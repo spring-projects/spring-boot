@@ -169,13 +169,13 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	private void processExecutableElement(String prefix, ExecutableElement element) {
 		if (element.getModifiers().contains(Modifier.PUBLIC)
 				&& (TypeKind.VOID != element.getReturnType().getKind())) {
-			Element returns = this.processingEnv.getTypeUtils().asElement(
-					element.getReturnType());
+			Element returns = this.processingEnv.getTypeUtils()
+					.asElement(element.getReturnType());
 			if (returns instanceof TypeElement) {
-				this.metadataCollector.add(ItemMetadata.newGroup(prefix,
-						this.typeUtils.getType(returns),
-						this.typeUtils.getType(element.getEnclosingElement()),
-						element.toString()));
+				this.metadataCollector.add(
+						ItemMetadata.newGroup(prefix, this.typeUtils.getType(returns),
+								this.typeUtils.getType(element.getEnclosingElement()),
+								element.toString()));
 				processTypeElement(prefix, (TypeElement) returns);
 			}
 		}
@@ -207,8 +207,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			ExecutableElement setter = members.getPublicSetters().get(name);
 			VariableElement field = members.getFields().get(name);
 			TypeMirror returnType = getter.getReturnType();
-			Element returnTypeElement = this.processingEnv.getTypeUtils().asElement(
-					returnType);
+			Element returnTypeElement = this.processingEnv.getTypeUtils()
+					.asElement(returnType);
 			boolean isExcluded = this.typeExcludeFilter.isExcluded(returnType);
 			boolean isNested = isNested(returnTypeElement, field, element);
 			boolean isCollection = this.typeUtils.isCollectionOrMap(returnType);
@@ -249,8 +249,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				continue;
 			}
 			TypeMirror returnType = field.asType();
-			Element returnTypeElement = this.processingEnv.getTypeUtils().asElement(
-					returnType);
+			Element returnTypeElement = this.processingEnv.getTypeUtils()
+					.asElement(returnType);
 			boolean isExcluded = this.typeExcludeFilter.isExcluded(returnType);
 			boolean isNested = isNested(returnTypeElement, field, element);
 			boolean isCollection = this.typeUtils.isCollectionOrMap(returnType);
@@ -277,8 +277,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	private boolean hasLombokSetter(VariableElement field, TypeElement element) {
 		return !field.getModifiers().contains(Modifier.FINAL)
 				&& (hasAnnotation(field, LOMBOK_SETTER_ANNOTATION)
-						|| hasAnnotation(element, LOMBOK_SETTER_ANNOTATION) || hasAnnotation(
-							element, LOMBOK_DATA_ANNOTATION));
+						|| hasAnnotation(element, LOMBOK_SETTER_ANNOTATION)
+						|| hasAnnotation(element, LOMBOK_DATA_ANNOTATION));
 	}
 
 	private void processNestedTypes(String prefix, TypeElement element,
@@ -288,8 +288,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			String name = entry.getKey();
 			ExecutableElement getter = entry.getValue();
 			VariableElement field = members.getFields().get(name);
-			Element returnType = this.processingEnv.getTypeUtils().asElement(
-					getter.getReturnType());
+			Element returnType = this.processingEnv.getTypeUtils()
+					.asElement(getter.getReturnType());
 			AnnotationMirror annotation = getAnnotation(getter,
 					configurationPropertiesAnnotation());
 			boolean isNested = isNested(returnType, field, element);
@@ -350,8 +350,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		Map<String, Object> values = new LinkedHashMap<String, Object>();
 		for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation
 				.getElementValues().entrySet()) {
-			values.put(entry.getKey().getSimpleName().toString(), entry.getValue()
-					.getValue());
+			values.put(entry.getKey().getSimpleName().toString(),
+					entry.getValue().getValue());
 		}
 		return values;
 	}
@@ -371,7 +371,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return null;
 	}
 
-	private ConfigurationMetadata mergeAdditionalMetadata(ConfigurationMetadata metadata) {
+	private ConfigurationMetadata mergeAdditionalMetadata(
+			ConfigurationMetadata metadata) {
 		try {
 			ConfigurationMetadata merged = new ConfigurationMetadata(metadata);
 			merged.merge(this.metadataStore.readAdditionalMetadata());

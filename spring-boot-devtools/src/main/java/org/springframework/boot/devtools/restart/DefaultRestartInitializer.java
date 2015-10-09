@@ -33,6 +33,7 @@ import java.util.Set;
 public class DefaultRestartInitializer implements RestartInitializer {
 
 	private static final Set<String> SKIPPED_STACK_ELEMENTS;
+
 	static {
 		Set<String> skipped = new LinkedHashSet<String>();
 		skipped.add("org.junit.runners.");
@@ -60,9 +61,8 @@ public class DefaultRestartInitializer implements RestartInitializer {
 	 * @return {@code true} if the thread is a main invocation
 	 */
 	protected boolean isMain(Thread thread) {
-		return thread.getName().equals("main")
-				&& thread.getContextClassLoader().getClass().getName()
-						.contains("AppClassLoader");
+		return thread.getName().equals("main") && thread.getContextClassLoader()
+				.getClass().getName().contains("AppClassLoader");
 	}
 
 	/**
@@ -87,8 +87,9 @@ public class DefaultRestartInitializer implements RestartInitializer {
 	 * @return the URLs
 	 */
 	protected URL[] getUrls(Thread thread) {
-		return ChangeableUrls.fromUrlClassLoader(
-				(URLClassLoader) thread.getContextClassLoader()).toArray();
+		return ChangeableUrls
+				.fromUrlClassLoader((URLClassLoader) thread.getContextClassLoader())
+				.toArray();
 	}
 
 }

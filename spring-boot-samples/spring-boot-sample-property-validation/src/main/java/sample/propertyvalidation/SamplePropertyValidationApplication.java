@@ -50,8 +50,8 @@ public class SamplePropertyValidationApplication {
 	}
 
 	public static void main(String[] args) throws Exception {
-		new SpringApplicationBuilder(SamplePropertyValidationApplication.class).profiles(
-				"app").run(args);
+		new SpringApplicationBuilder(SamplePropertyValidationApplication.class)
+				.profiles("app").run(args);
 	}
 
 }

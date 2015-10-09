@@ -116,9 +116,8 @@ public class MetricExportAutoConfiguration {
 		@ConditionalOnMissingBean
 		public MetricExportProperties metricExportProperties() {
 			MetricExportProperties export = new MetricExportProperties();
-			export.getRedis().setPrefix(
-					"spring.metrics" + (this.prefix.length() > 0 ? "." : "")
-							+ this.prefix);
+			export.getRedis().setPrefix("spring.metrics"
+					+ (this.prefix.length() > 0 ? "." : "") + this.prefix);
 			export.getAggregate().setPrefix(this.prefix);
 			export.getAggregate().setKeyPattern(this.aggregateKeyPattern);
 			return export;

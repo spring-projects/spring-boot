@@ -176,10 +176,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 				finally {
 					long duration = System.currentTimeMillis() - startTime;
 					if (duration > FIND_WARNING_TIMEOUT) {
-						getLog().warn(
-								"Searching for the main-class is taking some time, "
-										+ "consider using the mainClass configuration "
-										+ "parameter");
+						getLog().warn("Searching for the main-class is taking some time, "
+								+ "consider using the mainClass configuration "
+								+ "parameter");
 					}
 				}
 			}
@@ -203,9 +202,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
 		if (this.classifier != null) {
-			getLog().info(
-					"Attaching archive: " + target + ", with classifier: "
-							+ this.classifier);
+			getLog().info("Attaching archive: " + target + ", with classifier: "
+					+ this.classifier);
 			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(),
 					this.classifier, target);
 		}

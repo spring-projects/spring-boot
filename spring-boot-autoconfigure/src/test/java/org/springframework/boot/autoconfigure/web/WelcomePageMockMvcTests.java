@@ -68,8 +68,9 @@ public class WelcomePageMockMvcTests {
 	@Test
 	public void homePageCustomLocation() throws Exception {
 		this.wac = (ConfigurableWebApplicationContext) new SpringApplicationBuilder(
-				TestConfiguration.class).properties(
-				"spring.resources.staticLocations:classpath:/custom/").run();
+				TestConfiguration.class)
+						.properties("spring.resources.staticLocations:classpath:/custom/")
+						.run();
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 		this.mockMvc.perform(get("/")).andExpect(status().isOk()).andReturn();
 	}
@@ -77,8 +78,9 @@ public class WelcomePageMockMvcTests {
 	@Test
 	public void homePageCustomLocationNoTrailingSlash() throws Exception {
 		this.wac = (ConfigurableWebApplicationContext) new SpringApplicationBuilder(
-				TestConfiguration.class).properties(
-				"spring.resources.staticLocations:classpath:/custom").run();
+				TestConfiguration.class)
+						.properties("spring.resources.staticLocations:classpath:/custom")
+						.run();
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 		this.mockMvc.perform(get("/")).andExpect(status().isOk()).andReturn();
 	}
@@ -88,8 +90,8 @@ public class WelcomePageMockMvcTests {
 	@Documented
 	@Import({ ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 	}
 

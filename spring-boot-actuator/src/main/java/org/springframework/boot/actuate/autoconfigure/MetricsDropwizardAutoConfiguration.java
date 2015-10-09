@@ -50,13 +50,16 @@ public class MetricsDropwizardAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean({ DropwizardMetricServices.class, CounterService.class,
 			GaugeService.class })
-	public DropwizardMetricServices dropwizardMetricServices(MetricRegistry metricRegistry) {
+	public DropwizardMetricServices dropwizardMetricServices(
+			MetricRegistry metricRegistry) {
 		return new DropwizardMetricServices(metricRegistry);
 	}
 
 	@Bean
-	public MetricReaderPublicMetrics dropwizardPublicMetrics(MetricRegistry metricRegistry) {
-		MetricRegistryMetricReader reader = new MetricRegistryMetricReader(metricRegistry);
+	public MetricReaderPublicMetrics dropwizardPublicMetrics(
+			MetricRegistry metricRegistry) {
+		MetricRegistryMetricReader reader = new MetricRegistryMetricReader(
+				metricRegistry);
 		return new MetricReaderPublicMetrics(reader);
 	}
 

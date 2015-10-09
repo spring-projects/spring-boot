@@ -243,13 +243,13 @@ public class RandomAccessDataFile implements RandomAccessData {
 			this.files = new ConcurrentLinkedQueue<RandomAccessFile>();
 		}
 
-		@SuppressWarnings("resource")
 		public RandomAccessFile acquire() throws IOException {
 			try {
 				this.available.acquire();
 				RandomAccessFile file = this.files.poll();
-				return (file == null ? new RandomAccessFile(
-						RandomAccessDataFile.this.file, "r") : file);
+				return (file == null
+						? new RandomAccessFile(RandomAccessDataFile.this.file, "r")
+						: file);
 			}
 			catch (InterruptedException ex) {
 				throw new IOException(ex);

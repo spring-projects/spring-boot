@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,9 +96,10 @@ class ProjectLibraries implements Libraries {
 		}
 	}
 
-	private Set<GradleLibrary> getLibraries(String configurationName, LibraryScope scope) {
-		Configuration configuration = (configurationName == null ? null : this.project
-				.getConfigurations().findByName(configurationName));
+	private Set<GradleLibrary> getLibraries(String configurationName,
+			LibraryScope scope) {
+		Configuration configuration = (configurationName == null ? null
+				: this.project.getConfigurations().findByName(configurationName));
 		if (configuration == null) {
 			return null;
 		}
@@ -118,8 +119,8 @@ class ProjectLibraries implements Libraries {
 			if (dependency instanceof FileCollectionDependency) {
 				FileCollectionDependency fileDependency = (FileCollectionDependency) dependency;
 				for (File file : fileDependency.resolve()) {
-					libraries.add(new GradleLibrary(fileDependency.getGroup(), file,
-							scope));
+					libraries.add(
+							new GradleLibrary(fileDependency.getGroup(), file, scope));
 				}
 			}
 			else if (dependency instanceof ProjectDependency) {
@@ -231,8 +232,8 @@ class ProjectLibraries implements Libraries {
 		public boolean isUnpackRequired() {
 			if (ProjectLibraries.this.extension.getRequiresUnpack() != null) {
 				ModuleVersionIdentifier id = this.artifact.getModuleVersion().getId();
-				return ProjectLibraries.this.extension.getRequiresUnpack().contains(
-						id.getGroup() + ":" + id.getName());
+				return ProjectLibraries.this.extension.getRequiresUnpack()
+						.contains(id.getGroup() + ":" + id.getName());
 			}
 			return false;
 		}

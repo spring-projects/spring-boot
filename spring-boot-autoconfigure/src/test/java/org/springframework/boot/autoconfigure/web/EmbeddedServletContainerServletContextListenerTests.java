@@ -75,8 +75,8 @@ public class EmbeddedServletContainerServletContextListenerTests {
 	private void servletContextListenerBeanIsCalled(Class<?> configuration) {
 		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ServletContextListenerBeanConfiguration.class, configuration);
-		ServletContextListener servletContextListener = context.getBean(
-				"servletContextListener", ServletContextListener.class);
+		ServletContextListener servletContextListener = context
+				.getBean("servletContextListener", ServletContextListener.class);
 		verify(servletContextListener).contextInitialized(any(ServletContextEvent.class));
 		context.close();
 	}

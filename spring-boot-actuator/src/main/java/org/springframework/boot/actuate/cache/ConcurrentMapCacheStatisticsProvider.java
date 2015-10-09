@@ -25,8 +25,8 @@ import org.springframework.cache.concurrent.ConcurrentMapCache;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class ConcurrentMapCacheStatisticsProvider implements
-		CacheStatisticsProvider<ConcurrentMapCache> {
+public class ConcurrentMapCacheStatisticsProvider
+		implements CacheStatisticsProvider<ConcurrentMapCache> {
 
 	@Override
 	public CacheStatistics getCacheStatistics(CacheManager cacheManager,

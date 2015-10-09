@@ -32,8 +32,8 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Christian Dupuis
  */
 @ConfigurationProperties(prefix = "endpoints.shutdown", ignoreUnknownFields = false)
-public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> implements
-		ApplicationContextAware {
+public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>>
+		implements ApplicationContextAware {
 
 	private ConfigurableApplicationContext context;
 

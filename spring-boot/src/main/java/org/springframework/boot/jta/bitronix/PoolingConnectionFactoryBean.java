@@ -43,8 +43,8 @@ import bitronix.tm.resource.jms.PoolingConnectionFactory;
  */
 @SuppressWarnings("serial")
 @ConfigurationProperties(prefix = "spring.jta.bitronix.connectionfactory")
-public class PoolingConnectionFactoryBean extends PoolingConnectionFactory implements
-		BeanNameAware, InitializingBean, DisposableBean {
+public class PoolingConnectionFactoryBean extends PoolingConnectionFactory
+		implements BeanNameAware, InitializingBean, DisposableBean {
 
 	private static ThreadLocal<PoolingConnectionFactoryBean> source = new ThreadLocal<PoolingConnectionFactoryBean>();
 

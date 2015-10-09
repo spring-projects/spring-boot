@@ -39,11 +39,13 @@ import org.springframework.util.StringUtils;
 public class AnsiPropertySource extends PropertySource<AnsiElement> {
 
 	private static final Iterable<MappedEnum<?>> MAPPED_ENUMS;
+
 	static {
 		List<MappedEnum<?>> enums = new ArrayList<MappedEnum<?>>();
 		enums.add(new MappedEnum<AnsiStyle>("AnsiStyle.", AnsiStyle.class));
 		enums.add(new MappedEnum<AnsiColor>("AnsiColor.", AnsiColor.class));
-		enums.add(new MappedEnum<AnsiBackground>("AnsiBackground.", AnsiBackground.class));
+		enums.add(
+				new MappedEnum<AnsiBackground>("AnsiBackground.", AnsiBackground.class));
 		enums.add(new MappedEnum<AnsiStyle>("Ansi.", AnsiStyle.class));
 		enums.add(new MappedEnum<AnsiColor>("Ansi.", AnsiColor.class));
 		enums.add(new MappedEnum<AnsiBackground>("Ansi.BG_", AnsiBackground.class));

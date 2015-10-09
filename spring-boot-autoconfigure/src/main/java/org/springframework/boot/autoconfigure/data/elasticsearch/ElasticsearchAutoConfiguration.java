@@ -56,6 +56,7 @@ import org.springframework.util.StringUtils;
 public class ElasticsearchAutoConfiguration implements DisposableBean {
 
 	private static final Map<String, String> DEFAULTS;
+
 	static {
 		Map<String, String> defaults = new LinkedHashMap<String, String>();
 		defaults.put("http.enabled", String.valueOf(false));

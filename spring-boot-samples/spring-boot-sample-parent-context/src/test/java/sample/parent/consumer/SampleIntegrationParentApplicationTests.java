@@ -86,15 +86,16 @@ public class SampleIntegrationParentApplicationTests {
 	}
 
 	private Resource[] findResources() throws IOException {
-		return ResourcePatternUtils.getResourcePatternResolver(
-				new DefaultResourceLoader()).getResources("file:target/output/**/*.msg");
+		return ResourcePatternUtils
+				.getResourcePatternResolver(new DefaultResourceLoader())
+				.getResources("file:target/output/**/*.msg");
 	}
 
 	private String readResources(Resource[] resources) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		for (Resource resource : resources) {
-			builder.append(new String(StreamUtils.copyToByteArray(resource
-					.getInputStream())));
+			builder.append(
+					new String(StreamUtils.copyToByteArray(resource.getInputStream())));
 		}
 		return builder.toString();
 	}

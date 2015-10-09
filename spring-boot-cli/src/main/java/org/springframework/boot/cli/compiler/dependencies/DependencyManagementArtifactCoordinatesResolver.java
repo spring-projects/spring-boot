@@ -25,8 +25,8 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class DependencyManagementArtifactCoordinatesResolver implements
-		ArtifactCoordinatesResolver {
+public class DependencyManagementArtifactCoordinatesResolver
+		implements ArtifactCoordinatesResolver {
 
 	private final DependencyManagement dependencyManagement;
 

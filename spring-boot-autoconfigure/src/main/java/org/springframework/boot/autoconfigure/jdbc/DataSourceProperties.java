@@ -43,8 +43,8 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
-public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAware,
-		InitializingBean {
+public class DataSourceProperties
+		implements BeanClassLoaderAware, EnvironmentAware, InitializingBean {
 
 	public static final String PREFIX = "spring.datasource";
 
@@ -162,8 +162,8 @@ public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAw
 
 	public String getDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
-			Assert.state(driverClassIsLoadable(), "Cannot load driver class: "
-					+ this.driverClassName);
+			Assert.state(driverClassIsLoadable(),
+					"Cannot load driver class: " + this.driverClassName);
 			return this.driverClassName;
 		}
 		String driverClassName = null;
@@ -383,8 +383,9 @@ public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAw
 				}
 				else {
 					message.append(" (the profiles \""
-							+ StringUtils.arrayToCommaDelimitedString(environment
-									.getActiveProfiles()) + "\" are currently active)");
+							+ StringUtils.arrayToCommaDelimitedString(
+									environment.getActiveProfiles())
+							+ "\" are currently active)");
 
 				}
 			}

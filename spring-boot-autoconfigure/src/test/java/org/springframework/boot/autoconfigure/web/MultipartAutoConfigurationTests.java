@@ -188,8 +188,8 @@ public class MultipartAutoConfigurationTests {
 				BaseConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(MultipartProperties.class);
-		assertEquals(expectedNumberOfMultipartConfigElementBeans, this.context
-				.getBeansOfType(MultipartConfigElement.class).size());
+		assertEquals(expectedNumberOfMultipartConfigElementBeans,
+				this.context.getBeansOfType(MultipartConfigElement.class).size());
 	}
 
 	@Test
@@ -204,8 +204,8 @@ public class MultipartAutoConfigurationTests {
 
 	private void verify404() throws Exception {
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		ClientHttpRequest request = requestFactory.createRequest(new URI(
-				"http://localhost:"
+		ClientHttpRequest request = requestFactory.createRequest(
+				new URI("http://localhost:"
 						+ this.context.getEmbeddedServletContainer().getPort() + "/"),
 				HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
@@ -214,9 +214,12 @@ public class MultipartAutoConfigurationTests {
 
 	private void verifyServletWorks() {
 		RestTemplate restTemplate = new RestTemplate();
-		assertEquals("Hello", restTemplate.getForObject("http://localhost:"
-				+ this.context.getEmbeddedServletContainer().getPort() + "/",
-				String.class));
+		assertEquals("Hello",
+				restTemplate
+						.getForObject(
+								"http://localhost:" + this.context
+										.getEmbeddedServletContainer().getPort() + "/",
+						String.class));
 	}
 
 	@Configuration

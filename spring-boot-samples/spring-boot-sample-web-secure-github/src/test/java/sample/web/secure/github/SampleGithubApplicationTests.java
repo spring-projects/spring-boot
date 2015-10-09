@@ -59,8 +59,8 @@ public class SampleGithubApplicationTests {
 
 	@Before
 	public void setUp() {
-		this.mvc = webAppContextSetup(this.context).addFilters(this.filter,
-				this.filterChain).build();
+		this.mvc = webAppContextSetup(this.context)
+				.addFilters(this.filter, this.filterChain).build();
 		SecurityContextHolder.clearContext();
 	}
 

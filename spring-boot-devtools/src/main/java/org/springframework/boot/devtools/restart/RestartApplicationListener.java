@@ -30,8 +30,8 @@ import org.springframework.core.Ordered;
  * @since 1.3.0
  * @see Restarter
  */
-public class RestartApplicationListener implements ApplicationListener<ApplicationEvent>,
-		Ordered {
+public class RestartApplicationListener
+		implements ApplicationListener<ApplicationEvent>, Ordered {
 
 	private int order = HIGHEST_PRECEDENCE;
 

@@ -48,8 +48,8 @@ public class NonSensitiveHealthTests {
 
 	@Test
 	public void testSecureHealth() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/health", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + "/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertFalse("Wrong body: " + entity.getBody(),
 				entity.getBody().contains("\"hello\":1"));

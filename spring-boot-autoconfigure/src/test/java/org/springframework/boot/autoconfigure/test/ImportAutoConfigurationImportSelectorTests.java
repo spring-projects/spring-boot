@@ -79,8 +79,8 @@ public class ImportAutoConfigurationImportSelectorTests {
 
 	private void configureValue(String... value) {
 		String name = ImportAutoConfiguration.class.getName();
-		given(this.annotationMetadata.getAnnotationAttributes(name, true)).willReturn(
-				this.annotationAttributes);
+		given(this.annotationMetadata.getAnnotationAttributes(name, true))
+				.willReturn(this.annotationAttributes);
 		given(this.annotationAttributes.getStringArray("value")).willReturn(value);
 	}
 

@@ -70,8 +70,8 @@ public class EmbeddedServerPortFileWriterTests {
 		System.setProperty("PORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
 		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
-		assertThat(FileCopyUtils.copyToString(new FileReader(System
-				.getProperty("PORTFILE"))), equalTo("8080"));
+		assertThat(FileCopyUtils.copyToString(
+				new FileReader(System.getProperty("PORTFILE"))), equalTo("8080"));
 	}
 
 	@Test
@@ -86,8 +86,10 @@ public class EmbeddedServerPortFileWriterTests {
 				- StringUtils.getFilenameExtension(managementFile).length() - 1);
 		managementFile = managementFile + "-management."
 				+ StringUtils.getFilenameExtension(file.getName());
-		assertThat(FileCopyUtils.copyToString(new FileReader(new File(file
-				.getParentFile(), managementFile))), equalTo("9090"));
+		assertThat(
+				FileCopyUtils.copyToString(
+						new FileReader(new File(file.getParentFile(), managementFile))),
+				equalTo("9090"));
 		assertThat(collectFileNames(file.getParentFile()), hasItem(managementFile));
 	}
 
@@ -102,13 +104,16 @@ public class EmbeddedServerPortFileWriterTests {
 				- StringUtils.getFilenameExtension(managementFile).length() - 1);
 		managementFile = managementFile + "-MANAGEMENT."
 				+ StringUtils.getFilenameExtension(file.getName());
-		assertThat(FileCopyUtils.copyToString(new FileReader(new File(file
-				.getParentFile(), managementFile))), equalTo("9090"));
+		assertThat(
+				FileCopyUtils.copyToString(
+						new FileReader(new File(file.getParentFile(), managementFile))),
+				equalTo("9090"));
 		assertThat(collectFileNames(file.getParentFile()), hasItem(managementFile));
 	}
 
 	private EmbeddedServletContainerInitializedEvent mockEvent(String name, int port) {
-		EmbeddedWebApplicationContext applicationContext = mock(EmbeddedWebApplicationContext.class);
+		EmbeddedWebApplicationContext applicationContext = mock(
+				EmbeddedWebApplicationContext.class);
 		EmbeddedServletContainer source = mock(EmbeddedServletContainer.class);
 		given(applicationContext.getNamespace()).willReturn(name);
 		given(source.getPort()).willReturn(port);

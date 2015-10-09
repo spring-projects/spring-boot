@@ -150,8 +150,8 @@ public class RedisMetricRepository implements MetricRepository {
 		String name = delta.getName();
 		String key = keyFor(name);
 		trackMembership(key);
-		double value = this.zSetOperations.incrementScore(key, delta.getValue()
-				.doubleValue());
+		double value = this.zSetOperations.incrementScore(key,
+				delta.getValue().doubleValue());
 		String raw = serialize(new Metric<Double>(name, value, delta.getTimestamp()));
 		this.redisOperations.opsForValue().set(key, raw);
 	}

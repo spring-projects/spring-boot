@@ -40,10 +40,10 @@ import org.springframework.util.Assert;
  * <p>
  * The {@link #setFilter(Filter) Filter} must be specified before calling
  * {@link #onStartup(ServletContext)}. Registrations can be associated with
- * {@link #setUrlPatterns URL patterns} and/or servlets (either by
- * {@link #setServletNames name} or via a {@link #setServletRegistrationBeans
- * ServletRegistrationBean}s. When no URL pattern or servlets are specified the filter
- * will be associated to '/*'. The filter name will be deduced if not specified.
+ * {@link #setUrlPatterns URL patterns} and/or servlets (either by {@link #setServletNames
+ * name} or via a {@link #setServletRegistrationBeans ServletRegistrationBean}s. When no
+ * URL pattern or servlets are specified the filter will be associated to '/*'. The filter
+ * name will be deduced if not specified.
  *
  * @author Phillip Webb
  * @see ServletContextInitializer
@@ -62,8 +62,8 @@ public class FilterRegistrationBean extends RegistrationBean {
 			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST,
 			DispatcherType.ASYNC);
 
-	static final EnumSet<DispatcherType> NON_ASYNC_DISPATCHER_TYPES = EnumSet.of(
-			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
+	static final EnumSet<DispatcherType> NON_ASYNC_DISPATCHER_TYPES = EnumSet
+			.of(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
 
 	private static final String[] DEFAULT_URL_MAPPINGS = { "/*" };
 

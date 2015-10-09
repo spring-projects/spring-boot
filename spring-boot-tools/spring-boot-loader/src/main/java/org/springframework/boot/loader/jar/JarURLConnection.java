@@ -101,8 +101,8 @@ class JarURLConnection extends java.net.JarURLConnection {
 	@Override
 	public void connect() throws IOException {
 		if (!this.jarEntryName.isEmpty()) {
-			this.jarEntryData = this.jarFile.getJarEntryData(this.jarEntryName
-					.asAsciiBytes());
+			this.jarEntryData = this.jarFile
+					.getJarEntryData(this.jarEntryName.asAsciiBytes());
 			if (this.jarEntryData == null) {
 				throwFileNotFound(this.jarEntryName, this.jarFile);
 			}
@@ -115,8 +115,8 @@ class JarURLConnection extends java.net.JarURLConnection {
 		if (Boolean.TRUE.equals(useFastExceptions.get())) {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
-		throw new FileNotFoundException("JAR entry " + entry + " not found in "
-				+ jarFile.getName());
+		throw new FileNotFoundException(
+				"JAR entry " + entry + " not found in " + jarFile.getName());
 	}
 
 	@Override
@@ -247,8 +247,8 @@ class JarURLConnection extends java.net.JarURLConnection {
 			int hi = Character.digit(source.charAt(i + 1), 16);
 			int lo = Character.digit(source.charAt(i + 2), 16);
 			if (hi == -1 || lo == -1) {
-				throw new IllegalArgumentException("Invalid encoded sequence \""
-						+ source.substring(i) + "\"");
+				throw new IllegalArgumentException(
+						"Invalid encoded sequence \"" + source.substring(i) + "\"");
 			}
 			return ((char) ((hi << 4) + lo));
 		}

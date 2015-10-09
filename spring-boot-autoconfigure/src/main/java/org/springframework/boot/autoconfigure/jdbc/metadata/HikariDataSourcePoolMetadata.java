@@ -29,8 +29,8 @@ import com.zaxxer.hikari.pool.HikariPool;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public class HikariDataSourcePoolMetadata extends
-		AbstractDataSourcePoolMetadata<HikariDataSource> {
+public class HikariDataSourcePoolMetadata
+		extends AbstractDataSourcePoolMetadata<HikariDataSource> {
 
 	public HikariDataSourcePoolMetadata(HikariDataSource dataSource) {
 		super(dataSource);

@@ -148,8 +148,8 @@ public class CommandRunner implements Iterable<Command> {
 	public Command findCommand(String name) {
 		for (Command candidate : this.commands) {
 			String candidateName = candidate.getName();
-			if (candidateName.equals(name)
-					|| (isOptionCommand(candidate) && ("--" + candidateName).equals(name))) {
+			if (candidateName.equals(name) || (isOptionCommand(candidate)
+					&& ("--" + candidateName).equals(name))) {
 				return candidate;
 			}
 		}
@@ -280,8 +280,8 @@ public class CommandRunner implements Iterable<Command> {
 				String usageHelp = command.getUsageHelp();
 				String description = command.getDescription();
 				Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", command.getName(),
-						(usageHelp == null ? "" : usageHelp), (description == null ? ""
-								: description)));
+						(usageHelp == null ? "" : usageHelp),
+						(description == null ? "" : description)));
 			}
 		}
 		Log.info("");

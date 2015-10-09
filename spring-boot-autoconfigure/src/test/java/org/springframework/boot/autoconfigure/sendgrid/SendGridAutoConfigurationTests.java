@@ -76,12 +76,13 @@ public class SendGridAutoConfigurationTests {
 	@Test
 	public void expectedSendGridBeanWithProxyCreated() {
 		loadContext("spring.sendgrid.username:user", "spring.sendgrid.password:secret",
-				"spring.sendgrid.proxy.host:localhost", "spring.sendgrid.proxy.port:5678");
+				"spring.sendgrid.proxy.host:localhost",
+				"spring.sendgrid.proxy.port:5678");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		CloseableHttpClient client = (CloseableHttpClient) ReflectionTestUtils.getField(
-				sendGrid, "client");
-		HttpRoutePlanner routePlanner = (HttpRoutePlanner) ReflectionTestUtils.getField(
-				client, "routePlanner");
+		CloseableHttpClient client = (CloseableHttpClient) ReflectionTestUtils
+				.getField(sendGrid, "client");
+		HttpRoutePlanner routePlanner = (HttpRoutePlanner) ReflectionTestUtils
+				.getField(client, "routePlanner");
 		assertThat(routePlanner, instanceOf(DefaultProxyRoutePlanner.class));
 	}
 

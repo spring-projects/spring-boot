@@ -86,7 +86,8 @@ public class MetricExporters implements SchedulingConfigurer {
 		}
 	}
 
-	private MetricCopyExporter getExporter(MetricWriter writer, TriggerProperties trigger) {
+	private MetricCopyExporter getExporter(MetricWriter writer,
+			TriggerProperties trigger) {
 		MetricCopyExporter exporter = new MetricCopyExporter(this.reader, writer);
 		exporter.setIncludes(trigger.getIncludes());
 		exporter.setExcludes(trigger.getExcludes());

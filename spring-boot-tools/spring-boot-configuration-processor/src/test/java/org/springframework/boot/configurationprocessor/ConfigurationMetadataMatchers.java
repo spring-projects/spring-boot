@@ -136,12 +136,12 @@ public final class ConfigurationMetadataMatchers {
 			ConfigurationMetadata metadata = (ConfigurationMetadata) item;
 			ItemMetadata property = getFirstItemWithName(metadata, this.name);
 			if (property == null) {
-				description.appendText("missing "
-						+ this.itemType.toString().toLowerCase() + " " + this.name);
+				description.appendText("missing " + this.itemType.toString().toLowerCase()
+						+ " " + this.name);
 			}
 			else {
-				description.appendText(
-						"was " + this.itemType.toString().toLowerCase() + " ")
+				description
+						.appendText("was " + this.itemType.toString().toLowerCase() + " ")
 						.appendValue(property);
 			}
 		}
@@ -274,7 +274,8 @@ public final class ConfigurationMetadataMatchers {
 			}
 		}
 
-		public ContainsHintMatcher withValue(int index, Object value, String description) {
+		public ContainsHintMatcher withValue(int index, Object value,
+				String description) {
 			List<ValueHintMatcher> values = new ArrayList<ValueHintMatcher>(this.values);
 			values.add(new ValueHintMatcher(index, value, description));
 			return new ContainsHintMatcher(this.name, values, this.providers);
@@ -288,7 +289,8 @@ public final class ConfigurationMetadataMatchers {
 			return new ContainsHintMatcher(this.name, this.values, providers);
 		}
 
-		public ContainsHintMatcher withProvider(String provider, String key, Object value) {
+		public ContainsHintMatcher withProvider(String provider, String key,
+				Object value) {
 			return withProvider(this.providers.size(), provider,
 					Collections.singletonMap(key, value));
 		}
@@ -297,7 +299,8 @@ public final class ConfigurationMetadataMatchers {
 			return withProvider(this.providers.size(), provider, null);
 		}
 
-		private ItemHint getFirstHintWithName(ConfigurationMetadata metadata, String name) {
+		private ItemHint getFirstHintWithName(ConfigurationMetadata metadata,
+				String name) {
 			for (ItemHint hint : metadata.getHints()) {
 				if (name.equals(hint.getName())) {
 					return hint;
@@ -357,7 +360,8 @@ public final class ConfigurationMetadataMatchers {
 		private final String name;
 		private final Map<String, Object> parameters;
 
-		public ValueProviderMatcher(int index, String name, Map<String, Object> parameters) {
+		public ValueProviderMatcher(int index, String name,
+				Map<String, Object> parameters) {
 			this.index = index;
 			this.name = name;
 			this.parameters = parameters;

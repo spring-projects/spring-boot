@@ -154,8 +154,8 @@ public class TunnelClient implements SmartInitializingSingleton {
 
 		private void handleConnection(SocketChannel socketChannel) throws Exception {
 			Closeable closeable = new SocketCloseable(socketChannel);
-			WritableByteChannel outputChannel = TunnelClient.this.tunnelConnection.open(
-					socketChannel, closeable);
+			WritableByteChannel outputChannel = TunnelClient.this.tunnelConnection
+					.open(socketChannel, closeable);
 			TunnelClient.this.listeners.fireOpenEvent(socketChannel);
 			try {
 				logger.trace("Accepted connection to tunnel client from "

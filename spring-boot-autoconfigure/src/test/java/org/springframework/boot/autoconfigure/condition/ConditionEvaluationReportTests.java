@@ -180,9 +180,8 @@ public class ConditionEvaluationReportTests {
 	@Test
 	@SuppressWarnings("resource")
 	public void springBootConditionPopulatesReport() throws Exception {
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(new AnnotationConfigApplicationContext(Config.class)
-						.getBeanFactory());
+		ConditionEvaluationReport report = ConditionEvaluationReport.get(
+				new AnnotationConfigApplicationContext(Config.class).getBeanFactory());
 		assertThat(report.getConditionAndOutcomesBySource().size(), not(equalTo(0)));
 	}
 
@@ -211,12 +210,12 @@ public class ConditionEvaluationReportTests {
 	public void duplicateOutcomes() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				DuplicateConfig.class);
-		ConditionEvaluationReport report = ConditionEvaluationReport.get(context
-				.getBeanFactory());
+		ConditionEvaluationReport report = ConditionEvaluationReport
+				.get(context.getBeanFactory());
 		String autoconfigKey = MultipartAutoConfiguration.class.getName();
 
-		ConditionAndOutcomes outcomes = report.getConditionAndOutcomesBySource().get(
-				autoconfigKey);
+		ConditionAndOutcomes outcomes = report.getConditionAndOutcomesBySource()
+				.get(autoconfigKey);
 		assertThat(outcomes, not(nullValue()));
 		assertThat(getNumberOfOutcomes(outcomes), equalTo(2));
 
@@ -237,11 +236,12 @@ public class ConditionEvaluationReportTests {
 		EnvironmentTestUtils.addEnvironment(context, "test.present=true");
 		context.register(NegativeOuterConfig.class);
 		context.refresh();
-		ConditionEvaluationReport report = ConditionEvaluationReport.get(context
-				.getBeanFactory());
+		ConditionEvaluationReport report = ConditionEvaluationReport
+				.get(context.getBeanFactory());
 		Map<String, ConditionAndOutcomes> sourceOutcomes = report
 				.getConditionAndOutcomesBySource();
-		assertThat(context.containsBean("negativeOuterPositiveInnerBean"), equalTo(false));
+		assertThat(context.containsBean("negativeOuterPositiveInnerBean"),
+				equalTo(false));
 		String negativeConfig = NegativeOuterConfig.class.getName();
 		assertThat(sourceOutcomes.get(negativeConfig).isFullMatch(), equalTo(false));
 		String positiveConfig = NegativeOuterConfig.PositiveInnerConfig.class.getName();
@@ -287,8 +287,8 @@ public class ConditionEvaluationReportTests {
 		}
 	}
 
-	static class TestMatchCondition extends SpringBootCondition implements
-			ConfigurationCondition {
+	static class TestMatchCondition extends SpringBootCondition
+			implements ConfigurationCondition {
 
 		private final ConfigurationPhase phase;
 

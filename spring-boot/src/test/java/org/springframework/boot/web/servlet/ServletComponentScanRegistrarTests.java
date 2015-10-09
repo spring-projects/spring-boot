@@ -68,8 +68,8 @@ public class ServletComponentScanRegistrarTests {
 		this.context = new AnnotationConfigApplicationContext(BasePackageClasses.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan(), containsInAnyOrder(getClass()
-				.getPackage().getName()));
+		assertThat(postProcessor.getPackagesToScan(),
+				containsInAnyOrder(getClass().getPackage().getName()));
 	}
 
 	@Test
@@ -80,8 +80,8 @@ public class ServletComponentScanRegistrarTests {
 		this.context = new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan(), containsInAnyOrder(getClass()
-				.getPackage().getName()));
+		assertThat(postProcessor.getPackagesToScan(),
+				containsInAnyOrder(getClass().getPackage().getName()));
 	}
 
 	@Test
@@ -90,10 +90,8 @@ public class ServletComponentScanRegistrarTests {
 				AdditionalPackages.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(
-				postProcessor.getPackagesToScan(),
-				containsInAnyOrder("com.example.foo", "com.example.bar",
-						"com.example.baz"));
+		assertThat(postProcessor.getPackagesToScan(), containsInAnyOrder(
+				"com.example.foo", "com.example.bar", "com.example.baz"));
 	}
 
 	@Configuration

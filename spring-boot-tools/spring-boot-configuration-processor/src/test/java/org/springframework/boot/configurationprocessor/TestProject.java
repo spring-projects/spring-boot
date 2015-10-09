@@ -140,8 +140,8 @@ public class TestProject {
 		File targetFile = getSourceFile(target);
 		String contents = getContents(targetFile);
 		int insertAt = contents.lastIndexOf('}');
-		String additionalSource = FileCopyUtils.copyToString(new InputStreamReader(
-				snippetStream));
+		String additionalSource = FileCopyUtils
+				.copyToString(new InputStreamReader(snippetStream));
 		contents = contents.substring(0, insertAt) + additionalSource
 				+ contents.substring(insertAt);
 		putContents(targetFile, contents);

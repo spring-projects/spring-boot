@@ -78,16 +78,16 @@ public class CacheStatisticsAutoConfigurationTests {
 	@Test
 	public void basicJCacheCacheStatistics() {
 		load(JCacheCacheConfig.class);
-		CacheStatisticsProvider provider = this.context.getBean(
-				"jCacheCacheStatisticsProvider", CacheStatisticsProvider.class);
+		CacheStatisticsProvider provider = this.context
+				.getBean("jCacheCacheStatisticsProvider", CacheStatisticsProvider.class);
 		doTestCoreStatistics(provider, false);
 	}
 
 	@Test
 	public void basicEhCacheCacheStatistics() {
 		load(EhCacheConfig.class);
-		CacheStatisticsProvider provider = this.context.getBean(
-				"ehCacheCacheStatisticsProvider", CacheStatisticsProvider.class);
+		CacheStatisticsProvider provider = this.context
+				.getBean("ehCacheCacheStatisticsProvider", CacheStatisticsProvider.class);
 		doTestCoreStatistics(provider, true);
 	}
 
@@ -110,8 +110,8 @@ public class CacheStatisticsAutoConfigurationTests {
 	@Test
 	public void basicGuavaCacheStatistics() {
 		load(GuavaConfig.class);
-		CacheStatisticsProvider provider = this.context.getBean(
-				"guavaCacheStatisticsProvider", CacheStatisticsProvider.class);
+		CacheStatisticsProvider provider = this.context
+				.getBean("guavaCacheStatisticsProvider", CacheStatisticsProvider.class);
 		doTestCoreStatistics(provider, true);
 	}
 
@@ -125,23 +125,23 @@ public class CacheStatisticsAutoConfigurationTests {
 				books);
 		assertCoreStatistics(cacheStatistics, 0L, null, null);
 		getOrCreate(books, "a", "b", "b", "a", "a");
-		CacheStatistics updatedCacheStatistics = provider.getCacheStatistics(
-				this.cacheManager, books);
+		CacheStatistics updatedCacheStatistics = provider
+				.getCacheStatistics(this.cacheManager, books);
 		assertCoreStatistics(updatedCacheStatistics, 2L, null, null);
 	}
 
 	@Test
 	public void noOpCacheStatistics() {
 		load(NoOpCacheConfig.class);
-		CacheStatisticsProvider provider = this.context.getBean(
-				"noOpCacheStatisticsProvider", CacheStatisticsProvider.class);
+		CacheStatisticsProvider provider = this.context
+				.getBean("noOpCacheStatisticsProvider", CacheStatisticsProvider.class);
 		Cache books = getCache("books");
 		CacheStatistics cacheStatistics = provider.getCacheStatistics(this.cacheManager,
 				books);
 		assertCoreStatistics(cacheStatistics, null, null, null);
 		getOrCreate(books, "a", "b", "b", "a", "a");
-		CacheStatistics updatedCacheStatistics = provider.getCacheStatistics(
-				this.cacheManager, books);
+		CacheStatistics updatedCacheStatistics = provider
+				.getCacheStatistics(this.cacheManager, books);
 		assertCoreStatistics(updatedCacheStatistics, null, null, null);
 	}
 
@@ -152,14 +152,14 @@ public class CacheStatisticsAutoConfigurationTests {
 				books);
 		assertCoreStatistics(cacheStatistics, (supportSize ? 0L : null), null, null);
 		getOrCreate(books, "a", "b", "b", "a", "a", "a");
-		CacheStatistics updatedCacheStatistics = provider.getCacheStatistics(
-				this.cacheManager, books);
+		CacheStatistics updatedCacheStatistics = provider
+				.getCacheStatistics(this.cacheManager, books);
 		assertCoreStatistics(updatedCacheStatistics, (supportSize ? 2L : null), 0.66D,
 				0.33D);
 	}
 
-	private void assertCoreStatistics(CacheStatistics metrics, Long size,
-			Double hitRatio, Double missRatio) {
+	private void assertCoreStatistics(CacheStatistics metrics, Long size, Double hitRatio,
+			Double missRatio) {
 		assertNotNull("Cache metrics must not be null", metrics);
 		assertEquals("Wrong size for metrics " + metrics, size, metrics.getSize());
 		checkRatio("Wrong hit ratio for metrics " + metrics, hitRatio,
@@ -213,8 +213,9 @@ public class CacheStatisticsAutoConfigurationTests {
 
 		@Bean
 		public javax.cache.CacheManager jCacheCacheManager() {
-			javax.cache.CacheManager cacheManager = Caching.getCachingProvider(
-					HazelcastCachingProvider.class.getName()).getCacheManager();
+			javax.cache.CacheManager cacheManager = Caching
+					.getCachingProvider(HazelcastCachingProvider.class.getName())
+					.getCacheManager();
 			MutableConfiguration<Object, Object> config = new MutableConfiguration<Object, Object>();
 			config.setStatisticsEnabled(true);
 			cacheManager.createCache("books", config);
@@ -234,8 +235,8 @@ public class CacheStatisticsAutoConfigurationTests {
 
 		@Bean
 		public net.sf.ehcache.CacheManager ehCacheCacheManager() {
-			return EhCacheManagerUtils.buildCacheManager(new ClassPathResource(
-					"cache/test-ehcache.xml"));
+			return EhCacheManagerUtils
+					.buildCacheManager(new ClassPathResource("cache/test-ehcache.xml"));
 		}
 
 	}

@@ -53,8 +53,8 @@ public class ArrayDocumentMatcherTests {
 	}
 
 	private Properties getProperties(String values) throws IOException {
-		return PropertiesLoaderUtils.loadProperties(new ByteArrayResource(values
-				.getBytes()));
+		return PropertiesLoaderUtils
+				.loadProperties(new ByteArrayResource(values.getBytes()));
 	}
 
 }

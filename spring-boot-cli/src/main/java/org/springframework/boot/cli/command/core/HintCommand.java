@@ -83,8 +83,8 @@ public class HintCommand extends AbstractCommand {
 			return false;
 		}
 		return command.getName().startsWith(starting)
-				|| (this.commandRunner.isOptionCommand(command) && ("--" + command
-						.getName()).startsWith(starting));
+				|| (this.commandRunner.isOptionCommand(command)
+						&& ("--" + command.getName()).startsWith(starting));
 	}
 
 	private void showCommandOptionHints(String commandName,

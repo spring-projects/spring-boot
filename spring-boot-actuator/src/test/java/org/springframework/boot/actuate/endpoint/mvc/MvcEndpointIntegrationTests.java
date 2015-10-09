@@ -182,8 +182,8 @@ public class MvcEndpointIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jackson.serialization.indent-output:true");
 		MockMvc mockMvc = createMockMvc();
-		mockMvc.perform(get("/beans")).andExpect(
-				content().string(startsWith("{" + LINE_SEPARATOR)));
+		mockMvc.perform(get("/beans"))
+				.andExpect(content().string(startsWith("{" + LINE_SEPARATOR)));
 	}
 
 	private MockMvc createMockMvc() {
@@ -205,8 +205,8 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	static class DefaultConfiguration {
@@ -224,8 +224,8 @@ public class MvcEndpointIntegrationTests {
 
 	@ImportAutoConfiguration({ HypermediaAutoConfiguration.class,
 			RepositoryRestMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	static class SpringDataRestConfiguration {

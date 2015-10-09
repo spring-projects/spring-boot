@@ -55,8 +55,8 @@ class WebServletHandler extends ServletComponentHandler {
 
 	private String determineName(Map<String, Object> attributes,
 			BeanDefinition beanDefinition) {
-		return (String) (StringUtils.hasText((String) attributes.get("name")) ? attributes
-				.get("name") : beanDefinition.getBeanClassName());
+		return (String) (StringUtils.hasText((String) attributes.get("name"))
+				? attributes.get("name") : beanDefinition.getBeanClassName());
 	}
 
 }

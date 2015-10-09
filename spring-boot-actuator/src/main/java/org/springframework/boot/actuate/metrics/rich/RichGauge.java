@@ -23,8 +23,8 @@ import org.springframework.util.Assert;
  * <p>
  * The value of the average will depend on whether a weight ('alpha') is set for the
  * gauge. If it is unset, the average will contain a simple arithmetic mean. If a weight
- * is set, an exponential moving average will be calculated as defined in this <a
- * href="http://www.itl.nist.gov/div898/handbook/pmc/section4/pmc431.htm">NIST
+ * is set, an exponential moving average will be calculated as defined in this
+ * <a href="http://www.itl.nist.gov/div898/handbook/pmc/section4/pmc431.htm">NIST
  * document</a>.
  *
  * @author Luke Taylor

@@ -61,8 +61,8 @@ public abstract class AbstractConfigurationMetadataTests {
 	}
 
 	protected InputStream getInputStreamFor(String name) throws IOException {
-		Resource r = new ClassPathResource("metadata/configuration-metadata-" + name
-				+ ".json");
+		Resource r = new ClassPathResource(
+				"metadata/configuration-metadata-" + name + ".json");
 		return r.getInputStream();
 	}
 

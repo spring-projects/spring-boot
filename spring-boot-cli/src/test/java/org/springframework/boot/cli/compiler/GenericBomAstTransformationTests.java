@@ -40,6 +40,7 @@ import static org.junit.Assert.assertEquals;
  * Tests for {@link ResolveDependencyCoordinatesTransformation}
  *
  * @author Andy Wilkinson
+ * @author Dave Syer
  */
 public final class GenericBomAstTransformationTests {
 
@@ -59,6 +60,7 @@ public final class GenericBomAstTransformationTests {
 		protected String getBomModule() {
 			return "test:child:1.0.0";
 		}
+
 	};
 
 	@Test
@@ -106,16 +108,15 @@ public final class GenericBomAstTransformationTests {
 	}
 
 	private AnnotationNode findAnnotation() {
-		PackageNode pkg = this.moduleNode.getPackage();
+		PackageNode packageNode = this.moduleNode.getPackage();
 		ClassNode bom = ClassHelper.make(DependencyManagementBom.class);
-		if (pkg != null) {
-			if (!pkg.getAnnotations(bom).isEmpty()) {
-				return pkg.getAnnotations(bom).get(0);
+		if (packageNode != null) {
+			if (!packageNode.getAnnotations(bom).isEmpty()) {
+				return packageNode.getAnnotations(bom).get(0);
 			}
 		}
 		if (!this.moduleNode.getClasses().isEmpty()) {
-			ClassNode cls = this.moduleNode.getClasses().get(0);
-			return cls.getAnnotations(bom).get(0);
+			return this.moduleNode.getClasses().get(0).getAnnotations(bom).get(0);
 		}
 		throw new IllegalStateException("No package or class node found");
 	}

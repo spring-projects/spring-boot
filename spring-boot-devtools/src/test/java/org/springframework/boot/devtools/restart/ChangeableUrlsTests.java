@@ -57,10 +57,10 @@ public class ChangeableUrlsTests {
 
 	@Test
 	public void skipsUrls() throws Exception {
-		ChangeableUrls urls = ChangeableUrls
-				.fromUrls(makeUrl("spring-boot"), makeUrl("spring-boot-autoconfigure"),
-						makeUrl("spring-boot-actuator"), makeUrl("spring-boot-starter"),
-						makeUrl("spring-boot-starter-some-thing"));
+		ChangeableUrls urls = ChangeableUrls.fromUrls(makeUrl("spring-boot"),
+				makeUrl("spring-boot-autoconfigure"), makeUrl("spring-boot-actuator"),
+				makeUrl("spring-boot-starter"),
+				makeUrl("spring-boot-starter-some-thing"));
 		assertThat(urls.size(), equalTo(0));
 	}
 

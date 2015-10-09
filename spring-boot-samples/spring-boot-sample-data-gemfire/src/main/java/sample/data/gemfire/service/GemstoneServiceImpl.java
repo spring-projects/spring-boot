@@ -40,8 +40,8 @@ import sample.data.gemfire.domain.Gemstone;
 public class GemstoneServiceImpl implements GemstoneService {
 
 	protected static final List<String> APPROVED_GEMS = new ArrayList<String>(
-			Arrays.asList("ALEXANDRITE", "AQUAMARINE", "DIAMOND", "OPAL", "PEARL",
-					"RUBY", "SAPPHIRE", "SPINEL", "TOPAZ"));
+			Arrays.asList("ALEXANDRITE", "AQUAMARINE", "DIAMOND", "OPAL", "PEARL", "RUBY",
+					"SAPPHIRE", "SPINEL", "TOPAZ"));
 
 	@Autowired
 	private GemstoneRepository gemstoneRepo;
@@ -127,9 +127,10 @@ public class GemstoneServiceImpl implements GemstoneService {
 		// to demonstrate transactions in GemFire.
 		Gemstone savedGemstone = validate(this.gemstoneRepo.save(gemstone));
 
-		Assert.state(savedGemstone.equals(get(gemstone.getId())), String.format(
-				"Failed to find Gemstone (%1$s) in GemFire's Cache Region 'Gemstones'!",
-				gemstone));
+		Assert.state(savedGemstone.equals(get(gemstone.getId())),
+				String.format(
+						"Failed to find Gemstone (%1$s) in GemFire's Cache Region 'Gemstones'!",
+						gemstone));
 
 		System.out.printf("Saved Gemstone (%1$s)%n", savedGemstone.getName());
 
@@ -141,8 +142,8 @@ public class GemstoneServiceImpl implements GemstoneService {
 			// NOTE if the Gemstone is not valid, blow chunks (should cause transaction to
 			// rollback in GemFire)!
 			System.err.printf("Illegal Gemstone (%1$s)!%n", gemstone.getName());
-			throw new IllegalGemstoneException(String.format(
-					"'%1$s' is not a valid Gemstone!", gemstone.getName()));
+			throw new IllegalGemstoneException(
+					String.format("'%1$s' is not a valid Gemstone!", gemstone.getName()));
 		}
 
 		return gemstone;

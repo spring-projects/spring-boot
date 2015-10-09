@@ -142,8 +142,8 @@ public class RabbitProperties {
 			}
 			result.add(address);
 		}
-		return (result.isEmpty() ? null : StringUtils
-				.collectionToCommaDelimitedString(result));
+		return (result.isEmpty() ? null
+				: StringUtils.collectionToCommaDelimitedString(result));
 	}
 
 	public void setPort(int port) {

@@ -58,7 +58,8 @@ public class AnsiPropertySourceTests {
 
 	@Test
 	public void getAnsi() throws Exception {
-		assertThat(this.source.getProperty("Ansi.BOLD"), equalTo((Object) AnsiStyle.BOLD));
+		assertThat(this.source.getProperty("Ansi.BOLD"),
+				equalTo((Object) AnsiStyle.BOLD));
 		assertThat(this.source.getProperty("Ansi.RED"), equalTo((Object) AnsiColor.RED));
 		assertThat(this.source.getProperty("Ansi.BG_RED"),
 				equalTo((Object) AnsiBackground.RED));

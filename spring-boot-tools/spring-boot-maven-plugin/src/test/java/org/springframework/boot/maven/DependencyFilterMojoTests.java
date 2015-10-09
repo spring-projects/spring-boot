@@ -72,8 +72,8 @@ public class DependencyFilterMojoTests {
 		return a;
 	}
 
-	private static final class TestableDependencyFilterMojo extends
-			AbstractDependencyFilterMojo {
+	private static final class TestableDependencyFilterMojo
+			extends AbstractDependencyFilterMojo {
 
 		private TestableDependencyFilterMojo(List<Exclude> excludes,
 				String excludeGroupIds, String excludeArtifactIds) {

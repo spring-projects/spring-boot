@@ -241,8 +241,8 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	}
 
 	@Component
-	public static class CallbackEmbeddedContainerCustomizer implements
-			EmbeddedServletContainerCustomizer {
+	public static class CallbackEmbeddedContainerCustomizer
+			implements EmbeddedServletContainerCustomizer {
 		@Override
 		public void customize(ConfigurableEmbeddedServletContainer container) {
 			container.setPort(9000);

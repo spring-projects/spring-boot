@@ -81,7 +81,8 @@ public class BufferMetricReader implements MetricReader, PrefixMetricReader {
 	}
 
 	private <T extends Number, B extends Buffer<T>> void collectMetrics(
-			Buffers<B> buffers, Predicate<String> predicate, final List<Metric<?>> metrics) {
+			Buffers<B> buffers, Predicate<String> predicate,
+			final List<Metric<?>> metrics) {
 		buffers.forEach(predicate, new BiConsumer<String, B>() {
 
 			@Override

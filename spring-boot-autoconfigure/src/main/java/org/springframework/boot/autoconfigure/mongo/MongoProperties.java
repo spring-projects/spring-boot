@@ -215,8 +215,8 @@ public class MongoProperties {
 				}
 				List<MongoCredential> credentials = null;
 				if (hasCustomCredentials()) {
-					String database = this.authenticationDatabase == null ? getMongoClientDatabase()
-							: this.authenticationDatabase;
+					String database = this.authenticationDatabase == null
+							? getMongoClientDatabase() : this.authenticationDatabase;
 					credentials = Arrays.asList(MongoCredential.createMongoCRCredential(
 							this.username, database, this.password));
 				}
@@ -274,8 +274,8 @@ public class MongoProperties {
 			builder.socketFactory(options.getSocketFactory());
 			builder.socketKeepAlive(options.isSocketKeepAlive());
 			builder.socketTimeout(options.getSocketTimeout());
-			builder.threadsAllowedToBlockForConnectionMultiplier(options
-					.getThreadsAllowedToBlockForConnectionMultiplier());
+			builder.threadsAllowedToBlockForConnectionMultiplier(
+					options.getThreadsAllowedToBlockForConnectionMultiplier());
 			builder.writeConcern(options.getWriteConcern());
 		}
 		return builder;

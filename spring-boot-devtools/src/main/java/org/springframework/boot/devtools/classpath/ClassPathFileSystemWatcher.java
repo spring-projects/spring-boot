@@ -35,8 +35,8 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  * @see ClassPathFileChangeListener
  */
-public class ClassPathFileSystemWatcher implements InitializingBean, DisposableBean,
-		ApplicationContextAware {
+public class ClassPathFileSystemWatcher
+		implements InitializingBean, DisposableBean, ApplicationContextAware {
 
 	private final FileSystemWatcher fileSystemWatcher;
 

@@ -52,7 +52,8 @@ public class SitePreferenceAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnWebApplication
-	protected static class SitePreferenceMvcConfiguration extends WebMvcConfigurerAdapter {
+	protected static class SitePreferenceMvcConfiguration
+			extends WebMvcConfigurerAdapter {
 
 		@Autowired
 		private SitePreferenceHandlerInterceptor sitePreferenceHandlerInterceptor;

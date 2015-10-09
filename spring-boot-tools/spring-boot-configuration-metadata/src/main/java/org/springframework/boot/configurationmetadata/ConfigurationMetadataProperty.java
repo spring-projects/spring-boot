@@ -83,8 +83,8 @@ public class ConfigurationMetadataProperty implements Serializable {
 	 * For consistency, the type of a primitive is specified using its wrapper
 	 * counterpart, i.e. {@code boolean} becomes {@code java.lang.Boolean}. If the type
 	 * holds generic information, these are provided as well, i.e. a {@code HashMap} of
-	 * String to Integer would be defined as
-	 * {@code java.util.HashMap<java.lang.String,java.lang.Integer>}.
+	 * String to Integer would be defined as {@code java.util.HashMap
+	 * <java.lang.String,java.lang.Integer>}.
 	 * <p>
 	 * Note that this class may be a complex type that gets converted from a String as
 	 * values are bound.

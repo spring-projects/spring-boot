@@ -63,8 +63,8 @@ public class RepackagePluginFeatures implements PluginFeatures {
 				+ "archives so that they can be executed from the command "
 				+ "line using 'java -jar'");
 		task.setGroup(BasePlugin.BUILD_GROUP);
-		Configuration runtimeConfiguration = project.getConfigurations().getByName(
-				JavaPlugin.RUNTIME_CONFIGURATION_NAME);
+		Configuration runtimeConfiguration = project.getConfigurations()
+				.getByName(JavaPlugin.RUNTIME_CONFIGURATION_NAME);
 		TaskDependency runtimeProjectDependencyJarTasks = runtimeConfiguration
 				.getTaskDependencyFromProjectDependency(true, JavaPlugin.JAR_TASK_NAME);
 		task.dependsOn(
@@ -103,8 +103,8 @@ public class RepackagePluginFeatures implements PluginFeatures {
 	 * @param project the source project
 	 */
 	private void registerRepackageTaskProperty(Project project) {
-		project.getExtensions().getExtraProperties()
-				.set("BootRepackage", RepackageTask.class);
+		project.getExtensions().getExtraProperties().set("BootRepackage",
+				RepackageTask.class);
 	}
 
 	/**
@@ -143,8 +143,8 @@ public class RepackagePluginFeatures implements PluginFeatures {
 					+ this.task.getName());
 			File inputFile = jarTask.getArchivePath();
 			String outputName = inputFile.getName();
-			outputName = StringUtils.stripFilenameExtension(outputName) + "-"
-					+ classifier + "." + StringUtils.getFilenameExtension(outputName);
+			outputName = StringUtils.stripFilenameExtension(outputName) + "-" + classifier
+					+ "." + StringUtils.getFilenameExtension(outputName);
 			File outputFile = new File(inputFile.getParentFile(), outputName);
 			this.task.getInputs().file(jarTask);
 			addLibraryDependencies(this.task);

@@ -108,8 +108,8 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 				.boundZSetOps(groupKey);
 		String key = keyFor(delta.getName());
 		double value = zSetOperations.incrementScore(key, delta.getValue().doubleValue());
-		String raw = serialize(new Metric<Double>(delta.getName(), value,
-				delta.getTimestamp()));
+		String raw = serialize(
+				new Metric<Double>(delta.getName(), value, delta.getTimestamp()));
 		this.redisOperations.opsForValue().set(key, raw);
 	}
 

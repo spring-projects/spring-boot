@@ -42,8 +42,8 @@ import org.springframework.core.Ordered;
  *
  * @author Dave Syer
  */
-public class FileEncodingApplicationListener implements
-		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
+public class FileEncodingApplicationListener
+		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
 	private static Log logger = LogFactory.getLog(FileEncodingApplicationListener.class);
 
@@ -71,7 +71,8 @@ public class FileEncodingApplicationListener implements
 						+ desired + "'.");
 				throw new IllegalStateException(
 						"The Java Virtual Machine has not been configured to use the "
-								+ "desired default character encoding (" + desired + ").");
+								+ "desired default character encoding (" + desired
+								+ ").");
 			}
 		}
 	}

@@ -155,8 +155,8 @@ class AutoConfigurationSorter {
 		}
 
 		private Set<String> getAnnotationValue(Class<?> annotation) {
-			Map<String, Object> attributes = this.metadata.getAnnotationAttributes(
-					annotation.getName(), true);
+			Map<String, Object> attributes = this.metadata
+					.getAnnotationAttributes(annotation.getName(), true);
 			if (attributes == null) {
 				return Collections.emptySet();
 			}

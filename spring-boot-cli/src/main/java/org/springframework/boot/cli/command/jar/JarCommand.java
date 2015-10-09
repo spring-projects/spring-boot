@@ -73,8 +73,9 @@ import joptsimple.OptionSpec;
 public class JarCommand extends OptionParsingCommand {
 
 	public JarCommand() {
-		super("jar", "Create a self-contained "
-				+ "executable jar file from a Spring Groovy script",
+		super("jar",
+				"Create a self-contained "
+						+ "executable jar file from a Spring Groovy script",
 				new JarOptionHandler());
 	}
 
@@ -91,14 +92,12 @@ public class JarCommand extends OptionParsingCommand {
 
 		@Override
 		protected void doOptions() {
-			this.includeOption = option(
-					"include",
+			this.includeOption = option("include",
 					"Pattern applied to directories on the classpath to find files to include in the resulting jar")
-					.withRequiredArg().withValuesSeparatedBy(",").defaultsTo("");
-			this.excludeOption = option(
-					"exclude",
+							.withRequiredArg().withValuesSeparatedBy(",").defaultsTo("");
+			this.excludeOption = option("exclude",
 					"Pattern applied to directories on the claspath to find files to exclude from the resulting jar")
-					.withRequiredArg().withValuesSeparatedBy(",").defaultsTo("");
+							.withRequiredArg().withValuesSeparatedBy(",").defaultsTo("");
 		}
 
 		@Override
@@ -109,8 +108,8 @@ public class JarCommand extends OptionParsingCommand {
 					"The name of the resulting jar and at least one source file must be specified");
 
 			File output = new File((String) nonOptionArguments.remove(0));
-			Assert.isTrue(output.getName().toLowerCase().endsWith(".jar"), "The output '"
-					+ output + "' is not a JAR file.");
+			Assert.isTrue(output.getName().toLowerCase().endsWith(".jar"),
+					"The output '" + output + "' is not a JAR file.");
 			deleteIfExists(output);
 
 			GroovyCompiler compiler = createCompiler(options);
@@ -131,8 +130,8 @@ public class JarCommand extends OptionParsingCommand {
 
 		private void deleteIfExists(File file) {
 			if (file.exists() && !file.delete()) {
-				throw new IllegalStateException("Failed to delete existing file "
-						+ file.getPath());
+				throw new IllegalStateException(
+						"Failed to delete existing file " + file.getPath());
 			}
 		}
 
@@ -164,7 +163,7 @@ public class JarCommand extends OptionParsingCommand {
 
 		private void writeJar(File file, Class<?>[] compiledClasses,
 				List<MatchedResource> classpathEntries, List<URL> dependencies)
-				throws FileNotFoundException, IOException, URISyntaxException {
+						throws FileNotFoundException, IOException, URISyntaxException {
 			final List<Library> libraries;
 			JarWriter writer = new JarWriter(file);
 			try {

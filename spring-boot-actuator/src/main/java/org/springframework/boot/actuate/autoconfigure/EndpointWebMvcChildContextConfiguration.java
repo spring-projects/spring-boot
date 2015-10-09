@@ -159,8 +159,8 @@ public class EndpointWebMvcChildContextConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
-	protected static class SecureEndpointHandlerMappingConfiguration extends
-			EndpointHandlerMappingConfiguration {
+	protected static class SecureEndpointHandlerMappingConfiguration
+			extends EndpointHandlerMappingConfiguration {
 
 		@Override
 		protected void postProcessMapping(ListableBeanFactory beanFactory,
@@ -203,8 +203,8 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	static class ServerCustomization implements EmbeddedServletContainerCustomizer,
-			Ordered {
+	static class ServerCustomization
+			implements EmbeddedServletContainerCustomizer, Ordered {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;

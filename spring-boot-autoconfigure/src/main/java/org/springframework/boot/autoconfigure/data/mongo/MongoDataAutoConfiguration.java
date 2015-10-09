@@ -125,8 +125,8 @@ public class MongoDataAutoConfiguration implements BeanClassLoaderAware {
 		MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver,
 				context);
 		try {
-			mappingConverter.setCustomConversions(beanFactory
-					.getBean(CustomConversions.class));
+			mappingConverter
+					.setCustomConversions(beanFactory.getBean(CustomConversions.class));
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			// Ignore
@@ -142,8 +142,8 @@ public class MongoDataAutoConfiguration implements BeanClassLoaderAware {
 		context.setInitialEntitySet(getInitialEntitySet(beanFactory));
 		Class<?> strategyClass = this.properties.getFieldNamingStrategy();
 		if (strategyClass != null) {
-			context.setFieldNamingStrategy((FieldNamingStrategy) BeanUtils
-					.instantiate(strategyClass));
+			context.setFieldNamingStrategy(
+					(FieldNamingStrategy) BeanUtils.instantiate(strategyClass));
 		}
 		return context;
 	}
@@ -183,8 +183,9 @@ public class MongoDataAutoConfiguration implements BeanClassLoaderAware {
 	@ConditionalOnMissingBean
 	public GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory,
 			MongoTemplate mongoTemplate) {
-		return new GridFsTemplate(new GridFsMongoDbFactory(mongoDbFactory,
-				this.properties), mongoTemplate.getConverter());
+		return new GridFsTemplate(
+				new GridFsMongoDbFactory(mongoDbFactory, this.properties),
+				mongoTemplate.getConverter());
 	}
 
 	/**

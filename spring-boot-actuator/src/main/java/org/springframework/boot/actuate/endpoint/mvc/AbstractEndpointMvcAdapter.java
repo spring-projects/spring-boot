@@ -29,8 +29,8 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 1.3.0
  */
-public abstract class AbstractEndpointMvcAdapter<E extends Endpoint<?>> implements
-		MvcEndpoint {
+public abstract class AbstractEndpointMvcAdapter<E extends Endpoint<?>>
+		implements MvcEndpoint {
 
 	private final E delegate;
 

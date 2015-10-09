@@ -121,7 +121,8 @@ public class DropwizardMetricServicesTests {
 
 		private DropwizardMetricServices writer;
 
-		public WriterThread(ThreadGroup group, int index, DropwizardMetricServices writer) {
+		public WriterThread(ThreadGroup group, int index,
+				DropwizardMetricServices writer) {
 			super(group, "Writer-" + index);
 			this.index = index;
 			this.writer = writer;

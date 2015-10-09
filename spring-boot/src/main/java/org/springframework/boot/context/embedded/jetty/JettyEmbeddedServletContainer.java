@@ -115,8 +115,8 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			for (Connector connector : connectors) {
 				connector.start();
 			}
-			JettyEmbeddedServletContainer.logger.info("Jetty started on port(s) "
-					+ getActualPortsDescription());
+			JettyEmbeddedServletContainer.logger
+					.info("Jetty started on port(s) " + getActualPortsDescription());
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
@@ -141,8 +141,8 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 					connector);
 		}
 		catch (Exception ex) {
-			JettyEmbeddedServletContainer.logger.info("could not determine port ( "
-					+ ex.getMessage() + ")");
+			JettyEmbeddedServletContainer.logger
+					.info("could not determine port ( " + ex.getMessage() + ")");
 			return 0;
 		}
 	}

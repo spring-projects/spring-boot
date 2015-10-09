@@ -89,8 +89,8 @@ import org.springframework.util.StringUtils;
  * @see #setContextLifecycleListeners(Collection)
  * @see TomcatEmbeddedServletContainer
  */
-public class TomcatEmbeddedServletContainerFactory extends
-		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+public class TomcatEmbeddedServletContainerFactory
+		extends AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
@@ -176,8 +176,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 		context.setPath(getContextPath());
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
-		context.setParentClassLoader(this.resourceLoader != null ? this.resourceLoader
-				.getClassLoader() : ClassUtils.getDefaultClassLoader());
+		context.setParentClassLoader(
+				this.resourceLoader != null ? this.resourceLoader.getClassLoader()
+						: ClassUtils.getDefaultClassLoader());
 		SkipPatternJarScanner.apply(context, this.tldSkip);
 		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
@@ -286,12 +287,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 			Compression compression = getCompression();
 			protocol.setCompression("on");
 			protocol.setCompressionMinSize(compression.getMinResponseSize());
-			protocol.setCompressableMimeTypes(StringUtils
-					.arrayToCommaDelimitedString(compression.getMimeTypes()));
+			protocol.setCompressableMimeTypes(
+					StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
 			if (getCompression().getExcludedUserAgents() != null) {
-				protocol.setNoCompressionUserAgents(StringUtils
-						.arrayToCommaDelimitedString(getCompression()
-								.getExcludedUserAgents()));
+				protocol.setNoCompressionUserAgents(
+						StringUtils.arrayToCommaDelimitedString(
+								getCompression().getExcludedUserAgents()));
 			}
 		}
 	}
@@ -330,8 +331,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 			protocol.setKeystoreFile(file.getAbsolutePath());
 		}
 		catch (FileNotFoundException ex) {
-			throw new EmbeddedServletContainerException("Could load key store: "
-					+ ex.getMessage(), ex);
+			throw new EmbeddedServletContainerException(
+					"Could load key store: " + ex.getMessage(), ex);
 		}
 		if (ssl.getKeyStoreType() != null) {
 			protocol.setKeystoreType(ssl.getKeyStoreType());
@@ -349,8 +350,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 				protocol.setTruststoreFile(file.getAbsolutePath());
 			}
 			catch (FileNotFoundException ex) {
-				throw new EmbeddedServletContainerException("Could load trust store: "
-						+ ex.getMessage(), ex);
+				throw new EmbeddedServletContainerException(
+						"Could load trust store: " + ex.getMessage(), ex);
 			}
 		}
 		protocol.setTruststorePass(ssl.getTrustStorePassword());
@@ -362,7 +363,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 		}
 	}
 
-	private void assertNotClasspathResource(String resource) throws FileNotFoundException {
+	private void assertNotClasspathResource(String resource)
+			throws FileNotFoundException {
 		if (resource.startsWith(ResourceUtils.CLASSPATH_URL_PREFIX)) {
 			throw new FileNotFoundException("Unable to load '" + resource
 					+ "' since Tomcat doesn't support classpath resources");
@@ -469,7 +471,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 		catch (IOException ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to create Tomcat tempdir. java.io.tmpdir is set to "
-							+ System.getProperty("java.io.tmpdir"), ex);
+							+ System.getProperty("java.io.tmpdir"),
+					ex);
 		}
 	}
 
@@ -589,7 +592,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 * {@link Context}.
 	 * @param tomcatContextCustomizers the customizers to add
 	 */
-	public void addContextCustomizers(TomcatContextCustomizer... tomcatContextCustomizers) {
+	public void addContextCustomizers(
+			TomcatContextCustomizer... tomcatContextCustomizers) {
 		Assert.notNull(tomcatContextCustomizers,
 				"TomcatContextCustomizers must not be null");
 		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
@@ -690,8 +694,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 				}
 				else if (ClassUtils.isPresent("org.apache.catalina.deploy.ErrorPage",
 						null)) {
-					nativePage = BeanUtils.instantiate(ClassUtils.forName(
-							"org.apache.catalina.deploy.ErrorPage", null));
+					nativePage = BeanUtils.instantiate(ClassUtils
+							.forName("org.apache.catalina.deploy.ErrorPage", null));
 				}
 			}
 			catch (ClassNotFoundException ex) {

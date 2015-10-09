@@ -83,8 +83,7 @@ public class VanillaHypermediaIntegrationTests {
 
 	@Test
 	public void trace() throws Exception {
-		this.mockMvc
-				.perform(get("/trace").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/trace").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$._links.self.href").value("http://localhost/trace"))
 				.andExpect(jsonPath("$.content").isArray());
@@ -116,12 +115,9 @@ public class VanillaHypermediaIntegrationTests {
 		for (MvcEndpoint endpoint : this.mvcEndpoints.getEndpoints()) {
 			String path = endpoint.getPath();
 			path = path.length() > 0 ? path : "/";
-			this.mockMvc
-					.perform(get(path).accept(MediaType.APPLICATION_JSON))
-					.andExpect(status().isOk())
-					.andExpect(
-							jsonPath("$._links.self.href").value(
-									"http://localhost" + endpoint.getPath()));
+			this.mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk()).andExpect(jsonPath("$._links.self.href")
+							.value("http://localhost" + endpoint.getPath()));
 		}
 	}
 

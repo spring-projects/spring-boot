@@ -68,7 +68,8 @@ public class MockRestarter implements TestRule {
 					@Override
 					public Object answer(InvocationOnMock invocation) throws Throwable {
 						String name = (String) invocation.getArguments()[0];
-						ObjectFactory factory = (ObjectFactory) invocation.getArguments()[1];
+						ObjectFactory factory = (ObjectFactory) invocation
+								.getArguments()[1];
 						Object attribute = MockRestarter.this.attributes.get(name);
 						if (attribute == null) {
 							attribute = factory.getObject();

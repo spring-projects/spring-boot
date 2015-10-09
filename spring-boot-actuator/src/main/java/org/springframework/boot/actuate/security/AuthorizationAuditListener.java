@@ -47,7 +47,8 @@ public class AuthorizationAuditListener implements
 	@Override
 	public void onApplicationEvent(AbstractAuthorizationEvent event) {
 		if (event instanceof AuthenticationCredentialsNotFoundEvent) {
-			onAuthenticationCredentialsNotFoundEvent((AuthenticationCredentialsNotFoundEvent) event);
+			onAuthenticationCredentialsNotFoundEvent(
+					(AuthenticationCredentialsNotFoundEvent) event);
 		}
 		else if (event instanceof AuthorizationFailureEvent) {
 			onAuthorizationFailureEvent((AuthorizationFailureEvent) event);

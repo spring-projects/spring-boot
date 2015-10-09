@@ -57,9 +57,10 @@ public class JooqAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(DataSourceConnectionProvider.class)
-	public DataSourceConnectionProvider dataSourceConnectionProvider(DataSource dataSource) {
-		return new DataSourceConnectionProvider(new TransactionAwareDataSourceProxy(
-				dataSource));
+	public DataSourceConnectionProvider dataSourceConnectionProvider(
+			DataSource dataSource) {
+		return new DataSourceConnectionProvider(
+				new TransactionAwareDataSourceProxy(dataSource));
 	}
 
 	@Bean

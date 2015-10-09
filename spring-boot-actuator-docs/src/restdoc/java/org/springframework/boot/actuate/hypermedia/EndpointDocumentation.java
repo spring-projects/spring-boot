@@ -113,19 +113,19 @@ public class EndpointDocumentation {
 		final List<EndpointDoc> endpoints = new ArrayList<EndpointDoc>();
 		model.put("endpoints", endpoints);
 		for (MvcEndpoint endpoint : getEndpoints()) {
-			final String endpointPath = StringUtils.hasText(endpoint.getPath()) ? endpoint
-					.getPath() : "/";
+			final String endpointPath = StringUtils.hasText(endpoint.getPath())
+					? endpoint.getPath() : "/";
 
 			if (!endpointPath.equals("/docs") && !endpointPath.equals("/logfile")) {
 				String output = endpointPath.substring(1);
 				output = output.length() > 0 ? output : "./";
-				this.mockMvc
-						.perform(get(endpointPath).accept(MediaType.APPLICATION_JSON))
+				this.mockMvc.perform(get(endpointPath).accept(MediaType.APPLICATION_JSON))
 						.andExpect(status().isOk()).andDo(document(output))
 						.andDo(new ResultHandler() {
 							@Override
 							public void handle(MvcResult mvcResult) throws Exception {
-								EndpointDoc endpoint = new EndpointDoc(docs, endpointPath);
+								EndpointDoc endpoint = new EndpointDoc(docs,
+										endpointPath);
 								endpoints.add(endpoint);
 							}
 						});
@@ -135,8 +135,8 @@ public class EndpointDocumentation {
 		file.getParentFile().mkdirs();
 		PrintWriter writer = new PrintWriter(file, "UTF-8");
 		try {
-			Template template = this.templates.createTemplate(new File(
-					"src/restdoc/resources/templates/endpoints.adoc.tpl"));
+			Template template = this.templates.createTemplate(
+					new File("src/restdoc/resources/templates/endpoints.adoc.tpl"));
 			template.make(model).writeTo(writer);
 		}
 		finally {

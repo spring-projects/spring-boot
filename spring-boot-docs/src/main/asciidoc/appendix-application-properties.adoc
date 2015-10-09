@@ -43,6 +43,7 @@ content into your application; rather pick only the properties that you need.
 	spring.main.sources= # sources (class name, package name or XML resource location) to include
 	spring.main.web-environment= # detect by default
 	spring.main.show-banner=true
+	spring.main.banner-mode=console # mode used to display the banner when the application runs (console, off, or log)
 	spring.main....= # see class for all properties
 
 	# AUTO-CONFIGURATION
@@ -64,6 +65,7 @@ content into your application; rather pick only the properties that you need.
 	logging.pattern.console= # appender pattern for output to the console (only supported with the default logback setup)
 	logging.pattern.file= # appender pattern for output to the file (only supported with the default logback setup)
 	logging.pattern.level= # appender pattern for the log level (default %5p, only supported with the default logback setup)
+	logging.register-shutdown-hook=false # register a shutdown hook for the logging system when it is initialized
 
 	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
 	spring.application.name=

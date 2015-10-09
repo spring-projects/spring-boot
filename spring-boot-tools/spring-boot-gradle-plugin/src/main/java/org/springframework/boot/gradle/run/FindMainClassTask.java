@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,8 @@ public class FindMainClassTask extends DefaultTask {
 		String mainClass = null;
 
 		// Try the SpringBoot extension setting
-		SpringBootPluginExtension bootExtension = project.getExtensions().getByType(
-				SpringBootPluginExtension.class);
+		SpringBootPluginExtension bootExtension = project.getExtensions()
+				.getByType(SpringBootPluginExtension.class);
 		if (bootExtension.getMainClass() != null) {
 			mainClass = bootExtension.getMainClass();
 		}
@@ -99,13 +99,11 @@ public class FindMainClassTask extends DefaultTask {
 		if (mainClass == null) {
 			// Search
 			if (this.mainClassSourceSetOutput != null) {
-				project.getLogger().debug(
-						"Looking for main in: "
-								+ this.mainClassSourceSetOutput.getClassesDir());
+				project.getLogger().debug("Looking for main in: "
+						+ this.mainClassSourceSetOutput.getClassesDir());
 				try {
-					mainClass = MainClassFinder
-							.findSingleMainClass(this.mainClassSourceSetOutput
-									.getClassesDir());
+					mainClass = MainClassFinder.findSingleMainClass(
+							this.mainClassSourceSetOutput.getClassesDir());
 					project.getLogger().info("Computed main class: " + mainClass);
 				}
 				catch (IOException ex) {

@@ -93,8 +93,8 @@ class JsonReader {
 		source.setType(json.optString("type", null));
 		String description = json.optString("description", null);
 		source.setDescription(description);
-		source.setShortDescription(this.descriptionExtractor
-				.getShortDescription(description));
+		source.setShortDescription(
+				this.descriptionExtractor.getShortDescription(description));
 		source.setSourceType(json.optString("sourceType", null));
 		source.setSourceMethod(json.optString("sourceMethod", null));
 		return source;
@@ -106,8 +106,8 @@ class JsonReader {
 		item.setType(json.optString("type", null));
 		String description = json.optString("description", null);
 		item.setDescription(description);
-		item.setShortDescription(this.descriptionExtractor
-				.getShortDescription(description));
+		item.setShortDescription(
+				this.descriptionExtractor.getShortDescription(description));
 		item.setDefaultValue(readItemValue(json.opt("defaultValue")));
 		item.setDeprecation(parseDeprecation(json));
 		item.setSourceType(json.optString("sourceType", null));
@@ -126,8 +126,8 @@ class JsonReader {
 				valueHint.setValue(readItemValue(value.get("value")));
 				String description = value.optString("description", null);
 				valueHint.setDescription(description);
-				valueHint.setShortDescription(this.descriptionExtractor
-						.getShortDescription(description));
+				valueHint.setShortDescription(
+						this.descriptionExtractor.getShortDescription(description));
 				hint.getValueHints().add(valueHint);
 			}
 		}
@@ -157,8 +157,8 @@ class JsonReader {
 			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
 			Deprecation deprecation = new Deprecation();
 			deprecation.setReason(deprecationJsonObject.optString("reason", null));
-			deprecation.setReplacement(deprecationJsonObject.optString("replacement",
-					null));
+			deprecation
+					.setReplacement(deprecationJsonObject.optString("replacement", null));
 			return deprecation;
 		}
 		return (object.optBoolean("deprecated") ? new Deprecation() : null);

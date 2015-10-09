@@ -57,8 +57,7 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnClass(name = {
-		"org.glassfish.jersey.server.spring.SpringComponentProvider",
+@ConditionalOnClass(name = { "org.glassfish.jersey.server.spring.SpringComponentProvider",
 		"javax.servlet.ServletRegistration" })
 @ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
 @ConditionalOnWebApplication

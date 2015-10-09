@@ -93,8 +93,8 @@ public class DefaultGaugeServiceSpeedTests {
 			public void run() {
 				for (int i = 0; i < number; i++) {
 					String name = sample[i % sample.length];
-					DefaultGaugeServiceSpeedTests.this.gaugeService.submit(name, count
-							+ i);
+					DefaultGaugeServiceSpeedTests.this.gaugeService.submit(name,
+							count + i);
 				}
 			}
 		};

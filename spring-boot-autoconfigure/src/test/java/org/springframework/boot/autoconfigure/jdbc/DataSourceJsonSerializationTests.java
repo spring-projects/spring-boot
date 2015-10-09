@@ -90,8 +90,7 @@ public class DataSourceJsonSerializationTests {
 			for (PropertyDescriptor property : BeanUtils
 					.getPropertyDescriptors(DataSource.class)) {
 				Method reader = property.getReadMethod();
-				if (reader != null
-						&& property.getWriteMethod() != null
+				if (reader != null && property.getWriteMethod() != null
 						&& this.conversionService.canConvert(String.class,
 								property.getPropertyType())) {
 					jgen.writeObjectField(property.getName(),
@@ -115,9 +114,8 @@ public class DataSourceJsonSerializationTests {
 				AnnotatedMethod setter = beanDesc.findMethod(
 						"set" + StringUtils.capitalize(writer.getName()),
 						new Class<?>[] { writer.getPropertyType() });
-				if (setter != null
-						&& this.conversionService.canConvert(String.class,
-								writer.getPropertyType())) {
+				if (setter != null && this.conversionService.canConvert(String.class,
+						writer.getPropertyType())) {
 					result.add(writer);
 				}
 			}

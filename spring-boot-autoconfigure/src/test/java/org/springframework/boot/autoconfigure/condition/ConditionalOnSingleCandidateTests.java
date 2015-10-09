@@ -88,8 +88,8 @@ public class ConditionalOnSingleCandidateTests {
 	public void invalidAnnotationTwoTypes() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectCause(isA(IllegalArgumentException.class));
-		this.thrown.expectMessage(OnBeanSingleCandidateTwoTypesConfiguration.class
-				.getName());
+		this.thrown.expectMessage(
+				OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
 		load(OnBeanSingleCandidateTwoTypesConfiguration.class);
 	}
 
@@ -97,8 +97,8 @@ public class ConditionalOnSingleCandidateTests {
 	public void invalidAnnotationNoType() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectCause(isA(IllegalArgumentException.class));
-		this.thrown.expectMessage(OnBeanSingleCandidateNoTypeConfiguration.class
-				.getName());
+		this.thrown
+				.expectMessage(OnBeanSingleCandidateNoTypeConfiguration.class.getName());
 		load(OnBeanSingleCandidateNoTypeConfiguration.class);
 	}
 

@@ -78,10 +78,10 @@ public final class RepositoryConfigurationFactory {
 			List<RepositoryConfiguration> repositoryConfiguration) {
 		for (Profile activeProfile : activeProfiles) {
 			for (Repository repository : activeProfile.getRepositories()) {
-				repositoryConfiguration.add(new RepositoryConfiguration(repository
-						.getId(), URI.create(repository.getUrl()), repository
-						.getSnapshots() != null ? repository.getSnapshots().isEnabled()
-						: false));
+				repositoryConfiguration.add(new RepositoryConfiguration(
+						repository.getId(), URI.create(repository.getUrl()),
+						repository.getSnapshots() != null
+								? repository.getSnapshots().isEnabled() : false));
 			}
 		}
 	}

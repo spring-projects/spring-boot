@@ -61,7 +61,8 @@ import groovy.grape.Grape;
  * @since 1.3.0
  */
 @Order(DependencyManagementBomTransformation.ORDER)
-public class DependencyManagementBomTransformation extends AnnotatedNodeASTTransformation {
+public class DependencyManagementBomTransformation
+		extends AnnotatedNodeASTTransformation {
 
 	/**
 	 * The order of the transformation.
@@ -69,9 +70,9 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 100;
 
 	private static final Set<String> DEPENDENCY_MANAGEMENT_BOM_ANNOTATION_NAMES = Collections
-			.unmodifiableSet(new HashSet<String>(Arrays.asList(
-					DependencyManagementBom.class.getName(),
-					DependencyManagementBom.class.getSimpleName())));
+			.unmodifiableSet(new HashSet<String>(
+					Arrays.asList(DependencyManagementBom.class.getName(),
+							DependencyManagementBom.class.getSimpleName())));
 
 	private final DependencyResolutionContext resolutionContext;
 
@@ -103,7 +104,8 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 
 	private List<Map<String, String>> createDependencyMaps(Expression valueExpression) {
 		Map<String, String> dependency = null;
-		List<ConstantExpression> constantExpressions = getConstantExpressions(valueExpression);
+		List<ConstantExpression> constantExpressions = getConstantExpressions(
+				valueExpression);
 		List<Map<String, String>> dependencies = new ArrayList<Map<String, String>>(
 				constantExpressions.size());
 		for (ConstantExpression expression : constantExpressions) {
@@ -139,7 +141,8 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 		return Collections.emptyList();
 	}
 
-	private List<ConstantExpression> getConstantExpressions(ListExpression valueExpression) {
+	private List<ConstantExpression> getConstantExpressions(
+			ListExpression valueExpression) {
 		List<ConstantExpression> expressions = new ArrayList<ConstantExpression>();
 		for (Expression expression : valueExpression.getExpressions()) {
 			if (expression instanceof ConstantExpression
@@ -147,8 +150,9 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 				expressions.add((ConstantExpression) expression);
 			}
 			else {
-				reportError("Each entry in the array must be an "
-						+ "inline string constant", expression);
+				reportError(
+						"Each entry in the array must be an " + "inline string constant",
+						expression);
 			}
 		}
 		return expressions;
@@ -172,8 +176,8 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 				request.setModelSource(new UrlModelSource(uri.toURL()));
 				request.setSystemProperties(System.getProperties());
 				Model model = modelBuilder.build(request).getEffectiveModel();
-				this.resolutionContext
-						.addDependencyManagement(new MavenModelDependencyManagement(model));
+				this.resolutionContext.addDependencyManagement(
+						new MavenModelDependencyManagement(model));
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Failed to build model for '" + uri
@@ -191,14 +195,15 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 	}
 
 	private void reportError(String message, ASTNode node) {
-		getSourceUnit().getErrorCollector().addErrorAndContinue(
-				createSyntaxErrorMessage(message, node));
+		getSourceUnit().getErrorCollector()
+				.addErrorAndContinue(createSyntaxErrorMessage(message, node));
 	}
 
 	private Message createSyntaxErrorMessage(String message, ASTNode node) {
-		return new SyntaxErrorMessage(new SyntaxException(message, node.getLineNumber(),
-				node.getColumnNumber(), node.getLastLineNumber(),
-				node.getLastColumnNumber()), getSourceUnit());
+		return new SyntaxErrorMessage(
+				new SyntaxException(message, node.getLineNumber(), node.getColumnNumber(),
+						node.getLastLineNumber(), node.getLastColumnNumber()),
+				getSourceUnit());
 	}
 
 	private static class GrapeModelResolver implements ModelResolver {

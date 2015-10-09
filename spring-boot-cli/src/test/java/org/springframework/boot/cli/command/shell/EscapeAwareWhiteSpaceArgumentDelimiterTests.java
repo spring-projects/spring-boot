@@ -35,8 +35,8 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	@Test
 	public void simple() throws Exception {
 		String s = "one two";
-		assertThat(this.delimiter.delimit(s, 0).getArguments(), equalTo(new String[] {
-				"one", "two" }));
+		assertThat(this.delimiter.delimit(s, 0).getArguments(),
+				equalTo(new String[] { "one", "two" }));
 		assertThat(this.delimiter.parseArguments(s),
 				equalTo(new String[] { "one", "two" }));
 		assertThat(this.delimiter.isDelimiter(s, 2), equalTo(false));
@@ -47,8 +47,8 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	@Test
 	public void escaped() throws Exception {
 		String s = "o\\ ne two";
-		assertThat(this.delimiter.delimit(s, 0).getArguments(), equalTo(new String[] {
-				"o\\ ne", "two" }));
+		assertThat(this.delimiter.delimit(s, 0).getArguments(),
+				equalTo(new String[] { "o\\ ne", "two" }));
 		assertThat(this.delimiter.parseArguments(s),
 				equalTo(new String[] { "o ne", "two" }));
 		assertThat(this.delimiter.isDelimiter(s, 2), equalTo(false));
@@ -60,28 +60,28 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	@Test
 	public void quoted() throws Exception {
 		String s = "'o ne' 't w o'";
-		assertThat(this.delimiter.delimit(s, 0).getArguments(), equalTo(new String[] {
-				"'o ne'", "'t w o'" }));
-		assertThat(this.delimiter.parseArguments(s), equalTo(new String[] { "o ne",
-				"t w o" }));
+		assertThat(this.delimiter.delimit(s, 0).getArguments(),
+				equalTo(new String[] { "'o ne'", "'t w o'" }));
+		assertThat(this.delimiter.parseArguments(s),
+				equalTo(new String[] { "o ne", "t w o" }));
 	}
 
 	@Test
 	public void doubleQuoted() throws Exception {
 		String s = "\"o ne\" \"t w o\"";
-		assertThat(this.delimiter.delimit(s, 0).getArguments(), equalTo(new String[] {
-				"\"o ne\"", "\"t w o\"" }));
-		assertThat(this.delimiter.parseArguments(s), equalTo(new String[] { "o ne",
-				"t w o" }));
+		assertThat(this.delimiter.delimit(s, 0).getArguments(),
+				equalTo(new String[] { "\"o ne\"", "\"t w o\"" }));
+		assertThat(this.delimiter.parseArguments(s),
+				equalTo(new String[] { "o ne", "t w o" }));
 	}
 
 	@Test
 	public void nestedQuotes() throws Exception {
 		String s = "\"o 'n''e\" 't \"w o'";
-		assertThat(this.delimiter.delimit(s, 0).getArguments(), equalTo(new String[] {
-				"\"o 'n''e\"", "'t \"w o'" }));
-		assertThat(this.delimiter.parseArguments(s), equalTo(new String[] { "o 'n''e",
-				"t \"w o" }));
+		assertThat(this.delimiter.delimit(s, 0).getArguments(),
+				equalTo(new String[] { "\"o 'n''e\"", "'t \"w o'" }));
+		assertThat(this.delimiter.parseArguments(s),
+				equalTo(new String[] { "o 'n''e", "t \"w o" }));
 	}
 
 	@Test
@@ -95,7 +95,8 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	@Test
 	public void escapes() throws Exception {
 		String s = "\\ \\\\.\\\\\\t";
-		assertThat(this.delimiter.parseArguments(s), equalTo(new String[] { " \\.\\\t" }));
+		assertThat(this.delimiter.parseArguments(s),
+				equalTo(new String[] { " \\.\\\t" }));
 
 	}
 }

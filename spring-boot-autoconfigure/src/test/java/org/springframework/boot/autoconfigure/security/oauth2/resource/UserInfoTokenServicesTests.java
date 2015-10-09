@@ -62,13 +62,13 @@ public class UserInfoTokenServicesTests {
 	@Before
 	public void init() {
 		this.resource.setClientId("foo");
-		given(this.template.getForEntity(any(String.class), eq(Map.class))).willReturn(
-				new ResponseEntity<Map>(this.map, HttpStatus.OK));
-		given(this.template.getAccessToken()).willReturn(
-				new DefaultOAuth2AccessToken("FOO"));
+		given(this.template.getForEntity(any(String.class), eq(Map.class)))
+				.willReturn(new ResponseEntity<Map>(this.map, HttpStatus.OK));
+		given(this.template.getAccessToken())
+				.willReturn(new DefaultOAuth2AccessToken("FOO"));
 		given(this.template.getResource()).willReturn(this.resource);
-		given(this.template.getOAuth2ClientContext()).willReturn(
-				mock(OAuth2ClientContext.class));
+		given(this.template.getOAuth2ClientContext())
+				.willReturn(mock(OAuth2ClientContext.class));
 	}
 
 	@Test
@@ -80,9 +80,9 @@ public class UserInfoTokenServicesTests {
 	@Test
 	public void badToken() {
 		this.services.setRestTemplate(this.template);
-		given(this.template.getForEntity(any(String.class), eq(Map.class))).willThrow(
-				new UserRedirectRequiredException("foo:bar", Collections
-						.<String, String>emptyMap()));
+		given(this.template.getForEntity(any(String.class), eq(Map.class)))
+				.willThrow(new UserRedirectRequiredException("foo:bar",
+						Collections.<String, String>emptyMap()));
 		this.expected.expect(InvalidTokenException.class);
 		assertEquals("unknown", this.services.loadAuthentication("FOO").getName());
 	}

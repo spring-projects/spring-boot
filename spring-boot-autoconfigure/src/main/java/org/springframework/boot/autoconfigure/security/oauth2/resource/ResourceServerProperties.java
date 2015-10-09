@@ -203,8 +203,8 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 	}
 
 	private int countBeans(Class<?> type) {
-		return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory,
-				type, true, false).length;
+		return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, type,
+				true, false).length;
 	}
 
 	public class Jwt {

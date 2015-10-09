@@ -49,6 +49,7 @@ import jline.console.completer.CandidateListCompletionHandler;
 public class Shell {
 
 	private static final Set<Class<?>> NON_FORKED_COMMANDS;
+
 	static {
 		Set<Class<?>> nonForked = new HashSet<Class<?>>();
 		nonForked.add(VersionCommand.class);
@@ -86,8 +87,8 @@ public class Shell {
 
 	private Iterable<Command> getCommands() {
 		List<Command> commands = new ArrayList<Command>();
-		ServiceLoader<CommandFactory> factories = ServiceLoader.load(
-				CommandFactory.class, getClass().getClassLoader());
+		ServiceLoader<CommandFactory> factories = ServiceLoader.load(CommandFactory.class,
+				getClass().getClassLoader());
 		for (CommandFactory factory : factories) {
 			for (Command command : factory.getCommands()) {
 				commands.add(convertToForkCommand(command));
