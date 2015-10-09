@@ -169,16 +169,22 @@ easier to navigate.
 ==== Manual installation with m2eclipse
 If you prefer to install Eclipse yourself we recommend that you use the
 http://eclipse.org/m2e/[m2eclipe] eclipse plugin. If you don't already have m2eclipse
-installed it is available from the "eclipse marketplace".
+installed it is available from the "Eclipse marketplace".
 
 Spring Boot includes project specific source formatting settings, in order to have these
-work with m2eclipse, we provide an additional eclipse plugin that you can install:
+work with m2eclipse, we provide additional Eclipse plugins that you can install:
 
+===== Install the m2eclipse-maveneclipse plugin
 * Select "`Help`" -> "`Install New Software`".
 * Add `https://dl.bintray.com/philwebb/m2eclipse-maveneclipse` as a site.
 * Install "Maven Integration for the maven-eclipse-plugin"
 
-NOTE: This plugin is optional. Projects can be imported without the plugin, your code
+===== Install the Spring Formatter plugin
+* Select "`Help`" -> "`Install New Software`".
+* Add `https://dl.bintray.com/philwebb/spring-eclipse-code-formatter/` as a site.
+* Install "Spring Code Formatter"
+
+NOTE: These plugins are optional. Projects can be imported without the plugins, your code
 changes just won't be automatically formatted.
 
 With the requisite eclipse plugins installed you can select
