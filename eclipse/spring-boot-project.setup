@@ -85,6 +85,8 @@
         name="org.sonatype.m2e.buildhelper.feature.feature.group"/>
     <requirement
         name="org.eclipse.mylyn.github.feature.feature.group"/>
+    <requirement
+        name="org.springframework.ide.eclipse.jdt.formatter.feature.feature.group"/>
     <repository
         url="http://download.eclipse.org/technology/epp/packages/mars/R"/>
     <repository
@@ -93,6 +95,8 @@
         url="http://andrei.gmxhome.de/eclipse"/>
     <repository
         url="https://dl.bintray.com/philwebb/m2eclipse-maveneclipse"/>
+    <repository
+        url="https://dl.bintray.com/philwebb/spring-eclipse-code-formatter"/>
     <repository
         url="http://dist.springsource.com/release/TOOLS/update/e4.5"/>
     <repository
