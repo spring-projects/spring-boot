@@ -17,6 +17,8 @@
       xsi:type="setup:VariableTask"
       type="FOLDER"
       name="checkout.location"
+      defaultValue=""
+      storageURI="scope://Workspace"
       label="Checkout Location"/>
   <setupTask
       xsi:type="jdt:JRETask"
