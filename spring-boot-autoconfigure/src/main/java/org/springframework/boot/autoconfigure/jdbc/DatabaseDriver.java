@@ -93,7 +93,12 @@ enum DatabaseDriver {
 	/**
 	 * DB2 Server.
 	 */
-	DB2("com.ibm.db2.jcc.DB2Driver", "com.ibm.db2.jcc.DB2XADataSource");
+	DB2("com.ibm.db2.jcc.DB2Driver", "com.ibm.db2.jcc.DB2XADataSource"),
+
+	/**
+	 * DB2 AS400 Server.
+	 */
+	AS400("com.ibm.as400.access.AS400JDBCDriver", "com.ibm.as400.access.AS400JDBCXADataSource");
 
 	private final String driverClassName;
 

@@ -207,6 +207,14 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 
 		},
 
+		DB2_AS400("DB2 UDB for AS/400", "SELECT 1 FROM SYSIBM.SYSDUMMY1") {
+			@Override
+			protected boolean matchesProduct(String product) {
+				return super.matchesProduct(product)
+						|| product.toLowerCase().contains("as/400");
+			}
+		},
+
 		INFORMIX("Informix Dynamic Server", "select count(*) from systables"),
 
 		FIREBIRD("Firebird", "SELECT 1 FROM RDB$DATABASE") {
