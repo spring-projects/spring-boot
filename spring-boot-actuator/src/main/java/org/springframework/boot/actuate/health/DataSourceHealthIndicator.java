@@ -207,7 +207,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 
 		},
 
-		AS400("DB2 UDB for AS/400", "SELECT 1 FROM SYSIBM.SYSDUMMY1") {
+		DB2_AS400("DB2 UDB for AS/400", "SELECT 1 FROM SYSIBM.SYSDUMMY1") {
 			@Override
 			protected boolean matchesProduct(String product) {
 				return super.matchesProduct(product)
