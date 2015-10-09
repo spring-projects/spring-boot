@@ -156,8 +156,8 @@ public class DispatcherServletAutoConfigurationTests {
 				"spring.mvc.throw-exception-if-no-handler-found:true");
 		this.context.refresh();
 		DispatcherServlet bean = this.context.getBean(DispatcherServlet.class);
-		assertEquals(true, new DirectFieldAccessor(bean).
-				getPropertyValue("throwExceptionIfNoHandlerFound"));
+		assertEquals(true, new DirectFieldAccessor(bean)
+				.getPropertyValue("throwExceptionIfNoHandlerFound"));
 	}
 
 	@Configuration
