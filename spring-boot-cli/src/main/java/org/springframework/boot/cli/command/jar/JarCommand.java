@@ -96,7 +96,7 @@ public class JarCommand extends OptionParsingCommand {
 					"Pattern applied to directories on the classpath to find files to include in the resulting jar")
 							.withRequiredArg().withValuesSeparatedBy(",").defaultsTo("");
 			this.excludeOption = option("exclude",
-					"Pattern applied to directories on the claspath to find files to exclude from the resulting jar")
+					"Pattern applied to directories on the classpath to find files to exclude from the resulting jar")
 							.withRequiredArg().withValuesSeparatedBy(",").defaultsTo("");
 		}
 
