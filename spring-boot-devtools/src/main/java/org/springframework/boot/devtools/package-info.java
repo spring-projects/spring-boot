@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2012-2015 the original author or authors.
  *
