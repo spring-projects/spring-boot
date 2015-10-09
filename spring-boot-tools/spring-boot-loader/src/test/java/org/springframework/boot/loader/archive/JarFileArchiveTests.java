@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import org.springframework.boot.loader.util.AsciiBytes;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
@@ -38,6 +40,7 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link JarFileArchive}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class JarFileArchiveTests {
 
@@ -58,7 +61,6 @@ public class JarFileArchiveTests {
 	private void setup(boolean unpackNested) throws Exception {
 		this.rootJarFile = this.temporaryFolder.newFile();
 		this.rootJarFileUrl = this.rootJarFile.toURI().toString();
-		System.out.println(this.rootJarFileUrl);
 		TestJarCreator.createTestJar(this.rootJarFile, unpackNested);
 		this.archive = new JarFileArchive(this.rootJarFile);
 	}
@@ -72,7 +74,7 @@ public class JarFileArchiveTests {
 	@Test
 	public void getEntries() throws Exception {
 		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
-		assertThat(entries.size(), equalTo(9));
+		assertThat(entries.size(), equalTo(10));
 	}
 
 	@Test
@@ -96,6 +98,31 @@ public class JarFileArchiveTests {
 		Archive nested = this.archive.getNestedArchive(entry);
 		assertThat(nested.getUrl().toString(), startsWith("file:"));
 		assertThat(nested.getUrl().toString(), endsWith(".jar"));
+	}
+
+	@Test
+	public void unpackedLocationsAreUniquePerArchive() throws Exception {
+		setup(true);
+		Entry entry = getEntriesMap(this.archive).get("nested.jar");
+		URL firstNested = this.archive.getNestedArchive(entry).getUrl();
+		setup(true);
+		entry = getEntriesMap(this.archive).get("nested.jar");
+		URL secondNested = this.archive.getNestedArchive(entry).getUrl();
+		assertThat(secondNested, is(not(equalTo(firstNested))));
+	}
+
+	@Test
+	public void unpackedLocationsFromSameArchiveShareSameParent() throws Exception {
+		setup(true);
+		File nested = new File(this.archive
+				.getNestedArchive(getEntriesMap(this.archive).get("nested.jar")).getUrl()
+				.toURI());
+		File anotherNested = new File(
+				this.archive
+						.getNestedArchive(
+								getEntriesMap(this.archive).get("another-nested.jar"))
+						.getUrl().toURI());
+		assertThat(nested.getParent(), is(equalTo(anotherNested.getParent())));
 	}
 
 	@Test
