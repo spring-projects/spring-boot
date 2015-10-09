@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -53,6 +54,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
@@ -74,17 +76,24 @@ public class DispatcherServletAutoConfiguration {
 	@Configuration
 	@Conditional(DefaultDispatcherServletCondition.class)
 	@ConditionalOnClass(ServletRegistration.class)
+	@EnableConfigurationProperties(WebMvcProperties.class)
 	protected static class DispatcherServletConfiguration {
 
 		@Autowired
 		private ServerProperties server;
+
+		@Autowired
+		private WebMvcProperties webMvcProperties;
 
 		@Autowired(required = false)
 		private MultipartConfigElement multipartConfig;
 
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 		public DispatcherServlet dispatcherServlet() {
-			return new DispatcherServlet();
+			DispatcherServlet dispatcherServlet = new DispatcherServlet();
+			dispatcherServlet.setThrowExceptionIfNoHandlerFound(
+					this.webMvcProperties.isThrowExceptionIfNoHandlerFound());
+			return dispatcherServlet;
 		}
 
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)

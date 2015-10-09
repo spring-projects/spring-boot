@@ -19,7 +19,9 @@ package org.springframework.boot.autoconfigure.web;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletRequest;
 
+import org.junit.After;
 import org.junit.Test;
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.context.embedded.MultipartConfigFactory;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
@@ -48,6 +50,13 @@ import static org.junit.Assert.assertThat;
 public class DispatcherServletAutoConfigurationTests {
 
 	private AnnotationConfigWebApplicationContext context;
+
+	@After
+	public void closeContext() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
 	@Test
 	public void registrationProperties() throws Exception {
@@ -135,6 +144,20 @@ public class DispatcherServletAutoConfigurationTests {
 		dispatcherServlet.onApplicationEvent(new ContextRefreshedEvent(this.context));
 		assertThat(dispatcherServlet.getMultipartResolver(),
 				instanceOf(MockMultipartResolver.class));
+	}
+
+	@Test
+	public void dispatcherServletConfig() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(ServerPropertiesAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mvc.throw-exception-if-no-handler-found:true");
+		this.context.refresh();
+		DispatcherServlet bean = this.context.getBean(DispatcherServlet.class);
+		assertEquals(true, new DirectFieldAccessor(bean).
+				getPropertyValue("throwExceptionIfNoHandlerFound"));
 	}
 
 	@Configuration

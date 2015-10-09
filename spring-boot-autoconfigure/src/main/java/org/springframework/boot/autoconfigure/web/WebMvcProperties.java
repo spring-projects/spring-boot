@@ -53,6 +53,12 @@ public class WebMvcProperties {
 	 */
 	private boolean ignoreDefaultModelOnRedirect = true;
 
+	/**
+	 * If a "NoHandlerFoundException" should be thrown if no Handler was found to process
+	 * a request.
+	 */
+	private boolean throwExceptionIfNoHandlerFound = false;
+
 	private final Async async = new Async();
 
 	private final View view = new View();
@@ -88,6 +94,14 @@ public class WebMvcProperties {
 
 	public void setIgnoreDefaultModelOnRedirect(boolean ignoreDefaultModelOnRedirect) {
 		this.ignoreDefaultModelOnRedirect = ignoreDefaultModelOnRedirect;
+	}
+
+	public boolean isThrowExceptionIfNoHandlerFound() {
+		return this.throwExceptionIfNoHandlerFound;
+	}
+
+	public void setThrowExceptionIfNoHandlerFound(boolean throwExceptionIfNoHandlerFound) {
+		this.throwExceptionIfNoHandlerFound = throwExceptionIfNoHandlerFound;
 	}
 
 	public Async getAsync() {
