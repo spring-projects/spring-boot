@@ -19,7 +19,6 @@
  * {@link org.springframework.boot.context.embedded.EmbeddedServletContainer
  * EmbeddedServletContainers}.
  *
- * @see org.springframework.boot.context.embedded.undertow.
- * UndertowEmbeddedServletContainerFactory
+ * @see org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory
  */
 package org.springframework.boot.context.embedded.undertow;
