@@ -146,8 +146,8 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 
 	@Override
 	protected void doClose() {
-		super.doClose();
 		stopAndReleaseEmbeddedServletContainer();
+		super.doClose();
 	}
 
 	private synchronized void createEmbeddedServletContainer() {
