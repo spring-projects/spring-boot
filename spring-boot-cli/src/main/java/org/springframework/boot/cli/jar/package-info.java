@@ -19,4 +19,3 @@
  * @see org.springframework.boot.cli.command.jar.JarCommand
  */
 package org.springframework.boot.cli.jar;
-

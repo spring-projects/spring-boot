@@ -18,4 +18,3 @@
  * Auto-configuration for Redis.
  */
 package org.springframework.boot.autoconfigure.redis;
-

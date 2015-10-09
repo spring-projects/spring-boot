@@ -15,10 +15,10 @@
  */
 
 /**
- * Support for external configuration binding via the {@code @ConfigurationProperties} annotation.
+ * Support for external configuration binding via the {@code @ConfigurationProperties}
+ * annotation.
  *
  * @see org.springframework.boot.context.properties.ConfigurationProperties
  * @see org.springframework.boot.context.properties.EnableConfigurationProperties
  */
 package org.springframework.boot.context.properties;
-

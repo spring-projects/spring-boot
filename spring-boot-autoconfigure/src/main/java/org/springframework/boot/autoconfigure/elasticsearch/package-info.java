@@ -18,4 +18,3 @@
  * Auto-configuration for Elasticsearch.
  */
 package org.springframework.boot.autoconfigure.elasticsearch;
-

@@ -18,4 +18,3 @@
  * Auto-configuration for Velocity.
  */
 package org.springframework.boot.autoconfigure.velocity;
-

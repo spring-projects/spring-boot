@@ -18,4 +18,3 @@
  * Support for Cloud Foundry PAAS based deployment.
  */
 package org.springframework.boot.cloudfoundry;
-
