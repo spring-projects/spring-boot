@@ -100,7 +100,7 @@ log_file="$LOG_FOLDER/${identity}.log"
 if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
     javaexe="$JAVA_HOME/bin/java"
 elif type -p java 2>&1> /dev/null; then
-    javaexe=java
+    javaexe=$(type -p java)
 elif [[ -x "/usr/bin/java" ]];  then
     javaexe="/usr/bin/java"
 else
@@ -124,7 +124,20 @@ start() {
     chown "$run_user" "$PID_FOLDER"
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
-    su -s /bin/sh -c "$command &> \"$log_file\" & echo \$!" $run_user > "$pid_file"
+    if which start-stop-daemon >/dev/null; then
+      start-stop-daemon --start --quiet \
+        --chuid $run_user \
+        --name $identity \
+        --make-pidfile --pidfile $pid_file \
+        --background --no-close \
+        --startas $javaexe \
+        -- \
+        -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS \
+        -jar $jarfile $RUN_ARGS "$@" \
+        > $log_file 2>&1
+    else
+      su -s /bin/sh -c "$command &> \"$log_file\" & echo \$!" $run_user > "$pid_file"
+    fi
     pid=$(cat "$pid_file")
   else
     checkPermissions || return $?
@@ -166,7 +179,7 @@ status() {
 run() {
   pushd $(dirname "$jarfile") > /dev/null
   exec $command
-  result = $?
+  result=$?
   popd
   return $result
 }
