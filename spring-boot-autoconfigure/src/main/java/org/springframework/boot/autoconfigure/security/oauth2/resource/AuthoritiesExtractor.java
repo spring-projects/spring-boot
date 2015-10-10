@@ -32,7 +32,6 @@ public interface AuthoritiesExtractor {
 
 	/**
 	 * Extract the authorities from the resource server's response.
-	 *
 	 * @param map the response
 	 * @return the extracted authorities
 	 */

@@ -41,19 +41,19 @@ public class FixedAuthoritiesExtractor implements AuthoritiesExtractor {
 	public List<GrantedAuthority> extractAuthorities(Map<String, Object> map) {
 		String authorities = "ROLE_USER";
 		if (map.containsKey(AUTHORITIES)) {
-			Object object = map.get(AUTHORITIES);
-			if (object instanceof Collection) {
-				authorities = StringUtils
-						.collectionToCommaDelimitedString((Collection<?>) object);
-			}
-			else if (ObjectUtils.isArray(object)) {
-				authorities = StringUtils.arrayToCommaDelimitedString((Object[]) object);
-			}
-			else if (object != null) {
-				authorities = object.toString();
-			}
+			authorities = asAuthorities(map.get(AUTHORITIES));
 		}
 		return AuthorityUtils.commaSeparatedStringToAuthorityList(authorities);
+	}
+
+	private String asAuthorities(Object object) {
+		if (object instanceof Collection) {
+			return StringUtils.collectionToCommaDelimitedString((Collection<?>) object);
+		}
+		if (ObjectUtils.isArray(object)) {
+			return StringUtils.arrayToCommaDelimitedString((Object[]) object);
+		}
+		return object.toString();
 	}
 
 }

@@ -414,4 +414,5 @@ public class LoggingApplicationListenerTests {
 		}
 
 	}
+
 }

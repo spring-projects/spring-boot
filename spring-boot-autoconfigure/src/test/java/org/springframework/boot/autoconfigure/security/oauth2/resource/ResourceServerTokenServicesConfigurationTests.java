@@ -204,8 +204,10 @@ public class ResourceServerTokenServicesConfigurationTests {
 					return AuthorityUtils
 							.commaSeparatedStringToAuthorityList("ROLE_ADMIN");
 				}
+
 			};
 		}
+
 	}
 
 	@Import({ OAuth2RestOperationsConfiguration.class })
