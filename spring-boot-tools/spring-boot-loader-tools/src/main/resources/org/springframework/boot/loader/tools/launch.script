@@ -166,7 +166,7 @@ status() {
 run() {
   pushd $(dirname "$jarfile") > /dev/null
   exec $command
-  result = $?
+  result=$?
   popd
   return $result
 }
