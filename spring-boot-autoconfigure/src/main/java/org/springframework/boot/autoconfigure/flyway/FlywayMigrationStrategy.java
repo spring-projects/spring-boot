@@ -16,10 +16,7 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.flywaydb.core.Flyway;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
 
 /**
  * Strategy used to initialize {@link Flyway} migration. Custom implementations may be
@@ -28,28 +25,12 @@ import org.springframework.core.env.Environment;
  * @author Andreas Ahlenstorf
  * @author Phillip Webb
  */
-<<<<<<< HEAD
-public class FlywayMigrationStrategy implements EnvironmentAware {
-
-    private Environment environment;
-=======
 public interface FlywayMigrationStrategy {
 
-	/**
-	 * Trigger flyway migration.
-	 * @param flyway the flyway instance
-	 */
-	void migrate(Flyway flyway);
->>>>>>> upstream/master
+    /**
+     * Trigger flyway migration.
+     * @param flyway the flyway instance
+     */
+    void migrate(Flyway flyway);
 
-    public void migrate(Flyway flyway) {
-        if (BooleanUtils.isNotFalse(environment.getProperty("flyway.migrateOnInit", Boolean.class))) {
-            flyway.migrate();
-        }
-    }
-
-    @Override
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
 }
