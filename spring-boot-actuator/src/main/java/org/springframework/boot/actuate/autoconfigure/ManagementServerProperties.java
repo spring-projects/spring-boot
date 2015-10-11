@@ -26,11 +26,13 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Properties for the management server (e.g. port and path settings).
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  * @see ServerProperties
  */
 @ConfigurationProperties(prefix = "management", ignoreUnknownFields = true)
@@ -51,10 +53,11 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	 * management endpoints. This is a useful place to put user-defined access rules if
 	 * you want to override the default access rules.
 	 */
-	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER - 1;
+	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER
+			- 1;
 
 	/**
-	 * Management endpoint HTTP port. Use the same port as the applicationby default.
+	 * Management endpoint HTTP port. Use the same port as the application by default.
 	 */
 	private Integer port;
 
@@ -75,6 +78,13 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	private boolean addApplicationContextHeader = true;
 
 	private final Security security = maybeCreateSecurity();
+
+	private Security maybeCreateSecurity() {
+		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
+			return new Security();
+		}
+		return null;
+	}
 
 	/**
 	 * Returns the management port or {@code null} if the
@@ -103,12 +113,24 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		this.address = address;
 	}
 
+	/**
+	 * Return the context path with no trailing slash (i.e. the '/' root context is
+	 * represented as the empty string).
+	 * @return the context path (no trailing slash)
+	 */
 	public String getContextPath() {
 		return this.contextPath;
 	}
 
 	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
+		this.contextPath = cleanContextPath(contextPath);
+	}
+
+	private String cleanContextPath(String contextPath) {
+		if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
+			return contextPath.substring(0, contextPath.length() - 1);
+		}
+		return contextPath;
 	}
 
 	public Security getSecurity() {
@@ -167,13 +189,6 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 			this.enabled = enabled;
 		}
 
-	}
-
-	private static Security maybeCreateSecurity() {
-		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
-			return new Security();
-		}
-		return null;
 	}
 
 }

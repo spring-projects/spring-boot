@@ -30,7 +30,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import com.google.gson.Gson;
 
 /**
- * Configuration for HTTP Message converters that use Gson
+ * Configuration for HTTP Message converters that use Gson.
  *
  * @author Andy Wilkinson
  * @since 1.2.2
@@ -56,7 +56,7 @@ class GsonHttpMessageConvertersConfiguration {
 
 	private static class PreferGsonOrMissingJacksonCondition extends AnyNestedCondition {
 
-		public PreferGsonOrMissingJacksonCondition() {
+		PreferGsonOrMissingJacksonCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,6 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import liquibase.integration.spring.SpringLiquibase;
-import liquibase.servicelocator.ServiceLocator;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -33,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
 import org.springframework.context.annotation.Bean;
@@ -44,6 +42,9 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
+
+import liquibase.integration.spring.SpringLiquibase;
+import liquibase.servicelocator.ServiceLocator;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Liquibase.
@@ -57,7 +58,8 @@ import org.springframework.util.Assert;
 @ConditionalOnClass(SpringLiquibase.class)
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnProperty(prefix = "liquibase", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter(DataSourceAutoConfiguration.class)
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class,
+		HibernateJpaAutoConfiguration.class })
 public class LiquibaseAutoConfiguration {
 
 	@Configuration
@@ -78,15 +80,16 @@ public class LiquibaseAutoConfiguration {
 		@PostConstruct
 		public void checkChangelogExists() {
 			if (this.properties.isCheckChangeLogLocation()) {
-				Resource resource = this.resourceLoader.getResource(this.properties
-						.getChangeLog());
-				Assert.state(resource.exists(), "Cannot find changelog location: "
-						+ resource + " (please add changelog or check your Liquibase "
-						+ "configuration)");
+				Resource resource = this.resourceLoader
+						.getResource(this.properties.getChangeLog());
+				Assert.state(resource.exists(),
+						"Cannot find changelog location: " + resource
+								+ " (please add changelog or check your Liquibase "
+								+ "configuration)");
 			}
 			ServiceLocator serviceLocator = ServiceLocator.getInstance();
-			serviceLocator.addPackageToScan(CommonsLoggingLiquibaseLogger.class
-					.getPackage().getName());
+			serviceLocator.addPackageToScan(
+					CommonsLoggingLiquibaseLogger.class.getPackage().getName());
 		}
 
 		@Bean
@@ -98,6 +101,8 @@ public class LiquibaseAutoConfiguration {
 			liquibase.setDefaultSchema(this.properties.getDefaultSchema());
 			liquibase.setDropFirst(this.properties.isDropFirst());
 			liquibase.setShouldRun(this.properties.isEnabled());
+			liquibase.setLabels(this.properties.getLabels());
+			liquibase.setChangeLogParameters(this.properties.getParameters());
 			return liquibase;
 		}
 
@@ -118,8 +123,8 @@ public class LiquibaseAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	protected static class LiquibaseJpaDependencyConfiguration extends
-			EntityManagerFactoryDependsOnPostProcessor {
+	protected static class LiquibaseJpaDependencyConfiguration
+			extends EntityManagerFactoryDependsOnPostProcessor {
 
 		public LiquibaseJpaDependencyConfiguration() {
 			super("liquibase");

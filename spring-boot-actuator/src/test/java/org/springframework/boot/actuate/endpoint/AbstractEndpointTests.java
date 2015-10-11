@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,13 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -41,7 +44,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 
 	protected AnnotationConfigApplicationContext context;
 
-	private final Class<?> configClass;
+	protected final Class<?> configClass;
 
 	private final Class<?> type;
 
@@ -63,7 +66,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Before
 	public void setup() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(this.configClass);
+		this.context.register(JacksonAutoConfiguration.class, this.configClass);
 		this.context.refresh();
 	}
 
@@ -97,7 +100,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	public void isSensitiveOverride() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object> singletonMap(this.property + ".sensitive",
+				Collections.<String, Object>singletonMap(this.property + ".sensitive",
 						String.valueOf(!this.sensitive)));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
@@ -113,9 +116,8 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Test
 	public void isEnabledFallbackToEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object> singletonMap(this.property + ".enabled",
-						false));
+		PropertySource<?> propertySource = new MapPropertySource("test", Collections
+				.<String, Object>singletonMap(this.property + ".enabled", false));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
@@ -126,9 +128,8 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@SuppressWarnings("rawtypes")
 	public void isExplicitlyEnabled() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object> singletonMap(this.property + ".enabled",
-						false));
+		PropertySource<?> propertySource = new MapPropertySource("test", Collections
+				.<String, Object>singletonMap(this.property + ".enabled", false));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
@@ -140,7 +141,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	public void isAllEndpointsDisabled() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object> singletonMap("endpoints.enabled", false));
+				Collections.<String, Object>singletonMap("endpoints.enabled", false));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
@@ -158,6 +159,14 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.register(this.configClass);
 		this.context.refresh();
 		assertThat(getEndpointBean().isEnabled(), equalTo(true));
+	}
+
+	@Test
+	public void serialize() throws Exception {
+		Object result = getEndpointBean().invoke();
+		if (result != null) {
+			this.context.getBean(ObjectMapper.class).writeValue(System.out, result);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

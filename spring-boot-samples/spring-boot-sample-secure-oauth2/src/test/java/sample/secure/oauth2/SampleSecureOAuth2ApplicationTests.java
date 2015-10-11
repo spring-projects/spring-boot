@@ -19,9 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
-import sample.secure.oauth2.SampleSecureOAuth2Application;
-import sample.secure.oauth2.Flight;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,7 +38,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@SpringApplicationConfiguration(classes = SampleSecureOAuth2Application.class)
+@SpringApplicationConfiguration(SampleSecureOAuth2Application.class)
 @IntegrationTest("server.port:0")
 public class SampleSecureOAuth2ApplicationTests {
 
@@ -88,23 +85,22 @@ public class SampleSecureOAuth2ApplicationTests {
 	public void useAppSecretsPlusUserAccountToGetBearerToken() throws Exception {
 		String header = "Basic " + new String(Base64.encode("foo:bar".getBytes()));
 		MvcResult result = this.mvc
-				.perform(
-						post("/oauth/token").header("Authorization", header)
-								.param("grant_type", "password").param("scope", "read")
-								.param("username", "greg").param("password", "turnquist"))
+				.perform(post("/oauth/token").header("Authorization", header)
+						.param("grant_type", "password").param("scope", "read")
+						.param("username", "greg").param("password", "turnquist"))
 				.andExpect(status().isOk()).andDo(print()).andReturn();
-		Object accessToken = this.objectMapper.readValue(
-				result.getResponse().getContentAsString(), Map.class).get("access_token");
+		Object accessToken = this.objectMapper
+				.readValue(result.getResponse().getContentAsString(), Map.class)
+				.get("access_token");
 		MvcResult flightsAction = this.mvc
-				.perform(
-						get("/flights/1").accept(MediaTypes.HAL_JSON).header(
-								"Authorization", "Bearer " + accessToken))
+				.perform(get("/flights/1").accept(MediaTypes.HAL_JSON)
+						.header("Authorization", "Bearer " + accessToken))
 				.andExpect(
 						header().string("Content-Type", MediaTypes.HAL_JSON.toString()))
 				.andExpect(status().isOk()).andDo(print()).andReturn();
 
-		Flight flight = this.objectMapper.readValue(flightsAction.getResponse()
-				.getContentAsString(), Flight.class);
+		Flight flight = this.objectMapper.readValue(
+				flightsAction.getResponse().getContentAsString(), Flight.class);
 
 		assertThat(flight.getOrigin(), is("Nashville"));
 		assertThat(flight.getDestination(), is("Dallas"));

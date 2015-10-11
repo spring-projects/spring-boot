@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -88,8 +88,8 @@ public class FilterRegistrationBeanTests {
 		bean.addUrlPatterns("/c");
 		bean.setServletNames(new LinkedHashSet<String>(Arrays.asList("s1", "s2")));
 		bean.addServletNames("s3");
-		bean.setServletRegistrationBeans(Collections
-				.singleton(mockServletRegistation("s4")));
+		bean.setServletRegistrationBeans(
+				Collections.singleton(mockServletRegistation("s4")));
 		bean.addServletRegistrationBeans(mockServletRegistation("s5"));
 		bean.setMatchAfter(true);
 		bean.onStartup(this.servletContext);
@@ -99,13 +99,12 @@ public class FilterRegistrationBeanTests {
 		expectedInitParameters.put("a", "b");
 		expectedInitParameters.put("c", "d");
 		verify(this.registration).setInitParameters(expectedInitParameters);
-		verify(this.registration)
-				.addMappingForUrlPatterns(
-						FilterRegistrationBean.NON_ASYNC_DISPATCHER_TYPES, true, "/a",
-						"/b", "/c");
+		verify(this.registration).addMappingForUrlPatterns(
+				FilterRegistrationBean.NON_ASYNC_DISPATCHER_TYPES, true, "/a", "/b",
+				"/c");
 		verify(this.registration).addMappingForServletNames(
-				FilterRegistrationBean.NON_ASYNC_DISPATCHER_TYPES, true, "s4", "s5",
-				"s1", "s2", "s3");
+				FilterRegistrationBean.NON_ASYNC_DISPATCHER_TYPES, true, "s4", "s5", "s1",
+				"s2", "s3");
 	}
 
 	@Test

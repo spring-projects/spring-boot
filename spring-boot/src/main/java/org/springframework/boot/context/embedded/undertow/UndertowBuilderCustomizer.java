@@ -28,6 +28,7 @@ import io.undertow.Undertow.Builder;
 public interface UndertowBuilderCustomizer {
 
 	/**
+	 * Customize the builder.
 	 * @param builder the {@code Builder} to customize
 	 */
 	void customize(Builder builder);

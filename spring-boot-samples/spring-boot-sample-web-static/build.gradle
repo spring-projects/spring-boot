@@ -22,8 +22,6 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 apply plugin: 'war'
 
-mainClassName = "sample.ui.SampleWebStaticApplication"
-
 war {
 	baseName = 'spring-boot-sample-web-static'
 	version =  '0.0.0'

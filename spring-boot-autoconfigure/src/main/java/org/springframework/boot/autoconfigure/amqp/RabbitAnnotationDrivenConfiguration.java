@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,34 +20,45 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Listener;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Configuration for Spring AMQP annotation driven endpoints.
  *
  * @author Stephane Nicoll
+ * @author Josh Thornhill
  * @since 1.2.0
  */
 @Configuration
 @ConditionalOnClass(EnableRabbit.class)
 class RabbitAnnotationDrivenConfiguration {
 
-	@Autowired(required = false)
-	private PlatformTransactionManager transactionManager;
-
 	@Bean
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-			ConnectionFactory connectionFactory) {
+			ConnectionFactory connectionFactory, RabbitProperties config) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
-		if (this.transactionManager != null) {
-			factory.setTransactionManager(this.transactionManager);
+		Listener listenerConfig = config.getListener();
+		factory.setAutoStartup(listenerConfig.isAutoStartup());
+		if (listenerConfig.getAcknowledgeMode() != null) {
+			factory.setAcknowledgeMode(listenerConfig.getAcknowledgeMode());
+		}
+		if (listenerConfig.getConcurrency() != null) {
+			factory.setConcurrentConsumers(listenerConfig.getConcurrency());
+		}
+		if (listenerConfig.getMaxConcurrency() != null) {
+			factory.setMaxConcurrentConsumers(listenerConfig.getMaxConcurrency());
+		}
+		if (listenerConfig.getPrefetch() != null) {
+			factory.setPrefetchCount(listenerConfig.getPrefetch());
+		}
+		if (listenerConfig.getTransactionSize() != null) {
+			factory.setTxSize(listenerConfig.getTransactionSize());
 		}
 		return factory;
 	}

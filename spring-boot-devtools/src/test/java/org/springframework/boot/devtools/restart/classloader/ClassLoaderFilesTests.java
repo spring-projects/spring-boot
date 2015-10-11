@@ -27,8 +27,6 @@ import java.util.Iterator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
-import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceFolder;
 
@@ -131,8 +129,8 @@ public class ClassLoaderFilesTests {
 		ObjectOutputStream oos = new ObjectOutputStream(bos);
 		oos.writeObject(this.files);
 		oos.close();
-		ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(
-				bos.toByteArray()));
+		ObjectInputStream ois = new ObjectInputStream(
+				new ByteArrayInputStream(bos.toByteArray()));
 		ClassLoaderFiles readObject = (ClassLoaderFiles) ois.readObject();
 		assertThat(readObject.getFile("myfile"), notNullValue());
 	}

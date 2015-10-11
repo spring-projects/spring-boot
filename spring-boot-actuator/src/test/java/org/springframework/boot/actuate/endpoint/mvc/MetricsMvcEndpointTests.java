@@ -30,6 +30,9 @@ import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpointTests.TestConfiguration;
 import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +42,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -54,7 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Sergei Egorov
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { TestConfiguration.class })
+@SpringApplicationConfiguration(TestConfiguration.class)
 @WebAppConfiguration
 public class MetricsMvcEndpointTests {
 
@@ -100,35 +102,36 @@ public class MetricsMvcEndpointTests {
 
 	@Test
 	public void regexAll() throws Exception {
-		String expected = "{\"foo\":1,\"group1.a\":1,\"group1.b\":1,\"group2.a\":1,\"group2_a\":1}";
+		String expected = "\"foo\":1,\"group1.a\":1,\"group1.b\":1,\"group2.a\":1,\"group2_a\":1";
 		this.mvc.perform(get("/metrics/.*")).andExpect(status().isOk())
-				.andExpect(content().string(expected));
+				.andExpect(content().string(containsString(expected)));
 	}
 
 	@Test
 	public void regexGroupDot() throws Exception {
-		String expected = "{\"group1.a\":1,\"group1.b\":1,\"group2.a\":1}";
+		String expected = "\"group1.a\":1,\"group1.b\":1,\"group2.a\":1";
 		this.mvc.perform(get("/metrics/group[0-9]+\\..*")).andExpect(status().isOk())
-				.andExpect(content().string(expected));
+				.andExpect(content().string(containsString(expected)));
 	}
 
 	@Test
 	public void regexGroup1() throws Exception {
-		String expected = "{\"group1.a\":1,\"group1.b\":1}";
+		String expected = "\"group1.a\":1,\"group1.b\":1";
 		this.mvc.perform(get("/metrics/group1\\..*")).andExpect(status().isOk())
-				.andExpect(content().string(expected));
+				.andExpect(content().string(containsString(expected)));
 	}
 
 	@Test
 	public void specificMetricWithDot() throws Exception {
 		this.mvc.perform(get("/metrics/group2.a")).andExpect(status().isOk())
-				.andExpect(content().string("1"));
+				.andExpect(content().string(containsString("1")));
 
 	}
 
-	@Import({ EndpointWebMvcAutoConfiguration.class,
+	@Import({ JacksonAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class })
-	@EnableWebMvc
 	@Configuration
 	public static class TestConfiguration {
 
@@ -148,11 +151,6 @@ public class MetricsMvcEndpointTests {
 				}
 
 			});
-		}
-
-		@Bean
-		public MetricsMvcEndpoint mvcEndpoint() {
-			return new MetricsMvcEndpoint(endpoint());
 		}
 
 	}

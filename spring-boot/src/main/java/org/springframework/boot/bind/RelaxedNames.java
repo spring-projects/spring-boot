@@ -70,7 +70,10 @@ public final class RelaxedNames implements Iterable<String> {
 		}
 	}
 
-	static enum Variation {
+	/**
+	 * Name variations.
+	 */
+	enum Variation {
 
 		NONE {
 			@Override
@@ -97,7 +100,10 @@ public final class RelaxedNames implements Iterable<String> {
 
 	}
 
-	static enum Manipulation {
+	/**
+	 * Name manipulations.
+	 */
+	enum Manipulation {
 
 		NONE {
 			@Override
@@ -171,12 +177,13 @@ public final class RelaxedNames implements Iterable<String> {
 
 		public abstract String apply(String value);
 
-		private static String separatedToCamelCase(String value, boolean caseInsensitive) {
+		private static String separatedToCamelCase(String value,
+				boolean caseInsensitive) {
 			StringBuilder builder = new StringBuilder();
 			for (String field : value.split("[_\\-.]")) {
 				field = (caseInsensitive ? field.toLowerCase() : field);
-				builder.append(builder.length() == 0 ? field : StringUtils
-						.capitalize(field));
+				builder.append(
+						builder.length() == 0 ? field : StringUtils.capitalize(field));
 			}
 			for (String suffix : new String[] { "_", "-", "." }) {
 				if (value.endsWith(suffix)) {
@@ -186,6 +193,15 @@ public final class RelaxedNames implements Iterable<String> {
 			return builder.toString();
 
 		}
+	}
+
+	/**
+	 * Return a {@link RelaxedNames} for the given source camelCase source name.
+	 * @param name the source name in camelCase
+	 * @return the relaxed names
+	 */
+	public static RelaxedNames forCamelCase(String name) {
+		return new RelaxedNames(Manipulation.CAMELCASE_TO_HYPHEN.apply(name));
 	}
 
 }

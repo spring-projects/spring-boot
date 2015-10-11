@@ -45,6 +45,7 @@ import org.springframework.web.util.UrlPathHelper;
  * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "endpoints.jolokia", ignoreUnknownFields = false)
+@HypermediaDisabled
 public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 		ApplicationContextAware, ServletContextAware {
 
@@ -52,8 +53,8 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 	 * Endpoint URL path.
 	 */
 	@NotNull
-	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
-	private String path;
+	@Pattern(regexp = "/[^?#]*", message = "Path must start with /")
+	private String path = "/jolokia";;
 
 	/**
 	 * Enable security on the endpoint.
@@ -68,7 +69,6 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 	private final ServletWrappingController controller = new ServletWrappingController();
 
 	public JolokiaMvcEndpoint() {
-		this.path = "/jolokia";
 		this.controller.setServletClass(AgentServlet.class);
 		this.controller.setServletName("jolokia");
 	}
@@ -135,9 +135,10 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 	private static class PathStripper extends HttpServletRequestWrapper {
 
 		private final String path;
+
 		private final UrlPathHelper urlPathHelper;
 
-		public PathStripper(HttpServletRequest request, String path) {
+		PathStripper(HttpServletRequest request, String path) {
 			super(request);
 			this.path = path;
 			this.urlPathHelper = new UrlPathHelper();

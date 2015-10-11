@@ -21,7 +21,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
 import org.junit.Test;
-import org.springframework.boot.devtools.livereload.ConnectionOutputStream;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

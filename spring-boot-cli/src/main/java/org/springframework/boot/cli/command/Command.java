@@ -73,8 +73,8 @@ public interface Command {
 	/**
 	 * Run the command.
 	 * @param args command arguments (this will not include the command itself)
-	 * @throws Exception if the command fails
 	 * @return the outcome of the command
+	 * @throws Exception if the command fails
 	 */
 	ExitStatus run(String... args) throws Exception;
 

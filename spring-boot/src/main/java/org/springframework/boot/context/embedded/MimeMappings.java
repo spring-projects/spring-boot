@@ -37,6 +37,7 @@ public final class MimeMappings implements Iterable<Mapping> {
 	 * Default mime mapping commonly used.
 	 */
 	public static final MimeMappings DEFAULT;
+
 	static {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("abs", "audio/x-mpeg");
@@ -248,8 +249,9 @@ public final class MimeMappings implements Iterable<Mapping> {
 	 */
 	private MimeMappings(MimeMappings mappings, boolean mutable) {
 		Assert.notNull(mappings, "Mappings must not be null");
-		this.map = (mutable ? new LinkedHashMap<String, MimeMappings.Mapping>(
-				mappings.map) : Collections.unmodifiableMap(mappings.map));
+		this.map = (mutable
+				? new LinkedHashMap<String, MimeMappings.Mapping>(mappings.map)
+				: Collections.unmodifiableMap(mappings.map));
 	}
 
 	@Override

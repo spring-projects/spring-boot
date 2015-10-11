@@ -54,11 +54,11 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @Import(JndiSessionConfiguration.class)
 public class MailSenderAutoConfiguration {
 
-	@Autowired(required = false)
-	private Session session;
-
 	@Autowired
 	private MailProperties properties;
+
+	@Autowired(required = false)
+	private Session session;
 
 	@Bean
 	public JavaMailSenderImpl mailSender() {
@@ -79,7 +79,10 @@ public class MailSenderAutoConfiguration {
 		}
 		sender.setUsername(this.properties.getUsername());
 		sender.setPassword(this.properties.getPassword());
-		sender.setDefaultEncoding(this.properties.getDefaultEncoding());
+		sender.setProtocol(this.properties.getProtocol());
+		if (this.properties.getDefaultEncoding() != null) {
+			sender.setDefaultEncoding(this.properties.getDefaultEncoding().name());
+		}
 		if (!this.properties.getProperties().isEmpty()) {
 			sender.setJavaMailProperties(asProperties(this.properties.getProperties()));
 		}
@@ -97,7 +100,7 @@ public class MailSenderAutoConfiguration {
 	 */
 	static class MailSenderCondition extends AnyNestedCondition {
 
-		public MailSenderCondition() {
+		MailSenderCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 

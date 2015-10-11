@@ -30,8 +30,8 @@ import org.springframework.core.Ordered;
  * @since 1.3.0
  * @see Restarter
  */
-public class RestartApplicationListener implements ApplicationListener<ApplicationEvent>,
-		Ordered {
+public class RestartApplicationListener
+		implements ApplicationListener<ApplicationEvent>, Ordered {
 
 	private int order = HIGHEST_PRECEDENCE;
 
@@ -53,7 +53,10 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 		// users to disable restart using a System property.
 		String enabled = System.getProperty(ENABLED_PROPERTY);
 		if (enabled == null || Boolean.parseBoolean(enabled)) {
-			Restarter.initialize(event.getArgs());
+			String[] args = event.getArgs();
+			DefaultRestartInitializer initializer = new DefaultRestartInitializer();
+			boolean restartOnInitialize = !AgentReloader.isActive();
+			Restarter.initialize(args, false, initializer, restartOnInitialize);
 		}
 		else {
 			Restarter.disable();

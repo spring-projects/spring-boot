@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
-import liquibase.integration.spring.SpringLiquibase;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,6 +30,8 @@ import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import liquibase.integration.spring.SpringLiquibase;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
@@ -142,8 +144,8 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertEquals("jdbc:hsqldb:mem:liquibase", liquibase.getDataSource()
-				.getConnection().getMetaData().getURL());
+		assertEquals("jdbc:hsqldb:mem:liquibase",
+				liquibase.getDataSource().getConnection().getMetaData().getURL());
 	}
 
 	@Test(expected = BeanCreationException.class)
@@ -165,6 +167,33 @@ public class LiquibaseAutoConfigurationTests {
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
 		Object log = ReflectionTestUtils.getField(liquibase, "log");
 		assertThat(log, instanceOf(CommonsLoggingLiquibaseLogger.class));
+	}
+
+	@Test
+	public void testOverrideLabels() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"liquibase.labels:test, production");
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+		assertEquals("test, production", liquibase.getLabels());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testOverrideParameters() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context, "liquibase.parameters.foo:bar");
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+		Map<String, String> parameters = (Map<String, String>) ReflectionTestUtils
+				.getField(liquibase, "parameters");
+		assertTrue(parameters.containsKey("foo"));
+		assertEquals("bar", parameters.get("foo"));
 	}
 
 }

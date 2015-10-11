@@ -21,7 +21,10 @@ import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Test;
+import org.springframework.boot.ansi.AnsiOutput;
+import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ByteArrayResource;
@@ -37,6 +40,11 @@ import static org.junit.Assert.assertThat;
  * @author Phillip Webb
  */
 public class ResourceBannerTests {
+
+	@After
+	public void reset() {
+		AnsiOutput.setEnabled(Enabled.DETECT);
+	}
 
 	@Test
 	public void renderVersions() throws Exception {
@@ -72,12 +80,30 @@ public class ResourceBannerTests {
 		assertThat(banner, startsWith("banner 1"));
 	}
 
+	@Test
+	public void renderWithColors() throws Exception {
+		Resource resource = new ByteArrayResource(
+				"${Ansi.RED}This is red.${Ansi.NORMAL}".getBytes());
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
+		String banner = printBanner(resource, null, null);
+		assertThat(banner, startsWith("\u001B[31mThis is red.\u001B[0m"));
+	}
+
+	@Test
+	public void renderWithColorsButDisabled() throws Exception {
+		Resource resource = new ByteArrayResource(
+				"${Ansi.RED}This is red.${Ansi.NORMAL}".getBytes());
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
+		String banner = printBanner(resource, null, null);
+		assertThat(banner, startsWith("This is red."));
+	}
+
 	private String printBanner(Resource resource, String bootVersion,
 			String applicationVersion) {
 		ResourceBanner banner = new MockResourceBanner(resource, bootVersion,
 				applicationVersion);
 		ConfigurableEnvironment environment = new MockEnvironment();
-		Map<String, Object> source = Collections.<String, Object> singletonMap("a", "1");
+		Map<String, Object> source = Collections.<String, Object>singletonMap("a", "1");
 		environment.getPropertySources().addLast(new MapPropertySource("map", source));
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		banner.printBanner(environment, getClass(), new PrintStream(out));
@@ -90,7 +116,7 @@ public class ResourceBannerTests {
 
 		private final String applicationVersion;
 
-		public MockResourceBanner(Resource resource, String bootVersion,
+		MockResourceBanner(Resource resource, String bootVersion,
 				String applicationVersion) {
 			super(resource);
 			this.bootVersion = bootVersion;

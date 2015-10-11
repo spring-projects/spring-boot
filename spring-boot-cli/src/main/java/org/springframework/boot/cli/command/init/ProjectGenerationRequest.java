@@ -54,9 +54,11 @@ class ProjectGenerationRequest {
 
 	private String description;
 
-	private String packaging;
+	private String packageName;
 
 	private String type;
+
+	private String packaging;
 
 	private String build;
 
@@ -74,8 +76,8 @@ class ProjectGenerationRequest {
 
 	/**
 	 * The URL of the service to use.
-	 * @see #DEFAULT_SERVICE_URL
 	 * @return the service URL
+	 * @see #DEFAULT_SERVICE_URL
 	 */
 	public String getServiceUrl() {
 		return this.serviceUrl;
@@ -178,15 +180,15 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * The packaging type or {@code null} if it should not be customized.
-	 * @return the packaging type or {@code null}
+	 * Return the package name or {@code null} if it should not be customized.
+	 * @return the package name or {@code null}
 	 */
-	public String getPackaging() {
-		return this.packaging;
+	public String getPackageName() {
+		return this.packageName;
 	}
 
-	public void setPackaging(String packaging) {
-		this.packaging = packaging;
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
 	}
 
 	/**
@@ -200,6 +202,18 @@ class ProjectGenerationRequest {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	/**
+	 * The packaging type or {@code null} if it should not be customized.
+	 * @return the packaging type or {@code null}
+	 */
+	public String getPackaging() {
+		return this.packaging;
+	}
+
+	public void setPackaging(String packaging) {
+		this.packaging = packaging;
 	}
 
 	/**
@@ -285,7 +299,7 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * Generates the URI to use to generate a project represented by this request
+	 * Generates the URI to use to generate a project represented by this request.
 	 * @param metadata the metadata that describes the service
 	 * @return the project generation URI
 	 */
@@ -310,8 +324,9 @@ class ProjectGenerationRequest {
 			if (this.groupId != null) {
 				builder.setParameter("groupId", this.groupId);
 			}
-			if (this.artifactId != null) {
-				builder.setParameter("artifactId", this.artifactId);
+			String resolvedArtifactId = resolveArtifactId();
+			if (resolvedArtifactId != null) {
+				builder.setParameter("artifactId", resolvedArtifactId);
 			}
 			if (this.version != null) {
 				builder.setParameter("version", this.version);
@@ -322,11 +337,14 @@ class ProjectGenerationRequest {
 			if (this.description != null) {
 				builder.setParameter("description", this.description);
 			}
-			if (this.packaging != null) {
-				builder.setParameter("packaging", this.packaging);
+			if (this.packageName != null) {
+				builder.setParameter("packageName", this.packageName);
 			}
 			if (this.type != null) {
 				builder.setParameter("type", projectType.getId());
+			}
+			if (this.packaging != null) {
+				builder.setParameter("packaging", this.packaging);
 			}
 			if (this.javaVersion != null) {
 				builder.setParameter("javaVersion", this.javaVersion);
@@ -349,8 +367,8 @@ class ProjectGenerationRequest {
 		if (this.type != null) {
 			ProjectType result = metadata.getProjectTypes().get(this.type);
 			if (result == null) {
-				throw new ReportableException(
-						("No project type with id '" + this.type + "' - check the service capabilities (--list)"));
+				throw new ReportableException(("No project type with id '" + this.type
+						+ "' - check the service capabilities (--list)"));
 			}
 			return result;
 		}
@@ -388,10 +406,25 @@ class ProjectGenerationRequest {
 		}
 	}
 
+	/**
+	 * Resolve the artifactId to use or {@code null} if it should not be customized.
+	 * @return the artifactId
+	 */
+	protected String resolveArtifactId() {
+		if (this.artifactId != null) {
+			return this.artifactId;
+		}
+		if (this.output != null) {
+			int i = this.output.lastIndexOf('.');
+			return (i == -1 ? this.output : this.output.substring(0, i));
+		}
+		return null;
+	}
+
 	private static void filter(Map<String, ProjectType> projects, String tag,
 			String tagValue) {
-		for (Iterator<Map.Entry<String, ProjectType>> it = projects.entrySet().iterator(); it
-				.hasNext();) {
+		for (Iterator<Map.Entry<String, ProjectType>> it = projects.entrySet()
+				.iterator(); it.hasNext();) {
 			Map.Entry<String, ProjectType> entry = it.next();
 			String value = entry.getValue().getTags().get(tag);
 			if (!tagValue.equals(value)) {

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.lang.Grab;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -31,6 +29,8 @@ import org.codehaus.groovy.transform.ASTTransformation;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.core.annotation.Order;
 
+import groovy.lang.Grab;
+
 /**
  * {@link ASTTransformation} to resolve {@link Grab} artifact coordinates.
  *
@@ -38,14 +38,17 @@ import org.springframework.core.annotation.Order;
  * @author Phillip Webb
  */
 @Order(ResolveDependencyCoordinatesTransformation.ORDER)
-public class ResolveDependencyCoordinatesTransformation extends
-		AnnotatedNodeASTTransformation {
+public class ResolveDependencyCoordinatesTransformation
+		extends AnnotatedNodeASTTransformation {
 
+	/**
+	 * The order of the transformation.
+	 */
 	public static final int ORDER = DependencyManagementBomTransformation.ORDER + 300;
 
 	private static final Set<String> GRAB_ANNOTATION_NAMES = Collections
-			.unmodifiableSet(new HashSet<String>(Arrays.asList(Grab.class.getName(),
-					Grab.class.getSimpleName())));
+			.unmodifiableSet(new HashSet<String>(
+					Arrays.asList(Grab.class.getName(), Grab.class.getSimpleName())));
 
 	private final DependencyResolutionContext resolutionContext;
 

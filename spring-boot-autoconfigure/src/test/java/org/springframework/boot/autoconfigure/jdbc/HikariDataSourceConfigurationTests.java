@@ -62,8 +62,8 @@ public class HikariDataSourceConfigurationTests {
 	@Test
 	public void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(HikariDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "jdbcUrl:jdbc:foo//bar/spam");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				PREFIX + "jdbcUrl:jdbc:foo//bar/spam");
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "maxLifetime:1234");
 		this.context.refresh();
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);

@@ -35,8 +35,8 @@ import org.springframework.util.Assert;
  *
  * @author Andy Clement
  * @author Phillip Webb
- * @see FileChangeListener
  * @since 1.3.0
+ * @see FileChangeListener
  */
 public class FileSystemWatcher {
 
@@ -96,7 +96,7 @@ public class FileSystemWatcher {
 	}
 
 	/**
-	 * Add a source folders to monitor. Cannot be called after the watcher has been
+	 * Add source folders to monitor. Cannot be called after the watcher has been
 	 * {@link #start() started}.
 	 * @param folders the folders to monitor
 	 */
@@ -114,7 +114,8 @@ public class FileSystemWatcher {
 	 */
 	public synchronized void addSourceFolder(File folder) {
 		Assert.notNull(folder, "Folder must not be null");
-		Assert.isTrue(folder.isDirectory(), "Folder must not be a file");
+		Assert.isTrue(folder.isDirectory(),
+				"Folder '" + folder + "' must exist and must" + " be a directory");
 		checkNotStarted();
 		this.folders.put(folder, null);
 	}
@@ -135,7 +136,7 @@ public class FileSystemWatcher {
 	 * Start monitoring the source folder for changes.
 	 */
 	public synchronized void start() {
-		saveInitalSnapshots();
+		saveInitialSnapshots();
 		if (this.watchThread == null) {
 			this.watchThread = new Thread() {
 				@Override
@@ -149,6 +150,7 @@ public class FileSystemWatcher {
 							scan();
 						}
 						catch (InterruptedException ex) {
+							// Ignore
 						}
 						remainingScans = FileSystemWatcher.this.remainingScans.get();
 					}
@@ -161,7 +163,7 @@ public class FileSystemWatcher {
 		}
 	}
 
-	private void saveInitalSnapshots() {
+	private void saveInitialSnapshots() {
 		for (File folder : this.folders.keySet()) {
 			this.folders.put(folder, new FolderSnapshot(folder));
 		}

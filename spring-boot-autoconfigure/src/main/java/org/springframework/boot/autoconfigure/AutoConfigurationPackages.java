@@ -62,7 +62,7 @@ public abstract class AutoConfigurationPackages {
 	}
 
 	/**
-	 * Return the auto-configuration base packages for the given bean factory
+	 * Return the auto-configuration base packages for the given bean factory.
 	 * @param beanFactory the source bean factory
 	 * @return a list of auto-configuration packages
 	 * @throws IllegalStateException if auto-configuration is not enabled
@@ -110,8 +110,8 @@ public abstract class AutoConfigurationPackages {
 
 	private static String[] addBasePackages(
 			ConstructorArgumentValues constructorArguments, String[] packageNames) {
-		String[] existing = (String[]) constructorArguments.getIndexedArgumentValue(0,
-				String[].class).getValue();
+		String[] existing = (String[]) constructorArguments
+				.getIndexedArgumentValue(0, String[].class).getValue();
 		Set<String> merged = new LinkedHashSet<String>();
 		merged.addAll(Arrays.asList(existing));
 		merged.addAll(Arrays.asList(packageNames));
@@ -142,7 +142,7 @@ public abstract class AutoConfigurationPackages {
 
 		private boolean loggedBasePackageInfo;
 
-		public BasePackages(String... names) {
+		BasePackages(String... names) {
 			List<String> packages = new ArrayList<String>();
 			for (String name : names) {
 				if (StringUtils.hasText(name)) {

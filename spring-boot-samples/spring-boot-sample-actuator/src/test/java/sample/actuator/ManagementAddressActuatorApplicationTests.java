@@ -20,9 +20,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
@@ -41,15 +39,12 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
+@SpringApplicationConfiguration(SampleActuatorApplication.class)
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0", "management.port=0", "management.address=127.0.0.1",
-		"management.contextPath:/admin" })
+		"management.context-path:/admin" })
 @DirtiesContext
 public class ManagementAddressActuatorApplicationTests {
-
-	@Autowired
-	private SecurityProperties security;
 
 	@Value("${local.server.port}")
 	private int port = 9010;
@@ -60,17 +55,16 @@ public class ManagementAddressActuatorApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
 	@Test
 	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate()
-				.getForEntity(
-						"http://localhost:" + this.managementPort + "/admin/health",
-						String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.managementPort + "/admin/health",
+				String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body: " + entity.getBody(),
 				entity.getBody().contains("\"status\":\"UP\""));

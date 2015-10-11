@@ -27,7 +27,6 @@ import org.junit.runners.model.Statement;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.boot.devtools.restart.Restarter;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -69,7 +68,8 @@ public class MockRestarter implements TestRule {
 					@Override
 					public Object answer(InvocationOnMock invocation) throws Throwable {
 						String name = (String) invocation.getArguments()[0];
-						ObjectFactory factory = (ObjectFactory) invocation.getArguments()[1];
+						ObjectFactory factory = (ObjectFactory) invocation
+								.getArguments()[1];
 						Object attribute = MockRestarter.this.attributes.get(name);
 						if (attribute == null) {
 							attribute = factory.getObject();

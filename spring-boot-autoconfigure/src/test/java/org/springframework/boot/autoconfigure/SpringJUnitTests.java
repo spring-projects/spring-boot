@@ -34,7 +34,7 @@ import static org.junit.Assert.assertNotNull;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestConfiguration.class)
+@SpringApplicationConfiguration(TestConfiguration.class)
 public class SpringJUnitTests {
 
 	@Autowired

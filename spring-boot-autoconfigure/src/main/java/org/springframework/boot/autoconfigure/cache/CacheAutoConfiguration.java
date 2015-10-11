@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.Cache
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -66,7 +66,7 @@ public class CacheAutoConfiguration {
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	public static BeanFactoryPostProcessor cacheAutoConfigurationValidatorPostProcessor() {
+	public static CacheManagerValidatorPostProcessor cacheAutoConfigurationValidatorPostProcessor() {
 		return new CacheManagerValidatorPostProcessor();
 	}
 
@@ -84,10 +84,11 @@ public class CacheAutoConfiguration {
 		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
 				throws BeansException {
-			for (String name : beanFactory.getBeanNamesForType(CacheAspectSupport.class)) {
+			for (String name : beanFactory.getBeanNamesForType(CacheAspectSupport.class,
+					false, false)) {
 				BeanDefinition definition = beanFactory.getBeanDefinition(name);
-				definition.setDependsOn(append(definition.getDependsOn(),
-						VALIDATOR_BEAN_NAME));
+				definition.setDependsOn(
+						append(definition.getDependsOn(), VALIDATOR_BEAN_NAME));
 			}
 		}
 
@@ -115,9 +116,10 @@ public class CacheAutoConfiguration {
 
 		@PostConstruct
 		public void checkHasCacheManager() {
-			Assert.notNull(this.cacheManager, "No cache manager could "
-					+ "be auto-configured, check your configuration (caching "
-					+ "type is '" + this.cacheProperties.getType() + "')");
+			Assert.notNull(this.cacheManager,
+					"No cache manager could "
+							+ "be auto-configured, check your configuration (caching "
+							+ "type is '" + this.cacheProperties.getType() + "')");
 		}
 	}
 

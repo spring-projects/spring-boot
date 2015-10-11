@@ -34,9 +34,10 @@ class TomcatEmbeddedContext extends StandardContext {
 
 	private final boolean overrideLoadOnStart;
 
-	public TomcatEmbeddedContext() {
-		this.overrideLoadOnStart = ReflectionUtils.findMethod(StandardContext.class,
-				"loadOnStartup", Container[].class).getReturnType() == boolean.class;
+	TomcatEmbeddedContext() {
+		this.overrideLoadOnStart = ReflectionUtils
+				.findMethod(StandardContext.class, "loadOnStartup", Container[].class)
+				.getReturnType() == boolean.class;
 	}
 
 	@Override

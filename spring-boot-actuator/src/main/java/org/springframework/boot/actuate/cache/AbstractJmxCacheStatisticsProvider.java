@@ -37,12 +37,12 @@ import org.springframework.cache.CacheManager;
  * Base {@link CacheStatisticsProvider} implementation that uses JMX to retrieve the cache
  * statistics.
  *
+ * @param <C> The cache type
  * @author Stephane Nicoll
  * @since 1.3.0
- * @param <C> The cache type
  */
-public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache> implements
-		CacheStatisticsProvider<C> {
+public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache>
+		implements CacheStatisticsProvider<C> {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(AbstractJmxCacheStatisticsProvider.class);
@@ -67,7 +67,8 @@ public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache> implem
 	 * {@code null} if none is found.
 	 * @param cache the cache to handle
 	 * @return the object name of the cache statistics MBean
-	 * @throws MalformedObjectNameException if the {@link ObjectName} for that cache is invalid
+	 * @throws MalformedObjectNameException if the {@link ObjectName} for that cache is
+	 * invalid
 	 */
 	protected abstract ObjectName getObjectName(C cache)
 			throws MalformedObjectNameException;
@@ -80,7 +81,8 @@ public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache> implem
 	 */
 	protected abstract CacheStatistics getCacheStatistics(ObjectName objectName);
 
-	private ObjectName internalGetObjectName(C cache) throws MalformedObjectNameException {
+	private ObjectName internalGetObjectName(C cache)
+			throws MalformedObjectNameException {
 		String cacheName = cache.getName();
 		ObjectNameWrapper value = this.caches.get(cacheName);
 		if (value != null) {
@@ -124,7 +126,7 @@ public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache> implem
 
 		private final ObjectName objectName;
 
-		public ObjectNameWrapper(ObjectName objectName) {
+		ObjectNameWrapper(ObjectName objectName) {
 			this.objectName = objectName;
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,8 +75,8 @@ public class BasicErrorControllerDirectMockMvcTests {
 	@Test
 	public void errorPageAvailableWithParentContext() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplicationBuilder(
-				ParentConfiguration.class).child(ChildConfiguration.class).run(
-				"--server.port=0"));
+				ParentConfiguration.class).child(ChildConfiguration.class)
+						.run("--server.port=0"));
 		MvcResult response = this.mockMvc
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isOk()).andReturn();
@@ -99,9 +99,9 @@ public class BasicErrorControllerDirectMockMvcTests {
 	public void errorPageNotAvailableWithWhitelabelDisabled() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(
 				WebMvcIncludedConfiguration.class).run("--server.port=0",
-				"--error.whitelabel.enabled=false"));
+						"--server.error.whitelabel.enabled=false"));
 
-		thrown.expect(ServletException.class);
+		this.thrown.expect(ServletException.class);
 		this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML));
 	}
 
@@ -111,9 +111,9 @@ public class BasicErrorControllerDirectMockMvcTests {
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
-	protected static @interface MinimalWebConfiguration {
+			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
+	protected @interface MinimalWebConfiguration {
 	}
 
 	@Configuration
@@ -148,8 +148,8 @@ public class BasicErrorControllerDirectMockMvcTests {
 	protected static class ChildConfiguration {
 		// For manual testing
 		public static void main(String[] args) {
-			new SpringApplicationBuilder(ParentConfiguration.class).child(
-					ChildConfiguration.class).run(args);
+			new SpringApplicationBuilder(ParentConfiguration.class)
+					.child(ChildConfiguration.class).run(args);
 		}
 	}
 

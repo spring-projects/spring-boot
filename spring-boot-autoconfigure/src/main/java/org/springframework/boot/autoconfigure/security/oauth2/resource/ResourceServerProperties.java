@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import org.springframework.beans.BeansException;
@@ -35,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Dave Syer
  * @since 1.3.0
  */
-@ConfigurationProperties("spring.oauth2.resource")
+@ConfigurationProperties("security.oauth2.resource")
 public class ResourceServerProperties implements Validator, BeanFactoryAware {
 
 	@JsonIgnore
@@ -165,10 +166,14 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 
 	@Override
 	public void validate(Object target, Errors errors) {
-		if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory,
-				AuthorizationServerEndpointsConfiguration.class).length > 0) {
+		if (countBeans(AuthorizationServerEndpointsConfiguration.class) > 0) {
 			// If we are an authorization server we don't need remote resource token
 			// services
+			return;
+		}
+		if (countBeans(ResourceServerTokenServicesConfiguration.class) == 0) {
+			// If we are not a resource server or an SSO client we don't need remote
+			// resource token services
 			return;
 		}
 		ResourceServerProperties resource = (ResourceServerProperties) target;
@@ -195,6 +200,11 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 				}
 			}
 		}
+	}
+
+	private int countBeans(Class<?> type) {
+		return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, type,
+				true, false).length;
 	}
 
 	public class Jwt {

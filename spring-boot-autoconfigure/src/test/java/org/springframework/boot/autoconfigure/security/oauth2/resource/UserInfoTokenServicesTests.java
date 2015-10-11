@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import java.util.Collections;
@@ -35,6 +36,7 @@ import org.springframework.security.oauth2.common.exceptions.InvalidTokenExcepti
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -56,17 +58,17 @@ public class UserInfoTokenServicesTests {
 
 	private Map<String, Object> map = new LinkedHashMap<String, Object>();
 
+	@SuppressWarnings("rawtypes")
 	@Before
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void init() {
 		this.resource.setClientId("foo");
-		given(this.template.getForEntity(any(String.class), any(Class.class)))
+		given(this.template.getForEntity(any(String.class), eq(Map.class)))
 				.willReturn(new ResponseEntity<Map>(this.map, HttpStatus.OK));
-		given(this.template.getAccessToken()).willReturn(
-				new DefaultOAuth2AccessToken("FOO"));
+		given(this.template.getAccessToken())
+				.willReturn(new DefaultOAuth2AccessToken("FOO"));
 		given(this.template.getResource()).willReturn(this.resource);
-		given(this.template.getOAuth2ClientContext()).willReturn(
-				mock(OAuth2ClientContext.class));
+		given(this.template.getOAuth2ClientContext())
+				.willReturn(mock(OAuth2ClientContext.class));
 	}
 
 	@Test
@@ -75,13 +77,12 @@ public class UserInfoTokenServicesTests {
 		assertEquals("unknown", this.services.loadAuthentication("FOO").getName());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void badToken() {
 		this.services.setRestTemplate(this.template);
-		given(this.template.getForEntity(any(String.class), any(Class.class))).willThrow(
-				new UserRedirectRequiredException("foo:bar", Collections
-						.<String, String> emptyMap()));
+		given(this.template.getForEntity(any(String.class), eq(Map.class)))
+				.willThrow(new UserRedirectRequiredException("foo:bar",
+						Collections.<String, String>emptyMap()));
 		this.expected.expect(InvalidTokenException.class);
 		assertEquals("unknown", this.services.loadAuthentication("FOO").getName());
 	}

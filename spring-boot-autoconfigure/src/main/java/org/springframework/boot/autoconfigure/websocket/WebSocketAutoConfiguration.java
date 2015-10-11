@@ -24,8 +24,8 @@ import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainer
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -51,6 +51,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, ServerContainer.class })
+@ConditionalOnWebApplication
 @AutoConfigureBefore(EmbeddedServletContainerAutoConfiguration.class)
 public class WebSocketAutoConfiguration {
 
@@ -60,7 +61,7 @@ public class WebSocketAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "websocketContainerCustomizer")
-		public EmbeddedServletContainerCustomizer websocketContainerCustomizer() {
+		public TomcatWebSocketContainerCustomizer websocketContainerCustomizer() {
 			return new TomcatWebSocketContainerCustomizer();
 		}
 
@@ -72,7 +73,7 @@ public class WebSocketAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "websocketContainerCustomizer")
-		public EmbeddedServletContainerCustomizer websocketContainerCustomizer() {
+		public JettyWebSocketContainerCustomizer websocketContainerCustomizer() {
 			return new JettyWebSocketContainerCustomizer();
 		}
 
@@ -84,7 +85,7 @@ public class WebSocketAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "websocketContainerCustomizer")
-		public EmbeddedServletContainerCustomizer websocketContainerCustomizer() {
+		public UndertowWebSocketContainerCustomizer websocketContainerCustomizer() {
 			return new UndertowWebSocketContainerCustomizer();
 		}
 

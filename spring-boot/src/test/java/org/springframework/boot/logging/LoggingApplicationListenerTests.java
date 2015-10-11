@@ -29,6 +29,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.boot.SpringApplication;
@@ -40,6 +41,7 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.support.GenericApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -55,6 +57,9 @@ import static org.junit.Assert.assertTrue;
 public class LoggingApplicationListenerTests {
 
 	private static final String[] NO_ARGS = {};
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -74,25 +79,28 @@ public class LoggingApplicationListenerTests {
 	public void init() throws SecurityException, IOException {
 		LogManager.getLogManager().readConfiguration(
 				JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
-		this.initializer.onApplicationEvent(new ApplicationStartedEvent(
-				new SpringApplication(), NO_ARGS));
+		this.initializer.onApplicationEvent(
+				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
 		new File("target/foo.log").delete();
 		new File(tmpDir() + "/spring.log").delete();
 	}
 
 	@After
 	public void clear() {
+		LoggingSystem.get(getClass().getClassLoader()).cleanUp();
+		System.clearProperty(LoggingSystem.class.getName());
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
+		System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	private String tmpDir() {
-		String path = this.context.getEnvironment().resolvePlaceholders(
-				"${java.io.tmpdir}");
+		String path = this.context.getEnvironment()
+				.resolvePlaceholders("${java.io.tmpdir}");
 		path = path.replace("\\", "/");
 		if (path.endsWith("/")) {
 			path = path.substring(0, path.length() - 1);
@@ -104,10 +112,10 @@ public class LoggingApplicationListenerTests {
 	public void baseConfigLocation() {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		this.logger.info("Hello world");
-		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Wrong output:\n" + output, output.contains("???"));
+		this.outputCapture.expect(containsString("Hello world"));
+		this.outputCapture.expect(not(containsString("???")));
+		this.outputCapture.expect(containsString("[junit-"));
+		this.logger.info("Hello world", new RuntimeException("Expected"));
 		assertFalse(new File(tmpDir() + "/spring.log").exists());
 	}
 
@@ -121,7 +129,8 @@ public class LoggingApplicationListenerTests {
 		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Wrong output:\n" + output, output.contains("???"));
-		assertTrue("Wrong output:\n" + output, output.startsWith("LOG_FILE_IS_UNDEFINED"));
+		assertTrue("Wrong output:\n" + output,
+				output.startsWith("LOG_FILE_IS_UNDEFINED"));
 		assertTrue("Wrong output:\n" + output, output.endsWith("BOOTBOOT"));
 	}
 
@@ -129,14 +138,36 @@ public class LoggingApplicationListenerTests {
 	public void overrideConfigDoesNotExist() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"logging.config: doesnotexist.xml");
+		this.thrown.expect(IllegalStateException.class);
+		this.outputCapture.expect(containsString(
+				"Logging system failed to initialize using configuration from 'doesnotexist.xml'"));
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		// Should not throw
+	}
+
+	@Test
+	public void azureDefaultLoggingConfigDoesNotCauseAFailure() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.config: -Djava.util.logging.config.file=\"d:\\home\\site\\wwwroot\\bin\\apache-tomcat-7.0.52\\conf\\logging.properties\"");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
 		this.logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Wrong output:\n" + output, output.contains("???"));
 		assertFalse(new File(tmpDir() + "/spring.log").exists());
+	}
+
+	@Test
+	public void overrideConfigBroken() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.config: classpath:logback-broken.xml");
+		this.thrown.expect(IllegalStateException.class);
+		this.outputCapture.expect(containsString(
+				"Logging system failed to initialize using configuration from 'classpath:logback-broken.xml'"));
+		this.outputCapture.expect(containsString("ConsolAppender"));
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
 	}
 
 	@Test
@@ -173,7 +204,8 @@ public class LoggingApplicationListenerTests {
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.startsWith("target/foo/spring.log"));
+		assertTrue("Wrong output:\n" + output,
+				output.startsWith("target/foo/spring.log"));
 	}
 
 	@Test
@@ -202,6 +234,18 @@ public class LoggingApplicationListenerTests {
 	public void parseLevels() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"logging.level.org.springframework.boot=TRACE");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.debug("testatdebug");
+		this.logger.trace("testattrace");
+		assertThat(this.outputCapture.toString(), containsString("testatdebug"));
+		assertThat(this.outputCapture.toString(), containsString("testattrace"));
+	}
+
+	@Test
+	public void parseLevelsCaseInsensitive() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.level.org.springframework.boot=TrAcE");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
@@ -247,6 +291,18 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	public void parseLevelsMapsFalseToOff() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.level.org.springframework.boot=false");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.debug("testatdebug");
+		this.logger.fatal("testatfatal");
+		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
+		assertThat(this.outputCapture.toString(), not(containsString("testatfatal")));
+	}
+
+	@Test
 	public void parseArgsDisabled() throws Exception {
 		this.initializer.setParseArgs(false);
 		EnvironmentTestUtils.addEnvironment(this.context, "debug");
@@ -275,6 +331,42 @@ public class LoggingApplicationListenerTests {
 		assertFalse(bridgeHandlerInstalled());
 	}
 
+	@Test
+	public void overrideExceptionConversionWord() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.exceptionConversionWord:%ex");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.outputCapture.expect(containsString("Hello world"));
+		this.outputCapture.expect(not(containsString("???")));
+		this.outputCapture.expect(not(containsString("[junit-")));
+		this.logger.info("Hello world", new RuntimeException("Expected"));
+	}
+
+	@Test
+	public void shutdownHookIsNotRegisteredByDefault() throws Exception {
+		System.setProperty(LoggingSystem.class.getName(),
+				NullShutdownHandlerLoggingSystem.class.getName());
+		this.initializer.onApplicationEvent(
+				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertThat(NullShutdownHandlerLoggingSystem.shutdownHandlerRequested, is(false));
+	}
+
+	@Test
+	public void shutdownHookCanBeRegistered() throws Exception {
+		System.setProperty(LoggingSystem.class.getName(),
+				NullShutdownHandlerLoggingSystem.class.getName());
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.register_shutdown_hook:true");
+		this.initializer.onApplicationEvent(
+				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertThat(NullShutdownHandlerLoggingSystem.shutdownHandlerRequested, is(true));
+	}
+
 	private boolean bridgeHandlerInstalled() {
 		Logger rootLogger = LogManager.getLogManager().getLogger("");
 		Handler[] handlers = rootLogger.getHandlers();
@@ -285,4 +377,42 @@ public class LoggingApplicationListenerTests {
 		}
 		return false;
 	}
+
+	public static class NullShutdownHandlerLoggingSystem extends AbstractLoggingSystem {
+
+		static boolean shutdownHandlerRequested = false;
+
+		public NullShutdownHandlerLoggingSystem(ClassLoader classLoader) {
+			super(classLoader);
+		}
+
+		@Override
+		protected String[] getStandardConfigLocations() {
+			return new String[] { "foo.bar" };
+		}
+
+		@Override
+		protected void loadDefaults(LoggingInitializationContext initializationContext,
+				LogFile logFile) {
+		}
+
+		@Override
+		protected void loadConfiguration(
+				LoggingInitializationContext initializationContext, String location,
+				LogFile logFile) {
+		}
+
+		@Override
+		public void setLogLevel(String loggerName, LogLevel level) {
+
+		}
+
+		@Override
+		public Runnable getShutdownHandler() {
+			shutdownHandlerRequested = true;
+			return null;
+		}
+
+	}
+
 }

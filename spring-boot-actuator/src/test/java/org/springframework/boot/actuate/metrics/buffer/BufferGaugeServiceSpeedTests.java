@@ -99,18 +99,18 @@ public class BufferGaugeServiceSpeedTests {
 		watch.start("readRaw" + count);
 		for (String name : names) {
 			this.gauges.forEach(Pattern.compile(name).asPredicate(),
-					new BiConsumer<String, DoubleBuffer>() {
+					new BiConsumer<String, GaugeBuffer>() {
 						@Override
-						public void accept(String name, DoubleBuffer value) {
+						public void accept(String name, GaugeBuffer value) {
 							err.println(name + "=" + value);
 						}
 					});
 		}
 		final DoubleAdder total = new DoubleAdder();
 		this.gauges.forEach(Pattern.compile(".*").asPredicate(),
-				new BiConsumer<String, DoubleBuffer>() {
+				new BiConsumer<String, GaugeBuffer>() {
 					@Override
-					public void accept(String name, DoubleBuffer value) {
+					public void accept(String name, GaugeBuffer value) {
 						total.add(value.getValue());
 					}
 				});

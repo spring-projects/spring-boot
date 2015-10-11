@@ -58,7 +58,7 @@ class DelayedLiveReloadTrigger implements Runnable {
 
 	private long timeout = TIMEOUT;
 
-	public DelayedLiveReloadTrigger(OptionalLiveReloadServer liveReloadServer,
+	DelayedLiveReloadTrigger(OptionalLiveReloadServer liveReloadServer,
 			ClientHttpRequestFactory requestFactory, String url) {
 		Assert.notNull(liveReloadServer, "LiveReloadServer must not be null");
 		Assert.notNull(requestFactory, "RequestFactory must not be null");
@@ -95,6 +95,7 @@ class DelayedLiveReloadTrigger implements Runnable {
 			this.liveReloadServer.triggerReload();
 		}
 		catch (InterruptedException ex) {
+			// Ignore
 		}
 	}
 

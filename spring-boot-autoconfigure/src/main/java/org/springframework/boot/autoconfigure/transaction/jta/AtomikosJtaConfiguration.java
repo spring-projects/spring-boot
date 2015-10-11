@@ -68,8 +68,8 @@ class AtomikosJtaConfiguration {
 	}
 
 	@Bean(initMethod = "init", destroyMethod = "shutdownForce")
-	@ConditionalOnMissingBean
-	public UserTransactionService userTransactionService(
+	@ConditionalOnMissingBean(UserTransactionService.class)
+	public UserTransactionServiceImp userTransactionService(
 			AtomikosProperties atomikosProperties) {
 		Properties properties = new Properties();
 		if (StringUtils.hasText(this.jtaProperties.getTransactionManagerId())) {
@@ -100,8 +100,8 @@ class AtomikosJtaConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	public XADataSourceWrapper xaDataSourceWrapper() {
+	@ConditionalOnMissingBean(XADataSourceWrapper.class)
+	public AtomikosXADataSourceWrapper xaDataSourceWrapper() {
 		return new AtomikosXADataSourceWrapper();
 	}
 
@@ -122,8 +122,8 @@ class AtomikosJtaConfiguration {
 	static class AtomikosJtaJmsConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		public XAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
+		@ConditionalOnMissingBean(XAConnectionFactoryWrapper.class)
+		public AtomikosXAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
 			return new AtomikosXAConnectionFactoryWrapper();
 		}
 

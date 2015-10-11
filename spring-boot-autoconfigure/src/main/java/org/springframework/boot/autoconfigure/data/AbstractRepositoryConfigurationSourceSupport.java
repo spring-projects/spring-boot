@@ -42,8 +42,8 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Dave Syer
  * @author Oliver Gierke
  */
-public abstract class AbstractRepositoryConfigurationSourceSupport implements
-		BeanFactoryAware, ImportBeanDefinitionRegistrar, ResourceLoaderAware,
+public abstract class AbstractRepositoryConfigurationSourceSupport
+		implements BeanFactoryAware, ImportBeanDefinitionRegistrar, ResourceLoaderAware,
 		EnvironmentAware {
 
 	private ResourceLoader resourceLoader;
@@ -55,9 +55,9 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			BeanDefinitionRegistry registry) {
-		new RepositoryConfigurationDelegate(getConfigurationSource(),
-				this.resourceLoader, this.environment).registerRepositoriesIn(registry,
-				getRepositoryConfigurationExtension());
+		new RepositoryConfigurationDelegate(getConfigurationSource(), this.resourceLoader,
+				this.environment).registerRepositoriesIn(registry,
+						getRepositoryConfigurationExtension());
 	}
 
 	private AnnotationRepositoryConfigurationSource getConfigurationSource() {

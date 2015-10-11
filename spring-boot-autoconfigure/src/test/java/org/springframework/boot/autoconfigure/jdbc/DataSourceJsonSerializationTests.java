@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class DataSourceJsonSerializationTests {
 	}
 
 	@JsonSerialize(using = TomcatDataSourceSerializer.class)
-	protected static interface DataSourceJson {
+	protected interface DataSourceJson {
 	}
 
 	protected static class TomcatDataSourceSerializer extends JsonSerializer<DataSource> {
@@ -90,8 +90,7 @@ public class DataSourceJsonSerializationTests {
 			for (PropertyDescriptor property : BeanUtils
 					.getPropertyDescriptors(DataSource.class)) {
 				Method reader = property.getReadMethod();
-				if (reader != null
-						&& property.getWriteMethod() != null
+				if (reader != null && property.getWriteMethod() != null
 						&& this.conversionService.canConvert(String.class,
 								property.getPropertyType())) {
 					jgen.writeObjectField(property.getName(),
@@ -115,9 +114,8 @@ public class DataSourceJsonSerializationTests {
 				AnnotatedMethod setter = beanDesc.findMethod(
 						"set" + StringUtils.capitalize(writer.getName()),
 						new Class<?>[] { writer.getPropertyType() });
-				if (setter != null
-						&& this.conversionService.canConvert(String.class,
-								writer.getPropertyType())) {
+				if (setter != null && this.conversionService.canConvert(String.class,
+						writer.getPropertyType())) {
 					result.add(writer);
 				}
 			}

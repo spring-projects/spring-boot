@@ -20,8 +20,8 @@ package org.springframework.boot.jta.atomikos;
  * Logging levels supported by Atomikos.
  *
  * @author Phillip Webb
- * @see AtomikosProperties
  * @since 1.2.0
+ * @see AtomikosProperties
  */
 public enum AtomikosLoggingLevel {
 

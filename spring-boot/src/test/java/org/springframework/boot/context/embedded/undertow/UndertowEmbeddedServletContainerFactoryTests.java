@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,9 +15,6 @@
  */
 
 package org.springframework.boot.context.embedded.undertow;
-
-import io.undertow.Undertow.Builder;
-import io.undertow.servlet.api.DeploymentInfo;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,6 +27,9 @@ import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.ExampleServlet;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.http.HttpStatus;
+
+import io.undertow.Undertow.Builder;
+import io.undertow.servlet.api.DeploymentInfo;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -45,8 +45,8 @@ import static org.mockito.Mockito.mock;
  * @author Ivan Sopov
  * @author Andy Wilkinson
  */
-public class UndertowEmbeddedServletContainerFactoryTests extends
-		AbstractEmbeddedServletContainerFactoryTests {
+public class UndertowEmbeddedServletContainerFactoryTests
+		extends AbstractEmbeddedServletContainerFactoryTests {
 
 	@Override
 	protected UndertowEmbeddedServletContainerFactory getFactory() {
@@ -57,8 +57,8 @@ public class UndertowEmbeddedServletContainerFactoryTests extends
 	public void errorPage404() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/hello"));
-		this.container = factory.getEmbeddedServletContainer(new ServletRegistrationBean(
-				new ExampleServlet(), "/hello"));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
 		assertThat(getResponse(getLocalUrl("/not-found")), equalTo("Hello World"));
@@ -119,8 +119,8 @@ public class UndertowEmbeddedServletContainerFactoryTests extends
 		for (int i = 0; i < customizers.length; i++) {
 			customizers[i] = mock(UndertowDeploymentInfoCustomizer.class);
 		}
-		factory.setDeploymentInfoCustomizers(Arrays
-				.asList(customizers[0], customizers[1]));
+		factory.setDeploymentInfoCustomizers(
+				Arrays.asList(customizers[0], customizers[1]));
 		factory.addDeploymentInfoCustomizers(customizers[2], customizers[3]);
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) customizers);
@@ -147,6 +147,13 @@ public class UndertowEmbeddedServletContainerFactoryTests extends
 		});
 		this.container = factory.getEmbeddedServletContainer();
 		assertEquals("/", contextPath.get());
+	}
+
+	@Test
+	public void useForwardHeaders() throws Exception {
+		UndertowEmbeddedServletContainerFactory factory = getFactory();
+		factory.setUseForwardHeaders(true);
+		assertForwardHeaderIsUsed(factory);
 	}
 
 	@Override

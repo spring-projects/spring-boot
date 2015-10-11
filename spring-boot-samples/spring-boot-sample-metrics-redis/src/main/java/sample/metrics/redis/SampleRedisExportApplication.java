@@ -34,16 +34,12 @@ public class SampleRedisExportApplication {
 	@Autowired
 	private MetricExportProperties export;
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleRedisExportApplication.class, args);
-	}
-
 	@Bean
 	@ExportMetricWriter
 	public RedisMetricRepository redisMetricWriter(
 			RedisConnectionFactory connectionFactory) {
-		return new RedisMetricRepository(connectionFactory, this.export.getRedis()
-				.getPrefix(), this.export.getRedis().getKey());
+		return new RedisMetricRepository(connectionFactory,
+				this.export.getRedis().getPrefix(), this.export.getRedis().getKey());
 	}
 
 	@Bean
@@ -51,6 +47,10 @@ public class SampleRedisExportApplication {
 	public JmxMetricWriter jmxMetricWriter(
 			@Qualifier("mbeanExporter") MBeanExporter exporter) {
 		return new JmxMetricWriter(exporter);
+	}
+
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SampleRedisExportApplication.class, args);
 	}
 
 }

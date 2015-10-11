@@ -18,4 +18,3 @@
  * Metrics integration with OpenTSDB.
  */
 package org.springframework.boot.actuate.metrics.opentsdb;
-

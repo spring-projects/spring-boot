@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import sample.web.ui.SampleWebUiApplication;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -42,7 +44,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleWebUiApplication.class)
+@SpringApplicationConfiguration(SampleWebUiApplication.class)
 @WebAppConfiguration
 @IntegrationTest("server.port:0")
 @DirtiesContext
@@ -53,13 +55,13 @@ public class SampleWebUiApplicationTests {
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
-				.getBody().contains("<title>Messages"));
-		assertFalse("Wrong body (found layout:fragment):\n" + entity.getBody(), entity
-				.getBody().contains("layout:fragment"));
+		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(),
+				entity.getBody().contains("<title>Messages"));
+		assertFalse("Wrong body (found layout:fragment):\n" + entity.getBody(),
+				entity.getBody().contains("layout:fragment"));
 	}
 
 	@Test
@@ -67,8 +69,8 @@ public class SampleWebUiApplicationTests {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("text", "FOO text");
 		map.set("summary", "FOO");
-		URI location = new TestRestTemplate().postForLocation("http://localhost:"
-				+ this.port, map);
+		URI location = new TestRestTemplate()
+				.postForLocation("http://localhost:" + this.port, map);
 		assertTrue("Wrong location:\n" + location,
 				location.toString().contains("localhost:" + this.port));
 	}

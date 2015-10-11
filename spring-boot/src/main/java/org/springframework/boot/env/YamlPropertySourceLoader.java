@@ -68,7 +68,7 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 	 */
 	private static class Processor extends YamlProcessor {
 
-		public Processor(Resource resource, String profile) {
+		Processor(Resource resource, String profile) {
 			if (profile == null) {
 				setMatchDefault(true);
 				setDocumentMatchers(new SpringProfileDocumentMatcher());

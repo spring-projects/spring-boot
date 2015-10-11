@@ -27,10 +27,6 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.devtools.remote.server.AccessManager;
-import org.springframework.boot.devtools.remote.server.Dispatcher;
-import org.springframework.boot.devtools.remote.server.Handler;
-import org.springframework.boot.devtools.remote.server.HandlerMapper;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -83,7 +79,7 @@ public class DispatcherTests {
 	public void accessManagerMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("AccessManager must not be null");
-		new Dispatcher(null, Collections.<HandlerMapper> emptyList());
+		new Dispatcher(null, Collections.<HandlerMapper>emptyList());
 	}
 
 	@Test
@@ -95,8 +91,8 @@ public class DispatcherTests {
 
 	@Test
 	public void accessManagerVetoRequest() throws Exception {
-		given(this.accessManager.isAllowed(any(ServerHttpRequest.class))).willReturn(
-				false);
+		given(this.accessManager.isAllowed(any(ServerHttpRequest.class)))
+				.willReturn(false);
 		HandlerMapper mapper = mock(HandlerMapper.class);
 		Handler handler = mock(Handler.class);
 		given(mapper.getHandler(any(ServerHttpRequest.class))).willReturn(handler);

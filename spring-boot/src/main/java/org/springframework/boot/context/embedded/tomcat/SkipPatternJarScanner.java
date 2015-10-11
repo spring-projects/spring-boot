@@ -65,9 +65,9 @@ class SkipPatternJarScanner extends StandardJarScanner {
 	// For Tomcat 7 compatibility
 	public void scan(ServletContext context, ClassLoader classloader,
 			JarScannerCallback callback, Set<String> jarsToSkip) {
-		Method scanMethod = ReflectionUtils.findMethod(this.jarScanner.getClass(),
-				"scan", ServletContext.class, ClassLoader.class,
-				JarScannerCallback.class, Set.class);
+		Method scanMethod = ReflectionUtils.findMethod(this.jarScanner.getClass(), "scan",
+				ServletContext.class, ClassLoader.class, JarScannerCallback.class,
+				Set.class);
 		Assert.notNull(scanMethod, "Unable to find scan method");
 		try {
 			scanMethod.invoke(this.jarScanner, context, classloader, callback,
@@ -84,8 +84,8 @@ class SkipPatternJarScanner extends StandardJarScanner {
 	 * @param pattern the jar skip pattern or {@code null} for defaults
 	 */
 	public static void apply(TomcatEmbeddedContext context, String pattern) {
-		SkipPatternJarScanner scanner = new SkipPatternJarScanner(
-				context.getJarScanner(), pattern);
+		SkipPatternJarScanner scanner = new SkipPatternJarScanner(context.getJarScanner(),
+				pattern);
 		context.setJarScanner(scanner);
 	}
 
@@ -96,7 +96,7 @@ class SkipPatternJarScanner extends StandardJarScanner {
 
 		private final StandardJarScanner jarScanner;
 
-		public Tomcat8TldSkipSetter(StandardJarScanner jarScanner) {
+		Tomcat8TldSkipSetter(StandardJarScanner jarScanner) {
 			this.jarScanner = jarScanner;
 		}
 
@@ -109,7 +109,7 @@ class SkipPatternJarScanner extends StandardJarScanner {
 	}
 
 	/**
-	 * Skip patterns used by Spring Boot
+	 * Skip patterns used by Spring Boot.
 	 */
 	private static class SkipPattern {
 
@@ -202,7 +202,7 @@ class SkipPatternJarScanner extends StandardJarScanner {
 			add("xml-apis-*.jar");
 		}
 
-		public SkipPattern(String patterns) {
+		SkipPattern(String patterns) {
 			StringTokenizer tokenizer = new StringTokenizer(patterns, ",");
 			while (tokenizer.hasMoreElements()) {
 				add(tokenizer.nextToken());

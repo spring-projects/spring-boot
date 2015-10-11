@@ -33,8 +33,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheResourceTemplateLoader;
-import org.springframework.boot.autoconfigure.mustache.web.MustacheView;
-import org.springframework.boot.autoconfigure.mustache.web.MustacheViewResolver;
 import org.springframework.boot.autoconfigure.mustache.web.MustacheWebIntegrationTests.Application;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
@@ -64,7 +62,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(Application.class)
 @IntegrationTest("server.port:0")
 @WebAppConfiguration
 public class MustacheWebIntegrationTests {
@@ -89,15 +87,15 @@ public class MustacheWebIntegrationTests {
 
 	@Test
 	public void testHomePage() throws Exception {
-		String body = new TestRestTemplate().getForObject(
-				"http://localhost:" + this.port, String.class);
+		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port,
+				String.class);
 		assertTrue(body.contains("Hello World"));
 	}
 
 	@Test
 	public void testPartialPage() throws Exception {
-		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port
-				+ "/partial", String.class);
+		String body = new TestRestTemplate()
+				.getForObject("http://localhost:" + this.port + "/partial", String.class);
 		assertTrue(body.contains("Hello World"));
 	}
 
@@ -108,7 +106,7 @@ public class MustacheWebIntegrationTests {
 			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
-	protected static @interface MinimalWebConfiguration {
+	protected @interface MinimalWebConfiguration {
 	}
 
 	@Configuration
@@ -137,9 +135,9 @@ public class MustacheWebIntegrationTests {
 			MustacheViewResolver resolver = new MustacheViewResolver();
 			resolver.setPrefix("classpath:/mustache-templates/");
 			resolver.setSuffix(".html");
-			resolver.setCompiler(Mustache.compiler().withLoader(
-					new MustacheResourceTemplateLoader("classpath:/mustache-templates/",
-							".html")));
+			resolver.setCompiler(
+					Mustache.compiler().withLoader(new MustacheResourceTemplateLoader(
+							"classpath:/mustache-templates/", ".html")));
 			return resolver;
 		}
 

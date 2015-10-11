@@ -88,15 +88,16 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 						AbstractDeviceDelegatingViewResolver.class);
 		assertNotNull(internalResourceViewResolver);
 		assertNotNull(deviceDelegatingViewResolver);
-		assertTrue(deviceDelegatingViewResolver.getViewResolver() instanceof InternalResourceViewResolver);
+		assertTrue(deviceDelegatingViewResolver
+				.getViewResolver() instanceof InternalResourceViewResolver);
 		try {
 			this.context.getBean(ThymeleafViewResolver.class);
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			// expected. ThymeleafViewResolver shouldn't be defined.
 		}
-		assertTrue(deviceDelegatingViewResolver.getOrder() == internalResourceViewResolver
-				.getOrder() - 1);
+		assertTrue(deviceDelegatingViewResolver
+				.getOrder() == internalResourceViewResolver.getOrder() - 1);
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -138,11 +139,12 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 						AbstractDeviceDelegatingViewResolver.class);
 		assertNotNull(thymeleafViewResolver);
 		assertNotNull(deviceDelegatingViewResolver);
-		assertTrue(deviceDelegatingViewResolver.getViewResolver() instanceof ThymeleafViewResolver);
+		assertTrue(deviceDelegatingViewResolver
+				.getViewResolver() instanceof ThymeleafViewResolver);
 		assertNotNull(this.context.getBean(InternalResourceViewResolver.class));
 		assertNotNull(this.context.getBean(ThymeleafViewResolver.class));
-		assertTrue(deviceDelegatingViewResolver.getOrder() == thymeleafViewResolver
-				.getOrder() - 1);
+		assertTrue(deviceDelegatingViewResolver
+				.getOrder() == thymeleafViewResolver.getOrder() - 1);
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)

@@ -109,7 +109,7 @@ public final class ChangedFile {
 	/**
 	 * Change types.
 	 */
-	public static enum Type {
+	public enum Type {
 
 		/**
 		 * A new file has been added.

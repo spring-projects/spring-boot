@@ -32,12 +32,11 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
-import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
-import org.springframework.boot.devtools.remote.client.ClassPathChangeUploader;
+import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
-import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
+import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceFolder;
 import org.springframework.boot.devtools.test.MockClientHttpRequestFactory;
 import org.springframework.http.HttpStatus;
@@ -139,8 +138,8 @@ public class ClassPathChangeUploaderTests {
 		return file;
 	}
 
-	private ClassLoaderFiles deserialize(byte[] bytes) throws IOException,
-			ClassNotFoundException {
+	private ClassLoaderFiles deserialize(byte[] bytes)
+			throws IOException, ClassNotFoundException {
 		ObjectInputStream objectInputStream = new ObjectInputStream(
 				new ByteArrayInputStream(bytes));
 		return (ClassLoaderFiles) objectInputStream.readObject();

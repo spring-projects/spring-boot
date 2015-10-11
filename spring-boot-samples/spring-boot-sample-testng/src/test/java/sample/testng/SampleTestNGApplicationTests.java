@@ -26,7 +26,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.Test;
 
-import sample.testng.SampleTestNGApplication;
 import static org.testng.Assert.assertEquals;
 
 /**
@@ -34,7 +33,7 @@ import static org.testng.Assert.assertEquals;
  *
  * @author Phillip Webb
  */
-@SpringApplicationConfiguration(classes = SampleTestNGApplication.class)
+@SpringApplicationConfiguration(SampleTestNGApplication.class)
 @WebIntegrationTest("server.port:0")
 @DirtiesContext
 public class SampleTestNGApplicationTests extends AbstractTestNGSpringContextTests {
@@ -44,8 +43,8 @@ public class SampleTestNGApplicationTests extends AbstractTestNGSpringContextTes
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("Hello World", entity.getBody());
 	}

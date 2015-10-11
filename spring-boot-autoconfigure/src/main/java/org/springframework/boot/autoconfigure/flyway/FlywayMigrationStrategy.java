@@ -28,9 +28,19 @@ import org.springframework.core.env.Environment;
  * @author Andreas Ahlenstorf
  * @author Phillip Webb
  */
+<<<<<<< HEAD
 public class FlywayMigrationStrategy implements EnvironmentAware {
 
     private Environment environment;
+=======
+public interface FlywayMigrationStrategy {
+
+	/**
+	 * Trigger flyway migration.
+	 * @param flyway the flyway instance
+	 */
+	void migrate(Flyway flyway);
+>>>>>>> upstream/master
 
     public void migrate(Flyway flyway) {
         if (BooleanUtils.isNotFalse(environment.getProperty("flyway.migrateOnInit", Boolean.class))) {

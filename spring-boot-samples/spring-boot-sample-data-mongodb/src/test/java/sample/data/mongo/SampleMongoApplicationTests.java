@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
 
 package sample.data.mongo;
 
-import java.util.regex.Pattern;
-
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.OutputCapture;
-import org.springframework.core.NestedCheckedException;
-
-import com.mongodb.MongoServerSelectionException;
-import com.mongodb.MongoTimeoutException;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertTrue;
 
@@ -32,45 +30,21 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link SampleMongoApplication}.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(SampleMongoApplication.class)
+@IntegrationTest
 public class SampleMongoApplicationTests {
 
-	private static final Pattern TIMEOUT_MESSAGE_PATTERN = Pattern
-			.compile("Timed out after [0-9]+ ms while waiting for a server.*");
-
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	@ClassRule
+	public static OutputCapture outputCapture = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() throws Exception {
-		try {
-			SampleMongoApplication.main(new String[0]);
-		}
-		catch (IllegalStateException ex) {
-			if (serverNotRunning(ex)) {
-				return;
-			}
-		}
-		String output = this.outputCapture.toString();
+		String output = SampleMongoApplicationTests.outputCapture.toString();
 		assertTrue("Wrong output: " + output,
 				output.contains("firstName='Alice', lastName='Smith'"));
-	}
-
-	private boolean serverNotRunning(IllegalStateException ex) {
-		@SuppressWarnings("serial")
-		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
-		};
-		Throwable root = nested.getRootCause();
-		if (root instanceof MongoServerSelectionException
-				|| root instanceof MongoTimeoutException) {
-			if (root.getMessage().contains("Unable to connect to any server")) {
-				return true;
-			}
-			if (TIMEOUT_MESSAGE_PATTERN.matcher(root.getMessage()).matches()) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

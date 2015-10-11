@@ -108,8 +108,8 @@ public class FolderSnapshotTests {
 	public void getChangedFilesSnapshotMustBeTheSameSourceFolder() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Snapshot source folder must be '" + this.folder + "'");
-		this.initialSnapshot.getChangedFiles(new FolderSnapshot(
-				createTestFolderStructure()), null);
+		this.initialSnapshot
+				.getChangedFiles(new FolderSnapshot(createTestFolderStructure()), null);
 	}
 
 	@Test

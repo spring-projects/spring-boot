@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.Ordered;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -31,7 +32,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "security", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "security")
 public class SecurityProperties implements SecurityPrerequisite {
 
 	/**
@@ -39,7 +40,8 @@ public class SecurityProperties implements SecurityPrerequisite {
 	 * useful place to put user-defined access rules if you want to override the default
 	 * access rules.
 	 */
-	public static final int ACCESS_OVERRIDE_ORDER = SecurityProperties.BASIC_AUTH_ORDER - 2;
+	public static final int ACCESS_OVERRIDE_ORDER = SecurityProperties.BASIC_AUTH_ORDER
+			- 2;
 
 	/**
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
@@ -56,9 +58,12 @@ public class SecurityProperties implements SecurityPrerequisite {
 	public static final int IGNORED_ORDER = Ordered.HIGHEST_PRECEDENCE;
 
 	/**
-	 * Default order of Spring Security's Filter.
+	 * Default order of Spring Security's Filter in the servlet container (i.e. amongst
+	 * other filters registered with the container). There is no connection between this
+	 * and the <code>@Order</code> on a WebSecurityConfigurer.
 	 */
-	public static final int DEFAULT_FILTER_ORDER = 0;
+	public static final int DEFAULT_FILTER_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
+			- 100;
 
 	/**
 	 * Enable secure channel for all requests.
@@ -150,7 +155,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 
 	public static class Headers {
 
-		public static enum HSTS {
+		public enum HSTS {
 			NONE, DOMAIN, ALL
 		}
 

@@ -16,7 +16,9 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
+import java.io.File;
 import java.net.URL;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -50,19 +52,6 @@ import org.springframework.util.StringUtils;
 @ConditionalOnInitializedRestarter
 @EnableConfigurationProperties(DevToolsProperties.class)
 public class LocalDevToolsAutoConfiguration {
-
-	@Autowired
-	private DevToolsProperties properties;
-
-	@Bean
-	public static DevToolsPropertyDefaultsPostProcessor devToolsPropertyDefaultsPostProcessor() {
-		return new DevToolsPropertyDefaultsPostProcessor();
-	}
-
-	@Bean
-	public static DevToolHomePropertiesPostProcessor devToolHomePropertiesPostProcessor() {
-		return new DevToolHomePropertiesPostProcessor();
-	}
 
 	/**
 	 * Local LiveReload configuration.
@@ -116,7 +105,7 @@ public class LocalDevToolsAutoConfiguration {
 		public void onClassPathChanged(ClassPathChangedEvent event) {
 			if (event.isRestartRequired()) {
 				Restarter.getInstance().restart(
-						new FileWatchingFailureHandler(getFileSystemWatcherFactory()));
+						new FileWatchingFailureHandler(fileSystemWatcherFactory()));
 			}
 		}
 
@@ -125,7 +114,7 @@ public class LocalDevToolsAutoConfiguration {
 		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
 			URL[] urls = Restarter.getInstance().getInitialUrls();
 			ClassPathFileSystemWatcher watcher = new ClassPathFileSystemWatcher(
-					getFileSystemWatcherFactory(), classPathRestartStrategy(), urls);
+					fileSystemWatcherFactory(), classPathRestartStrategy(), urls);
 			watcher.setStopWatcherOnRestart(true);
 			return watcher;
 		}
@@ -133,12 +122,17 @@ public class LocalDevToolsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public ClassPathRestartStrategy classPathRestartStrategy() {
-			return new PatternClassPathRestartStrategy(this.properties.getRestart()
-					.getExclude());
+			return new PatternClassPathRestartStrategy(
+					this.properties.getRestart().getAllExclude());
 		}
 
 		@Bean
-		public FileSystemWatcherFactory getFileSystemWatcherFactory() {
+		public HateoasObjenesisCacheDisabler hateoasObjenesisCacheDisabler() {
+			return new HateoasObjenesisCacheDisabler();
+		}
+
+		@Bean
+		public FileSystemWatcherFactory fileSystemWatcherFactory() {
 			return new FileSystemWatcherFactory() {
 
 				@Override
@@ -157,6 +151,10 @@ public class LocalDevToolsAutoConfiguration {
 			String triggerFile = restartProperties.getTriggerFile();
 			if (StringUtils.hasLength(triggerFile)) {
 				watcher.setTriggerFilter(new TriggerFileFilter(triggerFile));
+			}
+			List<File> additionalPaths = restartProperties.getAdditionalPaths();
+			for (File path : additionalPaths) {
+				watcher.addSourceFolder(path.getAbsoluteFile());
 			}
 			return watcher;
 		}

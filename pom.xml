@@ -44,7 +44,7 @@
 		</developer>
 	</developers>
 	<prerequisites>
-		<maven>3.0.0</maven>
+		<maven>3.2.1</maven>
 	</prerequisites>
 	<properties>
 		<main.basedir>${basedir}</main.basedir>
@@ -87,6 +87,7 @@
 				<module>spring-boot-devtools</module>
 				<module>spring-boot-docs</module>
 				<module>spring-boot-starters</module>
+				<module>spring-boot-actuator-docs</module>
 				<module>spring-boot-cli</module>
 			</modules>
 		</profile>

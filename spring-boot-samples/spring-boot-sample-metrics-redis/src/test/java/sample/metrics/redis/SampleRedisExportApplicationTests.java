@@ -30,7 +30,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleRedisExportApplication.class)
+@SpringApplicationConfiguration(SampleRedisExportApplication.class)
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0", "spring.jmx.enabled=true" })
 @DirtiesContext

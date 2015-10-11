@@ -46,9 +46,9 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 
 	private Metric<Number> metric1 = new Metric<Number>("a", 1);
 
-	private Metric<Number> metric2 = new Metric<Number>("b", 2);;
+	private Metric<Number> metric2 = new Metric<Number>("b", 2);
 
-	private Metric<Number> metric3 = new Metric<Number>("c", 3);;
+	private Metric<Number> metric3 = new Metric<Number>("c", 3);
 
 	public MetricsEndpointTests() {
 		super(Config.class, MetricsEndpoint.class, "metrics", true, "endpoints.metrics");
@@ -62,8 +62,8 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 	@Test
 	public void ordered() {
 		List<PublicMetrics> publicMetrics = new ArrayList<PublicMetrics>();
-		publicMetrics.add(new TestPublicMetrics(2, this.metric2, this.metric2,
-				this.metric3));
+		publicMetrics
+				.add(new TestPublicMetrics(2, this.metric2, this.metric2, this.metric3));
 		publicMetrics.add(new TestPublicMetrics(1, this.metric1));
 		Map<String, Object> metrics = new MetricsEndpoint(publicMetrics).invoke();
 		Iterator<Entry<String, Object>> iterator = metrics.entrySet().iterator();
@@ -79,7 +79,7 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 
 		private final List<Metric<?>> metrics;
 
-		public TestPublicMetrics(int order, Metric<?>... metrics) {
+		TestPublicMetrics(int order, Metric<?>... metrics) {
 			this.order = order;
 			this.metrics = Arrays.asList(metrics);
 		}
@@ -106,7 +106,7 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 			PublicMetrics metrics = new PublicMetrics() {
 				@Override
 				public Collection<Metric<?>> metrics() {
-					return Collections.<Metric<?>> singleton(metric);
+					return Collections.<Metric<?>>singleton(metric);
 				}
 			};
 			return new MetricsEndpoint(metrics);

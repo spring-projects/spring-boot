@@ -50,6 +50,14 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
+	public void retrySample() throws Exception {
+		String output = this.cli.run("retry.groovy");
+		URI scriptUri = new File("samples/retry.groovy").toURI();
+		assertTrue("Wrong output: " + output,
+				output.contains("Hello World! From " + scriptUri));
+	}
+
+	@Test
 	public void beansSample() throws Exception {
 		this.cli.run("beans.groovy");
 		String output = this.cli.getHttpOutput();
@@ -73,9 +81,9 @@ public class SampleIntegrationTests {
 	public void oauth2Sample() throws Exception {
 		String output = this.cli.run("oauth2.groovy");
 		assertTrue("Wrong output: " + output,
-				output.contains("spring.oauth2.client.clientId"));
+				output.contains("security.oauth2.client.clientId"));
 		assertTrue("Wrong output: " + output,
-				output.contains("spring.oauth2.client.secret ="));
+				output.contains("security.oauth2.client.secret ="));
 	}
 
 	@Test

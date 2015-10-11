@@ -33,8 +33,8 @@ import org.springframework.core.Ordered;
  * @author Phillip Webb
  * @since 1.2.0
  */
-public class BitronixDependentBeanFactoryPostProcessor implements
-		BeanFactoryPostProcessor, Ordered {
+public class BitronixDependentBeanFactoryPostProcessor
+		implements BeanFactoryPostProcessor, Ordered {
 
 	private static final String[] NO_BEANS = {};
 
@@ -43,8 +43,8 @@ public class BitronixDependentBeanFactoryPostProcessor implements
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
 			throws BeansException {
-		String[] transactionManagers = beanFactory.getBeanNamesForType(
-				TransactionManager.class, true, false);
+		String[] transactionManagers = beanFactory
+				.getBeanNamesForType(TransactionManager.class, true, false);
 		for (String transactionManager : transactionManagers) {
 			addTransactionManagerDependencies(beanFactory, transactionManager);
 		}

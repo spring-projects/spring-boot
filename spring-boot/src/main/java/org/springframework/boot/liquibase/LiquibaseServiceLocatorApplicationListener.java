@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,14 +16,14 @@
 
 package org.springframework.boot.liquibase;
 
-import liquibase.servicelocator.CustomResolverServiceLocator;
-import liquibase.servicelocator.ServiceLocator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.ClassUtils;
+
+import liquibase.servicelocator.CustomResolverServiceLocator;
+import liquibase.servicelocator.ServiceLocator;
 
 /**
  * {@link ApplicationListener} that replaces the liquibase {@link ServiceLocator} with a
@@ -32,8 +32,8 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Dave Syer
  */
-public class LiquibaseServiceLocatorApplicationListener implements
-		ApplicationListener<ApplicationStartedEvent> {
+public class LiquibaseServiceLocatorApplicationListener
+		implements ApplicationListener<ApplicationStartedEvent> {
 
 	static final Log logger = LogFactory
 			.getLog(LiquibaseServiceLocatorApplicationListener.class);
@@ -46,11 +46,13 @@ public class LiquibaseServiceLocatorApplicationListener implements
 	}
 
 	/**
-	 * Inner class to prevent class not found issues
+	 * Inner class to prevent class not found issues.
 	 */
 	private static class LiquibasePresent {
 
 		public void replaceServiceLocator() {
+			ServiceLocator.getInstance().addPackageToScan(
+					CommonsLoggingLiquibaseLogger.class.getPackage().getName());
 			ServiceLocator.setInstance(new CustomResolverServiceLocator(
 					new SpringPackageScanClassResolver(logger)));
 		}

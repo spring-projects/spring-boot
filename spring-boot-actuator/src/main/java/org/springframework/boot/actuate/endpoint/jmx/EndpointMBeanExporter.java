@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
@@ -59,9 +58,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecycle,
-		BeanFactoryAware, ApplicationContextAware {
+public class EndpointMBeanExporter extends MBeanExporter
+		implements SmartLifecycle, ApplicationContextAware {
 
+	/**
+	 * The default JMX domain.
+	 */
 	public static final String DEFAULT_DOMAIN = "org.springframework.boot";
 
 	private static Log logger = LogFactory.getLog(EndpointMBeanExporter.class);
@@ -137,7 +139,8 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 	}
 
 	@Override
-	public void setEnsureUniqueRuntimeObjectNames(boolean ensureUniqueRuntimeObjectNames) {
+	public void setEnsureUniqueRuntimeObjectNames(
+			boolean ensureUniqueRuntimeObjectNames) {
 		super.setEnsureUniqueRuntimeObjectNames(ensureUniqueRuntimeObjectNames);
 		this.ensureUniqueRuntimeObjectNames = ensureUniqueRuntimeObjectNames;
 	}
@@ -207,9 +210,8 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 						+ ObjectUtils.getIdentityHexString(this.applicationContext));
 			}
 			if (this.ensureUniqueRuntimeObjectNames) {
-				builder.append(",identity="
-						+ ObjectUtils.getIdentityHexString(((EndpointMBean) bean)
-								.getEndpoint()));
+				builder.append(",identity=" + ObjectUtils
+						.getIdentityHexString(((EndpointMBean) bean).getEndpoint()));
 			}
 			builder.append(getStaticNames());
 			return ObjectNameManager.getInstance(builder.toString());

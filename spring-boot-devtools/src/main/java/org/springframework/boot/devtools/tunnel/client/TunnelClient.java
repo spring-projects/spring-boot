@@ -72,7 +72,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 
 	/**
 	 * Start the client and accept incoming connections on the port.
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public synchronized void start() throws IOException {
 		Assert.state(this.serverThread == null, "Server already started");
@@ -85,7 +85,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 
 	/**
 	 * Stop the client, disconnecting any servers.
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public synchronized void stop() throws IOException {
 		if (this.serverThread != null) {
@@ -95,6 +95,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 				this.serverThread.join(2000);
 			}
 			catch (InterruptedException ex) {
+				// Ignore
 			}
 			this.serverThread = null;
 		}
@@ -153,8 +154,8 @@ public class TunnelClient implements SmartInitializingSingleton {
 
 		private void handleConnection(SocketChannel socketChannel) throws Exception {
 			Closeable closeable = new SocketCloseable(socketChannel);
-			WritableByteChannel outputChannel = TunnelClient.this.tunnelConnection.open(
-					socketChannel, closeable);
+			WritableByteChannel outputChannel = TunnelClient.this.tunnelConnection
+					.open(socketChannel, closeable);
 			TunnelClient.this.listeners.fireOpenEvent(socketChannel);
 			try {
 				logger.trace("Accepted connection to tunnel client from "
@@ -191,7 +192,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 
 		private boolean closed = false;
 
-		public SocketCloseable(SocketChannel socketChannel) {
+		SocketCloseable(SocketChannel socketChannel) {
 			this.socketChannel = socketChannel;
 		}
 

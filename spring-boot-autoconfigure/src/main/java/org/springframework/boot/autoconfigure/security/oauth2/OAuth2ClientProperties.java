@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@ConfigurationProperties("spring.oauth2.client")
+@ConfigurationProperties("security.oauth2.client")
 public class OAuth2ClientProperties {
 
 	/**

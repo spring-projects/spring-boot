@@ -31,6 +31,7 @@ import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -45,16 +46,19 @@ import org.springframework.security.authentication.event.AuthenticationFailureBa
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -63,6 +67,7 @@ import static org.junit.Assert.fail;
  * Tests for {@link SecurityAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Rob Winch
  */
 public class SecurityAutoConfigurationTests {
 
@@ -85,9 +90,39 @@ public class SecurityAutoConfigurationTests {
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
 		// 5 for static resources and one for the rest
-		List<SecurityFilterChain> filterChains = this.context.getBean(
-				FilterChainProxy.class).getFilterChains();
+		List<SecurityFilterChain> filterChains = this.context
+				.getBean(FilterChainProxy.class).getFilterChains();
 		assertEquals(5, filterChains.size());
+	}
+
+	@Test
+	public void testDefaultFilterOrderWithSecurityAdapter() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(WebSecurity.class, SecurityAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100,
+				this.context.getBean("securityFilterChainRegistration",
+						FilterRegistrationBean.class).getOrder());
+	}
+
+	@Test
+	public void testFilterIsNotRegisteredInNonWeb() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(SecurityAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		try {
+			context.refresh();
+			assertFalse(context.containsBean("securityFilterChainRegistration"));
+		}
+		finally {
+			context.close();
+		}
 	}
 
 	@Test
@@ -95,11 +130,11 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(
-				0,
+		assertEquals(FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100,
 				this.context.getBean("securityFilterChainRegistration",
 						FilterRegistrationBean.class).getOrder());
 	}
@@ -110,13 +145,13 @@ public class SecurityAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "security.filter-order:12345");
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(
-				12345,
-				this.context.getBean("securityFilterChainRegistration",
-						FilterRegistrationBean.class).getOrder());
+		assertEquals(12345, this.context
+				.getBean("securityFilterChainRegistration", FilterRegistrationBean.class)
+				.getOrder());
 	}
 
 	@Test
@@ -129,8 +164,8 @@ public class SecurityAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
 		this.context.refresh();
 		// Just the application endpoints now
-		assertEquals(1, this.context.getBean(FilterChainProxy.class).getFilterChains()
-				.size());
+		assertEquals(1,
+				this.context.getBean(FilterChainProxy.class).getFilterChains().size());
 	}
 
 	@Test
@@ -187,7 +222,8 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(
-				this.context.getBean(TestAuthenticationConfiguration.class).authenticationManager,
+				this.context.getBean(
+						TestAuthenticationConfiguration.class).authenticationManager,
 				this.context.getBean(AuthenticationManager.class));
 	}
 
@@ -215,7 +251,8 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(
-				this.context.getBean(TestAuthenticationConfiguration.class).authenticationManager,
+				this.context.getBean(
+						TestAuthenticationConfiguration.class).authenticationManager,
 				this.context.getBean(AuthenticationManager.class));
 	}
 
@@ -232,8 +269,8 @@ public class SecurityAutoConfigurationTests {
 		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
 				"foo", "bar",
 				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
-		assertNotNull(this.context.getBean(AuthenticationManager.class)
-				.authenticate(user));
+		assertNotNull(
+				this.context.getBean(AuthenticationManager.class).authenticate(user));
 		pingAuthenticationListener();
 	}
 
@@ -250,8 +287,8 @@ public class SecurityAutoConfigurationTests {
 		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
 				"foo", "bar",
 				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
-		assertNotNull(this.context.getBean(AuthenticationManager.class)
-				.authenticate(user));
+		assertNotNull(
+				this.context.getBean(AuthenticationManager.class).authenticate(user));
 	}
 
 	@Test
@@ -260,6 +297,8 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.url:jdbc:hsqldb:mem:testsecdb");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:false");
 		this.context.register(EntityConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
@@ -307,14 +346,25 @@ public class SecurityAutoConfigurationTests {
 			fail("Expected Exception");
 		}
 		catch (AuthenticationException success) {
+			// Expected
 		}
 
 		token = new UsernamePasswordAuthenticationToken("foo", "bar");
 		assertNotNull(manager.authenticate(token));
 	}
 
-	private static final class AuthenticationListener implements
-			ApplicationListener<AbstractAuthenticationEvent> {
+	@Test
+	public void testSecurityEvaluationContextExtensionSupport() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(AuthenticationManagerCustomizer.class,
+				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(SecurityEvaluationContextExtension.class));
+	}
+
+	private static final class AuthenticationListener
+			implements ApplicationListener<AbstractAuthenticationEvent> {
 
 		private ApplicationEvent event;
 
@@ -354,13 +404,13 @@ public class SecurityAutoConfigurationTests {
 	protected static class SecurityCustomizer extends WebSecurityConfigurerAdapter {
 
 		@Autowired
-		private AuthenticationManager authenticationManager;
+		AuthenticationManager authenticationManager;
 
 	}
 
 	@Configuration
-	protected static class WorkaroundSecurityCustomizer extends
-			WebSecurityConfigurerAdapter {
+	protected static class WorkaroundSecurityCustomizer
+			extends WebSecurityConfigurerAdapter {
 
 		@Autowired
 		private AuthenticationManagerBuilder builder;
@@ -384,8 +434,8 @@ public class SecurityAutoConfigurationTests {
 
 	@Configuration
 	@Order(-1)
-	protected static class AuthenticationManagerCustomizer extends
-			GlobalAuthenticationConfigurerAdapter {
+	protected static class AuthenticationManagerCustomizer
+			extends GlobalAuthenticationConfigurerAdapter {
 
 		@Override
 		public void init(AuthenticationManagerBuilder auth) throws Exception {
@@ -395,8 +445,8 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class UserDetailsSecurityCustomizer extends
-			WebSecurityConfigurerAdapter {
+	protected static class UserDetailsSecurityCustomizer
+			extends WebSecurityConfigurerAdapter {
 
 		private UserDetailsService userDetails;
 
@@ -408,6 +458,12 @@ public class SecurityAutoConfigurationTests {
 		public UserDetailsService getUserDetails() {
 			return this.userDetails;
 		}
+
+	}
+
+	@Configuration
+	@EnableWebSecurity
+	static class WebSecurity extends WebSecurityConfigurerAdapter {
 
 	}
 

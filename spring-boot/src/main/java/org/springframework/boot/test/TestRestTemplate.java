@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,8 @@ public class TestRestTemplate extends RestTemplate {
 	public TestRestTemplate(String username, String password,
 			HttpClientOption... httpClientOptions) {
 		if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
-			setRequestFactory(new CustomHttpComponentsClientHttpRequestFactory(
-					httpClientOptions));
+			setRequestFactory(
+					new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
 		}
 		addAuthentication(username, password);
 		setErrorHandler(new DefaultResponseErrorHandler() {
@@ -85,8 +85,8 @@ public class TestRestTemplate extends RestTemplate {
 			return;
 		}
 		List<ClientHttpRequestInterceptor> interceptors = Collections
-				.<ClientHttpRequestInterceptor> singletonList(new BasicAuthorizationInterceptor(
-						username, password));
+				.<ClientHttpRequestInterceptor>singletonList(
+						new BasicAuthorizationInterceptor(username, password));
 		setRequestFactory(new InterceptingClientHttpRequestFactory(getRequestFactory(),
 				interceptors));
 	}
@@ -94,7 +94,7 @@ public class TestRestTemplate extends RestTemplate {
 	/**
 	 * Options used to customize the Apache Http Client if it is used.
 	 */
-	public static enum HttpClientOption {
+	public enum HttpClientOption {
 
 		/**
 		 * Enable cookies.
@@ -108,14 +108,14 @@ public class TestRestTemplate extends RestTemplate {
 
 	}
 
-	private static class BasicAuthorizationInterceptor implements
-			ClientHttpRequestInterceptor {
+	private static class BasicAuthorizationInterceptor
+			implements ClientHttpRequestInterceptor {
 
 		private final String username;
 
 		private final String password;
 
-		public BasicAuthorizationInterceptor(String username, String password) {
+		BasicAuthorizationInterceptor(String username, String password) {
 			this.username = username;
 			this.password = (password == null ? "" : password);
 		}
@@ -130,8 +130,11 @@ public class TestRestTemplate extends RestTemplate {
 
 	}
 
-	protected static class CustomHttpComponentsClientHttpRequestFactory extends
-			HttpComponentsClientHttpRequestFactory {
+	/**
+	 * {@link HttpComponentsClientHttpRequestFactory} to apply customizations.
+	 */
+	protected static class CustomHttpComponentsClientHttpRequestFactory
+			extends HttpComponentsClientHttpRequestFactory {
 
 		private final String cookieSpec;
 
@@ -141,8 +144,8 @@ public class TestRestTemplate extends RestTemplate {
 				HttpClientOption[] httpClientOptions) {
 			Set<HttpClientOption> options = new HashSet<TestRestTemplate.HttpClientOption>(
 					Arrays.asList(httpClientOptions));
-			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? CookieSpecs.STANDARD
-					: CookieSpecs.IGNORE_COOKIES);
+			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES)
+					? CookieSpecs.STANDARD : CookieSpecs.IGNORE_COOKIES);
 			this.enableRedirects = options.contains(HttpClientOption.ENABLE_REDIRECTS);
 		}
 

@@ -22,9 +22,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
-
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.HelpExample;
 import org.springframework.boot.cli.command.OptionParsingCommand;
@@ -32,6 +29,9 @@ import org.springframework.boot.cli.command.options.OptionHandler;
 import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
 import org.springframework.util.Assert;
+
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 
 /**
  * {@link Command} that initializes a project using Spring initializr.
@@ -47,8 +47,9 @@ public class InitCommand extends OptionParsingCommand {
 	}
 
 	public InitCommand(InitOptionHandler handler) {
-		super("init", "Initialize a new project using Spring "
-				+ "Initialzr (start.spring.io)", handler);
+		super("init",
+				"Initialize a new project using Spring " + "Initialzr (start.spring.io)",
+				handler);
 	}
 
 	@Override
@@ -69,6 +70,9 @@ public class InitCommand extends OptionParsingCommand {
 		return examples;
 	}
 
+	/**
+	 * {@link OptionHandler} for {@link InitCommand}.
+	 */
 	static class InitOptionHandler extends OptionHandler {
 
 		private final ServiceCapabilitiesReportGenerator serviceCapabilitiesReport;
@@ -89,9 +93,11 @@ public class InitCommand extends OptionParsingCommand {
 
 		private OptionSpec<String> description;
 
-		private OptionSpec<String> packaging;
+		private OptionSpec<String> packageName;
 
 		private OptionSpec<String> type;
+
+		private OptionSpec<String> packaging;
 
 		private OptionSpec<String> build;
 
@@ -119,8 +125,8 @@ public class InitCommand extends OptionParsingCommand {
 		@Override
 		protected void options() {
 			this.target = option(Arrays.asList("target"), "URL of the service to use")
-					.withRequiredArg().defaultsTo(
-							ProjectGenerationRequest.DEFAULT_SERVICE_URL);
+					.withRequiredArg()
+					.defaultsTo(ProjectGenerationRequest.DEFAULT_SERVICE_URL);
 			this.listCapabilities = option(Arrays.asList("list", "l"),
 					"List the capabilities of the service. Use it to discover the "
 							+ "dependencies and the types that are available");
@@ -133,37 +139,35 @@ public class InitCommand extends OptionParsingCommand {
 					"Project coordinates (for example 'org.test')").withRequiredArg();
 			this.artifactId = option(Arrays.asList("artifactId", "a"),
 					"Project coordinates; infer archive name (for example 'test')")
-					.withRequiredArg();
+							.withRequiredArg();
 			this.version = option(Arrays.asList("version", "v"),
 					"Project version (for example '0.0.1-SNAPSHOT')").withRequiredArg();
 			this.name = option(Arrays.asList("name", "n"),
 					"Project name; infer application name").withRequiredArg();
 			this.description = option("description", "Project description")
 					.withRequiredArg();
-			this.packaging = option(Arrays.asList("packaging", "p"),
-					"Project packaging (for example 'jar')").withRequiredArg();
-			this.type = option(
-					Arrays.asList("type", "t"),
+			this.packageName = option("package-name", "Package name").withRequiredArg();
+			this.type = option(Arrays.asList("type", "t"),
 					"Project type. Not normally needed if you use --build "
 							+ "and/or --format. Check the capabilities of the service "
 							+ "(--list) for more details").withRequiredArg();
+			this.packaging = option(Arrays.asList("packaging", "p"),
+					"Project packaging (for example 'jar')").withRequiredArg();
 			this.build = option("build",
 					"Build system to use (for example 'maven' or 'gradle')")
-					.withRequiredArg().defaultsTo("maven");
-			this.format = option(
-					"format",
+							.withRequiredArg().defaultsTo("maven");
+			this.format = option("format",
 					"Format of the generated content (for example 'build' for a build file, "
 							+ "'project' for a project archive)").withRequiredArg()
-					.defaultsTo("project");
+									.defaultsTo("project");
 			this.javaVersion = option(Arrays.asList("java-version", "j"),
 					"Language level (for example '1.8')").withRequiredArg();
 			this.language = option(Arrays.asList("language", "l"),
 					"Programming language  (for example 'java')").withRequiredArg();
 			this.bootVersion = option(Arrays.asList("boot-version", "b"),
 					"Spring Boot version (for example '1.2.0.RELEASE')")
-					.withRequiredArg();
-			this.dependencies = option(
-					Arrays.asList("dependencies", "d"),
+							.withRequiredArg();
+			this.dependencies = option(Arrays.asList("dependencies", "d"),
 					"Comma-separated list of dependency identifiers to include in the "
 							+ "generated project").withRequiredArg();
 		}
@@ -197,7 +201,8 @@ public class InitCommand extends OptionParsingCommand {
 		}
 
 		private void generateReport(OptionSet options) throws IOException {
-			Log.info(this.serviceCapabilitiesReport.generate(options.valueOf(this.target)));
+			Log.info(this.serviceCapabilitiesReport
+					.generate(options.valueOf(this.target)));
 		}
 
 		protected void generateProject(OptionSet options) throws IOException {
@@ -226,14 +231,17 @@ public class InitCommand extends OptionParsingCommand {
 			if (options.has(this.javaVersion)) {
 				request.setJavaVersion(options.valueOf(this.javaVersion));
 			}
-			if (options.has(this.packaging)) {
-				request.setPackaging(options.valueOf(this.packaging));
+			if (options.has(this.packageName)) {
+				request.setPackageName(options.valueOf(this.packageName));
 			}
 			request.setBuild(options.valueOf(this.build));
 			request.setFormat(options.valueOf(this.format));
 			request.setDetectType(options.has(this.build) || options.has(this.format));
 			if (options.has(this.type)) {
 				request.setType(options.valueOf(this.type));
+			}
+			if (options.has(this.packaging)) {
+				request.setPackaging(options.valueOf(this.packaging));
 			}
 			if (options.has(this.language)) {
 				request.setLanguage(options.valueOf(this.language));

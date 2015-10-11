@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
  * @author Phillip Webb
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { Config.class, MoreConfig.class })
+@SpringApplicationConfiguration({ Config.class, MoreConfig.class })
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0", "value1=123" })
 @TestPropertySource(properties = "value2=456", locations = "classpath:/test-property-source-annotation.properties")

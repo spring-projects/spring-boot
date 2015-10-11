@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,24 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.web.BasicErrorControllerIntegrationTests.TestConfiguration;
 import org.springframework.boot.autoconfigure.web.BasicErrorControllerMockMvcTests.MinimalWebConfiguration;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -48,55 +52,109 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractView;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link BasicErrorController} using {@link IntegrationTest} that hit a real
- * HTTP server.
+ * Tests for {@link BasicErrorController} using a real HTTP server.
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestConfiguration.class)
+@SpringApplicationConfiguration(TestConfiguration.class)
 @WebAppConfiguration
 @DirtiesContext
 @IntegrationTest("server.port=0")
 public class BasicErrorControllerIntegrationTests {
 
-	@Value("${local.server.port}")
-	private int port;
+	private ConfigurableApplicationContext context;
+
+	@After
+	public void closeContext() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testErrorForMachineClient() throws Exception {
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, Map.class);
-		String body = entity.getBody().toString();
-		assertThat(body, endsWith("status=500, " + "error=Internal Server Error, "
-				+ "exception=java.lang.IllegalStateException, " + "message=Expected!, "
-				+ "path=/}"));
+		load();
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("?trace=true"), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
+				IllegalStateException.class, "Expected!", "/");
+		assertFalse("trace parameter should not be set",
+				entity.getBody().containsKey("trace"));
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void testErrorForMachineClientTraceParamStacktrace() throws Exception {
+		load("--server.error.include-stacktrace=on-trace-param");
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("?trace=true"), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
+				IllegalStateException.class, "Expected!", "/");
+		assertTrue("trace parameter should be set",
+				entity.getBody().containsKey("trace"));
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void testErrorForMachineClientNoStacktrace() throws Exception {
+		load("--server.error.include-stacktrace=never");
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("?trace=true"), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
+				IllegalStateException.class, "Expected!", "/");
+		assertFalse("trace parameter should not be set",
+				entity.getBody().containsKey("trace"));
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void testErrorForMachineClientAlwaysStacktrace() throws Exception {
+		load("--server.error.include-stacktrace=always");
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("?trace=false"), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
+				IllegalStateException.class, "Expected!", "/");
+		assertTrue("trace parameter should be set",
+				entity.getBody().containsKey("trace"));
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testErrorForAnnotatedException() throws Exception {
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/annotated", Map.class);
-		assertThat(
-				entity.getBody().toString(),
-				endsWith("status=400, "
-						+ "error=Bad Request, "
-						+ "exception=org.springframework.boot.autoconfigure.web.BasicErrorControllerIntegrationTests$TestConfiguration$Errors$ExpectedException, "
-						+ "message=Expected!, " + "path=/annotated}"));
+		load();
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("/annotated"), Map.class);
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request",
+				TestConfiguration.Errors.ExpectedException.class, "Expected!",
+				"/annotated");
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void testErrorForAnnotatedNoReasonException() throws Exception {
+		load();
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("/annotatedNoReason"), Map.class);
+		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
+				TestConfiguration.Errors.NoReasonExpectedException.class,
+				"Expected message", "/annotatedNoReason");
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testBindingExceptionForMachineClient() throws Exception {
-		RequestEntity request = RequestEntity
-				.get(URI.create("http://localhost:" + this.port + "/bind"))
+		load();
+		RequestEntity request = RequestEntity.get(URI.create(createUrl("/bind")))
 				.accept(MediaType.APPLICATION_JSON).build();
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
 		String resp = entity.getBody().toString();
@@ -104,6 +162,31 @@ public class BasicErrorControllerIntegrationTests {
 		assertThat(resp, containsString("errors=[{"));
 		assertThat(resp, containsString("codes=["));
 		assertThat(resp, containsString("org.springframework.validation.BindException"));
+	}
+
+	private void assertErrorAttributes(Map<?, ?> content, String status, String error,
+			Class<?> exception, String message, String path) {
+		assertEquals("Wrong status", status, content.get("status"));
+		assertEquals("Wrong error", error, content.get("error"));
+		assertEquals("Wrong exception", exception.getName(), content.get("exception"));
+		assertEquals("Wrong message", message, content.get("message"));
+		assertEquals("Wrong path", path, content.get("path"));
+	}
+
+	private String createUrl(String path) {
+		int port = this.context.getEnvironment().getProperty("local.server.port",
+				int.class);
+		return "http://localhost:" + port + path;
+	}
+
+	private void load(String... arguments) {
+		List<String> args = new ArrayList<String>();
+		args.add("--server.port=0");
+		if (arguments != null) {
+			args.addAll(Arrays.asList(arguments));
+		}
+		this.context = SpringApplication.run(TestConfiguration.class,
+				args.toArray(new String[args.size()]));
 	}
 
 	@Configuration
@@ -121,7 +204,7 @@ public class BasicErrorControllerIntegrationTests {
 				@Override
 				protected void renderMergedOutputModel(Map<String, Object> model,
 						HttpServletRequest request, HttpServletResponse response)
-						throws Exception {
+								throws Exception {
 					response.getWriter().write("ERROR_BEAN");
 				}
 			};
@@ -144,8 +227,13 @@ public class BasicErrorControllerIntegrationTests {
 				throw new ExpectedException();
 			}
 
+			@RequestMapping("/annotatedNoReason")
+			public String annotatedNoReason() {
+				throw new NoReasonExpectedException("Expected message");
+			}
+
 			@RequestMapping("/bind")
-			public String bind(HttpServletRequest request) throws Exception {
+			public String bind() throws Exception {
 				BindException error = new BindException(this, "test");
 				error.rejectValue("foo", "bar.error");
 				throw error;
@@ -154,6 +242,16 @@ public class BasicErrorControllerIntegrationTests {
 			@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Expected!")
 			@SuppressWarnings("serial")
 			private static class ExpectedException extends RuntimeException {
+
+			}
+
+			@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+			@SuppressWarnings("serial")
+			private static class NoReasonExpectedException extends RuntimeException {
+
+				NoReasonExpectedException(String message) {
+					super(message);
+				}
 
 			}
 

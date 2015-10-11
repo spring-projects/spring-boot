@@ -195,7 +195,7 @@ public class Restarter {
 	 * @param enabled if restart support is enabled
 	 */
 	private void setEnabled(boolean enabled) {
-		this.enabled = false;
+		this.enabled = enabled;
 	}
 
 	/**
@@ -233,7 +233,7 @@ public class Restarter {
 
 	/**
 	 * Restart the running application.
-	 * @param failureHandler a failure handler to deal with application that don't start
+	 * @param failureHandler a failure handler to deal with application that doesn't start
 	 */
 	public void restart(final FailureHandler failureHandler) {
 		if (!this.enabled) {
@@ -255,8 +255,8 @@ public class Restarter {
 
 	/**
 	 * Start the application.
-	 * @param failureHandler a failure handler for application that wont start
-	 * @throws Exception
+	 * @param failureHandler a failure handler for application that won't start
+	 * @throws Exception in case of errors
 	 */
 	protected void start(FailureHandler failureHandler) throws Exception {
 		do {
@@ -282,8 +282,8 @@ public class Restarter {
 		ClassLoader classLoader = new RestartClassLoader(parent, urls, updatedFiles,
 				this.logger);
 		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Starting application " + this.mainClassName
-					+ " with URLs " + Arrays.asList(urls));
+			this.logger.debug("Starting application " + this.mainClassName + " with URLs "
+					+ Arrays.asList(urls));
 		}
 		return relaunch(classLoader);
 	}
@@ -292,7 +292,7 @@ public class Restarter {
 	 * Relaunch the application using the specified classloader.
 	 * @param classLoader the classloader to use
 	 * @return any exception that caused the launch to fail or {@code null}
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	protected Throwable relaunch(ClassLoader classLoader) throws Exception {
 		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName,
@@ -304,7 +304,7 @@ public class Restarter {
 
 	/**
 	 * Stop the application.
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	protected void stop() throws Exception {
 		this.logger.debug("Stopping application");
@@ -374,8 +374,8 @@ public class Restarter {
 			Map<?, ?> map = ((Map<?, ?>) instance);
 			for (Iterator<?> iterator = map.keySet().iterator(); iterator.hasNext();) {
 				Object value = iterator.next();
-				if (value instanceof Class
-						&& ((Class<?>) value).getClassLoader() instanceof RestartClassLoader) {
+				if (value instanceof Class && ((Class<?>) value)
+						.getClassLoader() instanceof RestartClassLoader) {
 					iterator.remove();
 				}
 
@@ -394,6 +394,7 @@ public class Restarter {
 			}
 		}
 		catch (final OutOfMemoryError ex) {
+			// Expected
 		}
 	}
 
@@ -557,7 +558,7 @@ public class Restarter {
 
 		private Object result;
 
-		public LeakSafeThread() {
+		LeakSafeThread() {
 			setDaemon(false);
 		}
 

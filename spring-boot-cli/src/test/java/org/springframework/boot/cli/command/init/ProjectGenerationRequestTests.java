@@ -42,7 +42,7 @@ import static org.junit.Assert.assertEquals;
 public class ProjectGenerationRequestTests {
 
 	public static final Map<String, String> EMPTY_TAGS = Collections
-			.<String, String> emptyMap();
+			.<String, String>emptyMap();
 
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
@@ -60,8 +60,9 @@ public class ProjectGenerationRequestTests {
 		String customServerUrl = "http://foo:8080/initializr";
 		this.request.setServiceUrl(customServerUrl);
 		this.request.getDependencies().add("security");
-		assertEquals(new URI(customServerUrl
-				+ "/starter.zip?dependencies=security&type=test-type"),
+		assertEquals(
+				new URI(customServerUrl
+						+ "/starter.zip?dependencies=security&type=test-type"),
 				this.request.generateUrl(createDefaultMetadata()));
 	}
 
@@ -95,9 +96,9 @@ public class ProjectGenerationRequestTests {
 	}
 
 	@Test
-	public void customPackaging() {
-		this.request.setPackaging("war");
-		assertEquals(createDefaultUrl("?packaging=war&type=test-type"),
+	public void customPackageName() {
+		this.request.setPackageName("demo.foo");
+		assertEquals(createDefaultUrl("?packageName=demo.foo&type=test-type"),
 				this.request.generateUrl(createDefaultMetadata()));
 	}
 
@@ -108,9 +109,17 @@ public class ProjectGenerationRequestTests {
 		InitializrServiceMetadata metadata = new InitializrServiceMetadata(projectType);
 		this.request.setType("custom");
 		this.request.getDependencies().add("data-rest");
-		assertEquals(new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL
-				+ "/foo?dependencies=data-rest&type=custom"),
+		assertEquals(
+				new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL
+						+ "/foo?dependencies=data-rest&type=custom"),
 				this.request.generateUrl(metadata));
+	}
+
+	@Test
+	public void customPackaging() {
+		this.request.setPackaging("war");
+		assertEquals(createDefaultUrl("?type=test-type&packaging=war"),
+				this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
@@ -127,8 +136,38 @@ public class ProjectGenerationRequestTests {
 		this.request.setVersion("1.0.1-SNAPSHOT");
 		this.request.setDescription("Spring Boot Test");
 		assertEquals(
-				createDefaultUrl("?groupId=org.acme&artifactId=sample&version=1.0.1-SNAPSHOT"
-						+ "&description=Spring+Boot+Test&type=test-type"),
+				createDefaultUrl(
+						"?groupId=org.acme&artifactId=sample&version=1.0.1-SNAPSHOT"
+								+ "&description=Spring+Boot+Test&type=test-type"),
+				this.request.generateUrl(createDefaultMetadata()));
+	}
+
+	@Test
+	public void outputCustomizeArtifactId() {
+		this.request.setOutput("my-project");
+		assertEquals(createDefaultUrl("?artifactId=my-project&type=test-type"),
+				this.request.generateUrl(createDefaultMetadata()));
+	}
+
+	@Test
+	public void outputArchiveCustomizeArtifactId() {
+		this.request.setOutput("my-project.zip");
+		assertEquals(createDefaultUrl("?artifactId=my-project&type=test-type"),
+				this.request.generateUrl(createDefaultMetadata()));
+	}
+
+	@Test
+	public void outputArchiveWithDotsCustomizeArtifactId() {
+		this.request.setOutput("my.nice.project.zip");
+		assertEquals(createDefaultUrl("?artifactId=my.nice.project&type=test-type"),
+				this.request.generateUrl(createDefaultMetadata()));
+	}
+
+	@Test
+	public void outputDoesNotOverrideCustomArtifactId() {
+		this.request.setOutput("my-project");
+		this.request.setArtifactId("my-id");
+		assertEquals(createDefaultUrl("?artifactId=my-id&type=test-type"),
 				this.request.generateUrl(createDefaultMetadata()));
 	}
 
@@ -213,8 +252,8 @@ public class ProjectGenerationRequestTests {
 
 	private static InitializrServiceMetadata readMetadata(String version) {
 		try {
-			Resource resource = new ClassPathResource("metadata/service-metadata-"
-					+ version + ".json");
+			Resource resource = new ClassPathResource(
+					"metadata/service-metadata-" + version + ".json");
 			String content = StreamUtils.copyToString(resource.getInputStream(),
 					Charset.forName("UTF-8"));
 			JSONObject json = new JSONObject(content);

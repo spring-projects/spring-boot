@@ -17,6 +17,7 @@
 package sample.metrics.opentsdb;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.ExportMetricWriter;
 import org.springframework.boot.actuate.metrics.opentsdb.DefaultOpenTsdbNamingStrategy;
 import org.springframework.boot.actuate.metrics.opentsdb.OpenTsdbMetricWriter;
 import org.springframework.boot.actuate.metrics.opentsdb.OpenTsdbNamingStrategy;
@@ -28,12 +29,9 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class SampleOpenTsdbExportApplication {
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleOpenTsdbExportApplication.class, args);
-	}
-
 	@Bean
 	@ConfigurationProperties("metrics.export")
+	@ExportMetricWriter
 	public MetricWriter openTsdbMetricWriter() {
 		OpenTsdbMetricWriter writer = new OpenTsdbMetricWriter();
 		writer.setNamingStrategy(namingStrategy());
@@ -44,6 +42,10 @@ public class SampleOpenTsdbExportApplication {
 	@ConfigurationProperties("metrics.names")
 	public OpenTsdbNamingStrategy namingStrategy() {
 		return new DefaultOpenTsdbNamingStrategy();
+	}
+
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SampleOpenTsdbExportApplication.class, args);
 	}
 
 }

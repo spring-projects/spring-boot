@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,12 @@ import org.springframework.core.annotation.Order;
  * a {@link SpringApplication}. Multiple {@link CommandLineRunner} beans can be defined
  * within the same application context and can be ordered using the {@link Ordered}
  * interface or {@link Order @Order} annotation.
+ * <p>
+ * If you need access to {@link ApplicationArguments} instead of the raw String array
+ * consider using {@link ApplicationRunner}.
  *
  * @author Dave Syer
+ * @see ApplicationRunner
  */
 public interface CommandLineRunner {
 

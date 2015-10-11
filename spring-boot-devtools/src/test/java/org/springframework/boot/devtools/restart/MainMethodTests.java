@@ -22,7 +22,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.devtools.restart.MainMethod;
 import org.springframework.util.ReflectionUtils;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -63,8 +62,8 @@ public class MainMethodTests {
 			}
 		}).test();
 		assertThat(method.getMethod(), equalTo(this.actualMain));
-		assertThat(method.getDeclaringClassName(), equalTo(this.actualMain
-				.getDeclaringClass().getName()));
+		assertThat(method.getDeclaringClassName(),
+				equalTo(this.actualMain.getDeclaringClass().getName()));
 	}
 
 	@Test
@@ -99,7 +98,7 @@ public class MainMethodTests {
 
 		private MainMethod mainMethod;
 
-		public TestThread(Runnable runnable) {
+		TestThread(Runnable runnable) {
 			this.runnable = runnable;
 		}
 

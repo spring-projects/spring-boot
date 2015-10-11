@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,8 @@ public class SampleBatchApplication {
 	public static void main(String[] args) throws Exception {
 		// System.exit is common for Batch applications since the exit code can be used to
 		// drive a workflow
-		System.exit(SpringApplication.exit(SpringApplication.run(
-				SampleBatchApplication.class, args)));
+		System.exit(SpringApplication
+				.exit(SpringApplication.run(SampleBatchApplication.class, args)));
 	}
+
 }

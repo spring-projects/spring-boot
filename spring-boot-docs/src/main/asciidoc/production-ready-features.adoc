@@ -7,6 +7,9 @@ Spring Boot includes a number of additional features to help you monitor and man
 application when it's pushed to production. You can choose to manage and monitor your
 application using HTTP endpoints, with JMX or even by remote shell (SSH or Telnet).
 Auditing, health and metrics gathering can be automatically applied to your application.
+
+Actuator HTTP endpoints are only available with a Spring MVC-based application. In
+particular, it will not work with Jersey unless you enable Spring MVC as well.
 --
 
 
@@ -64,6 +67,11 @@ The following endpoints are available:
 |===
 | ID | Description | Sensitive
 
+|`actuator`
+|Provides a hypermedia-based "`discovery page`" for the other endpoints. Requires Spring
+HATEOAS to be on the classpath.
+|true
+
 |`autoconfig`
 |Displays an auto-configuration report showing all auto-configuration candidates and the
  reason why they '`were`' or '`were not`' applied.
@@ -85,14 +93,27 @@ The following endpoints are available:
 |Exposes properties from Spring's `ConfigurableEnvironment`.
 |true
 
+|`flyway`
+|Shows any Flyway database migrations that have been applied.
+|true
+
 |`health`
-|Shows application health information (a simple '`status`' when accessed over an
+|Shows application health information (when the application is secure, a simple '`status`' when accessed over an
 unauthenticated connection or full message details when authenticated).
 |false
 
 |`info`
 |Displays arbitrary application info.
 |false
+
+|`liquibase`
+|Shows any Liquibase database migrations that have been applied.
+|true
+
+|`logfile`
+|Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
+been set). Only available via MVC.
+|true
 
 |`metrics`
 |Shows '`metrics`' information for the current application.
@@ -145,6 +166,43 @@ For example, the following will disable _all_ endpoints except for `info`:
 	endpoints.info.enabled=true
 ----
 
+[[production-ready-endpoint-hypermedia]]
+=== Hypermedia for actuator MVC endpoints
+If http://projects.spring.io/spring-hateoas[Spring HATEOAS] is on the classpath (e.g.
+through the `spring-boot-starter-hateoas` or if you are using
+http://projects.spring.io/spring-data-rest[Spring Data REST]) then the HTTP endpoints
+from the Actuator are enhanced with hypermedia links, and a "`discovery page`" is added
+with links to all the endpoints. The "`discovery page`" is available on `/actuator` by
+default. It is implemented as an endpoint, allowing properties to be used to configure
+its path (`endpoints.actuator.path`) and whether or not it is enabled
+(`endpoints.actuator.enabled`).
+
+When a custom management context path is configured, the "`discovery page`" will
+automatically move from `/actuator` to the root of the management context. For example,
+if the management context path is `/management` then the discovery page will be available
+from `/management`.
+
+If the https://github.com/mikekelly/hal-browser[HAL Browser] is on the classpath
+via its webjar (`org.webjars:hal-browser`), or via the `spring-data-rest-hal-browser` then
+an HTML "`discovery page`", in the form of the HAL Browser, is also provided.
+
+
+
+[[production-ready-customizing-endpoints-programmatically]]
+=== Adding custom endpoints
+If you add a `@Bean` of type `Endpoint` then it will automatically be exposed over JMX and
+HTTP (if there is an server available). An HTTP endpoints can be customized further by
+creating a bean of type `MvcEndpoint`. Your `MvcEndpoint` is not a `@Controller` but it
+can use `@RequestMapping` (and `@Managed*`) to expose resources.
+
+TIP: If you are doing this as a library feature consider adding a configuration class to
+`/META-INF/spring.factories` under the key
+`org.springframework.boot.actuate.autoconfigure.EndpointWebMvcConfiguration`. If you do
+that then the endpoint will move to a child context with all the other MVC endpoints if
+your users ask for a separate management port or address. A configuration declared this
+way can be a `WebConfigurerAdapter` if it wants to add static resources (for instance) to
+the management endpoints.
+
 
 
 [[production-ready-health]]
@@ -152,8 +210,8 @@ For example, the following will disable _all_ endpoints except for `info`:
 Health information can be used to check the status of your running application. It is
 often used by monitoring software to alert someone if a production system goes down.
 The default information exposed by the `health` endpoint depends on how it is accessed.
-For an insecure unauthenticated connection a simple '`status`' message is returned, for a
-secure or authenticated connection additional details are also displayed (see
+For an unauthenticated connection in a secure application a simple '`status`' message is
+returned, and for an authenticated connection additional details are also displayed (see
 <<production-ready-health-access-restrictions>> for HTTP details).
 
 Health information is collected from all
@@ -189,6 +247,15 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |{sc-spring-boot-actuator}/health/DataSourceHealthIndicator.{sc-ext}[`DataSourceHealthIndicator`]
 |Checks that a connection to `DataSource` can be obtained.
 
+|{sc-spring-boot-actuator}/health/ElasticsearchHealthIndicator.{sc-ext}[`ElasticsearchHealthIndicator`]
+|Checks that an ElasticSearch cluster is up.
+
+|{sc-spring-boot-actuator}/health/JmsHealthIndicator.{sc-ext}[`JmsHealthIndicator`]
+|Checks that a JMS broker is up.
+
+|{sc-spring-boot-actuator}/health/MailHealthIndicator.{sc-ext}[`MailHealthIndicator`]
+|Checks that a mail server is up.
+
 |{sc-spring-boot-actuator}/health/MongoHealthIndicator.{sc-ext}[`MongoHealthIndicator`]
 |Checks that a Mongo database is up.
 
@@ -202,6 +269,8 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |Checks that a Solr server is up.
 |===
 
+TIP: It is possible to disable them all using the `management.health.defaults.enabled`
+property.
 
 
 ==== Writing custom HealthIndicators
@@ -244,7 +313,7 @@ to your application properties:
 
 [source,properties,indent=0]
 ----
-	management.health.status.order: DOWN, OUT_OF_SERVICE, UNKNOWN, UP
+	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP
 ----
 
 You might also want to register custom status mappings with the `HealthMvcEndpoint`
@@ -383,8 +452,15 @@ generate a `git.properties` file. Simply add the following declaration to your P
 	</build>
 ----
 
-A similar https://github.com/ajoberstar/gradle-git[`gradle-git`] plugin is also available
-for Gradle users, although a little more work is required to generate the properties file.
+Gradle users can achieve the same result using the
+https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties[`gradle-git-properties`] plugin
+
+[source,groovy,indent=0]
+----
+	plugins {
+		id "com.gorylenko.gradle-git-properties" version "1.4.6"
+	}
+----
 
 
 
@@ -424,7 +500,7 @@ you should carefully consider which endpoints you enable. See
 
 
 [[production-ready-customizing-management-server-context-path]]
-=== Customizing the management server context path
+=== Customizing the management endpoint paths
 Sometimes it is useful to group all management endpoints under a single path. For example,
 your application might already use `/info` for another purpose. You can use the
 `management.context-path` property to set a prefix for your management endpoint:
@@ -436,6 +512,21 @@ your application might already use `/info` for another purpose. You can use the
 
 The `application.properties` example above will change the endpoint from `/{id}` to
 `/manage/{id}` (e.g. `/manage/info`).
+
+You can also change the "`id`" of an endpoint (using `endpoints.{name}.id`) which then
+changes the default resource path for the MVC endpoint. Legal endpoint ids are composed
+only of alphanumeric characters (because they can be exposed in a number of places,
+including JMX object names, where special characters are forbidden). The MVC path can be
+changed separately by configuring `endpoints.{name}.path`, and there is no validation on
+those values (so you can use anything that is legel in a URL path). For example, to change
+the location of the `/health` endpoint to `/ping/me` you can set
+`endpoints.health.path=/ping/me`.
+
+TIP: If you provide a custom `MvcEndpoint` remember to include a settable `path` property,
+and default it to `/{id}` if you want your code to behave like the standard MVC endpoints.
+(Take a look at the `HealthMvcEndpoint` to see how you might do that.) If your custom
+endpoint is an `Endpoint` (not an `MvcEndpoint`) then Spring Boot will take care of the
+path for you.
 
 
 
@@ -502,15 +593,42 @@ If you don't want to expose endpoints over HTTP you can set the management port 
 [[production-ready-health-access-restrictions]]
 === HTTP health endpoint access restrictions
 The information exposed by the health endpoint varies depending on whether or not it's
-accessed anonymously. By default, when accessed anonymously, any details about the
+accessed anonymously, and whether or not the enclosing application is secure.
+By default, when accessed anonymously in a secure application, any details about the
 server's health are hidden and the endpoint will simply indicate whether or not the server
 is up or down. Furthermore, when accessed anonymously, the response is cached for a
 configurable period to prevent the endpoint being used in a denial of service attack.
 The `endpoints.health.time-to-live` property is used to configure the caching period in
 milliseconds. It defaults to 1000, i.e. one second.
 
-The above-described restrictions can be disabled, thereby allowing anonymous users full
-access to the health endpoint. To do so, set `endpoints.health.sensitive` to `false`.
+The above-described restrictions can be enhanced, thereby allowing only authenticated
+users full access to the health endpoint in a secure application. To do so, set
+`endpoints.health.sensitive` to `true`. Here's a summary of behavior (with default
+`sensitive` flag value "`false`" indicated in bold):
+
+|====
+|Secure |Sensitive |Unauthenticated |Authenticated
+
+|false
+|**false**
+|Full content
+|Full content
+
+|false
+|true
+|Status only
+|Full content
+
+|true
+|**false**
+|Status only
+|Full content
+
+|true
+|true
+|No content
+|Full content
+|====
 
 
 
@@ -525,10 +643,10 @@ under the `org.springframework.boot` domain.
 [[production-ready-custom-mbean-names]]
 === Customizing MBean names
 The name of the MBean is usually generated from the `id` of the endpoint. For example
-the `health` endpoint is exposed as `org.springframework.boot/Endpoint/HealthEndpoint`.
+the `health` endpoint is exposed as `org.springframework.boot/Endpoint/healthEndpoint`.
 
 If your application contains more than one Spring `ApplicationContext` you may find that
-names clash. To solve this problem you can set the `endpoints.jmx.uniqueNames` property
+names clash. To solve this problem you can set the `endpoints.jmx.unique-names` property
 to `true` so that MBean names are always unique.
 
 You can also customize the JMX domain under which endpoints are exposed. Here is an
@@ -537,7 +655,7 @@ example `application.properties`:
 [source,properties,indent=0]
 ----
 	endpoints.jmx.domain=myapp
-	endpoints.jmx.uniqueNames=true
+	endpoints.jmx.unique-names=true
 ----
 
 
@@ -600,8 +718,8 @@ If you are using Jolokia but you don't want Spring Boot to configure it, simply 
 [[production-ready-remote-shell]]
 == Monitoring and management using a remote shell
 Spring Boot supports an integrated Java shell called '`CRaSH`'. You can use CRaSH to
-`ssh` or `telnet` into your running application. To enable remote shell support add a
-dependency to `spring-boot-starter-remote-shell`:
+`ssh` or `telnet` into your running application. To enable remote shell support, add
+the following dependency to your project:
 
 [source,xml,indent=0]
 ----
@@ -678,15 +796,16 @@ for details). By default Spring Boot will search for commands in the following l
 
 TIP: You can change the search path by settings a `shell.command-path-patterns` property.
 
-Here is a simple '`hello world`' command that could be loaded from
+Here is a simple '`hello`' command that could be loaded from
 `src/main/resources/commands/hello.groovy`
 
 [source,groovy,indent=0]
 ----
 	package commands
 
-	import org.crsh.cli.Usage
 	import org.crsh.cli.Command
+	import org.crsh.cli.Usage
+	import org.crsh.command.InvocationContext
 
 	class hello {
 
@@ -800,7 +919,7 @@ The following system metrics are exposed by Spring Boot:
 * The application context uptime in milliseconds (`instance.uptime`)
 * The average system load (`systemload.average`)
 * Heap information in KB (`heap`, `heap.committed`, `heap.init`, `heap.used`)
-* Thread information (`threads`, `thread.peak`, `thead.daemon`)
+* Thread information (`threads`, `thread.peak`, `thread.daemon`)
 * Class load information (`classes`, `classes.loaded`, `classes.unloaded`)
 * Garbage collection information (`gc.xxx.count`, `gc.xxx.time`)
 
@@ -811,8 +930,6 @@ The following system metrics are exposed by Spring Boot:
 The following metrics are exposed for each supported `DataSource` defined in your
 application:
 
-* The maximum number connections (`datasource.xxx.max`).
-* The minimum number of connections (`datasource.xxx.min`).
 * The number of active connections (`datasource.xxx.active`)
 * The current usage of the connection pool (`datasource.xxx.usage`).
 
@@ -942,7 +1059,6 @@ hooked up to an `Exporter` and fed metric updates every 5 seconds (configured vi
 `spring.metrics.export.delay-millis`). In addition, any `MetricReader` that you define and
 mark as `@ExportMetricReader` will have its values exported by the default exporter.
 
-
 The default exporter is a `MetricCopyExporter` which tries to optimize itself by not
 copying values that haven't changed since it was last called (the optimization can be
 switched off using a flag `spring.metrics.export.send-latest`). Note also that the
@@ -954,6 +1070,11 @@ and `send-latest`) can be set as `spring.metrics.export.\*`. Individual
 values for specific `MetricWriters` can be set as
 `spring.metrics.export.triggers.<name>.*` where `<name>` is a bean name (or pattern for
 matching bean names).
+
+WARNING: The automatic export of metrics is disabled if you switch off the default
+`MetricRepository` (e.g. by using Dropwizard metrics). You can get back the same
+functionality be declaring a bean of your own of type `MetricReader` and  declaring it to
+be `@ExportMetricReader`.
 
 
 
@@ -1045,26 +1166,26 @@ curl localhost:4242/api/query?start=1h-ago&m=max:counter.status.200.root
 
 [[production-ready-metric-writers-export-to-statsd]]
 ==== Example: Export to Statsd
-If you provide a `@Bean` of type `StatsdMetricWriter` and mark it `@ExportMetricWriter` the metrics are exported to a
-statsd server:
+To export metrics to Statsd add a `spring.metrics.export.statsd.host` value to your
+`application.properties` file. Connections will be opened to port `8125` unless a
+`spring.metrics.export.statsd.port` override is provided. You can use
+`spring.metrics.export.statsd.prefix` if you want a custom prefix.
+
+Alternatively, you can provide a `@Bean` of type `StatsdMetricWriter` and mark it
+`@ExportMetricWriter`:
 
 [source,java,indent=0]
 ----
 @Value("${spring.application.name:application}.${random.value:0000}")
 private String prefix = "metrics";
 
-@Value("${statsd.host:localhost}")
-private String host = "localhost";
-
-@Value("${statsd.port:8125}")
-private int port;
-
 @Bean
 @ExportMetricWriter
 MetricWriter metricWriter() {
-	return new StatsdMetricWriter(prefix, host, port);
+	return new StatsdMetricWriter(prefix, "localhost", "8125");
 }
 ----
+
 
 
 [[production-ready-metric-writers-export-to-jmx]]
@@ -1143,7 +1264,7 @@ repositories, and don't want to export their values.
 [[production-ready-dropwizard-metrics]]
 === Dropwizard Metrics
 A default `MetricRegistry` Spring bean will be created when you declare a dependency to
-the `io.dropwizard.metrics:metric-core` library; you can also register you own `@Bean`
+the `io.dropwizard.metrics:metrics-core` library; you can also register you own `@Bean`
 instance if you need customizations. Users of the
 https://dropwizard.github.io/metrics/[Dropwizard '`Metrics`' library] will find that
 Spring Boot metrics are automatically published to `com.codahale.metrics.MetricRegistry`.
@@ -1253,7 +1374,8 @@ described below.
 
 [[production-ready-process-monitoring-configuration]]
 === Extend configuration
-In `META-INF/spring.factories` file you have to activate the listener(s):
+In `META-INF/spring.factories` file you can activate the listener(s) that
+writes a PID file. Example:
 
 [indent=0]
 ----

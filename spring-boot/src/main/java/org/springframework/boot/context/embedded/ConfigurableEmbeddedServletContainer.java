@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,6 +72,12 @@ public interface ConfigurableEmbeddedServletContainer {
 	 * @param timeUnit the time unit
 	 */
 	void setSessionTimeout(int sessionTimeout, TimeUnit timeUnit);
+
+	/**
+	 * Sets if session data should be persisted between restarts.
+	 * @param persistSession {@code true} if session data should be persisted
+	 */
+	void setPersistSession(boolean persistSession);
 
 	/**
 	 * Sets the specific network address that the server should bind to.
@@ -165,9 +171,16 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setSsl(Ssl ssl);
 
 	/**
-	 * Sets the configuration that will be applied to the container's JSP servlet
+	 * Sets the configuration that will be applied to the container's JSP servlet.
 	 * @param jspServlet the JSP servlet configuration
 	 */
 	void setJspServlet(JspServlet jspServlet);
+
+	/**
+	 * Sets the compression configuration that will be applied to the container's default
+	 * connector.
+	 * @param compression the compression configuration
+	 */
+	void setCompression(Compression compression);
 
 }

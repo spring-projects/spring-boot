@@ -36,8 +36,8 @@ import com.samskivert.mustache.Mustache.VariableFetcher;
  * @author Dave Syer
  * @since 1.2.2
  */
-public class MustacheEnvironmentCollector extends DefaultCollector implements
-		EnvironmentAware {
+public class MustacheEnvironmentCollector extends DefaultCollector
+		implements EnvironmentAware {
 
 	private ConfigurableEnvironment environment;
 
@@ -51,8 +51,8 @@ public class MustacheEnvironmentCollector extends DefaultCollector implements
 	public void setEnvironment(Environment environment) {
 		this.environment = (ConfigurableEnvironment) environment;
 		this.target = new HashMap<String, Object>();
-		new RelaxedDataBinder(this.target).bind(new PropertySourcesPropertyValues(
-				this.environment.getPropertySources()));
+		new RelaxedDataBinder(this.target).bind(
+				new PropertySourcesPropertyValues(this.environment.getPropertySources()));
 		this.propertyResolver = new RelaxedPropertyResolver(environment);
 	}
 

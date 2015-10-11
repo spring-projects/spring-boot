@@ -37,9 +37,9 @@ public class CounterBuffersTests {
 	@Test
 	public void inAndOut() {
 		this.buffers.increment("foo", 2);
-		this.buffers.get("foo", new Consumer<LongBuffer>() {
+		this.buffers.doWith("foo", new Consumer<CounterBuffer>() {
 			@Override
-			public void accept(LongBuffer buffer) {
+			public void accept(CounterBuffer buffer) {
 				CounterBuffersTests.this.value = buffer.getValue();
 			}
 		});
@@ -48,9 +48,9 @@ public class CounterBuffersTests {
 
 	@Test
 	public void getNonExistent() {
-		this.buffers.get("foo", new Consumer<LongBuffer>() {
+		this.buffers.doWith("foo", new Consumer<CounterBuffer>() {
 			@Override
-			public void accept(LongBuffer buffer) {
+			public void accept(CounterBuffer buffer) {
 				CounterBuffersTests.this.value = buffer.getValue();
 			}
 		});

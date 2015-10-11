@@ -38,6 +38,7 @@ import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -108,6 +109,25 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
+	public void sourceFolderMustExist() throws Exception {
+		File folder = new File("does/not/exist");
+		assertThat(folder.exists(), is(false));
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage(
+				"Folder '" + folder + "' must exist and must be a directory");
+		this.watcher.addSourceFolder(folder);
+	}
+
+	@Test
+	public void sourceFolderMustBeADirectory() throws Exception {
+		File folder = new File("pom.xml");
+		assertThat(folder.isFile(), is(true));
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Folder 'pom.xml' must exist and must be a directory");
+		this.watcher.addSourceFolder(new File("pom.xml"));
+	}
+
+	@Test
 	public void cannotAddSourceFolderToStartedListener() throws Exception {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("FileSystemWatcher already started");
@@ -136,7 +156,7 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void waitsForIdleTime() throws Exception {
+	public void waitsForPollingInterval() throws Exception {
 		this.changes.clear();
 		setupWatcher(100, 1);
 		File folder = startWithNewFolder();
@@ -148,7 +168,7 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void waitsForQuietTime() throws Exception {
+	public void waitsForQuietPeriod() throws Exception {
 		setupWatcher(300, 200);
 		File folder = startWithNewFolder();
 		for (int i = 0; i < 10; i++) {
@@ -266,8 +286,8 @@ public class FileSystemWatcherTests {
 		assertEquals(expected, actual);
 	}
 
-	private void setupWatcher(long idleTime, long quietTime) {
-		this.watcher = new FileSystemWatcher(false, idleTime, quietTime);
+	private void setupWatcher(long pollingInterval, long quietPeriod) {
+		this.watcher = new FileSystemWatcher(false, pollingInterval, quietPeriod);
 		this.watcher.addListener(new FileChangeListener() {
 			@Override
 			public void onChange(Set<ChangedFiles> changeSet) {

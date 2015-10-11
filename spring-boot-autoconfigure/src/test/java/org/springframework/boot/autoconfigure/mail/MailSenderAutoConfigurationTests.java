@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mail;
 
 import java.util.Properties;
 
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -40,6 +41,10 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MailSenderAutoConfiguration}.
@@ -95,21 +100,24 @@ public class MailSenderAutoConfigurationTests {
 		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
 				.getBean(JavaMailSender.class);
 		assertEquals(host, bean.getHost());
+		assertEquals(JavaMailSenderImpl.DEFAULT_PORT, bean.getPort());
+		assertEquals(JavaMailSenderImpl.DEFAULT_PROTOCOL, bean.getProtocol());
 	}
 
 	@Test
-	public void smptHostWithSettings() {
+	public void smtpHostWithSettings() {
 		String host = "192.168.1.234";
 		load(EmptyConfig.class, "spring.mail.host:" + host, "spring.mail.port:42",
 				"spring.mail.username:john", "spring.mail.password:secret",
-				"spring.mail.default-encoding:ISO-9");
+				"spring.mail.default-encoding:US-ASCII", "spring.mail.protocol:smtps");
 		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
 				.getBean(JavaMailSender.class);
 		assertEquals(host, bean.getHost());
 		assertEquals(42, bean.getPort());
 		assertEquals("john", bean.getUsername());
 		assertEquals("secret", bean.getPassword());
-		assertEquals("ISO-9", bean.getDefaultEncoding());
+		assertEquals("US-ASCII", bean.getDefaultEncoding());
+		assertEquals("smtps", bean.getProtocol());
 	}
 
 	@Test
@@ -143,8 +151,8 @@ public class MailSenderAutoConfigurationTests {
 		load(EmptyConfig.class, "spring.mail.jndi-name:foo");
 		Session sessionBean = this.context.getBean(Session.class);
 		assertEquals(session, sessionBean);
-		assertEquals(sessionBean, this.context.getBean(JavaMailSenderImpl.class)
-				.getSession());
+		assertEquals(sessionBean,
+				this.context.getBean(JavaMailSenderImpl.class).getSession());
 	}
 
 	@Test
@@ -170,8 +178,24 @@ public class MailSenderAutoConfigurationTests {
 		load(EmptyConfig.class, "spring.mail.jndi-name:foo");
 	}
 
-	private Session configureJndiSession(String name) throws IllegalStateException,
-			NamingException {
+	@Test
+	public void connectionOnStartup() throws MessagingException {
+		load(MockMailConfiguration.class, "spring.mail.host:10.0.0.23",
+				"spring.mail.test-connection:true");
+		JavaMailSenderImpl mailSender = this.context.getBean(JavaMailSenderImpl.class);
+		verify(mailSender, times(1)).testConnection();
+	}
+
+	@Test
+	public void connectionOnStartupNotCalled() throws MessagingException {
+		load(MockMailConfiguration.class, "spring.mail.host:10.0.0.23",
+				"spring.mail.test-connection:false");
+		JavaMailSenderImpl mailSender = this.context.getBean(JavaMailSenderImpl.class);
+		verify(mailSender, never()).testConnection();
+	}
+
+	private Session configureJndiSession(String name)
+			throws IllegalStateException, NamingException {
 		Properties properties = new Properties();
 		Session session = Session.getDefaultInstance(properties);
 		TestableInitialContextFactory.bind(name, session);
@@ -188,6 +212,7 @@ public class MailSenderAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.register(configs);
 		applicationContext.register(MailSenderAutoConfiguration.class);
+		applicationContext.register(MailSenderValidatorAutoConfiguration.class);
 		applicationContext.refresh();
 		return applicationContext;
 	}
@@ -203,6 +228,16 @@ public class MailSenderAutoConfigurationTests {
 		@Bean
 		JavaMailSender customMailSender() {
 			return new JavaMailSenderImpl();
+		}
+
+	}
+
+	@Configuration
+	static class MockMailConfiguration {
+
+		@Bean
+		JavaMailSenderImpl mockMailSender() {
+			return mock(JavaMailSenderImpl.class);
 		}
 
 	}

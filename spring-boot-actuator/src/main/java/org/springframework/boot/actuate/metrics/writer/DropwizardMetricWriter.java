@@ -31,8 +31,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 /**
- * A {@link MetricWriter} that send data to a Codahale {@link MetricRegistry} based on a
- * naming convention:
+ * A {@link MetricWriter} that send data to a Dropwizard {@link MetricRegistry} based on a
+ * naming convention.
  *
  * <ul>
  * <li>Updates to {@link #increment(Delta)} with names in "meter.*" are treated as
@@ -94,16 +94,16 @@ public class DropwizardMetricWriter implements MetricWriter {
 		else {
 			final double gauge = value.getValue().doubleValue();
 			// Ensure we synchronize to avoid another thread pre-empting this thread after
-			// remove causing an error in CodaHale metrics
-			// NOTE: CodaHale provides no way to do this atomically
-			synchronized (getGuageLock(name)) {
+			// remove causing an error in Dropwizard Metrics
+			// NOTE: Dropwizard Metrics provides no way to do this atomically
+			synchronized (getGaugeLock(name)) {
 				this.registry.remove(name);
 				this.registry.register(name, new SimpleGauge(gauge));
 			}
 		}
 	}
 
-	private Object getGuageLock(String name) {
+	private Object getGaugeLock(String name) {
 		Object lock = this.gaugeLocks.get(name);
 		if (lock == null) {
 			Object newLock = new Object();
@@ -121,7 +121,7 @@ public class DropwizardMetricWriter implements MetricWriter {
 	/**
 	 * Simple {@link Gauge} implementation to {@literal double} value.
 	 */
-	private static class SimpleGauge implements Gauge<Double> {
+	private final static class SimpleGauge implements Gauge<Double> {
 
 		private final double value;
 

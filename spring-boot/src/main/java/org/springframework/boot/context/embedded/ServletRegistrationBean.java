@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -153,8 +153,8 @@ public class ServletRegistrationBean extends RegistrationBean {
 	}
 
 	/**
-	 * Set the the {@link MultipartConfigElement multi-part configuration}.
-	 * @param multipartConfig the muti-part configuration to set or {@code null}
+	 * Set the {@link MultipartConfigElement multi-part configuration}.
+	 * @param multipartConfig the multi-part configuration to set or {@code null}
 	 */
 	public void setMultipartConfig(MultipartConfigElement multipartConfig) {
 		this.multipartConfig = multipartConfig;

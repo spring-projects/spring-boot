@@ -51,9 +51,10 @@ public class WarPackagingTests {
 					"tomcat-embed-websocket-"));
 
 	private static final Set<String> JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
-			Arrays.asList("spring-boot-starter-jetty-", "jetty-util-", "javax.servlet-",
-					"jetty-io-", "jetty-http-", "jetty-server-", "jetty-security-",
-					"jetty-servlet-", "jetty-webapp-", "websocket-api",
+			Arrays.asList("spring-boot-starter-jetty-", "jetty-continuation",
+					"jetty-util-", "javax.servlet-", "jetty-io-", "jetty-http-",
+					"jetty-server-", "jetty-security-", "jetty-servlet-",
+					"jetty-servlets", "jetty-webapp-", "websocket-api",
 					"javax.annotation-api", "jetty-plus", "javax-websocket-server-impl-",
 					"asm-", "javax.websocket-api-", "asm-tree-", "asm-commons-",
 					"websocket-common-", "jetty-annotations-",
@@ -84,25 +85,31 @@ public class WarPackagingTests {
 
 	private void checkWebInfEntriesForServletContainer(String servletContainer,
 			Set<String> expectedLibProvidedEntries) throws IOException {
-		project.newBuild()
-				.forTasks("clean", "build")
+		project.newBuild().forTasks("clean", "build")
 				.withArguments("-PbootVersion=" + BOOT_VERSION,
-						"-PservletContainer=" + servletContainer).run();
+						"-PservletContainer=" + servletContainer)
+				.run();
 
 		JarFile war = new JarFile("target/war-packaging/build/libs/war-packaging.war");
 
 		checkWebInfLibProvidedEntries(war, expectedLibProvidedEntries);
 
 		checkWebInfLibEntries(war, expectedLibProvidedEntries);
+
+		try {
+			war.close();
+		}
+		catch (IOException ex) {
+			// Ignore
+		}
 	}
 
 	private void checkWebInfLibProvidedEntries(JarFile war, Set<String> expectedEntries)
 			throws IOException {
 		Set<String> entries = getWebInfLibProvidedEntries(war);
 
-		assertEquals(
-				"Expected " + expectedEntries.size() + " but found " + entries.size()
-						+ ": " + entries, expectedEntries.size(), entries.size());
+		assertEquals("Expected " + expectedEntries.size() + " but found " + entries.size()
+				+ ": " + entries, expectedEntries.size(), entries.size());
 
 		List<String> unexpectedLibProvidedEntries = new ArrayList<String>();
 		for (String entry : entries) {
@@ -110,8 +117,10 @@ public class WarPackagingTests {
 				unexpectedLibProvidedEntries.add(entry);
 			}
 		}
-		assertTrue("Found unexpected entries in WEB-INF/lib-provided: "
-				+ unexpectedLibProvidedEntries, unexpectedLibProvidedEntries.isEmpty());
+		assertTrue(
+				"Found unexpected entries in WEB-INF/lib-provided: "
+						+ unexpectedLibProvidedEntries,
+				unexpectedLibProvidedEntries.isEmpty());
 	}
 
 	private void checkWebInfLibEntries(JarFile war, Set<String> entriesOnlyInLibProvided)
@@ -162,7 +171,8 @@ public class WarPackagingTests {
 		return name.startsWith(WEB_INF_LIB_PREFIX) && !name.equals(WEB_INF_LIB_PREFIX);
 	}
 
-	private boolean isExpectedInWebInfLibProvided(String name, Set<String> expectedEntries) {
+	private boolean isExpectedInWebInfLibProvided(String name,
+			Set<String> expectedEntries) {
 		for (String expected : expectedEntries) {
 			if (name.startsWith(WEB_INF_LIB_PROVIDED_PREFIX + expected)) {
 				return true;

@@ -69,9 +69,6 @@ public class AuthenticationManagerConfiguration {
 	private static Log logger = LogFactory
 			.getLog(AuthenticationManagerConfiguration.class);
 
-	@Autowired
-	private List<SecurityPrerequisite> dependencies;
-
 	@Bean
 	@Primary
 	public AuthenticationManager authenticationManager(
@@ -81,7 +78,8 @@ public class AuthenticationManagerConfiguration {
 
 	@Bean
 	public static SpringBootAuthenticationConfigurerAdapter springBootAuthenticationConfigurerAdapter(
-			SecurityProperties securityProperties, List<SecurityPrerequisite> dependencies) {
+			SecurityProperties securityProperties,
+			List<SecurityPrerequisite> dependencies) {
 		return new SpringBootAuthenticationConfigurerAdapter(securityProperties);
 	}
 
@@ -97,27 +95,26 @@ public class AuthenticationManagerConfiguration {
 	 * {@link GlobalAuthenticationConfigurerAdapter#init(AuthenticationManagerBuilder)}
 	 * exists that adds a {@link SecurityConfigurer} to the
 	 * {@link AuthenticationManagerBuilder}.</li>
-	 * <li>
-	 * {@link AuthenticationManagerConfiguration#init(AuthenticationManagerBuilder)} adds
-	 * {@link SpringBootAuthenticationConfigurerAdapter} so it is after the
+	 * <li>{@link AuthenticationManagerConfiguration#init(AuthenticationManagerBuilder)}
+	 * adds {@link SpringBootAuthenticationConfigurerAdapter} so it is after the
 	 * {@link SecurityConfigurer} in the first step.</li>
 	 * <li>We then can default an {@link AuthenticationProvider} if necessary. Note we can
 	 * only invoke the
 	 * {@link AuthenticationManagerBuilder#authenticationProvider(AuthenticationProvider)}
 	 * method since all other methods add a {@link SecurityConfigurer} which is not
 	 * allowed in the configure stage. It is not allowed because we guarantee all init
-	 * methods are invoked before configure, which cannot be guaranteed at this point.</li>
+	 * methods are invoked before configure, which cannot be guaranteed at this point.
+	 * </li>
 	 * </ul>
 	 */
 	@Order(Ordered.LOWEST_PRECEDENCE - 100)
-	private static class SpringBootAuthenticationConfigurerAdapter extends
-			GlobalAuthenticationConfigurerAdapter {
+	private static class SpringBootAuthenticationConfigurerAdapter
+			extends GlobalAuthenticationConfigurerAdapter {
 
 		private final SecurityProperties securityProperties;
 
 		@Autowired
-		public SpringBootAuthenticationConfigurerAdapter(
-				SecurityProperties securityProperties) {
+		SpringBootAuthenticationConfigurerAdapter(SecurityProperties securityProperties) {
 			this.securityProperties = securityProperties;
 		}
 
@@ -150,12 +147,12 @@ public class AuthenticationManagerConfiguration {
 	 * {@link DefaultInMemoryUserDetailsManagerConfigurer} will default the value.</li>
 	 * </ul>
 	 */
-	private static class DefaultInMemoryUserDetailsManagerConfigurer extends
-			InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> {
+	private static class DefaultInMemoryUserDetailsManagerConfigurer
+			extends InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> {
 
 		private final SecurityProperties securityProperties;
 
-		public DefaultInMemoryUserDetailsManagerConfigurer(
+		DefaultInMemoryUserDetailsManagerConfigurer(
 				SecurityProperties securityProperties) {
 			this.securityProperties = securityProperties;
 		}
@@ -171,8 +168,8 @@ public class AuthenticationManagerConfiguration {
 						+ "\n");
 			}
 			Set<String> roles = new LinkedHashSet<String>(user.getRole());
-			withUser(user.getName()).password(user.getPassword()).roles(
-					roles.toArray(new String[roles.size()]));
+			withUser(user.getName()).password(user.getPassword())
+					.roles(roles.toArray(new String[roles.size()]));
 			setField(auth, "defaultUserDetailsService", getUserDetailsService());
 			super.configure(auth);
 		}
@@ -183,7 +180,7 @@ public class AuthenticationManagerConfiguration {
 				ReflectionUtils.makeAccessible(field);
 				ReflectionUtils.setField(field, target, value);
 			}
-			catch (Exception e) {
+			catch (Exception ex) {
 				logger.info("Could not set " + name);
 			}
 		}
@@ -195,8 +192,8 @@ public class AuthenticationManagerConfiguration {
 	 * into the {@link AuthenticationManager}.
 	 */
 	@Component
-	protected static class AuthenticationManagerConfigurationListener implements
-			SmartInitializingSingleton {
+	protected static class AuthenticationManagerConfigurationListener
+			implements SmartInitializingSingleton {
 
 		@Autowired
 		private AuthenticationEventPublisher eventPublisher;
@@ -207,8 +204,8 @@ public class AuthenticationManagerConfiguration {
 		@Override
 		public void afterSingletonsInstantiated() {
 			try {
-				configureAuthenticationManager(this.context
-						.getBean(AuthenticationManager.class));
+				configureAuthenticationManager(
+						this.context.getBean(AuthenticationManager.class));
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				// Ignore

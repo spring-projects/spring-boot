@@ -23,6 +23,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Dave Syer
  * @see JacksonJsonParser
+ * @see GsonJsonParser
  * @see YamlJsonParser
  * @see JsonSimpleJsonParser
  * @see JsonJsonParser
@@ -32,7 +33,7 @@ public abstract class JsonParserFactory {
 
 	/**
 	 * Static factory for the "best" JSON parser available on the classpath. Tries Jackson
-	 * 2, then JSON (from eclipse), Simple JSON, Gson, Snake YAML, and then falls back to
+	 * 2, then Gson, Snake YAML, Simple JSON, JSON (from eclipse), and then falls back to
 	 * the {@link BasicJsonParser}.
 	 * @return a {@link JsonParser}
 	 */

@@ -38,6 +38,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.context.request.async.StandardServletAsyncWebRequest;
 import org.springframework.web.context.request.async.WebAsyncManager;
 import org.springframework.web.context.request.async.WebAsyncUtils;
+import org.springframework.web.util.NestedServletException;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -62,7 +63,8 @@ public class ErrorPageFilterTests {
 
 	private ErrorPageFilter filter = new ErrorPageFilter();
 
-	private MockHttpServletRequest request = new MockHttpServletRequest();
+	private MockHttpServletRequest request = new MockHttpServletRequest("GET",
+			"/test/path");
 
 	private MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -95,9 +97,8 @@ public class ErrorPageFilterTests {
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(((HttpServletResponse) this.chain.getResponse()).getStatus(),
 				equalTo(201));
-		assertThat(
-				((HttpServletResponse) ((HttpServletResponseWrapper) this.chain.getResponse())
-						.getResponse()).getStatus(), equalTo(201));
+		assertThat(((HttpServletResponse) ((HttpServletResponseWrapper) this.chain
+				.getResponse()).getResponse()).getStatus(), equalTo(201));
 		assertTrue(this.response.isCommitted());
 	}
 
@@ -199,6 +200,9 @@ public class ErrorPageFilterTests {
 				equalTo((Object) 400));
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE),
 				equalTo((Object) "BAD"));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI),
+				equalTo((Object) "/test/path"));
+
 		assertTrue(this.response.isCommitted());
 		assertThat(this.response.getForwardedUrl(), equalTo("/error"));
 	}
@@ -221,6 +225,8 @@ public class ErrorPageFilterTests {
 				equalTo((Object) 400));
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE),
 				equalTo((Object) "BAD"));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI),
+				equalTo((Object) "/test/path"));
 		assertTrue(this.response.isCommitted());
 		assertThat(this.response.getForwardedUrl(), equalTo("/400"));
 	}
@@ -264,6 +270,8 @@ public class ErrorPageFilterTests {
 				equalTo((Object) "BAD"));
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE),
 				equalTo((Object) RuntimeException.class.getName()));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI),
+				equalTo((Object) "/test/path"));
 		assertTrue(this.response.isCommitted());
 		assertThat(this.response.getForwardedUrl(), equalTo("/500"));
 	}
@@ -319,6 +327,8 @@ public class ErrorPageFilterTests {
 				equalTo((Object) "BAD"));
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE),
 				equalTo((Object) IllegalStateException.class.getName()));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI),
+				equalTo((Object) "/test/path"));
 		assertTrue(this.response.isCommitted());
 	}
 
@@ -353,7 +363,8 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
-	public void responseIsCommitedWhenRequestIsAsyncAndStatusIs400Plus() throws Exception {
+	public void responseIsCommitedWhenRequestIsAsyncAndStatusIs400Plus()
+			throws Exception {
 		this.filter.addErrorPages(new ErrorPage("/error"));
 		this.request.setAsyncStarted(true);
 		this.chain = new MockFilterChain() {
@@ -432,8 +443,8 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
-	public void errorMessageForRequestWithoutPathInfo() throws IOException,
-			ServletException {
+	public void errorMessageForRequestWithoutPathInfo()
+			throws IOException, ServletException {
 		this.request.setServletPath("/test");
 		this.filter.addErrorPages(new ErrorPage("/error"));
 		this.chain = new MockFilterChain() {
@@ -449,7 +460,8 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
-	public void errorMessageForRequestWithPathInfo() throws IOException, ServletException {
+	public void errorMessageForRequestWithPathInfo()
+			throws IOException, ServletException {
 		this.request.setServletPath("/test");
 		this.request.setPathInfo("/alpha");
 		this.filter.addErrorPages(new ErrorPage("/error"));
@@ -465,13 +477,39 @@ public class ErrorPageFilterTests {
 		assertThat(this.output.toString(), containsString("request [/test/alpha]"));
 	}
 
+	@Test
+	public void nestedServletExceptionIsUnwrapped() throws Exception {
+		this.filter.addErrorPages(new ErrorPage(RuntimeException.class, "/500"));
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				super.doFilter(request, response);
+				throw new NestedServletException("Wrapper", new RuntimeException("BAD"));
+			}
+		};
+		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
+				equalTo(500));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE),
+				equalTo((Object) 500));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE),
+				equalTo((Object) "BAD"));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE),
+				equalTo((Object) RuntimeException.class.getName()));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI),
+				equalTo((Object) "/test/path"));
+		assertTrue(this.response.isCommitted());
+		assertThat(this.response.getForwardedUrl(), equalTo("/500"));
+	}
+
 	private void setUpAsyncDispatch() throws Exception {
 		this.request.setAsyncSupported(true);
 		this.request.setAsyncStarted(true);
 		DeferredResult<String> result = new DeferredResult<String>();
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(this.request);
-		asyncManager.setAsyncWebRequest(new StandardServletAsyncWebRequest(this.request,
-				this.response));
+		asyncManager.setAsyncWebRequest(
+				new StandardServletAsyncWebRequest(this.request, this.response));
 		asyncManager.startDeferredResultProcessing(result);
 	}
 

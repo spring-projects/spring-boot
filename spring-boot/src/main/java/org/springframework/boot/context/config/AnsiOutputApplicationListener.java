@@ -20,19 +20,20 @@ import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.env.EnvironmentPostProcessingApplicationListener;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 
 /**
- * An {@link ApplicationListener} that configures {@link AnsiOutput} depending on the the
+ * An {@link ApplicationListener} that configures {@link AnsiOutput} depending on the
  * value of the property {@code spring.output.ansi.enabled}. See {@link Enabled} for valid
  * values.
  *
  * @author Raphael von der Grün
  * @since 1.2.0
  */
-public class AnsiOutputApplicationListener implements
-		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
+public class AnsiOutputApplicationListener
+		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
@@ -44,15 +45,16 @@ public class AnsiOutputApplicationListener implements
 		}
 
 		if (resolver.containsProperty("console-available")) {
-			AnsiOutput.setConsoleAvailable(resolver.getProperty("console-available",
-					Boolean.class));
+			AnsiOutput.setConsoleAvailable(
+					resolver.getProperty("console-available", Boolean.class));
 		}
 	}
 
 	@Override
 	public int getOrder() {
-		// Apply after the ConfigFileApplicationListener
-		return ConfigFileApplicationListener.DEFAULT_ORDER + 1;
+		// Apply after the EnvironmentPostProcessingApplicationListener has called all
+		// EnvironmentPostProcessors
+		return EnvironmentPostProcessingApplicationListener.ORDER + 1;
 	}
 
 }

@@ -46,7 +46,7 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 
 	private void configureJdkLoggingBridgeHandler() {
 		try {
-			if (bridgeHandlerIsAvailable()) {
+			if (isBridgeHandlerAvailable()) {
 				removeJdkLoggingBridgeHandler();
 				SLF4JBridgeHandler.install();
 			}
@@ -56,13 +56,13 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
-	private boolean bridgeHandlerIsAvailable() {
+	protected final boolean isBridgeHandlerAvailable() {
 		return ClassUtils.isPresent(BRIDGE_HANDLER, getClassLoader());
 	}
 
 	private void removeJdkLoggingBridgeHandler() {
 		try {
-			if (bridgeHandlerIsAvailable()) {
+			if (isBridgeHandlerAvailable()) {
 				try {
 					SLF4JBridgeHandler.removeHandlersForRootLogger();
 				}

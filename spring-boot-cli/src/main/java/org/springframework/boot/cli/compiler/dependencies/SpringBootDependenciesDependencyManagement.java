@@ -24,13 +24,14 @@ import org.apache.maven.model.io.DefaultModelReader;
 import org.apache.maven.model.locator.DefaultModelLocator;
 
 /**
- * {@link DependencyManagement} derived from the effective pom of spring-boot-dependencies
+ * {@link DependencyManagement} derived from the effective pom of
+ * {@code spring-boot-dependencies}.
  *
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-public class SpringBootDependenciesDependencyManagement extends
-		MavenModelDependencyManagement {
+public class SpringBootDependenciesDependencyManagement
+		extends MavenModelDependencyManagement {
 
 	public SpringBootDependenciesDependencyManagement() {
 		super(readModel());

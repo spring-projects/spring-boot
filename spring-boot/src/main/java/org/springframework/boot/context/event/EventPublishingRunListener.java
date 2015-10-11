@@ -25,6 +25,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
@@ -32,7 +33,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  *
  * @author Phillip Webb
  */
-public class EventPublishingRunListener implements SpringApplicationRunListener {
+public class EventPublishingRunListener implements SpringApplicationRunListener, Ordered {
 
 	private final ApplicationEventMulticaster multicaster;
 
@@ -47,6 +48,11 @@ public class EventPublishingRunListener implements SpringApplicationRunListener 
 		for (ApplicationListener<?> listener : application.getListeners()) {
 			this.multicaster.addApplicationListener(listener);
 		}
+	}
+
+	@Override
+	public int getOrder() {
+		return 0;
 	}
 
 	@Override

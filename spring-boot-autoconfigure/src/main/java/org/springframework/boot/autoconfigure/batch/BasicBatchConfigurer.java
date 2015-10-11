@@ -65,7 +65,7 @@ class BasicBatchConfigurer implements BatchConfigurer {
 	 * @param properties the batch properties
 	 * @param dataSource the underlying data source
 	 */
-	public BasicBatchConfigurer(BatchProperties properties, DataSource dataSource) {
+	BasicBatchConfigurer(BatchProperties properties, DataSource dataSource) {
 		this(properties, dataSource, null);
 	}
 
@@ -75,7 +75,7 @@ class BasicBatchConfigurer implements BatchConfigurer {
 	 * @param dataSource the underlying data source
 	 * @param entityManagerFactory the entity manager factory (or {@code null})
 	 */
-	public BasicBatchConfigurer(BatchProperties properties, DataSource dataSource,
+	BasicBatchConfigurer(BatchProperties properties, DataSource dataSource,
 			EntityManagerFactory entityManagerFactory) {
 		this.properties = properties;
 		this.entityManagerFactory = entityManagerFactory;
@@ -137,8 +137,13 @@ class BasicBatchConfigurer implements BatchConfigurer {
 		JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
 		factory.setDataSource(this.dataSource);
 		if (this.entityManagerFactory != null) {
-			logger.warn("JPA does not support custom isolation levels, so locks may not be taken when launching Jobs");
+			logger.warn(
+					"JPA does not support custom isolation levels, so locks may not be taken when launching Jobs");
 			factory.setIsolationLevelForCreate("ISOLATION_DEFAULT");
+		}
+		String tablePrefix = this.properties.getTablePrefix();
+		if (StringUtils.hasText(tablePrefix)) {
+			factory.setTablePrefix(tablePrefix);
 		}
 		factory.setTransactionManager(getTransactionManager());
 		factory.afterPropertiesSet();

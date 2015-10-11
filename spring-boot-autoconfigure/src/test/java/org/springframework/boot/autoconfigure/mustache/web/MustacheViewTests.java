@@ -20,7 +20,6 @@ import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.mustache.web.MustacheView;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -56,9 +55,11 @@ public class MustacheViewTests {
 
 	@Test
 	public void viewResolvesHandlebars() throws Exception {
-		MustacheView view = new MustacheView(Mustache.compiler().compile("Hello {{msg}}"));
+		MustacheView view = new MustacheView(
+				Mustache.compiler().compile("Hello {{msg}}"));
 		view.setApplicationContext(this.context);
-		view.render(Collections.singletonMap("msg", "World"), this.request, this.response);
+		view.render(Collections.singletonMap("msg", "World"), this.request,
+				this.response);
 		assertEquals("Hello World", this.response.getContentAsString());
 	}
 

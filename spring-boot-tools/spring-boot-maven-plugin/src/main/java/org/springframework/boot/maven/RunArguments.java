@@ -33,11 +33,11 @@ class RunArguments {
 
 	private final LinkedList<String> args;
 
-	public RunArguments(String arguments) {
+	RunArguments(String arguments) {
 		this(parseArgs(arguments));
 	}
 
-	public RunArguments(String[] args) {
+	RunArguments(String[] args) {
 		this.args = new LinkedList<String>(Arrays.asList(args));
 	}
 
@@ -58,8 +58,8 @@ class RunArguments {
 			return CommandLineUtils.translateCommandline(arguments);
 		}
 		catch (Exception ex) {
-			throw new IllegalArgumentException("Failed to parse arguments [" + arguments
-					+ "]", ex);
+			throw new IllegalArgumentException(
+					"Failed to parse arguments [" + arguments + "]", ex);
 		}
 	}
 

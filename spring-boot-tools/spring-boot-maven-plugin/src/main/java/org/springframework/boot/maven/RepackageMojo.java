@@ -122,6 +122,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * A list of the libraries that must be unpacked from fat jars in order to run.
+	 * Specify each library as a <code>&lt;dependency&gt;</code> with a
+	 * <code>&lt;groupId&gt;</code> and a <code>&lt;artifactId&gt;</code> and they will be
+	 * unpacked at runtime in <code>$TMPDIR/spring-boot-libs</code>.
 	 * @since 1.1
 	 */
 	@Parameter
@@ -173,10 +176,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 				finally {
 					long duration = System.currentTimeMillis() - startTime;
 					if (duration > FIND_WARNING_TIMEOUT) {
-						getLog().warn(
-								"Searching for the main-class is taking some time, "
-										+ "consider using the mainClass configuration "
-										+ "parameter");
+						getLog().warn("Searching for the main-class is taking some time, "
+								+ "consider using the mainClass configuration "
+								+ "parameter");
 					}
 				}
 			}
@@ -199,12 +201,15 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		catch (IOException ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
-		if (!source.equals(target)) {
-			getLog().info(
-					"Attaching archive: " + target + ", with classifier: "
-							+ this.classifier);
+		if (this.classifier != null) {
+			getLog().info("Attaching archive: " + target + ", with classifier: "
+					+ this.classifier);
 			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(),
 					this.classifier, target);
+		}
+		else if (!source.equals(target)) {
+			this.project.getArtifact().setFile(target);
+			getLog().info("Replacing main artifact " + source + " to " + target);
 		}
 	}
 
@@ -213,11 +218,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		if (classifier.length() > 0 && !classifier.startsWith("-")) {
 			classifier = "-" + classifier;
 		}
-
 		if (!this.outputDirectory.exists()) {
 			this.outputDirectory.mkdirs();
 		}
-
 		return new File(this.outputDirectory, this.finalName + classifier + "."
 				+ this.project.getArtifact().getArtifactHandler().getExtension());
 	}
@@ -230,35 +233,38 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		return null;
 	}
 
-	public static enum LayoutType {
+	/**
+	 * Archive layout types.
+	 */
+	public enum LayoutType {
 
 		/**
-		 * Jar Layout
+		 * Jar Layout.
 		 */
 		JAR(new Layouts.Jar()),
 
 		/**
-		 * War Layout
+		 * War Layout.
 		 */
 		WAR(new Layouts.War()),
 
 		/**
-		 * Zip Layout
+		 * Zip Layout.
 		 */
 		ZIP(new Layouts.Expanded()),
 
 		/**
-		 * Dir Layout
+		 * Dir Layout.
 		 */
 		DIR(new Layouts.Expanded()),
 
 		/**
-		 * Module Layout
+		 * Module Layout.
 		 */
 		MODULE(new Layouts.Module()),
 
 		/**
-		 * No Layout
+		 * No Layout.
 		 */
 		NONE(new Layouts.None());
 
@@ -268,7 +274,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			return this.layout;
 		}
 
-		private LayoutType(Layout layout) {
+		LayoutType(Layout layout) {
 			this.layout = layout;
 		}
 	}

@@ -228,6 +228,7 @@ public class RestarterTests {
 				Thread.sleep(1200);
 			}
 			catch (InterruptedException ex) {
+				// Ignore
 			}
 		}
 
@@ -237,7 +238,7 @@ public class RestarterTests {
 
 		private ClassLoader relaunchClassLoader;
 
-		public TestableRestarter() {
+		TestableRestarter() {
 			this(Thread.currentThread(), new String[] {}, false,
 					new MockRestartInitializer());
 		}

@@ -36,9 +36,6 @@ import org.eclipse.jetty.websocket.common.events.JettyListenerEventDriver;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.devtools.livereload.Connection;
-import org.springframework.boot.devtools.livereload.ConnectionClosedException;
-import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -51,6 +48,7 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link LiveReloadServer}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class LiveReloadServerTests {
 
@@ -125,7 +123,16 @@ public class LiveReloadServerTests {
 		finally {
 			client.stop();
 		}
+		awaitClosedException();
 		assertThat(this.server.getClosedExceptions().size(), greaterThan(0));
+	}
+
+	private void awaitClosedException() throws InterruptedException {
+		long startTime = System.currentTimeMillis();
+		while (this.server.getClosedExceptions().isEmpty()
+				&& System.currentTimeMillis() - startTime < 10000) {
+			Thread.sleep(100);
+		}
 	}
 
 	@Test
@@ -154,11 +161,30 @@ public class LiveReloadServerTests {
 		return socket;
 	}
 
+	/**
+	 * Useful main method for manual testing against a real browser.
+	 * @param args main args
+	 * @throws IOException in case of I/O errors
+	 */
+	public static void main(String[] args) throws IOException {
+		LiveReloadServer server = new LiveReloadServer();
+		server.start();
+		while (true) {
+			try {
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			server.triggerReload();
+		}
+	}
+
 	private static class Driver extends JettyListenerEventDriver {
 
 		private int pongCount;
 
-		public Driver(WebSocketListener listener) {
+		Driver(WebSocketListener listener) {
 			super(WebSocketPolicy.newClientPolicy(), listener);
 		}
 
@@ -201,32 +227,15 @@ public class LiveReloadServerTests {
 	}
 
 	/**
-	 * Useful main method for manual testing against a real browser.
-	 * @param args main args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException {
-		LiveReloadServer server = new LiveReloadServer();
-		server.start();
-		while (true) {
-			try {
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-			server.triggerReload();
-		}
-	}
-
-	/**
 	 * {@link LiveReloadServer} with additional monitoring.
 	 */
 	private static class MonitoredLiveReloadServer extends LiveReloadServer {
 
-		private List<ConnectionClosedException> closedExceptions = new ArrayList<ConnectionClosedException>();
+		private final List<ConnectionClosedException> closedExceptions = new ArrayList<ConnectionClosedException>();
 
-		public MonitoredLiveReloadServer(int port) {
+		private final Object monitor = new Object();
+
+		MonitoredLiveReloadServer(int port) {
 			super(port);
 		}
 
@@ -237,12 +246,14 @@ public class LiveReloadServerTests {
 		}
 
 		public List<ConnectionClosedException> getClosedExceptions() {
-			return this.closedExceptions;
+			synchronized (this.monitor) {
+				return new ArrayList<ConnectionClosedException>(this.closedExceptions);
+			}
 		}
 
 		private class MonitoredConnection extends Connection {
 
-			public MonitoredConnection(java.net.Socket socket, InputStream inputStream,
+			MonitoredConnection(java.net.Socket socket, InputStream inputStream,
 					OutputStream outputStream) throws IOException {
 				super(socket, inputStream, outputStream);
 			}
@@ -253,7 +264,9 @@ public class LiveReloadServerTests {
 					super.run();
 				}
 				catch (ConnectionClosedException ex) {
-					MonitoredLiveReloadServer.this.closedExceptions.add(ex);
+					synchronized (MonitoredLiveReloadServer.this.monitor) {
+						MonitoredLiveReloadServer.this.closedExceptions.add(ex);
+					}
 					throw ex;
 				}
 			}

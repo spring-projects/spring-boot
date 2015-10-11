@@ -7,8 +7,8 @@ org.springframework.boot.actuate.autoconfigure.EndpointMBeanExportAutoConfigurat
 org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.ManagementSecurityAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.MetricFilterAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.MetricRepositoryAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.MetricsDropwizardAutoConfiguration,\
@@ -17,3 +17,7 @@ org.springframework.boot.actuate.autoconfigure.MetricExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.PublicMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.TraceRepositoryAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.TraceWebFilterAutoConfiguration
+
+org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration=\
+org.springframework.boot.actuate.autoconfigure.EndpointWebMvcManagementContextConfiguration,\
+org.springframework.boot.actuate.autoconfigure.EndpointWebMvcHypermediaManagementContextConfiguration

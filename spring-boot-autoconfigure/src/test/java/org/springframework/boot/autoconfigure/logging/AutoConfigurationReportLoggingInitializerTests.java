@@ -107,7 +107,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 
 	@After
 	public void cleanup() {
-		System.clearProperty(LogFactory.FACTORY_PROPERTIES);
+		System.clearProperty(LogFactory.FACTORY_PROPERTY);
 		LogFactory.releaseAll();
 	}
 
@@ -163,8 +163,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(Config.class);
-		ConditionEvaluationReport.get(context.getBeanFactory()).recordExclusions(
-				Arrays.asList("com.foo.Bar"));
+		ConditionEvaluationReport.get(context.getBeanFactory())
+				.recordExclusions(Arrays.asList("com.foo.Bar"));
 		context.refresh();
 		this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
 		for (String message : this.debugLog) {
@@ -172,7 +172,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		}
 		// Just basic sanity check, test is for visual inspection
 		String l = this.debugLog.get(0);
-		assertThat(l, containsString("not a web application (OnWebApplicationCondition)"));
+		assertThat(l,
+				containsString("not a web application (OnWebApplicationCondition)"));
 	}
 
 	@Test
@@ -196,14 +197,15 @@ public class AutoConfigurationReportLoggingInitializerTests {
 
 	@Test
 	public void noErrorIfNotInitialized() throws Exception {
-		this.initializer.onApplicationEvent(new ApplicationFailedEvent(
-				new SpringApplication(), new String[0], null, new RuntimeException(
-						"Planned")));
+		this.initializer
+				.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(),
+						new String[0], null, new RuntimeException("Planned")));
 		assertThat(this.infoLog.get(0),
 				containsString("Unable to provide auto-configuration report"));
 	}
 
 	public static class MockLogFactory extends LogFactoryImpl {
+
 		@Override
 		public Log getInstance(String name) throws LogConfigurationException {
 			if (AutoConfigurationReportLoggingInitializer.class.getName().equals(name)) {
@@ -211,11 +213,11 @@ public class AutoConfigurationReportLoggingInitializerTests {
 			}
 			return new NoOpLog();
 		}
+
 	}
 
 	@Configuration
-	@Import({ WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
+	@Import({ WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	static class Config {
 

@@ -47,8 +47,8 @@ public class MainMethodRunner implements Runnable {
 					.loadClass(this.mainClassName);
 			Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
 			if (mainMethod == null) {
-				throw new IllegalStateException(this.mainClassName
-						+ " does not have a main method");
+				throw new IllegalStateException(
+						this.mainClassName + " does not have a main method");
 			}
 			mainMethod.invoke(null, new Object[] { this.args });
 		}

@@ -64,13 +64,14 @@ public class HttpRestartServer {
 	 * Handle a server request.
 	 * @param request the request
 	 * @param response the response
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public void handle(ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException {
 		try {
 			Assert.state(request.getHeaders().getContentLength() > 0, "No content");
-			ObjectInputStream objectInputStream = new ObjectInputStream(request.getBody());
+			ObjectInputStream objectInputStream = new ObjectInputStream(
+					request.getBody());
 			ClassLoaderFiles files = (ClassLoaderFiles) objectInputStream.readObject();
 			objectInputStream.close();
 			this.server.updateAndRestart(files);

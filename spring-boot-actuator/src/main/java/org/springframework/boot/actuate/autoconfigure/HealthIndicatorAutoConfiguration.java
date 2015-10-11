@@ -48,9 +48,11 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
@@ -58,8 +60,6 @@ import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetada
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -67,6 +67,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.ResolvableType;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /**
@@ -92,8 +93,8 @@ public class HealthIndicatorAutoConfiguration {
 	private HealthIndicatorAutoConfigurationProperties configurationProperties = new HealthIndicatorAutoConfigurationProperties();
 
 	@Bean
-	@ConditionalOnMissingBean
-	public HealthAggregator healthAggregator() {
+	@ConditionalOnMissingBean(HealthAggregator.class)
+	public OrderedHealthAggregator healthAggregator() {
 		OrderedHealthAggregator healthAggregator = new OrderedHealthAggregator();
 		if (this.configurationProperties.getOrder() != null) {
 			healthAggregator.setStatusOrder(this.configurationProperties.getOrder());
@@ -103,7 +104,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HealthIndicator.class)
-	public HealthIndicator applicationHealthIndicator() {
+	public ApplicationHealthIndicator applicationHealthIndicator() {
 		return new ApplicationHealthIndicator();
 	}
 
@@ -133,8 +134,8 @@ public class HealthIndicatorAutoConfiguration {
 
 		@SuppressWarnings("unchecked")
 		protected H createHealthIndicator(S source) {
-			Class<?>[] generics = ResolvableType.forClass(
-					CompositeHealthIndicatorConfiguration.class, getClass())
+			Class<?>[] generics = ResolvableType
+					.forClass(CompositeHealthIndicatorConfiguration.class, getClass())
 					.resolveGenerics();
 			Class<H> indicatorClass = (Class<H>) generics[0];
 			Class<S> sourceClass = (Class<S>) generics[1];
@@ -150,8 +151,9 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnClass(JdbcTemplate.class)
 	@ConditionalOnBean(DataSource.class)
-	@ConditionalOnProperty(prefix = "management.health.db", name = "enabled", matchIfMissing = true)
+	@ConditionalOnEnabledHealthIndicator("db")
 	public static class DataSourcesHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<DataSourceHealthIndicator, DataSource>
 			implements InitializingBean {
@@ -191,7 +193,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(MongoTemplate.class)
-	@ConditionalOnProperty(prefix = "management.health.mongo", name = "enabled", matchIfMissing = true)
+	@ConditionalOnEnabledHealthIndicator("mongo")
 	public static class MongoHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<MongoHealthIndicator, MongoTemplate> {
 
@@ -208,9 +210,8 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(RedisConnectionFactory.class)
-	@ConditionalOnProperty(prefix = "management.health.redis", name = "enabled", matchIfMissing = true)
-	public static class RedisHealthIndicatorConfiguration
-			extends
+	@ConditionalOnEnabledHealthIndicator("redis")
+	public static class RedisHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<RedisHealthIndicator, RedisConnectionFactory> {
 
 		@Autowired
@@ -226,7 +227,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(RabbitTemplate.class)
-	@ConditionalOnProperty(prefix = "management.health.rabbit", name = "enabled", matchIfMissing = true)
+	@ConditionalOnEnabledHealthIndicator("rabbit")
 	public static class RabbitHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<RabbitHealthIndicator, RabbitTemplate> {
 
@@ -243,7 +244,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(SolrServer.class)
-	@ConditionalOnProperty(prefix = "management.health.solr", name = "enabled", matchIfMissing = true)
+	@ConditionalOnEnabledHealthIndicator("solr")
 	public static class SolrHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<SolrHealthIndicator, SolrServer> {
 
@@ -259,12 +260,12 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "management.health.diskspace", name = "enabled", matchIfMissing = true)
+	@ConditionalOnEnabledHealthIndicator("diskspace")
 	public static class DiskSpaceHealthIndicatorConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "diskSpaceHealthIndicator")
-		public HealthIndicator diskSpaceHealthIndicator(
+		public DiskSpaceHealthIndicator diskSpaceHealthIndicator(
 				DiskSpaceHealthIndicatorProperties properties) {
 			return new DiskSpaceHealthIndicator(properties);
 		}
@@ -278,9 +279,8 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(JavaMailSenderImpl.class)
-	@ConditionalOnProperty(prefix = "management.health.mail", name = "enabled", matchIfMissing = true)
-	public static class MailHealthIndicatorConfiguration
-			extends
+	@ConditionalOnEnabledHealthIndicator("mail")
+	public static class MailHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<MailHealthIndicator, JavaMailSenderImpl> {
 
 		@Autowired(required = false)
@@ -296,7 +296,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(ConnectionFactory.class)
-	@ConditionalOnProperty(prefix = "management.health.jms", name = "enabled", matchIfMissing = true)
+	@ConditionalOnEnabledHealthIndicator("jms")
 	public static class JmsHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<JmsHealthIndicator, ConnectionFactory> {
 
@@ -313,7 +313,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(Client.class)
-	@ConditionalOnProperty(prefix = "management.health.elasticsearch", name = "enabled", matchIfMissing = true)
+	@ConditionalOnEnabledHealthIndicator("elasticsearch")
 	@EnableConfigurationProperties(ElasticsearchHealthIndicatorProperties.class)
 	public static class ElasticsearchHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<ElasticsearchHealthIndicator, Client> {

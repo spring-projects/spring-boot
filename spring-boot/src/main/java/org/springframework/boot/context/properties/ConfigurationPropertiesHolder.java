@@ -26,7 +26,7 @@ class ConfigurationPropertiesHolder {
 
 	private final Object target;
 
-	public ConfigurationPropertiesHolder(Object target) {
+	ConfigurationPropertiesHolder(Object target) {
 		this.target = target;
 	}
 

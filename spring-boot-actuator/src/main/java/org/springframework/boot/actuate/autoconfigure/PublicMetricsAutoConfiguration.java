@@ -45,6 +45,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
@@ -107,6 +108,7 @@ public class PublicMetricsAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Tomcat.class })
+	@ConditionalOnWebApplication
 	static class TomcatMetricsConfiguration {
 
 		@Bean
@@ -142,8 +144,8 @@ public class PublicMetricsAutoConfiguration {
 		@ConditionalOnMissingBean
 		public MetricReaderPublicMetrics springIntegrationPublicMetrics(
 				IntegrationMBeanExporter exporter) {
-			return new MetricReaderPublicMetrics(new SpringIntegrationMetricReader(
-					exporter));
+			return new MetricReaderPublicMetrics(
+					new SpringIntegrationMetricReader(exporter));
 		}
 
 	}

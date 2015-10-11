@@ -26,7 +26,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleFlywayApplication.class)
+@SpringApplicationConfiguration(SampleFlywayApplication.class)
 public class SampleFlywayApplicationTests {
 
 	@Autowired
@@ -34,8 +34,8 @@ public class SampleFlywayApplicationTests {
 
 	@Test
 	public void testDefaultSettings() throws Exception {
-		assertEquals(new Integer(1), this.template.queryForObject(
-				"SELECT COUNT(*) from PERSON", Integer.class));
+		assertEquals(new Integer(1), this.template
+				.queryForObject("SELECT COUNT(*) from PERSON", Integer.class));
 	}
 
 }

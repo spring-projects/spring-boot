@@ -17,9 +17,9 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.util.LinkedHashSet;
-import java.util.Properties;
 import java.util.Set;
 
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
@@ -29,6 +29,8 @@ import org.springframework.util.StringUtils;
  * @author Greg Turnquist
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
+ * @author Josh Thornhill
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
@@ -72,6 +74,11 @@ public class RabbitProperties {
 	 * Requested heartbeat timeout, in seconds; zero for none.
 	 */
 	private Integer requestedHeartbeat;
+
+	/**
+	 * Listener container configuration.
+	 */
+	private final Listener listener = new Listener();
 
 	public String getHost() {
 		if (this.addresses == null) {
@@ -127,7 +134,7 @@ public class RabbitProperties {
 			}
 			int index = address.indexOf("/");
 			if (index >= 0 && index < address.length()) {
-				this.virtualHost = address.substring(index + 1);
+				setVirtualHost(address.substring(index + 1));
 				address = address.substring(0, index);
 			}
 			if (!address.contains(":")) {
@@ -135,8 +142,8 @@ public class RabbitProperties {
 			}
 			result.add(address);
 		}
-		return (result.isEmpty() ? null : StringUtils
-				.collectionToCommaDelimitedString(result));
+		return (result.isEmpty() ? null
+				: StringUtils.collectionToCommaDelimitedString(result));
 	}
 
 	public void setPort(int port) {
@@ -177,6 +184,10 @@ public class RabbitProperties {
 
 	public void setRequestedHeartbeat(Integer requestedHeartbeat) {
 		this.requestedHeartbeat = requestedHeartbeat;
+	}
+
+	public Listener getListener() {
+		return this.listener;
 	}
 
 	public static class Ssl {
@@ -246,28 +257,89 @@ public class RabbitProperties {
 			this.trustStorePassword = trustStorePassword;
 		}
 
+	}
+
+	public static class Listener {
+
 		/**
-		 * Create the ssl configuration as expected by the
-		 * {@link org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean
-		 * RabbitConnectionFactoryBean}.
-		 * @return the ssl configuration
+		 * Start the container automatically on startup.
 		 */
-		public Properties createSslProperties() {
-			Properties properties = new Properties();
-			if (getKeyStore() != null) {
-				properties.put("keyStore", getKeyStore());
-			}
-			if (getKeyStorePassword() != null) {
-				properties.put("keyStore.passPhrase", getKeyStorePassword());
-			}
-			if (getTrustStore() != null) {
-				properties.put("trustStore", getTrustStore());
-			}
-			if (getTrustStorePassword() != null) {
-				properties.put("trustStore.passPhrase", getTrustStorePassword());
-			}
-			return properties;
+		private boolean autoStartup = true;
+
+		/**
+		 * Acknowledge mode of container.
+		 */
+		private AcknowledgeMode acknowledgeMode;
+
+		/**
+		 * Minimum number of consumers.
+		 */
+		private Integer concurrency;
+
+		/**
+		 * Maximum number of consumers.
+		 */
+		private Integer maxConcurrency;
+
+		/**
+		 * Number of messages to be handled in a single request. It should be greater than
+		 * or equal to the transaction size (if used).
+		 */
+		private Integer prefetch;
+
+		/**
+		 * Number of messages to be processed in a transaction. For best results it should
+		 * be less than or equal to the prefetch count.
+		 */
+		private Integer transactionSize;
+
+		public boolean isAutoStartup() {
+			return this.autoStartup;
 		}
 
+		public void setAutoStartup(boolean autoStartup) {
+			this.autoStartup = autoStartup;
+		}
+
+		public AcknowledgeMode getAcknowledgeMode() {
+			return this.acknowledgeMode;
+		}
+
+		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+			this.acknowledgeMode = acknowledgeMode;
+		}
+
+		public Integer getConcurrency() {
+			return this.concurrency;
+		}
+
+		public void setConcurrency(Integer concurrency) {
+			this.concurrency = concurrency;
+		}
+
+		public Integer getMaxConcurrency() {
+			return this.maxConcurrency;
+		}
+
+		public void setMaxConcurrency(Integer maxConcurrency) {
+			this.maxConcurrency = maxConcurrency;
+		}
+
+		public Integer getPrefetch() {
+			return this.prefetch;
+		}
+
+		public void setPrefetch(Integer prefetch) {
+			this.prefetch = prefetch;
+		}
+
+		public Integer getTransactionSize() {
+			return this.transactionSize;
+		}
+
+		public void setTransactionSize(Integer transactionSize) {
+			this.transactionSize = transactionSize;
+		}
 	}
+
 }

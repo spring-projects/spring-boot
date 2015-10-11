@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNotEquals;
  * @author Phillip Webb
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Config.class)
+@SpringApplicationConfiguration(Config.class)
 @WebIntegrationTest({ "server.port=0", "value=123" })
 public class SpringApplicationWebIntegrationTestTests {
 
@@ -55,8 +55,8 @@ public class SpringApplicationWebIntegrationTestTests {
 	public void runAndTestHttpEndpoint() {
 		assertNotEquals(8080, this.port);
 		assertNotEquals(0, this.port);
-		String body = new RestTemplate().getForObject("http://localhost:" + this.port
-				+ "/", String.class);
+		String body = new RestTemplate()
+				.getForObject("http://localhost:" + this.port + "/", String.class);
 		assertEquals("Hello World", body);
 	}
 

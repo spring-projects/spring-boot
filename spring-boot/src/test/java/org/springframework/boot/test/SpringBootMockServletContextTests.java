@@ -43,7 +43,7 @@ import static org.junit.Assert.assertThat;
  * @author Phillip Webb
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SpringBootMockServletContextTests.Config.class)
+@SpringApplicationConfiguration(SpringBootMockServletContextTests.Config.class)
 @WebAppConfiguration("src/test/webapp")
 public class SpringBootMockServletContextTests implements ServletContextAware {
 

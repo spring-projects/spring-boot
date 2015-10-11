@@ -31,8 +31,8 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Phillip Webb
  * @author Dave Syer
  */
-class JpaRepositoriesAutoConfigureRegistrar extends
-		AbstractRepositoryConfigurationSourceSupport {
+class JpaRepositoriesAutoConfigureRegistrar
+		extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {

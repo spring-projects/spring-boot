@@ -45,10 +45,11 @@ public class ResourceMatcherTests {
 
 	@Test
 	public void nonExistentRoot() throws IOException {
-		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("alpha/**",
-				"bravo/*", "*"), Arrays.asList(".*", "alpha/**/excluded"));
-		List<MatchedResource> matchedResources = resourceMatcher.find(Arrays
-				.asList(new File("does-not-exist")));
+		ResourceMatcher resourceMatcher = new ResourceMatcher(
+				Arrays.asList("alpha/**", "bravo/*", "*"),
+				Arrays.asList(".*", "alpha/**/excluded"));
+		List<MatchedResource> matchedResources = resourceMatcher
+				.find(Arrays.asList(new File("does-not-exist")));
 		assertEquals(0, matchedResources.size());
 	}
 
@@ -67,18 +68,18 @@ public class ResourceMatcherTests {
 	public void excludedWins() throws Exception {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("*"),
 				Arrays.asList("**/*.jar"));
-		List<MatchedResource> found = resourceMatcher.find(Arrays.asList(new File(
-				"src/test/resources")));
+		List<MatchedResource> found = resourceMatcher
+				.find(Arrays.asList(new File("src/test/resources")));
 		assertThat(found, not(hasItem(new FooJarMatcher(MatchedResource.class))));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void includedDeltas() throws Exception {
-		ResourceMatcher resourceMatcher = new ResourceMatcher(
-				Arrays.asList("-static/**"), Arrays.asList(""));
-		Collection<String> includes = (Collection<String>) ReflectionTestUtils.getField(
-				resourceMatcher, "includes");
+		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("-static/**"),
+				Arrays.asList(""));
+		Collection<String> includes = (Collection<String>) ReflectionTestUtils
+				.getField(resourceMatcher, "includes");
 		assertTrue(includes.contains("templates/**"));
 		assertFalse(includes.contains("static/**"));
 	}
@@ -86,10 +87,10 @@ public class ResourceMatcherTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void includedDeltasAndNewEntries() throws Exception {
-		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("-static/**",
-				"foo.jar"), Arrays.asList("-**/*.jar"));
-		Collection<String> includes = (Collection<String>) ReflectionTestUtils.getField(
-				resourceMatcher, "includes");
+		ResourceMatcher resourceMatcher = new ResourceMatcher(
+				Arrays.asList("-static/**", "foo.jar"), Arrays.asList("-**/*.jar"));
+		Collection<String> includes = (Collection<String>) ReflectionTestUtils
+				.getField(resourceMatcher, "includes");
 		assertTrue(includes.contains("foo.jar"));
 		assertTrue(includes.contains("templates/**"));
 		assertFalse(includes.contains("static/**"));
@@ -110,8 +111,9 @@ public class ResourceMatcherTests {
 	public void jarFileAlwaysMatches() throws Exception {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("*"),
 				Arrays.asList("**/*.jar"));
-		List<MatchedResource> found = resourceMatcher.find(Arrays.asList(new File(
-				"src/test/resources/templates"), new File("src/test/resources/foo.jar")));
+		List<MatchedResource> found = resourceMatcher
+				.find(Arrays.asList(new File("src/test/resources/templates"),
+						new File("src/test/resources/foo.jar")));
 		FooJarMatcher matcher = new FooJarMatcher(MatchedResource.class);
 		assertThat(found, hasItem(matcher));
 		// A jar file is always treated as a dependency (stick it in /lib)
@@ -120,12 +122,13 @@ public class ResourceMatcherTests {
 
 	@Test
 	public void resourceMatching() throws IOException {
-		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("alpha/**",
-				"bravo/*", "*"), Arrays.asList(".*", "alpha/**/excluded"));
-		List<MatchedResource> matchedResources = resourceMatcher.find(Arrays.asList(
-				new File("src/test/resources/resource-matcher/one"), new File(
-						"src/test/resources/resource-matcher/two"), new File(
-						"src/test/resources/resource-matcher/three")));
+		ResourceMatcher resourceMatcher = new ResourceMatcher(
+				Arrays.asList("alpha/**", "bravo/*", "*"),
+				Arrays.asList(".*", "alpha/**/excluded"));
+		List<MatchedResource> matchedResources = resourceMatcher
+				.find(Arrays.asList(new File("src/test/resources/resource-matcher/one"),
+						new File("src/test/resources/resource-matcher/two"),
+						new File("src/test/resources/resource-matcher/three")));
 		System.out.println(matchedResources);
 		List<String> paths = new ArrayList<String>();
 		for (MatchedResource resource : matchedResources) {

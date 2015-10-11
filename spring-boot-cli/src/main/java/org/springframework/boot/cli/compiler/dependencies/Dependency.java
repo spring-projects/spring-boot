@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ public final class Dependency {
 	 * @param version the version
 	 */
 	public Dependency(String groupId, String artifactId, String version) {
-		this(groupId, artifactId, version, Collections.<Exclusion> emptyList());
+		this(groupId, artifactId, version, Collections.<Exclusion>emptyList());
 	}
 
 	/**

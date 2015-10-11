@@ -61,8 +61,20 @@ class JmsAnnotationDrivenConfiguration {
 		if (this.transactionManager != null) {
 			factory.setTransactionManager(this.transactionManager);
 		}
+		else {
+			factory.setSessionTransacted(true);
+		}
 		if (this.destinationResolver != null) {
 			factory.setDestinationResolver(this.destinationResolver);
+		}
+		JmsProperties.Listener listener = this.properties.getListener();
+		factory.setAutoStartup(listener.isAutoStartup());
+		if (listener.getAcknowledgeMode() != null) {
+			factory.setSessionAcknowledgeMode(listener.getAcknowledgeMode().getMode());
+		}
+		String concurrency = listener.formatConcurrency();
+		if (concurrency != null) {
+			factory.setConcurrency(concurrency);
 		}
 		return factory;
 	}
@@ -76,8 +88,8 @@ class JmsAnnotationDrivenConfiguration {
 	protected static class JndiConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		public DestinationResolver destinationResolver() {
+		@ConditionalOnMissingBean(DestinationResolver.class)
+		public JndiDestinationResolver destinationResolver() {
 			JndiDestinationResolver resolver = new JndiDestinationResolver();
 			resolver.setFallbackToDynamicDestination(true);
 			return resolver;

@@ -42,12 +42,12 @@ public @interface ConditionalOnEnabledEndpoint {
 	 * The name of the endpoint.
 	 * @return The name of the endpoint
 	 */
-	public String value();
+	String value();
 
 	/**
 	 * Returns whether or not the endpoint is enabled by default.
 	 * @return {@code true} if the endpoint is enabled by default, otherwise {@code false}
 	 */
-	public boolean enabledByDefault() default true;
+	boolean enabledByDefault() default true;
 
 }

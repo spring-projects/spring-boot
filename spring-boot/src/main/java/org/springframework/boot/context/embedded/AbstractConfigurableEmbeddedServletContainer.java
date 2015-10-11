@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,10 +35,11 @@ import org.springframework.util.ClassUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Ivan Sopov
  * @see AbstractEmbeddedServletContainerFactory
  */
-public abstract class AbstractConfigurableEmbeddedServletContainer implements
-		ConfigurableEmbeddedServletContainer {
+public abstract class AbstractConfigurableEmbeddedServletContainer
+		implements ConfigurableEmbeddedServletContainer {
 
 	private static final int DEFAULT_SESSION_TIMEOUT = (int) TimeUnit.MINUTES
 			.toSeconds(30);
@@ -63,9 +64,13 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 
 	private int sessionTimeout = DEFAULT_SESSION_TIMEOUT;
 
+	private boolean persistSession;
+
 	private Ssl ssl;
 
 	private JspServlet jspServlet = new JspServlet();
+
+	private Compression compression;
 
 	/**
 	 * Create a new {@link AbstractConfigurableEmbeddedServletContainer} instance.
@@ -109,7 +114,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 			}
 			if (!contextPath.startsWith("/") || contextPath.endsWith("/")) {
 				throw new IllegalArgumentException(
-						"ContextPath must start with '/ and not end with '/'");
+						"ContextPath must start with '/' and not end with '/'");
 			}
 		}
 	}
@@ -151,7 +156,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	/**
-	 * @return the address the embedded container binds to
+	 * Return the address that the embedded container binds to.
+	 * @return the address
 	 */
 	public InetAddress getAddress() {
 		return this.address;
@@ -169,10 +175,20 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	/**
-	 * @return the session timeout in seconds
+	 * Return the session timeout in seconds.
+	 * @return the timeout in seconds
 	 */
 	public int getSessionTimeout() {
 		return this.sessionTimeout;
+	}
+
+	@Override
+	public void setPersistSession(boolean persistSession) {
+		this.persistSession = persistSession;
+	}
+
+	public boolean isPersistSession() {
+		return this.persistSession;
 	}
 
 	@Override
@@ -278,6 +294,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 		return this.jspServlet;
 	}
 
+	public Compression getCompression() {
+		return this.compression;
+	}
+
+	@Override
+	public void setCompression(Compression compression) {
+		this.compression = compression;
+	}
+
 	/**
 	 * Utility method that can be used by subclasses wishing to combine the specified
 	 * {@link ServletContextInitializer} parameters with those defined in this instance.
@@ -300,10 +325,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	 * @return {@code true} if the container should be registered, otherwise {@code false}
 	 */
 	protected boolean shouldRegisterJspServlet() {
-		return this.jspServlet != null
-				&& this.jspServlet.getRegistered()
-				&& ClassUtils.isPresent(this.jspServlet.getClassName(), getClass()
-						.getClassLoader());
+		return this.jspServlet != null && this.jspServlet.getRegistered() && ClassUtils
+				.isPresent(this.jspServlet.getClassName(), getClass().getClassLoader());
 	}
 
 }

@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.cache;
 
-import net.sf.ehcache.statistics.StatisticsGateway;
-
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCache;
+
+import net.sf.ehcache.statistics.StatisticsGateway;
 
 /**
  * {@link CacheStatisticsProvider} implementation for EhCache.
@@ -37,8 +37,11 @@ public class EhCacheStatisticsProvider implements CacheStatisticsProvider<EhCach
 		statistics.setSize(ehCacheStatistics.getSize());
 		Double hitRatio = ehCacheStatistics.cacheHitRatio();
 		if (!hitRatio.isNaN()) {
-			statistics.setHitRatio(hitRatio);
-			statistics.setMissRatio(1 - hitRatio);
+			// ratio is calculated 'racily' and can drift marginally above unity,
+			// so we cap it here
+			double sanitizedHitRatio = (hitRatio > 1 ? 1 : hitRatio);
+			statistics.setHitRatio(sanitizedHitRatio);
+			statistics.setMissRatio(1 - sanitizedHitRatio);
 		}
 		return statistics;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public @interface ConditionalOnMissingClass {
 	 * The names of the classes that must not be present.
 	 * @return the names of the classes that must not be present
 	 */
-	public String[] value() default {};
+	String[] value() default {};
 
 	/**
 	 * An alias for {@link #value} specifying the names of the classes that must not be
@@ -48,6 +48,6 @@ public @interface ConditionalOnMissingClass {
 	 * @return the class names that must not be present.
 	 * @deprecated since 1.3.0 in favor of {@link #value}.
 	 */
-	public String[] name() default {};
+	String[] name() default {};
 
 }

@@ -44,6 +44,7 @@ public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 
 	@RequestMapping(value = "/{name:.*}", method = RequestMethod.GET)
 	@ResponseBody
+	@HypermediaDisabled
 	public Object value(@PathVariable String name) {
 		if (!this.delegate.isEnabled()) {
 			// Shouldn't happen - MVC endpoint shouldn't be registered when delegate's
@@ -58,7 +59,7 @@ public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 	 */
 	private class NamePatternMapFilter extends NamePatternFilter<Map<String, ?>> {
 
-		public NamePatternMapFilter(Map<String, ?> source) {
+		NamePatternMapFilter(Map<String, ?> source) {
 			super(source);
 		}
 

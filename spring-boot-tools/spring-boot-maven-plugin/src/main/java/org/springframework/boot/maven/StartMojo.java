@@ -86,8 +86,8 @@ public class StartMojo extends AbstractRunMojo {
 	private final Object lock = new Object();
 
 	@Override
-	protected void runWithForkedJvm(List<String> args) throws MojoExecutionException,
-			MojoFailureException {
+	protected void runWithForkedJvm(List<String> args)
+			throws MojoExecutionException, MojoFailureException {
 		RunProcess runProcess = runProcess(args);
 		try {
 			waitForSpringApplication();
@@ -118,8 +118,8 @@ public class StartMojo extends AbstractRunMojo {
 		RunArguments applicationArguments = super.resolveApplicationArguments();
 		applicationArguments.getArgs().addLast(ENABLE_MBEAN_PROPERTY);
 		if (isFork()) {
-			applicationArguments.getArgs().addLast(
-					JMX_NAME_PROPERTY_PREFIX + this.jmxName);
+			applicationArguments.getArgs()
+					.addLast(JMX_NAME_PROPERTY_PREFIX + this.jmxName);
 		}
 		return applicationArguments;
 	}
@@ -142,8 +142,8 @@ public class StartMojo extends AbstractRunMojo {
 	protected void runWithMavenJvm(String startClassName, String... arguments)
 			throws MojoExecutionException {
 		IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(startClassName);
-		Thread launchThread = new Thread(threadGroup, new LaunchRunner(startClassName,
-				arguments), startClassName + ".main()");
+		Thread launchThread = new Thread(threadGroup,
+				new LaunchRunner(startClassName, arguments), startClassName + ".main()");
 		launchThread.setContextClassLoader(new URLClassLoader(getClassPathUrls()));
 		launchThread.start();
 		waitForSpringApplication(this.wait, this.maxAttempts);
@@ -176,8 +176,8 @@ public class StartMojo extends AbstractRunMojo {
 						+ (wait * maxAttempts) + "ms");
 	}
 
-	private void waitForSpringApplication() throws MojoFailureException,
-			MojoExecutionException {
+	private void waitForSpringApplication()
+			throws MojoFailureException, MojoExecutionException {
 		try {
 			if (Boolean.TRUE.equals(isFork())) {
 				waitForForkedSpringApplication();
@@ -196,8 +196,8 @@ public class StartMojo extends AbstractRunMojo {
 		}
 	}
 
-	private void waitForForkedSpringApplication() throws IOException,
-			MojoFailureException, MojoExecutionException {
+	private void waitForForkedSpringApplication()
+			throws IOException, MojoFailureException, MojoExecutionException {
 		try {
 			getLog().debug("Connecting to local MBeanServer at port " + this.jmxPort);
 			JMXConnector connector = execute(this.wait, this.maxAttempts,
@@ -220,8 +220,8 @@ public class StartMojo extends AbstractRunMojo {
 			throw ex;
 		}
 		catch (Exception ex) {
-			throw new MojoExecutionException("Failed to connect to MBean server at port "
-					+ this.jmxPort, ex);
+			throw new MojoExecutionException(
+					"Failed to connect to MBean server at port " + this.jmxPort, ex);
 		}
 	}
 
@@ -250,12 +250,13 @@ public class StartMojo extends AbstractRunMojo {
 
 	/**
 	 * Execute a task, retrying it on failure.
+	 * @param <T> the result type
 	 * @param wait the wait time
 	 * @param maxAttempts the maximum number of attempts
 	 * @param callback the task to execute (possibly multiple times). The callback should
 	 * return {@code null} to indicate that another attempt should be made
 	 * @return the result
-	 * @throws Exception
+	 * @throws Exception in case of execution errors
 	 */
 	public <T> T execute(long wait, int maxAttempts, Callable<T> callback)
 			throws Exception {
@@ -287,7 +288,7 @@ public class StartMojo extends AbstractRunMojo {
 
 		private final int port;
 
-		public CreateJmxConnector(int port) {
+		CreateJmxConnector(int port) {
 			this.port = port;
 		}
 
@@ -308,8 +309,8 @@ public class StartMojo extends AbstractRunMojo {
 		}
 
 		private boolean hasCauseWithType(Throwable t, Class<? extends Exception> type) {
-			return type.isAssignableFrom(t.getClass()) || t.getCause() != null
-					&& hasCauseWithType(t.getCause(), type);
+			return type.isAssignableFrom(t.getClass())
+					|| t.getCause() != null && hasCauseWithType(t.getCause(), type);
 		}
 
 	}

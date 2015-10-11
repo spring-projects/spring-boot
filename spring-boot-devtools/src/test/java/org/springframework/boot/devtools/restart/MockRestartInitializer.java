@@ -18,8 +18,6 @@ package org.springframework.boot.devtools.restart;
 
 import java.net.URL;
 
-import org.springframework.boot.devtools.restart.RestartInitializer;
-
 /**
  * Simple mock {@link RestartInitializer} that returns an empty array of URLs.
  *

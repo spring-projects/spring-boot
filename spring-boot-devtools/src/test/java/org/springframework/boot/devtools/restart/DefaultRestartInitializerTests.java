@@ -19,7 +19,6 @@ package org.springframework.boot.devtools.restart;
 import java.net.URL;
 
 import org.junit.Test;
-import org.springframework.boot.devtools.restart.DefaultRestartInitializer;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -64,7 +63,8 @@ public class DefaultRestartInitializerTests {
 	@Test
 	public void threadNotUsingAppClassLoader() throws Exception {
 		MockRestartInitializer initializer = new MockRestartInitializer(false);
-		ClassLoader classLoader = new MockLauncherClassLoader(getClass().getClassLoader());
+		ClassLoader classLoader = new MockLauncherClassLoader(
+				getClass().getClassLoader());
 		Thread thread = new Thread();
 		thread.setName("main");
 		thread.setContextClassLoader(classLoader);
@@ -91,7 +91,7 @@ public class DefaultRestartInitializerTests {
 
 	private static class MockAppClassLoader extends ClassLoader {
 
-		public MockAppClassLoader(ClassLoader parent) {
+		MockAppClassLoader(ClassLoader parent) {
 			super(parent);
 		}
 
@@ -99,7 +99,7 @@ public class DefaultRestartInitializerTests {
 
 	private static class MockLauncherClassLoader extends ClassLoader {
 
-		public MockLauncherClassLoader(ClassLoader parent) {
+		MockLauncherClassLoader(ClassLoader parent) {
 			super(parent);
 		}
 
@@ -109,7 +109,7 @@ public class DefaultRestartInitializerTests {
 
 		private final boolean considerStackElements;
 
-		public MockRestartInitializer(boolean considerStackElements) {
+		MockRestartInitializer(boolean considerStackElements) {
 			this.considerStackElements = considerStackElements;
 		}
 

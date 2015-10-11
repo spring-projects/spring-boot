@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.lang.UsesJava7;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
 
@@ -100,27 +101,8 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		if (this.rootClassLoader == null) {
 			return findResources(name);
 		}
-
-		final Enumeration<URL> rootResources = this.rootClassLoader.getResources(name);
-		final Enumeration<URL> localResources = findResources(name);
-
-		return new Enumeration<URL>() {
-
-			@Override
-			public boolean hasMoreElements() {
-				return rootResources.hasMoreElements()
-						|| localResources.hasMoreElements();
-			}
-
-			@Override
-			public URL nextElement() {
-				if (rootResources.hasMoreElements()) {
-					return rootResources.nextElement();
-				}
-				return localResources.nextElement();
-			}
-
-		};
+		return new ResourceEnumeration(this.rootClassLoader.getResources(name),
+				findResources(name));
 	}
 
 	/**
@@ -156,6 +138,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			}
 		}
 		catch (Exception ex) {
+			// Ignore and continue
 		}
 
 		// 2) Try to find locally
@@ -165,6 +148,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			return cls;
 		}
 		catch (Exception ex) {
+			// Ignore and continue
 		}
 
 		// 3) Use standard loading
@@ -206,7 +190,8 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 								// manifest
 								if (jarFile.getJarEntryData(path) != null
 										&& jarFile.getManifest() != null) {
-									definePackage(packageName, jarFile.getManifest(), url);
+									definePackage(packageName, jarFile.getManifest(),
+											url);
 									return null;
 								}
 
@@ -259,5 +244,42 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 
 	}
+
+	/**
+	 * {@link Enumeration} implementation used for {@code getResources()}.
+	 */
+	private static class ResourceEnumeration implements Enumeration<URL> {
+
+		private final Enumeration<URL> rootResources;
+
+		private final Enumeration<URL> localResources;
+
+		ResourceEnumeration(Enumeration<URL> rootResources,
+				Enumeration<URL> localResources) {
+			this.rootResources = rootResources;
+			this.localResources = localResources;
+		}
+
+		@Override
+		public boolean hasMoreElements() {
+			try {
+				Handler.setUseFastConnectionExceptions(true);
+				return this.rootResources.hasMoreElements()
+						|| this.localResources.hasMoreElements();
+			}
+			finally {
+				Handler.setUseFastConnectionExceptions(false);
+			}
+		}
+
+		@Override
+		public URL nextElement() {
+			if (this.rootResources.hasMoreElements()) {
+				return this.rootResources.nextElement();
+			}
+			return this.localResources.nextElement();
+		}
+
+	};
 
 }

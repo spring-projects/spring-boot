@@ -17,10 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -31,51 +28,49 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.SmartInitializingSingleton;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties.Security;
-import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
-import org.springframework.boot.actuate.endpoint.HealthEndpoint;
-import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
-import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
-import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
-import org.springframework.boot.actuate.endpoint.mvc.ShutdownMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ConfigurationCondition;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
-import org.springframework.util.CollectionUtils;
+import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.core.type.MethodMetadata;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -90,33 +85,25 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Phillip Webb
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @author Johannes Stelzer
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ PropertyPlaceholderAutoConfiguration.class,
 		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
-		ManagementServerPropertiesAutoConfiguration.class })
-@EnableConfigurationProperties({ HealthMvcEndpointProperties.class,
-		EndpointCorsProperties.class })
-public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
-		SmartInitializingSingleton {
+		ManagementServerPropertiesAutoConfiguration.class,
+		RepositoryRestMvcAutoConfiguration.class, HypermediaAutoConfiguration.class,
+		HttpMessageConvertersAutoConfiguration.class })
+public class EndpointWebMvcAutoConfiguration
+		implements ApplicationContextAware, BeanFactoryAware, SmartInitializingSingleton {
 
-	private static Log logger = LogFactory.getLog(EndpointWebMvcAutoConfiguration.class);
+	private static final Log logger = LogFactory
+			.getLog(EndpointWebMvcAutoConfiguration.class);
 
 	private ApplicationContext applicationContext;
 
-	@Autowired
-	private HealthMvcEndpointProperties healthMvcEndpointProperties;
-
-	@Autowired
-	private ManagementServerProperties managementServerProperties;
-
-	@Autowired
-	private EndpointCorsProperties corsProperties;
-
-	@Autowired(required = false)
-	private List<EndpointHandlerMappingCustomizer> mappingCustomizers;
+	private BeanFactory beanFactory;
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
@@ -124,144 +111,73 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		this.applicationContext = applicationContext;
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	public EndpointHandlerMapping endpointHandlerMapping() {
-		Set<? extends MvcEndpoint> endpoints = mvcEndpoints().getEndpoints();
-		CorsConfiguration corsConfiguration = getCorsConfiguration(this.corsProperties);
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(endpoints,
-				corsConfiguration);
-		boolean disabled = ManagementServerPort.get(this.applicationContext) != ManagementServerPort.SAME;
-		mapping.setDisabled(disabled);
-		if (!disabled) {
-			mapping.setPrefix(this.managementServerProperties.getContextPath());
-		}
-		if (this.mappingCustomizers != null) {
-			for (EndpointHandlerMappingCustomizer customizer : this.mappingCustomizers) {
-				customizer.customize(mapping);
-			}
-		}
-		return mapping;
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = beanFactory;
 	}
 
-	private CorsConfiguration getCorsConfiguration(EndpointCorsProperties properties) {
-		if (CollectionUtils.isEmpty(properties.getAllowedOrigins())) {
-			return null;
-		}
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(properties.getAllowedOrigins());
-		if (!CollectionUtils.isEmpty(properties.getAllowedHeaders())) {
-			configuration.setAllowedHeaders(properties.getAllowedHeaders());
-		}
-		if (!CollectionUtils.isEmpty(properties.getAllowedMethods())) {
-			configuration.setAllowedMethods(properties.getAllowedMethods());
-		}
-		if (!CollectionUtils.isEmpty(properties.getExposedHeaders())) {
-			configuration.setExposedHeaders(properties.getExposedHeaders());
-		}
-		if (properties.getMaxAge() != null) {
-			configuration.setMaxAge(properties.getMaxAge());
-		}
-		if (properties.getAllowCredentials() != null) {
-			configuration.setAllowCredentials(properties.getAllowCredentials());
-		}
-		return configuration;
+	@Bean
+	public ManagementContextResolver managementContextResolver() {
+		return new ManagementContextResolver(this.applicationContext);
+	}
+
+	@Bean
+	public ManagementServletContext managementServletContext(
+			final ManagementServerProperties properties) {
+		return new ManagementServletContext() {
+
+			@Override
+			public String getContextPath() {
+				return properties.getContextPath();
+			}
+
+		};
 	}
 
 	@Override
 	public void afterSingletonsInstantiated() {
-		ManagementServerPort managementPort = ManagementServerPort
-				.get(this.applicationContext);
+		ManagementServerPort managementPort = ManagementServerPort.DIFFERENT;
+		if (this.applicationContext instanceof WebApplicationContext) {
+			managementPort = ManagementServerPort
+					.get(this.applicationContext.getEnvironment(), this.beanFactory);
+		}
 		if (managementPort == ManagementServerPort.DIFFERENT
 				&& this.applicationContext instanceof EmbeddedWebApplicationContext
 				&& ((EmbeddedWebApplicationContext) this.applicationContext)
 						.getEmbeddedServletContainer() != null) {
 			createChildManagementContext();
 		}
-		if (managementPort == ManagementServerPort.SAME
-				&& this.applicationContext.getEnvironment() instanceof ConfigurableEnvironment) {
-			addLocalManagementPortPropertyAlias((ConfigurableEnvironment) this.applicationContext
-					.getEnvironment());
+		if (managementPort == ManagementServerPort.SAME && this.applicationContext
+				.getEnvironment() instanceof ConfigurableEnvironment) {
+			addLocalManagementPortPropertyAlias(
+					(ConfigurableEnvironment) this.applicationContext.getEnvironment());
 		}
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public MvcEndpoints mvcEndpoints() {
-		return new MvcEndpoints();
-	}
-
-	@Bean
-	@ConditionalOnBean(EnvironmentEndpoint.class)
-	@ConditionalOnEnabledEndpoint("env")
-	public EnvironmentMvcEndpoint environmentMvcEndpoint(EnvironmentEndpoint delegate) {
-		return new EnvironmentMvcEndpoint(delegate);
-	}
-
-	@Bean
-	@ConditionalOnBean(HealthEndpoint.class)
-	@ConditionalOnEnabledEndpoint("health")
-	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
-		Security security = this.managementServerProperties.getSecurity();
-		boolean secure = (security == null || security.isEnabled());
-		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate, secure);
-		if (this.healthMvcEndpointProperties.getMapping() != null) {
-			healthMvcEndpoint.addStatusMapping(this.healthMvcEndpointProperties
-					.getMapping());
-		}
-		return healthMvcEndpoint;
-	}
-
-	@Bean
-	@ConditionalOnBean(MetricsEndpoint.class)
-	@ConditionalOnEnabledEndpoint("metrics")
-	public MetricsMvcEndpoint metricsMvcEndpoint(MetricsEndpoint delegate) {
-		return new MetricsMvcEndpoint(delegate);
-	}
-
-	@Bean
-	@ConditionalOnBean(ShutdownEndpoint.class)
-	@ConditionalOnEnabledEndpoint(value = "shutdown", enabledByDefault = false)
-	public ShutdownMvcEndpoint shutdownMvcEndpoint(ShutdownEndpoint delegate) {
-		return new ShutdownMvcEndpoint(delegate);
 	}
 
 	private void createChildManagementContext() {
-
 		final AnnotationConfigEmbeddedWebApplicationContext childContext = new AnnotationConfigEmbeddedWebApplicationContext();
 		childContext.setParent(this.applicationContext);
 		childContext.setNamespace("management");
 		childContext.setId(this.applicationContext.getId() + ":management");
-
-		// Register the ManagementServerChildContextConfiguration first followed
-		// by various specific AutoConfiguration classes. NOTE: The child context
-		// is intentionally not completely auto-configured.
 		childContext.register(EndpointWebMvcChildContextConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				EmbeddedServletContainerAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
-
-		// Ensure close on the parent also closes the child
-		if (this.applicationContext instanceof ConfigurableApplicationContext) {
-			((ConfigurableApplicationContext) this.applicationContext)
-					.addApplicationListener(new ApplicationListener<ContextClosedEvent>() {
-						@Override
-						public void onApplicationEvent(ContextClosedEvent event) {
-							if (event.getApplicationContext() == EndpointWebMvcAutoConfiguration.this.applicationContext) {
-								childContext.close();
-							}
-						}
-					});
-		}
+		CloseEventPropagationListener.addIfPossible(this.applicationContext,
+				childContext);
 		try {
 			childContext.refresh();
+			managementContextResolver().setApplicationContext(childContext);
 		}
 		catch (RuntimeException ex) {
 			// No support currently for deploying a war with management.port=<different>,
 			// and this is the signature of that happening
 			if (ex instanceof EmbeddedServletContainerException
 					|| ex.getCause() instanceof EmbeddedServletContainerException) {
-				logger.warn("Could not start embedded container (management endpoints are still available through JMX)");
+				logger.warn(
+						"Could not start embedded management container (management endpoints "
+								+ "are still available through JMX)");
+				logger.debug("Embedded management container startup failed", ex);
 			}
 			else {
 				throw ex;
@@ -276,8 +192,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	 */
 	private void addLocalManagementPortPropertyAlias(
 			final ConfigurableEnvironment environment) {
-		environment.getPropertySources().addLast(
-				new PropertySource<Object>("Management Server") {
+		environment.getPropertySources()
+				.addLast(new PropertySource<Object>("Management Server") {
 					@Override
 					public Object getProperty(String name) {
 						if ("local.management.port".equals(name)) {
@@ -294,10 +210,17 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	protected static class ApplicationContextFilterConfiguration {
 
 		@Bean
-		public Filter applicationContextIdFilter(ApplicationContext context) {
+		public ApplicationContextHeaderFilter applicationContextIdFilter(
+				ApplicationContext context) {
 			return new ApplicationContextHeaderFilter(context);
 		}
 
+	}
+
+	@Configuration
+	@Conditional(OnManagementMvcCondition.class)
+	@Import(ManagementContextConfigurationsImportSelector.class)
+	protected static class EndpointWebMvcConfiguration {
 	}
 
 	/**
@@ -310,14 +233,14 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 		private ManagementServerProperties properties;
 
-		public ApplicationContextHeaderFilter(ApplicationContext applicationContext) {
+		ApplicationContextHeaderFilter(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
 
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain filterChain)
-				throws ServletException, IOException {
+						throws ServletException, IOException {
 			if (this.properties == null) {
 				this.properties = this.applicationContext
 						.getBean(ManagementServerProperties.class);
@@ -331,38 +254,128 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	}
 
-	protected static enum ManagementServerPort {
+	/**
+	 * {@link ApplicationListener} to propagate the {@link ContextClosedEvent} from a
+	 * parent to a child.
+	 */
+	private static class CloseEventPropagationListener
+			implements ApplicationListener<ContextClosedEvent> {
+
+		private final ApplicationContext parentContext;
+
+		private final ConfigurableApplicationContext childContext;
+
+		CloseEventPropagationListener(ApplicationContext parentContext,
+				ConfigurableApplicationContext childContext) {
+			this.parentContext = parentContext;
+			this.childContext = childContext;
+		}
+
+		@Override
+		public void onApplicationEvent(ContextClosedEvent event) {
+			if (event.getApplicationContext() == this.parentContext) {
+				this.childContext.close();
+			}
+		}
+
+		public static void addIfPossible(ApplicationContext parentContext,
+				ConfigurableApplicationContext childContext) {
+			if (parentContext instanceof ConfigurableApplicationContext) {
+				add((ConfigurableApplicationContext) parentContext, childContext);
+			}
+		}
+
+		private static void add(ConfigurableApplicationContext parentContext,
+				ConfigurableApplicationContext childContext) {
+			parentContext.addApplicationListener(
+					new CloseEventPropagationListener(parentContext, childContext));
+		}
+
+	}
+
+	private static class OnManagementMvcCondition extends SpringBootCondition
+			implements ConfigurationCondition {
+
+		@Override
+		public ConfigurationPhase getConfigurationPhase() {
+			return ConfigurationPhase.REGISTER_BEAN;
+		}
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			if (!(context.getResourceLoader() instanceof WebApplicationContext)) {
+				return ConditionOutcome.noMatch("Non WebApplicationContext");
+			}
+			ManagementServerPort port = ManagementServerPort.get(context.getEnvironment(),
+					context.getBeanFactory());
+			return new ConditionOutcome(port == ManagementServerPort.SAME,
+					"Management context");
+		}
+
+	}
+
+	protected enum ManagementServerPort {
 
 		DISABLE, SAME, DIFFERENT;
 
-		public static ManagementServerPort get(BeanFactory beanFactory) {
-			ServerProperties serverProperties;
-			try {
-				serverProperties = beanFactory.getBean(ServerProperties.class);
+		public static ManagementServerPort get(Environment environment,
+				BeanFactory beanFactory) {
+			Integer serverPort = getPortProperty(environment, "server.");
+			if (serverPort == null && hasCustomBeanDefinition(beanFactory,
+					ServerProperties.class, ServerPropertiesAutoConfiguration.class)) {
+				ServerProperties bean = beanFactory.getBean(ServerProperties.class);
+				serverPort = bean.getPort();
 			}
-			catch (NoSuchBeanDefinitionException ex) {
-				serverProperties = new ServerProperties();
-			}
-			ManagementServerProperties managementServerProperties;
-			try {
-				managementServerProperties = beanFactory
+			Integer managementPort = getPortProperty(environment, "management.");
+			if (managementPort == null && hasCustomBeanDefinition(beanFactory,
+					ManagementServerProperties.class,
+					ManagementServerPropertiesAutoConfiguration.class)) {
+				ManagementServerProperties bean = beanFactory
 						.getBean(ManagementServerProperties.class);
+				managementPort = bean.getPort();
 			}
-			catch (NoSuchBeanDefinitionException ex) {
-				managementServerProperties = new ManagementServerProperties();
-			}
-			Integer port = managementServerProperties.getPort();
-			if (port != null && port < 0) {
+			if (managementPort != null && managementPort < 0) {
 				return DISABLE;
 			}
-			if (!(beanFactory instanceof WebApplicationContext)) {
-				// Current context is not a webapp
-				return DIFFERENT;
+			return ((managementPort == null)
+					|| (serverPort == null && managementPort.equals(8080))
+					|| (managementPort != 0 && managementPort.equals(serverPort)) ? SAME
+							: DIFFERENT);
+		}
+
+		private static Integer getPortProperty(Environment environment, String prefix) {
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
+					prefix);
+			return resolver.getProperty("port", Integer.class);
+		}
+
+		private static <T> boolean hasCustomBeanDefinition(BeanFactory beanFactory,
+				Class<T> type, Class<?> configClass) {
+			if (!(beanFactory instanceof ConfigurableListableBeanFactory)) {
+				return false;
 			}
-			return ((port == null)
-					|| (serverProperties.getPort() == null && port.equals(8080))
-					|| (port != 0 && port.equals(serverProperties.getPort())) ? SAME
-					: DIFFERENT);
+			return hasCustomBeanDefinition((ConfigurableListableBeanFactory) beanFactory,
+					type, configClass);
+		}
+
+		private static <T> boolean hasCustomBeanDefinition(
+				ConfigurableListableBeanFactory beanFactory, Class<T> type,
+				Class<?> configClass) {
+			String[] names = beanFactory.getBeanNamesForType(type, true, false);
+			if (names == null || names.length != 1) {
+				return false;
+			}
+			BeanDefinition definition = beanFactory.getBeanDefinition(names[0]);
+			if (definition instanceof AnnotatedBeanDefinition) {
+				MethodMetadata factoryMethodMetadata = ((AnnotatedBeanDefinition) definition)
+						.getFactoryMethodMetadata();
+				if (factoryMethodMetadata != null) {
+					String className = factoryMethodMetadata.getDeclaringClassName();
+					return !configClass.getName().equals(className);
+				}
+			}
+			return true;
 		}
 
 	}

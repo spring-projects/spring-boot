@@ -16,10 +16,10 @@
 
 package org.springframework.boot.cli.compiler.grape;
 
+import java.lang.reflect.Field;
+
 import groovy.grape.Grape;
 import groovy.grape.GrapeEngine;
-
-import java.lang.reflect.Field;
 
 /**
  * Utility to install a specific {@link Grape} engine with Groovy.

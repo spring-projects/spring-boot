@@ -28,8 +28,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
-import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
+import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceFolder;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
@@ -93,10 +93,10 @@ public class RestartServer {
 		}
 		updateTimeStamp(urls);
 		restart(urls, files);
-
 	}
 
-	private boolean updateFileSystem(URL url, String name, ClassLoaderFile classLoaderFile) {
+	private boolean updateFileSystem(URL url, String name,
+			ClassLoaderFile classLoaderFile) {
 		if (!isFolderUrl(url.toString())) {
 			return false;
 		}

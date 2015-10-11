@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ import static org.junit.Assert.assertEquals;
 /**
  * Abstract base class for {@link DataSourcePoolMetadata} tests.
  *
- * @author Stephane Nicoll
  * @param <D> the data source pool metadata type
+ * @author Stephane Nicoll
  */
 public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourcePoolMetadata<?>> {
 
@@ -54,12 +54,12 @@ public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractData
 	@Test
 	public void getPoolSizeNoConnection() {
 		// Make sure the pool is initialized
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata()
-				.getDataSource());
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(
+				getDataSourceMetadata().getDataSource());
 		jdbcTemplate.execute(new ConnectionCallback<Void>() {
 			@Override
-			public Void doInConnection(Connection connection) throws SQLException,
-					DataAccessException {
+			public Void doInConnection(Connection connection)
+					throws SQLException, DataAccessException {
 				return null;
 			}
 		});
@@ -69,12 +69,12 @@ public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractData
 
 	@Test
 	public void getPoolSizeOneConnection() {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata()
-				.getDataSource());
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(
+				getDataSourceMetadata().getDataSource());
 		jdbcTemplate.execute(new ConnectionCallback<Void>() {
 			@Override
-			public Void doInConnection(Connection connection) throws SQLException,
-					DataAccessException {
+			public Void doInConnection(Connection connection)
+					throws SQLException, DataAccessException {
 				assertEquals(Integer.valueOf(1), getDataSourceMetadata().getActive());
 				assertEquals(Float.valueOf(0.5F), getDataSourceMetadata().getUsage());
 				return null;
@@ -84,20 +84,20 @@ public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractData
 
 	@Test
 	public void getPoolSizeTwoConnections() {
-		final JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata()
-				.getDataSource());
+		final JdbcTemplate jdbcTemplate = new JdbcTemplate(
+				getDataSourceMetadata().getDataSource());
 		jdbcTemplate.execute(new ConnectionCallback<Void>() {
 			@Override
-			public Void doInConnection(Connection connection) throws SQLException,
-					DataAccessException {
+			public Void doInConnection(Connection connection)
+					throws SQLException, DataAccessException {
 				jdbcTemplate.execute(new ConnectionCallback<Void>() {
 					@Override
 					public Void doInConnection(Connection connection)
 							throws SQLException, DataAccessException {
-						assertEquals(Integer.valueOf(2), getDataSourceMetadata()
-								.getActive());
-						assertEquals(Float.valueOf(1F), getDataSourceMetadata()
-								.getUsage());
+						assertEquals(Integer.valueOf(2),
+								getDataSourceMetadata().getActive());
+						assertEquals(Float.valueOf(1F),
+								getDataSourceMetadata().getUsage());
 						return null;
 					}
 				});

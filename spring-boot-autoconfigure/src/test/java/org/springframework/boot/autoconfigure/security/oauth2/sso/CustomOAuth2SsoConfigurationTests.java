@@ -52,13 +52,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestConfiguration.class)
+@SpringApplicationConfiguration(TestConfiguration.class)
 @WebAppConfiguration
-@TestPropertySource(properties = { "spring.oauth2.client.clientId=client",
-		"spring.oauth2.client.clientSecret=secret",
-		"spring.oauth2.client.authorizationUri=http://example.com/oauth/authorize",
-		"spring.oauth2.client.tokenUri=http://example.com/oauth/token",
-		"spring.oauth2.resource.jwt.keyValue=SSSSHHH" })
+@TestPropertySource(properties = { "security.oauth2.client.clientId=client",
+		"security.oauth2.client.clientSecret=secret",
+		"security.oauth2.client.authorizationUri=http://example.com/oauth/authorize",
+		"security.oauth2.client.tokenUri=http://example.com/oauth/token",
+		"security.oauth2.resource.jwt.keyValue=SSSSHHH" })
 public class CustomOAuth2SsoConfigurationTests {
 
 	@Autowired
@@ -109,7 +109,7 @@ public class CustomOAuth2SsoConfigurationTests {
 		@RestController
 		public static class TestController {
 
-			@RequestMapping(value = "/ui/test")
+			@RequestMapping("/ui/test")
 			public String test() {
 				return "test";
 			}

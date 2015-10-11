@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
  * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleWebMustacheApplication.class)
+@SpringApplicationConfiguration(SampleWebMustacheApplication.class)
 @WebAppConfiguration
 @IntegrationTest("server.port=0")
 @DirtiesContext
@@ -55,8 +55,8 @@ public class SampleWebMustacheApplicationTests {
 
 	@Test
 	public void testMustacheTemplate() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(),
 				entity.getBody().contains("Hello, Andy"));
@@ -73,8 +73,8 @@ public class SampleWebMustacheApplicationTests {
 				requestEntity, String.class);
 
 		assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-		assertTrue("Wrong body:\n" + responseEntity.getBody(), responseEntity.getBody()
-				.contains("Something went wrong: 404 Not Found"));
+		assertTrue("Wrong body:\n" + responseEntity.getBody(),
+				responseEntity.getBody().contains("Something went wrong: 404 Not Found"));
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.ws.rs.ApplicationPath;
 
-import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -59,8 +57,7 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnClass(name = {
-		"org.glassfish.jersey.server.spring.SpringComponentProvider",
+@ConditionalOnClass(name = { "org.glassfish.jersey.server.spring.SpringComponentProvider",
 		"javax.servlet.ServletRegistration" })
 @ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
 @ConditionalOnWebApplication
@@ -71,9 +68,6 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 
 	@Autowired
 	private JerseyProperties jersey;
-
-	@Autowired
-	private ListableBeanFactory context;
 
 	@Autowired
 	private ResourceConfig config;
@@ -131,8 +125,6 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 	}
 
 	private void addInitParameters(RegistrationBean registration) {
-		registration.addInitParameter(CommonProperties.METAINF_SERVICES_LOOKUP_DISABLE,
-				"true");
 		for (Entry<String, String> entry : this.jersey.getInit().entrySet()) {
 			registration.addInitParameter(entry.getKey(), entry.getValue());
 		}

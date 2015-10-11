@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,10 +40,10 @@ import org.springframework.util.Assert;
  * <p>
  * The {@link #setFilter(Filter) Filter} must be specified before calling
  * {@link #onStartup(ServletContext)}. Registrations can be associated with
- * {@link #setUrlPatterns URL patterns} and/or servlets (either by
- * {@link #setServletNames name} or via a {@link #setServletRegistrationBeans
- * ServletRegistrationBean}s. When no URL pattern or servlets are specified the filter
- * will be associated to '/*'. The filter name will be deduced if not specified.
+ * {@link #setUrlPatterns URL patterns} and/or servlets (either by {@link #setServletNames
+ * name} or via a {@link #setServletRegistrationBeans ServletRegistrationBean}s. When no
+ * URL pattern or servlets are specified the filter will be associated to '/*'. The filter
+ * name will be deduced if not specified.
  *
  * @author Phillip Webb
  * @see ServletContextInitializer
@@ -51,14 +51,19 @@ import org.springframework.util.Assert;
  */
 public class FilterRegistrationBean extends RegistrationBean {
 
+	/**
+	 * Filters that wrap the servlet request should be ordered less than or equal to this.
+	 */
+	public static final int REQUEST_WRAPPER_FILTER_MAX_ORDER = 0;
+
 	private static Log logger = LogFactory.getLog(FilterRegistrationBean.class);
 
 	static final EnumSet<DispatcherType> ASYNC_DISPATCHER_TYPES = EnumSet.of(
 			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST,
 			DispatcherType.ASYNC);
 
-	static final EnumSet<DispatcherType> NON_ASYNC_DISPATCHER_TYPES = EnumSet.of(
-			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
+	static final EnumSet<DispatcherType> NON_ASYNC_DISPATCHER_TYPES = EnumSet
+			.of(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
 
 	private static final String[] DEFAULT_URL_MAPPINGS = { "/*" };
 

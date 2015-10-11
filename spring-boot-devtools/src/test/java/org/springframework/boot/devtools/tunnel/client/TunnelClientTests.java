@@ -28,9 +28,6 @@ import java.nio.channels.WritableByteChannel;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.devtools.tunnel.client.TunnelClient;
-import org.springframework.boot.devtools.tunnel.client.TunnelClientListener;
-import org.springframework.boot.devtools.tunnel.client.TunnelConnection;
 import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -165,7 +162,7 @@ public class TunnelClientTests {
 
 			private final Closeable closeable;
 
-			public TunnelChannel(WritableByteChannel incomingChannel, Closeable closeable) {
+			TunnelChannel(WritableByteChannel incomingChannel, Closeable closeable) {
 				this.incomingChannel = incomingChannel;
 				this.closeable = closeable;
 			}

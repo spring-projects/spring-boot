@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 the original author or authors.
+ * Copyright 2010-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,12 +50,12 @@ public class ContextIdApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
 	/**
-	 * Placeholder pattern to resolve for application name
+	 * Placeholder pattern to resolve for application name.
 	 */
 	private static final String NAME_PATTERN = "${vcap.application.name:${spring.application.name:${spring.config.name:application}}}";
 
 	/**
-	 * Placeholder pattern to resolve for application index
+	 * Placeholder pattern to resolve for application index.
 	 */
 	private static final String INDEX_PATTERN = "${vcap.application.instance_index:${spring.application.index:${server.port:${PORT:null}}}}";
 
@@ -68,7 +68,8 @@ public class ContextIdApplicationContextInitializer implements
 	}
 
 	/**
-	 * @param name
+	 * Create a new {@link ContextIdApplicationContextInitializer} instance.
+	 * @param name the name of the application (can include placeholders)
 	 */
 	public ContextIdApplicationContextInitializer(String name) {
 		this.name = name;
@@ -91,9 +92,8 @@ public class ContextIdApplicationContextInitializer implements
 	private String getApplicationId(ConfigurableEnvironment environment) {
 		String name = environment.resolvePlaceholders(this.name);
 		String index = environment.resolvePlaceholders(INDEX_PATTERN);
-
-		String profiles = StringUtils.arrayToCommaDelimitedString(environment
-				.getActiveProfiles());
+		String profiles = StringUtils
+				.arrayToCommaDelimitedString(environment.getActiveProfiles());
 		if (StringUtils.hasText(profiles)) {
 			name = name + ":" + profiles;
 		}

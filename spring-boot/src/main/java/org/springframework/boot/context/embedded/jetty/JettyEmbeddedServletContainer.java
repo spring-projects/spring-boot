@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -81,6 +81,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 			// Start the server so that the ServletContext is available
 			this.server.start();
+			this.server.setStopAtShutdown(false);
 		}
 		catch (Exception ex) {
 			// Ensure process isn't left running
@@ -95,6 +96,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			this.server.stop();
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 	}
 
@@ -113,8 +115,8 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			for (Connector connector : connectors) {
 				connector.start();
 			}
-			JettyEmbeddedServletContainer.logger.info("Jetty started on port(s) "
-					+ getActualPortsDescription());
+			JettyEmbeddedServletContainer.logger
+					.info("Jetty started on port(s) " + getActualPortsDescription());
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
@@ -139,8 +141,8 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 					connector);
 		}
 		catch (Exception ex) {
-			JettyEmbeddedServletContainer.logger.info("could not determine port ( "
-					+ ex.getMessage() + ")");
+			JettyEmbeddedServletContainer.logger
+					.info("could not determine port ( " + ex.getMessage() + ")");
 			return 0;
 		}
 	}

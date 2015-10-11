@@ -52,7 +52,7 @@ public class CompositeHealthIndicator implements HealthIndicator {
 	public CompositeHealthIndicator(HealthAggregator healthAggregator,
 			Map<String, HealthIndicator> indicators) {
 		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
-		Assert.notNull(healthAggregator, "Indicators must not be null");
+		Assert.notNull(indicators, "Indicators must not be null");
 		this.indicators = new LinkedHashMap<String, HealthIndicator>(indicators);
 		this.healthAggregator = healthAggregator;
 	}

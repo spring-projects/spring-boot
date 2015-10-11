@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -172,7 +172,7 @@ public class SpringApplicationBuilder {
 		web(false);
 
 		// Probably not interested in multiple banners
-		showBanner(false);
+		bannerMode(Banner.Mode.OFF);
 
 		// Make sure sources get copied over
 		this.application.setSources(this.sources);
@@ -265,7 +265,7 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Add more sources (configuration classes and components) to this application
+	 * Add more sources (configuration classes and components) to this application.
 	 * @param sources the sources to add
 	 * @return the current builder
 	 */
@@ -310,9 +310,16 @@ public class SpringApplicationBuilder {
 	 * Flag to indicate the startup banner should be printed.
 	 * @param showBanner the flag to set. Default true.
 	 * @return the current builder
+	 * @deprecated Since 1.3.0 in favor of {@link #bannerMode}
 	 */
+	@Deprecated
 	public SpringApplicationBuilder showBanner(boolean showBanner) {
 		this.application.setShowBanner(showBanner);
+		return this;
+	}
+
+	public SpringApplicationBuilder bannerMode(Banner.Mode bannerMode) {
+		this.application.setBannerMode(bannerMode);
 		return this;
 	}
 
@@ -405,7 +412,7 @@ public class SpringApplicationBuilder {
 	/**
 	 * Default properties for the environment. Multiple calls to this method are
 	 * cumulative.
-	 * @param defaults
+	 * @param defaults the default properties
 	 * @return the current builder
 	 * @see SpringApplicationBuilder#properties(String...)
 	 */
@@ -445,7 +452,8 @@ public class SpringApplicationBuilder {
 	 * @param beanNameGenerator the generator to set.
 	 * @return the current builder
 	 */
-	public SpringApplicationBuilder beanNameGenerator(BeanNameGenerator beanNameGenerator) {
+	public SpringApplicationBuilder beanNameGenerator(
+			BeanNameGenerator beanNameGenerator) {
 		this.application.setBeanNameGenerator(beanNameGenerator);
 		return this;
 	}

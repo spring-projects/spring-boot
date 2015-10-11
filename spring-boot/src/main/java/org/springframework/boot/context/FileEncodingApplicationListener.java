@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,8 @@ import org.springframework.core.Ordered;
  *
  * @author Dave Syer
  */
-public class FileEncodingApplicationListener implements
-		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
+public class FileEncodingApplicationListener
+		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
 	private static Log logger = LogFactory.getLog(FileEncodingApplicationListener.class);
 
@@ -71,7 +71,8 @@ public class FileEncodingApplicationListener implements
 						+ desired + "'.");
 				throw new IllegalStateException(
 						"The Java Virtual Machine has not been configured to use the "
-								+ "desired default character encoding (" + desired + ").");
+								+ "desired default character encoding (" + desired
+								+ ").");
 			}
 		}
 	}

@@ -31,7 +31,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleJerseyApplication.class)
+@SpringApplicationConfiguration(SampleJerseyApplication.class)
 @IntegrationTest("server.port=0")
 @WebAppConfiguration
 public class SampleJerseyApplicationTests {
@@ -43,8 +43,8 @@ public class SampleJerseyApplicationTests {
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity(
-				"http://localhost:" + this.port + "/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("http://localhost:" + this.port + "/hello", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 
@@ -58,8 +58,8 @@ public class SampleJerseyApplicationTests {
 
 	@Test
 	public void validation() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity(
-				"http://localhost:" + this.port + "/reverse", String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("http://localhost:" + this.port + "/reverse", String.class);
 		assertEquals(HttpStatus.BAD_REQUEST, entity.getStatusCode());
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ class DriverClassNameProvider {
 	private static final String JDBC_URL_PREFIX = "jdbc";
 
 	private static final Map<String, String> DRIVERS;
+
 	static {
 		Map<String, String> drivers = new HashMap<String, String>();
 		drivers.put("derby", "org.apache.derby.jdbc.EmbeddedDriver");
@@ -46,18 +47,21 @@ class DriverClassNameProvider {
 		drivers.put("postgresql", "org.postgresql.Driver");
 		drivers.put("jtds", "net.sourceforge.jtds.jdbc.Driver");
 		drivers.put("sqlserver", "com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		drivers.put("firebirdsql", "org.firebirdsql.jdbc.FBDriver");
+		drivers.put("db2", "com.ibm.db2.jcc.DB2Driver");
+		drivers.put("teradata", "com.teradata.jdbc.TeraDriver");
 		DRIVERS = Collections.unmodifiableMap(drivers);
 	}
 
 	/**
-	 * Find a JDBC driver class name based on given JDBC URL
+	 * Find a JDBC driver class name based on given JDBC URL.
 	 * @param jdbcUrl JDBC URL
 	 * @return driver class name or null if not found
 	 */
 	String getDriverClassName(final String jdbcUrl) {
 		Assert.notNull(jdbcUrl, "JdbcUrl must not be null");
-		Assert.isTrue(jdbcUrl.startsWith(JDBC_URL_PREFIX), "JdbcUrl must start with '"
-				+ JDBC_URL_PREFIX + "'");
+		Assert.isTrue(jdbcUrl.startsWith(JDBC_URL_PREFIX),
+				"JdbcUrl must start with '" + JDBC_URL_PREFIX + "'");
 		String urlWithoutPrefix = jdbcUrl.substring(JDBC_URL_PREFIX.length());
 		for (Map.Entry<String, String> driver : DRIVERS.entrySet()) {
 			if (urlWithoutPrefix.startsWith(":" + driver.getKey() + ":")) {

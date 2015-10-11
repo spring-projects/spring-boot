@@ -17,7 +17,6 @@
 package org.springframework.boot.devtools.livereload;
 
 import org.junit.Test;
-import org.springframework.boot.devtools.livereload.Base64Encoder;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

@@ -81,7 +81,8 @@ public class CliTester implements TestRule {
 		try {
 			this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
 			return getOutput();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			return getOutput();
 		}
 	}
@@ -159,8 +160,8 @@ public class CliTester implements TestRule {
 
 	@Override
 	public Statement apply(final Statement base, final Description description) {
-		final Statement statement = CliTester.this.outputCapture.apply(
-				new RunLauncherStatement(base), description);
+		final Statement statement = CliTester.this.outputCapture
+				.apply(new RunLauncherStatement(base), description);
 		return new Statement() {
 
 			@Override
@@ -180,8 +181,8 @@ public class CliTester implements TestRule {
 
 	public String getHttpOutput(String uri) {
 		try {
-			InputStream stream = URI.create("http://localhost:" + this.port + uri)
-					.toURL().openStream();
+			InputStream stream = URI.create("http://localhost:" + this.port + uri).toURL()
+					.openStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			String line;
 			StringBuilder result = new StringBuilder();

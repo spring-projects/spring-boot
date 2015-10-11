@@ -1,5 +1,5 @@
 [[deployment]]
-== Deploying Spring Boot applications
+= Deploying Spring Boot applications
 
 [partintro]
 --
@@ -348,7 +348,7 @@ or `systemd`.
 
 
 [[deployment-initd-service]]
-==== Installation as a init.d service (System V)
+==== Installation as an init.d service (System V)
 The default executable script that can be embedded into Spring Boot jars will act as an
 `init.d` script when it is symlinked to `/etc/init.d`. The standard `start`, `stop`,
 `restart` and `status` commands can be used. The script supports the following features:
@@ -362,7 +362,7 @@ Spring Boot application as an `init.d` service simply create a symlink:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	$ sudo link -s /var/myapp/myapp.jar /etc/init.d/myapp
+	$ sudo ln -s /var/myapp/myapp.jar /etc/init.d/myapp
 ----
 
 TIP: It is advisable to create a specific user account to run you application. Ensure
@@ -432,9 +432,15 @@ the default behavior in a script or on the command line:
  but if it is not a symlink, or you want to explicitly set the app name this can be
  useful.
 
+|`RUN_ARGS`
+|The arguments to pass to the program (the Spring Boot app).
+
 |`JAVA_HOME`
 |The location of the `java` executable is discovered by using the `PATH` by default, but
  you can set it explicitly if there is an executable file at `$JAVA_HOME/bin/java`.
+
+|`JAVA_OPTS`
+|Options that are passed to the JVM when it is launched.
 
 |`JARFILE`
 |The explicit location of the jar file, in case the script is being used to launch a jar
@@ -444,6 +450,36 @@ the default behavior in a script or on the command line:
 |if not empty will set the `-x` flag on the shell process, making it easy to see the logic
  in the script.
 |===
+
+
+
+[[deployment-script-customization-conf-file]]
+==== Customizing the startup script with a conf file
+
+With the exception of `JARFILE` and `APP_NAME`, the above settings can be configured using
+a `.conf` file,
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	JAVA_OPTS=-Xmx1024M
+	LOG_FOLDER=/custom/log/folder
+----
+
+The file should be situated next to the jar file and have the same name but suffixed with
+`.conf` rather than `.jar`. For example, a jar named `/var/myapp/myapp.jar` will use the
+configuration file named `/var/myapp/myapp.conf` if it exists.
+
+
+
+[[deployment-windows]]
+=== Microsoft Windows services
+Spring Boot application can be started as Windows service using
+https://github.com/kohsuke/winsw[`winsw`].
+
+A sample https://github.com/snicoll-scratches/spring-boot-daemon[maintained separately]
+to the core of Spring Boot describes steps by steps how you can create a Windows service for
+your Spring Boot application.
+
 
 
 

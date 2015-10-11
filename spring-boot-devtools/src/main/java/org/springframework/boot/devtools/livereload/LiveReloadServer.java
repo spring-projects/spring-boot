@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ import org.springframework.util.Assert;
  * A <a href="http://livereload.com">livereload</a> server.
  *
  * @author Phillip Webb
- * @see <a href="http://livereload.com">livereload.com</a>
  * @since 1.3.0
+ * @see <a href="http://livereload.com">livereload.com</a>
  */
 public class LiveReloadServer {
 
@@ -109,7 +109,7 @@ public class LiveReloadServer {
 
 	/**
 	 * Start the livereload server and accept incoming connections.
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public synchronized void start() throws IOException {
 		Assert.state(!isStarted(), "Server already started");
@@ -137,7 +137,7 @@ public class LiveReloadServer {
 	}
 
 	/**
-	 * Return the port that the server is listening on
+	 * Return the port that the server is listening on.
 	 * @return the server port
 	 */
 	public int getPort() {
@@ -165,7 +165,7 @@ public class LiveReloadServer {
 
 	/**
 	 * Gracefully stop the livereload server.
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public synchronized void stop() throws IOException {
 		if (this.listenThread != null) {
@@ -231,7 +231,7 @@ public class LiveReloadServer {
 	 * @param inputStream the socket input stream
 	 * @param outputStream the socket output stream
 	 * @return a connection
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	protected Connection createConnection(Socket socket, InputStream inputStream,
 			OutputStream outputStream) throws IOException {
@@ -248,7 +248,7 @@ public class LiveReloadServer {
 
 		private final InputStream inputStream;
 
-		public ConnectionHandler(Socket socket) throws IOException {
+		ConnectionHandler(Socket socket) throws IOException {
 			this.socket = socket;
 			this.inputStream = socket.getInputStream();
 		}
@@ -303,7 +303,7 @@ public class LiveReloadServer {
 	}
 
 	/**
-	 * {@link ThreadFactory} to create the worker threads,
+	 * {@link ThreadFactory} to create the worker threads.
 	 */
 	private static class WorkerThreadFactory implements ThreadFactory {
 

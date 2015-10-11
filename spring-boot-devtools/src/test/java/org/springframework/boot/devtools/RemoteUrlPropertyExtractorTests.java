@@ -16,15 +16,20 @@
 
 package org.springframework.boot.devtools;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.devtools.RemoteUrlPropertyExtractor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
+import ch.qos.logback.classic.Logger;
+
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -36,6 +41,12 @@ public class RemoteUrlPropertyExtractorTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	@After
+	public void preventRunFailuresFromPollutingLoggerContext() {
+		((Logger) LoggerFactory.getLogger(RemoteUrlPropertyExtractorTests.class))
+				.getLoggerContext().getTurboFilterList().clear();
+	}
 
 	@Test
 	public void missingUrl() throws Exception {
@@ -64,6 +75,8 @@ public class RemoteUrlPropertyExtractorTests {
 		ApplicationContext context = doTest("http://localhost:8080");
 		assertThat(context.getEnvironment().getProperty("remoteUrl"),
 				equalTo("http://localhost:8080"));
+		assertThat(context.getEnvironment().getProperty("spring.thymeleaf.cache"),
+				is(nullValue()));
 	}
 
 	private ApplicationContext doTest(String... args) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	/**
 	 * Create a new {@link JarFile} backed by the specified file.
 	 * @param file the root jar file
-	 * @throws IOException
+	 * @throws IOException if the file cannot be read
 	 */
 	public JarFile(File file) throws IOException {
 		this(new RandomAccessDataFile(file));
@@ -98,7 +98,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	/**
 	 * Create a new {@link JarFile} backed by the specified file.
 	 * @param file the root jar file
-	 * @throws IOException
+	 * @throws IOException if the file cannot be read
 	 */
 	JarFile(RandomAccessDataFile file) throws IOException {
 		this(file, "", file);
@@ -110,7 +110,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * @param rootFile the root jar file
 	 * @param pathFromRoot the name of this file
 	 * @param data the underlying data
-	 * @throws IOException
+	 * @throws IOException if the file cannot be read
 	 */
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
 			RandomAccessData data) throws IOException {
@@ -124,7 +124,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
 			RandomAccessData data, List<JarEntryData> entries, JarEntryFilter... filters)
-			throws IOException {
+					throws IOException {
 		super(rootFile.getFile());
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
@@ -167,7 +167,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		for (JarEntryData entry : entries) {
 			AsciiBytes name = entry.getName();
 			for (JarEntryFilter filter : filters) {
-				name = (filter == null || name == null ? name : filter.apply(name, entry));
+				name = (filter == null || name == null ? name
+						: filter.apply(name, entry));
 			}
 			if (name != null) {
 				JarEntryData filteredCopy = entry.createFilteredCopy(this, name);
@@ -291,8 +292,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		// Fallback to JarInputStream to obtain certificates, not fast but hopefully not
 		// happening that often.
 		try {
-			JarInputStream inputStream = new JarInputStream(getData().getInputStream(
-					ResourceAccess.ONCE));
+			JarInputStream inputStream = new JarInputStream(
+					getData().getInputStream(ResourceAccess.ONCE));
 			try {
 				java.util.jar.JarEntry entry = inputStream.getNextJarEntry();
 				while (entry != null) {
@@ -320,19 +321,20 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	/**
 	 * Return a nested {@link JarFile} loaded from the specified entry.
-	 * @param ze the zip entry
+	 * @param entry the zip entry
 	 * @return a {@link JarFile} for the entry
-	 * @throws IOException
+	 * @throws IOException if the nested jar file cannot be read
 	 */
-	public synchronized JarFile getNestedJarFile(final ZipEntry ze) throws IOException {
-		return getNestedJarFile(getContainedEntry(ze).getSource());
+	public synchronized JarFile getNestedJarFile(final ZipEntry entry)
+			throws IOException {
+		return getNestedJarFile(getContainedEntry(entry).getSource());
 	}
 
 	/**
 	 * Return a nested {@link JarFile} loaded from the specified entry.
 	 * @param sourceEntry the zip entry
 	 * @return a {@link JarFile} for the entry
-	 * @throws IOException
+	 * @throws IOException if the nested jar file cannot be read
 	 */
 	public synchronized JarFile getNestedJarFile(JarEntryData sourceEntry)
 			throws IOException {
@@ -343,8 +345,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 			return sourceEntry.nestedJar;
 		}
 		catch (IOException ex) {
-			throw new IOException("Unable to open nested jar file '"
-					+ sourceEntry.getName() + "'", ex);
+			throw new IOException(
+					"Unable to open nested jar file '" + sourceEntry.getName() + "'", ex);
 		}
 	}
 
@@ -367,9 +369,10 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 				return null;
 			}
 		};
-		return new JarFile(this.rootFile, this.pathFromRoot + "!/"
-				+ sourceEntry.getName().substring(0, sourceName.length() - 1), this.data,
-				this.entries, filter);
+		return new JarFile(this.rootFile,
+				this.pathFromRoot + "!/"
+						+ sourceEntry.getName().substring(0, sourceName.length() - 1),
+				this.data, this.entries, filter);
 	}
 
 	private JarFile createJarFileFromFileEntry(JarEntryData sourceEntry)
@@ -380,15 +383,15 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 					+ "jar files must be stored without compression. Please check the "
 					+ "mechanism used to create your executable jar file");
 		}
-		return new JarFile(this.rootFile, this.pathFromRoot + "!/"
-				+ sourceEntry.getName(), sourceEntry.getData());
+		return new JarFile(this.rootFile,
+				this.pathFromRoot + "!/" + sourceEntry.getName(), sourceEntry.getData());
 	}
 
 	/**
 	 * Return a new jar based on the filtered contents of this file.
 	 * @param filters the set of jar entry filters to be applied
 	 * @return a filtered {@link JarFile}
-	 * @throws IOException
+	 * @throws IOException if the jar file cannot be read
 	 */
 	public synchronized JarFile getFilteredJarFile(JarEntryFilter... filters)
 			throws IOException {
@@ -418,7 +421,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * Return a URL that can be used to access this JAR file. NOTE: the specified URL
 	 * cannot be serialized and or cloned.
 	 * @return the URL
-	 * @throws MalformedURLException
+	 * @throws MalformedURLException if the URL is malformed
 	 */
 	public URL getUrl() throws MalformedURLException {
 		if (this.url == null) {

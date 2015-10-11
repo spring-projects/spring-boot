@@ -72,9 +72,7 @@
         <artifactId>${project.artifactId}</artifactId>
         <version>${project.version}</version>
         <configuration>
-          <excludes>
-            <excludeArtifactIds>my-lib,another-lib</excludeArtifactIds>
-          </excludes>
+          <excludeArtifactIds>my-lib,another-lib</excludeArtifactIds>
         </configuration>
         ...
       </plugin>
@@ -101,9 +99,7 @@
         <artifactId>${project.artifactId}</artifactId>
         <version>${project.version}</version>
         <configuration>
-          <excludes>
-            <excludeGroupIds>com.foo</excludeGroupIds>
-          </excludes>
+          <excludeGroupIds>com.foo</excludeGroupIds>
         </configuration>
         ...
       </plugin>

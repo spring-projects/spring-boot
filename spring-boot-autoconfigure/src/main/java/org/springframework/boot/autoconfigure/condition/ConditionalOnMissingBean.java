@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Conditional;
  * not already contained in the {@link BeanFactory}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -52,6 +53,21 @@ public @interface ConditionalOnMissingBean {
 	 * @return the class type names of beans to check
 	 */
 	String[] type() default {};
+
+	/**
+	 * The class type of beans that should be ignored when identifying matching beans.
+	 * @return the class types of beans to ignore
+	 * @since 1.2.5
+	 */
+	Class<?>[] ignored() default {};
+
+	/**
+	 * The class type names of beans that should be ignored when identifying matching
+	 * beans.
+	 * @return the class type names of beans to ignore
+	 * @since 1.2.5
+	 */
+	String[] ignoredType() default {};
 
 	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches

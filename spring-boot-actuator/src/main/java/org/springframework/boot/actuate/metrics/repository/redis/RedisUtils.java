@@ -28,7 +28,10 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  *
  * @author Luke Taylor
  */
-class RedisUtils {
+final class RedisUtils {
+
+	private RedisUtils() {
+	}
 
 	static <K, V> RedisTemplate<K, V> createRedisTemplate(
 			RedisConnectionFactory connectionFactory, Class<V> valueClass) {

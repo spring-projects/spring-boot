@@ -1,8 +1,10 @@
 language: java
 jdk:
   - oraclejdk8
-services: mongodb
-
+services:
+  - mongodb
+  - redis
+sudo: false
 install: true
 before_script:
 - mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true || true

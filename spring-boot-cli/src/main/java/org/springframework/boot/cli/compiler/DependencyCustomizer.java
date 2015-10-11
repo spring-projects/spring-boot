@@ -16,15 +16,15 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.lang.Grab;
-import groovy.lang.GroovyClassLoader;
-
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
+
+import groovy.lang.Grab;
+import groovy.lang.GroovyClassLoader;
 
 /**
  * Customizer that allows dependencies to be added during compilation. Adding a dependency
@@ -60,7 +60,7 @@ public class DependencyCustomizer {
 
 	/**
 	 * Create a new nested {@link DependencyCustomizer}.
-	 * @param parent
+	 * @param parent the parent customizer
 	 */
 	protected DependencyCustomizer(DependencyCustomizer parent) {
 		this.loader = parent.loader;
@@ -74,8 +74,8 @@ public class DependencyCustomizer {
 	}
 
 	public String getVersion(String artifactId, String defaultVersion) {
-		String version = this.dependencyResolutionContext
-				.getArtifactCoordinatesResolver().getVersion(artifactId);
+		String version = this.dependencyResolutionContext.getArtifactCoordinatesResolver()
+				.getVersion(artifactId);
 		if (version == null) {
 			version = defaultVersion;
 		}
@@ -224,11 +224,11 @@ public class DependencyCustomizer {
 		if (canAdd()) {
 			ArtifactCoordinatesResolver artifactCoordinatesResolver = this.dependencyResolutionContext
 					.getArtifactCoordinatesResolver();
-			this.classNode.addAnnotation(createGrabAnnotation(
-					artifactCoordinatesResolver.getGroupId(module),
-					artifactCoordinatesResolver.getArtifactId(module),
-					artifactCoordinatesResolver.getVersion(module), classifier, type,
-					transitive));
+			this.classNode.addAnnotation(
+					createGrabAnnotation(artifactCoordinatesResolver.getGroupId(module),
+							artifactCoordinatesResolver.getArtifactId(module),
+							artifactCoordinatesResolver.getVersion(module), classifier,
+							type, transitive));
 		}
 		return this;
 	}

@@ -20,8 +20,6 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -114,9 +112,6 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 	@Configuration
 	@EnableConfigurationProperties
 	public static class Factory {
-
-		@Autowired
-		private ConfigurationBeanFactoryMetaData beanFactoryMetaData;
 
 		@Bean
 		public ConfigurationPropertiesReportEndpoint endpoint() {

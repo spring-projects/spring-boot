@@ -34,7 +34,10 @@ import org.springframework.boot.loader.tools.LogbackInitializer;
  * @see #main(String...)
  * @see CommandRunner
  */
-public class SpringCli {
+public final class SpringCli {
+
+	private SpringCli() {
+	}
 
 	public static void main(String... args) {
 		System.setProperty("java.awt.headless", Boolean.toString(true));
@@ -56,8 +59,8 @@ public class SpringCli {
 	}
 
 	private static void addServiceLoaderCommands(CommandRunner runner) {
-		ServiceLoader<CommandFactory> factories = ServiceLoader.load(
-				CommandFactory.class, runner.getClass().getClassLoader());
+		ServiceLoader<CommandFactory> factories = ServiceLoader.load(CommandFactory.class,
+				runner.getClass().getClassLoader());
 		for (CommandFactory factory : factories) {
 			runner.addCommands(factory.getCommands());
 		}

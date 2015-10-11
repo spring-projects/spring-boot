@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Properties;
-
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -35,7 +32,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ByteArrayResource;
 
 import com.rabbitmq.client.Channel;
 
@@ -47,30 +43,25 @@ import com.rabbitmq.client.Channel;
  * <P>
  * Registers the following beans:
  * <ul>
- * <li>
- * {@link org.springframework.amqp.rabbit.core.RabbitTemplate RabbitTemplate} if there is
- * no other bean of the same type in the context.</li>
- * <li>
- * {@link org.springframework.amqp.rabbit.connection.CachingConnectionFactory
+ * <li>{@link org.springframework.amqp.rabbit.core.RabbitTemplate RabbitTemplate} if there
+ * is no other bean of the same type in the context.</li>
+ * <li>{@link org.springframework.amqp.rabbit.connection.CachingConnectionFactory
  * CachingConnectionFactory} instance if there is no other bean of the same type in the
  * context.</li>
- * <li>
- * {@link org.springframework.amqp.core.AmqpAdmin } instance as long as
+ * <li>{@link org.springframework.amqp.core.AmqpAdmin } instance as long as
  * {@literal spring.rabbitmq.dynamic=true}.</li>
  * </ul>
  * <p>
  * The {@link org.springframework.amqp.rabbit.connection.CachingConnectionFactory} honors
  * the following properties:
  * <ul>
- * <li>
- * {@literal spring.rabbitmq.port} is used to specify the port to which the client should
- * connect, and defaults to 5672.</li>
- * <li>
- * {@literal spring.rabbitmq.username} is used to specify the (optional) username.</li>
- * <li>
- * {@literal spring.rabbitmq.password} is used to specify the (optional) password.</li>
- * <li>
- * {@literal spring.rabbitmq.host} is used to specify the host, and defaults to
+ * <li>{@literal spring.rabbitmq.port} is used to specify the port to which the client
+ * should connect, and defaults to 5672.</li>
+ * <li>{@literal spring.rabbitmq.username} is used to specify the (optional) username.
+ * </li>
+ * <li>{@literal spring.rabbitmq.password} is used to specify the (optional) password.
+ * </li>
+ * <li>{@literal spring.rabbitmq.host} is used to specify the host, and defaults to
  * {@literal localhost}.</li>
  * <li>{@literal spring.rabbitmq.virtualHost} is used to specify the (optional) virtual
  * host to which the client should connect.</li>
@@ -88,7 +79,7 @@ public class RabbitAutoConfiguration {
 	@Bean
 	@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "dynamic", matchIfMissing = true)
 	@ConditionalOnMissingBean(AmqpAdmin.class)
-	public AmqpAdmin amqpAdmin(CachingConnectionFactory connectionFactory) {
+	public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
 		return new RabbitAdmin(connectionFactory);
 	}
 
@@ -106,7 +97,7 @@ public class RabbitAutoConfiguration {
 	protected static class RabbitConnectionFactoryCreator {
 
 		@Bean
-		public ConnectionFactory rabbitConnectionFactory(RabbitProperties config)
+		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties config)
 				throws Exception {
 			RabbitConnectionFactoryBean factory = new RabbitConnectionFactoryBean();
 			if (config.getHost() != null) {
@@ -128,13 +119,10 @@ public class RabbitAutoConfiguration {
 			RabbitProperties.Ssl ssl = config.getSsl();
 			if (ssl.isEnabled()) {
 				factory.setUseSSL(true);
-				if (ssl.getKeyStore() != null || ssl.getTrustStore() != null) {
-					Properties properties = ssl.createSslProperties();
-					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-					properties.store(outputStream, "SSL config");
-					factory.setSslPropertiesLocation(new ByteArrayResource(outputStream
-							.toByteArray()));
-				}
+				factory.setKeyStore(ssl.getKeyStore());
+				factory.setKeyStorePassphrase(ssl.getKeyStorePassword());
+				factory.setTrustStore(ssl.getTrustStore());
+				factory.setTrustStorePassphrase(ssl.getTrustStorePassword());
 			}
 			factory.afterPropertiesSet();
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(

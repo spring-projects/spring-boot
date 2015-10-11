@@ -56,15 +56,15 @@ public class BootGlobalAuthenticationConfiguration {
 		return new BootGlobalAuthenticationConfigurationAdapter(context);
 	}
 
-	private static class BootGlobalAuthenticationConfigurationAdapter extends
-			GlobalAuthenticationConfigurerAdapter {
+	private static class BootGlobalAuthenticationConfigurationAdapter
+			extends GlobalAuthenticationConfigurerAdapter {
 
 		private static Log logger = LogFactory
 				.getLog(BootGlobalAuthenticationConfiguration.class);
 
 		private final ApplicationContext context;
 
-		public BootGlobalAuthenticationConfigurationAdapter(ApplicationContext context) {
+		BootGlobalAuthenticationConfigurationAdapter(ApplicationContext context) {
 			this.context = context;
 		}
 

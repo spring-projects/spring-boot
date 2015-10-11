@@ -32,29 +32,29 @@ public class BufferCounterService implements CounterService {
 
 	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<String, String>();
 
-	private final CounterBuffers writer;
+	private final CounterBuffers buffers;
 
 	/**
 	 * Create a {@link BufferCounterService} instance.
-	 * @param writer the underlying writer used to manage metrics
+	 * @param buffers the underlying buffers used to store metrics
 	 */
-	public BufferCounterService(CounterBuffers writer) {
-		this.writer = writer;
+	public BufferCounterService(CounterBuffers buffers) {
+		this.buffers = buffers;
 	}
 
 	@Override
 	public void increment(String metricName) {
-		this.writer.increment(wrap(metricName), 1L);
+		this.buffers.increment(wrap(metricName), 1L);
 	}
 
 	@Override
 	public void decrement(String metricName) {
-		this.writer.increment(wrap(metricName), -1L);
+		this.buffers.increment(wrap(metricName), -1L);
 	}
 
 	@Override
 	public void reset(String metricName) {
-		this.writer.reset(wrap(metricName));
+		this.buffers.reset(wrap(metricName));
 	}
 
 	private String wrap(String metricName) {

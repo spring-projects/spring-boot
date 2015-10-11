@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,11 +103,11 @@ import org.springframework.util.StringUtils;
  * infrastructure add beans of type {@link CrshShellProperties} to the application
  * context.
  * <p>
- * Additional shell commands can be implemented using the guide and documentation at <a
- * href="http://www.crashub.org">crashub.org</a>. By default Boot will search for commands
- * using the following classpath scanning pattern {@code classpath*:/commands/**}. To add
- * different locations or override the default use {@code shell.command_path_patterns} in
- * your application configuration.
+ * Additional shell commands can be implemented using the guide and documentation at
+ * <a href="http://www.crashub.org">crashub.org</a>. By default Boot will search for
+ * commands using the following classpath scanning pattern {@code classpath*:/commands/**}
+ * . To add different locations or override the default use
+ * {@code shell.command_path_patterns} in your application configuration.
  *
  * @author Christian Dupuis
  * @see ShellProperties
@@ -116,7 +116,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass({ PluginLifeCycle.class })
 @EnableConfigurationProperties({ ShellProperties.class })
 @AutoConfigureAfter({ SecurityAutoConfiguration.class,
-		ManagementSecurityAutoConfiguration.class })
+		ManagementWebSecurityAutoConfiguration.class })
 public class CrshAutoConfiguration {
 
 	@Autowired
@@ -124,28 +124,28 @@ public class CrshAutoConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "jaas")
-	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-	public CrshShellAuthenticationProperties jaasAuthenticationProperties() {
+	@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+	public JaasAuthenticationProperties jaasAuthenticationProperties() {
 		return new JaasAuthenticationProperties();
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "key")
-	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-	public CrshShellAuthenticationProperties keyAuthenticationProperties() {
+	@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+	public KeyAuthenticationProperties keyAuthenticationProperties() {
 		return new KeyAuthenticationProperties();
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "simple", matchIfMissing = true)
-	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-	public CrshShellAuthenticationProperties simpleAuthenticationProperties() {
+	@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+	public SimpleAuthenticationProperties simpleAuthenticationProperties() {
 		return new SimpleAuthenticationProperties();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ PluginLifeCycle.class })
-	public PluginLifeCycle shellBootstrap() {
+	@ConditionalOnMissingBean(PluginLifeCycle.class)
+	public CrshBootstrapBean shellBootstrap() {
 		CrshBootstrapBean bootstrapBean = new CrshBootstrapBean();
 		bootstrapBean.setConfig(this.properties.asCrshShellConfig());
 		return bootstrapBean;
@@ -156,7 +156,7 @@ public class CrshAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "spring", matchIfMissing = true)
-	@ConditionalOnBean({ AuthenticationManager.class })
+	@ConditionalOnBean(AuthenticationManager.class)
 	@AutoConfigureAfter(CrshAutoConfiguration.class)
 	public static class AuthenticationManagerAdapterAutoConfiguration {
 
@@ -164,13 +164,13 @@ public class CrshAutoConfiguration {
 		private ManagementServerProperties management;
 
 		@Bean
-		public CRaSHPlugin<?> shellAuthenticationManager() {
+		public AuthenticationManagerAdapter shellAuthenticationManager() {
 			return new AuthenticationManagerAdapter();
 		}
 
 		@Bean
-		@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-		public CrshShellAuthenticationProperties springAuthenticationProperties() {
+		@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+		public SpringAuthenticationProperties springAuthenticationProperties() {
 			// In case no shell.auth property is provided fall back to Spring Security
 			// based authentication and get role to access shell from
 			// ManagementServerProperties.
@@ -179,8 +179,8 @@ public class CrshAutoConfiguration {
 			// ConfigurationProperties.
 			SpringAuthenticationProperties authenticationProperties = new SpringAuthenticationProperties();
 			if (this.management != null) {
-				authenticationProperties.setRoles(new String[] { this.management
-						.getSecurity().getRole() });
+				authenticationProperties.setRoles(
+						new String[] { this.management.getSecurity().getRole() });
 			}
 			return authenticationProperties;
 		}
@@ -239,8 +239,8 @@ public class CrshAutoConfiguration {
 							pathPattern, this.resourceLoader, filterPatterns)));
 				}
 				catch (IOException ex) {
-					throw new IllegalStateException("Failed to mount file system for '"
-							+ pathPattern + "'", ex);
+					throw new IllegalStateException(
+							"Failed to mount file system for '" + pathPattern + "'", ex);
 				}
 			}
 			return fileSystem;
@@ -272,9 +272,9 @@ public class CrshAutoConfiguration {
 	private static class AuthenticationManagerAdapter extends
 			CRaSHPlugin<AuthenticationPlugin> implements AuthenticationPlugin<String> {
 
-		private static final PropertyDescriptor<String> ROLES = PropertyDescriptor
-				.create("auth.spring.roles", "ADMIN",
-						"Comma separated list of roles required to access the shell");
+		private static final PropertyDescriptor<String> ROLES = PropertyDescriptor.create(
+				"auth.spring.roles", "ADMIN",
+				"Comma separated list of roles required to access the shell");
 
 		@Autowired
 		private AuthenticationManager authenticationManager;
@@ -337,7 +337,7 @@ public class CrshAutoConfiguration {
 
 		@Override
 		protected Iterable<PropertyDescriptor<?>> createConfigurationCapabilities() {
-			return Arrays.<PropertyDescriptor<?>> asList(ROLES);
+			return Arrays.<PropertyDescriptor<?>>asList(ROLES);
 		}
 
 	}
@@ -346,16 +346,16 @@ public class CrshAutoConfiguration {
 	 * {@link ServiceLoaderDiscovery} to expose {@link CRaSHPlugin} Beans from Spring and
 	 * deal with filtering disabled plugins.
 	 */
-	private static class BeanFactoryFilteringPluginDiscovery extends
-			ServiceLoaderDiscovery {
+	private static class BeanFactoryFilteringPluginDiscovery
+			extends ServiceLoaderDiscovery {
 
 		private final ListableBeanFactory beanFactory;
 
 		private final String[] disabledPlugins;
 
-		public BeanFactoryFilteringPluginDiscovery(ClassLoader classLoader,
+		BeanFactoryFilteringPluginDiscovery(ClassLoader classLoader,
 				ListableBeanFactory beanFactory, String[] disabledPlugins)
-				throws NullPointerException {
+						throws NullPointerException {
 			super(classLoader);
 			this.beanFactory = beanFactory;
 			this.disabledPlugins = disabledPlugins;
@@ -372,8 +372,8 @@ public class CrshAutoConfiguration {
 				}
 			}
 
-			Collection<CRaSHPlugin> pluginBeans = this.beanFactory.getBeansOfType(
-					CRaSHPlugin.class).values();
+			Collection<CRaSHPlugin> pluginBeans = this.beanFactory
+					.getBeansOfType(CRaSHPlugin.class).values();
 			for (CRaSHPlugin<?> pluginBean : pluginBeans) {
 				if (isEnabled(pluginBean)) {
 					plugins.add(pluginBean);
@@ -404,8 +404,8 @@ public class CrshAutoConfiguration {
 		private boolean isEnabled(Class<?> pluginClass) {
 			for (String disabledPlugin : this.disabledPlugins) {
 				if (ClassUtils.getShortName(pluginClass).equalsIgnoreCase(disabledPlugin)
-						|| ClassUtils.getQualifiedName(pluginClass).equalsIgnoreCase(
-								disabledPlugin)) {
+						|| ClassUtils.getQualifiedName(pluginClass)
+								.equalsIgnoreCase(disabledPlugin)) {
 					return false;
 				}
 			}
@@ -420,7 +420,7 @@ public class CrshAutoConfiguration {
 
 		private final ResourceHandle root;
 
-		public SimpleFileSystemDriver(ResourceHandle handle) {
+		SimpleFileSystemDriver(ResourceHandle handle) {
 			this.root = handle;
 		}
 
@@ -457,7 +457,7 @@ public class CrshAutoConfiguration {
 				return Collections.singletonList(((FileHandle) handle).openStream())
 						.iterator();
 			}
-			return Collections.<InputStream> emptyList().iterator();
+			return Collections.<InputStream>emptyList().iterator();
 		}
 
 		@Override
@@ -474,7 +474,7 @@ public class CrshAutoConfiguration {
 
 		private final String name;
 
-		public ResourceHandle(String name) {
+		ResourceHandle(String name) {
 			this.name = name;
 		}
 
@@ -495,7 +495,7 @@ public class CrshAutoConfiguration {
 
 		private final AntPathMatcher matcher = new AntPathMatcher();
 
-		public DirectoryHandle(String name, ResourcePatternResolver resourceLoader,
+		DirectoryHandle(String name, ResourcePatternResolver resourceLoader,
 				String[] filterPatterns) {
 			super(name);
 			this.resourceLoader = resourceLoader;
@@ -506,7 +506,8 @@ public class CrshAutoConfiguration {
 			Resource[] resources = this.resourceLoader.getResources(getName());
 			List<ResourceHandle> files = new ArrayList<ResourceHandle>();
 			for (Resource resource : resources) {
-				if (!resource.getURL().getPath().endsWith("/") && !shouldFilter(resource)) {
+				if (!resource.getURL().getPath().endsWith("/")
+						&& !shouldFilter(resource)) {
 					files.add(new FileHandle(resource.getFilename(), resource));
 				}
 			}
@@ -530,7 +531,7 @@ public class CrshAutoConfiguration {
 
 		private final Resource resource;
 
-		public FileHandle(String name, Resource resource) {
+		FileHandle(String name, Resource resource) {
 			super(name);
 			this.resource = resource;
 		}

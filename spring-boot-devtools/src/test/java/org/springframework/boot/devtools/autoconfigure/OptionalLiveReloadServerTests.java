@@ -17,7 +17,6 @@
 package org.springframework.boot.devtools.autoconfigure;
 
 import org.junit.Test;
-import org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
 
 import static org.mockito.BDDMockito.willThrow;

@@ -16,6 +16,9 @@
 
 package org.springframework.boot;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.security.AccessControlException;
 import java.util.ArrayList;
@@ -64,6 +67,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
@@ -79,12 +83,9 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * <ul>
  * <li>Create an appropriate {@link ApplicationContext} instance (depending on your
  * classpath)</li>
- *
  * <li>Register a {@link CommandLinePropertySource} to expose command line arguments as
  * Spring properties</li>
- *
  * <li>Refresh the application context, loading all singleton beans</li>
- *
  * <li>Trigger any {@link CommandLineRunner} beans</li>
  * </ul>
  *
@@ -119,16 +120,13 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * generally recommended that a single {@code @Configuration} class is used to bootstrap
  * your application, however, any of the following sources can also be used:
  *
- * <p>
  * <ul>
- * <li>{@link Class} - A Java class to be loaded by {@link AnnotatedBeanDefinitionReader}</li>
- *
+ * <li>{@link Class} - A Java class to be loaded by {@link AnnotatedBeanDefinitionReader}
+ * </li>
  * <li>{@link Resource} - An XML resource to be loaded by {@link XmlBeanDefinitionReader},
  * or a groovy script to be loaded by {@link GroovyBeanDefinitionReader}</li>
- *
  * <li>{@link Package} - A Java package to be scanned by
  * {@link ClassPathBeanDefinitionScanner}</li>
- *
  * <li>{@link CharSequence} - A class name, resource handle or package name to loaded as
  * appropriate. If the {@link CharSequence} cannot be resolved to class and does not
  * resolve to a {@link Resource} that exists it will be considered a {@link Package}.</li>
@@ -139,24 +137,45 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Andy Wilkinson
  * @author Christian Dupuis
  * @author Stephane Nicoll
+ * @author Jeremy Rickard
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
  */
 public class SpringApplication {
 
-	private static final String DEFAULT_CONTEXT_CLASS = "org.springframework.context."
+	/**
+	 * The class name of application context that will be used by default for non-web
+	 * environments.
+	 */
+	public static final String DEFAULT_CONTEXT_CLASS = "org.springframework.context."
 			+ "annotation.AnnotationConfigApplicationContext";
 
+	/**
+	 * The class name of application context that will be used by default for web
+	 * environments.
+	 */
 	public static final String DEFAULT_WEB_CONTEXT_CLASS = "org.springframework."
 			+ "boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext";
 
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
+	private static final String CONFIGURABLE_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
+
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
 
 	private static final Banner DEFAULT_BANNER = new SpringBootBanner();
+
+	private static final Set<String> SERVLET_ENVIRONMENT_SOURCE_NAMES;
+
+	static {
+		Set<String> names = new HashSet<String>();
+		names.add(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME);
+		names.add(StandardServletEnvironment.SERVLET_CONFIG_PROPERTY_SOURCE_NAME);
+		names.add(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME);
+		SERVLET_ENVIRONMENT_SOURCE_NAMES = Collections.unmodifiableSet(names);
+	}
 
 	private final Log log = LogFactory.getLog(getClass());
 
@@ -164,7 +183,7 @@ public class SpringApplication {
 
 	private Class<?> mainApplicationClass;
 
-	private boolean showBanner = true;
+	private Banner.Mode bannerMode = Banner.Mode.CONSOLE;
 
 	private boolean logStartupInfo = true;
 
@@ -192,7 +211,7 @@ public class SpringApplication {
 
 	private Map<String, Object> defaultProperties;
 
-	private Set<String> profiles = new HashSet<String>();
+	private Set<String> additionalProfiles = new HashSet<String>();
 
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
@@ -228,7 +247,8 @@ public class SpringApplication {
 			this.sources.addAll(Arrays.asList(sources));
 		}
 		this.webEnvironment = deduceWebEnvironment();
-		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		setInitializers((Collection) getSpringFactoriesInstances(
+				ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
@@ -272,11 +292,10 @@ public class SpringApplication {
 		listeners.started();
 		try {
 			context = doRun(listeners, args);
-
 			stopWatch.stop();
 			if (this.logStartupInfo) {
-				new StartupInfoLogger(this.mainApplicationClass).logStarted(
-						getApplicationLog(), stopWatch);
+				new StartupInfoLogger(this.mainApplicationClass)
+						.logStarted(getApplicationLog(), stopWatch);
 			}
 			return context;
 		}
@@ -295,11 +314,6 @@ public class SpringApplication {
 		}
 	}
 
-	/**
-	 * @param listeners
-	 * @param args
-	 * @return
-	 */
 	private ConfigurableApplicationContext doRun(SpringApplicationRunListeners listeners,
 			String... args) {
 		ConfigurableApplicationContext context;
@@ -307,27 +321,29 @@ public class SpringApplication {
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, args);
 		listeners.environmentPrepared(environment);
-		if (this.showBanner) {
+		if (isWebEnvironment(environment) && !this.webEnvironment) {
+			environment = convertToStandardEnvironment(environment);
+		}
+
+		if (this.bannerMode != Banner.Mode.OFF) {
 			printBanner(environment);
 		}
 
 		// Create, load, refresh and run the ApplicationContext
 		context = createApplicationContext();
-		if (this.registerShutdownHook) {
-			try {
-				context.registerShutdownHook();
-			}
-			catch (AccessControlException ex) {
-				// Not allowed in some environments.
-			}
-		}
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
 		applyInitializers(context);
 		listeners.contextPrepared(context);
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
+			logStartupProfileInfo(context);
 		}
+
+		// Add boot specific singleton beans
+		ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+		context.getBeanFactory().registerSingleton("springApplicationArguments",
+				applicationArguments);
 
 		// Load the sources
 		Set<Object> sources = getSources();
@@ -337,16 +353,22 @@ public class SpringApplication {
 
 		// Refresh the context
 		refresh(context);
-		afterRefresh(context, args);
+		if (this.registerShutdownHook) {
+			try {
+				context.registerShutdownHook();
+			}
+			catch (AccessControlException ex) {
+				// Not allowed in some environments.
+			}
+		}
+		afterRefresh(context, applicationArguments);
 		listeners.finished(context, null);
 		return context;
 	}
 
 	private void configureHeadlessProperty() {
-		System.setProperty(
-				SYSTEM_PROPERTY_JAVA_AWT_HEADLESS,
-				System.getProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS,
-						Boolean.toString(this.headless)));
+		System.setProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, System.getProperty(
+				SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, Boolean.toString(this.headless)));
 	}
 
 	private SpringApplicationRunListeners getRunListeners(String[] args) {
@@ -379,8 +401,8 @@ public class SpringApplication {
 				instances.add(instance);
 			}
 			catch (Throwable ex) {
-				throw new IllegalArgumentException("Cannot instantiate " + type + " : "
-						+ name, ex);
+				throw new IllegalArgumentException(
+						"Cannot instantiate " + type + " : " + name, ex);
 			}
 		}
 
@@ -410,9 +432,44 @@ public class SpringApplication {
 	 * @see #configureProfiles(ConfigurableEnvironment, String[])
 	 * @see #configurePropertySources(ConfigurableEnvironment, String[])
 	 */
-	protected void configureEnvironment(ConfigurableEnvironment environment, String[] args) {
+	protected void configureEnvironment(ConfigurableEnvironment environment,
+			String[] args) {
 		configurePropertySources(environment, args);
 		configureProfiles(environment, args);
+	}
+
+	private boolean isWebEnvironment(ConfigurableEnvironment environment) {
+		try {
+			Class<?> webEnvironmentClass = ClassUtils
+					.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, getClassLoader());
+			return (webEnvironmentClass.isInstance(environment));
+		}
+		catch (Throwable ex) {
+			return false;
+		}
+	}
+
+	private ConfigurableEnvironment convertToStandardEnvironment(
+			ConfigurableEnvironment environment) {
+		StandardEnvironment result = new StandardEnvironment();
+		removeAllPropertySources(result.getPropertySources());
+		result.setActiveProfiles(environment.getActiveProfiles());
+		for (PropertySource<?> propertySource : environment.getPropertySources()) {
+			if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(propertySource.getName())) {
+				result.getPropertySources().addLast(propertySource);
+			}
+		}
+		return result;
+	}
+
+	private void removeAllPropertySources(MutablePropertySources propertySources) {
+		Set<String> names = new HashSet<String>();
+		for (PropertySource<?> propertySource : propertySources) {
+			names.add(propertySource.getName());
+		}
+		for (String name : names) {
+			propertySources.remove(name);
+		}
 	}
 
 	/**
@@ -426,16 +483,16 @@ public class SpringApplication {
 			String[] args) {
 		MutablePropertySources sources = environment.getPropertySources();
 		if (this.defaultProperties != null && !this.defaultProperties.isEmpty()) {
-			sources.addLast(new MapPropertySource("defaultProperties",
-					this.defaultProperties));
+			sources.addLast(
+					new MapPropertySource("defaultProperties", this.defaultProperties));
 		}
 		if (this.addCommandLineProperties && args.length > 0) {
 			String name = CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME;
 			if (sources.contains(name)) {
 				PropertySource<?> source = sources.get(name);
 				CompositePropertySource composite = new CompositePropertySource(name);
-				composite.addPropertySource(new SimpleCommandLinePropertySource(name
-						+ "-" + args.hashCode(), args));
+				composite.addPropertySource(new SimpleCommandLinePropertySource(
+						name + "-" + args.hashCode(), args));
 				composite.addPropertySource(source);
 				sources.replace(name, composite);
 			}
@@ -447,17 +504,17 @@ public class SpringApplication {
 
 	/**
 	 * Configure which profiles are active (or active by default) for this application
-	 * environment. Consider overriding this method to programmatically enforce profile
-	 * rules and semantics, such as ensuring mutual exclusivity of profiles (e.g. 'dev' OR
-	 * 'prod', but never both).
+	 * environment. Additional profiles may be activated during configuration file
+	 * processing via the {@code spring.profiles.active} property.
 	 * @param environment this application's environment
 	 * @param args arguments passed to the {@code run} method
 	 * @see #configureEnvironment(ConfigurableEnvironment, String[])
+	 * @see org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor
 	 */
 	protected void configureProfiles(ConfigurableEnvironment environment, String[] args) {
 		environment.getActiveProfiles(); // ensure they are initialized
 		// But these ones should go first (last wins in a property key clash)
-		Set<String> profiles = new LinkedHashSet<String>(this.profiles);
+		Set<String> profiles = new LinkedHashSet<String>(this.additionalProfiles);
 		profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
 		environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
 	}
@@ -468,27 +525,47 @@ public class SpringApplication {
 	 * banner.location=classpath:banner.txt, banner.charset=UTF-8. If the banner file does
 	 * not exist or cannot be printed, a simple default is created.
 	 * @param environment the environment
-	 * @see #setShowBanner(boolean)
+	 * @see #setBannerMode
 	 */
 	protected void printBanner(Environment environment) {
+
+		Banner selectedBanner = selectBanner(environment);
+
+		if (this.bannerMode == Banner.Mode.LOG) {
+			try {
+				this.log.info(createStringFromBanner(selectedBanner, environment));
+			}
+			catch (UnsupportedEncodingException ex) {
+				this.log.warn("Failed to create String for banner", ex);
+			}
+		}
+		else {
+			selectedBanner.printBanner(environment, this.mainApplicationClass,
+					System.out);
+		}
+	}
+
+	private Banner selectBanner(Environment environment) {
 		String location = environment.getProperty("banner.location", "banner.txt");
 		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
 				: new DefaultResourceLoader(getClassLoader());
 		Resource resource = resourceLoader.getResource(location);
+
 		if (resource.exists()) {
-			new ResourceBanner(resource).printBanner(environment,
-					this.mainApplicationClass, System.out);
-			return;
+			return new ResourceBanner(resource);
 		}
 		if (this.banner != null) {
-			this.banner.printBanner(environment, this.mainApplicationClass, System.out);
-			return;
+			return this.banner;
 		}
-		printDefaultBanner();
+		return DEFAULT_BANNER;
 	}
 
-	private void printDefaultBanner() {
-		DEFAULT_BANNER.printBanner(null, this.mainApplicationClass, System.out);
+	private String createStringFromBanner(Banner banner, Environment environment)
+			throws UnsupportedEncodingException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		banner.printBanner(environment, this.mainApplicationClass, new PrintStream(baos));
+		String charset = environment.getProperty("banner.charset", "UTF-8");
+		return baos.toString(charset);
 	}
 
 	/**
@@ -502,14 +579,14 @@ public class SpringApplication {
 		Class<?> contextClass = this.applicationContextClass;
 		if (contextClass == null) {
 			try {
-				contextClass = Class
-						.forName(this.webEnvironment ? DEFAULT_WEB_CONTEXT_CLASS
-								: DEFAULT_CONTEXT_CLASS);
+				contextClass = Class.forName(this.webEnvironment
+						? DEFAULT_WEB_CONTEXT_CLASS : DEFAULT_CONTEXT_CLASS);
 			}
 			catch (ClassNotFoundException ex) {
 				throw new IllegalStateException(
 						"Unable create a default ApplicationContext, "
-								+ "please specify an ApplicationContextClass", ex);
+								+ "please specify an ApplicationContextClass",
+						ex);
 			}
 		}
 		return (ConfigurableApplicationContext) BeanUtils.instantiate(contextClass);
@@ -538,8 +615,8 @@ public class SpringApplication {
 						.setResourceLoader(this.resourceLoader);
 			}
 			if (context instanceof DefaultResourceLoader) {
-				((DefaultResourceLoader) context).setClassLoader(this.resourceLoader
-						.getClassLoader());
+				((DefaultResourceLoader) context)
+						.setClassLoader(this.resourceLoader.getClassLoader());
 			}
 		}
 	}
@@ -573,6 +650,24 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Called to log active profile information.
+	 * @param context the application context
+	 */
+	protected void logStartupProfileInfo(ConfigurableApplicationContext context) {
+		Log log = getApplicationLog();
+		if (log.isInfoEnabled()) {
+			String[] activeProfiles = context.getEnvironment().getActiveProfiles();
+			if (ObjectUtils.isEmpty(activeProfiles)) {
+				log.info("No profiles are active");
+			}
+			else {
+				log.info("The following profiles are active: "
+						+ StringUtils.arrayToCommaDelimitedString(activeProfiles));
+			}
+		}
+	}
+
+	/**
 	 * Returns the {@link Log} for the application. By default will be deduced.
 	 * @return the application log
 	 */
@@ -590,8 +685,8 @@ public class SpringApplication {
 	 */
 	protected void load(ApplicationContext context, Object[] sources) {
 		if (this.log.isDebugEnabled()) {
-			this.log.debug("Loading source "
-					+ StringUtils.arrayToCommaDelimitedString(sources));
+			this.log.debug(
+					"Loading source " + StringUtils.arrayToCommaDelimitedString(sources));
 		}
 		BeanDefinitionLoader loader = createBeanDefinitionLoader(
 				getBeanDefinitionRegistry(context), sources);
@@ -630,6 +725,7 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Get the bean definition registry.
 	 * @param context the application context
 	 * @return the BeanDefinitionRegistry if it can be determined
 	 */
@@ -655,20 +751,6 @@ public class SpringApplication {
 		return new BeanDefinitionLoader(registry, sources);
 	}
 
-	private void runCommandLineRunners(ApplicationContext context, String... args) {
-		List<CommandLineRunner> runners = new ArrayList<CommandLineRunner>(context
-				.getBeansOfType(CommandLineRunner.class).values());
-		AnnotationAwareOrderComparator.sort(runners);
-		for (CommandLineRunner runner : runners) {
-			try {
-				runner.run(args);
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException("Failed to execute CommandLineRunner", ex);
-			}
-		}
-	}
-
 	/**
 	 * Refresh the underlying {@link ApplicationContext}.
 	 * @param applicationContext the application context to refresh
@@ -678,8 +760,59 @@ public class SpringApplication {
 		((AbstractApplicationContext) applicationContext).refresh();
 	}
 
+	/**
+	 * Called after the context has been refreshed.
+	 * @param context the application context
+	 * @param args the application argumments
+	 */
+	protected void afterRefresh(ConfigurableApplicationContext context,
+			ApplicationArguments args) {
+		afterRefresh(context, args.getSourceArgs());
+		callRunners(context, args);
+	}
+
+	private void callRunners(ApplicationContext context, ApplicationArguments args) {
+		List<Object> runners = new ArrayList<Object>();
+		runners.addAll(context.getBeansOfType(ApplicationRunner.class).values());
+		runners.addAll(context.getBeansOfType(CommandLineRunner.class).values());
+		AnnotationAwareOrderComparator.sort(runners);
+		for (Object runner : new LinkedHashSet<Object>(runners)) {
+			if (runner instanceof ApplicationRunner) {
+				callRunner((ApplicationRunner) runner, args);
+			}
+			if (runner instanceof CommandLineRunner) {
+				callRunner((CommandLineRunner) runner, args);
+			}
+		}
+	}
+
+	private void callRunner(ApplicationRunner runner, ApplicationArguments args) {
+		try {
+			(runner).run(args);
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Failed to execute ApplicationRunner", ex);
+		}
+	}
+
+	private void callRunner(CommandLineRunner runner, ApplicationArguments args) {
+		try {
+			(runner).run(args.getSourceArgs());
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Failed to execute CommandLineRunner", ex);
+		}
+	}
+
+	/**
+	 * Called after the context has been refreshed.
+	 * @param context the application context
+	 * @param args the application argumments
+	 * @deprecated in 1.3 in favor of
+	 * {@link #afterRefresh(ConfigurableApplicationContext, ApplicationArguments)}
+	 */
+	@Deprecated
 	protected void afterRefresh(ConfigurableApplicationContext context, String[] args) {
-		runCommandLineRunners(context, args);
 	}
 
 	/**
@@ -733,9 +866,20 @@ public class SpringApplication {
 	 * Sets if the Spring banner should be displayed when the application runs. Defaults
 	 * to {@code true}.
 	 * @param showBanner if the banner should be shown
+	 * @deprecated since 1.3.0 in favor of {@link #setBannerMode}
 	 */
+	@Deprecated
 	public void setShowBanner(boolean showBanner) {
-		this.showBanner = showBanner;
+		setBannerMode(showBanner ? Banner.Mode.CONSOLE : Banner.Mode.OFF);
+	}
+
+	/**
+	 * Sets the mode used to display the banner when the application runs. Defaults to
+	 * {@code Banner.Mode.CONSOLE}.
+	 * @param bannerMode the mode used to display the banner
+	 */
+	public void setBannerMode(Banner.Mode bannerMode) {
+		this.bannerMode = bannerMode;
 	}
 
 	/**
@@ -782,7 +926,7 @@ public class SpringApplication {
 	 * @param profiles the additional profiles to set
 	 */
 	public void setAdditionalProfiles(String... profiles) {
-		this.profiles = new LinkedHashSet<String>(Arrays.asList(profiles));
+		this.additionalProfiles = new LinkedHashSet<String>(Arrays.asList(profiles));
 	}
 
 	/**
@@ -846,8 +990,17 @@ public class SpringApplication {
 	public void setApplicationContextClass(
 			Class<? extends ConfigurableApplicationContext> applicationContextClass) {
 		this.applicationContextClass = applicationContextClass;
-		if (!WebApplicationContext.class.isAssignableFrom(applicationContextClass)) {
+		if (!isWebApplicationContext(applicationContextClass)) {
 			this.webEnvironment = false;
+		}
+	}
+
+	private boolean isWebApplicationContext(Class<?> applicationContextClass) {
+		try {
+			return WebApplicationContext.class.isAssignableFrom(applicationContextClass);
+		}
+		catch (NoClassDefFoundError ex) {
+			return false;
 		}
 	}
 
@@ -965,8 +1118,8 @@ public class SpringApplication {
 			try {
 				List<ExitCodeGenerator> generators = new ArrayList<ExitCodeGenerator>();
 				generators.addAll(Arrays.asList(exitCodeGenerators));
-				generators.addAll(context.getBeansOfType(ExitCodeGenerator.class)
-						.values());
+				generators
+						.addAll(context.getBeansOfType(ExitCodeGenerator.class).values());
 				exitCode = getExitCode(generators);
 			}
 			finally {

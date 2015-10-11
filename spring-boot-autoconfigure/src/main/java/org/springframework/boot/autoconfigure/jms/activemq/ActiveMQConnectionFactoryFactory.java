@@ -35,7 +35,7 @@ class ActiveMQConnectionFactoryFactory {
 
 	private final ActiveMQProperties properties;
 
-	public ActiveMQConnectionFactoryFactory(ActiveMQProperties properties) {
+	ActiveMQConnectionFactoryFactory(ActiveMQProperties properties) {
 		Assert.notNull(properties, "Properties must not be null");
 		this.properties = properties;
 	}
@@ -46,8 +46,8 @@ class ActiveMQConnectionFactoryFactory {
 			return doCreateConnectionFactory(factoryClass);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create "
-					+ "ActiveMQConnectionFactory", ex);
+			throw new IllegalStateException(
+					"Unable to create " + "ActiveMQConnectionFactory", ex);
 		}
 	}
 

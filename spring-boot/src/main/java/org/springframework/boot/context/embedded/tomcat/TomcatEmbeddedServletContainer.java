@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -76,8 +76,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 	}
 
 	private synchronized void initialize() throws EmbeddedServletContainerException {
-		TomcatEmbeddedServletContainer.logger.info("Tomcat initialized with port(s): "
-				+ getPortsDescription(false));
+		TomcatEmbeddedServletContainer.logger
+				.info("Tomcat initialized with port(s): " + getPortsDescription(false));
 		try {
 			addInstanceIdToEngineName();
 
@@ -95,8 +95,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			startDaemonAwaitThread();
 		}
 		catch (Exception ex) {
-			throw new EmbeddedServletContainerException(
-					"Unable to start embedded Tomcat", ex);
+			throw new EmbeddedServletContainerException("Unable to start embedded Tomcat",
+					ex);
 		}
 	}
 
@@ -156,8 +156,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			stopSilently();
 			throw new IllegalStateException("Tomcat connector in failed state");
 		}
-		TomcatEmbeddedServletContainer.logger.info("Tomcat started on port(s): "
-				+ getPortsDescription(true));
+		TomcatEmbeddedServletContainer.logger
+				.info("Tomcat started on port(s): " + getPortsDescription(true));
 	}
 
 	private boolean connectorsHaveFailedToStart() {
@@ -174,6 +174,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			this.tomcat.stop();
 		}
 		catch (LifecycleException ex) {
+			// Ignore
 		}
 	}
 

@@ -16,84 +16,32 @@
 
 package org.springframework.boot.actuate.metrics.buffer;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 import org.springframework.lang.UsesJava8;
 
 /**
- * Fast writes to in-memory metrics store using {@link DoubleBuffer}.
+ * Fast writes to in-memory metrics store using {@link GaugeBuffer}.
  *
  * @author Dave Syer
  * @since 1.3.0
  */
 @UsesJava8
-public class GaugeBuffers {
-
-	private final ConcurrentHashMap<String, DoubleBuffer> metrics = new ConcurrentHashMap<String, DoubleBuffer>();
-
-	public void forEach(final Predicate<String> predicate,
-			final BiConsumer<String, DoubleBuffer> consumer) {
-		this.metrics.forEach(new BiConsumer<String, DoubleBuffer>() {
-			@Override
-			public void accept(String name, DoubleBuffer value) {
-				if (predicate.test(name)) {
-					consumer.accept(name, value);
-				}
-			}
-		});
-	}
-
-	public DoubleBuffer find(final String name) {
-		return this.metrics.get(name);
-	}
-
-	public void get(final String name, final Consumer<DoubleBuffer> consumer) {
-		acceptInternal(name, new Consumer<DoubleBuffer>() {
-			@Override
-			public void accept(DoubleBuffer value) {
-				consumer.accept(value);
-			}
-		});
-	}
+public class GaugeBuffers extends Buffers<GaugeBuffer> {
 
 	public void set(final String name, final double value) {
-		write(name, value);
-	}
-
-	public int count() {
-		return this.metrics.size();
-	}
-
-	private void write(final String name, final double value) {
-		acceptInternal(name, new Consumer<DoubleBuffer>() {
+		doWith(name, new Consumer<GaugeBuffer>() {
 			@Override
-			public void accept(DoubleBuffer buffer) {
+			public void accept(GaugeBuffer buffer) {
 				buffer.setTimestamp(System.currentTimeMillis());
 				buffer.setValue(value);
 			}
 		});
 	}
 
-	public void reset(String name) {
-		this.metrics.remove(name, this.metrics.get(name));
-	}
-
-	private void acceptInternal(final String name, final Consumer<DoubleBuffer> consumer) {
-		DoubleBuffer value;
-		if (null == (value = this.metrics.get(name))) {
-			value = this.metrics.computeIfAbsent(name,
-					new Function<String, DoubleBuffer>() {
-						@Override
-						public DoubleBuffer apply(String tag) {
-							return new DoubleBuffer(0L);
-						}
-					});
-		}
-		consumer.accept(value);
+	@Override
+	protected GaugeBuffer createBuffer() {
+		return new GaugeBuffer(0L);
 	}
 
 }

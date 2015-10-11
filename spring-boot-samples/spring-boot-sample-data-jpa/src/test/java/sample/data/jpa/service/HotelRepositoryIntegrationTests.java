@@ -44,7 +44,7 @@ import static org.junit.Assert.assertThat;
  * @author Oliver Gierke
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
+@SpringApplicationConfiguration(SampleDataJpaApplication.class)
 public class HotelRepositoryIntegrationTests {
 
 	@Autowired
@@ -59,10 +59,10 @@ public class HotelRepositoryIntegrationTests {
 				.get(0);
 		assertThat(city.getName(), is("Atlanta"));
 
-		Page<HotelSummary> hotels = this.repository.findByCity(city, new PageRequest(0,
-				10, Direction.ASC, "name"));
-		Hotel hotel = this.repository.findByCityAndName(city, hotels.getContent().get(0)
-				.getName());
+		Page<HotelSummary> hotels = this.repository.findByCity(city,
+				new PageRequest(0, 10, Direction.ASC, "name"));
+		Hotel hotel = this.repository.findByCityAndName(city,
+				hotels.getContent().get(0).getName());
 		assertThat(hotel.getName(), is("Doubletree"));
 
 		List<RatingCount> counts = this.repository.findRatingCounts(hotel);

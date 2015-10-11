@@ -37,7 +37,7 @@ class StartupInfoLogger {
 
 	private final Class<?> sourceClass;
 
-	public StartupInfoLogger(Class<?> sourceClass) {
+	StartupInfoLogger(Class<?> sourceClass) {
 		this.sourceClass = sourceClass;
 	}
 
@@ -139,7 +139,8 @@ class StartupInfoLogger {
 			}
 		});
 		ApplicationHome home = new ApplicationHome(this.sourceClass);
-		String path = (home.getSource() == null ? "" : home.getSource().getAbsolutePath());
+		String path = (home.getSource() == null ? ""
+				: home.getSource().getAbsolutePath());
 		if (startedBy == null && path == null) {
 			return "";
 		}

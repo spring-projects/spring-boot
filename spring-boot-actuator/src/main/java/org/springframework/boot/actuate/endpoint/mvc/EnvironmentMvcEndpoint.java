@@ -37,8 +37,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-public class EnvironmentMvcEndpoint extends EndpointMvcAdapter implements
-		EnvironmentAware {
+public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
+		implements EnvironmentAware {
 
 	private Environment environment;
 
@@ -48,6 +48,7 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter implements
 
 	@RequestMapping(value = "/{name:.*}", method = RequestMethod.GET)
 	@ResponseBody
+	@HypermediaDisabled
 	public Object value(@PathVariable String name) {
 		if (!getDelegate().isEnabled()) {
 			// Shouldn't happen - MVC endpoint shouldn't be registered when delegate's
@@ -67,7 +68,7 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter implements
 	 */
 	private class NamePatternEnvironmentFilter extends NamePatternFilter<Environment> {
 
-		public NamePatternEnvironmentFilter(Environment source) {
+		NamePatternEnvironmentFilter(Environment source) {
 			super(source);
 		}
 

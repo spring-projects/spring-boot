@@ -38,7 +38,7 @@ import static org.junit.Assert.assertEquals;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleActuatorUiApplication.class)
+@SpringApplicationConfiguration(SampleActuatorUiApplication.class)
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0", "management.port:0" })
 @DirtiesContext
@@ -52,8 +52,8 @@ public class SampleActuatorUiApplicationPortTests {
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 

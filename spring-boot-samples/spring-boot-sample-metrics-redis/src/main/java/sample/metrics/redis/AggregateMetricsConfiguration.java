@@ -42,13 +42,16 @@ public class AggregateMetricsConfiguration {
 	}
 
 	private MetricReader globalMetricsForAggregation() {
-		return new RedisMetricRepository(this.connectionFactory, this.export.getRedis()
-				.getAggregatePrefix(), this.export.getRedis().getKey());
+		return new RedisMetricRepository(this.connectionFactory,
+				this.export.getRedis().getAggregatePrefix(),
+				this.export.getRedis().getKey());
 	}
 
 	private MetricReader aggregatesMetricReader() {
 		AggregateMetricReader repository = new AggregateMetricReader(
 				globalMetricsForAggregation());
+		repository.setKeyPattern(this.export.getAggregate().getKeyPattern());
 		return repository;
 	}
+
 }

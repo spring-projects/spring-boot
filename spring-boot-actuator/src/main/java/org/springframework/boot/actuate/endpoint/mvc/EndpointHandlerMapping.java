@@ -25,7 +25,6 @@ import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
@@ -49,8 +48,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @author Christian Dupuis
  * @author Dave Syer
  */
-public class EndpointHandlerMapping extends RequestMappingHandlerMapping implements
-		ApplicationContextAware {
+public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 
 	private final Set<MvcEndpoint> endpoints;
 
@@ -99,7 +97,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 
 	/**
 	 * Since all handler beans are passed into the constructor there is no need to detect
-	 * anything here
+	 * anything here.
 	 */
 	@Override
 	protected boolean isHandler(Class<?> beanType) {
@@ -107,6 +105,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	}
 
 	@Override
+	@Deprecated
 	protected void registerHandlerMethod(Object handler, Method method,
 			RequestMappingInfo mapping) {
 		if (mapping == null) {
@@ -150,7 +149,8 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	}
 
 	/**
-	 * @param prefix the prefix to set
+	 * Set the prefix used in mappings.
+	 * @param prefix the prefix
 	 */
 	public void setPrefix(String prefix) {
 		Assert.isTrue("".equals(prefix) || StringUtils.startsWithIgnoreCase(prefix, "/"),
@@ -159,13 +159,15 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	}
 
 	/**
-	 * @return the prefix used in mappings
+	 * Get the prefix used in mappings.
+	 * @return the prefix
 	 */
 	public String getPrefix() {
 		return this.prefix;
 	}
 
 	/**
+	 * Get the path of the endpoint.
 	 * @param endpoint the endpoint
 	 * @return the path used in mappings
 	 */
@@ -190,7 +192,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	}
 
 	/**
-	 * Return the endpoints
+	 * Return the endpoints.
 	 * @return the endpoints
 	 */
 	public Set<? extends MvcEndpoint> getEndpoints() {
@@ -202,4 +204,5 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 			RequestMappingInfo mappingInfo) {
 		return this.corsConfiguration;
 	}
+
 }

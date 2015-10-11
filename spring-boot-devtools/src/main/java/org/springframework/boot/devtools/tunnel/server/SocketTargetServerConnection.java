@@ -70,10 +70,10 @@ public class SocketTargetServerConnection implements TargetServerConnection {
 
 		private final ReadableByteChannel readChannel;
 
-		public TimeoutAwareChannel(SocketChannel socketChannel) throws IOException {
+		TimeoutAwareChannel(SocketChannel socketChannel) throws IOException {
 			this.socketChannel = socketChannel;
-			this.readChannel = Channels.newChannel(socketChannel.socket()
-					.getInputStream());
+			this.readChannel = Channels
+					.newChannel(socketChannel.socket().getInputStream());
 		}
 
 		@Override

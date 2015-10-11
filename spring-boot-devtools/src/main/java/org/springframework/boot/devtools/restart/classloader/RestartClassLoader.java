@@ -134,7 +134,8 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	}
 
 	@Override
-	public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+	public Class<?> loadClass(String name, boolean resolve)
+			throws ClassNotFoundException {
 		String path = name.replace('.', '/').concat(".class");
 		ClassLoaderFile file = this.updatedFiles.getFile(path);
 		if (file != null && file.getKind() == Kind.DELETED) {
@@ -206,7 +207,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 
 		private final Enumeration<E> enumeration;
 
-		public CompoundEnumeration(E firstElement, Enumeration<E> enumeration) {
+		CompoundEnumeration(E firstElement, Enumeration<E> enumeration) {
 			this.firstElement = firstElement;
 			this.enumeration = enumeration;
 		}

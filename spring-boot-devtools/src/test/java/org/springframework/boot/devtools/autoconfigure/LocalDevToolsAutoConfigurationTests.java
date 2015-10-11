@@ -16,6 +16,7 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
@@ -45,7 +47,9 @@ import org.springframework.util.SocketUtils;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -87,6 +91,37 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
+	public void defaultPropertyCanBeOverridenFromCommandLine() throws Exception {
+		this.context = initializeAndRun(Config.class, "--spring.thymeleaf.cache=true");
+		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
+		resolver.initialize();
+		assertThat(resolver.isCacheable(), equalTo(true));
+	}
+
+	@Test
+	public void defaultPropertyCanBeOverridenFromUserHomeProperties() throws Exception {
+		String userHome = System.getProperty("user.home");
+		System.setProperty("user.home",
+				new File("src/test/resources/user-home").getAbsolutePath());
+		try {
+			this.context = initializeAndRun(Config.class);
+			TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
+			resolver.initialize();
+			assertThat(resolver.isCacheable(), equalTo(true));
+		}
+		finally {
+			System.setProperty("user.home", userHome);
+		}
+	}
+
+	@Test
+	public void resourceCachePeriodIsZero() throws Exception {
+		this.context = initializeAndRun(WebResourcesConfig.class);
+		ResourceProperties properties = this.context.getBean(ResourceProperties.class);
+		assertThat(properties.getCachePeriod(), equalTo(0));
+	}
+
+	@Test
 	public void liveReloadServer() throws Exception {
 		this.context = initializeAndRun(Config.class);
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
@@ -108,7 +143,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
-				Collections.<ChangedFiles> emptySet(), false);
+				Collections.<ChangedFiles>emptySet(), false);
 		this.context.publishEvent(event);
 		verify(server).triggerReload();
 	}
@@ -119,7 +154,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
-				Collections.<ChangedFiles> emptySet(), true);
+				Collections.<ChangedFiles>emptySet(), true);
 		this.context.publishEvent(event);
 		verify(server, never()).triggerReload();
 	}
@@ -134,19 +169,19 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void restartTriggerdOnClassPathChangeWithRestart() throws Exception {
+	public void restartTriggeredOnClassPathChangeWithRestart() throws Exception {
 		this.context = initializeAndRun(Config.class);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
-				Collections.<ChangedFiles> emptySet(), true);
+				Collections.<ChangedFiles>emptySet(), true);
 		this.context.publishEvent(event);
 		verify(this.mockRestarter.getMock()).restart(any(FailureHandler.class));
 	}
 
 	@Test
-	public void restartNotTriggerdOnClassPathChangeWithRestart() throws Exception {
+	public void restartNotTriggeredOnClassPathChangeWithRestart() throws Exception {
 		this.context = initializeAndRun(Config.class);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
-				Collections.<ChangedFiles> emptySet(), false);
+				Collections.<ChangedFiles>emptySet(), false);
 		this.context.publishEvent(event);
 		verify(this.mockRestarter.getMock(), never()).restart();
 	}
@@ -181,17 +216,36 @@ public class LocalDevToolsAutoConfigurationTests {
 		assertThat(filter, instanceOf(TriggerFileFilter.class));
 	}
 
-	private ConfigurableApplicationContext initializeAndRun(Class<?> config) {
-		return initializeAndRun(config, Collections.<String, Object> emptyMap());
+	@Test
+	public void watchingAdditionalPaths() throws Exception {
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put("spring.devtools.restart.additional-paths",
+				"src/main/java,src/test/java");
+		this.context = initializeAndRun(Config.class, properties);
+		ClassPathFileSystemWatcher classPathWatcher = this.context
+				.getBean(ClassPathFileSystemWatcher.class);
+		Object watcher = ReflectionTestUtils.getField(classPathWatcher,
+				"fileSystemWatcher");
+		@SuppressWarnings("unchecked")
+		Map<File, Object> folders = (Map<File, Object>) ReflectionTestUtils
+				.getField(watcher, "folders");
+		assertThat(folders.size(), is(equalTo(2)));
+		assertThat(folders, hasKey(new File("src/main/java").getAbsoluteFile()));
+		assertThat(folders, hasKey(new File("src/test/java").getAbsoluteFile()));
 	}
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config,
-			Map<String, Object> properties) {
+			String... args) {
+		return initializeAndRun(config, Collections.<String, Object>emptyMap(), args);
+	}
+
+	private ConfigurableApplicationContext initializeAndRun(Class<?> config,
+			Map<String, Object> properties, String... args) {
 		Restarter.initialize(new String[0], false, new MockRestartInitializer(), false);
 		SpringApplication application = new SpringApplication(config);
 		application.setDefaultProperties(getDefaultProperties(properties));
 		application.setWebEnvironment(false);
-		ConfigurableApplicationContext context = application.run();
+		ConfigurableApplicationContext context = application.run(args);
 		return context;
 	}
 
@@ -218,6 +272,12 @@ public class LocalDevToolsAutoConfigurationTests {
 		public LiveReloadServer liveReloadServer() {
 			return mock(LiveReloadServer.class);
 		}
+
+	}
+
+	@Configuration
+	@Import({ LocalDevToolsAutoConfiguration.class, ResourceProperties.class })
+	public static class WebResourcesConfig {
 
 	}
 

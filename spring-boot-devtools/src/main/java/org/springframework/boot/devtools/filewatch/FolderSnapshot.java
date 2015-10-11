@@ -50,7 +50,7 @@ class FolderSnapshot {
 	 * Create a new {@link FolderSnapshot} for the given folder.
 	 * @param folder the source folder
 	 */
-	public FolderSnapshot(File folder) {
+	FolderSnapshot(File folder) {
 		Assert.notNull(folder, "Folder must not be null");
 		Assert.isTrue(folder.isDirectory(), "Folder must not be a file");
 		this.folder = folder;
@@ -74,11 +74,12 @@ class FolderSnapshot {
 		}
 	}
 
-	public ChangedFiles getChangedFiles(FolderSnapshot snapshot, FileFilter triggerFilter) {
+	public ChangedFiles getChangedFiles(FolderSnapshot snapshot,
+			FileFilter triggerFilter) {
 		Assert.notNull(snapshot, "Snapshot must not be null");
 		File folder = this.folder;
-		Assert.isTrue(snapshot.folder.equals(folder), "Snapshot source folder must be '"
-				+ folder + "'");
+		Assert.isTrue(snapshot.folder.equals(folder),
+				"Snapshot source folder must be '" + folder + "'");
 		Set<ChangedFile> changes = new LinkedHashSet<ChangedFile>();
 		Map<File, FileSnapshot> previousFiles = getFilesMap();
 		for (FileSnapshot currentFile : snapshot.files) {
@@ -88,8 +89,8 @@ class FolderSnapshot {
 					changes.add(new ChangedFile(folder, currentFile.getFile(), Type.ADD));
 				}
 				else if (!previousFile.equals(currentFile)) {
-					changes.add(new ChangedFile(folder, currentFile.getFile(),
-							Type.MODIFY));
+					changes.add(
+							new ChangedFile(folder, currentFile.getFile(), Type.MODIFY));
 				}
 			}
 		}
@@ -166,7 +167,7 @@ class FolderSnapshot {
 
 	@Override
 	public String toString() {
-		return this.folder + " snaphost at " + this.time;
+		return this.folder + " snapshot at " + this.time;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,15 +57,29 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see #configure(SpringApplicationBuilder)
  */
 public abstract class SpringBootServletInitializer implements WebApplicationInitializer {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	private boolean registerErrorPageFilter = true;
+
+	/**
+	 * Set if the {@link ErrorPageFilter} should be registered. Set to {@code false} if
+	 * error page mappings should be handled via the Servlet container and not Spring
+	 * Boot.
+	 * @param registerErrorPageFilter if the {@link ErrorPageFilter} should be registered.
+	 */
+	protected final void setRegisterErrorPageFilter(boolean registerErrorPageFilter) {
+		this.registerErrorPageFilter = registerErrorPageFilter;
+	}
+
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
-		WebApplicationContext rootAppContext = createRootApplicationContext(servletContext);
+		WebApplicationContext rootAppContext = createRootApplicationContext(
+				servletContext);
 		if (rootAppContext != null) {
 			servletContext.addListener(new ContextLoaderListener(rootAppContext) {
 				@Override
@@ -84,6 +98,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	protected WebApplicationContext createRootApplicationContext(
 			ServletContext servletContext) {
 		SpringApplicationBuilder builder = createSpringApplicationBuilder();
+		builder.main(getClass());
 		ApplicationContext parent = getExistingRootWebApplicationContext(servletContext);
 		if (parent != null) {
 			this.logger.info("Root context already created (using as parent).");
@@ -91,20 +106,22 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, null);
 			builder.initializers(new ParentContextApplicationContextInitializer(parent));
 		}
-		builder.initializers(new ServletContextApplicationContextInitializer(
-				servletContext));
+		builder.initializers(
+				new ServletContextApplicationContextInitializer(servletContext));
 		builder.contextClass(AnnotationConfigEmbeddedWebApplicationContext.class);
 		builder = configure(builder);
 		SpringApplication application = builder.build();
-		if (application.getSources().isEmpty()
-				&& AnnotationUtils.findAnnotation(getClass(), Configuration.class) != null) {
+		if (application.getSources().isEmpty() && AnnotationUtils
+				.findAnnotation(getClass(), Configuration.class) != null) {
 			application.getSources().add(getClass());
 		}
 		Assert.state(application.getSources().size() > 0,
 				"No SpringApplication sources have been defined. Either override the "
 						+ "configure method or add an @Configuration annotation");
 		// Ensure error pages are registered
-		application.getSources().add(ErrorPageFilter.class);
+		if (this.registerErrorPageFilter) {
+			application.getSources().add(ErrorPageFilter.class);
+		}
 		return run(application);
 	}
 
@@ -130,8 +147,8 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	private ApplicationContext getExistingRootWebApplicationContext(
 			ServletContext servletContext) {
-		Object context = servletContext
-				.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+		Object context = servletContext.getAttribute(
+				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 		if (context instanceof ApplicationContext) {
 			return (ApplicationContext) context;
 		}

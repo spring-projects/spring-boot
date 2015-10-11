@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 /**
- * Configuration for HTTP message converters that use Jackson
+ * Configuration for HTTP message converters that use Jackson.
  *
  * @author Andy Wilkinson
  * @since 1.2.2
@@ -45,7 +45,9 @@ class JacksonHttpMessageConvertersConfiguration {
 	protected static class MappingJackson2HttpMessageConverterConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(value = MappingJackson2HttpMessageConverter.class, ignoredType = {
+				"org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter",
+				"org.springframework.data.rest.webmvc.alps.AlpsJsonHttpMessageConverter" })
 		public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(
 				ObjectMapper objectMapper) {
 			return new MappingJackson2HttpMessageConverter(objectMapper);
@@ -62,8 +64,8 @@ class JacksonHttpMessageConvertersConfiguration {
 		@ConditionalOnMissingBean
 		public MappingJackson2XmlHttpMessageConverter mappingJackson2XmlHttpMessageConverter(
 				Jackson2ObjectMapperBuilder builder) {
-			return new MappingJackson2XmlHttpMessageConverter(builder.createXmlMapper(
-					true).build());
+			return new MappingJackson2XmlHttpMessageConverter(
+					builder.createXmlMapper(true).build());
 		}
 
 	}

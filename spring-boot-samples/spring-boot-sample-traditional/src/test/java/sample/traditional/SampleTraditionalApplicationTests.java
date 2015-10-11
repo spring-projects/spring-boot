@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleTraditionalApplication.class)
+@SpringApplicationConfiguration(SampleTraditionalApplication.class)
 @WebAppConfiguration
 @IntegrationTest("server.port:0")
 @DirtiesContext
@@ -48,8 +48,8 @@ public class SampleTraditionalApplicationTests {
 
 	@Test
 	public void testHomeJsp() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		String body = entity.getBody();
 		assertTrue("Wrong body:\n" + body, body.contains("<html>"));

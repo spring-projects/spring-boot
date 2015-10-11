@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Dave Syer
  */
-@SpringApplicationConfiguration(classes = TestConfiguration.class)
+@SpringApplicationConfiguration(TestConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @DirtiesContext
@@ -132,9 +132,9 @@ public class BasicErrorControllerMockMvcTests {
 			EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
-	protected static @interface MinimalWebConfiguration {
+			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
+	protected @interface MinimalWebConfiguration {
 	}
 
 	@Configuration
@@ -152,7 +152,7 @@ public class BasicErrorControllerMockMvcTests {
 				@Override
 				protected void renderMergedOutputModel(Map<String, Object> model,
 						HttpServletRequest request, HttpServletResponse response)
-						throws Exception {
+								throws Exception {
 					response.getWriter().write("ERROR_BEAN");
 				}
 			};
@@ -186,10 +186,10 @@ public class BasicErrorControllerMockMvcTests {
 
 	}
 
-	@ResponseStatus(value = HttpStatus.NOT_FOUND)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
 	private static class NotFoundException extends RuntimeException {
 
-		public NotFoundException(String string) {
+		NotFoundException(String string) {
 			super(string);
 		}
 
@@ -198,9 +198,10 @@ public class BasicErrorControllerMockMvcTests {
 	private class ErrorDispatcher implements RequestBuilder {
 
 		private MvcResult result;
+
 		private String path;
 
-		public ErrorDispatcher(MvcResult result, String path) {
+		ErrorDispatcher(MvcResult result, String path) {
 			this.result = result;
 			this.path = path;
 		}

@@ -48,8 +48,8 @@ public class ResourceServerPropertiesTests {
 	@Test
 	public void tokenKeyDerived() throws Exception {
 		this.properties.setUserInfoUri("http://example.com/userinfo");
-		assertNotNull("Wrong properties: " + this.properties, this.properties.getJwt()
-				.getKeyUri());
+		assertNotNull("Wrong properties: " + this.properties,
+				this.properties.getJwt().getKeyUri());
 	}
 
 }

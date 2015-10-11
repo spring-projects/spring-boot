@@ -38,7 +38,7 @@ defaults. The parent project provides the following features:
 * A Dependency Management section, allowing you to omit `<version>` tags for common
   dependencies, inherited from the `spring-boot-dependencies` POM.
 * Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
-* Sensible plugin configuration (http://mojo.codehaus.org/exec-maven-plugin/[exec plugin],
+* Sensible plugin configuration (http://www.mojohaus.org/exec-maven-plugin/[exec plugin],
   http://maven.apache.org/surefire/maven-surefire-plugin/[surefire],
   https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID],
   http://maven.apache.org/plugins/maven-shade-plugin/[shade]).
@@ -210,12 +210,68 @@ endif::[]
 
 [[using-boot-ant]]
 ===  Ant
-It is possible to build a Spring Boot project using Apache Ant, however, no special
-support or plugins are provided. Ant scripts can use the Ivy dependency system to import
-starter POMs.
+It is possible to build a Spring Boot project using Apache Ant+Ivy. The
+`spring-boot-antlib` "`AntLib`" module is also available to help Ant create executable
+jars.
 
-See the _<<howto.adoc#howto-build-an-executable-archive-with-ant>>_ "`How-to`" for more
-complete instructions.
+To declare dependencies a typical `ivy.xml` file will look something like this:
+
+[source,xml,indent=0]
+----
+	<ivy-module version="2.0">
+		<info organisation="org.springframework.boot" module="spring-boot-sample-ant" />
+		<configurations>
+			<conf name="compile" description="everything needed to compile this module" />
+			<conf name="runtime" extends="compile" description="everything needed to run this module" />
+		</configurations>
+		<dependencies>
+			<dependency org="org.springframework.boot" name="spring-boot-starter"
+				rev="${spring-boot.version}" conf="compile" />
+		</dependencies>
+	</ivy-module>
+----
+
+A typical `build.xml` will look like this:
+
+[source,xml,indent=0]
+----
+	<project
+		xmlns:ivy="antlib:org.apache.ivy.ant"
+		xmlns:spring-boot="antlib:org.springframework.boot.ant"
+		name="myapp" default="build">
+
+		<property name="spring-boot.version" value="1.3.0.BUILD-SNAPSHOT" />
+
+		<target name="resolve" description="--> retrieve dependencies with ivy">
+			<ivy:retrieve pattern="lib/[conf]/[artifact]-[type]-[revision].[ext]" />
+		</target>
+
+		<target name="classpaths" depends="resolve">
+			<path id="compile.classpath">
+				<fileset dir="lib/compile" includes="*.jar" />
+			</path>
+		</target>
+
+		<target name="init" depends="classpaths">
+			<mkdir dir="build/classes" />
+		</target>
+
+		<target name="compile" depends="init" description="compile">
+			<javac srcdir="src/main/java" destdir="build/classes" classpathref="compile.classpath" />
+		</target>
+
+		<target name="build" depends="compile">
+			<spring-boot:exejar destfile="build/myapp.jar" classes="build/classes">
+				<spring-boot:lib>
+					<fileset dir="lib/runtime" />
+				</spring-boot:lib>
+			</spring-boot:exejar>
+		</target>
+	</project>
+----
+
+TIP: See the _<<howto.adoc#howto-build-an-executable-archive-with-ant>>_ "`How-to`" if
+you don't want to use the `spring-boot-antlib` module.
 
 
 
@@ -240,8 +296,9 @@ search dependencies by name. For example, with the appropriate Eclipse or STS pl
 installed, you can simply hit `ctrl-space` in the POM editor and type
 "`spring-boot-starter`" for a complete list.
 
-Third party starters should not start with `spring-boot-starter` as it is reserved for
-official starters. A third-party starter for `acme` will be typically named
+As explained in the <<spring-boot-features#boot-features-custom-starter,Creating your own starter>>
+section, third party starters should not start with `spring-boot` as it is reserved for
+official Spring Boot artifacts. A third-party starter for `acme` will be typically named
 `acme-spring-boot-starter`.
 ****
 
@@ -263,6 +320,9 @@ The following application starters are provided by Spring Boot under the
 
 |`spring-boot-starter-aop`
 |Support for aspect-oriented programming including `spring-aop` and AspectJ.
+
+|`spring-boot-starter-artemis`
+|Support for "`Java Message Service API`" via Apache Artemis.
 
 |`spring-boot-starter-batch`
 |Support for "`Spring Batch`" including HSQLDB database.
@@ -494,7 +554,7 @@ source is a `@Configuration` class. Usually the class that defines the `main` me
 is also a good candidate as the primary `@Configuration`.
 
 TIP: Many Spring configuration examples have been published on the Internet that use XML
-configuration. Always try to use the equivalent Java-base configuration if possible.
+configuration. Always try to use the equivalent Java-based configuration if possible.
 Searching for `+enable*+` annotations can be a good starting point.
 
 
@@ -503,7 +563,7 @@ Searching for `+enable*+` annotations can be a good starting point.
 === Importing additional configuration classes
 You don't need to put all your `@Configuration` into a single class. The `@Import`
 annotation can be used to import additional configuration classes. Alternatively, you
-can use `@ComponentScan` to automatically pickup all Spring components, including
+can use `@ComponentScan` to automatically pick up all Spring components, including
 `@Configuration` classes.
 
 
@@ -538,12 +598,12 @@ configuration to replace specific parts of the auto-configuration. For example, 
 you add your own `DataSource` bean, the default embedded database support will back away.
 
 If you need to find out what auto-configuration is currently being applied, and why,
-starting your application with the `--debug` switch. This will log an auto-configuration
+start your application with the `--debug` switch. This will log an auto-configuration
 report to the console.
 
 
 
-[[using-boot-disabling-specific-auto-configutation]]
+[[using-boot-disabling-specific-auto-configuration]]
 === Disabling specific auto-configuration
 If you find that specific auto-configure classes are being applied that you don't want,
 you can use the exclude attribute of `@EnableAutoConfiguration` to disable them.
@@ -560,7 +620,12 @@ you can use the exclude attribute of `@EnableAutoConfiguration` to disable them.
 	}
 ----
 
+If the class is not on the classpath, you can use the `excludeName` attribute of
+the annotation and specify the fully qualified name instead. Finally, you can also
+control the list of auto-configuration classes to exclude via the
+`spring.autoconfigure.exclude` property.
 
+TIP: You can define exclusions both at the annotation level and using the property.
 
 [[using-boot-spring-beans-and-dependency-injection]]
 == Spring Beans and dependency injection
@@ -630,6 +695,9 @@ The `@SpringBootApplication` annotation is equivalent to using `@Configuration`,
 
 	}
 ----
+
+NOTE: `@SpringBootApplication` also provides aliases to customize the attributes of
+`@EnableAutoConfiguration` and `@ComponentScan`.
 
 
 
@@ -709,9 +777,9 @@ entropy for session keys.)
 
 [[using-boot-running-with-the-gradle-plugin]]
 === Using the Gradle plugin
-The Spring Boot Gradle plugin also includes a `run` goal which can be used to run
+The Spring Boot Gradle plugin also includes a `bootRun` task which can be used to run
 your application in an exploded form. The `bootRun` task is added whenever you import
-the `spring-boot-plugin`
+the `spring-boot-gradle-plugin`:
 
 [indent=0,subs="attributes"]
 ----
@@ -755,6 +823,7 @@ devtools support, simply add the module dependency to your build:
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
 		</dependency>
 	</dependencies>
 ----
@@ -767,10 +836,13 @@ devtools support, simply add the module dependency to your build:
 	}
 ----
 
-
 NOTE: Developer tools are automatically disabled when running a fully packaged
 application. If your application is launched using `java -jar` or if it's started using a
-special classloader, then it is considered a "`production application`".
+special classloader, then it is considered a "`production application`". Flagging the
+dependency as optional is a best practice that prevents devtools from being transitively
+applied to other modules using your project. Gradle does not support `optional`
+dependencies out-of-the-box so you may want to have a look to the
+{propdeps-plugin}[`propdeps-plugin`] in the meantime.
 
 
 
@@ -788,7 +860,7 @@ to set these properties manually, the `spring-boot-devtools` module will automat
 apply sensible development-time configuration.
 
 TIP: For a complete list of the properties that are applied see
-{sc-spring-boot-devtools}/autoconfigure/DevToolsPropertyDefaultsPostProcessor.{sc-ext}[DevToolsPropertyDefaultsPostProcessor].
+{sc-spring-boot-devtools}/env/DevToolsPropertyDefaultsPostProcessor.{sc-ext}[DevToolsPropertyDefaultsPostProcessor].
 
 
 
@@ -799,8 +871,16 @@ on the classpath change. This can be a useful feature when working in an IDE as 
 a very fast feedback loop for code changes. By default, any entry on the classpath that
 points to a folder will be monitored for changes.
 
-TIP: Automatic restart work very well when used with LiveReload.
+NOTE: You can also start your application via the supported build plugins (i.e. Maven and
+Gradle) as long as forking is enabled since DevTools need an isolated application
+classloader to operate properly.
+
+TIP: Automatic restart works very well when used with LiveReload.
 <<using-boot-devtools-livereload,See below>> for details.
+
+NOTE: If you use JRebel automatic restarts will be disabled in favor of dynamic class
+reloading. Other devtools features (such as LiveReload and property overrides) can still
+be used.
 
 .Restart vs Reload
 ****
@@ -822,18 +902,34 @@ commercially supported.
 
 
 
+[[using-boot-devtools-restart-exclude]]
 ==== Excluding resources
 Certain resources don't necessarily need to trigger a restart when they are changed. For
 example, Thymeleaf templates can just be edited in-place. By default changing resources
-in `/META-INF/resources` ,`/resources` ,`/static` ,`/public` or `/templates` will not
-trigger a restart. If you want to customize these exclusions you can use the
-`spring.devtools.restart.exclude` property. For example, to exclude only `/static` and
-`/public` you would set the following:
+in `/META-INF/maven`, `/META-INF/resources` ,`/resources` ,`/static` ,`/public` or
+`/templates` will not trigger a restart but will trigger a
+<<using-boot-devtools-livereload, live reload>>. If you want to customize these exclusions
+you can use the `spring.devtools.restart.exclude` property. For example, to exclude only
+`/static` and `/public` you would set the following:
 
 [indent=0]
 ----
 	spring.devtools.restart.exclude=static/**,public/**
 ----
+
+TIP: if you want to keep those defaults and _add_ additional exclusions, use the
+`spring.devtools.restart.additional-exclude` property instead.
+
+
+[[using-boot-devtools-restart-additional-paths]]
+==== Watching additional paths
+You may want your application to be restarted or reloaded when you make changes to files
+that are not on the classpath. To do so, use the
+`spring.devtools.restart.additional-paths` property to configure additional paths to watch
+for changes. You can use the `spring.devtools.restart.exclude` property
+<<using-boot-devtools-restart-exclude, described above>> to control whether changes
+beneath the additional paths will trigger a full restart or just a
+<<using-boot-devtools-livereload, live reload>>.
 
 
 
@@ -909,11 +1005,11 @@ the following:
 === Remote applications
 The Spring Boot developer tools are not just limited to local development. You can also
 use several features when running applications remotely. Remote support is opt-in, to
-enable it you need to set a `spring.devtools.remote.password` property. For example:
+enable it you need to set a `spring.devtools.remote.secret` property. For example:
 
 [source,properties,indent=0]
 ----
-	spring.devtools.remote.password=mysecret
+	spring.devtools.remote.secret=mysecret
 ----
 
 WARNING: Enabling `spring-boot-devtools` on a remote application is a security risk. You
@@ -921,7 +1017,7 @@ should never enable support on a production deployment.
 
 Remote devtools support is provided in two parts; there is a server side endpoint that
 accepts connections, and a client application that you run in your IDE. The server
-component is automatically enabled when the `spring.devtools.remote.password` property
+component is automatically enabled when the `spring.devtools.remote.secret` property
 is set. The client component must be launched manually.
 
 
@@ -962,11 +1058,14 @@ A running remote client will look like this:
 ----
 
 NOTE: Because the remote client is using the same classpath as the real application it
-can directly read application properties. This is how the `spring.devtools.remote.password`
+can directly read application properties. This is how the `spring.devtools.remote.secret`
 property is read and passed to the server for authentication.
 
 TIP: It's always advisable to use `https://` as the connection protocol so that traffic is
 encrypted and passwords cannot be intercepted.
+
+TIP: If you need to use a proxy to access the remote application, configure the
+`spring.devtools.remote.proxy.host` and `spring.devtools.remote.proxy.port` properties.
 
 
 

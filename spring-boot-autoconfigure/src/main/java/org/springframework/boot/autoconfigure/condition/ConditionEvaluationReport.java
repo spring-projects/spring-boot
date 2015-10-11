@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -44,7 +45,7 @@ import org.springframework.util.ObjectUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ConditionEvaluationReport {
+public final class ConditionEvaluationReport {
 
 	private static final String BEAN_NAME = "autoConfigurationReport";
 
@@ -57,6 +58,8 @@ public class ConditionEvaluationReport {
 	private ConditionEvaluationReport parent;
 
 	private List<String> exclusions = Collections.emptyList();
+
+	private Set<String> unconditionalClasses = new HashSet<String>();
 
 	/**
 	 * Private constructor.
@@ -76,6 +79,7 @@ public class ConditionEvaluationReport {
 		Assert.notNull(source, "Source must not be null");
 		Assert.notNull(condition, "Condition must not be null");
 		Assert.notNull(outcome, "Outcome must not be null");
+		this.unconditionalClasses.remove(source);
 		if (!this.outcomes.containsKey(source)) {
 			this.outcomes.put(source, new ConditionAndOutcomes());
 		}
@@ -84,7 +88,7 @@ public class ConditionEvaluationReport {
 	}
 
 	/**
-	 * Records the name of the classes that have been excluded from condition evaluation
+	 * Records the names of the classes that have been excluded from condition evaluation.
 	 * @param exclusions the names of the excluded classes
 	 */
 	public void recordExclusions(Collection<String> exclusions) {
@@ -93,12 +97,23 @@ public class ConditionEvaluationReport {
 	}
 
 	/**
+	 * Records the names of the classes that are candidates for condition evaluation.
+	 * @param evaluationCandidates the names of the classes whose conditions will be
+	 * evaluated
+	 */
+	public void recordEvaluationCandidates(List<String> evaluationCandidates) {
+		Assert.notNull(evaluationCandidates, "evaluationCandidates must not be null");
+		this.unconditionalClasses = new HashSet<String>(evaluationCandidates);
+	}
+
+	/**
 	 * Returns condition outcomes from this report, grouped by the source.
 	 * @return the condition outcomes
 	 */
 	public Map<String, ConditionAndOutcomes> getConditionAndOutcomesBySource() {
 		if (!this.addedAncestorOutcomes) {
-			for (Map.Entry<String, ConditionAndOutcomes> entry : this.outcomes.entrySet()) {
+			for (Map.Entry<String, ConditionAndOutcomes> entry : this.outcomes
+					.entrySet()) {
 				if (!entry.getValue().isFullMatch()) {
 					addNoMatchOutcomeToAncestors(entry.getKey());
 				}
@@ -112,19 +127,27 @@ public class ConditionEvaluationReport {
 		String prefix = source + "$";
 		for (Entry<String, ConditionAndOutcomes> entry : this.outcomes.entrySet()) {
 			if (entry.getKey().startsWith(prefix)) {
-				ConditionOutcome outcome = new ConditionOutcome(false, "Ancestor '"
-						+ source + "' did not match");
+				ConditionOutcome outcome = new ConditionOutcome(false,
+						"Ancestor '" + source + "' did not match");
 				entry.getValue().add(ANCESTOR_CONDITION, outcome);
 			}
 		}
 	}
 
 	/**
-	 * Returns the name of the classes that have been excluded from condition evaluation.
+	 * Returns the names of the classes that have been excluded from condition evaluation.
 	 * @return the names of the excluded classes
 	 */
 	public List<String> getExclusions() {
 		return Collections.unmodifiableList(this.exclusions);
+	}
+
+	/**
+	 * Returns the names of the classes that were evaluated but were not conditional.
+	 * @return the names of the unconditional classes
+	 */
+	public Set<String> getUnconditionalClasses() {
+		return Collections.unmodifiableSet(this.unconditionalClasses);
 	}
 
 	/**
@@ -228,8 +251,8 @@ public class ConditionEvaluationReport {
 			}
 			ConditionAndOutcome other = (ConditionAndOutcome) obj;
 			return (ObjectUtils.nullSafeEquals(this.condition.getClass(),
-					other.condition.getClass()) && ObjectUtils.nullSafeEquals(
-					this.outcome, other.outcome));
+					other.condition.getClass())
+					&& ObjectUtils.nullSafeEquals(this.outcome, other.outcome));
 		}
 
 		@Override

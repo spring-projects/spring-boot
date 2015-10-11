@@ -43,7 +43,7 @@ import static org.junit.Assert.assertEquals;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { SampleSecureApplication.class,
+@SpringApplicationConfiguration({ SampleSecureApplication.class,
 		TestConfiguration.class })
 public class SampleSecureApplicationTests {
 
@@ -59,8 +59,8 @@ public class SampleSecureApplicationTests {
 	public void init() {
 		AuthenticationManager authenticationManager = this.context
 				.getBean(AuthenticationManager.class);
-		this.authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken("user", "password"));
+		this.authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken("user", "password"));
 	}
 
 	@After

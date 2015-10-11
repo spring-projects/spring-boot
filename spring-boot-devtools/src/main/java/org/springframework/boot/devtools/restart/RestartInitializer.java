@@ -30,7 +30,7 @@ public interface RestartInitializer {
 	/**
 	 * {@link RestartInitializer} that doesn't return any URLs.
 	 */
-	public static final RestartInitializer NONE = new RestartInitializer() {
+	RestartInitializer NONE = new RestartInitializer() {
 
 		@Override
 		public URL[] getInitialUrls(Thread thread) {

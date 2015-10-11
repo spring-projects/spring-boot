@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.lang.Grab;
-
 import java.util.Arrays;
 
 import org.codehaus.groovy.ast.ASTNode;
@@ -45,6 +43,8 @@ import org.junit.Test;
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 
+import groovy.lang.Grab;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -63,7 +63,8 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 
 	private final AnnotationNode grabAnnotation = createGrabAnnotation();
 
-	private final ArtifactCoordinatesResolver coordinatesResolver = mock(ArtifactCoordinatesResolver.class);
+	private final ArtifactCoordinatesResolver coordinatesResolver = mock(
+			ArtifactCoordinatesResolver.class);
 
 	private final DependencyResolutionContext resolutionContext = new DependencyResolutionContext() {
 
@@ -79,8 +80,8 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 
 	@Before
 	public void setupExpectations() {
-		given(this.coordinatesResolver.getGroupId("spring-core")).willReturn(
-				"org.springframework");
+		given(this.coordinatesResolver.getGroupId("spring-core"))
+				.willReturn("org.springframework");
 	}
 
 	@Test
@@ -233,8 +234,8 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 			return null;
 		}
 		else {
-			throw new IllegalStateException("Member '" + memberName
-					+ "' is not a ConstantExpression");
+			throw new IllegalStateException(
+					"Member '" + memberName + "' is not a ConstantExpression");
 		}
 	}
 

@@ -37,7 +37,7 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 	private final DiskSpaceHealthIndicatorProperties properties;
 
 	/**
-	 * Create a new {@code DiskSpaceHealthIndicator}
+	 * Create a new {@code DiskSpaceHealthIndicator}.
 	 * @param properties the disk space properties
 	 */
 	@Autowired
@@ -53,9 +53,10 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 			builder.up();
 		}
 		else {
-			logger.warn(String.format("Free disk space below threshold. "
-					+ "Available: %d bytes (threshold: %d bytes)", diskFreeInBytes,
-					this.properties.getThreshold()));
+			logger.warn(String.format(
+					"Free disk space below threshold. "
+							+ "Available: %d bytes (threshold: %d bytes)",
+					diskFreeInBytes, this.properties.getThreshold()));
 			builder.down();
 		}
 		builder.withDetail("total", path.getTotalSpace())

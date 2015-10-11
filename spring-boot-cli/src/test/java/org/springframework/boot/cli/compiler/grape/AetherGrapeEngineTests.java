@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.compiler.grape;
 
-import groovy.lang.GroovyClassLoader;
-
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
@@ -33,6 +31,8 @@ import org.eclipse.aether.repository.Authentication;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import groovy.lang.GroovyClassLoader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -53,8 +53,8 @@ public class AetherGrapeEngineTests {
 	private AetherGrapeEngine createGrapeEngine(
 			RepositoryConfiguration... additionalRepositories) {
 		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<RepositoryConfiguration>();
-		repositoryConfigurations.add(new RepositoryConfiguration("central", URI
-				.create("http://repo1.maven.org/maven2"), false));
+		repositoryConfigurations.add(new RepositoryConfiguration("central",
+				URI.create("http://repo1.maven.org/maven2"), false));
 		repositoryConfigurations.addAll(Arrays.asList(additionalRepositories));
 		return AetherGrapeEngineFactory.create(this.groovyClassLoader,
 				repositoryConfigurations, new DependencyResolutionContext());
@@ -121,7 +121,6 @@ public class AetherGrapeEngineTests {
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void dependencyResolutionWithExclusions() {
 		Map<String, Object> args = new HashMap<String, Object>();
@@ -139,10 +138,8 @@ public class AetherGrapeEngineTests {
 	public void nonTransitiveDependencyResolution() {
 		Map<String, Object> args = new HashMap<String, Object>();
 
-		createGrapeEngine().grab(
-				args,
-				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE",
-						false));
+		createGrapeEngine().grab(args, createDependency("org.springframework",
+				"spring-jdbc", "3.2.4.RELEASE", false));
 
 		assertEquals(1, this.groovyClassLoader.getURLs().length);
 	}

@@ -34,38 +34,39 @@ import static org.junit.Assert.assertTrue;
 public class InputArgumentsJavaAgentDetectorTests {
 
 	@Test
-	public void nonAgentJarsDoNotProduceFalsePositives() throws MalformedURLException,
-			IOException {
+	public void nonAgentJarsDoNotProduceFalsePositives()
+			throws MalformedURLException, IOException {
 		InputArgumentsJavaAgentDetector detector = new InputArgumentsJavaAgentDetector(
 				Arrays.asList("-javaagent:my-agent.jar"));
-		assertFalse(detector.isJavaAgentJar(new File("something-else.jar")
-				.getCanonicalFile().toURI().toURL()));
+		assertFalse(detector.isJavaAgentJar(
+				new File("something-else.jar").getCanonicalFile().toURI().toURL()));
 	}
 
 	@Test
 	public void singleJavaAgent() throws MalformedURLException, IOException {
 		InputArgumentsJavaAgentDetector detector = new InputArgumentsJavaAgentDetector(
 				Arrays.asList("-javaagent:my-agent.jar"));
-		assertTrue(detector.isJavaAgentJar(new File("my-agent.jar").getCanonicalFile()
-				.toURI().toURL()));
+		assertTrue(detector.isJavaAgentJar(
+				new File("my-agent.jar").getCanonicalFile().toURI().toURL()));
 	}
 
 	@Test
 	public void singleJavaAgentWithOptions() throws MalformedURLException, IOException {
 		InputArgumentsJavaAgentDetector detector = new InputArgumentsJavaAgentDetector(
 				Arrays.asList("-javaagent:my-agent.jar=a=alpha,b=bravo"));
-		assertTrue(detector.isJavaAgentJar(new File("my-agent.jar").getCanonicalFile()
-				.toURI().toURL()));
+		assertTrue(detector.isJavaAgentJar(
+				new File("my-agent.jar").getCanonicalFile().toURI().toURL()));
 	}
 
 	@Test
 	public void multipleJavaAgents() throws MalformedURLException, IOException {
 		InputArgumentsJavaAgentDetector detector = new InputArgumentsJavaAgentDetector(
-				Arrays.asList("-javaagent:my-agent.jar", "-javaagent:my-other-agent.jar"));
-		assertTrue(detector.isJavaAgentJar(new File("my-agent.jar").getCanonicalFile()
-				.toURI().toURL()));
-		assertTrue(detector.isJavaAgentJar(new File("my-other-agent.jar")
-				.getCanonicalFile().toURI().toURL()));
+				Arrays.asList("-javaagent:my-agent.jar",
+						"-javaagent:my-other-agent.jar"));
+		assertTrue(detector.isJavaAgentJar(
+				new File("my-agent.jar").getCanonicalFile().toURI().toURL()));
+		assertTrue(detector.isJavaAgentJar(
+				new File("my-other-agent.jar").getCanonicalFile().toURI().toURL()));
 	}
 
 }

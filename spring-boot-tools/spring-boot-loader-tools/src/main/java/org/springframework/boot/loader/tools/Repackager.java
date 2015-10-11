@@ -20,7 +20,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -88,9 +90,9 @@ public class Repackager {
 	}
 
 	/**
-	 * Repackage the source file so that it can be run using '{@literal java -jar}'
+	 * Repackage the source file so that it can be run using '{@literal java -jar}'.
 	 * @param libraries the libraries required to run the archive
-	 * @throws IOException
+	 * @throws IOException if the file cannot be repackaged
 	 */
 	public void repackage(Libraries libraries) throws IOException {
 		repackage(this.source, libraries);
@@ -98,10 +100,10 @@ public class Repackager {
 
 	/**
 	 * Repackage to the given destination so that it can be launched using '
-	 * {@literal java -jar}'
+	 * {@literal java -jar}'.
 	 * @param destination the destination file (may be the same as the source)
 	 * @param libraries the libraries required to run the archive
-	 * @throws IOException
+	 * @throws IOException if the file cannot be repackaged
 	 */
 	public void repackage(File destination, Libraries libraries) throws IOException {
 		repackage(destination, libraries, null);
@@ -109,15 +111,15 @@ public class Repackager {
 
 	/**
 	 * Repackage to the given destination so that it can be launched using '
-	 * {@literal java -jar}'
+	 * {@literal java -jar}'.
 	 * @param destination the destination file (may be the same as the source)
 	 * @param libraries the libraries required to run the archive
 	 * @param launchScript an optional launch script prepended to the front of the jar
-	 * @throws IOException
+	 * @throws IOException if the file cannot be repackaged
 	 * @since 1.3.0
 	 */
-	public void repackage(File destination, Libraries libraries, LaunchScript launchScript)
-			throws IOException {
+	public void repackage(File destination, Libraries libraries,
+			LaunchScript launchScript) throws IOException {
 		if (destination == null || destination.isDirectory()) {
 			throw new IllegalArgumentException("Invalid destination");
 		}
@@ -130,8 +132,8 @@ public class Repackager {
 		destination = destination.getAbsoluteFile();
 		File workingSource = this.source;
 		if (this.source.equals(destination)) {
-			workingSource = new File(this.source.getParentFile(), this.source.getName()
-					+ ".original");
+			workingSource = new File(this.source.getParentFile(),
+					this.source.getName() + ".original");
 			workingSource.delete();
 			renameFile(this.source, workingSource);
 		}
@@ -156,8 +158,8 @@ public class Repackager {
 		JarFile jarFile = new JarFile(this.source);
 		try {
 			Manifest manifest = jarFile.getManifest();
-			return (manifest != null && manifest.getMainAttributes().getValue(
-					BOOT_VERSION_ATTRIBUTE) != null);
+			return (manifest != null && manifest.getMainAttributes()
+					.getValue(BOOT_VERSION_ATTRIBUTE) != null);
 		}
 		finally {
 			jarFile.close();
@@ -166,29 +168,29 @@ public class Repackager {
 
 	private void repackage(JarFile sourceJar, File destination, Libraries libraries,
 			LaunchScript launchScript) throws IOException {
-		final JarWriter writer = new JarWriter(destination, launchScript);
+		JarWriter writer = new JarWriter(destination, launchScript);
 		try {
-			final Set<String> seen = new HashSet<String>();
-			writer.writeManifest(buildManifest(sourceJar));
+			final List<Library> unpackLibraries = new ArrayList<Library>();
+			final List<Library> standardLibraries = new ArrayList<Library>();
 			libraries.doWithLibraries(new LibraryCallback() {
 				@Override
 				public void library(Library library) throws IOException {
 					File file = library.getFile();
 					if (isZip(file)) {
-						String destination = Repackager.this.layout
-								.getLibraryDestination(library.getName(),
-										library.getScope());
-						if (destination != null) {
-							if (!seen.add(destination + library.getName())) {
-								throw new IllegalStateException("Duplicate library "
-										+ library.getName());
-							}
-							writer.writeNestedLibrary(destination, library);
+						if (library.isUnpackRequired()) {
+							unpackLibraries.add(library);
+						}
+						else {
+							standardLibraries.add(library);
 						}
 					}
 				}
 			});
+			writer.writeManifest(buildManifest(sourceJar));
+			Set<String> seen = new HashSet<String>();
+			writeNestedLibraries(unpackLibraries, seen, writer);
 			writer.writeEntries(sourceJar);
+			writeNestedLibraries(standardLibraries, seen, writer);
 			if (this.layout.isExecutable()) {
 				writer.writeLoaderClasses();
 			}
@@ -199,6 +201,21 @@ public class Repackager {
 			}
 			catch (Exception ex) {
 				// Ignore
+			}
+		}
+	}
+
+	private void writeNestedLibraries(List<Library> libraries, Set<String> alreadySeen,
+			JarWriter writer) throws IOException {
+		for (Library library : libraries) {
+			String destination = Repackager.this.layout
+					.getLibraryDestination(library.getName(), library.getScope());
+			if (destination != null) {
+				if (!alreadySeen.add(destination + library.getName())) {
+					throw new IllegalStateException(
+							"Duplicate library " + library.getName());
+				}
+				writer.writeNestedLibrary(destination, library);
 			}
 		}
 	}
@@ -243,8 +260,8 @@ public class Repackager {
 		}
 		String launcherClassName = this.layout.getLauncherClassName();
 		if (launcherClassName != null) {
-			manifest.getMainAttributes()
-					.putValue(MAIN_CLASS_ATTRIBUTE, launcherClassName);
+			manifest.getMainAttributes().putValue(MAIN_CLASS_ATTRIBUTE,
+					launcherClassName);
 			if (startClass == null) {
 				throw new IllegalStateException("Unable to find main class");
 			}
@@ -265,8 +282,8 @@ public class Repackager {
 
 	private void renameFile(File file, File dest) {
 		if (!file.renameTo(dest)) {
-			throw new IllegalStateException("Unable to rename '" + file + "' to '" + dest
-					+ "'");
+			throw new IllegalStateException(
+					"Unable to rename '" + file + "' to '" + dest + "'");
 		}
 	}
 

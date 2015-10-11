@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,7 +45,7 @@ import com.codahale.metrics.Sampling;
 import com.codahale.metrics.Timer;
 
 /**
- * A Spring Boot {@link MetricReader} that reads metrics from a Codahale
+ * A Spring Boot {@link MetricReader} that reads metrics from a Dropwizard
  * {@link MetricRegistry}. Gauges and Counters are reflected as a single value. Timers,
  * Meters and Histograms are expanded into sets of metrics containing all the properties
  * of type Number.
@@ -240,8 +240,8 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 			result = new HashSet<String>();
 		}
 		if (result.isEmpty()) {
-			for (PropertyDescriptor descriptor : BeanUtils.getPropertyDescriptors(metric
-					.getClass())) {
+			for (PropertyDescriptor descriptor : BeanUtils
+					.getPropertyDescriptors(metric.getClass())) {
 				if (ClassUtils.isAssignable(Number.class, descriptor.getPropertyType())) {
 					result.add(descriptor.getName());
 				}

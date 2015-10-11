@@ -26,9 +26,6 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import jline.console.ConsoleReader;
-import jline.console.completer.CandidateListCompletionHandler;
-
 import org.fusesource.jansi.AnsiRenderer.Code;
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.CommandFactory;
@@ -37,6 +34,9 @@ import org.springframework.boot.cli.command.core.HelpCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
 import org.springframework.boot.loader.tools.SignalUtils;
 import org.springframework.util.StringUtils;
+
+import jline.console.ConsoleReader;
+import jline.console.completer.CandidateListCompletionHandler;
 
 /**
  * A shell for Spring Boot. Drops the user into an event loop (REPL) where command line
@@ -49,6 +49,7 @@ import org.springframework.util.StringUtils;
 public class Shell {
 
 	private static final Set<Class<?>> NON_FORKED_COMMANDS;
+
 	static {
 		Set<Class<?>> nonForked = new HashSet<Class<?>>();
 		nonForked.add(VersionCommand.class);
@@ -65,9 +66,9 @@ public class Shell {
 
 	/**
 	 * Create a new {@link Shell} instance.
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
-	public Shell() throws IOException {
+	Shell() throws IOException {
 		attachSignalHandler();
 		this.consoleReader = new ConsoleReader();
 		this.commandRunner = createCommandRunner();
@@ -86,8 +87,8 @@ public class Shell {
 
 	private Iterable<Command> getCommands() {
 		List<Command> commands = new ArrayList<Command>();
-		ServiceLoader<CommandFactory> factories = ServiceLoader.load(
-				CommandFactory.class, getClass().getClassLoader());
+		ServiceLoader<CommandFactory> factories = ServiceLoader.load(CommandFactory.class,
+				getClass().getClassLoader());
 		for (CommandFactory factory : factories) {
 			for (Command command : factory.getCommands()) {
 				commands.add(convertToForkCommand(command));
@@ -174,7 +175,7 @@ public class Shell {
 	}
 
 	/**
-	 * Final handle an interrup signal (CTRL-C)
+	 * Final handle an interrup signal (CTRL-C).
 	 */
 	protected void handleSigInt() {
 		if (this.commandRunner.handleSigInt()) {
@@ -194,7 +195,7 @@ public class Shell {
 
 		private final Map<String, String> aliases = new HashMap<String, String>();
 
-		public ShellCommandRunner() {
+		ShellCommandRunner() {
 			super(null);
 		}
 
