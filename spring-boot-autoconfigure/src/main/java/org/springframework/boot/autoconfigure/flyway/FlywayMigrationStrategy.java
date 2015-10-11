@@ -27,10 +27,10 @@ import org.flywaydb.core.Flyway;
  */
 public interface FlywayMigrationStrategy {
 
-    /**
-     * Trigger flyway migration.
-     * @param flyway the flyway instance
-     */
-    void migrate(Flyway flyway);
+	/**
+	 * Trigger flyway migration.
+	 * @param flyway the flyway instance
+	 */
+	void migrate(Flyway flyway);
 
 }
