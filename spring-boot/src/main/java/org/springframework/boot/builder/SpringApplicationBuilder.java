@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ import org.springframework.core.io.ResourceLoader;
  * SpringApplication instead.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class SpringApplicationBuilder {
 
@@ -79,6 +80,8 @@ public class SpringApplicationBuilder {
 	private Set<String> additionalProfiles = new LinkedHashSet<String>();
 
 	private boolean registerShutdownHookApplied;
+
+	private boolean configuredAsChild = false;
 
 	public SpringApplicationBuilder(Object... sources) {
 		this.application = createSpringApplication(sources);
@@ -120,19 +123,11 @@ public class SpringApplicationBuilder {
 	 * @return an application context created from the current state
 	 */
 	public ConfigurableApplicationContext run(String... args) {
-		if (this.parent != null) {
-			// If there is a parent don't register a shutdown hook
-			if (!this.registerShutdownHookApplied) {
-				this.application.setRegisterShutdownHook(false);
-			}
-			// initialize it and make sure it is added to the current context
-			initializers(new ParentContextApplicationContextInitializer(
-					this.parent.run(args)));
-		}
 		if (this.running.get()) {
 			// If already created we just return the existing context
 			return this.context;
 		}
+		configureAsChildIfNecessary();
 		if (this.running.compareAndSet(false, true)) {
 			synchronized (this.running) {
 				// If not already running copy the sources over and then run.
@@ -142,11 +137,23 @@ public class SpringApplicationBuilder {
 		return this.context;
 	}
 
+	private void configureAsChildIfNecessary() {
+		if (this.parent != null && !this.configuredAsChild) {
+			this.configuredAsChild = true;
+			if (!this.registerShutdownHookApplied) {
+				this.application.setRegisterShutdownHook(false);
+			}
+			initializers(
+					new ParentContextApplicationContextInitializer(this.parent.run()));
+		}
+	}
+
 	/**
 	 * Returns a fully configured {@link SpringApplication} that is ready to run.
 	 * @return the fully configured {@link SpringApplication}.
 	 */
 	public SpringApplication build() {
+		configureAsChildIfNecessary();
 		this.application.setSources(this.sources);
 		return this.application;
 	}
@@ -405,7 +412,7 @@ public class SpringApplicationBuilder {
 	/**
 	 * Default properties for the environment. Multiple calls to this method are
 	 * cumulative.
-	 * @param defaults
+	 * @param defaults the default properties
 	 * @return the current builder
 	 * @see SpringApplicationBuilder#properties(String...)
 	 */
