@@ -91,8 +91,8 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 		return null;
 	}
 
-	private Map<String, PersistentSession> load(File file) throws IOException,
-			ClassNotFoundException {
+	private Map<String, PersistentSession> load(File file)
+			throws IOException, ClassNotFoundException {
 		ObjectInputStream stream = new ObjectInputStream(new FileInputStream(file));
 		try {
 			return load(stream);
@@ -107,7 +107,8 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 		Map<String, SerializablePersistentSession> session = readSession(stream);
 		long time = System.currentTimeMillis();
 		Map<String, PersistentSession> result = new LinkedHashMap<String, PersistentSession>();
-		for (Map.Entry<String, SerializablePersistentSession> entry : session.entrySet()) {
+		for (Map.Entry<String, SerializablePersistentSession> entry : session
+				.entrySet()) {
 			PersistentSession entrySession = entry.getValue().getPersistentSession();
 			if (entrySession.getExpiration().getTime() > time) {
 				result.put(entry.getKey(), entrySession);
@@ -147,7 +148,8 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 
 		SerializablePersistentSession(PersistentSession session) {
 			this.expiration = session.getExpiration();
-			this.sessionData = new LinkedHashMap<String, Object>(session.getSessionData());
+			this.sessionData = new LinkedHashMap<String, Object>(
+					session.getSessionData());
 		}
 
 		public PersistentSession getPersistentSession() {

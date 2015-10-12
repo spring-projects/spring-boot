@@ -138,8 +138,8 @@ public class ClassPathChangeUploaderTests {
 		return file;
 	}
 
-	private ClassLoaderFiles deserialize(byte[] bytes) throws IOException,
-			ClassNotFoundException {
+	private ClassLoaderFiles deserialize(byte[] bytes)
+			throws IOException, ClassNotFoundException {
 		ObjectInputStream objectInputStream = new ObjectInputStream(
 				new ByteArrayInputStream(bytes));
 		return (ClassLoaderFiles) objectInputStream.readObject();

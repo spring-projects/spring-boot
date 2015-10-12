@@ -15,9 +15,8 @@
  */
 
 /**
- * Classes and utilities that are useful when unit-testing Spring Boot applications.
- * This package is only intended for use in 'src/test' and should not be used in your
+ * Classes and utilities that are useful when unit-testing Spring Boot applications. This
+ * package is only intended for use in 'src/test' and should not be used in your
  * 'src/main' code.
  */
 package org.springframework.boot.test;
-

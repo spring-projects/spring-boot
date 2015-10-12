@@ -39,11 +39,12 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Maciej Walkowiak
  * @author Stephane Nicoll
+ * @author Benedikt Ritter
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
-public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAware,
-		InitializingBean {
+public class DataSourceProperties
+		implements BeanClassLoaderAware, EnvironmentAware, InitializingBean {
 
 	public static final String PREFIX = "spring.datasource";
 
@@ -161,7 +162,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAw
 
 	public String getDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
-			Assert.state(ClassUtils.isPresent(this.driverClassName, null),
+			Assert.state(driverClassIsLoadable(),
 					"Cannot load driver class: " + this.driverClassName);
 			return this.driverClassName;
 		}
@@ -180,6 +181,20 @@ public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAw
 					this.environment, "driver class");
 		}
 		return driverClassName;
+	}
+
+	private boolean driverClassIsLoadable() {
+		try {
+			ClassUtils.forName(this.driverClassName, null);
+			return true;
+		}
+		catch (UnsupportedClassVersionError ex) {
+			// Driver library has been compiled with a later JDK, propagate error
+			throw ex;
+		}
+		catch (Throwable ex) {
+			return false;
+		}
 	}
 
 	public void setDriverClassName(String driverClassName) {
@@ -368,8 +383,9 @@ public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAw
 				}
 				else {
 					message.append(" (the profiles \""
-							+ StringUtils.arrayToCommaDelimitedString(environment
-									.getActiveProfiles()) + "\" are currently active)");
+							+ StringUtils.arrayToCommaDelimitedString(
+									environment.getActiveProfiles())
+							+ "\" are currently active)");
 
 				}
 			}

@@ -32,7 +32,8 @@ public class BufferMetricReaderTests {
 
 	private GaugeBuffers gauges = new GaugeBuffers();
 
-	private BufferMetricReader reader = new BufferMetricReader(this.counters, this.gauges);
+	private BufferMetricReader reader = new BufferMetricReader(this.counters,
+			this.gauges);
 
 	@Test
 	public void countReflectsNumberOfMetrics() {

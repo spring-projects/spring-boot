@@ -108,15 +108,17 @@ public class MavenSettings {
 		return new ConservativeAuthenticationSelector(selector);
 	}
 
-	private ProxySelector createProxySelector(SettingsDecryptionResult decryptedSettings) {
+	private ProxySelector createProxySelector(
+			SettingsDecryptionResult decryptedSettings) {
 		DefaultProxySelector selector = new DefaultProxySelector();
 		for (Proxy proxy : decryptedSettings.getProxies()) {
 			Authentication authentication = new AuthenticationBuilder()
 					.addUsername(proxy.getUsername()).addPassword(proxy.getPassword())
 					.build();
-			selector.add(new org.eclipse.aether.repository.Proxy(proxy.getProtocol(),
-					proxy.getHost(), proxy.getPort(), authentication), proxy
-					.getNonProxyHosts());
+			selector.add(
+					new org.eclipse.aether.repository.Proxy(proxy.getProtocol(),
+							proxy.getHost(), proxy.getPort(), authentication),
+					proxy.getNonProxyHosts());
 		}
 		return selector;
 	}
@@ -124,10 +126,10 @@ public class MavenSettings {
 	private List<Profile> determineActiveProfiles(Settings settings) {
 		SpringBootCliModelProblemCollector problemCollector = new SpringBootCliModelProblemCollector();
 		List<org.apache.maven.model.Profile> activeModelProfiles = createProfileSelector()
-				.getActiveProfiles(
-						createModelProfiles(settings.getProfiles()),
-						new SpringBootCliProfileActivationContext(settings
-								.getActiveProfiles()), problemCollector);
+				.getActiveProfiles(createModelProfiles(settings.getProfiles()),
+						new SpringBootCliProfileActivationContext(
+								settings.getActiveProfiles()),
+						problemCollector);
 		if (!problemCollector.getProblems().isEmpty()) {
 			throw new IllegalStateException(createFailureMessage(problemCollector));
 		}
@@ -145,8 +147,8 @@ public class MavenSettings {
 		PrintWriter printer = new PrintWriter(message);
 		printer.println("Failed to determine active profiles:");
 		for (ModelProblemCollectorRequest problem : problemCollector.getProblems()) {
-			printer.println("    " + problem.getMessage() + " at "
-					+ problem.getLocation());
+			printer.println(
+					"    " + problem.getMessage() + " at " + problem.getLocation());
 		}
 		return message.toString();
 	}
@@ -175,7 +177,8 @@ public class MavenSettings {
 		return modelProfiles;
 	}
 
-	private org.apache.maven.model.Activation createModelActivation(Activation activation) {
+	private org.apache.maven.model.Activation createModelActivation(
+			Activation activation) {
 		org.apache.maven.model.Activation modelActivation = new org.apache.maven.model.Activation();
 		modelActivation.setActiveByDefault(activation.isActiveByDefault());
 		if (activation.getFile() != null) {
@@ -226,8 +229,8 @@ public class MavenSettings {
 		return this.activeProfiles;
 	}
 
-	private static final class SpringBootCliProfileActivationContext implements
-			ProfileActivationContext {
+	private static final class SpringBootCliProfileActivationContext
+			implements ProfileActivationContext {
 
 		private final List<String> activeProfiles;
 
@@ -268,8 +271,8 @@ public class MavenSettings {
 
 	}
 
-	private static final class SpringBootCliModelProblemCollector implements
-			ModelProblemCollector {
+	private static final class SpringBootCliModelProblemCollector
+			implements ModelProblemCollector {
 
 		private final List<ModelProblemCollectorRequest> problems = new ArrayList<ModelProblemCollectorRequest>();
 

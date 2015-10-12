@@ -56,8 +56,8 @@ import org.springframework.web.servlet.ModelAndView;
  * @see ErrorAttributes
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class DefaultErrorAttributes implements ErrorAttributes, HandlerExceptionResolver,
-		Ordered {
+public class DefaultErrorAttributes
+		implements ErrorAttributes, HandlerExceptionResolver, Ordered {
 
 	private static final String ERROR_ATTRIBUTE = DefaultErrorAttributes.class.getName()
 			+ ".ERROR";

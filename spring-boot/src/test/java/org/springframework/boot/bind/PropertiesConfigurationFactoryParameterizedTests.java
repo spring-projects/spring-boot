@@ -51,9 +51,8 @@ public class PropertiesConfigurationFactoryParameterizedTests {
 
 	@Parameters
 	public static Object[] parameters() {
-		return new Object[] { new Object[] { false, false },
-				new Object[] { false, true }, new Object[] { true, false },
-				new Object[] { true, true } };
+		return new Object[] { new Object[] { false, false }, new Object[] { false, true },
+				new Object[] { true, false }, new Object[] { true, true } };
 	}
 
 	public PropertiesConfigurationFactoryParameterizedTests(boolean ignoreUnknownFields,

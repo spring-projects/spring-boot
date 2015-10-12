@@ -18,4 +18,3 @@
  * Metrics integration with Dropwizard Metrics.
  */
 package org.springframework.boot.actuate.metrics.dropwizard;
-

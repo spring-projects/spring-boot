@@ -71,8 +71,8 @@ public final class CommandLineInvoker {
 				return pathname.isDirectory() && pathname.getName().contains("-bin");
 			}
 		})[0];
-		dir = new File(dir, dir.getName().replace("-bin", "")
-				.replace("spring-boot-cli", "spring"));
+		dir = new File(dir,
+				dir.getName().replace("-bin", "").replace("spring-boot-cli", "spring"));
 		dir = new File(dir, "bin");
 		File launchScript = new File(dir, isWindows() ? "spring.bat" : "spring");
 		Assert.state(launchScript.exists() && launchScript.isFile(),
@@ -99,10 +99,10 @@ public final class CommandLineInvoker {
 
 		public Invocation(Process process) {
 			this.process = process;
-			this.streamReaders.add(new Thread(new StreamReadingRunnable(this.process
-					.getErrorStream(), this.err)));
-			this.streamReaders.add(new Thread(new StreamReadingRunnable(this.process
-					.getInputStream(), this.out)));
+			this.streamReaders.add(new Thread(
+					new StreamReadingRunnable(this.process.getErrorStream(), this.err)));
+			this.streamReaders.add(new Thread(
+					new StreamReadingRunnable(this.process.getInputStream(), this.out)));
 			for (Thread streamReader : this.streamReaders) {
 				streamReader.start();
 			}

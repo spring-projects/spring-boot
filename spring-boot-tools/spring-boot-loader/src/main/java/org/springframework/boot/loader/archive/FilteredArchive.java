@@ -85,8 +85,8 @@ public class FilteredArchive extends Archive {
 		return this.parent.getFilteredArchive(new EntryRenameFilter() {
 			@Override
 			public AsciiBytes apply(AsciiBytes entryName, Entry entry) {
-				return FilteredArchive.this.filter.matches(entry) ? filter.apply(
-						entryName, entry) : null;
+				return FilteredArchive.this.filter.matches(entry)
+						? filter.apply(entryName, entry) : null;
 			}
 		});
 	}

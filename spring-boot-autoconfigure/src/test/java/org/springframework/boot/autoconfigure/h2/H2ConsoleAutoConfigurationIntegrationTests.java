@@ -74,8 +74,8 @@ public class H2ConsoleAutoConfigurationIntegrationTests {
 	public void someOtherPrincipal() throws Exception {
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
 				.apply(springSecurity()).build();
-		mockMvc.perform(get("/h2-console/").with(user("test").roles("FOO"))).andExpect(
-				status().isForbidden());
+		mockMvc.perform(get("/h2-console/").with(user("test").roles("FOO")))
+				.andExpect(status().isForbidden());
 	}
 
 	@Configuration

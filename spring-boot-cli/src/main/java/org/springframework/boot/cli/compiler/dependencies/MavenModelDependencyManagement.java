@@ -50,8 +50,8 @@ public class MavenModelDependencyManagement implements DependencyManagement {
 			List<Exclusion> exclusions = new ArrayList<Exclusion>();
 			for (org.apache.maven.model.Exclusion mavenExclusion : mavenDependency
 					.getExclusions()) {
-				exclusions.add(new Exclusion(mavenExclusion.getGroupId(), mavenExclusion
-						.getArtifactId()));
+				exclusions.add(new Exclusion(mavenExclusion.getGroupId(),
+						mavenExclusion.getArtifactId()));
 			}
 			Dependency dependency = new Dependency(mavenDependency.getGroupId(),
 					mavenDependency.getArtifactId(), mavenDependency.getVersion(),

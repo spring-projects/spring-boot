@@ -87,9 +87,8 @@ public class MessageSourceAutoConfiguration {
 	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		if (StringUtils.hasText(this.basename)) {
-			messageSource.setBasenames(StringUtils
-					.commaDelimitedListToStringArray(StringUtils
-							.trimAllWhitespace(this.basename)));
+			messageSource.setBasenames(StringUtils.commaDelimitedListToStringArray(
+					StringUtils.trimAllWhitespace(this.basename)));
 		}
 		if (this.encoding != null) {
 			messageSource.setDefaultEncoding(this.encoding.name());
@@ -138,8 +137,8 @@ public class MessageSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			String basename = context.getEnvironment().getProperty(
-					"spring.messages.basename", "messages");
+			String basename = context.getEnvironment()
+					.getProperty("spring.messages.basename", "messages");
 			ConditionOutcome outcome = cache.get(basename);
 			if (outcome == null) {
 				outcome = getMatchOutcomeForBasename(context, basename);
@@ -150,8 +149,8 @@ public class MessageSourceAutoConfiguration {
 
 		private ConditionOutcome getMatchOutcomeForBasename(ConditionContext context,
 				String basename) {
-			for (String name : StringUtils.commaDelimitedListToStringArray(StringUtils
-					.trimAllWhitespace(basename))) {
+			for (String name : StringUtils.commaDelimitedListToStringArray(
+					StringUtils.trimAllWhitespace(basename))) {
 				for (Resource resource : getResources(context.getClassLoader(), name)) {
 					if (resource.exists()) {
 						return ConditionOutcome.match("Bundle found for "
@@ -159,8 +158,8 @@ public class MessageSourceAutoConfiguration {
 					}
 				}
 			}
-			return ConditionOutcome.noMatch("No bundle found for "
-					+ "spring.messages.basename: " + basename);
+			return ConditionOutcome.noMatch(
+					"No bundle found for " + "spring.messages.basename: " + basename);
 		}
 
 		private Resource[] getResources(ClassLoader classLoader, String name) {
@@ -179,10 +178,11 @@ public class MessageSourceAutoConfiguration {
 	 * {@link PathMatchingResourcePatternResolver} that skips well known JARs that don't
 	 * contain messages.properties.
 	 */
-	private static class SkipPatternPathMatchingResourcePatternResolver extends
-			PathMatchingResourcePatternResolver {
+	private static class SkipPatternPathMatchingResourcePatternResolver
+			extends PathMatchingResourcePatternResolver {
 
 		private static final ClassLoader ROOT_CLASSLOADER;
+
 		static {
 			ClassLoader classLoader = null;
 			try {
@@ -223,7 +223,8 @@ public class MessageSourceAutoConfiguration {
 		protected Set<Resource> doFindAllClassPathResources(String path)
 				throws IOException {
 			Set<Resource> resources = super.doFindAllClassPathResources(path);
-			for (Iterator<Resource> iterator = resources.iterator(); iterator.hasNext();) {
+			for (Iterator<Resource> iterator = resources.iterator(); iterator
+					.hasNext();) {
 				Resource resource = iterator.next();
 				for (String skipped : SKIPPED) {
 					if (resource.getFilename().startsWith(skipped)) {

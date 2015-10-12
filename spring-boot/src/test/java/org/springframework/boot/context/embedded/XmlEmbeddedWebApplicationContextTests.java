@@ -31,8 +31,7 @@ import static org.mockito.Mockito.verify;
 public class XmlEmbeddedWebApplicationContextTests {
 
 	private static final String PATH = XmlEmbeddedWebApplicationContextTests.class
-			.getPackage().getName().replace(".", "/")
-			+ "/";
+			.getPackage().getName().replace(".", "/") + "/";
 
 	private static final String FILE = "exampleEmbeddedWebApplicationConfiguration.xml";
 
@@ -40,8 +39,8 @@ public class XmlEmbeddedWebApplicationContextTests {
 
 	@Test
 	public void createFromResource() throws Exception {
-		this.context = new XmlEmbeddedWebApplicationContext(new ClassPathResource(FILE,
-				getClass()));
+		this.context = new XmlEmbeddedWebApplicationContext(
+				new ClassPathResource(FILE, getClass()));
 		verifyContext();
 	}
 

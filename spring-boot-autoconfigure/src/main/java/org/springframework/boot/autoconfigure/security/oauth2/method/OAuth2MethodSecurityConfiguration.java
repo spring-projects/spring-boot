@@ -44,8 +44,8 @@ import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecur
 @Configuration
 @ConditionalOnClass({ OAuth2AccessToken.class })
 @ConditionalOnBean(GlobalMethodSecurityConfiguration.class)
-public class OAuth2MethodSecurityConfiguration implements BeanFactoryPostProcessor,
-		ApplicationContextAware {
+public class OAuth2MethodSecurityConfiguration
+		implements BeanFactoryPostProcessor, ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
 
@@ -63,8 +63,8 @@ public class OAuth2MethodSecurityConfiguration implements BeanFactoryPostProcess
 		beanFactory.addBeanPostProcessor(processor);
 	}
 
-	private static class OAuth2ExpressionHandlerInjectionPostProcessor implements
-			BeanPostProcessor {
+	private static class OAuth2ExpressionHandlerInjectionPostProcessor
+			implements BeanPostProcessor {
 
 		private ApplicationContext applicationContext;
 
@@ -84,7 +84,8 @@ public class OAuth2MethodSecurityConfiguration implements BeanFactoryPostProcess
 				throws BeansException {
 			if (bean instanceof DefaultMethodSecurityExpressionHandler
 					&& !(bean instanceof OAuth2MethodSecurityExpressionHandler)) {
-				return getExpressionHandler((DefaultMethodSecurityExpressionHandler) bean);
+				return getExpressionHandler(
+						(DefaultMethodSecurityExpressionHandler) bean);
 			}
 			return bean;
 		}
@@ -93,7 +94,8 @@ public class OAuth2MethodSecurityConfiguration implements BeanFactoryPostProcess
 				DefaultMethodSecurityExpressionHandler bean) {
 			OAuth2MethodSecurityExpressionHandler handler = new OAuth2MethodSecurityExpressionHandler();
 			handler.setApplicationContext(this.applicationContext);
-			AuthenticationTrustResolver trustResolver = findInContext(AuthenticationTrustResolver.class);
+			AuthenticationTrustResolver trustResolver = findInContext(
+					AuthenticationTrustResolver.class);
 			if (trustResolver != null) {
 				handler.setTrustResolver(trustResolver);
 			}

@@ -98,9 +98,8 @@ public class HypermediaAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
 				ObjectMapper.class);
-		assertThat(
-				objectMapper.getSerializationConfig().isEnabled(
-						SerializationFeature.INDENT_OUTPUT), is(false));
+		assertThat(objectMapper.getSerializationConfig()
+				.isEnabled(SerializationFeature.INDENT_OUTPUT), is(false));
 	}
 
 	@Test
@@ -113,8 +112,8 @@ public class HypermediaAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
 				ObjectMapper.class);
-		assertTrue(objectMapper.getSerializationConfig().isEnabled(
-				SerializationFeature.INDENT_OUTPUT));
+		assertTrue(objectMapper.getSerializationConfig()
+				.isEnabled(SerializationFeature.INDENT_OUTPUT));
 	}
 
 	@Test
@@ -127,10 +126,8 @@ public class HypermediaAutoConfigurationTests {
 				.getBean(RequestMappingHandlerAdapter.class);
 		for (HttpMessageConverter<?> converter : handlerAdapter.getMessageConverters()) {
 			if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-				assertThat(
-						converter.getSupportedMediaTypes(),
-						containsInAnyOrder(MediaType.APPLICATION_JSON,
-								MediaTypes.HAL_JSON));
+				assertThat(converter.getSupportedMediaTypes(), containsInAnyOrder(
+						MediaType.APPLICATION_JSON, MediaTypes.HAL_JSON));
 			}
 		}
 	}

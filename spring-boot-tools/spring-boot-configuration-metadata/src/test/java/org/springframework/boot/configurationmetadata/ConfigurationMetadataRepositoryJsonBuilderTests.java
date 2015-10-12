@@ -31,8 +31,8 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Stephane Nicoll
  */
-public class ConfigurationMetadataRepositoryJsonBuilderTests extends
-		AbstractConfigurationMetadataTests {
+public class ConfigurationMetadataRepositoryJsonBuilderTests
+		extends AbstractConfigurationMetadataTests {
 
 	@Test
 	public void nullResource() throws IOException {
@@ -48,8 +48,8 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests extends
 					.create(foo).build();
 			validateFoo(repo);
 			assertEquals(1, repo.getAllGroups().size());
-			contains(repo.getAllProperties(), "spring.foo.name",
-					"spring.foo.description", "spring.foo.counter");
+			contains(repo.getAllProperties(), "spring.foo.name", "spring.foo.description",
+					"spring.foo.counter");
 			assertEquals(3, repo.getAllProperties().size());
 		}
 		finally {
@@ -67,9 +67,9 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests extends
 			validateFoo(repo);
 			validateBar(repo);
 			assertEquals(2, repo.getAllGroups().size());
-			contains(repo.getAllProperties(), "spring.foo.name",
-					"spring.foo.description", "spring.foo.counter", "spring.bar.name",
-					"spring.bar.description", "spring.bar.counter");
+			contains(repo.getAllProperties(), "spring.foo.name", "spring.foo.description",
+					"spring.foo.counter", "spring.bar.name", "spring.bar.description",
+					"spring.bar.counter");
 			assertEquals(6, repo.getAllProperties().size());
 		}
 		finally {
@@ -88,9 +88,8 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests extends
 			validateFoo(repo);
 			assertEquals(2, repo.getAllGroups().size());
 
-			contains(repo.getAllProperties(), "spring.foo.name",
-					"spring.foo.description", "spring.foo.counter", "spring.root.name",
-					"spring.root2.name");
+			contains(repo.getAllProperties(), "spring.foo.name", "spring.foo.description",
+					"spring.foo.counter", "spring.root.name", "spring.root2.name");
 			assertEquals(5, repo.getAllProperties().size());
 		}
 		finally {
@@ -114,9 +113,8 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests extends
 			contains(group.getProperties(), "spring.foo.name", "spring.foo.description",
 					"spring.foo.counter", "spring.foo.enabled", "spring.foo.type");
 			assertEquals(5, group.getProperties().size());
-			contains(repo.getAllProperties(), "spring.foo.name",
-					"spring.foo.description", "spring.foo.counter", "spring.foo.enabled",
-					"spring.foo.type");
+			contains(repo.getAllProperties(), "spring.foo.name", "spring.foo.description",
+					"spring.foo.counter", "spring.foo.enabled", "spring.foo.type");
 			assertEquals(5, repo.getAllProperties().size());
 		}
 		finally {
@@ -159,12 +157,13 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests extends
 		ConfigurationMetadataSource source = group.getSources().get("org.acme.Foo");
 		contains(source.getProperties(), "spring.foo.name", "spring.foo.description");
 		assertEquals(2, source.getProperties().size());
-		ConfigurationMetadataSource source2 = group.getSources().get(
-				"org.springframework.boot.FooProperties");
+		ConfigurationMetadataSource source2 = group.getSources()
+				.get("org.springframework.boot.FooProperties");
 		contains(source2.getProperties(), "spring.foo.name", "spring.foo.counter");
 		assertEquals(2, source2.getProperties().size());
 		validatePropertyHints(repo.getAllProperties().get("spring.foo.name"), 0, 0);
-		validatePropertyHints(repo.getAllProperties().get("spring.foo.description"), 0, 0);
+		validatePropertyHints(repo.getAllProperties().get("spring.foo.description"), 0,
+				0);
 		validatePropertyHints(repo.getAllProperties().get("spring.foo.counter"), 1, 1);
 	}
 
@@ -175,12 +174,13 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests extends
 		ConfigurationMetadataSource source = group.getSources().get("org.acme.Bar");
 		contains(source.getProperties(), "spring.bar.name", "spring.bar.description");
 		assertEquals(2, source.getProperties().size());
-		ConfigurationMetadataSource source2 = group.getSources().get(
-				"org.springframework.boot.BarProperties");
+		ConfigurationMetadataSource source2 = group.getSources()
+				.get("org.springframework.boot.BarProperties");
 		contains(source2.getProperties(), "spring.bar.name", "spring.bar.counter");
 		assertEquals(2, source2.getProperties().size());
 		validatePropertyHints(repo.getAllProperties().get("spring.bar.name"), 0, 0);
-		validatePropertyHints(repo.getAllProperties().get("spring.bar.description"), 2, 2);
+		validatePropertyHints(repo.getAllProperties().get("spring.bar.description"), 2,
+				2);
 		validatePropertyHints(repo.getAllProperties().get("spring.bar.counter"), 0, 0);
 	}
 

@@ -58,8 +58,8 @@ class RunArguments {
 			return CommandLineUtils.translateCommandline(arguments);
 		}
 		catch (Exception ex) {
-			throw new IllegalArgumentException("Failed to parse arguments [" + arguments
-					+ "]", ex);
+			throw new IllegalArgumentException(
+					"Failed to parse arguments [" + arguments + "]", ex);
 		}
 	}
 

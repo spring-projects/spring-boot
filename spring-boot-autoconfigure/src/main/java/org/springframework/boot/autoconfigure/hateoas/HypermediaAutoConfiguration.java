@@ -88,8 +88,8 @@ public class HypermediaAutoConfiguration {
 	 * {@link BeanPostProcessor} to apply any {@link Jackson2ObjectMapperBuilder}
 	 * configuration to the HAL {@link ObjectMapper}.
 	 */
-	private static class HalObjectMapperConfigurer implements BeanPostProcessor,
-			BeanFactoryAware {
+	private static class HalObjectMapperConfigurer
+			implements BeanPostProcessor, BeanFactoryAware {
 
 		private BeanFactory beanFactory;
 

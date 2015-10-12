@@ -73,20 +73,20 @@ public class TomcatDataSourceConfigurationTests {
 	@Test
 	public void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "url:jdbc:foo//bar/spam");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				PREFIX + "url:jdbc:foo//bar/spam");
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testWhileIdle:true");
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnBorrow:true");
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnReturn:true");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "timeBetweenEvictionRunsMillis:10000");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "minEvictableIdleTimeMillis:12345");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				PREFIX + "timeBetweenEvictionRunsMillis:10000");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				PREFIX + "minEvictableIdleTimeMillis:12345");
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "maxWait:1234");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "jdbcInterceptors:SlowQueryReport");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "validationInterval:9999");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				PREFIX + "jdbcInterceptors:SlowQueryReport");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				PREFIX + "validationInterval:9999");
 		this.context.refresh();
 		org.apache.tomcat.jdbc.pool.DataSource ds = this.context
 				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
@@ -146,8 +146,7 @@ public class TomcatDataSourceConfigurationTests {
 			DataSourceBuilder factory = DataSourceBuilder
 					.create(this.properties.getClassLoader())
 					.driverClassName(this.properties.getDriverClassName())
-					.url(this.properties.getUrl())
-					.username(this.properties.getUsername())
+					.url(this.properties.getUrl()).username(this.properties.getUsername())
 					.password(this.properties.getPassword())
 					.type(org.apache.tomcat.jdbc.pool.DataSource.class);
 			return factory.build();

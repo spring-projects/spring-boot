@@ -98,8 +98,8 @@ public class ResourceConditionTests {
 		}
 	}
 
-	private static class UnknownDefaultLocationResourceCondition extends
-			ResourceCondition {
+	private static class UnknownDefaultLocationResourceCondition
+			extends ResourceCondition {
 
 		UnknownDefaultLocationResourceCondition() {
 			super("test", "spring.foo.test", "config",

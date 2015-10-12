@@ -37,6 +37,7 @@ public class DefaultSourceFolderUrlFilterTests {
 	private static final String SOURCE_ROOT = "/Users/me/code/some-root/";
 
 	private static final List<String> COMMON_POSTFIXES;
+
 	static {
 		List<String> postfixes = new ArrayList<String>();
 		postfixes.add(".jar");
@@ -92,9 +93,10 @@ public class DefaultSourceFolderUrlFilterTests {
 		urls.add(new URL("file:/some/path/" + name));
 		urls.add(new URL("file:/some/path/" + name + "!/"));
 		for (String postfix : COMMON_POSTFIXES) {
-			urls.add(new URL("jar:file:/some/path/lib-module" + postfix + "!/lib/" + name));
-			urls.add(new URL("jar:file:/some/path/lib-module" + postfix + "!/lib/" + name
-					+ "!/"));
+			urls.add(new URL(
+					"jar:file:/some/path/lib-module" + postfix + "!/lib/" + name));
+			urls.add(new URL(
+					"jar:file:/some/path/lib-module" + postfix + "!/lib/" + name + "!/"));
 		}
 		return urls;
 	}

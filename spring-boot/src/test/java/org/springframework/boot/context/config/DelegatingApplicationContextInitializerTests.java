@@ -78,8 +78,8 @@ public class DelegatingApplicationContextInitializerTests {
 	@Test
 	public void notAnInitializerClass() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "context.initializer.classes:"
-				+ Object.class.getName());
+		EnvironmentTestUtils.addEnvironment(context,
+				"context.initializer.classes:" + Object.class.getName());
 		this.thrown.expect(IllegalArgumentException.class);
 		this.initializer.initialize(context);
 	}
@@ -87,16 +87,16 @@ public class DelegatingApplicationContextInitializerTests {
 	@Test
 	public void genericNotSuitable() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "context.initializer.classes:"
-				+ NotSuitableInit.class.getName());
+		EnvironmentTestUtils.addEnvironment(context,
+				"context.initializer.classes:" + NotSuitableInit.class.getName());
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("generic parameter");
 		this.initializer.initialize(context);
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
-	private static class MockInitA implements
-			ApplicationContextInitializer<ConfigurableApplicationContext> {
+	private static class MockInitA
+			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
 			applicationContext.getBeanFactory().registerSingleton("a", "a");
@@ -104,8 +104,8 @@ public class DelegatingApplicationContextInitializerTests {
 	}
 
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	private static class MockInitB implements
-			ApplicationContextInitializer<ConfigurableApplicationContext> {
+	private static class MockInitB
+			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
 			assertThat(applicationContext.getBeanFactory().getSingleton("a"),
@@ -114,8 +114,8 @@ public class DelegatingApplicationContextInitializerTests {
 		}
 	}
 
-	private static class NotSuitableInit implements
-			ApplicationContextInitializer<ConfigurableWebApplicationContext> {
+	private static class NotSuitableInit
+			implements ApplicationContextInitializer<ConfigurableWebApplicationContext> {
 		@Override
 		public void initialize(ConfigurableWebApplicationContext applicationContext) {
 		}

@@ -18,4 +18,3 @@
  * Metrics integration with JMX.
  */
 package org.springframework.boot.actuate.metrics.jmx;
-

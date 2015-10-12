@@ -105,16 +105,17 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 			return create(metadata);
 		}
 		catch (IOException ex) {
-			throw new IllegalArgumentException("Failed to read configuration "
-					+ "metadata", ex);
+			throw new IllegalArgumentException(
+					"Failed to read configuration " + "metadata", ex);
 		}
 		catch (JSONException ex) {
-			throw new IllegalArgumentException("Invalid configuration "
-					+ "metadata document", ex);
+			throw new IllegalArgumentException(
+					"Invalid configuration " + "metadata document", ex);
 		}
 	}
 
-	private SimpleConfigurationMetadataRepository create(RawConfigurationMetadata metadata) {
+	private SimpleConfigurationMetadataRepository create(
+			RawConfigurationMetadata metadata) {
 		SimpleConfigurationMetadataRepository repository = new SimpleConfigurationMetadataRepository();
 		repository.add(metadata.getSources());
 		for (ConfigurationMetadataItem item : metadata.getItems()) {
@@ -170,7 +171,8 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 	 * @param defaultCharset the default charset to use
 	 * @return a new {@link ConfigurationMetadataRepositoryJsonBuilder} instance.
 	 */
-	public static ConfigurationMetadataRepositoryJsonBuilder create(Charset defaultCharset) {
+	public static ConfigurationMetadataRepositoryJsonBuilder create(
+			Charset defaultCharset) {
 		return new ConfigurationMetadataRepositoryJsonBuilder(defaultCharset);
 	}
 

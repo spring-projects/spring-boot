@@ -54,15 +54,15 @@ class RelaxedConversionService implements ConversionService {
 
 	@Override
 	public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
-		return (this.conversionService != null && this.conversionService.canConvert(
-				sourceType, targetType))
+		return (this.conversionService != null
+				&& this.conversionService.canConvert(sourceType, targetType))
 				|| this.additionalConverters.canConvert(sourceType, targetType);
 	}
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return (this.conversionService != null && this.conversionService.canConvert(
-				sourceType, targetType))
+		return (this.conversionService != null
+				&& this.conversionService.canConvert(sourceType, targetType))
 				|| this.additionalConverters.canConvert(sourceType, targetType);
 	}
 
@@ -93,8 +93,8 @@ class RelaxedConversionService implements ConversionService {
 	 * case of the source.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static class StringToEnumIgnoringCaseConverterFactory implements
-			ConverterFactory<String, Enum> {
+	private static class StringToEnumIgnoringCaseConverterFactory
+			implements ConverterFactory<String, Enum> {
 
 		@Override
 		public <T extends Enum> Converter<String, T> getConverter(Class<T> targetType) {
@@ -123,8 +123,8 @@ class RelaxedConversionService implements ConversionService {
 				}
 				source = source.trim();
 				for (T candidate : (Set<T>) EnumSet.allOf(this.enumType)) {
-					RelaxedNames names = new RelaxedNames(candidate.name()
-							.replace("_", "-").toLowerCase());
+					RelaxedNames names = new RelaxedNames(
+							candidate.name().replace("_", "-").toLowerCase());
 					for (String name : names) {
 						if (name.equals(source)) {
 							return candidate;

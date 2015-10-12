@@ -62,8 +62,8 @@ public class InitializrServiceMetadataTests {
 		// Security description
 		assertEquals("AOP", metadata.getDependency("aop").getName());
 		assertEquals("Security", metadata.getDependency("security").getName());
-		assertEquals("Security description", metadata.getDependency("security")
-				.getDescription());
+		assertEquals("Security description",
+				metadata.getDependency("security").getDescription());
 		assertEquals("JDBC", metadata.getDependency("jdbc").getName());
 		assertEquals("JPA", metadata.getDependency("data-jpa").getName());
 		assertEquals("MongoDB", metadata.getDependency("data-mongodb").getName());
@@ -88,12 +88,12 @@ public class InitializrServiceMetadataTests {
 	}
 
 	private static JSONObject readJson(String version) throws IOException {
-		Resource resource = new ClassPathResource("metadata/service-metadata-" + version
-				+ ".json");
+		Resource resource = new ClassPathResource(
+				"metadata/service-metadata-" + version + ".json");
 		InputStream stream = resource.getInputStream();
 		try {
-			return new JSONObject(StreamUtils.copyToString(stream,
-					Charset.forName("UTF-8")));
+			return new JSONObject(
+					StreamUtils.copyToString(stream, Charset.forName("UTF-8")));
 		}
 		finally {
 			stream.close();

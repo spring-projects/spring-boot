@@ -93,9 +93,9 @@ public class EmbeddedVelocityToolboxView extends VelocityToolboxView {
 				InputStream inputStream = (InputStream) invocation.proceed();
 				if (inputStream == null) {
 					try {
-						inputStream = new ClassPathResource(this.toolboxFile, Thread
-								.currentThread().getContextClassLoader())
-								.getInputStream();
+						inputStream = new ClassPathResource(this.toolboxFile,
+								Thread.currentThread().getContextClassLoader())
+										.getInputStream();
 					}
 					catch (Exception ex) {
 						// Ignore

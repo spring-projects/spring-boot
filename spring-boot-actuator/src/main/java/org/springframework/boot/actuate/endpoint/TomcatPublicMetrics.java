@@ -47,7 +47,8 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 	@Override
 	public Collection<Metric<?>> metrics() {
 		if (this.applicationContext instanceof EmbeddedWebApplicationContext) {
-			Manager manager = getManager((EmbeddedWebApplicationContext) this.applicationContext);
+			Manager manager = getManager(
+					(EmbeddedWebApplicationContext) this.applicationContext);
 			if (manager != null) {
 				return metrics(manager);
 			}
@@ -65,7 +66,8 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 	}
 
 	private Manager getManager(TomcatEmbeddedServletContainer servletContainer) {
-		for (Container container : servletContainer.getTomcat().getHost().findChildren()) {
+		for (Container container : servletContainer.getTomcat().getHost()
+				.findChildren()) {
 			if (container instanceof Context) {
 				return ((Context) container).getManager();
 			}

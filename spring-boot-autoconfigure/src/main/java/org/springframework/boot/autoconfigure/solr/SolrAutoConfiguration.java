@@ -21,6 +21,7 @@ import javax.annotation.PreDestroy;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.CloudSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.common.cloud.HashPartitioner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -31,13 +32,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Solr.
+ * {@link EnableAutoConfiguration Auto-configuration} for Solr 4.x.
  *
  * @author Christoph Strobl
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass({ HttpSolrServer.class, CloudSolrServer.class })
+@ConditionalOnClass({ HttpSolrServer.class, CloudSolrServer.class,
+		HashPartitioner.class })
 @EnableConfigurationProperties(SolrProperties.class)
 public class SolrAutoConfiguration {
 

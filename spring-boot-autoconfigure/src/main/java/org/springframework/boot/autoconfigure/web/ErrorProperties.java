@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Configuration properties for web error handling.
@@ -25,12 +25,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@ConfigurationProperties("error")
 public class ErrorProperties {
 
 	/**
 	 * Path of the error controller.
 	 */
+	@Value("${error.path:/error}")
 	private String path = "/error";
 
 	/**

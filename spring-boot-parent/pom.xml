@@ -25,7 +25,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.1.1</maven.version>
-		<spring-restdocs.version>1.0.0.RC1</spring-restdocs.version>
 	</properties>
 	<scm>
 		<url>http://github.com/spring-projects/spring-boot</url>
@@ -200,11 +199,6 @@
 				<version>1.12.6</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework.restdocs</groupId>
-				<artifactId>spring-restdocs-mockmvc</artifactId>
-				<version>${spring-restdocs.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.zeroturnaround</groupId>
 				<artifactId>zt-zip</artifactId>
 				<version>1.7</version>
@@ -373,6 +367,7 @@
 										</versionRange>
 										<goals>
 											<goal>descriptor</goal>
+											<goal>helpmojo</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
@@ -449,30 +444,6 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>checkstyle-prepare</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${main.basedir}/spring-boot-parent/src/checkstyle</directory>
-									<includes>
-										<include>checkstyle-import-control.xml</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>

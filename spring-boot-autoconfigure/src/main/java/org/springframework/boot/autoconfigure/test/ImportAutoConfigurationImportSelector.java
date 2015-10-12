@@ -30,7 +30,8 @@ import org.springframework.core.type.AnnotationMetadata;
  *
  * @author Phillip Webb
  */
-class ImportAutoConfigurationImportSelector extends EnableAutoConfigurationImportSelector {
+class ImportAutoConfigurationImportSelector
+		extends EnableAutoConfigurationImportSelector {
 
 	@Override
 	protected Class<?> getAnnotationClass() {

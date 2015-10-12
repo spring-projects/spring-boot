@@ -114,7 +114,8 @@ public abstract class MainClassFinder {
 			return null; // nothing to do
 		}
 		if (!rootFolder.isDirectory()) {
-			throw new IllegalArgumentException("Invalid root folder '" + rootFolder + "'");
+			throw new IllegalArgumentException(
+					"Invalid root folder '" + rootFolder + "'");
 		}
 		String prefix = rootFolder.getAbsolutePath() + "/";
 		Deque<File> stack = new ArrayDeque<File>();
@@ -232,7 +233,8 @@ public abstract class MainClassFinder {
 		return name;
 	}
 
-	private static List<JarEntry> getClassEntries(JarFile source, String classesLocation) {
+	private static List<JarEntry> getClassEntries(JarFile source,
+			String classesLocation) {
 		classesLocation = (classesLocation != null ? classesLocation : "");
 		Enumeration<JarEntry> sourceEntries = source.entries();
 		List<JarEntry> classEntries = new ArrayList<JarEntry>();

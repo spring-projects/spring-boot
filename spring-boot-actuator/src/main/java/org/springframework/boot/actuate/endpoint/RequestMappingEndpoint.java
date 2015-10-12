@@ -86,11 +86,12 @@ public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>
 	protected void extractMethodMappings(ApplicationContext applicationContext,
 			Map<String, Object> result) {
 		if (applicationContext != null) {
-			for (String name : applicationContext.getBeansOfType(
-					AbstractHandlerMethodMapping.class).keySet()) {
+			for (String name : applicationContext
+					.getBeansOfType(AbstractHandlerMethodMapping.class).keySet()) {
 				@SuppressWarnings("unchecked")
-				Map<?, HandlerMethod> methods = applicationContext.getBean(name,
-						AbstractHandlerMethodMapping.class).getHandlerMethods();
+				Map<?, HandlerMethod> methods = applicationContext
+						.getBean(name, AbstractHandlerMethodMapping.class)
+						.getHandlerMethods();
 				for (Object key : methods.keySet()) {
 					Map<String, String> map = new LinkedHashMap<String, String>();
 					map.put("bean", name);
@@ -144,10 +145,8 @@ public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>
 		for (AbstractHandlerMethodMapping<?> mapping : methodMappings) {
 			Map<?, HandlerMethod> methods = mapping.getHandlerMethods();
 			for (Map.Entry<?, HandlerMethod> entry : methods.entrySet()) {
-				result.put(
-						String.valueOf(entry.getKey()),
-						Collections.singletonMap("method",
-								String.valueOf(entry.getValue())));
+				result.put(String.valueOf(entry.getKey()), Collections
+						.singletonMap("method", String.valueOf(entry.getValue())));
 			}
 		}
 	}

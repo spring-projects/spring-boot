@@ -38,6 +38,7 @@ public abstract class LoggingSystem {
 	public static final String SYSTEM_PROPERTY = LoggingSystem.class.getName();
 
 	private static final Map<String, String> SYSTEMS;
+
 	static {
 		Map<String, String> systems = new LinkedHashMap<String, String>();
 		systems.put("ch.qos.logback.core.Appender",
@@ -89,6 +90,16 @@ public abstract class LoggingSystem {
 	 * should override this method to perform any logging system-specific cleanup.
 	 */
 	public void cleanUp() {
+	}
+
+	/**
+	 * Returns a {@link Runnable} that can handle shutdown of this logging system when the
+	 * JVM exits. The default implementation returns {@code null}, indicating that no
+	 * shutdown is required.
+	 * @return the shutdown handler, or {@code null}
+	 */
+	public Runnable getShutdownHandler() {
+		return null;
 	}
 
 	/**

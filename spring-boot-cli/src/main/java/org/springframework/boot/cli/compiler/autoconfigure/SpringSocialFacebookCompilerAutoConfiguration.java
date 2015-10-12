@@ -29,8 +29,8 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  * @author Craig Walls
  * @since 1.1.0
  */
-public class SpringSocialFacebookCompilerAutoConfiguration extends
-		CompilerAutoConfiguration {
+public class SpringSocialFacebookCompilerAutoConfiguration
+		extends CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
@@ -40,9 +40,9 @@ public class SpringSocialFacebookCompilerAutoConfiguration extends
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
-		dependencies.ifAnyMissingClasses(
-				"org.springframework.social.facebook.api.Facebook").add(
-				"spring-boot-starter-social-facebook");
+		dependencies
+				.ifAnyMissingClasses("org.springframework.social.facebook.api.Facebook")
+				.add("spring-boot-starter-social-facebook");
 	}
 
 	@Override

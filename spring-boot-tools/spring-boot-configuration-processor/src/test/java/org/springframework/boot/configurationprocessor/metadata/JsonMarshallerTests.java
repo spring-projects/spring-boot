@@ -45,12 +45,12 @@ public class JsonMarshallerTests {
 		metadata.add(ItemMetadata.newProperty("a", "b", StringBuffer.class.getName(),
 				InputStream.class.getName(), "sourceMethod", "desc", "x",
 				new ItemDeprecation("Deprecation comment", "b.c.d")));
-		metadata.add(ItemMetadata.newProperty("b.c.d", null, null, null, null, null,
-				null, null));
-		metadata.add(ItemMetadata.newProperty("c", null, null, null, null, null, 123,
+		metadata.add(ItemMetadata.newProperty("b.c.d", null, null, null, null, null, null,
 				null));
-		metadata.add(ItemMetadata.newProperty("d", null, null, null, null, null, true,
-				null));
+		metadata.add(
+				ItemMetadata.newProperty("c", null, null, null, null, null, 123, null));
+		metadata.add(
+				ItemMetadata.newProperty("d", null, null, null, null, null, true, null));
 		metadata.add(ItemMetadata.newProperty("e", null, null, null, null, null,
 				new String[] { "y", "n" }, null));
 		metadata.add(ItemMetadata.newProperty("f", null, null, null, null, null,
@@ -59,14 +59,17 @@ public class JsonMarshallerTests {
 		metadata.add(ItemHint.newHint("a.b"));
 		metadata.add(ItemHint.newHint("c", new ItemHint.ValueHint(123, "hey"),
 				new ItemHint.ValueHint(456, null)));
-		metadata.add(new ItemHint("d", null, Arrays.asList(new ItemHint.ValueProvider(
-				"first", Collections.<String, Object>singletonMap("target", "foo")),
+		metadata.add(new ItemHint("d", null,
+				Arrays.asList(
+						new ItemHint.ValueProvider("first",
+								Collections.<String, Object>singletonMap("target",
+										"foo")),
 				new ItemHint.ValueProvider("second", null))));
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);
-		ConfigurationMetadata read = marshaller.read(new ByteArrayInputStream(
-				outputStream.toByteArray()));
+		ConfigurationMetadata read = marshaller
+				.read(new ByteArrayInputStream(outputStream.toByteArray()));
 		assertThat(read,
 				containsProperty("a.b", StringBuffer.class).fromSource(InputStream.class)
 						.withDescription("desc").withDefaultValue(is("x"))
@@ -76,8 +79,8 @@ public class JsonMarshallerTests {
 		assertThat(read, containsProperty("d").withDefaultValue(is(true)));
 		assertThat(read,
 				containsProperty("e").withDefaultValue(is(new String[] { "y", "n" })));
-		assertThat(read,
-				containsProperty("f").withDefaultValue(is(new boolean[] { true, false })));
+		assertThat(read, containsProperty("f")
+				.withDefaultValue(is(new boolean[] { true, false })));
 		assertThat(read, containsGroup("d"));
 		assertThat(read, containsHint("a.b"));
 		assertThat(read,

@@ -28,8 +28,8 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author Dave Syer
  * @author Phillip Webb
  */
-public class ConfigurationPropertiesBindingPostProcessorRegistrar implements
-		ImportBeanDefinitionRegistrar {
+public class ConfigurationPropertiesBindingPostProcessorRegistrar
+		implements ImportBeanDefinitionRegistrar {
 
 	/**
 	 * The bean name of the {@link ConfigurationPropertiesBindingPostProcessor}.
@@ -45,8 +45,8 @@ public class ConfigurationPropertiesBindingPostProcessorRegistrar implements
 		if (!registry.containsBeanDefinition(BINDER_BEAN_NAME)) {
 			BeanDefinitionBuilder meta = BeanDefinitionBuilder
 					.genericBeanDefinition(ConfigurationBeanFactoryMetaData.class);
-			BeanDefinitionBuilder bean = BeanDefinitionBuilder
-					.genericBeanDefinition(ConfigurationPropertiesBindingPostProcessor.class);
+			BeanDefinitionBuilder bean = BeanDefinitionBuilder.genericBeanDefinition(
+					ConfigurationPropertiesBindingPostProcessor.class);
 			bean.addPropertyReference("beanMetaDataStore", METADATA_BEAN_NAME);
 			registry.registerBeanDefinition(BINDER_BEAN_NAME, bean.getBeanDefinition());
 			registry.registerBeanDefinition(METADATA_BEAN_NAME, meta.getBeanDefinition());

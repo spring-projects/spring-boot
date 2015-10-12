@@ -139,8 +139,8 @@ public class EndpointWebMvcManagementContextConfiguration {
 		boolean secure = (security != null && security.isEnabled());
 		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate, secure);
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
-			healthMvcEndpoint.addStatusMapping(this.healthMvcEndpointProperties
-					.getMapping());
+			healthMvcEndpoint
+					.addStatusMapping(this.healthMvcEndpointProperties.getMapping());
 		}
 		return healthMvcEndpoint;
 	}

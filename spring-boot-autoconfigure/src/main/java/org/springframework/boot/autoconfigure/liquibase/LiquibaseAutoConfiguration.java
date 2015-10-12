@@ -80,15 +80,16 @@ public class LiquibaseAutoConfiguration {
 		@PostConstruct
 		public void checkChangelogExists() {
 			if (this.properties.isCheckChangeLogLocation()) {
-				Resource resource = this.resourceLoader.getResource(this.properties
-						.getChangeLog());
-				Assert.state(resource.exists(), "Cannot find changelog location: "
-						+ resource + " (please add changelog or check your Liquibase "
-						+ "configuration)");
+				Resource resource = this.resourceLoader
+						.getResource(this.properties.getChangeLog());
+				Assert.state(resource.exists(),
+						"Cannot find changelog location: " + resource
+								+ " (please add changelog or check your Liquibase "
+								+ "configuration)");
 			}
 			ServiceLocator serviceLocator = ServiceLocator.getInstance();
-			serviceLocator.addPackageToScan(CommonsLoggingLiquibaseLogger.class
-					.getPackage().getName());
+			serviceLocator.addPackageToScan(
+					CommonsLoggingLiquibaseLogger.class.getPackage().getName());
 		}
 
 		@Bean
@@ -122,8 +123,8 @@ public class LiquibaseAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	protected static class LiquibaseJpaDependencyConfiguration extends
-			EntityManagerFactoryDependsOnPostProcessor {
+	protected static class LiquibaseJpaDependencyConfiguration
+			extends EntityManagerFactoryDependsOnPostProcessor {
 
 		public LiquibaseJpaDependencyConfiguration() {
 			super("liquibase");

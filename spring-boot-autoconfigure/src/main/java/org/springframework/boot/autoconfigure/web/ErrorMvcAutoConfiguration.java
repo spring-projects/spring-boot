@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.util.HtmlUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} to render errors via a MVC error
+ * {@link EnableAutoConfiguration Auto-configuration} to render errors via an MVC error
  * controller.
  *
  * @author Dave Syer
@@ -72,19 +72,9 @@ import org.springframework.web.util.HtmlUtils;
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(ErrorProperties.class)
 @Configuration
-public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustomizer,
-		Ordered {
-
-	@Autowired
-	private ErrorProperties errorProperties;
-
+public class ErrorMvcAutoConfiguration {
 	@Autowired
 	private ServerProperties properties;
-
-	@Override
-	public int getOrder() {
-		return 0;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
@@ -95,17 +85,16 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorController.class, search = SearchStrategy.CURRENT)
 	public BasicErrorController basicErrorController(ErrorAttributes errorAttributes) {
-		return new BasicErrorController(errorAttributes, this.errorProperties);
+		return new BasicErrorController(errorAttributes, this.properties.getError());
 	}
 
-	@Override
-	public void customize(ConfigurableEmbeddedServletContainer container) {
-		container.addErrorPages(new ErrorPage(this.properties.getServletPrefix()
-				+ this.errorProperties.getPath()));
+	@Bean
+	public ErrorPageCustomizer errorPageCustomizer() {
+		return new ErrorPageCustomizer(this.properties);
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "error.whitelabel", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "server.error.whitelabel", name = "enabled", matchIfMissing = true)
 	@Conditional(ErrorTemplateMissingCondition.class)
 	protected static class WhitelabelErrorViewConfiguration {
 
@@ -223,6 +212,32 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 			catch (Exception ex) {
 				return null;
 			}
+		}
+
+	}
+
+	/**
+	 * {@link EmbeddedServletContainerCustomizer} that configures the container's error
+	 * pages.
+	 */
+	private static class ErrorPageCustomizer
+			implements EmbeddedServletContainerCustomizer, Ordered {
+
+		private final ServerProperties properties;
+
+		protected ErrorPageCustomizer(ServerProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public void customize(ConfigurableEmbeddedServletContainer container) {
+			container.addErrorPages(new ErrorPage(this.properties.getServletPrefix()
+					+ this.properties.getError().getPath()));
+		}
+
+		@Override
+		public int getOrder() {
+			return 0;
 		}
 
 	}

@@ -60,8 +60,8 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 @ConditionalOnMissingBean(AuthorizationServerConfigurer.class)
 @ConditionalOnBean(AuthorizationServerEndpointsConfiguration.class)
 @EnableConfigurationProperties
-public class OAuth2AuthorizationServerConfiguration extends
-		AuthorizationServerConfigurerAdapter {
+public class OAuth2AuthorizationServerConfiguration
+		extends AuthorizationServerConfigurerAdapter {
 
 	private static final Log logger = LogFactory
 			.getLog(OAuth2AuthorizationServerConfiguration.class);
@@ -88,8 +88,8 @@ public class OAuth2AuthorizationServerConfiguration extends
 								.toArray(new String[0]))
 				.scopes(this.details.getScope().toArray(new String[0]));
 		if (this.details.getRegisteredRedirectUri() != null) {
-			builder.redirectUris(this.details.getRegisteredRedirectUri().toArray(
-					new String[0]));
+			builder.redirectUris(
+					this.details.getRegisteredRedirectUri().toArray(new String[0]));
 		}
 	}
 
@@ -140,8 +140,8 @@ public class OAuth2AuthorizationServerConfiguration extends
 			details.setClientSecret(this.client.getClientSecret());
 			details.setAuthorizedGrantTypes(Arrays.asList("authorization_code",
 					"password", "client_credentials", "implicit", "refresh_token"));
-			details.setAuthorities(AuthorityUtils
-					.commaSeparatedStringToAuthorityList("ROLE_USER"));
+			details.setAuthorities(
+					AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
 			details.setRegisteredRedirectUri(Collections.<String>emptySet());
 			return details;
 		}

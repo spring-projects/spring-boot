@@ -29,8 +29,8 @@ import java.util.Map;
  * @since 1.3.0
  */
 @SuppressWarnings("serial")
-public class SimpleConfigurationMetadataRepository implements
-		ConfigurationMetadataRepository, Serializable {
+public class SimpleConfigurationMetadataRepository
+		implements ConfigurationMetadataRepository, Serializable {
 
 	private final Map<String, ConfigurationMetadataGroup> allGroups = new HashMap<String, ConfigurationMetadataGroup>();
 

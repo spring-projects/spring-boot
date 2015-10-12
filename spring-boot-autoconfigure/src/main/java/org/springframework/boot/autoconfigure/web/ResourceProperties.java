@@ -46,6 +46,7 @@ public class ResourceProperties implements ResourceLoaderAware {
 			"classpath:/static/", "classpath:/public/" };
 
 	private static final String[] RESOURCE_LOCATIONS;
+
 	static {
 		RESOURCE_LOCATIONS = new String[CLASSPATH_RESOURCE_LOCATIONS.length
 				+ SERVLET_RESOURCE_LOCATIONS.length];

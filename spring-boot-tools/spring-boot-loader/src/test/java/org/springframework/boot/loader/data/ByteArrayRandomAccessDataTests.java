@@ -34,8 +34,8 @@ public class ByteArrayRandomAccessDataTests {
 	public void testGetInputStream() throws Exception {
 		byte[] bytes = new byte[] { 0, 1, 2, 3, 4, 5 };
 		RandomAccessData data = new ByteArrayRandomAccessData(bytes);
-		assertThat(FileCopyUtils.copyToByteArray(data
-				.getInputStream(ResourceAccess.PER_READ)), equalTo(bytes));
+		assertThat(FileCopyUtils.copyToByteArray(
+				data.getInputStream(ResourceAccess.PER_READ)), equalTo(bytes));
 		assertThat(data.getSize(), equalTo((long) bytes.length));
 	}
 
@@ -44,8 +44,10 @@ public class ByteArrayRandomAccessDataTests {
 		byte[] bytes = new byte[] { 0, 1, 2, 3, 4, 5 };
 		RandomAccessData data = new ByteArrayRandomAccessData(bytes);
 		data = data.getSubsection(1, 4).getSubsection(1, 2);
-		assertThat(FileCopyUtils.copyToByteArray(data
-				.getInputStream(ResourceAccess.PER_READ)), equalTo(new byte[] { 2, 3 }));
+		assertThat(
+				FileCopyUtils
+						.copyToByteArray(data.getInputStream(ResourceAccess.PER_READ)),
+				equalTo(new byte[] { 2, 3 }));
 		assertThat(data.getSize(), equalTo(2L));
 	}
 }

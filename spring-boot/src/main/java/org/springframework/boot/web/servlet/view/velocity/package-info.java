@@ -18,4 +18,3 @@
  * Velocity support classes.
  */
 package org.springframework.boot.web.servlet.view.velocity;
-

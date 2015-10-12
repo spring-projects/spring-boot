@@ -120,8 +120,8 @@ public class ElasticsearchHealthIndicatorTests {
 	public void healthDetails() {
 		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<ClusterHealthResponse>();
 		responseFuture.onResponse(new StubClusterHealthResponse());
-		given(this.cluster.health(any(ClusterHealthRequest.class))).willReturn(
-				responseFuture);
+		given(this.cluster.health(any(ClusterHealthRequest.class)))
+				.willReturn(responseFuture);
 		Health health = this.indicator.health();
 		assertThat(health.getStatus(), is(Status.UP));
 		Map<String, Object> details = health.getDetails();
@@ -139,26 +139,26 @@ public class ElasticsearchHealthIndicatorTests {
 	public void redResponseMapsToDown() {
 		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<ClusterHealthResponse>();
 		responseFuture.onResponse(new StubClusterHealthResponse(ClusterHealthStatus.RED));
-		given(this.cluster.health(any(ClusterHealthRequest.class))).willReturn(
-				responseFuture);
+		given(this.cluster.health(any(ClusterHealthRequest.class)))
+				.willReturn(responseFuture);
 		assertThat(this.indicator.health().getStatus(), is(Status.DOWN));
 	}
 
 	@Test
 	public void yellowResponseMapsToUp() {
 		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<ClusterHealthResponse>();
-		responseFuture.onResponse(new StubClusterHealthResponse(
-				ClusterHealthStatus.YELLOW));
-		given(this.cluster.health(any(ClusterHealthRequest.class))).willReturn(
-				responseFuture);
+		responseFuture
+				.onResponse(new StubClusterHealthResponse(ClusterHealthStatus.YELLOW));
+		given(this.cluster.health(any(ClusterHealthRequest.class)))
+				.willReturn(responseFuture);
 		assertThat(this.indicator.health().getStatus(), is(Status.UP));
 	}
 
 	@Test
 	public void responseTimeout() {
 		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<ClusterHealthResponse>();
-		given(this.cluster.health(any(ClusterHealthRequest.class))).willReturn(
-				responseFuture);
+		given(this.cluster.health(any(ClusterHealthRequest.class)))
+				.willReturn(responseFuture);
 		Health health = this.indicator.health();
 		assertThat(health.getStatus(), is(Status.DOWN));
 		assertThat((String) health.getDetails().get("error"),
@@ -179,9 +179,10 @@ public class ElasticsearchHealthIndicatorTests {
 		}
 
 		private StubClusterHealthResponse(ClusterHealthStatus status) {
-			super("test-cluster", new String[0], new ClusterState(null, 0, null,
-					RoutingTable.builder().build(), DiscoveryNodes.builder().build(),
-					ClusterBlocks.builder().build(), null));
+			super("test-cluster", new String[0],
+					new ClusterState(null, 0, null, RoutingTable.builder().build(),
+							DiscoveryNodes.builder().build(),
+							ClusterBlocks.builder().build(), null));
 			this.status = status;
 		}
 
@@ -227,8 +228,8 @@ public class ElasticsearchHealthIndicatorTests {
 
 	}
 
-	private static class TestActionFuture extends
-			PlainActionFuture<ClusterHealthResponse> {
+	private static class TestActionFuture
+			extends PlainActionFuture<ClusterHealthResponse> {
 
 		private long getTimeout = -1L;
 

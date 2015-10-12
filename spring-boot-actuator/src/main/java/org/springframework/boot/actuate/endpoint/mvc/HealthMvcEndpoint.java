@@ -17,11 +17,9 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.security.Principal;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
@@ -31,7 +29,10 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -44,15 +45,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Phillip Webb
  * @since 1.1.0
  */
-public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
-
-	private final HealthEndpoint delegate;
+public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint>
+		implements EnvironmentAware {
 
 	private final boolean secure;
 
 	private Map<String, HttpStatus> statusMapping = new HashMap<String, HttpStatus>();
 
 	private RelaxedPropertyResolver propertyResolver;
+
+	private RelaxedPropertyResolver roleResolver;
 
 	private long lastAccess = 0;
 
@@ -63,8 +65,7 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	}
 
 	public HealthMvcEndpoint(HealthEndpoint delegate, boolean secure) {
-		Assert.notNull(delegate, "Delegate must not be null");
-		this.delegate = delegate;
+		super(delegate);
 		this.secure = secure;
 		setupDefaultStatusMapping();
 	}
@@ -78,6 +79,8 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	public void setEnvironment(Environment environment) {
 		this.propertyResolver = new RelaxedPropertyResolver(environment,
 				"endpoints.health.");
+		this.roleResolver = new RelaxedPropertyResolver(environment,
+				"management.security.");
 	}
 
 	/**
@@ -123,10 +126,9 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	@RequestMapping
 	@ResponseBody
 	public Object invoke(Principal principal) {
-		if (!this.delegate.isEnabled()) {
+		if (!getDelegate().isEnabled()) {
 			// Shouldn't happen because the request mapping should not be registered
-			return new ResponseEntity<Map<String, String>>(Collections.singletonMap(
-					"message", "This endpoint is disabled"), HttpStatus.NOT_FOUND);
+			return getDisabledResponse();
 		}
 		Health health = getHealth(principal);
 		HttpStatus status = getStatus(health);
@@ -154,7 +156,7 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		long accessTime = System.currentTimeMillis();
 		if (isCacheStale(accessTime)) {
 			this.lastAccess = accessTime;
-			this.cached = this.delegate.invoke();
+			this.cached = getDelegate().invoke();
 		}
 		if (exposeHealthDetails(principal)) {
 			return this.cached;
@@ -166,7 +168,7 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		if (this.cached == null) {
 			return true;
 		}
-		return (accessTime - this.lastAccess) >= this.delegate.getTimeToLive();
+		return (accessTime - this.lastAccess) >= getDelegate().getTimeToLive();
 	}
 
 	private boolean exposeHealthDetails(Principal principal) {
@@ -174,29 +176,30 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	}
 
 	private boolean isSecure(Principal principal) {
-		return (principal != null && !principal.getClass().getName()
-				.contains("Anonymous"));
+		if (principal == null || principal.getClass().getName().contains("Anonymous")) {
+			return false;
+		}
+		if (isSpringSecurityAuthentication(principal)) {
+			Authentication authentication = (Authentication) principal;
+			String role = this.roleResolver.getProperty("role", "ROLE_ADMIN");
+			for (GrantedAuthority authority : authentication.getAuthorities()) {
+				String name = authority.getAuthority();
+				if (role.equals(name) || ("ROLE_" + role).equals(name)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isSpringSecurityAuthentication(Principal principal) {
+		return ClassUtils.isPresent("org.springframework.security.core.Authentication",
+				null) && (principal instanceof Authentication);
 	}
 
 	private boolean isUnrestricted() {
 		Boolean sensitive = this.propertyResolver.getProperty("sensitive", Boolean.class);
 		return !this.secure && !Boolean.TRUE.equals(sensitive);
-	}
-
-	@Override
-	public String getPath() {
-		return "/" + this.delegate.getId();
-	}
-
-	@Override
-	public boolean isSensitive() {
-		return this.delegate.isSensitive();
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public Class<? extends Endpoint> getEndpointType() {
-		return this.delegate.getClass();
 	}
 
 }

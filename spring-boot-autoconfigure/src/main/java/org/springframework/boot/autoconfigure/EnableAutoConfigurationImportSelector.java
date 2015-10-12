@@ -71,7 +71,8 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 	public String[] selectImports(AnnotationMetadata metadata) {
 		try {
 			AnnotationAttributes attributes = getAttributes(metadata);
-			List<String> configurations = getCandidateConfigurations(metadata, attributes);
+			List<String> configurations = getCandidateConfigurations(metadata,
+					attributes);
 			configurations = removeDuplicates(configurations);
 			Set<String> exclusions = getExclusions(metadata, attributes);
 			configurations.removeAll(exclusions);
@@ -93,8 +94,8 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 	 */
 	protected AnnotationAttributes getAttributes(AnnotationMetadata metadata) {
 		String name = getAnnotationClass().getName();
-		AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
-				.getAnnotationAttributes(name, true));
+		AnnotationAttributes attributes = AnnotationAttributes
+				.fromMap(metadata.getAnnotationAttributes(name, true));
 		Assert.notNull(attributes,
 				"No auto-configuration attributes found. Is " + metadata.getClassName()
 						+ " annotated with " + ClassUtils.getShortName(name) + "?");

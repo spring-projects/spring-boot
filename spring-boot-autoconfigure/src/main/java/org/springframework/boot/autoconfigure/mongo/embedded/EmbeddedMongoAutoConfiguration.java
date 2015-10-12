@@ -93,20 +93,20 @@ public class EmbeddedMongoAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnClass(Logger.class)
 	public IRuntimeConfig embeddedMongoRuntimeConfig() {
-		Logger logger = LoggerFactory.getLogger(getClass().getPackage().getName()
-				+ ".EmbeddedMongo");
+		Logger logger = LoggerFactory
+				.getLogger(getClass().getPackage().getName() + ".EmbeddedMongo");
 		ProcessOutput processOutput = new ProcessOutput(
 				Processors.logTo(logger, Slf4jLevel.INFO),
-				Processors.logTo(logger, Slf4jLevel.ERROR),
-				Processors.named("[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG)));
+				Processors.logTo(logger, Slf4jLevel.ERROR), Processors.named("[console>]",
+						Processors.logTo(logger, Slf4jLevel.DEBUG)));
 		return new RuntimeConfigBuilder().defaultsWithLogger(Command.MongoD, logger)
 				.processOutput(processOutput).artifactStore(getArtifactStore(logger))
 				.build();
 	}
 
 	private ArtifactStoreBuilder getArtifactStore(Logger logger) {
-		return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD).download(
-				new DownloadConfigBuilder().defaultsForCommand(Command.MongoD)
+		return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD)
+				.download(new DownloadConfigBuilder().defaultsForCommand(Command.MongoD)
 						.progressListener(new Slf4jProgressListener(logger)));
 	}
 
@@ -181,8 +181,8 @@ public class EmbeddedMongoAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(MongoClient.class)
-	protected static class EmbeddedMongoDependencyConfiguration extends
-			MongoClientDependsOnBeanFactoryPostProcessor {
+	protected static class EmbeddedMongoDependencyConfiguration
+			extends MongoClientDependsOnBeanFactoryPostProcessor {
 
 		public EmbeddedMongoDependencyConfiguration() {
 			super("embeddedMongoServer");
@@ -194,14 +194,15 @@ public class EmbeddedMongoAutoConfiguration {
 	 * A workaround for the lack of a {@code toString} implementation on
 	 * {@code GenericFeatureAwareVersion}.
 	 */
-	private final static class ToStringFriendlyFeatureAwareVersion implements
-			IFeatureAwareVersion {
+	private final static class ToStringFriendlyFeatureAwareVersion
+			implements IFeatureAwareVersion {
 
 		private final String version;
 
 		private final Set<Feature> features;
 
-		private ToStringFriendlyFeatureAwareVersion(String version, Set<Feature> features) {
+		private ToStringFriendlyFeatureAwareVersion(String version,
+				Set<Feature> features) {
 			Assert.notNull(version, "version must not be null");
 			this.version = version;
 			this.features = (features == null ? Collections.<Feature>emptySet()

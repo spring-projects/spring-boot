@@ -36,11 +36,14 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.Scope;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory.MockEmbeddedServletContainer;
 import org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationListener;
@@ -56,6 +59,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertEquals;
@@ -109,15 +113,13 @@ public class EmbeddedWebApplicationContextTests {
 
 		// Ensure WebApplicationContextUtils.registerWebApplicationScopes was called
 		assertThat(
-				this.context.getBeanFactory().getRegisteredScope(
-						WebApplicationContext.SCOPE_SESSION),
+				this.context.getBeanFactory()
+						.getRegisteredScope(WebApplicationContext.SCOPE_SESSION),
 				instanceOf(SessionScope.class));
 
 		// Ensure WebApplicationContextUtils.registerEnvironmentBeans was called
-		assertThat(
-				this.context
-						.containsBean(WebApplicationContext.SERVLET_CONTEXT_BEAN_NAME),
-				equalTo(true));
+		assertThat(this.context.containsBean(
+				WebApplicationContext.SERVLET_CONTEXT_BEAN_NAME), equalTo(true));
 	}
 
 	@Test
@@ -137,11 +139,11 @@ public class EmbeddedWebApplicationContextTests {
 	@Test
 	public void containerEventPublished() throws Exception {
 		addEmbeddedServletContainerFactoryBean();
-		this.context.registerBeanDefinition("listener", new RootBeanDefinition(
-				MockListener.class));
+		this.context.registerBeanDefinition("listener",
+				new RootBeanDefinition(MockListener.class));
 		this.context.refresh();
-		EmbeddedServletContainerInitializedEvent event = this.context.getBean(
-				MockListener.class).getEvent();
+		EmbeddedServletContainerInitializedEvent event = this.context
+				.getBean(MockListener.class).getEvent();
 		assertNotNull(event);
 		assertTrue(event.getSource().getPort() >= 0);
 		assertEquals(this.context, event.getApplicationContext());
@@ -249,10 +251,10 @@ public class EmbeddedWebApplicationContextTests {
 		InOrder ordered = inOrder(servletContext);
 		ordered.verify(servletContext).addServlet("servletBean1", servlet1);
 		ordered.verify(servletContext).addServlet("servletBean2", servlet2);
-		verify(escf.getRegisteredServlet(0).getRegistration()).addMapping(
-				"/servletBean1/");
-		verify(escf.getRegisteredServlet(1).getRegistration()).addMapping(
-				"/servletBean2/");
+		verify(escf.getRegisteredServlet(0).getRegistration())
+				.addMapping("/servletBean1/");
+		verify(escf.getRegisteredServlet(1).getRegistration())
+				.addMapping("/servletBean2/");
 	}
 
 	@Test
@@ -265,8 +267,8 @@ public class EmbeddedWebApplicationContextTests {
 				withSettings().extraInterfaces(Ordered.class));
 		given(((Ordered) servlet2).getOrder()).willReturn(2);
 		this.context.registerBeanDefinition("servletBean2", beanDefinition(servlet2));
-		this.context
-				.registerBeanDefinition("dispatcherServlet", beanDefinition(servlet1));
+		this.context.registerBeanDefinition("dispatcherServlet",
+				beanDefinition(servlet1));
 		this.context.refresh();
 		MockEmbeddedServletContainerFactory escf = getEmbeddedServletContainerFactory();
 		ServletContext servletContext = escf.getServletContext();
@@ -274,17 +276,19 @@ public class EmbeddedWebApplicationContextTests {
 		ordered.verify(servletContext).addServlet("dispatcherServlet", servlet1);
 		ordered.verify(servletContext).addServlet("servletBean2", servlet2);
 		verify(escf.getRegisteredServlet(0).getRegistration()).addMapping("/");
-		verify(escf.getRegisteredServlet(1).getRegistration()).addMapping(
-				"/servletBean2/");
+		verify(escf.getRegisteredServlet(1).getRegistration())
+				.addMapping("/servletBean2/");
 	}
 
 	@Test
 	public void servletAndFilterBeans() throws Exception {
 		addEmbeddedServletContainerFactoryBean();
 		Servlet servlet = mock(Servlet.class);
-		Filter filter1 = mock(Filter.class, withSettings().extraInterfaces(Ordered.class));
+		Filter filter1 = mock(Filter.class,
+				withSettings().extraInterfaces(Ordered.class));
 		given(((Ordered) filter1).getOrder()).willReturn(1);
-		Filter filter2 = mock(Filter.class, withSettings().extraInterfaces(Ordered.class));
+		Filter filter2 = mock(Filter.class,
+				withSettings().extraInterfaces(Ordered.class));
 		given(((Ordered) filter2).getOrder()).willReturn(2);
 		this.context.registerBeanDefinition("servletBean", beanDefinition(servlet));
 		this.context.registerBeanDefinition("filterBean2", beanDefinition(filter2));
@@ -377,7 +381,8 @@ public class EmbeddedWebApplicationContextTests {
 		addEmbeddedServletContainerFactoryBean();
 		Servlet servlet = mock(Servlet.class);
 		Filter filter = mock(Filter.class);
-		ServletRegistrationBean initializer = new ServletRegistrationBean(servlet, "/foo");
+		ServletRegistrationBean initializer = new ServletRegistrationBean(servlet,
+				"/foo");
 		this.context.registerBeanDefinition("initializerBean",
 				beanDefinition(initializer));
 		this.context.registerBeanDefinition("servletBean", beanDefinition(servlet));
@@ -437,9 +442,24 @@ public class EmbeddedWebApplicationContextTests {
 				sameInstance(scope));
 		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_SESSION),
 				sameInstance(scope));
-		assertThat(
-				factory.getRegisteredScope(WebApplicationContext.SCOPE_GLOBAL_SESSION),
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_GLOBAL_SESSION),
 				sameInstance(scope));
+	}
+
+	@Test
+	public void containerIsStoppedBeforeContextIsClosed() {
+		addEmbeddedServletContainerFactoryBean();
+		this.context.registerBeanDefinition("shutdownOrderingValidator",
+				BeanDefinitionBuilder.rootBeanDefinition(ShutdownOrderingValidator.class)
+						.addConstructorArgReference("embeddedServletContainerFactory")
+						.getBeanDefinition());
+		this.context.refresh();
+		ShutdownOrderingValidator validator = this.context
+				.getBean(ShutdownOrderingValidator.class);
+		this.context.close();
+		assertThat(validator.destroyed, is(true));
+		assertThat(validator.containerStoppedFirst, is(true));
+
 	}
 
 	private void addEmbeddedServletContainerFactoryBean() {
@@ -465,8 +485,8 @@ public class EmbeddedWebApplicationContextTests {
 		return object;
 	}
 
-	public static class MockListener implements
-			ApplicationListener<EmbeddedServletContainerInitializedEvent> {
+	public static class MockListener
+			implements ApplicationListener<EmbeddedServletContainerInitializedEvent> {
 
 		private EmbeddedServletContainerInitializedEvent event;
 
@@ -487,6 +507,27 @@ public class EmbeddedWebApplicationContextTests {
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response,
 				FilterChain chain) throws IOException, ServletException {
+		}
+
+	}
+
+	protected static class ShutdownOrderingValidator implements DisposableBean {
+
+		private final MockEmbeddedServletContainer servletContainer;
+
+		private boolean destroyed = false;
+
+		private boolean containerStoppedFirst = false;
+
+		ShutdownOrderingValidator(
+				MockEmbeddedServletContainerFactory servletContainerFactory) {
+			this.servletContainer = servletContainerFactory.getContainer();
+		}
+
+		@Override
+		public void destroy() {
+			this.destroyed = true;
+			this.containerStoppedFirst = this.servletContainer.isStopped();
 		}
 
 	}

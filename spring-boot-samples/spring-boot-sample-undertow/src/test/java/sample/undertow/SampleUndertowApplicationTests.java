@@ -71,11 +71,12 @@ public class SampleUndertowApplicationTests {
 		requestHeaders.set("Accept-Encoding", "gzip");
 		HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
 		RestTemplate restTemplate = new TestRestTemplate();
-		ResponseEntity<byte[]> entity = restTemplate.exchange("http://localhost:"
-				+ this.port, HttpMethod.GET, requestEntity, byte[].class);
+		ResponseEntity<byte[]> entity = restTemplate.exchange(
+				"http://localhost:" + this.port, HttpMethod.GET, requestEntity,
+				byte[].class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		GZIPInputStream inflater = new GZIPInputStream(new ByteArrayInputStream(
-				entity.getBody()));
+		GZIPInputStream inflater = new GZIPInputStream(
+				new ByteArrayInputStream(entity.getBody()));
 		try {
 			assertEquals("Hello World",
 					StreamUtils.copyToString(inflater, Charset.forName("UTF-8")));
@@ -86,8 +87,8 @@ public class SampleUndertowApplicationTests {
 	}
 
 	private void assertOkResponse(String path, String body) {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + path, String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + path, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals(body, entity.getBody());
 	}

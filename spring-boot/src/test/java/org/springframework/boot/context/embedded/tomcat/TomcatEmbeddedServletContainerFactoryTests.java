@@ -35,6 +35,7 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -64,8 +65,8 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class TomcatEmbeddedServletContainerFactoryTests extends
-		AbstractEmbeddedServletContainerFactoryTests {
+public class TomcatEmbeddedServletContainerFactoryTests
+		extends AbstractEmbeddedServletContainerFactoryTests {
 
 	@Override
 	protected TomcatEmbeddedServletContainerFactory getFactory() {
@@ -333,6 +334,13 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		assertThat(jspServlet.findInitParameter("a"), is(equalTo("alpha")));
 	}
 
+	@Test
+	public void useForwardHeaders() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.addContextValves(new RemoteIpValve());
+		assertForwardHeaderIsUsed(factory);
+	}
+
 	@Override
 	protected Wrapper getJspServlet() {
 		Container context = ((TomcatEmbeddedServletContainer) this.container).getTomcat()
@@ -340,7 +348,8 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		return (Wrapper) context.findChild("jsp");
 	}
 
-	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory, int expected) {
+	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory,
+			int expected) {
 		Tomcat tomcat = getTomcat(factory);
 		Context context = (Context) tomcat.getHost().findChildren()[0];
 		assertThat(context.getSessionTimeout(), equalTo(expected));

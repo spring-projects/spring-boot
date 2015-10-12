@@ -116,9 +116,8 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Test
 	public void isEnabledFallbackToEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object>singletonMap(this.property + ".enabled",
-						false));
+		PropertySource<?> propertySource = new MapPropertySource("test", Collections
+				.<String, Object>singletonMap(this.property + ".enabled", false));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
@@ -129,9 +128,8 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@SuppressWarnings("rawtypes")
 	public void isExplicitlyEnabled() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object>singletonMap(this.property + ".enabled",
-						false));
+		PropertySource<?> propertySource = new MapPropertySource("test", Collections
+				.<String, Object>singletonMap(this.property + ".enabled", false));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();

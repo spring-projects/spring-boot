@@ -37,8 +37,8 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * @since 1.3.0
  * @see SpringFactoriesLoader#loadFactories(Class, ClassLoader)
  */
-public class EnvironmentPostProcessingApplicationListener implements
-		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
+public class EnvironmentPostProcessingApplicationListener
+		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
 	/**
 	 * The order for the {@link EnvironmentPostProcessingApplicationListener}.
@@ -48,8 +48,8 @@ public class EnvironmentPostProcessingApplicationListener implements
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		List<EnvironmentPostProcessor> postProcessors = SpringFactoriesLoader
-				.loadFactories(EnvironmentPostProcessor.class, getClass()
-						.getClassLoader());
+				.loadFactories(EnvironmentPostProcessor.class,
+						getClass().getClassLoader());
 		for (EnvironmentPostProcessor postProcessor : postProcessors) {
 			postProcessor.postProcessEnvironment(event.getEnvironment(),
 					event.getSpringApplication());

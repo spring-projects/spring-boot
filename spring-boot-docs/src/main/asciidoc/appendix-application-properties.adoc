@@ -43,6 +43,7 @@ content into your application; rather pick only the properties that you need.
 	spring.main.sources= # sources (class name, package name or XML resource location) to include
 	spring.main.web-environment= # detect by default
 	spring.main.show-banner=true
+	spring.main.banner-mode=console # mode used to display the banner when the application runs (console, off, or log)
 	spring.main....= # see class for all properties
 
 	# AUTO-CONFIGURATION
@@ -64,6 +65,7 @@ content into your application; rather pick only the properties that you need.
 	logging.pattern.console= # appender pattern for output to the console (only supported with the default logback setup)
 	logging.pattern.file= # appender pattern for output to the file (only supported with the default logback setup)
 	logging.pattern.level= # appender pattern for the log level (default %5p, only supported with the default logback setup)
+	logging.register-shutdown-hook=false # register a shutdown hook for the logging system when it is initialized
 
 	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
 	spring.application.name=
@@ -83,6 +85,7 @@ content into your application; rather pick only the properties that you need.
 	server.jsp-servlet.registered=true # Whether or not the JSP servlet is registered
 	server.servlet-path= # the servlet path, defaults to '/'
 	server.display-name= # the display name of the application
+	server.use-forward-headers= # if X-Forwarded-* headers should be used (default is off unless running in a known cloud)
 	server.session.persistent=false # true if session should be saved across restarts
 	server.session.timeout= # session timeout in seconds
 	server.session.tracking-modes= # tracking modes (one or more of "cookie" ,"url", "ssl")
@@ -138,8 +141,9 @@ content into your application; rather pick only the properties that you need.
     server.undertow.worker-threads= # number of worker threads
 
 	# ERROR HANDLING ({sc-spring-boot-autoconfigure}/web/ErrorProperties.{sc-ext}[ErrorProperties])
-	error.path=/error # the error path
-	error.include-stacktrace=never # when to include a stacktrace attribute (never/alway/on-trace-param)
+	server.error.path=/error # the error path
+	server.error.include-stacktrace=never # when to include a stacktrace attribute (never/alway/on-trace-param)
+	server.error.whitelabel.enabled=true # enable the default error page displayed in browsers in case of a server error
 
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/WebMvcProperties.{sc-ext}[WebMvcProperties])
 	spring.mvc.locale= # set fixed locale, e.g. en_UK
@@ -147,6 +151,7 @@ content into your application; rather pick only the properties that you need.
 	spring.mvc.favicon.enabled=true
 	spring.mvc.message-codes-resolver-format= # PREFIX_ERROR_CODE / POSTFIX_ERROR_CODE
 	spring.mvc.ignore-default-model-on-redirect=true # if the content of the "default" model should be ignored redirects
+	spring.mvc.throw-exception-if-no-handler-found=false # if a "NoHandlerFoundException" should be thrown if no Handler was found to process a request
 	spring.mvc.async.request-timeout= # async request timeout in milliseconds
 	spring.mvc.view.prefix= # MVC view prefix
 	spring.mvc.view.suffix= # ... and suffix
@@ -248,7 +253,7 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.allow-session-override=false
 	spring.velocity.cache=true
 	spring.velocity.check-template-location=true
-	spring.velocity.charset=UTF-8
+	spring.velocity.charset=UTF-8 # charset for input and output encoding
 	spring.velocity.content-type=text/html
 	spring.velocity.date-tool-attribute=
 	spring.velocity.enabled=true # enable MVC view resolution
@@ -472,8 +477,16 @@ content into your application; rather pick only the properties that you need.
 	spring.data.elasticsearch.properties.*= # Additional properties used to configure the client
 	spring.data.elasticsearch.repositories.enabled=true # if spring data repository support is enabled
 
-	# DATA REST ({spring-data-rest-javadoc}/core/config/RepositoryRestConfiguration.{dc-ext}[RepositoryRestConfiguration])
-	spring.data.rest.base-path= # base path against which the exporter should calculate its links
+	# DATA REST ({sc-spring-boot-autoconfigure}/data/rest/RepositoryRestProperties.{sc-ext}[RepositoryRestProperties])
+	spring.data.rest.base-path= # base path to be used by Spring Data REST to expose repository resources
+    spring.data.rest.default-page-size= # default size of pages
+    spring.data.rest.enable-enum-translation= # enable enum value translation via the Spring Data REST default resource bundle
+    spring.data.rest.limit-param-name= # name of the URL query string parameter that indicates how many results to return at once
+    spring.data.rest.max-page-size= # maximum size of pages
+    spring.data.rest.page-param-name= # name of the URL query string parameter that indicates what page to return
+    spring.data.rest.return-body-on-create= # return a response body after creating an entity
+    spring.data.rest.return-body-on-update= # return a response body after updating an entity
+    spring.data.rest.sort-param-name= # name of the URL query string parameter that indicates what direction to sort results
 
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
 	flyway.*= # Any public property available on the auto-configured `Flyway` object
@@ -665,6 +678,8 @@ content into your application; rather pick only the properties that you need.
     spring.devtools.remote.context-path=/.~~spring-boot!~ # context path used to handle the remote connection
     spring.devtools.remote.debug.enabled=true # enable remote debug support
     spring.devtools.remote.debug.local-port=8000 # local remote debug server port
+    spring.devtools.remote.proxy.host= # the host of the proxy to use to connect to the remote application
+    spring.devtools.remote.proxy.port= # the port of the proxy to use to connect to the remote application
     spring.devtools.remote.restart.enabled=true # enable remote restart
     spring.devtools.remote.secret= # a shared secret required to establish a connection
     spring.devtools.remote.secret-header-name=X-AUTH-TOKEN # HTTP header used to transfer the shared secret

@@ -10,8 +10,8 @@ covers the features in more detail.
 
 == Enabling the Actuator
 The simplest way to enable the features is to add a dependency to the
-`spring-boot-starter-actuator` ``Starter POM''. To add the actuator to a Maven based
-project, add the following "starter" dependency:
+`spring-boot-starter-actuator` "`Starter POM`". To add the actuator to a Maven based
+project, add the following "`starter`" dependency:
 
 [source,xml,indent=0]
 ----
@@ -38,8 +38,8 @@ For Gradle, use the declaration:
   your own. For example the `health` endpoint provides basic application health
   information. Run up a basic application and look at `/health` (and see `/mappings` for
   a list of other HTTP endpoints).
-* **Metrics** Spring Boot Actuator includes a metrics service with ``gauge'' and
-  ``counter'' support.  A ``gauge'' records a single value; and a ``counter'' records a
+* **Metrics** Spring Boot Actuator includes a metrics service with "`gauge`" and
+  "`counter`" support.  A "`gauge`" records a single value; and a "`counter`" records a
   delta (an increment or decrement). Metrics for all HTTP requests are automatically
   recorded, so if you hit the `metrics` endpoint should see a sensible response.
 * **Audit** Spring Boot Actuator has a flexible audit framework that will publish events

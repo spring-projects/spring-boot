@@ -42,8 +42,8 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 		RelaxedDataBinder binder = new RelaxedDataBinder(properties, "spring.resources");
 		binder.bind(new PropertySourcesPropertyValues(environment.getPropertySources()));
 		Boolean match = properties.getChain().getEnabled();
-		return new ConditionOutcome(match, "Resource chain is "
-				+ (match ? "enabled" : "disabled"));
+		return new ConditionOutcome(match,
+				"Resource chain is " + (match ? "enabled" : "disabled"));
 	}
 
 }

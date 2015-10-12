@@ -28,8 +28,8 @@ import org.springframework.boot.cli.compiler.MavenSettingsReader;
  *
  * @author Andy Wilkinson
  */
-public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
-		RepositorySystemSessionAutoConfiguration {
+public class SettingsXmlRepositorySystemSessionAutoConfiguration
+		implements RepositorySystemSessionAutoConfiguration {
 
 	@Override
 	public void apply(DefaultRepositorySystemSession session,

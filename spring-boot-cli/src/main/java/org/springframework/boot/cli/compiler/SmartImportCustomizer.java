@@ -33,14 +33,15 @@ class SmartImportCustomizer extends ImportCustomizer {
 
 	private SourceUnit source;
 
-	SmartImportCustomizer(SourceUnit source, GeneratorContext context, ClassNode classNode) {
+	SmartImportCustomizer(SourceUnit source, GeneratorContext context,
+			ClassNode classNode) {
 		this.source = source;
 	}
 
 	@Override
 	public ImportCustomizer addImport(String alias, String className) {
-		if (this.source.getAST().getImport(
-				ClassHelper.make(className).getNameWithoutPackage()) == null) {
+		if (this.source.getAST()
+				.getImport(ClassHelper.make(className).getNameWithoutPackage()) == null) {
 			super.addImport(alias, className);
 		}
 		return this;
@@ -49,8 +50,8 @@ class SmartImportCustomizer extends ImportCustomizer {
 	@Override
 	public ImportCustomizer addImports(String... imports) {
 		for (String alias : imports) {
-			if (this.source.getAST().getImport(
-					ClassHelper.make(alias).getNameWithoutPackage()) == null) {
+			if (this.source.getAST()
+					.getImport(ClassHelper.make(alias).getNameWithoutPackage()) == null) {
 				super.addImports(alias);
 			}
 		}

@@ -38,6 +38,7 @@ import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Session.Cookie;
+import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -47,6 +48,7 @@ import org.springframework.boot.context.embedded.InitParameterConfiguringServlet
 import org.springframework.boot.context.embedded.JspServlet;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -54,7 +56,9 @@ import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServle
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 /**
@@ -69,7 +73,8 @@ import org.springframework.util.StringUtils;
  * @author Marcos Barbero
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
-public class ServerProperties implements EmbeddedServletContainerCustomizer, Ordered {
+public class ServerProperties
+		implements EmbeddedServletContainerCustomizer, EnvironmentAware, Ordered {
 
 	/**
 	 * Server HTTP port.
@@ -91,10 +96,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	 */
 	private String displayName = "application";
 
-	private Session session = new Session();
-
 	@NestedConfigurationProperty
-	private Ssl ssl;
+	private ErrorProperties error = new ErrorProperties();
 
 	/**
 	 * Path of the main dispatcher servlet.
@@ -102,9 +105,20 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	@NotNull
 	private String servletPath = "/";
 
-	private final Tomcat tomcat = new Tomcat();
+	/**
+	 * ServletContext parameters.
+	 */
+	private final Map<String, String> contextParameters = new HashMap<String, String>();
 
-	private final Undertow undertow = new Undertow();
+	/**
+	 * If X-Forwarded-* headers should be applied to the HttpRequest.
+	 */
+	private Boolean useForwardHeaders;
+
+	private Session session = new Session();
+
+	@NestedConfigurationProperty
+	private Ssl ssl;
 
 	@NestedConfigurationProperty
 	private Compression compression = new Compression();
@@ -112,146 +126,22 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	@NestedConfigurationProperty
 	private JspServlet jspServlet;
 
-	/**
-	 * ServletContext parameters.
-	 */
-	private final Map<String, String> contextParameters = new HashMap<String, String>();
+	private final Tomcat tomcat = new Tomcat();
+
+	private final Jetty jetty = new Jetty();
+
+	private final Undertow undertow = new Undertow();
+
+	private Environment environment;
 
 	@Override
 	public int getOrder() {
 		return 0;
 	}
 
-	public Tomcat getTomcat() {
-		return this.tomcat;
-	}
-
-	public Undertow getUndertow() {
-		return this.undertow;
-	}
-
-	public Compression getCompression() {
-		return this.compression;
-	}
-
-	public String getContextPath() {
-		return this.contextPath;
-	}
-
-	public void setContextPath(String contextPath) {
-		this.contextPath = cleanContextPath(contextPath);
-	}
-
-	private String cleanContextPath(String contextPath) {
-		if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
-			return contextPath.substring(0, contextPath.length() - 1);
-		}
-		return contextPath;
-	}
-
-	public String getDisplayName() {
-		return this.displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
-
-	public String getServletPath() {
-		return this.servletPath;
-	}
-
-	public String getServletMapping() {
-		if (this.servletPath.equals("") || this.servletPath.equals("/")) {
-			return "/";
-		}
-		if (this.servletPath.contains("*")) {
-			return this.servletPath;
-		}
-		if (this.servletPath.endsWith("/")) {
-			return this.servletPath + "*";
-		}
-		return this.servletPath + "/*";
-	}
-
-	public String getServletPrefix() {
-		String result = this.servletPath;
-		if (result.contains("*")) {
-			result = result.substring(0, result.indexOf("*"));
-		}
-		if (result.endsWith("/")) {
-			result = result.substring(0, result.length() - 1);
-		}
-		return result;
-	}
-
-	public void setServletPath(String servletPath) {
-		this.servletPath = servletPath;
-	}
-
-	public Integer getPort() {
-		return this.port;
-	}
-
-	public void setPort(Integer port) {
-		this.port = port;
-	}
-
-	public InetAddress getAddress() {
-		return this.address;
-	}
-
-	public void setAddress(InetAddress address) {
-		this.address = address;
-	}
-
-	/**
-	 * Get the session timeout.
-	 * @return the session timeout
-	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
-	 */
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "server.session.timeout")
-	public Integer getSessionTimeout() {
-		return this.session.getTimeout();
-	}
-
-	/**
-	 * Set the session timeout.
-	 * @param sessionTimeout the session timeout
-	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
-	 */
-	@Deprecated
-	public void setSessionTimeout(Integer sessionTimeout) {
-		this.session.setTimeout(sessionTimeout);
-	}
-
-	public Session getSession() {
-		return this.session;
-	}
-
-	public Ssl getSsl() {
-		return this.ssl;
-	}
-
-	public void setSsl(Ssl ssl) {
-		this.ssl = ssl;
-	}
-
-	public JspServlet getJspServlet() {
-		return this.jspServlet;
-	}
-
-	public void setJspServlet(JspServlet jspServlet) {
-		this.jspServlet = jspServlet;
-	}
-
-	public Map<String, String> getContextParameters() {
-		return this.contextParameters;
-	}
-
-	public void setLoader(String value) {
-		// no op to support Tomcat running as a traditional container (not embedded)
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 	@Override
@@ -282,16 +172,53 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			container.setCompression(getCompression());
 		}
 		if (container instanceof TomcatEmbeddedServletContainerFactory) {
-			getTomcat()
-					.customizeTomcat((TomcatEmbeddedServletContainerFactory) container);
+			getTomcat().customizeTomcat(this,
+					(TomcatEmbeddedServletContainerFactory) container);
 		}
+		if (container instanceof JettyEmbeddedServletContainerFactory) {
+			getJetty().customizeJetty(this,
+					(JettyEmbeddedServletContainerFactory) container);
+		}
+
 		if (container instanceof UndertowEmbeddedServletContainerFactory) {
-			getUndertow().customizeUndertow(
+			getUndertow().customizeUndertow(this,
 					(UndertowEmbeddedServletContainerFactory) container);
 		}
 		container.addInitializers(new SessionConfiguringInitializer(this.session));
 		container.addInitializers(new InitParameterConfiguringServletContextInitializer(
 				getContextParameters()));
+	}
+
+	public String getServletMapping() {
+		if (this.servletPath.equals("") || this.servletPath.equals("/")) {
+			return "/";
+		}
+		if (this.servletPath.contains("*")) {
+			return this.servletPath;
+		}
+		if (this.servletPath.endsWith("/")) {
+			return this.servletPath + "*";
+		}
+		return this.servletPath + "/*";
+	}
+
+	public String getPath(String path) {
+		String prefix = getServletPrefix();
+		if (!path.startsWith("/")) {
+			path = "/" + path;
+		}
+		return prefix + path;
+	}
+
+	public String getServletPrefix() {
+		String result = this.servletPath;
+		if (result.contains("*")) {
+			result = result.substring(0, result.indexOf("*"));
+		}
+		if (result.endsWith("/")) {
+			result = result.substring(0, result.length() - 1);
+		}
+		return result;
 	}
 
 	public String[] getPathsArray(Collection<String> paths) {
@@ -312,12 +239,140 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		return result;
 	}
 
-	public String getPath(String path) {
-		String prefix = getServletPrefix();
-		if (!path.startsWith("/")) {
-			path = "/" + path;
+	public void setLoader(String value) {
+		// no op to support Tomcat running as a traditional container (not embedded)
+	}
+
+	public Integer getPort() {
+		return this.port;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+
+	public InetAddress getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(InetAddress address) {
+		this.address = address;
+	}
+
+	public String getContextPath() {
+		return this.contextPath;
+	}
+
+	public void setContextPath(String contextPath) {
+		this.contextPath = cleanContextPath(contextPath);
+	}
+
+	private String cleanContextPath(String contextPath) {
+		if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
+			return contextPath.substring(0, contextPath.length() - 1);
 		}
-		return prefix + path;
+		return contextPath;
+	}
+
+	public String getDisplayName() {
+		return this.displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getServletPath() {
+		return this.servletPath;
+	}
+
+	public void setServletPath(String servletPath) {
+		this.servletPath = servletPath;
+	}
+
+	public Map<String, String> getContextParameters() {
+		return this.contextParameters;
+	}
+
+	public Boolean isUseForwardHeaders() {
+		return this.useForwardHeaders;
+	}
+
+	public void setUseForwardHeaders(Boolean useForwardHeaders) {
+		this.useForwardHeaders = useForwardHeaders;
+	}
+
+	protected final boolean getOrDeduceUseForwardHeaders() {
+		if (this.useForwardHeaders != null) {
+			return this.useForwardHeaders;
+		}
+		CloudPlatform platform = CloudPlatform.getActive(this.environment);
+		return (platform == null ? false : platform.isUsingForwardHeaders());
+	}
+
+	/**
+	 * Get the session timeout.
+	 * @return the session timeout
+	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
+	 */
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "server.session.timeout")
+	public Integer getSessionTimeout() {
+		return this.session.getTimeout();
+	}
+
+	/**
+	 * Set the session timeout.
+	 * @param sessionTimeout the session timeout
+	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
+	 */
+	@Deprecated
+	public void setSessionTimeout(Integer sessionTimeout) {
+		this.session.setTimeout(sessionTimeout);
+	}
+
+	public ErrorProperties getError() {
+		return this.error;
+	}
+
+	public Session getSession() {
+		return this.session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
+	}
+
+	public Compression getCompression() {
+		return this.compression;
+	}
+
+	public JspServlet getJspServlet() {
+		return this.jspServlet;
+	}
+
+	public void setJspServlet(JspServlet jspServlet) {
+		this.jspServlet = jspServlet;
+	}
+
+	public Tomcat getTomcat() {
+		return this.tomcat;
+	}
+
+	private Jetty getJetty() {
+		return this.jetty;
+	}
+
+	public Undertow getUndertow() {
+		return this.undertow;
 	}
 
 	public static class Session {
@@ -484,9 +539,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		/**
 		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
-		 * Configures a RemoteIpValve only if remoteIpHeader is also set.
 		 */
-		private String protocolHeader = "x-forwarded-proto";
+		private String protocolHeader;
 
 		/**
 		 * Value of the protocol header that indicates that the incoming request uses SSL.
@@ -496,13 +550,12 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		/**
 		 * Name of the HTTP header used to override the original port value.
 		 */
-		private String portHeader = "x-forwarded-port";
+		private String portHeader = "X-Forwarded-Port";
 
 		/**
-		 * Name of the http header from which the remote ip is extracted. Configures a
-		 * RemoteIpValve only if protocolHeader is also set.
+		 * Name of the http header from which the remote ip is extracted..
 		 */
-		private String remoteIpHeader = "x-forwarded-for";
+		private String remoteIpHeader;
 
 		/**
 		 * Tomcat base directory. If not specified a temporary directory will be used.
@@ -655,12 +708,13 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			this.uriEncoding = uriEncoding;
 		}
 
-		void customizeTomcat(TomcatEmbeddedServletContainerFactory factory) {
+		void customizeTomcat(ServerProperties serverProperties,
+				TomcatEmbeddedServletContainerFactory factory) {
 			if (getBasedir() != null) {
 				factory.setBaseDirectory(getBasedir());
 			}
 			customizeBackgroundProcessorDelay(factory);
-			customizeHeaders(factory);
+			customizeRemoteIpValve(serverProperties, factory);
 			if (this.maxThreads > 0) {
 				customizeMaxThreads(factory);
 			}
@@ -681,20 +735,26 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 				@Override
 				public void customize(Context context) {
-					context.setBackgroundProcessorDelay(Tomcat.this.backgroundProcessorDelay);
+					context.setBackgroundProcessorDelay(
+							Tomcat.this.backgroundProcessorDelay);
 				}
 
 			});
 		}
 
-		private void customizeHeaders(TomcatEmbeddedServletContainerFactory factory) {
-			String remoteIpHeader = getRemoteIpHeader();
+		private void customizeRemoteIpValve(ServerProperties properties,
+				TomcatEmbeddedServletContainerFactory factory) {
 			String protocolHeader = getProtocolHeader();
-			if (StringUtils.hasText(remoteIpHeader)
-					&& StringUtils.hasText(protocolHeader)) {
+			String remoteIpHeader = getRemoteIpHeader();
+			// For back compatibility the valve is also enabled if protocol-header is set
+			if (StringUtils.hasText(protocolHeader) || StringUtils.hasText(remoteIpHeader)
+					|| properties.getOrDeduceUseForwardHeaders()) {
 				RemoteIpValve valve = new RemoteIpValve();
-				valve.setRemoteIpHeader(remoteIpHeader);
-				valve.setProtocolHeader(protocolHeader);
+				valve.setProtocolHeader(StringUtils.hasLength(protocolHeader)
+						? protocolHeader : "X-Forwarded-Proto");
+				if (StringUtils.hasLength(remoteIpHeader)) {
+					valve.setRemoteIpHeader(remoteIpHeader);
+				}
 				// The internal proxies default to a white list of "safe" internal IP
 				// addresses
 				valve.setInternalProxies(getInternalProxies());
@@ -814,6 +874,15 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			public void setSuffix(String suffix) {
 				this.suffix = suffix;
 			}
+		}
+
+	}
+
+	private static class Jetty {
+
+		void customizeJetty(ServerProperties serverProperties,
+				JettyEmbeddedServletContainerFactory factory) {
+			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
 		}
 
 	}
@@ -954,7 +1023,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			getAccesslog().setDir(accessLogDir);
 		}
 
-		void customizeUndertow(UndertowEmbeddedServletContainerFactory factory) {
+		void customizeUndertow(ServerProperties serverProperties,
+				UndertowEmbeddedServletContainerFactory factory) {
 			factory.setBufferSize(this.bufferSize);
 			factory.setBuffersPerRegion(this.buffersPerRegion);
 			factory.setIoThreads(this.ioThreads);
@@ -963,6 +1033,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			factory.setAccessLogDirectory(this.accesslog.dir);
 			factory.setAccessLogPattern(this.accesslog.pattern);
 			factory.setAccessLogEnabled(this.accesslog.enabled);
+			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
 		}
 
 		public static class Accesslog {
@@ -1014,8 +1085,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	 * {@link ServletContextInitializer} to apply appropriate parts of the {@link Session}
 	 * configuration.
 	 */
-	private static class SessionConfiguringInitializer implements
-			ServletContextInitializer {
+	private static class SessionConfiguringInitializer
+			implements ServletContextInitializer {
 
 		private final Session session;
 

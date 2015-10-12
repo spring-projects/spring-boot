@@ -13,7 +13,6 @@
 	<description>Spring Boot Hypermedia UI Sample</description>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
-		<java.version>1.7</java.version>
 	</properties>
 	<dependencies>
 		<dependency>

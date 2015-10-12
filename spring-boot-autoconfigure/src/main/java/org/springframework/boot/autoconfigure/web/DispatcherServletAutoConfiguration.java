@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -53,6 +54,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
@@ -74,17 +76,24 @@ public class DispatcherServletAutoConfiguration {
 	@Configuration
 	@Conditional(DefaultDispatcherServletCondition.class)
 	@ConditionalOnClass(ServletRegistration.class)
+	@EnableConfigurationProperties(WebMvcProperties.class)
 	protected static class DispatcherServletConfiguration {
 
 		@Autowired
 		private ServerProperties server;
+
+		@Autowired
+		private WebMvcProperties webMvcProperties;
 
 		@Autowired(required = false)
 		private MultipartConfigElement multipartConfig;
 
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 		public DispatcherServlet dispatcherServlet() {
-			return new DispatcherServlet();
+			DispatcherServlet dispatcherServlet = new DispatcherServlet();
+			dispatcherServlet.setThrowExceptionIfNoHandlerFound(
+					this.webMvcProperties.isThrowExceptionIfNoHandlerFound());
+			return dispatcherServlet;
 		}
 
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
@@ -122,9 +131,10 @@ public class DispatcherServletAutoConfiguration {
 			return checkServletRegistrations(beanFactory);
 		}
 
-		private ConditionOutcome checkServlets(ConfigurableListableBeanFactory beanFactory) {
-			List<String> servlets = Arrays.asList(beanFactory.getBeanNamesForType(
-					DispatcherServlet.class, false, false));
+		private ConditionOutcome checkServlets(
+				ConfigurableListableBeanFactory beanFactory) {
+			List<String> servlets = Arrays.asList(beanFactory
+					.getBeanNamesForType(DispatcherServlet.class, false, false));
 			boolean containsDispatcherBean = beanFactory
 					.containsBean(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			if (servlets.isEmpty()) {
@@ -149,8 +159,8 @@ public class DispatcherServletAutoConfiguration {
 
 		private ConditionOutcome checkServletRegistrations(
 				ConfigurableListableBeanFactory beanFactory) {
-			List<String> registrations = Arrays.asList(beanFactory.getBeanNamesForType(
-					ServletRegistrationBean.class, false, false));
+			List<String> registrations = Arrays.asList(beanFactory
+					.getBeanNamesForType(ServletRegistrationBean.class, false, false));
 			boolean containsDispatcherRegistrationBean = beanFactory
 					.containsBean(DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
 			if (registrations.isEmpty()) {
@@ -161,14 +171,14 @@ public class DispatcherServletAutoConfiguration {
 				}
 				return ConditionOutcome.match("no ServletRegistrationBean found");
 			}
-			if (registrations.contains(DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)) {
+			if (registrations
+					.contains(DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)) {
 				return ConditionOutcome.noMatch("found ServletRegistrationBean named "
 						+ DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
 			}
 			if (containsDispatcherRegistrationBean) {
-				return ConditionOutcome
-						.noMatch("found non-ServletRegistrationBean named "
-								+ DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
+				return ConditionOutcome.noMatch("found non-ServletRegistrationBean named "
+						+ DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
 			}
 			return ConditionOutcome
 					.match("one or more ServletRegistrationBeans is found and none is named "

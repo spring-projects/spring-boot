@@ -58,8 +58,8 @@ public class RelaxedPropertyResolverTests {
 		this.source.put("myobject", "object");
 		this.source.put("myInteger", 123);
 		this.source.put("myClass", "java.lang.String");
-		this.environment.getPropertySources().addFirst(
-				new MapPropertySource("test", this.source));
+		this.environment.getPropertySources()
+				.addFirst(new MapPropertySource("test", this.source));
 		this.resolver = new RelaxedPropertyResolver(this.environment);
 	}
 

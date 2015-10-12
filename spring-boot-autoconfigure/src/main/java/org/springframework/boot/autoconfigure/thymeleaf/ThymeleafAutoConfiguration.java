@@ -23,6 +23,8 @@ import java.util.LinkedHashMap;
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -38,7 +40,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.util.Assert;
 import org.springframework.util.MimeType;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.thymeleaf.dialect.IDialect;
@@ -68,6 +69,8 @@ import nz.net.ultraq.thymeleaf.LayoutDialect;
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class ThymeleafAutoConfiguration {
 
+	private static final Log logger = LogFactory.getLog(ThymeleafAutoConfiguration.class);
+
 	@Configuration
 	@ConditionalOnMissingBean(name = "defaultTemplateResolver")
 	public static class DefaultTemplateResolverConfiguration {
@@ -84,10 +87,11 @@ public class ThymeleafAutoConfiguration {
 			if (checkTemplateLocation) {
 				TemplateLocation location = new TemplateLocation(
 						this.properties.getPrefix());
-				Assert.state(location.exists(this.applicationContext),
-						"Cannot find template location: " + location
-								+ " (please add some templates or check "
-								+ "your Thymeleaf configuration)");
+				if (!location.exists(this.applicationContext)) {
+					logger.warn("Cannot find template location: " + location
+							+ " (please add some templates or check "
+							+ "your Thymeleaf configuration)");
+				}
 			}
 		}
 

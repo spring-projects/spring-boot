@@ -38,15 +38,15 @@ public class DatabaseDriverTests {
 
 	@Test
 	public void classNameForKnownDatabase() {
-		String driverClassName = DatabaseDriver.fromJdbcUrl(
-				"jdbc:postgresql://hostname/dbname").getDriverClassName();
+		String driverClassName = DatabaseDriver
+				.fromJdbcUrl("jdbc:postgresql://hostname/dbname").getDriverClassName();
 		assertEquals("org.postgresql.Driver", driverClassName);
 	}
 
 	@Test
 	public void nullClassNameForUnknownDatabase() {
-		String driverClassName = DatabaseDriver.fromJdbcUrl(
-				"jdbc:unknowndb://hostname/dbname").getDriverClassName();
+		String driverClassName = DatabaseDriver
+				.fromJdbcUrl("jdbc:unknowndb://hostname/dbname").getDriverClassName();
 		assertNull(driverClassName);
 	}
 

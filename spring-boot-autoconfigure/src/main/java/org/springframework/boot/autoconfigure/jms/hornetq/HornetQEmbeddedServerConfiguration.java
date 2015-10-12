@@ -106,16 +106,15 @@ class HornetQEmbeddedServerConfiguration {
 	private void addQueues(JMSConfiguration configuration, String[] queues) {
 		boolean persistent = this.properties.getEmbedded().isPersistent();
 		for (String queue : queues) {
-			configuration.getQueueConfigurations().add(
-					new JMSQueueConfigurationImpl(queue, null, persistent, "/queue/"
-							+ queue));
+			configuration.getQueueConfigurations().add(new JMSQueueConfigurationImpl(
+					queue, null, persistent, "/queue/" + queue));
 		}
 	}
 
 	private void addTopics(JMSConfiguration configuration, String[] topics) {
 		for (String topic : topics) {
-			configuration.getTopicConfigurations().add(
-					new TopicConfigurationImpl(topic, "/topic/" + topic));
+			configuration.getTopicConfigurations()
+					.add(new TopicConfigurationImpl(topic, "/topic/" + topic));
 		}
 	}
 

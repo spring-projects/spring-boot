@@ -83,8 +83,8 @@ public class MongoHealthIndicatorTests {
 	@Test
 	public void mongoIsDown() throws Exception {
 		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
-		given(mongoTemplate.executeCommand("{ buildInfo: 1 }")).willThrow(
-				new MongoException("Connection failed"));
+		given(mongoTemplate.executeCommand("{ buildInfo: 1 }"))
+				.willThrow(new MongoException("Connection failed"));
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 
 		Health health = healthIndicator.health();

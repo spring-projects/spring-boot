@@ -50,7 +50,8 @@ class SpringPropertyAction extends Action {
 		String source = attributes.getValue(SOURCE_ATTRIBUTE);
 		Scope scope = ActionUtil.stringToScope(attributes.getValue(SCOPE_ATTRIBUTE));
 		if (OptionHelper.isEmpty(name) || OptionHelper.isEmpty(source)) {
-			addError("The \"name\" and \"source\" attributes of <springProperty> must be set");
+			addError(
+					"The \"name\" and \"source\" attributes of <springProperty> must be set");
 		}
 		ActionUtil.setProperty(ic, name, getValue(source), scope);
 	}

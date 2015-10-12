@@ -60,8 +60,8 @@ public class PropertySourcesPropertyValuesTests {
 			}
 
 		});
-		this.propertySources.addFirst(new MapPropertySource("map", Collections
-				.<String, Object>singletonMap("name", "${foo}")));
+		this.propertySources.addFirst(new MapPropertySource("map",
+				Collections.<String, Object>singletonMap("name", "${foo}")));
 	}
 
 	@Test
@@ -146,8 +146,8 @@ public class PropertySourcesPropertyValuesTests {
 
 	@Test
 	public void testOverriddenValue() {
-		this.propertySources.addFirst(new MapPropertySource("new", Collections
-				.<String, Object>singletonMap("name", "spam")));
+		this.propertySources.addFirst(new MapPropertySource("new",
+				Collections.<String, Object>singletonMap("name", "spam")));
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
 				this.propertySources);
 		assertEquals("spam", propertyValues.getPropertyValue("name").getValue());
@@ -174,8 +174,8 @@ public class PropertySourcesPropertyValuesTests {
 	public void testPlaceholdersBindingWithError() {
 		TestBean target = new TestBean();
 		DataBinder binder = new DataBinder(target);
-		this.propertySources.addFirst(new MapPropertySource("another", Collections
-				.<String, Object>singletonMap("something", "${nonexistent}")));
+		this.propertySources.addFirst(new MapPropertySource("another",
+				Collections.<String, Object>singletonMap("something", "${nonexistent}")));
 		binder.bind(new PropertySourcesPropertyValues(this.propertySources));
 		assertEquals("bar", target.getName());
 	}

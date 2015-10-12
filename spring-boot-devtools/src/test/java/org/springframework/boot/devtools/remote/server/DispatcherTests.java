@@ -91,8 +91,8 @@ public class DispatcherTests {
 
 	@Test
 	public void accessManagerVetoRequest() throws Exception {
-		given(this.accessManager.isAllowed(any(ServerHttpRequest.class))).willReturn(
-				false);
+		given(this.accessManager.isAllowed(any(ServerHttpRequest.class)))
+				.willReturn(false);
 		HandlerMapper mapper = mock(HandlerMapper.class);
 		Handler handler = mock(Handler.class);
 		given(mapper.getHandler(any(ServerHttpRequest.class))).willReturn(handler);

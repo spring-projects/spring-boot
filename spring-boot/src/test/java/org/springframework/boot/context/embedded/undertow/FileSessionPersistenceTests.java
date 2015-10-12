@@ -73,8 +73,8 @@ public class FileSessionPersistenceTests {
 		PersistentSession session = new PersistentSession(this.expiration, data);
 		sessionData.put("abc", session);
 		this.persistence.persistSessions("test", sessionData);
-		Map<String, PersistentSession> restored = this.persistence.loadSessionAttributes(
-				"test", this.classLoader);
+		Map<String, PersistentSession> restored = this.persistence
+				.loadSessionAttributes("test", this.classLoader);
 		assertThat(restored, notNullValue());
 		assertThat(restored.get("abc").getExpiration(), equalTo(this.expiration));
 		assertThat(restored.get("abc").getSessionData().get("spring"),
@@ -90,8 +90,8 @@ public class FileSessionPersistenceTests {
 		PersistentSession session = new PersistentSession(expired, data);
 		sessionData.put("abc", session);
 		this.persistence.persistSessions("test", sessionData);
-		Map<String, PersistentSession> restored = this.persistence.loadSessionAttributes(
-				"test", this.classLoader);
+		Map<String, PersistentSession> restored = this.persistence
+				.loadSessionAttributes("test", this.classLoader);
 		assertThat(restored, notNullValue());
 		assertThat(restored.containsKey("abc"), equalTo(false));
 	}

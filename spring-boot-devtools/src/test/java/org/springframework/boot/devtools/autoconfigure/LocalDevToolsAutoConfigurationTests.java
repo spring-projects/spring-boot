@@ -91,6 +91,30 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
+	public void defaultPropertyCanBeOverridenFromCommandLine() throws Exception {
+		this.context = initializeAndRun(Config.class, "--spring.thymeleaf.cache=true");
+		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
+		resolver.initialize();
+		assertThat(resolver.isCacheable(), equalTo(true));
+	}
+
+	@Test
+	public void defaultPropertyCanBeOverridenFromUserHomeProperties() throws Exception {
+		String userHome = System.getProperty("user.home");
+		System.setProperty("user.home",
+				new File("src/test/resources/user-home").getAbsolutePath());
+		try {
+			this.context = initializeAndRun(Config.class);
+			TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
+			resolver.initialize();
+			assertThat(resolver.isCacheable(), equalTo(true));
+		}
+		finally {
+			System.setProperty("user.home", userHome);
+		}
+	}
+
+	@Test
 	public void resourceCachePeriodIsZero() throws Exception {
 		this.context = initializeAndRun(WebResourcesConfig.class);
 		ResourceProperties properties = this.context.getBean(ResourceProperties.class);
@@ -203,24 +227,25 @@ public class LocalDevToolsAutoConfigurationTests {
 		Object watcher = ReflectionTestUtils.getField(classPathWatcher,
 				"fileSystemWatcher");
 		@SuppressWarnings("unchecked")
-		Map<File, Object> folders = (Map<File, Object>) ReflectionTestUtils.getField(
-				watcher, "folders");
+		Map<File, Object> folders = (Map<File, Object>) ReflectionTestUtils
+				.getField(watcher, "folders");
 		assertThat(folders.size(), is(equalTo(2)));
 		assertThat(folders, hasKey(new File("src/main/java").getAbsoluteFile()));
 		assertThat(folders, hasKey(new File("src/test/java").getAbsoluteFile()));
 	}
 
-	private ConfigurableApplicationContext initializeAndRun(Class<?> config) {
-		return initializeAndRun(config, Collections.<String, Object>emptyMap());
+	private ConfigurableApplicationContext initializeAndRun(Class<?> config,
+			String... args) {
+		return initializeAndRun(config, Collections.<String, Object>emptyMap(), args);
 	}
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config,
-			Map<String, Object> properties) {
+			Map<String, Object> properties, String... args) {
 		Restarter.initialize(new String[0], false, new MockRestartInitializer(), false);
 		SpringApplication application = new SpringApplication(config);
 		application.setDefaultProperties(getDefaultProperties(properties));
 		application.setWebEnvironment(false);
-		ConfigurableApplicationContext context = application.run();
+		ConfigurableApplicationContext context = application.run(args);
 		return context;
 	}
 

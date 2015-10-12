@@ -94,8 +94,8 @@ public class PublicMetricsAutoConfigurationTests {
 	@Test
 	public void metricReaderPublicMetrics() throws Exception {
 		load();
-		assertEquals(1, this.context.getBeansOfType(MetricReaderPublicMetrics.class)
-				.size());
+		assertEquals(1,
+				this.context.getBeansOfType(MetricReaderPublicMetrics.class).size());
 	}
 
 	@Test
@@ -105,8 +105,8 @@ public class PublicMetricsAutoConfigurationTests {
 				PublicMetricsAutoConfiguration.class);
 		RichGaugeReader richGaugeReader = context.getBean(RichGaugeReader.class);
 		assertNotNull(richGaugeReader);
-		given(richGaugeReader.findAll()).willReturn(
-				Collections.singletonList(new RichGauge("bar", 3.7d)));
+		given(richGaugeReader.findAll())
+				.willReturn(Collections.singletonList(new RichGauge("bar", 3.7d)));
 		RichGaugeReaderPublicMetrics publicMetrics = context
 				.getBean(RichGaugeReaderPublicMetrics.class);
 		assertNotNull(publicMetrics);
@@ -125,7 +125,8 @@ public class PublicMetricsAutoConfigurationTests {
 	@Test
 	public void noDataSource() {
 		load();
-		assertEquals(0, this.context.getBeansOfType(DataSourcePublicMetrics.class).size());
+		assertEquals(0,
+				this.context.getBeansOfType(DataSourcePublicMetrics.class).size());
 	}
 
 	@Test
@@ -145,12 +146,12 @@ public class PublicMetricsAutoConfigurationTests {
 				"datasource.commonsDbcp.active", "datasource.commonsDbcp.usage");
 
 		// Hikari won't work unless a first connection has been retrieved
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(this.context.getBean("hikariDS",
-				DataSource.class));
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(
+				this.context.getBean("hikariDS", DataSource.class));
 		jdbcTemplate.execute(new ConnectionCallback<Void>() {
 			@Override
-			public Void doInConnection(Connection connection) throws SQLException,
-					DataAccessException {
+			public Void doInConnection(Connection connection)
+					throws SQLException, DataAccessException {
 				return null;
 			}
 		});

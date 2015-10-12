@@ -106,8 +106,8 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	/**
 	 * Testable version of {@link ConfigurationWarningsApplicationContextInitializer}.
 	 */
-	public static class TestConfigurationWarningsApplicationContextInitializer extends
-			ConfigurationWarningsApplicationContextInitializer {
+	public static class TestConfigurationWarningsApplicationContextInitializer
+			extends ConfigurationWarningsApplicationContextInitializer {
 
 		@Override
 		protected Check[] getChecks() {
@@ -120,8 +120,8 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	 * Testable ComponentScanDefaultPackageCheck that doesn't need to use the default
 	 * package.
 	 */
-	static class TestComponentScanDefaultPackageCheck extends
-			ComponentScanDefaultPackageCheck {
+	static class TestComponentScanDefaultPackageCheck
+			extends ComponentScanDefaultPackageCheck {
 
 		@Override
 		protected boolean isInDefaultPackage(String className) {

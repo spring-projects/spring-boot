@@ -18,4 +18,3 @@
  * Auto-configuration for HornetQ.
  */
 package org.springframework.boot.autoconfigure.jms.hornetq;
-

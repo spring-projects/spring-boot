@@ -47,6 +47,9 @@ import org.springframework.web.util.UrlPathHelper;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 final class MetricsFilter extends OncePerRequestFilter {
 
+	private static final String ATTRIBUTE_STOP_WATCH = MetricsFilter.class.getName()
+			+ ".StopWatch";
+
 	private static final int UNDEFINED_HTTP_STATUS = 999;
 
 	private static final String UNKNOWN_PATH_SUFFIX = "/unmapped";
@@ -58,6 +61,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 	private final GaugeService gaugeService;
 
 	private static final Set<PatternReplacer> STATUS_REPLACERS;
+
 	static {
 		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
 		replacements.add(new PatternReplacer("[{}]", 0, "-"));
@@ -69,6 +73,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 	}
 
 	private static final Set<PatternReplacer> KEY_REPLACERS;
+
 	static {
 		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
 		replacements.add(new PatternReplacer("/", Pattern.LITERAL, "."));
@@ -82,11 +87,15 @@ final class MetricsFilter extends OncePerRequestFilter {
 	}
 
 	@Override
+	protected boolean shouldNotFilterAsyncDispatch() {
+		return false;
+	}
+
+	@Override
 	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain chain) throws ServletException,
-			IOException {
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
+			HttpServletResponse response, FilterChain chain)
+					throws ServletException, IOException {
+		StopWatch stopWatch = createStopWatchIfNecessary(request);
 		String path = new UrlPathHelper().getPathWithinApplication(request);
 		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
 		try {
@@ -94,9 +103,22 @@ final class MetricsFilter extends OncePerRequestFilter {
 			status = getStatus(response);
 		}
 		finally {
-			stopWatch.stop();
-			recordMetrics(request, path, status, stopWatch.getTotalTimeMillis());
+			if (!request.isAsyncStarted()) {
+				stopWatch.stop();
+				request.removeAttribute(ATTRIBUTE_STOP_WATCH);
+				recordMetrics(request, path, status, stopWatch.getTotalTimeMillis());
+			}
 		}
+	}
+
+	private StopWatch createStopWatchIfNecessary(HttpServletRequest request) {
+		StopWatch stopWatch = (StopWatch) request.getAttribute(ATTRIBUTE_STOP_WATCH);
+		if (stopWatch == null) {
+			stopWatch = new StopWatch();
+			stopWatch.start();
+			request.setAttribute(ATTRIBUTE_STOP_WATCH, stopWatch);
+		}
+		return stopWatch;
 	}
 
 	private int getStatus(HttpServletResponse response) {
@@ -197,8 +219,8 @@ final class MetricsFilter extends OncePerRequestFilter {
 		}
 
 		public String apply(String input) {
-			return this.pattern.matcher(input).replaceAll(
-					Matcher.quoteReplacement(this.replacement));
+			return this.pattern.matcher(input)
+					.replaceAll(Matcher.quoteReplacement(this.replacement));
 		}
 
 	}

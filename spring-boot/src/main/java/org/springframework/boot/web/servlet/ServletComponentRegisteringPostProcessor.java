@@ -40,10 +40,11 @@ import org.springframework.context.annotation.ScannedGenericBeanDefinition;
  * @see ServletComponentScan
  * @see ServletComponentScanRegistrar
  */
-class ServletComponentRegisteringPostProcessor implements BeanFactoryPostProcessor,
-		ApplicationContextAware {
+class ServletComponentRegisteringPostProcessor
+		implements BeanFactoryPostProcessor, ApplicationContextAware {
 
 	private static final List<ServletComponentHandler> HANDLERS;
+
 	static {
 		List<ServletComponentHandler> handers = new ArrayList<ServletComponentHandler>();
 		handers.add(new WebServletHandler());

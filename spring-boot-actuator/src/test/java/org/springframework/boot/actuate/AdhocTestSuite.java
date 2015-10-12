@@ -20,8 +20,8 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-import org.springframework.boot.actuate.autoconfigure.MetricRepositoryAutoConfigurationTests;
-import org.springframework.boot.actuate.autoconfigure.PublicMetricsAutoConfigurationTests;
+import org.springframework.boot.actuate.endpoint.FlywayEndpointTests;
+import org.springframework.boot.actuate.health.DataSourceHealthIndicatorTests;
 
 /**
  * A test suite for probing weird ordering problems in the tests.
@@ -29,8 +29,7 @@ import org.springframework.boot.actuate.autoconfigure.PublicMetricsAutoConfigura
  * @author Dave Syer
  */
 @RunWith(Suite.class)
-@SuiteClasses({ PublicMetricsAutoConfigurationTests.class,
-		MetricRepositoryAutoConfigurationTests.class })
+@SuiteClasses({ DataSourceHealthIndicatorTests.class, FlywayEndpointTests.class })
 @Ignore
 public class AdhocTestSuite {
 

@@ -18,4 +18,3 @@
  * Support for the Log4j logging library.
  */
 package org.springframework.boot.logging.log4j;
-

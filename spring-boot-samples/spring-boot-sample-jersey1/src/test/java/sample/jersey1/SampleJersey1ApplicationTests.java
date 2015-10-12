@@ -38,8 +38,8 @@ public class SampleJersey1ApplicationTests {
 
 	@Test
 	public void contextLoads() {
-		assertEquals("Hello World", new TestRestTemplate().getForObject(
-				"http://localhost:" + this.port + "/", String.class));
+		assertEquals("Hello World", new TestRestTemplate()
+				.getForObject("http://localhost:" + this.port + "/", String.class));
 	}
 
 }

@@ -66,8 +66,8 @@ public class EntityManagerFactoryBuilder {
 	 * @param callback the entity manager factory bean callback
 	 */
 	public void setCallback(final EntityManagerFactoryBeanCallback callback) {
-		this.delegate
-				.setCallback(new org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder.EntityManagerFactoryBeanCallback() {
+		this.delegate.setCallback(
+				new org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder.EntityManagerFactoryBeanCallback() {
 
 					@Override
 					public void execute(LocalContainerEntityManagerFactoryBean factory) {
@@ -169,8 +169,8 @@ public class EntityManagerFactoryBuilder {
 
 	}
 
-	private static class Delegate extends
-			org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder {
+	private static class Delegate
+			extends org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder {
 
 		Delegate(JpaVendorAdapter jpaVendorAdapter, Map<String, ?> jpaProperties,
 				PersistenceUnitManager persistenceUnitManager) {

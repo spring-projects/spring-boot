@@ -70,26 +70,27 @@ public class RedisAutoConfigurationTests {
 	@Test
 	public void testOverrideRedisConfiguration() throws Exception {
 		load("spring.redis.host:foo", "spring.redis.database:1");
-		assertEquals("foo", this.context.getBean(JedisConnectionFactory.class)
-				.getHostName());
+		assertEquals("foo",
+				this.context.getBean(JedisConnectionFactory.class).getHostName());
 		assertEquals(1, this.context.getBean(JedisConnectionFactory.class).getDatabase());
 	}
 
 	@Test
 	public void testRedisConfigurationWithPool() throws Exception {
 		load("spring.redis.host:foo", "spring.redis.pool.max-idle:1");
-		assertEquals("foo", this.context.getBean(JedisConnectionFactory.class)
-				.getHostName());
-		assertEquals(1, this.context.getBean(JedisConnectionFactory.class)
-				.getPoolConfig().getMaxIdle());
+		assertEquals("foo",
+				this.context.getBean(JedisConnectionFactory.class).getHostName());
+		assertEquals(1, this.context.getBean(JedisConnectionFactory.class).getPoolConfig()
+				.getMaxIdle());
 	}
 
 	@Test
 	public void testRedisConfigurationWithTimeout() throws Exception {
 		load("spring.redis.host:foo", "spring.redis.timeout:100");
-		assertEquals("foo", this.context.getBean(JedisConnectionFactory.class)
-				.getHostName());
-		assertEquals(100, this.context.getBean(JedisConnectionFactory.class).getTimeout());
+		assertEquals("foo",
+				this.context.getBean(JedisConnectionFactory.class).getHostName());
+		assertEquals(100,
+				this.context.getBean(JedisConnectionFactory.class).getTimeout());
 	}
 
 	@Test

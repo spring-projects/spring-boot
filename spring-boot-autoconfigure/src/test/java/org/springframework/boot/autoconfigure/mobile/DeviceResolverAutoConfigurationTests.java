@@ -82,8 +82,8 @@ public class DeviceResolverAutoConfigurationTests {
 		this.context.refresh();
 		RequestMappingHandlerMapping mapping = this.context
 				.getBean(RequestMappingHandlerMapping.class);
-		HandlerInterceptor[] interceptors = mapping.getHandler(
-				new MockHttpServletRequest()).getInterceptors();
+		HandlerInterceptor[] interceptors = mapping
+				.getHandler(new MockHttpServletRequest()).getInterceptors();
 		assertThat(interceptors,
 				hasItemInArray(instanceOf(DeviceResolverHandlerInterceptor.class)));
 	}

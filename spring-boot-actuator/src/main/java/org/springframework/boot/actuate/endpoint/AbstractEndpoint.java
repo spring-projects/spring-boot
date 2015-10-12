@@ -109,8 +109,8 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 			return this.enabled;
 		}
 		if (this.environment != null) {
-			return this.environment.getProperty(ENDPOINTS_ENABLED_PROPERTY,
-					Boolean.class, true);
+			return this.environment.getProperty(ENDPOINTS_ENABLED_PROPERTY, Boolean.class,
+					true);
 		}
 		return true;
 	}

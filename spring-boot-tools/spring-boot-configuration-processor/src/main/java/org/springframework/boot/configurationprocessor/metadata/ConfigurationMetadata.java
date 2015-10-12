@@ -179,7 +179,8 @@ public class ConfigurationMetadata {
 		return first + "-" + second;
 	}
 
-	private static <T extends Comparable<T>> List<T> flattenValues(MultiValueMap<?, T> map) {
+	private static <T extends Comparable<T>> List<T> flattenValues(
+			MultiValueMap<?, T> map) {
 		List<T> content = new ArrayList<T>();
 		for (List<T> values : map.values()) {
 			content.addAll(values);

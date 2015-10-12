@@ -149,7 +149,8 @@ public abstract class Launcher {
 			throw new IllegalStateException(
 					"Unable to determine code source archive from " + root);
 		}
-		return (root.isDirectory() ? new ExplodedArchive(root) : new JarFileArchive(root));
+		return (root.isDirectory() ? new ExplodedArchive(root)
+				: new JarFileArchive(root));
 	}
 
 }

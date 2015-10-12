@@ -83,9 +83,6 @@
 			<property name="option" value="bottom" />
 			<property name="sortStaticImportsAlphabetically" value="true" />
 		</module>
-		<module name="ImportControl">
-			<property name="file" value="${checkstyle.build.directory}/checkstyle-import-control.xml"/>
-		</module>
 
 		<!-- Javadoc Comments -->
 		<module name="JavadocType">
@@ -128,6 +125,13 @@
 			<property name="format" value="^\t* +\t*\S" />
 			<property name="message"
 				value="Line has leading space characters; indentation should be performed with tabs only." />
+			<property name="ignoreComments" value="true" />
+		</module>
+ 		<module name="RegexpSinglelineJava">
+ 			<property name="maximum" value="0"/>
+			<property name="format" value="org\.mockito\.Mockito\.(when|doThrow|doAnswer)" />
+			<property name="message"
+				value="Please use BDDMockto imports." />
 			<property name="ignoreComments" value="true" />
 		</module>
 		<module name="Regexp">

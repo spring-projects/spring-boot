@@ -122,7 +122,8 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	}
 
 	private void processEnumerablePropertySource(EnumerablePropertySource<?> source,
-			PropertySourcesPropertyResolver resolver, PropertyNamePatternsMatcher includes) {
+			PropertySourcesPropertyResolver resolver,
+			PropertyNamePatternsMatcher includes) {
 		if (source.getPropertyNames().length > 0) {
 			for (String propertyName : source.getPropertyNames()) {
 				if (includes.matches(propertyName)) {
@@ -198,8 +199,8 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 					COLLECTION_PROPERTY.matcher(propertyName).replaceAll("[]"), source);
 			if (collectionOwner == null || collectionOwner == source) {
 				this.collectionOwners.get(this.collectionOwners);
-				PropertyValue propertyValue = new OriginCapablePropertyValue(
-						propertyName, value, propertyName, source);
+				PropertyValue propertyValue = new OriginCapablePropertyValue(propertyName,
+						value, propertyName, source);
 				this.propertyValues.put(propertyName, propertyValue);
 				return propertyValue;
 			}

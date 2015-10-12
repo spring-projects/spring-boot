@@ -44,10 +44,10 @@ public class ReactorCompilerAutoConfiguration extends CompilerAutoConfiguration 
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("reactor.bus.Bus", "reactor.bus.Event",
-				"reactor.bus.EventBus", "reactor.fn.Function", "reactor.fn.Functions",
-				"reactor.fn.Predicate", "reactor.fn.Predicates", "reactor.fn.Supplier",
-				"reactor.fn.Suppliers", "reactor.spring.context.annotation.Consumer",
+		imports.addImports("reactor.bus.Bus", "reactor.bus.Event", "reactor.bus.EventBus",
+				"reactor.fn.Function", "reactor.fn.Functions", "reactor.fn.Predicate",
+				"reactor.fn.Predicates", "reactor.fn.Supplier", "reactor.fn.Suppliers",
+				"reactor.spring.context.annotation.Consumer",
 				"reactor.spring.context.annotation.ReplyTo",
 				"reactor.spring.context.annotation.Selector",
 				"reactor.spring.context.annotation.SelectorType",

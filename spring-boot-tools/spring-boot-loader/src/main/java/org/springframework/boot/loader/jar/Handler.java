@@ -45,14 +45,16 @@ public class Handler extends URLStreamHandler {
 
 	private static final String SEPARATOR = "!/";
 
-	private static final String[] FALLBACK_HANDLERS = { "sun.net.www.protocol.jar.Handler" };
+	private static final String[] FALLBACK_HANDLERS = {
+			"sun.net.www.protocol.jar.Handler" };
 
 	private static final Method OPEN_CONNECTION_METHOD;
+
 	static {
 		Method method = null;
 		try {
-			method = URLStreamHandler.class
-					.getDeclaredMethod("openConnection", URL.class);
+			method = URLStreamHandler.class.getDeclaredMethod("openConnection",
+					URL.class);
 		}
 		catch (Exception ex) {
 			// Swallow and ignore
@@ -61,6 +63,7 @@ public class Handler extends URLStreamHandler {
 	}
 
 	private static SoftReference<Map<File, JarFile>> rootFileCache;
+
 	static {
 		rootFileCache = new SoftReference<Map<File, JarFile>>(null);
 	}
@@ -187,7 +190,8 @@ public class Handler extends URLStreamHandler {
 	 * which are then swallowed.
 	 * @param useFastConnectionExceptions if fast connection exceptions can be used.
 	 */
-	public static void setUseFastConnectionExceptions(boolean useFastConnectionExceptions) {
+	public static void setUseFastConnectionExceptions(
+			boolean useFastConnectionExceptions) {
 		JarURLConnection.setUseFastExceptions(useFastConnectionExceptions);
 	}
 
