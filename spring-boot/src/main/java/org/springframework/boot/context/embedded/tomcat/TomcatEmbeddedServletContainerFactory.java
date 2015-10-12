@@ -285,8 +285,7 @@ public class TomcatEmbeddedServletContainerFactory
 
 	private void configureSslKeyStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		try {
-			File file = ResourceUtils.getFile(ssl.getKeyStore());
-			protocol.setKeystoreFile(file.getAbsolutePath());
+			protocol.setKeystoreFile(ResourceUtils.getURL(ssl.getKeyStore()).toString());
 		}
 		catch (FileNotFoundException ex) {
 			throw new EmbeddedServletContainerException(
@@ -303,8 +302,8 @@ public class TomcatEmbeddedServletContainerFactory
 	private void configureSslTrustStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		if (ssl.getTrustStore() != null) {
 			try {
-				File file = ResourceUtils.getFile(ssl.getTrustStore());
-				protocol.setTruststoreFile(file.getAbsolutePath());
+				protocol.setTruststoreFile(
+						ResourceUtils.getURL(ssl.getTrustStore()).toString());
 			}
 			catch (FileNotFoundException ex) {
 				throw new EmbeddedServletContainerException(
