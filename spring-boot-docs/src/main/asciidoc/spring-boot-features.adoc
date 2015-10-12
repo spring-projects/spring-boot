@@ -2081,6 +2081,11 @@ For example, typical POM dependencies would be:
 	</dependency>
 ----
 
+TIP: If you're using H2 and, for whatever reason, you do configure its connection URL,
+care should be taken to disable the database's automatic shutdown using
+`DB_CLOSE_ON_EXIT=FALSE`. This allows Spring Boot to control when the database is closed,
+thereby ensuring that it happens once access to the database is no longer needed.
+
 NOTE: You need a dependency on `spring-jdbc` for an embedded database to be
 auto-configured. In this example it's pulled in transitively via
 `spring-boot-starter-data-jpa`.
