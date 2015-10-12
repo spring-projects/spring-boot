@@ -609,7 +609,7 @@ public class ConfigFileEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void profileSubDocumentInProfileSpecificFile() throws Exception {
+	public void profileSubDocumentInSameProfileSpecificFile() throws Exception {
 		// gh-340
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
@@ -637,6 +637,17 @@ public class ConfigFileEnvironmentPostProcessorTests {
 		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
 		field.setAccessible(true);
 		assertThat((Banner.Mode) field.get(this.application), equalTo(Banner.Mode.OFF));
+	}
+
+	@Test
+	public void profileSubDocumentInDifferentProfileSpecificFile() throws Exception {
+		// gh-4132
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		this.context = application.run(
+				"--spring.profiles.active=activeprofilewithdifferentsubdoc,activeprofilewithdifferentsubdoc2");
+		String property = this.context.getEnvironment().getProperty("foobar");
+		assertThat(property, equalTo("baz"));
 	}
 
 	private static Matcher<? super ConfigurableEnvironment> containsPropertySource(
