@@ -326,9 +326,7 @@ public class TomcatEmbeddedServletContainerFactory
 
 	private void configureSslKeyStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		try {
-			assertNotClasspathResource(ssl.getKeyStore());
-			File file = ResourceUtils.getFile(ssl.getKeyStore());
-			protocol.setKeystoreFile(file.getAbsolutePath());
+			protocol.setKeystoreFile(ResourceUtils.getURL(ssl.getKeyStore()).toString());
 		}
 		catch (FileNotFoundException ex) {
 			throw new EmbeddedServletContainerException(
@@ -345,9 +343,8 @@ public class TomcatEmbeddedServletContainerFactory
 	private void configureSslTrustStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		if (ssl.getTrustStore() != null) {
 			try {
-				assertNotClasspathResource(ssl.getTrustStore());
-				File file = ResourceUtils.getFile(ssl.getTrustStore());
-				protocol.setTruststoreFile(file.getAbsolutePath());
+				protocol.setTruststoreFile(
+						ResourceUtils.getURL(ssl.getTrustStore()).toString());
 			}
 			catch (FileNotFoundException ex) {
 				throw new EmbeddedServletContainerException(
@@ -360,14 +357,6 @@ public class TomcatEmbeddedServletContainerFactory
 		}
 		if (ssl.getTrustStoreProvider() != null) {
 			protocol.setTruststoreProvider(ssl.getTrustStoreProvider());
-		}
-	}
-
-	private void assertNotClasspathResource(String resource)
-			throws FileNotFoundException {
-		if (resource.startsWith(ResourceUtils.CLASSPATH_URL_PREFIX)) {
-			throw new FileNotFoundException("Unable to load '" + resource
-					+ "' since Tomcat doesn't support classpath resources");
 		}
 	}
 
