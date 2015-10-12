@@ -19,7 +19,7 @@
 		<main.basedir>${basedir}/../..</main.basedir>
 		<cargo.container.id>tomcat8x</cargo.container.id>
 		<cargo.container.url>
-			http://archive.apache.org/dist/tomcat/tomcat-8/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip
+			http://central.maven.org/maven2/org/apache/tomcat/tomcat/${tomcat.version}/tomcat-${tomcat.version}.zip
 		</cargo.container.url>
 	</properties>
 	<dependencies>
