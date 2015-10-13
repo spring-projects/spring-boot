@@ -363,9 +363,6 @@ Maven '`project properties`' via `@..@` placeholders, e.g.
 	info.build.version=@project.version@
 ----
 
-NOTE: In the above example we used `+project.*+` to set some values to be used as
-fallbacks if the Maven resource filtering has not been switched on for some reason.
-
 TIP: The `spring-boot:run` maven goal adds `src/main/resources` directly to the classpath
 (for hot reloading purposes). This circumvents the resource filtering and this feature.
 You can use the `exec:java` goal instead or customize the plugin's configuration, see the
@@ -396,10 +393,14 @@ and (inside `<plugins/>`):
 			<delimiters>
 				<delimiter>@</delimiter>
 			</delimiters>
+			<useDefaultDelimiters>false</useDefaultDelimiters>
 		</configuration>
 	</plugin>
 ----
 
+NOTE: The `useDefaultDelimiters` property is important if you are using standard
+Spring placeholders in your configuration (e.g. `${foo}`). These may be expanded
+by the build if that property is not set to `false`.
 
 
 [[production-ready-application-info-automatic-expansion-gradle]]
