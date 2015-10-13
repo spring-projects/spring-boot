@@ -38,6 +38,7 @@ import org.springframework.boot.loader.tools.Layouts;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class SpringBootPluginExtension {
 
@@ -86,6 +87,11 @@ public class SpringBootPluginExtension {
 	 * form {@literal groupId:artifactId}.
 	 */
 	Set<String> requiresUnpack;
+
+	/**
+	 * Whether Spring Boot Devtools should be excluded from the fat jar.
+	 */
+	boolean excludeDevtools = false;
 
 	/**
 	 * Location of an agent jar to attach to the VM when running the application with
@@ -184,6 +190,14 @@ public class SpringBootPluginExtension {
 
 	public void setRequiresUnpack(Set<String> requiresUnpack) {
 		this.requiresUnpack = requiresUnpack;
+	}
+
+	public boolean isExcludeDevtools() {
+		return this.excludeDevtools;
+	}
+
+	public void setExcludeDevtools(boolean excludeDevtools) {
+		this.excludeDevtools = excludeDevtools;
 	}
 
 	public File getAgent() {

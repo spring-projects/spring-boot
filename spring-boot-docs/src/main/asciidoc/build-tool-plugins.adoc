@@ -395,6 +395,10 @@ want the other Boot features but not this one)
 |`embeddedLaunchScriptProperties`
 |Additional properties that to be expanded in the launch script. The default script
  supports a `mode` property which can contain the values `auto`, `service` or `run`.
+
+|`excludeDevtools`
+|Boolean flag to indicate if the devtools jar should be excluded from the repackaged
+archives. Defaults to `false`.
 |===
 
 
