@@ -51,6 +51,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -60,6 +61,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -68,6 +71,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Dave Syer
  * @author Rob Winch
+ * @author Andy Wilkinson
  */
 public class SpringBootWebSecurityConfigurationTests {
 
@@ -187,6 +191,49 @@ public class SpringBootWebSecurityConfigurationTests {
 
 		result = rest.postForEntity("http://localhost:" + port + "/", form, Object.class);
 		assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+	}
+
+	@Test
+	public void defaultHeaderConfiguration() throws Exception {
+		this.context = SpringApplication.run(VanillaWebConfiguration.class,
+				"--server.port=0");
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters((FilterChainProxy) this.context
+						.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.header().string("X-Content-Type-Options",
+						is(notNullValue())))
+				.andExpect(MockMvcResultMatchers.header().string("X-XSS-Protection",
+						is(notNullValue())))
+				.andExpect(MockMvcResultMatchers.header().string("Cache-Control",
+						is(notNullValue())))
+				.andExpect(MockMvcResultMatchers.header().string("X-Frame-Options",
+						is(notNullValue())));
+	}
+
+	@Test
+	public void securityHeadersCanBeDisabled() throws Exception {
+		this.context = SpringApplication.run(VanillaWebConfiguration.class,
+				"--server.port=0", "--security.headers.content-type=false",
+				"--security.headers.xss=false", "--security.headers.cache=false",
+				"--security.headers.frame=false");
+
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters(
+						this.context.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+				.andExpect(MockMvcResultMatchers.header()
+						.doesNotExist("X-Content-Type-Options"))
+				.andExpect(
+						MockMvcResultMatchers.header().doesNotExist("X-XSS-Protection"))
+				.andExpect(MockMvcResultMatchers.header().doesNotExist("Cache-Control"))
+				.andExpect(
+						MockMvcResultMatchers.header().doesNotExist("X-Frame-Options"));
 	}
 
 	@Configuration
