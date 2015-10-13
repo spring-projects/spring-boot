@@ -3874,16 +3874,26 @@ might not actually appear on the running application classpath. You can also use
 
 [[boot-features-bean-conditions]]
 ==== Bean conditions
-The `@ConditionalOnBean` and `@ConditionalOnMissingBean` annotations allow configurations
+The `@ConditionalOnBean` and `@ConditionalOnMissingBean` annotations allow a bean
 to be included based on the presence or absence of specific beans. You can use the `value`
 attribute to specify beans by type, or `name` to specify beans by name. The `search`
 attribute allows you to limit the `ApplicationContext` hierarchy that should be considered
 when searching for beans.
 
-NOTE: `@Conditional` annotations are processed when `@Configuration` classes are parsed.
-Auto-configured `@Configuration` is always parsed last (after any user defined beans),
-however, if you are using these annotations on regular `@Configuration` classes, care must
-be taken not to refer to bean definitions that have not yet been created.
+Conditions are evaluated after all configuration classes have been processed. This clearly
+means that you can't use it to make a whole configuration class conditional on the presence
+(or absence) of another bean. You can, however, use it when you have to share that
+condition with all the beans of that configuration class.
+
+[NOTE]
+====
+You also need to be very careful about ordering as the condition will be evaluated based on
+the bean definitions that have been processed so far. Auto-configured `@Configuration` is
+always parsed last (after any user defined beans) so it is recommended to restrict the use
+of that condition on auto-configuration classes only. However, if you are sure that the bean
+targeted at the condition won't be created by auto-configuration, then you could use it on a
+normal configuration class with appropriate ordering.
+====
 
 
 
