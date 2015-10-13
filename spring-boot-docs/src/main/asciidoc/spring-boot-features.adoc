@@ -764,6 +764,10 @@ can provide a `ConversionService` bean (with bean id `conversionService`) or cus
 property editors (via a `CustomEditorConfigurer` bean) or custom `Converters` (with
 bean definitions annotated as `@ConfigurationPropertiesBinding`).
 
+NOTE: As this bean is requested very early during the application lifecycle, make sure to
+limit the dependencies your `ConversionService` is using. Typically, any dependency that
+you'd require may not be fully initialized at creation time. You may want to rename your
+custom `ConversionService` if it's not required for configuration keys coercion.
 
 
 [[boot-features-external-config-validation]]
