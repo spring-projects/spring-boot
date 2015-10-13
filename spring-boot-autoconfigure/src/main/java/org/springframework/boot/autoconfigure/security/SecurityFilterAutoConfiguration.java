@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -42,6 +43,7 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
 @Configuration
 @ConditionalOnWebApplication
 @EnableConfigurationProperties
+@ConditionalOnClass(AbstractSecurityWebApplicationInitializer.class)
 @AutoConfigureAfter(SpringBootWebSecurityConfiguration.class)
 public class SecurityFilterAutoConfiguration {
 
