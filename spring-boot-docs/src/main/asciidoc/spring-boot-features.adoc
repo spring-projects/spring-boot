@@ -3880,20 +3880,15 @@ attribute to specify beans by type, or `name` to specify beans by name. The `sea
 attribute allows you to limit the `ApplicationContext` hierarchy that should be considered
 when searching for beans.
 
-Conditions are evaluated after all configuration classes have been processed. This clearly
-means that you can't use it to make a whole configuration class conditional on the presence
-(or absence) of another bean. You can, however, use it when you have to share that
-condition with all the beans of that configuration class.
+TIP: You need to be very careful about the order that bean definitions are added as these
+conditions are evaluated based on what has been processed so far. For this reason,
+we recommend only  using `@ConditionalOnBean` and `@ConditionalOnMissingBean` annotations
+on auto-configuration classes (since these are guaranteed to load after any user-define
+beans definitions have been added).
 
-[NOTE]
-====
-You also need to be very careful about ordering as the condition will be evaluated based on
-the bean definitions that have been processed so far. Auto-configured `@Configuration` is
-always parsed last (after any user defined beans) so it is recommended to restrict the use
-of that condition on auto-configuration classes only. However, if you are sure that the bean
-targeted at the condition won't be created by auto-configuration, then you could use it on a
-normal configuration class with appropriate ordering.
-====
+NOTE: `@ConditionalOnBean` and `@ConditionalOnMissingBean` do not prevent `@Configuration`
+classes from being created. Using these conditions at the class level is equivalent to
+marking each contained `@Bean` method with the annotation.
 
 
 
