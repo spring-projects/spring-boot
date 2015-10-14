@@ -27,6 +27,7 @@ import org.springframework.boot.loader.tools.LibraryScope;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Andrey Stolyarov
  */
 public class WarCommand extends ArchiveCommand {
 
