@@ -83,8 +83,8 @@
 		<hornetq.version>2.4.7.Final</hornetq.version>
 		<hsqldb.version>2.3.3</hsqldb.version>
 		<httpasyncclient.version>4.1</httpasyncclient.version>
-		<httpclient.version>4.5</httpclient.version>
-		<httpcore.version>4.4.1</httpcore.version>
+		<httpclient.version>4.5.1</httpclient.version>
+		<httpcore.version>4.4.3</httpcore.version>
 		<infinispan.version>7.2.4.Final</infinispan.version>
 		<jackson.version>2.6.1</jackson.version>
 		<janino.version>2.7.8</janino.version>
