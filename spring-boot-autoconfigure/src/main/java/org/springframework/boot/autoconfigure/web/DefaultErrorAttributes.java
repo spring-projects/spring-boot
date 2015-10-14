@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
@@ -52,6 +53,7 @@ import org.springframework.web.servlet.ModelAndView;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  * @since 1.1.0
  * @see ErrorAttributes
  */
@@ -130,11 +132,11 @@ public class DefaultErrorAttributes
 	}
 
 	private void addErrorMessage(Map<String, Object> errorAttributes, Throwable error) {
-		if (!(error instanceof BindingResult)) {
+		BindingResult result = extractBindingResult(error);
+		if (result == null) {
 			errorAttributes.put("message", error.getMessage());
 			return;
 		}
-		BindingResult result = (BindingResult) error;
 		if (result.getErrorCount() > 0) {
 			errorAttributes.put("errors", result.getAllErrors());
 			errorAttributes.put("message",
@@ -144,6 +146,16 @@ public class DefaultErrorAttributes
 		else {
 			errorAttributes.put("message", "No errors");
 		}
+	}
+
+	private BindingResult extractBindingResult(Throwable error) {
+		if (error instanceof BindingResult) {
+			return (BindingResult) error;
+		}
+		if (error instanceof MethodArgumentNotValidException) {
+			return ((MethodArgumentNotValidException) error).getBindingResult();
+		}
+		return null;
 	}
 
 	private void addStackTrace(Map<String, Object> errorAttributes, Throwable error) {

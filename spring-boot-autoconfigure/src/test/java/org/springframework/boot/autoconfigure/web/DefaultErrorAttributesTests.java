@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
@@ -162,7 +163,20 @@ public class DefaultErrorAttributesTests {
 		BindingResult bindingResult = new MapBindingResult(
 				Collections.singletonMap("a", "b"), "objectName");
 		bindingResult.addError(new ObjectError("c", "d"));
-		BindException ex = new BindException(bindingResult);
+		Exception ex = new BindException(bindingResult);
+		testBindingResult(bindingResult, ex);
+	}
+
+	@Test
+	public void extractMethodArgumentNotValidExceptionBindingResultErrors() throws Exception {
+		BindingResult bindingResult = new MapBindingResult(
+				Collections.singletonMap("a", "b"), "objectName");
+		bindingResult.addError(new ObjectError("c", "d"));
+		Exception ex = new MethodArgumentNotValidException(null, bindingResult);
+		testBindingResult(bindingResult, ex);
+	}
+
+	private void testBindingResult(BindingResult bindingResult, Exception ex) {
 		this.request.setAttribute("javax.servlet.error.exception", ex);
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);

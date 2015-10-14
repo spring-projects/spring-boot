@@ -24,6 +24,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.junit.After;
 import org.junit.Test;
@@ -45,7 +47,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.View;
@@ -164,6 +168,20 @@ public class BasicErrorControllerIntegrationTests {
 		assertThat(resp, containsString("org.springframework.validation.BindException"));
 	}
 
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void testRequestBodyValidationForMachineClient() throws Exception {
+		load();
+		RequestEntity request = RequestEntity.post(URI.create(createUrl("/bodyValidation")))
+				.contentType(MediaType.APPLICATION_JSON).body("{}");
+		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
+		String resp = entity.getBody().toString();
+		assertThat(resp, containsString("Error count: 1"));
+		assertThat(resp, containsString("errors=[{"));
+		assertThat(resp, containsString("codes=["));
+		assertThat(resp, containsString("org.springframework.web.bind.MethodArgumentNotValidException"));
+	}
+
 	private void assertErrorAttributes(Map<?, ?> content, String status, String error,
 			Class<?> exception, String message, String path) {
 		assertEquals("Wrong status", status, content.get("status"));
@@ -239,6 +257,11 @@ public class BasicErrorControllerIntegrationTests {
 				throw error;
 			}
 
+			@RequestMapping(path = "/bodyValidation", method = RequestMethod.POST, produces = "application/json")
+			public String bodyValidation(@Valid @RequestBody DummyBody body) {
+				return body.content;
+			}
+
 			@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Expected!")
 			@SuppressWarnings("serial")
 			private static class ExpectedException extends RuntimeException {
@@ -253,6 +276,20 @@ public class BasicErrorControllerIntegrationTests {
 					super(message);
 				}
 
+			}
+
+			private static class DummyBody {
+
+				@NotNull
+				private String content;
+
+				public String getContent() {
+					return this.content;
+				}
+
+				public void setContent(String content) {
+					this.content = content;
+				}
 			}
 
 		}
