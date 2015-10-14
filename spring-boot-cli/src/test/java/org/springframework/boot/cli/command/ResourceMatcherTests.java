@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command.jar;
+package org.springframework.boot.cli.command;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +26,8 @@ import java.util.List;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
-import org.springframework.boot.cli.command.jar.ResourceMatcher.MatchedResource;
+import org.springframework.boot.cli.command.ArchiveCommand.MatchedResource;
+import org.springframework.boot.cli.command.ArchiveCommand.ResourceMatcher;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.Matchers.hasItem;

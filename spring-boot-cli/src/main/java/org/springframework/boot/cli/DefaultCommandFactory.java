@@ -30,6 +30,7 @@ import org.springframework.boot.cli.command.install.UninstallCommand;
 import org.springframework.boot.cli.command.jar.JarCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
 import org.springframework.boot.cli.command.test.TestCommand;
+import org.springframework.boot.cli.command.war.WarCommand;
 
 /**
  * Default implementation of {@link CommandFactory}.
@@ -40,7 +41,7 @@ public class DefaultCommandFactory implements CommandFactory {
 
 	private static final List<Command> DEFAULT_COMMANDS = Arrays.<Command>asList(
 			new VersionCommand(), new RunCommand(), new TestCommand(), new GrabCommand(),
-			new JarCommand(), new InstallCommand(), new UninstallCommand(),
+			new JarCommand(), new WarCommand(), new InstallCommand(), new UninstallCommand(),
 			new InitCommand());
 
 	@Override

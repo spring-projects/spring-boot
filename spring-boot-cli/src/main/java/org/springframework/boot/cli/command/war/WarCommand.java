@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command.jar;
+package org.springframework.boot.cli.command.war;
+
 
 import org.springframework.boot.cli.command.ArchiveCommand;
 import org.springframework.boot.cli.command.Command;
@@ -26,21 +27,25 @@ import org.springframework.boot.loader.tools.LibraryScope;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
- *
  */
-public class JarCommand extends ArchiveCommand {
+public class WarCommand extends ArchiveCommand {
 
-	public JarCommand() {
-		super("jar", "Create a self-contained "
-						+ "executable jar file from a Spring Groovy script",
-
+	public WarCommand() {
+		super("war", "Create a self-contained "
+						+ "executable war file from a Spring Groovy script",
 				new ArchiveCommand.LibraryScopeResolver() {
 					@Override
 					public LibraryScope resolve(String fileName) {
-						return LibraryScope.COMPILE;
+						if (fileName.contains("tomcat-embed") ||
+								fileName.contains("spring-boot-starter-tomcat")) {
+							return  LibraryScope.PROVIDED;
+						}
+						else {
+							return  LibraryScope.COMPILE;
+						}
 					}
 				},
-				new Layouts.Jar()
+				new Layouts.War()
 		);
 	}
 
