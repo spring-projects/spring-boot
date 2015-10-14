@@ -737,6 +737,8 @@ the following dependency to your project:
 TIP: If you want to also enable telnet access you will additionally need a dependency
 on `org.crsh:crsh.shell.telnet`.
 
+NOTE: CRaSH requires to run with a JDK as it compiles commands on the fly. If a basic
+`help` command fails, you are probably running with a JRE.
 
 
 [[production-ready-connecting-to-the-remote-shell]]
