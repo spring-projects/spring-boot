@@ -97,7 +97,7 @@
 		<jboss-logging.version>3.3.0.Final</jboss-logging.version>
 		<jdom2.version>2.0.6</jdom2.version>
 		<jedis.version>2.7.3</jedis.version>
-		<jersey.version>2.21</jersey.version>
+		<jersey.version>2.22.1</jersey.version>
 		<jetty.version>9.2.13.v20150730</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jmustache.version>1.10</jmustache.version>
