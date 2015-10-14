@@ -634,8 +634,8 @@ Nested POJO properties can also be created (so a setter is not mandatory) if the
 default constructor, or a constructor accepting a single value that can be coerced from
 String. Some people use Project Lombok to add getters and setters automatically.
 
-TIP: Contrary to `@Value`, SpEL expressions are not evaluated prior to injecting a value
-in the relevant `@ConfigurationProperties` bean as said value is usually externalized.
+NOTE: Contrary to `@Value`, SpEL expressions are not evaluated prior to injecting a value
+in the relevant `@ConfigurationProperties` bean.
 
 The `@EnableConfigurationProperties` annotation is automatically applied to your project
 so that any beans annotated with `@ConfigurationProperties` will be configured from the
@@ -962,7 +962,7 @@ NOTE: Logback does not have a `FATAL` level (it is mapped to `ERROR`)
 === Console output
 The default log configuration will echo messages to the console as they are written. By
 default `ERROR`, `WARN` and `INFO` level messages are logged. You can also enable a
-"debug" mode by starting your application with a `--debug` flag.
+"`debug`" mode by starting your application with a `--debug` flag.
 
 [indent=0]
 ----
@@ -972,8 +972,8 @@ default `ERROR`, `WARN` and `INFO` level messages are logged. You can also enabl
 NOTE: you can also specify `debug=true` in your `application.properties`.
 
 When the debug mode is enabled, a selection of core loggers (embedded container, Hibernate
-and Spring) are configured to output more information. In other words, enabling the debug
-mode does not configure your application log messages with `DEBUG` level.
+and Spring) are configured to output more information. Enabling the debug mode does _not_
+configure your application log all messages with `DEBUG` level.
 
 If your terminal supports ANSI, color output will be used to aid readability. You can set
 `spring.output.ansi.enabled` to a
@@ -1452,7 +1452,6 @@ particular controller and/or exception type.
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-
 	@ControllerAdvice(basePackageClasses = FooController.class)
 	public class FooControllerAdvice extends ResponseEntityExceptionHandler {
 
@@ -1474,9 +1473,9 @@ particular controller and/or exception type.
 	}
 ----
 
-In the example above, if `YourException` is thrown by a controller defined in the same package
-as `FooController`, a json representation of the `CustomerErrorType` POJO will be used instead
-of the `ErrorAttributes` representation.
+In the example above, if `YourException` is thrown by a controller defined in the same
+package as `FooController`, a json representation of the `CustomerErrorType` POJO will be
+used instead of the `ErrorAttributes` representation.
 
 If you want more specific error pages for some conditions, the embedded servlet containers
 support a uniform Java DSL for customizing the error handling. Assuming that you have a

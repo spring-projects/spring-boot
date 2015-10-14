@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.AbstractXmlHttpMessageConverter;
@@ -155,15 +156,14 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		formConverter.setPartConverters(combinedConverters);
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<HttpMessageConverter<?>> extractPartConverters(
-			AllEncompassingFormHttpMessageConverter formConverter) {
-		Field field = ReflectionUtils.findField(
-				AllEncompassingFormHttpMessageConverter.class, "partConverters");
+			FormHttpMessageConverter formConverter) {
+		Field field = ReflectionUtils.findField(FormHttpMessageConverter.class,
+				"partConverters");
 		ReflectionUtils.makeAccessible(field);
-		@SuppressWarnings("unchecked")
-		List<HttpMessageConverter<?>> partConverters = (List<HttpMessageConverter<?>>) ReflectionUtils
-				.getField(field, formConverter);
-		return partConverters;
+		return (List<HttpMessageConverter<?>>) ReflectionUtils.getField(field,
+				formConverter);
 	}
 
 	/**

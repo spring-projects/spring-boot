@@ -168,7 +168,8 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void extractMethodArgumentNotValidExceptionBindingResultErrors() throws Exception {
+	public void extractMethodArgumentNotValidExceptionBindingResultErrors()
+			throws Exception {
 		BindingResult bindingResult = new MapBindingResult(
 				Collections.singletonMap("a", "b"), "objectName");
 		bindingResult.addError(new ObjectError("c", "d"));

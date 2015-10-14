@@ -172,14 +172,16 @@ public class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	public void testRequestBodyValidationForMachineClient() throws Exception {
 		load();
-		RequestEntity request = RequestEntity.post(URI.create(createUrl("/bodyValidation")))
+		RequestEntity request = RequestEntity
+				.post(URI.create(createUrl("/bodyValidation")))
 				.contentType(MediaType.APPLICATION_JSON).body("{}");
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
 		String resp = entity.getBody().toString();
 		assertThat(resp, containsString("Error count: 1"));
 		assertThat(resp, containsString("errors=[{"));
 		assertThat(resp, containsString("codes=["));
-		assertThat(resp, containsString("org.springframework.web.bind.MethodArgumentNotValidException"));
+		assertThat(resp, containsString(
+				"org.springframework.web.bind.MethodArgumentNotValidException"));
 	}
 
 	private void assertErrorAttributes(Map<?, ?> content, String status, String error,
@@ -278,7 +280,7 @@ public class BasicErrorControllerIntegrationTests {
 
 			}
 
-			private static class DummyBody {
+			static class DummyBody {
 
 				@NotNull
 				private String content;
@@ -290,6 +292,7 @@ public class BasicErrorControllerIntegrationTests {
 				public void setContent(String content) {
 					this.content = content;
 				}
+
 			}
 
 		}
