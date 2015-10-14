@@ -27,6 +27,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -76,6 +77,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -146,10 +148,22 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/endpoint", ports.get().server, null);
 		assertContent("/controller", ports.get().management, null);
 		assertContent("/endpoint", ports.get().management, "endpointoutput");
+		assertContent("/error", ports.get().management, startsWith("{\"timestamp\""));
 		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
 				this.applicationContext.getBean(EndpointHandlerMapping.class),
 				"interceptors");
 		assertEquals(1, interceptors.size());
+		this.applicationContext.close();
+		assertAllClosed();
+	}
+
+	@Test
+	public void onDifferentPortWithoutErrorMvcAutoConfiguration() throws Exception {
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
+				DifferentPortConfig.class, BaseConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class);
+		this.applicationContext.refresh();
+		assertContent("/error", ports.get().management, null);
 		this.applicationContext.close();
 		assertAllClosed();
 	}
@@ -378,6 +392,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/endpoint", ports.get().management, null);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void assertContent(String url, int port, Object expected) throws Exception {
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
 		ClientHttpRequest request = clientHttpRequestFactory
@@ -387,7 +402,12 @@ public class EndpointWebMvcAutoConfigurationTests {
 			try {
 				String actual = StreamUtils.copyToString(response.getBody(),
 						Charset.forName("UTF-8"));
-				assertThat(actual, equalTo(expected));
+				if (expected instanceof Matcher) {
+					assertThat(actual, is((Matcher<String>) expected));
+				}
+				else {
+					assertThat(actual, equalTo(expected));
+				}
 			}
 			finally {
 				response.close();

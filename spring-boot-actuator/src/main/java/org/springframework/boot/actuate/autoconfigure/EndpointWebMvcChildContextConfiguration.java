@@ -75,9 +75,6 @@ public class EndpointWebMvcChildContextConfiguration {
 	@Value("${error.path:/error}")
 	private String errorPath = "/error";
 
-	@Autowired(required = false)
-	private List<EndpointHandlerMappingCustomizer> mappingCustomizers;
-
 	@Configuration
 	protected static class ServerCustomization
 			implements EmbeddedServletContainerCustomizer, Ordered {
@@ -144,11 +141,12 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	/*
 	 * The error controller is present but not mapped as an endpoint in this context
-	 * because of the DispatcherServlet having had it's HandlerMapping explicitly
-	 * disabled. So we expose the same feature but only for machine endpoints.
+	 * because of the DispatcherServlet having had its HandlerMapping explicitly disabled.
+	 * So we expose the same feature but only for machine endpoints.
 	 */
 	@Bean
-	public ManagementErrorEndpoint errorEndpoint(final ErrorAttributes errorAttributes) {
+	@ConditionalOnBean(ErrorAttributes.class)
+	public ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes) {
 		return new ManagementErrorEndpoint(this.errorPath, errorAttributes);
 	}
 
