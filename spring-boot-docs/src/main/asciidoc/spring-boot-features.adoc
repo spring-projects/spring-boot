@@ -961,8 +961,8 @@ NOTE: Logback does not have a `FATAL` level (it is mapped to `ERROR`)
 [[boot-features-logging-console-output]]
 === Console output
 The default log configuration will echo messages to the console as they are written. By
-default `ERROR`, `WARN` and `INFO` level messages are logged. To also log `DEBUG` level
-messages to the console you can start your application with a `--debug` flag.
+default `ERROR`, `WARN` and `INFO` level messages are logged. You can also enable a
+"debug" mode by starting your application with a `--debug` flag.
 
 [indent=0]
 ----
@@ -970,6 +970,10 @@ messages to the console you can start your application with a `--debug` flag.
 ----
 
 NOTE: you can also specify `debug=true` in your `application.properties`.
+
+When the debug mode is enabled, a selection of core loggers (embedded container, Hibernate
+and Spring) are configured to output more information. In other words, enabling the debug
+mode does not configure your application log messages with `DEBUG` level.
 
 If your terminal supports ANSI, color output will be used to aid readability. You can set
 `spring.output.ansi.enabled` to a
