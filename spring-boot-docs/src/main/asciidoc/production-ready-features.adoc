@@ -1173,9 +1173,11 @@ curl localhost:4242/api/query?start=1h-ago&m=max:counter.status.200.root
 
 [[production-ready-metric-writers-export-to-statsd]]
 ==== Example: Export to Statsd
-To export metrics to Statsd add a `spring.metrics.export.statsd.host` value to your
-`application.properties` file. Connections will be opened to port `8125` unless a
-`spring.metrics.export.statsd.port` override is provided. You can use
+To export metrics to Statsd, make sure first that you have added
+`com.timgroup:java-statsd-client` as a dependency of your project (Spring Boot
+provides a dependency management for it). Then add a `spring.metrics.export.statsd.host`
+value to your `application.properties` file. Connections will be opened to port `8125`
+unless a `spring.metrics.export.statsd.port` override is provided. You can use
 `spring.metrics.export.statsd.prefix` if you want a custom prefix.
 
 Alternatively, you can provide a `@Bean` of type `StatsdMetricWriter` and mark it
