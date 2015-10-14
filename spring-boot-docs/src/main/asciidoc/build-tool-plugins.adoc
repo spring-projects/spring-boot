@@ -246,13 +246,17 @@ its {dependency-management-plugin-documentation}[documentation].
 [[build-tool-plugins-gradle-packaging]]
 === Packaging executable jar and war files
 Once the `spring-boot` plugin has been applied to your project it will automatically
-attempt to rewrite archives to make them executable using the `bootRepackage` task. You
+attempt to rewrite archives to make them executable using the
+<<build-tool-plugins-gradle-repackage-configuration,`bootRepackage` task>>. You
 should configure your project to build a jar or war (as appropriate) in the usual way.
 
 The main class that you want to launch can either be specified using a configuration
 option, or by adding a `Main-Class` attribute to the manifest. If you don't specify a
 main class the plugin will search for a class with a
 `public static void main(String[] args)` method.
+
+TIP: Check <<build-tool-plugins-gradle-repackage-configuration>> for a full list of
+configuration options.
 
 To build and run a project artifact, you can type the following:
 
