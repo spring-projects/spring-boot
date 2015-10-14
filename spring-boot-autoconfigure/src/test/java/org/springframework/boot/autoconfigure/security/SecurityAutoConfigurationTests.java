@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.context.embedded.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationEvent;
@@ -106,7 +107,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.refresh();
 		assertEquals(FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100,
 				this.context.getBean("securityFilterChainRegistration",
-						FilterRegistrationBean.class).getOrder());
+						DelegatingFilterProxyRegistrationBean.class).getOrder());
 	}
 
 	@Test
@@ -136,7 +137,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.refresh();
 		assertEquals(FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100,
 				this.context.getBean("securityFilterChainRegistration",
-						FilterRegistrationBean.class).getOrder());
+						DelegatingFilterProxyRegistrationBean.class).getOrder());
 	}
 
 	@Test
@@ -149,9 +150,8 @@ public class SecurityAutoConfigurationTests {
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(12345, this.context
-				.getBean("securityFilterChainRegistration", FilterRegistrationBean.class)
-				.getOrder());
+		assertEquals(12345, this.context.getBean("securityFilterChainRegistration",
+				DelegatingFilterProxyRegistrationBean.class).getOrder());
 	}
 
 	@Test
