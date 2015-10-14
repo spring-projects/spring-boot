@@ -3857,8 +3857,10 @@ should apply. Usually auto-configuration classes use `@ConditionalOnClass` and
 `@ConditionalOnMissingBean` annotations. This ensures that auto-configuration only applies
 when relevant classes are found and when you have not declared your own `@Configuration`.
 
-You can browse the source code of `spring-boot-autoconfigure` to see the `@Configuration`
-classes that we provide (see the `META-INF/spring.factories` file).
+You can browse the source code of {sc-spring-boot-autoconfigure}[`spring-boot-autoconfigure`]
+to see the `@Configuration` classes that we provide (see the
+{github-code}/spring-boot-autoconfigure/src/main/resources/META-INF/spring.factories[`META-INF/spring.factories`]
+file).
 
 
 
