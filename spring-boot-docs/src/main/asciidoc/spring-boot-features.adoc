@@ -1440,6 +1440,37 @@ is to handle `text/html` specifically and provide a fallback for everything else
 just extend `BasicErrorController` and add a public method with a `@RequestMapping` that
 has a `produces` attribute, and create a bean of your new type.
 
+You can also define a `@ControllerAdvice` to customize the JSON document to return for a
+particular controller and/or exception type.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+
+	@ControllerAdvice(basePackageClasses = FooController.class)
+	public class FooControllerAdvice extends ResponseEntityExceptionHandler {
+
+		@ExceptionHandler(YourException.class)
+		@ResponseBody
+		ResponseEntity<?> handleControllerException(HttpServletRequest request, Throwable ex) {
+			HttpStatus status = getStatus(request);
+			return new ResponseEntity<>(new CustomErrorType(status.value(), ex.getMessage()), status);
+		}
+
+		private HttpStatus getStatus(HttpServletRequest request) {
+			Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
+			if (statusCode == null) {
+				return HttpStatus.INTERNAL_SERVER_ERROR;
+			}
+			return HttpStatus.valueOf(statusCode);
+		}
+
+	}
+----
+
+In the example above, if `YourException` is thrown by a controller defined in the same package
+as `FooController`, a json representation of the `CustomerErrorType` POJO will be used instead
+of the `ErrorAttributes` representation.
+
 If you want more specific error pages for some conditions, the embedded servlet containers
 support a uniform Java DSL for customizing the error handling. Assuming that you have a
 mapping for `/400`:
