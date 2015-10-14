@@ -161,7 +161,7 @@
 		<velocity.version>1.7</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
 		<webjars-hal-browser.version>9f96c74</webjars-hal-browser.version>
-		<webjars-locator.version>0.22</webjars-locator.version>
+		<webjars-locator.version>0.28</webjars-locator.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 	</properties>
 	<prerequisites>
