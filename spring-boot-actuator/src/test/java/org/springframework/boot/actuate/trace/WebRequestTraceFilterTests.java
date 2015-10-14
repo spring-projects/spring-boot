@@ -16,7 +16,19 @@
 
 package org.springframework.boot.actuate.trace;
 
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+
+import java.security.Principal;
 import java.util.Map;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
@@ -29,35 +41,94 @@ import static org.junit.Assert.assertEquals;
  * Tests for {@link WebRequestTraceFilter}.
  *
  * @author Dave Syer
+ * @author Wallace Wadge
  */
 public class WebRequestTraceFilterTests {
 
-	private final WebRequestTraceFilter filter = new WebRequestTraceFilter(
-			new InMemoryTraceRepository());
+	private final InMemoryTraceRepository inMemoryTraceRepository = new InMemoryTraceRepository();
+
+	private final WebRequestTraceFilter filter = new WebRequestTraceFilter(this.inMemoryTraceRepository);
+
 
 	@Test
-	public void filterDumpsRequest() {
+	public void filterDumpsRequestResponse() throws IOException, ServletException {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		request.addHeader("Accept", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request);
-		assertEquals("GET", trace.get("method"));
-		assertEquals("/foo", trace.get("path"));
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
-		assertEquals("{Accept=application/json}", map.get("request").toString());
-	}
 
-	@Test
-	public void filterDumpsResponse() {
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+		request.setContextPath("some.context.path");
+		request.setContent("Hello, World!".getBytes());
+		request.setRemoteAddr("some.remote.addr");
+		request.setQueryString("some.query.string");
+		request.setParameter("param", "paramvalue");
+		File tmp = File.createTempFile("spring-boot", "tmp");
+		String url = tmp.toURI().toURL().toString();
+		request.setPathInfo(url);
+		tmp.deleteOnExit();
+		Cookie cookie = new Cookie("testCookie", "testValue");
+		request.setCookies(cookie);
+		request.setAuthType("authType");
+		Principal principal = new Principal() {
+			@Override
+			public String getName() {
+				return "principalTest";
+			}
+		};
+		request.setUserPrincipal(principal);
+
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.addHeader("Content-Type", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request);
-		this.filter.enhanceTrace(trace, response);
+
+
+		this.filter.setIncludeClientInfo(true);
+		this.filter.setIncludeContextPath(true);
+		this.filter.setIncludeCookies(true);
+		this.filter.setIncludeParameters(true);
+		this.filter.setIncludePathInfo(true);
+		this.filter.setIncludePayload(true);
+		this.filter.setIncludePayloadResponse(true);
+		this.filter.setIncludeQueryString(true);
+		this.filter.setIncludePathTranslated(true);
+		this.filter.setIncludeAuthType(true);
+		this.filter.setIncludeUserPrincipal(true);
+		this.filter.setIncludeUserPrincipal(true);
+		this.filter.setMaxPayloadLength(100);
+		this.filter.setMaxPayloadResponseLength(100);
+
+
+		this.filter.doFilterInternal(request, response, new FilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
+				BufferedReader bufferedReader = request.getReader();
+				while (bufferedReader.readLine() != null) {
+					// read the contents as normal (forces cache to fill up)
+				}
+				response.getWriter().println("Goodbye, World!");
+			}
+		});
+
+
+		assertEquals(1, this.inMemoryTraceRepository.findAll().size());
+		Map<String, Object> trace = this.inMemoryTraceRepository.findAll().iterator().next().getInfo();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
 		assertEquals("{Content-Type=application/json, status=200}",
-				map.get("response").toString());
+			map.get("response").toString());
+
+		assertEquals("GET", trace.get("method"));
+		assertEquals("/foo", trace.get("path"));
+		assertEquals("paramvalue", ((String[]) ((Map) trace.get("requestParams")).get("param"))[0]);
+		assertEquals("some.remote.addr", trace.get("requestRemoteAddr"));
+		assertEquals("some.query.string", trace.get("requestQueryString"));
+		assertEquals(principal.getName(), ((Principal) trace.get("userPrincipal")).getName());
+		assertEquals("some.context.path", trace.get("contextPath"));
+		assertEquals(url, trace.get(WebRequestTraceFilter.TRACE_RQ_PATH_INFO));
+
+		assertEquals("Hello, World!", trace.get(WebRequestTraceFilter.TRACE_RQ_PAYLOAD));
+		assertEquals("authType", trace.get(WebRequestTraceFilter.TRACE_RQ_AUTH_TYPE));
+		assertEquals("Goodbye, World!", trace.get(WebRequestTraceFilter.TRACE_RESP_PAYLOAD));
+		assertEquals("{Accept=application/json}", map.get("request").toString());
+		assertEquals(cookie, ((Cookie[]) trace.get(WebRequestTraceFilter.TRACE_RQ_COOKIES))[0]);
+
 	}
 
 	@Test

@@ -697,6 +697,22 @@ content into your application; rather pick only the properties that you need.
 	management.security.role=ADMIN # role required to access the management endpoint
 	management.security.sessions=stateless # session creating policy to use (always, never, if_required, stateless)
 
+	# MANAGEMENT HTTP TRACING (({sc-spring-boot-actuator}/autoconfigure/TraceWebFilterProperties.{sc-ext}[TraceWebFilterProperties])
+	management.trace.include.authType=true # Include authType in HTTP trace.
+	management.trace.include.clientInfo=true # Include clientInfo in HTTP trace.
+	management.trace.include.contextPath=true # Include contextPath in HTTP trace.
+	management.trace.include.cookies=true # Include cookies in HTTP trace.
+	management.trace.include.maxPayloadLength=50 # Max no of bytes to capture for incoming HTTP request
+	management.trace.include.maxPayloadResponseLength=50 # Max no of bytes to capture for outgoing HTTP response
+	management.trace.include.parameters=true # Include http parameters in trace.
+	management.trace.include.pathInfo=true # Include pathInfo in incoming HTTP trace.
+	management.trace.include.pathTranslated=true # Include path translated in incoming HTTP trace.
+	management.trace.include.payload=true # Include request payload in trace.
+	management.trace.include.payloadResponse=true # Include payload response in trace.
+	management.trace.include.queryString=true # Include queryString in trace.
+	management.trace.include.userPrincipal=true # Include userPrincipal in trace.
+
+
 	# PID FILE ({sc-spring-boot-actuator}/system/ApplicationPidFileWriter.{sc-ext}[ApplicationPidFileWriter])
 	spring.pid.file= # Location of the PID file to write
 	spring.pid.fail-on-write-error= # Fail if the PID file cannot be written
