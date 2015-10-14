@@ -398,9 +398,10 @@ and (inside `<plugins/>`):
 	</plugin>
 ----
 
-NOTE: The `useDefaultDelimiters` property is important if you are using standard
-Spring placeholders in your configuration (e.g. `${foo}`). These may be expanded
-by the build if that property is not set to `false`.
+NOTE: The `useDefaultDelimiters` property is important if you are using standard Spring
+placeholders in your configuration (e.g. `${foo}`). These may be expanded by the build if
+that property is not set to `false`.
+
 
 
 [[production-ready-application-info-automatic-expansion-gradle]]
@@ -608,7 +609,10 @@ users full access to the health endpoint in a secure application. To do so, set
 `sensitive` flag value "`false`" indicated in bold):
 
 |====
-|`management.security.enabled` |`endpoints.health.sensitive` |Unauthenticated |Authenticated
+|`management.security.enabled`
+|`endpoints.health.sensitive`
+|Unauthenticated
+|Authenticated
 
 |false
 |**false**
