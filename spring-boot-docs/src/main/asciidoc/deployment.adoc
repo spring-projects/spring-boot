@@ -471,6 +471,18 @@ configuration file named `/var/myapp/myapp.conf` if it exists.
 
 
 
+[[deployment-windows]]
+=== Microsoft Windows services
+Spring Boot application can be started as Windows service using
+https://github.com/kohsuke/winsw[`winsw`].
+
+A sample https://github.com/snicoll-scratches/spring-boot-daemon[maintained separately]
+to the core of Spring Boot describes steps by steps how you can create a Windows service for
+your Spring Boot application.
+
+
+
+
 [[deployment-whats-next]]
 == What to read next
 Check out the http://www.cloudfoundry.com/[Cloud Foundry], https://www.heroku.com/[Heroku]

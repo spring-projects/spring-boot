@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,6 +116,8 @@ public class DataSourceHealthIndicatorTests {
 		assertThat(Product.forProduct("Apache Derby"), equalTo(Product.DERBY));
 		assertThat(Product.forProduct("DB2"), equalTo(Product.DB2));
 		assertThat(Product.forProduct("DB2/LINUXX8664"), equalTo(Product.DB2));
+		assertThat(Product.forProduct("DB2 UDB for AS/400"), equalTo(Product.DB2_AS400));
+		assertThat(Product.forProduct("DB3 XDB fur AS/400"), equalTo(Product.DB2_AS400));
 		assertThat(Product.forProduct("Informix Dynamic Server"),
 				equalTo(Product.INFORMIX));
 		assertThat(Product.forProduct("Firebird 2.5.WI"), equalTo(Product.FIREBIRD));

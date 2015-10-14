@@ -112,7 +112,7 @@ public class CassandraRepositoriesAutoConfigurationTests {
 
 	@Configuration
 	@ComponentScan(excludeFilters = @ComponentScan.Filter(classes = {
-			Session.class }, type = FilterType.ASSIGNABLE_TYPE) )
+			Session.class }, type = FilterType.ASSIGNABLE_TYPE))
 	static class TestExcludeConfiguration {
 
 	}

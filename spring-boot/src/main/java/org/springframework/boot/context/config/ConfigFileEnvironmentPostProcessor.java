@@ -277,6 +277,8 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 
 		private Queue<String> profiles;
 
+		private List<String> processedProfiles;
+
 		private boolean activatedProfiles;
 
 		Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
@@ -288,6 +290,7 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 		public void load() throws IOException {
 			this.propertiesLoader = new PropertySourcesLoader();
 			this.profiles = Collections.asLifoQueue(new LinkedList<String>());
+			this.processedProfiles = new LinkedList<String>();
 			this.activatedProfiles = false;
 			if (this.environment.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
 				// Any pre-existing active profiles set via property sources (e.g. System
@@ -334,6 +337,7 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 						}
 					}
 				}
+				this.processedProfiles.add(profile);
 			}
 
 			addConfigurationProperties(this.propertiesLoader.getPropertySources());
@@ -353,6 +357,12 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 						// Try the profile specific file
 						loadIntoGroup(group, location + name + "-" + profile + "." + ext,
 								null);
+						for (String processedProfile : this.processedProfiles) {
+							if (processedProfile != null) {
+								loadIntoGroup(group, location + name + "-"
+										+ processedProfile + "." + ext, profile);
+							}
+						}
 						// Sometimes people put "spring.profiles: dev" in
 						// application-dev.yml (gh-340). Arguably we should try and error
 						// out on that, but we can be kind and load it anyway.
@@ -412,7 +422,6 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 				}
 				return;
 			}
-
 			Set<String> profiles = getProfilesForValue(value);
 			activateProfiles(profiles);
 			if (profiles.size() > 0) {

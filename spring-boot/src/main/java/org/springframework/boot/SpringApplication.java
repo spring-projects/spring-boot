@@ -16,6 +16,9 @@
 
 package org.springframework.boot;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.security.AccessControlException;
 import java.util.ArrayList;
@@ -134,6 +137,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Andy Wilkinson
  * @author Christian Dupuis
  * @author Stephane Nicoll
+ * @author Jeremy Rickard
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -179,7 +183,7 @@ public class SpringApplication {
 
 	private Class<?> mainApplicationClass;
 
-	private boolean showBanner = true;
+	private Banner.Mode bannerMode = Banner.Mode.CONSOLE;
 
 	private boolean logStartupInfo = true;
 
@@ -321,7 +325,7 @@ public class SpringApplication {
 			environment = convertToStandardEnvironment(environment);
 		}
 
-		if (this.showBanner) {
+		if (this.bannerMode != Banner.Mode.OFF) {
 			printBanner(environment);
 		}
 
@@ -521,27 +525,47 @@ public class SpringApplication {
 	 * banner.location=classpath:banner.txt, banner.charset=UTF-8. If the banner file does
 	 * not exist or cannot be printed, a simple default is created.
 	 * @param environment the environment
-	 * @see #setShowBanner(boolean)
+	 * @see #setBannerMode
 	 */
 	protected void printBanner(Environment environment) {
+
+		Banner selectedBanner = selectBanner(environment);
+
+		if (this.bannerMode == Banner.Mode.LOG) {
+			try {
+				this.log.info(createStringFromBanner(selectedBanner, environment));
+			}
+			catch (UnsupportedEncodingException ex) {
+				this.log.warn("Failed to create String for banner", ex);
+			}
+		}
+		else {
+			selectedBanner.printBanner(environment, this.mainApplicationClass,
+					System.out);
+		}
+	}
+
+	private Banner selectBanner(Environment environment) {
 		String location = environment.getProperty("banner.location", "banner.txt");
 		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
 				: new DefaultResourceLoader(getClassLoader());
 		Resource resource = resourceLoader.getResource(location);
+
 		if (resource.exists()) {
-			new ResourceBanner(resource).printBanner(environment,
-					this.mainApplicationClass, System.out);
-			return;
+			return new ResourceBanner(resource);
 		}
 		if (this.banner != null) {
-			this.banner.printBanner(environment, this.mainApplicationClass, System.out);
-			return;
+			return this.banner;
 		}
-		printDefaultBanner();
+		return DEFAULT_BANNER;
 	}
 
-	private void printDefaultBanner() {
-		DEFAULT_BANNER.printBanner(null, this.mainApplicationClass, System.out);
+	private String createStringFromBanner(Banner banner, Environment environment)
+			throws UnsupportedEncodingException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		banner.printBanner(environment, this.mainApplicationClass, new PrintStream(baos));
+		String charset = environment.getProperty("banner.charset", "UTF-8");
+		return baos.toString(charset);
 	}
 
 	/**
@@ -842,9 +866,20 @@ public class SpringApplication {
 	 * Sets if the Spring banner should be displayed when the application runs. Defaults
 	 * to {@code true}.
 	 * @param showBanner if the banner should be shown
+	 * @deprecated since 1.3.0 in favor of {@link #setBannerMode}
 	 */
+	@Deprecated
 	public void setShowBanner(boolean showBanner) {
-		this.showBanner = showBanner;
+		setBannerMode(showBanner ? Banner.Mode.CONSOLE : Banner.Mode.OFF);
+	}
+
+	/**
+	 * Sets the mode used to display the banner when the application runs. Defaults to
+	 * {@code Banner.Mode.CONSOLE}.
+	 * @param bannerMode the mode used to display the banner
+	 */
+	public void setBannerMode(Banner.Mode bannerMode) {
+		this.bannerMode = bannerMode;
 	}
 
 	/**

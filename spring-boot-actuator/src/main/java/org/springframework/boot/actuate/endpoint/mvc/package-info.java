@@ -18,4 +18,3 @@
  * Actuator Spring MVC endpoint support.
  */
 package org.springframework.boot.actuate.endpoint.mvc;
-

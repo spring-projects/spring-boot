@@ -18,4 +18,3 @@
  * Auto-configuration for Spring Social.
  */
 package org.springframework.boot.autoconfigure.social;
-

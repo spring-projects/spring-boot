@@ -93,7 +93,7 @@ instance and customize it. For example, to turn off the banner you would write:
 ----
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(MySpringConfiguration.class);
-		app.setShowBanner(false);
+		app.setBannerMode(Banner.Mode.OFF);
 		app.run(args);
 	}
 ----
@@ -124,7 +124,7 @@ For example:
 [source,java,indent=0]
 ----
 	new SpringApplicationBuilder()
-		.showBanner(false)
+		.bannerMode(Banner.Mode.OFF)
 		.sources(Parent.class)
 		.child(Application.class)
 		.run(args);
@@ -763,6 +763,11 @@ it binds to the `@ConfigurationProperties` beans. If you need custom type conver
 can provide a `ConversionService` bean (with bean id `conversionService`) or custom
 property editors (via a `CustomEditorConfigurer` bean) or custom `Converters` (with
 bean definitions annotated as `@ConfigurationPropertiesBinding`).
+
+NOTE: As this bean is requested very early during the application lifecycle, make sure to
+limit the dependencies that your `ConversionService` is using. Typically, any dependency
+that you require may not be fully initialized at creation time. You may want to rename
+your custom `ConversionService` if it's not required for configuration keys coercion.
 
 
 
@@ -2081,6 +2086,11 @@ For example, typical POM dependencies would be:
 	</dependency>
 ----
 
+TIP: If you're using H2 and, for whatever reason, you do configure its connection URL,
+care should be taken to disable the database's automatic shutdown using
+`DB_CLOSE_ON_EXIT=FALSE`. This allows Spring Boot to control when the database is closed,
+thereby ensuring that it happens once access to the database is no longer needed.
+
 NOTE: You need a dependency on `spring-jdbc` for an embedded database to be
 auto-configured. In this example it's pulled in transitively via
 `spring-boot-starter-data-jpa`.
@@ -2705,10 +2715,13 @@ https://github.com/spring-projects/spring-data-gemfire/blob/master/src/main/java
 [[boot-features-solr]]
 === Solr
 http://lucene.apache.org/solr/[Apache Solr] is a search engine. Spring Boot offers basic
-auto-configuration for the Solr client library and abstractions on top of it provided by
+auto-configuration for the Solr 4 client library and abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-solr[Spring Data Solr]. There is
 a `spring-boot-starter-data-solr` '`Starter POM`' for collecting the dependencies in a
 convenient way.
+
+TIP: Solr 5 is currently not supported and the auto-configuration will not be enabled by
+a Solr 5 dependency.
 
 
 
@@ -3862,16 +3875,21 @@ might not actually appear on the running application classpath. You can also use
 
 [[boot-features-bean-conditions]]
 ==== Bean conditions
-The `@ConditionalOnBean` and `@ConditionalOnMissingBean` annotations allow configurations
+The `@ConditionalOnBean` and `@ConditionalOnMissingBean` annotations allow a bean
 to be included based on the presence or absence of specific beans. You can use the `value`
 attribute to specify beans by type, or `name` to specify beans by name. The `search`
 attribute allows you to limit the `ApplicationContext` hierarchy that should be considered
 when searching for beans.
 
-NOTE: `@Conditional` annotations are processed when `@Configuration` classes are parsed.
-Auto-configured `@Configuration` is always parsed last (after any user defined beans),
-however, if you are using these annotations on regular `@Configuration` classes, care must
-be taken not to refer to bean definitions that have not yet been created.
+TIP: You need to be very careful about the order that bean definitions are added as these
+conditions are evaluated based on what has been processed so far. For this reason,
+we recommend only  using `@ConditionalOnBean` and `@ConditionalOnMissingBean` annotations
+on auto-configuration classes (since these are guaranteed to load after any user-define
+beans definitions have been added).
+
+NOTE: `@ConditionalOnBean` and `@ConditionalOnMissingBean` do not prevent `@Configuration`
+classes from being created. Using these conditions at the class level is equivalent to
+marking each contained `@Bean` method with the annotation.
 
 
 

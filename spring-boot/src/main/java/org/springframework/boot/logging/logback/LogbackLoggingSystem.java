@@ -199,6 +199,11 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		getLogger(loggerName).setLevel(LEVELS.get(level));
 	}
 
+	@Override
+	public Runnable getShutdownHandler() {
+		return new ShutdownHandler();
+	}
+
 	private ch.qos.logback.classic.Logger getLogger(String name) {
 		LoggerContext factory = getLoggerContext();
 		return factory
@@ -231,6 +236,15 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			// Unable to determine location
 		}
 		return "unknown location";
+	}
+
+	private final class ShutdownHandler implements Runnable {
+
+		@Override
+		public void run() {
+			getLoggerContext().stop();
+		}
+
 	}
 
 }

@@ -20,4 +20,3 @@
  * @see org.springframework.boot.actuate.metrics.repository.redis.RedisMetricRepository
  */
 package org.springframework.boot.actuate.metrics.repository.redis;
-

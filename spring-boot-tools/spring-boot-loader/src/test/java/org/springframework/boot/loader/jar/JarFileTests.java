@@ -91,6 +91,7 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName(), equalTo("special/"));
 		assertThat(entries.nextElement().getName(), equalTo("special/\u00EB.dat"));
 		assertThat(entries.nextElement().getName(), equalTo("nested.jar"));
+		assertThat(entries.nextElement().getName(), equalTo("another-nested.jar"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
 		URL jarUrl = new URL("jar:" + this.rootJarFile.toURI() + "!/");
 		URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarUrl });
@@ -132,6 +133,7 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName(), equalTo("special/"));
 		assertThat(entries.nextElement().getName(), equalTo("special/\u00EB.dat"));
 		assertThat(entries.nextElement().getName(), equalTo("nested.jar"));
+		assertThat(entries.nextElement().getName(), equalTo("another-nested.jar"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
 	}
 

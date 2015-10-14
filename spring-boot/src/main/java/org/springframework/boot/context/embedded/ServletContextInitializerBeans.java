@@ -62,6 +62,9 @@ class ServletContextInitializerBeans
 
 	private final Log log = LogFactory.getLog(getClass());
 
+	/**
+	 * Seen bean instances or bean names.
+	 */
 	private final Set<Object> seen = new HashSet<Object>();
 
 	private final MultiValueMap<Class<?>, ServletContextInitializer> initializers;
@@ -92,17 +95,26 @@ class ServletContextInitializerBeans
 	private void addServletContextInitializerBean(String beanName,
 			ServletContextInitializer initializer, ListableBeanFactory beanFactory) {
 		if (initializer instanceof ServletRegistrationBean) {
+			Servlet source = ((ServletRegistrationBean) initializer).getServlet();
 			addServletContextInitializerBean(Servlet.class, beanName, initializer,
-					beanFactory, ((ServletRegistrationBean) initializer).getServlet());
+					beanFactory, source);
 		}
 		else if (initializer instanceof FilterRegistrationBean) {
+			Filter source = ((FilterRegistrationBean) initializer).getFilter();
 			addServletContextInitializerBean(Filter.class, beanName, initializer,
-					beanFactory, ((FilterRegistrationBean) initializer).getFilter());
+					beanFactory, source);
+		}
+		else if (initializer instanceof DelegatingFilterProxyRegistrationBean) {
+			String source = ((DelegatingFilterProxyRegistrationBean) initializer)
+					.getTargetBeanName();
+			addServletContextInitializerBean(Filter.class, beanName, initializer,
+					beanFactory, source);
 		}
 		else if (initializer instanceof ServletListenerRegistrationBean) {
+			EventListener source = ((ServletListenerRegistrationBean<?>) initializer)
+					.getListener();
 			addServletContextInitializerBean(EventListener.class, beanName, initializer,
-					beanFactory,
-					((ServletListenerRegistrationBean<?>) initializer).getListener());
+					beanFactory, source);
 		}
 		else {
 			addServletContextInitializerBean(ServletContextInitializer.class, beanName,
@@ -164,7 +176,8 @@ class ServletContextInitializerBeans
 
 	private <T, B extends T> void addAsRegistrationBean(ListableBeanFactory beanFactory,
 			Class<T> type, Class<B> beanType, RegistrationBeanAdapter<T> adapter) {
-		List<Map.Entry<String, B>> beans = getOrderedBeansOfType(beanFactory, beanType);
+		List<Map.Entry<String, B>> beans = getOrderedBeansOfType(beanFactory, beanType,
+				this.seen);
 		for (Entry<String, B> bean : beans) {
 			if (this.seen.add(bean.getValue())) {
 				int order = getOrder(bean.getValue());
@@ -175,7 +188,6 @@ class ServletContextInitializerBeans
 				registration.setName(beanName);
 				registration.setOrder(order);
 				this.initializers.add(type, registration);
-
 				if (this.log.isDebugEnabled()) {
 					this.log.debug(
 							"Created " + type.getSimpleName() + " initializer for bean '"
@@ -197,18 +209,30 @@ class ServletContextInitializerBeans
 
 	private <T> List<Entry<String, T>> getOrderedBeansOfType(
 			ListableBeanFactory beanFactory, Class<T> type) {
+		return getOrderedBeansOfType(beanFactory, type, Collections.emptySet());
+	}
+
+	private <T> List<Entry<String, T>> getOrderedBeansOfType(
+			ListableBeanFactory beanFactory, Class<T> type, Set<?> excludes) {
 		List<Entry<String, T>> beans = new ArrayList<Entry<String, T>>();
 		Comparator<Entry<String, T>> comparator = new Comparator<Entry<String, T>>() {
+
 			@Override
 			public int compare(Entry<String, T> o1, Entry<String, T> o2) {
 				return AnnotationAwareOrderComparator.INSTANCE.compare(o1.getValue(),
 						o2.getValue());
 			}
+
 		};
 		String[] names = beanFactory.getBeanNamesForType(type, true, false);
 		Map<String, T> map = new LinkedHashMap<String, T>();
 		for (String name : names) {
-			map.put(name, beanFactory.getBean(name, type));
+			if (!excludes.contains(name)) {
+				T bean = beanFactory.getBean(name, type);
+				if (!excludes.contains(bean)) {
+					map.put(name, bean);
+				}
+			}
 		}
 		beans.addAll(map.entrySet());
 		Collections.sort(beans, comparator);

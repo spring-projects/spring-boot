@@ -70,6 +70,22 @@ public class DefaultSourceFolderUrlFilterTests {
 		doTest("my-module/something/quite/quite/mad/");
 	}
 
+	@Test
+	public void skippedProjects() throws Exception {
+		String sourceFolder = "/Users/me/code/spring-boot-samples/"
+				+ "spring-boot-sample-devtools";
+		URL jarUrl = new URL("jar:file:/Users/me/tmp/"
+				+ "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/");
+		assertThat(this.filter.isMatch(sourceFolder, jarUrl), equalTo(true));
+		URL nestedJarUrl = new URL("jar:file:/Users/me/tmp/"
+				+ "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/"
+				+ "lib/spring-boot-1.3.0.BUILD-SNAPSHOT.jar!/");
+		assertThat(this.filter.isMatch(sourceFolder, nestedJarUrl), equalTo(false));
+		URL fileUrl = new URL("file:/Users/me/tmp/"
+				+ "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar");
+		assertThat(this.filter.isMatch(sourceFolder, fileUrl), equalTo(true));
+	}
+
 	private void doTest(String sourcePostfix) throws MalformedURLException {
 		doTest(sourcePostfix, "my-module", true);
 		doTest(sourcePostfix, "my-module-other", false);

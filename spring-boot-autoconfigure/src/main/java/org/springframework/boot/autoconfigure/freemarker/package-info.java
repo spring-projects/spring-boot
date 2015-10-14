@@ -18,4 +18,3 @@
  * Auto-configuration for Freemarker.
  */
 package org.springframework.boot.autoconfigure.freemarker;
-

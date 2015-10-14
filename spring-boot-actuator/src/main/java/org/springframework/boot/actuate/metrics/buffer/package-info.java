@@ -18,4 +18,3 @@
  * Metrics buffering support.
  */
 package org.springframework.boot.actuate.metrics.buffer;
-

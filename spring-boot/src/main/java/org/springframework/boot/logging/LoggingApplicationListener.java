@@ -19,6 +19,7 @@ package org.springframework.boot.logging;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -77,6 +78,13 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	public static final String CONFIG_PROPERTY = "logging.config";
 
 	/**
+	 * The name of the Spring property that controls the registration of a shutdown hook
+	 * to shut down the logging system when the JVM exits.
+	 * @see LoggingSystem#getShutdownHandler
+	 */
+	public static final String REGISTER_SHOW_HOOK_PROPERTY = "logging.register-shutdown-hook";
+
+	/**
 	 * The name of the Spring property that contains the path where the logging
 	 * configuration can be found.
 	 */
@@ -99,6 +107,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	public static final String EXCEPTION_CONVERSION_WORD = "LOG_EXCEPTION_CONVERSION_WORD";
 
 	private static MultiValueMap<LogLevel, String> LOG_LEVEL_LOGGERS;
+
+	private static AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
 
 	static {
 		LOG_LEVEL_LOGGERS = new LinkedMultiValueMap<LogLevel, String>();
@@ -201,6 +211,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		initializeEarlyLoggingLevel(environment);
 		initializeSystem(environment, this.loggingSystem);
 		initializeFinalLoggingLevels(environment, this.loggingSystem);
+		registerShutdownHookIfNecessary(environment, this.loggingSystem);
 	}
 
 	private String getExceptionConversionWord(ConfigurableEnvironment environment) {
@@ -297,6 +308,19 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			return LogLevel.OFF;
 		}
 		return LogLevel.valueOf(level.toUpperCase());
+	}
+
+	private void registerShutdownHookIfNecessary(Environment environment,
+			LoggingSystem loggingSystem) {
+		boolean registerShutdownHook = new RelaxedPropertyResolver(environment)
+				.getProperty(REGISTER_SHOW_HOOK_PROPERTY, Boolean.class, false);
+		if (registerShutdownHook) {
+			Runnable shutdownHandler = loggingSystem.getShutdownHandler();
+			if (shutdownHandler != null
+					&& shutdownHookRegistered.compareAndSet(false, true)) {
+				Runtime.getRuntime().addShutdownHook(new Thread());
+			}
+		}
 	}
 
 	public void setOrder(int order) {

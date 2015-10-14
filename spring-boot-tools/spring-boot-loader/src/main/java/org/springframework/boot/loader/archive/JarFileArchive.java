@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
@@ -40,6 +41,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
  * {@link Archive} implementation backed by a {@link JarFile}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class JarFileArchive extends Archive {
 
@@ -52,6 +54,8 @@ public class JarFileArchive extends Archive {
 	private final List<Entry> entries;
 
 	private URL url;
+
+	private File tempUnpackFolder;
 
 	public JarFileArchive(File file) throws IOException {
 		this(file, null);
@@ -123,10 +127,25 @@ public class JarFileArchive extends Archive {
 	}
 
 	private File getTempUnpackFolder() {
-		File tempFolder = new File(System.getProperty("java.io.tmpdir"));
-		File unpackFolder = new File(tempFolder, "spring-boot-libs");
-		unpackFolder.mkdirs();
-		return unpackFolder;
+		if (this.tempUnpackFolder == null) {
+			File tempFolder = new File(System.getProperty("java.io.tmpdir"));
+			this.tempUnpackFolder = createUnpackFolder(tempFolder);
+		}
+		return this.tempUnpackFolder;
+	}
+
+	private File createUnpackFolder(File parent) {
+		int attempts = 0;
+		while (attempts++ < 1000) {
+			String fileName = new File(this.jarFile.getName()).getName();
+			File unpackFolder = new File(parent,
+					fileName + "-spring-boot-libs-" + UUID.randomUUID());
+			if (unpackFolder.mkdirs()) {
+				return unpackFolder;
+			}
+		}
+		throw new IllegalStateException(
+				"Failed to create unpack folder in directory '" + parent + "'");
 	}
 
 	private void unpack(JarEntryData data, File file) throws IOException {
