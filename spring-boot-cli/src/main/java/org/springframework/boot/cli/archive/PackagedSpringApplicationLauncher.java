@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.jar;
+package org.springframework.boot.cli.archive;
 
 import java.net.URL;
 import java.net.URLClassLoader;
