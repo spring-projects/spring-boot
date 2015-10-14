@@ -634,6 +634,9 @@ Nested POJO properties can also be created (so a setter is not mandatory) if the
 default constructor, or a constructor accepting a single value that can be coerced from
 String. Some people use Project Lombok to add getters and setters automatically.
 
+TIP: Contrary to `@Value`, SpEL expressions are not evaluated prior to injecting a value
+in the relevant `@ConfigurationProperties` bean as said value is usually externalized.
+
 The `@EnableConfigurationProperties` annotation is automatically applied to your project
 so that any beans annotated with `@ConfigurationProperties` will be configured from the
 `Environment` properties. This style of configuration works particularly well with the
