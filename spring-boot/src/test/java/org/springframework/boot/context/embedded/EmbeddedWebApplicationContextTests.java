@@ -29,13 +29,19 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import org.apache.struts.mock.MockHttpServletRequest;
+import org.apache.struts.mock.MockHttpServletResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -52,6 +58,8 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.SessionScope;
@@ -88,8 +96,12 @@ public class EmbeddedWebApplicationContextTests {
 
 	private EmbeddedWebApplicationContext context;
 
+	@Captor
+	private ArgumentCaptor<Filter> filterCaptor;
+
 	@Before
 	public void setup() {
+		MockitoAnnotations.initMocks(this);
 		this.context = new EmbeddedWebApplicationContext();
 	}
 
@@ -302,9 +314,9 @@ public class EmbeddedWebApplicationContextTests {
 		ordered.verify(escf.getServletContext()).addFilter("filterBean1", filter1);
 		ordered.verify(escf.getServletContext()).addFilter("filterBean2", filter2);
 		verify(escf.getRegisteredFilter(0).getRegistration()).addMappingForUrlPatterns(
-				FilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "/*");
+				AbstractFilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "/*");
 		verify(escf.getRegisteredFilter(1).getRegistration()).addMappingForUrlPatterns(
-				FilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "/*");
+				AbstractFilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "/*");
 	}
 
 	@Test
@@ -395,7 +407,7 @@ public class EmbeddedWebApplicationContextTests {
 	}
 
 	@Test
-	public void filterReegistrationBeansSkipsRegisteredFilters() throws Exception {
+	public void filterRegistrationBeansSkipsRegisteredFilters() throws Exception {
 		addEmbeddedServletContainerFactoryBean();
 		Filter filter = mock(Filter.class);
 		FilterRegistrationBean initializer = new FilterRegistrationBean(filter);
@@ -406,6 +418,32 @@ public class EmbeddedWebApplicationContextTests {
 		ServletContext servletContext = getEmbeddedServletContainerFactory()
 				.getServletContext();
 		verify(servletContext, atMost(1)).addFilter(anyString(), (Filter) anyObject());
+	}
+
+	@Test
+	public void delegatingFilterProxyRegistrationBeansSkipsTargetBeanNames()
+			throws Exception {
+		addEmbeddedServletContainerFactoryBean();
+		DelegatingFilterProxyRegistrationBean initializer = new DelegatingFilterProxyRegistrationBean(
+				"filterBean");
+		this.context.registerBeanDefinition("initializerBean",
+				beanDefinition(initializer));
+		BeanDefinition filterBeanDefinition = beanDefinition(
+				new IllegalStateException("Create FilterBean Failure"));
+		filterBeanDefinition.setLazyInit(true);
+		this.context.registerBeanDefinition("filterBean", filterBeanDefinition);
+		this.context.refresh();
+		ServletContext servletContext = getEmbeddedServletContainerFactory()
+				.getServletContext();
+		verify(servletContext, atMost(1)).addFilter(anyString(),
+				this.filterCaptor.capture());
+		// Up to this point the filterBean should not have been created, calling
+		// the delegate proxy will trigger creation and an exception
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("Create FilterBean Failure");
+		this.filterCaptor.getValue().init(new MockFilterConfig());
+		this.filterCaptor.getValue().doFilter(new MockHttpServletRequest(),
+				new MockHttpServletResponse(), new MockFilterChain());
 	}
 
 	@Test
@@ -459,7 +497,6 @@ public class EmbeddedWebApplicationContextTests {
 		this.context.close();
 		assertThat(validator.destroyed, is(true));
 		assertThat(validator.containerStoppedFirst, is(true));
-
 	}
 
 	private void addEmbeddedServletContainerFactoryBean() {
@@ -482,6 +519,9 @@ public class EmbeddedWebApplicationContextTests {
 	}
 
 	public static <T> T getBean(T object) {
+		if (object instanceof RuntimeException) {
+			throw (RuntimeException) object;
+		}
 		return object;
 	}
 

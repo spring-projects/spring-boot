@@ -31,6 +31,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @see ServletRegistrationBean
  * @see FilterRegistrationBean
+ * @see DelegatingFilterProxyRegistrationBean
  * @see ServletListenerRegistrationBean
  */
 public abstract class RegistrationBean implements ServletContextInitializer, Ordered {
