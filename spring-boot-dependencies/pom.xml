@@ -100,7 +100,7 @@
 		<jersey.version>2.22.1</jersey.version>
 		<jetty.version>9.2.13.v20150730</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
-		<jmustache.version>1.10</jmustache.version>
+		<jmustache.version>1.11</jmustache.version>
 		<joda-time.version>2.8.2</joda-time.version>
 		<jolokia.version>1.3.2</jolokia.version>
 		<jooq.version>3.7.0</jooq.version>
