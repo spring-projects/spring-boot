@@ -784,6 +784,9 @@ content into your application; rather pick only the properties that you need.
 	management.health.solr.enabled=true
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP
 
+	# TRACING (({sc-spring-boot-actuator}/trace/TraceProperties.{sc-ext}[TraceProperties])
+	management.trace.include=request-headers,response-headers,errors # See TraceProperties.Include for options
+
 	# MVC ONLY ENDPOINTS
 	endpoints.jolokia.path=/jolokia
 	endpoints.jolokia.sensitive=true
