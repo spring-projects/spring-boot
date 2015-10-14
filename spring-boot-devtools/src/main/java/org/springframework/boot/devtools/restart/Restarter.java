@@ -204,7 +204,7 @@ public class Restarter {
 	 */
 	public void addUrls(Collection<URL> urls) {
 		Assert.notNull(urls, "Urls must not be null");
-		this.urls.addAll(ChangeableUrls.fromUrls(urls).toList());
+		this.urls.addAll(urls);
 	}
 
 	/**

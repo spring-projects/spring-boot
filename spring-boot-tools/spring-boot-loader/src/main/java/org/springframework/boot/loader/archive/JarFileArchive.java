@@ -114,12 +114,11 @@ public class JarFileArchive extends Archive {
 	}
 
 	private Archive getUnpackedNestedArchive(JarEntryData data) throws IOException {
-		AsciiBytes hash = data.getComment().substring(UNPACK_MARKER.length());
 		String name = data.getName().toString();
 		if (name.lastIndexOf("/") != -1) {
 			name = name.substring(name.lastIndexOf("/") + 1);
 		}
-		File file = new File(getTempUnpackFolder(), hash.toString() + "-" + name);
+		File file = new File(getTempUnpackFolder(), name);
 		if (!file.exists() || file.length() != data.getSize()) {
 			unpack(data, file);
 		}

@@ -34,7 +34,7 @@ import org.springframework.boot.gradle.run.RunPluginFeatures;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-class SpringBootPlugin implements Plugin<Project> {
+public class SpringBootPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {

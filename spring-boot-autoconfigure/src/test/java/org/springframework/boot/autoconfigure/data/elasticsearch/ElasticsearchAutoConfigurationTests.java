@@ -26,11 +26,15 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ElasticsearchAutoConfiguration}.
@@ -90,6 +94,17 @@ public class ElasticsearchAutoConfigurationTests {
 	}
 
 	@Test
+	public void useExistingClient() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CustomConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				ElasticsearchAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(1, this.context.getBeanNamesForType(Client.class).length);
+		assertSame(this.context.getBean("myClient"), this.context.getBean(Client.class));
+	}
+
+	@Test
 	public void createTransportClient() throws Exception {
 		// We don't have a local elasticsearch server so use an address that's missing
 		// a port and check the exception
@@ -103,6 +118,16 @@ public class ElasticsearchAutoConfigurationTests {
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("port");
 		this.context.refresh();
+	}
+
+	@Configuration
+	static class CustomConfiguration {
+
+		@Bean
+		public Client myClient() {
+			return mock(Client.class);
+		}
+
 	}
 
 }
