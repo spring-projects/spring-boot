@@ -16,10 +16,10 @@
 
 package org.springframework.boot.cli.app;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Test;
@@ -90,25 +90,32 @@ public class SpringApplicationLauncherTests {
 				equalTo("false"));
 	}
 
-	private List<String> launch() {
+	private Set<String> launch() {
 		TestClassLoader classLoader = new TestClassLoader(getClass().getClassLoader());
 		try {
 			new TestSpringApplicationLauncher(classLoader).launch(new Object[0],
 					new String[0]);
 		}
-		catch (Exception e) {
-			// SpringApplication isn't on the classpath, but we can still check that
-			// the launcher tried to use the right class
+		catch (Exception ex) {
+			// Launch will fail, but we can still check that the launcher tried to use
+			// the right class
 		}
 		return classLoader.classes;
 	}
 
 	private static class TestClassLoader extends ClassLoader {
 
-		private List<String> classes = new ArrayList<String>();
+		private Set<String> classes = new HashSet<String>();
 
 		TestClassLoader(ClassLoader parent) {
 			super(parent);
+		}
+
+		@Override
+		protected Class<?> loadClass(String name, boolean resolve)
+				throws ClassNotFoundException {
+			this.classes.add(name);
+			return super.loadClass(name, resolve);
 		}
 
 		@Override

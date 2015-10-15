@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command.jar;
+package org.springframework.boot.cli.command.archive;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,10 +38,12 @@ import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.springframework.boot.cli.app.SpringApplicationLauncher;
+import org.springframework.boot.cli.archive.PackagedSpringApplicationLauncher;
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.OptionParsingCommand;
-import org.springframework.boot.cli.command.jar.ResourceMatcher.MatchedResource;
+import org.springframework.boot.cli.command.archive.ResourceMatcher.MatchedResource;
 import org.springframework.boot.cli.command.options.CompilerOptionHandler;
+import org.springframework.boot.cli.command.options.OptionHandler;
 import org.springframework.boot.cli.command.options.OptionSetGroovyCompilerConfiguration;
 import org.springframework.boot.cli.command.options.SourceOptions;
 import org.springframework.boot.cli.command.status.ExitStatus;
@@ -49,8 +51,8 @@ import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
-import org.springframework.boot.cli.jar.PackagedSpringApplicationLauncher;
 import org.springframework.boot.loader.tools.JarWriter;
+import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
@@ -65,51 +67,66 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 /**
- * {@link Command} to create a self-contained executable jar file from a CLI application.
+ * Abstract {@link Command} to create a self-contained executable archive file from a CLI
+ * application.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Andrey Stolyarov
  */
-public class JarCommand extends OptionParsingCommand {
+abstract class ArchiveCommand extends OptionParsingCommand {
 
-	public JarCommand() {
-		super("jar",
-				"Create a self-contained "
-						+ "executable jar file from a Spring Groovy script",
-				new JarOptionHandler());
+	protected ArchiveCommand(String name, String description,
+			OptionHandler optionHandler) {
+		super(name, description, optionHandler);
 	}
 
 	@Override
 	public String getUsageHelp() {
-		return "[options] <jar-name> <files>";
+		return "[options] <" + getName() + "-name> <files>";
 	}
 
-	private static final class JarOptionHandler extends CompilerOptionHandler {
+	/**
+	 * Abstract base {@link CompilerOptionHandler} for archive commands.
+	 */
+	protected abstract static class ArchiveOptionHandler extends CompilerOptionHandler {
+
+		private final String type;
+
+		private final Layout layout;
 
 		private OptionSpec<String> includeOption;
 
 		private OptionSpec<String> excludeOption;
 
+		public ArchiveOptionHandler(String type, Layout layout) {
+			this.type = type;
+			this.layout = layout;
+		}
+
 		@Override
 		protected void doOptions() {
 			this.includeOption = option("include",
-					"Pattern applied to directories on the classpath to find files to include in the resulting jar")
-							.withRequiredArg().withValuesSeparatedBy(",").defaultsTo("");
+					"Pattern applied to directories on the classpath to find files to "
+							+ "include in the resulting ").withRequiredArg()
+									.withValuesSeparatedBy(",").defaultsTo("");
 			this.excludeOption = option("exclude",
-					"Pattern applied to directories on the classpath to find files to exclude from the resulting jar")
-							.withRequiredArg().withValuesSeparatedBy(",").defaultsTo("");
+					"Pattern applied to directories on the classpath to find files to "
+							+ "exclude from the resulting " + this.type).withRequiredArg()
+									.withValuesSeparatedBy(",").defaultsTo("");
 		}
 
 		@Override
 		protected ExitStatus run(OptionSet options) throws Exception {
 			List<?> nonOptionArguments = new ArrayList<Object>(
 					options.nonOptionArguments());
-			Assert.isTrue(nonOptionArguments.size() >= 2,
-					"The name of the resulting jar and at least one source file must be specified");
+			Assert.isTrue(nonOptionArguments.size() >= 2, "The name of the resulting "
+					+ this.type + " and at least one source file must be specified");
 
 			File output = new File((String) nonOptionArguments.remove(0));
-			Assert.isTrue(output.getName().toLowerCase().endsWith(".jar"),
-					"The output '" + output + "' is not a JAR file.");
+			Assert.isTrue(output.getName().toLowerCase().endsWith("." + this.type),
+					"The output '" + output + "' is not a " + this.type.toUpperCase()
+							+ " file.");
 			deleteIfExists(output);
 
 			GroovyCompiler compiler = createCompiler(options);
@@ -196,7 +213,7 @@ public class JarCommand extends OptionParsingCommand {
 			List<Library> libraries = new ArrayList<Library>();
 			for (URL dependency : dependencies) {
 				File file = new File(dependency.toURI());
-				libraries.add(new Library(file, LibraryScope.COMPILE));
+				libraries.add(new Library(file, getLibraryScope(file)));
 			}
 			return libraries;
 		}
@@ -220,7 +237,7 @@ public class JarCommand extends OptionParsingCommand {
 			return builder.toString();
 		}
 
-		private void addCliClasses(JarWriter writer) throws IOException {
+		protected void addCliClasses(JarWriter writer) throws IOException {
 			addClass(writer, PackagedSpringApplicationLauncher.class);
 			addClass(writer, SpringApplicationLauncher.class);
 			Resource[] resources = new PathMatchingResourcePatternResolver()
@@ -232,10 +249,19 @@ public class JarCommand extends OptionParsingCommand {
 			}
 		}
 
-		private void addClass(JarWriter writer, Class<?> sourceClass) throws IOException {
-			String name = sourceClass.getName().replace(".", "/") + ".class";
-			InputStream stream = sourceClass.getResourceAsStream("/" + name);
-			writer.writeEntry(name, stream);
+		protected final void addClass(JarWriter writer, Class<?> sourceClass)
+				throws IOException {
+			addClass(writer, sourceClass.getClassLoader(), sourceClass.getName());
+		}
+
+		protected final void addClass(JarWriter writer, ClassLoader classLoader,
+				String sourceClass) throws IOException {
+			if (classLoader == null) {
+				classLoader = Thread.currentThread().getContextClassLoader();
+			}
+			String name = sourceClass.replace(".", "/") + ".class";
+			InputStream stream = classLoader.getResourceAsStream(name);
+			writer.writeEntry(this.layout.getClassesLocation() + name, stream);
 		}
 
 		private void addResource(JarWriter writer, Resource resource, String name)
@@ -258,6 +284,8 @@ public class JarCommand extends OptionParsingCommand {
 			}
 			return libraries;
 		}
+
+		protected abstract LibraryScope getLibraryScope(File file);
 
 	}
 
