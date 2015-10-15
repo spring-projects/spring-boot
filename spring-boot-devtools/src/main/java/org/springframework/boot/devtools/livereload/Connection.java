@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.Base64Utils;
 
 /**
  * A {@link LiveReloadServer} connection.
@@ -149,7 +150,7 @@ class Connection {
 		String response = matcher.group(1).trim() + WEBSOCKET_GUID;
 		MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
 		messageDigest.update(response.getBytes(), 0, response.length());
-		return Base64Encoder.encode(messageDigest.digest());
+		return Base64Utils.encodeToString(messageDigest.digest());
 	}
 
 	/**
