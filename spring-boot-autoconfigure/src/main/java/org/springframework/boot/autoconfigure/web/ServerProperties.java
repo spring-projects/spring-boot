@@ -394,7 +394,7 @@ public class ServerProperties
 		private boolean persistent;
 
 		/**
-		 * The directory used to store session data.
+		 * Directory used to store session data.
 		 */
 		private File storeDir;
 
