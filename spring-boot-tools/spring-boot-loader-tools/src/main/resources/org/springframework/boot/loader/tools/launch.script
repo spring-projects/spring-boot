@@ -61,7 +61,8 @@ if [[ -z "$identity" ]]; then
   fi
 fi
 
-
+# Initialize log file name if not provided by the config file
+[[ -z "$LOG_FILENAME" ]] && LOG_FILENAME="${identity}.log"
 
 
 # ANSI Colors
@@ -91,7 +92,7 @@ if [[ "$identity" == "$init_script" ]] || [[ "$identity" == "$APP_NAME" ]]; then
   PID_FOLDER="$PID_FOLDER/${identity}"
 fi
 pid_file="$PID_FOLDER/${identity}.pid"
-log_file="$LOG_FOLDER/${identity}.log"
+log_file="$LOG_FOLDER/$LOG_FILENAME"
 
 # Determine the user to run as if we are root
 [[ $(id -u) == "0" ]] && run_user=$(ls -ld "$jarfile" | awk '{print $3}')
