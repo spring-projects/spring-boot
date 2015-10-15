@@ -394,18 +394,31 @@ public class TomcatEmbeddedServletContainerFactory
 	private void configureSession(Context context) {
 		long sessionTimeout = getSessionTimeoutInMinutes();
 		context.setSessionTimeout((int) sessionTimeout);
+		Manager manager = context.getManager();
+		if (manager == null) {
+			manager = new StandardManager();
+			context.setManager(manager);
+		}
 		if (isPersistSession()) {
-			Manager manager = context.getManager();
-			if (manager == null) {
-				manager = new StandardManager();
-				context.setManager(manager);
-			}
-			Assert.state(manager instanceof StandardManager,
-					"Unable to persist HTTP session state using manager type "
-							+ manager.getClass().getName());
-			File folder = new ApplicationTemp().getFolder("tomcat-sessions");
-			File file = new File(folder, "SESSIONS.ser");
-			((StandardManager) manager).setPathname(file.getAbsolutePath());
+			configurePersistSession(manager);
+		}
+		else {
+			disablePersistSession(manager);
+		}
+	}
+
+	private void configurePersistSession(Manager manager) {
+		Assert.state(manager instanceof StandardManager,
+				"Unable to persist HTTP session state using manager type "
+						+ manager.getClass().getName());
+		File folder = new ApplicationTemp().getFolder("tomcat-sessions");
+		File file = new File(folder, "SESSIONS.ser");
+		((StandardManager) manager).setPathname(file.getAbsolutePath());
+	}
+
+	private void disablePersistSession(Manager manager) {
+		if (manager instanceof StandardManager) {
+			((StandardManager) manager).setPathname(null);
 		}
 	}
 

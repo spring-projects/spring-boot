@@ -723,7 +723,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		return bean;
 	}
 
-	private ServletContextInitializer sessionServletRegistration() {
+	protected final ServletContextInitializer sessionServletRegistration() {
 		ServletRegistrationBean bean = new ServletRegistrationBean(new ExampleServlet() {
 
 			@Override

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -45,6 +46,7 @@ import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -331,6 +333,31 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.addContextValves(new RemoteIpValve());
 		assertForwardHeaderIsUsed(factory);
+	}
+
+	@Test
+	public void disableDoesNotSaveSessionFiles() throws Exception {
+		File baseDir = this.temporaryFolder.newFolder();
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		// If baseDir is not set SESSIONS.ser is written to a different temp folder
+		// each time. By setting it we can really ensure that data isn't saved
+		factory.setBaseDirectory(baseDir);
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		this.container.start();
+		String s1 = getResponse(getLocalUrl("/session"));
+		String s2 = getResponse(getLocalUrl("/session"));
+		this.container.stop();
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		this.container.start();
+		String s3 = getResponse(getLocalUrl("/session"));
+		System.out.println(s1);
+		System.out.println(s2);
+		System.out.println(s3);
+		String message = "Session error s1=" + s1 + " s2=" + s2 + " s3=" + s3;
+		assertThat(message, s2.split(":")[0], equalTo(s1.split(":")[1]));
+		assertThat(message, s3.split(":")[0], not(equalTo(s2.split(":")[1])));
 	}
 
 	@Override
