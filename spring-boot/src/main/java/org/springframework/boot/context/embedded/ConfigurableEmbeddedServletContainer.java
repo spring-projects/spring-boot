@@ -80,6 +80,12 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setPersistSession(boolean persistSession);
 
 	/**
+	 * Set the directory used to store serialized session data.
+	 * @param sessionStoreDir the directory or {@code null} to use a default location.
+	 */
+	void setSessionStoreDir(File sessionStoreDir);
+
+	/**
 	 * Sets the specific network address that the server should bind to.
 	 * @param address the address to set (defaults to {@code null})
 	 */

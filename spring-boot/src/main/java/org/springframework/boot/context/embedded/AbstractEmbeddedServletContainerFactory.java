@@ -26,6 +26,9 @@ import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.ApplicationHome;
+import org.springframework.boot.ApplicationTemp;
+import org.springframework.util.Assert;
 
 /**
  * Abstract base class for {@link EmbeddedServletContainerFactory} implementations.
@@ -138,6 +141,26 @@ public abstract class AbstractEmbeddedServletContainerFactory
 		catch (IOException ex) {
 			return null;
 		}
+	}
+
+	protected final File getValidSessionStoreDir() {
+		return getValidSessionStoreDir(true);
+	}
+
+	protected final File getValidSessionStoreDir(boolean mkdirs) {
+		File dir = getSessionStoreDir();
+		if (dir == null) {
+			return new ApplicationTemp().getFolder("servlet-sessions");
+		}
+		if (!dir.isAbsolute()) {
+			dir = new File(new ApplicationHome().getDir(), dir.getPath());
+		}
+		if (!dir.exists() && mkdirs) {
+			dir.mkdirs();
+		}
+		Assert.state(!mkdirs || dir.exists(), "Session dir " + dir + " does not exist");
+		Assert.state(!dir.isFile(), "Session dir " + dir + " points to a file");
+		return dir;
 	}
 
 }

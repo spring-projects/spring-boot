@@ -38,7 +38,6 @@ import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -360,7 +359,7 @@ public class UndertowEmbeddedServletContainerFactory
 			configureAccessLog(deployment);
 		}
 		if (isPersistSession()) {
-			File folder = new ApplicationTemp().getFolder("undertow-sessions");
+			File folder = getValidSessionStoreDir();
 			deployment.setSessionPersistenceManager(new FileSessionPersistence(folder));
 		}
 		DeploymentManager manager = Servlets.defaultContainer().addDeployment(deployment);

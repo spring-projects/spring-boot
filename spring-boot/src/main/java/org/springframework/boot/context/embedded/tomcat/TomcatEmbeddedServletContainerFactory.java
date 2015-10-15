@@ -52,7 +52,6 @@ import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -411,7 +410,7 @@ public class TomcatEmbeddedServletContainerFactory
 		Assert.state(manager instanceof StandardManager,
 				"Unable to persist HTTP session state using manager type "
 						+ manager.getClass().getName());
-		File folder = new ApplicationTemp().getFolder("tomcat-sessions");
+		File folder = getValidSessionStoreDir();
 		File file = new File(folder, "SESSIONS.ser");
 		((StandardManager) manager).setPathname(file.getAbsolutePath());
 	}

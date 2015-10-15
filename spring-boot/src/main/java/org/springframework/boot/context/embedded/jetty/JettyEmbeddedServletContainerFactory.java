@@ -53,7 +53,6 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -304,8 +303,8 @@ public class JettyEmbeddedServletContainerFactory
 
 	private void configurePersistSession(SessionManager sessionManager) {
 		try {
-			File storeDirectory = new ApplicationTemp().getFolder("jetty-sessions");
-			((HashSessionManager) sessionManager).setStoreDirectory(storeDirectory);
+			((HashSessionManager) sessionManager)
+					.setStoreDirectory(getValidSessionStoreDir());
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);

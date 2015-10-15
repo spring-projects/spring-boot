@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -382,6 +383,17 @@ public class ServerPropertiesTests {
 				new JettyEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(true);
+	}
+
+	@Test
+	public void sessionStoreDir() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.session.store-dir", "myfolder");
+		bindProperties(map);
+		JettyEmbeddedServletContainerFactory container = spy(
+				new JettyEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+		verify(container).setSessionStoreDir(new File("myfolder"));
 	}
 
 	private void bindProperties(Map<String, String> map) {

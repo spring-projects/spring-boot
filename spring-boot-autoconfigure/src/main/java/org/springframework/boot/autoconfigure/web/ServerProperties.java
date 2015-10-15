@@ -162,6 +162,7 @@ public class ServerProperties
 			container.setSessionTimeout(getSession().getTimeout());
 		}
 		container.setPersistSession(getSession().isPersistent());
+		container.setSessionStoreDir(getSession().getStoreDir());
 		if (getSsl() != null) {
 			container.setSsl(getSsl());
 		}
@@ -392,6 +393,11 @@ public class ServerProperties
 		 */
 		private boolean persistent;
 
+		/**
+		 * The directory used to store session data.
+		 */
+		private File storeDir;
+
 		private Cookie cookie = new Cookie();
 
 		public Cookie getCookie() {
@@ -420,6 +426,14 @@ public class ServerProperties
 
 		public void setPersistent(boolean persistent) {
 			this.persistent = persistent;
+		}
+
+		public File getStoreDir() {
+			return this.storeDir;
+		}
+
+		public void setStoreDir(File storeDir) {
+			this.storeDir = storeDir;
 		}
 
 		public static class Cookie {

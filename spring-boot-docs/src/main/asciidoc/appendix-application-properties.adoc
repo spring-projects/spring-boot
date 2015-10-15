@@ -87,6 +87,7 @@ content into your application; rather pick only the properties that you need.
 	server.display-name= # the display name of the application
 	server.use-forward-headers= # if X-Forwarded-* headers should be used (default is off unless running in a known cloud)
 	server.session.persistent=false # true if session should be saved across restarts
+	server.session.store-dir= # dir used to save session data
 	server.session.timeout= # session timeout in seconds
 	server.session.tracking-modes= # tracking modes (one or more of "cookie" ,"url", "ssl")
 	server.session.cookie.name= # session cookie name

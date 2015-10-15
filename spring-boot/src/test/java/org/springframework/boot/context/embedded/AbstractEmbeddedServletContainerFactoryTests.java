@@ -19,6 +19,7 @@ package org.springframework.boot.context.embedded;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -58,6 +59,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
+import org.springframework.boot.ApplicationHome;
+import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -72,6 +75,7 @@ import org.springframework.util.concurrent.ListenableFuture;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.notNullValue;
@@ -562,6 +566,54 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		String message = "Session error s1=" + s1 + " s2=" + s2 + " s3=" + s3;
 		assertThat(message, s2.split(":")[0], equalTo(s1.split(":")[1]));
 		assertThat(message, s3.split(":")[0], equalTo(s2.split(":")[1]));
+	}
+
+	@Test
+	public void persistSessionInSpecificSessionStoreDir() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		File sessionStoreDir = this.temporaryFolder.newFolder();
+		factory.setPersistSession(true);
+		factory.setSessionStoreDir(sessionStoreDir);
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		this.container.start();
+		getResponse(getLocalUrl("/session"));
+		this.container.stop();
+		File[] dirContents = sessionStoreDir.listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return !(".".equals(name) || "..".equals(name));
+			}
+
+		});
+		assertThat(dirContents.length, greaterThan(0));
+	}
+
+	@Test
+	public void getValidSessionStoreWhenSessionStoreNotSet() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		File dir = factory.getValidSessionStoreDir(false);
+		assertThat(dir.getName(), equalTo("servlet-sessions"));
+		assertThat(dir.getParentFile(), equalTo(new ApplicationTemp().getFolder()));
+	}
+
+	@Test
+	public void getValidSessionStoreWhenSessionStoreIsRelative() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSessionStoreDir(new File("sessions"));
+		File dir = factory.getValidSessionStoreDir(false);
+		assertThat(dir.getName(), equalTo("sessions"));
+		assertThat(dir.getParentFile(), equalTo(new ApplicationHome().getDir()));
+	}
+
+	@Test
+	public void getValidSessionStoreWhenSessionStoreReferencesFile() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSessionStoreDir(this.temporaryFolder.newFile());
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("points to a file");
+		factory.getValidSessionStoreDir(false);
 	}
 
 	@Test

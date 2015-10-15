@@ -3584,7 +3584,7 @@ Spring Session provides support for managing a user's session information. If yo
 writing a web application and Spring Session and Spring Data Redis are both on the
 classpath, Spring Boot will auto-configure Spring Session through its
 `@EnableRedisHttpSession`. Session data will be stored in Redis and the session timeout
-can be configured using the `server.session-timeout` property.
+can be configured using the `server.session.timeout` property.
 
 
 
