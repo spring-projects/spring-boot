@@ -56,7 +56,6 @@ import org.xnio.SslClientAuthMode;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowMessages;
-import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.Resource;
 import io.undertow.server.handlers.resource.ResourceChangeListener;
@@ -370,10 +369,7 @@ public class UndertowEmbeddedServletContainerFactory
 		if (root != null && root.isFile()) {
 			return new JarResourcemanager(root);
 		}
-		if (this.resourceLoader != null) {
-			return new ClassPathResourceManager(this.resourceLoader.getClassLoader(), "");
-		}
-		return new ClassPathResourceManager(getClass().getClassLoader(), "");
+		return ResourceManager.EMPTY_RESOURCE_MANAGER;
 	}
 
 	private void configureErrorPages(DeploymentInfo servletBuilder) {
