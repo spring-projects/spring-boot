@@ -92,6 +92,10 @@ public abstract class AbstractEmbeddedServletContainerFactory
 		return null;
 	}
 
+	private File getWarFileDocumentRoot() {
+		return getArchiveFileDocumentRoot(".war");
+	}
+
 	private File getArchiveFileDocumentRoot(String extension) {
 		File file = getCodeSourceArchive();
 		if (this.logger.isDebugEnabled()) {
@@ -102,10 +106,6 @@ public abstract class AbstractEmbeddedServletContainerFactory
 			return file.getAbsoluteFile();
 		}
 		return null;
-	}
-
-	private File getWarFileDocumentRoot() {
-		return getArchiveFileDocumentRoot(".war");
 	}
 
 	private File getCommonDocumentRoot() {
