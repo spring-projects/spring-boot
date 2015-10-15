@@ -100,7 +100,7 @@ log_file="$LOG_FOLDER/${identity}.log"
 if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
     javaexe="$JAVA_HOME/bin/java"
 elif type -p java 2>&1> /dev/null; then
-    javaexe=java
+    javaexe=$(type -p java)
 elif [[ -x "/usr/bin/java" ]];  then
     javaexe="/usr/bin/java"
 else
