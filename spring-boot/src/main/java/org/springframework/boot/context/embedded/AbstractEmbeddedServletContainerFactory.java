@@ -150,7 +150,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	protected final File getValidSessionStoreDir(boolean mkdirs) {
 		File dir = getSessionStoreDir();
 		if (dir == null) {
-			return new ApplicationTemp().getFolder("servlet-sessions");
+			return new ApplicationTemp().getDir("servlet-sessions");
 		}
 		if (!dir.isAbsolute()) {
 			dir = new File(new ApplicationHome().getDir(), dir.getPath());

@@ -595,7 +595,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		File dir = factory.getValidSessionStoreDir(false);
 		assertThat(dir.getName(), equalTo("servlet-sessions"));
-		assertThat(dir.getParentFile(), equalTo(new ApplicationTemp().getFolder()));
+		assertThat(dir.getParentFile(), equalTo(new ApplicationTemp().getDir()));
 	}
 
 	@Test
