@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
  * Properties for the security aspects of an application.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "security")
 public class SecurityProperties implements SecurityPrerequisite {
@@ -162,22 +163,22 @@ public class SecurityProperties implements SecurityPrerequisite {
 		/**
 		 * Enable cross site scripting (XSS) protection.
 		 */
-		private boolean xss;
+		private boolean xss = true;
 
 		/**
 		 * Enable cache control HTTP headers.
 		 */
-		private boolean cache;
+		private boolean cache = true;
 
 		/**
 		 * Enable "X-Frame-Options" header.
 		 */
-		private boolean frame;
+		private boolean frame = true;
 
 		/**
 		 * Enable "X-Content-Type-Options" header.
 		 */
-		private boolean contentType;
+		private boolean contentType = true;
 
 		/**
 		 * HTTP Strict Transport Security (HSTS) mode (none, domain, all).

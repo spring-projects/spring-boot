@@ -35,6 +35,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.Layout;
@@ -153,6 +154,13 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	@Parameter
 	private Properties embeddedLaunchScriptProperties;
 
+	/**
+	 * Exclude Spring Boot devtools.
+	 * @since 1.3
+	 */
+	@Parameter(defaultValue = "false")
+	private boolean excludeDevtools;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.project.getPackaging().equals("pom")) {
@@ -190,7 +198,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		}
 
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
-				getFilters());
+				getFilters(getAdditionalFilters()));
 
 		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack,
 				getLog());
@@ -211,6 +219,17 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			this.project.getArtifact().setFile(target);
 			getLog().info("Replacing main artifact " + source + " to " + target);
 		}
+	}
+
+	private ArtifactsFilter[] getAdditionalFilters() {
+		if (this.excludeDevtools) {
+			Exclude exclude = new Exclude();
+			exclude.setGroupId("org.springframework.boot");
+			exclude.setArtifactId("spring-boot-devtools");
+			ExcludeFilter filter = new ExcludeFilter(exclude);
+			return new ArtifactsFilter[] { filter };
+		}
+		return new ArtifactsFilter[] {};
 	}
 
 	private File getTargetFile() {

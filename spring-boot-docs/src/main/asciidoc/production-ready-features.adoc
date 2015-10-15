@@ -363,9 +363,6 @@ Maven '`project properties`' via `@..@` placeholders, e.g.
 	info.build.version=@project.version@
 ----
 
-NOTE: In the above example we used `+project.*+` to set some values to be used as
-fallbacks if the Maven resource filtering has not been switched on for some reason.
-
 TIP: The `spring-boot:run` maven goal adds `src/main/resources` directly to the classpath
 (for hot reloading purposes). This circumvents the resource filtering and this feature.
 You can use the `exec:java` goal instead or customize the plugin's configuration, see the
@@ -396,9 +393,14 @@ and (inside `<plugins/>`):
 			<delimiters>
 				<delimiter>@</delimiter>
 			</delimiters>
+			<useDefaultDelimiters>false</useDefaultDelimiters>
 		</configuration>
 	</plugin>
 ----
+
+NOTE: The `useDefaultDelimiters` property is important if you are using standard Spring
+placeholders in your configuration (e.g. `${foo}`). These may be expanded by the build if
+that property is not set to `false`.
 
 
 
@@ -607,7 +609,10 @@ users full access to the health endpoint in a secure application. To do so, set
 `sensitive` flag value "`false`" indicated in bold):
 
 |====
-|Secure |Sensitive |Unauthenticated |Authenticated
+|`management.security.enabled`
+|`endpoints.health.sensitive`
+|Unauthenticated
+|Authenticated
 
 |false
 |**false**
@@ -732,6 +737,8 @@ the following dependency to your project:
 TIP: If you want to also enable telnet access you will additionally need a dependency
 on `org.crsh:crsh.shell.telnet`.
 
+NOTE: CRaSH requires to run with a JDK as it compiles commands on the fly. If a basic
+`help` command fails, you are probably running with a JRE.
 
 
 [[production-ready-connecting-to-the-remote-shell]]
@@ -1166,9 +1173,11 @@ curl localhost:4242/api/query?start=1h-ago&m=max:counter.status.200.root
 
 [[production-ready-metric-writers-export-to-statsd]]
 ==== Example: Export to Statsd
-To export metrics to Statsd add a `spring.metrics.export.statsd.host` value to your
-`application.properties` file. Connections will be opened to port `8125` unless a
-`spring.metrics.export.statsd.port` override is provided. You can use
+To export metrics to Statsd, make sure first that you have added
+`com.timgroup:java-statsd-client` as a dependency of your project (Spring Boot
+provides a dependency management for it). Then add a `spring.metrics.export.statsd.host`
+value to your `application.properties` file. Connections will be opened to port `8125`
+unless a `spring.metrics.export.statsd.port` override is provided. You can use
 `spring.metrics.export.statsd.prefix` if you want a custom prefix.
 
 Alternatively, you can provide a `@Bean` of type `StatsdMetricWriter` and mark it

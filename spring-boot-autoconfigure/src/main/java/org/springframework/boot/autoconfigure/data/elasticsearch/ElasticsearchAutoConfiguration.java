@@ -32,6 +32,7 @@ import org.elasticsearch.node.NodeBuilder;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -72,6 +73,7 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	private Releasable releasable;
 
 	@Bean
+	@ConditionalOnMissingBean
 	public Client elasticsearchClient() {
 		try {
 			return createClient();

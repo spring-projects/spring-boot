@@ -16,15 +16,14 @@
 
 package org.springframework.boot.autoconfigure.security;
 
-import javax.servlet.Filter;
-
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.context.embedded.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
@@ -37,11 +36,13 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
  * {@link WebSecurityConfiguration} exists.
  *
  * @author Rob Winch
+ * @author Phillip Webb
  * @since 1.3
  */
 @Configuration
 @ConditionalOnWebApplication
 @EnableConfigurationProperties
+@ConditionalOnClass(AbstractSecurityWebApplicationInitializer.class)
 @AutoConfigureAfter(SpringBootWebSecurityConfiguration.class)
 public class SecurityFilterAutoConfiguration {
 
@@ -49,12 +50,12 @@ public class SecurityFilterAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(name = DEFAULT_FILTER_NAME)
-	public FilterRegistrationBean securityFilterChainRegistration(
-			@Qualifier(DEFAULT_FILTER_NAME) Filter securityFilter,
+	public DelegatingFilterProxyRegistrationBean securityFilterChainRegistration(
+			ApplicationContext applicationContext,
 			SecurityProperties securityProperties) {
-		FilterRegistrationBean registration = new FilterRegistrationBean(securityFilter);
+		DelegatingFilterProxyRegistrationBean registration = new DelegatingFilterProxyRegistrationBean(
+				DEFAULT_FILTER_NAME);
 		registration.setOrder(securityProperties.getFilterOrder());
-		registration.setName(DEFAULT_FILTER_NAME);
 		return registration;
 	}
 

@@ -26,6 +26,9 @@ import java.lang.annotation.Target;
  * Annotation for externalized configuration. Add this to a class definition or a
  * {@code @Bean} method in a {@code @Configuration} class if you want to bind and validate
  * some external Properties (e.g. from a .properties file).
+ * <p>
+ * Note that contrary to {@code @Value}, SpEL expressions are not evaluated since property
+ * values are externalized.
  *
  * @author Dave Syer
  * @see ConfigurationPropertiesBindingPostProcessor

@@ -330,14 +330,19 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
-	public void basicSsl() throws Exception {
+	public void basicSslFromClassPath() throws Exception {
+		testBasicSslWithKeyStore("classpath:test.jks");
+	}
+
+	@Test
+	public void basicSslFromFileSystem() throws Exception {
 		testBasicSslWithKeyStore("src/test/resources/test.jks");
 	}
 
 	@Test
 	public void sslDisabled() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		Ssl ssl = getSsl(null, "password", "src/test/resources/test.jks");
+		Ssl ssl = getSsl(null, "password", "classpath:test.jks");
 		ssl.setEnabled(false);
 		factory.setSsl(ssl);
 		this.container = factory.getEmbeddedServletContainer(
@@ -393,8 +398,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	public void pkcs12KeyStoreAndTrustStore() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		factory.setSsl(getSsl(ClientAuth.NEED, null, "src/test/resources/test.p12",
-				"src/test/resources/test.p12"));
+		factory.setSsl(getSsl(ClientAuth.NEED, null, "classpath:test.p12",
+				"classpath:test.p12"));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		KeyStore keyStore = KeyStore.getInstance("pkcs12");
@@ -417,8 +422,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		factory.setSsl(getSsl(ClientAuth.NEED, "password", "src/test/resources/test.jks",
-				"src/test/resources/test.jks"));
+		factory.setSsl(getSsl(ClientAuth.NEED, "password", "classpath:test.jks",
+				"classpath:test.jks"));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -441,8 +446,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		factory.setSsl(
-				getSsl(ClientAuth.NEED, "password", "src/test/resources/test.jks"));
+		factory.setSsl(getSsl(ClientAuth.NEED, "password", "classpath:test.jks"));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
@@ -460,8 +464,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		factory.setSsl(
-				getSsl(ClientAuth.WANT, "password", "src/test/resources/test.jks"));
+		factory.setSsl(getSsl(ClientAuth.WANT, "password", "classpath:test.jks"));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -484,8 +487,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		factory.setSsl(
-				getSsl(ClientAuth.WANT, "password", "src/test/resources/test.jks"));
+		factory.setSsl(getSsl(ClientAuth.WANT, "password", "classpath:test.jks"));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
