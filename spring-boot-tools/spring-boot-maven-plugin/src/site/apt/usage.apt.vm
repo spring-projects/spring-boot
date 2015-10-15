@@ -116,7 +116,8 @@ mvn spring-boot:run
 
   If you need to specify some JVM arguments (i.e. for debugging purposes), you can use
   the <<<jvmArguments>>> parameter, see {{{./examples/run-debug.html}Debug the application}}
-  for more details.
+  for more details. As a convenience, the   profiles to enable are handed by a specific
+  property (<<<profiles>>>), see {{{./examples/run-profiles.html}Specify active profiles}}.
 
   By default, any <<src/main/resources>> folder will be added to the application classpath
   when you run the application and any duplicate found in <<target/classes>> will be
