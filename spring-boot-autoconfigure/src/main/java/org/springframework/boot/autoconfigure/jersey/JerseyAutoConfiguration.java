@@ -48,6 +48,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.filter.RequestContextFilter;
 
@@ -56,6 +57,7 @@ import org.springframework.web.filter.RequestContextFilter;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnClass(name = { "org.glassfish.jersey.server.spring.SpringComponentProvider",
@@ -77,8 +79,13 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 
 	@PostConstruct
 	public void path() {
-		this.path = findPath(AnnotationUtils.findAnnotation(this.config.getClass(),
-				ApplicationPath.class));
+		if (StringUtils.hasLength(this.jersey.getPath())) {
+			this.path = parsePath(this.jersey.getPath());
+		}
+		else {
+			this.path = findPath(AnnotationUtils.findAnnotation(this.config.getClass(),
+					ApplicationPath.class));
+		}
 	}
 
 	@Bean
@@ -144,9 +151,15 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 			return "/*";
 		}
 		String path = annotation.value();
-		if (!path.startsWith("/")) {
-			path = "/" + path;
-		}
-		return path.equals("/") ? "/*" : path + "/*";
+
+		return parsePath(path);
 	}
+
+	private static String parsePath(String applicationPath) {
+		if (!applicationPath.startsWith("/")) {
+			applicationPath = "/" + applicationPath;
+		}
+		return applicationPath.equals("/") ? "/*" : applicationPath + "/*";
+	}
+
 }
