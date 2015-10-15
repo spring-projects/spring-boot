@@ -7,7 +7,7 @@
 		<version>1.3.0.BUILD-SNAPSHOT</version>
 		<relativePath>../</relativePath>
 	</parent>
-	<artifactId>spring-boot-security-tests-web-helloworld</artifactId>
+	<artifactId>spring-boot-security-test-web-helloworld</artifactId>
 	<name>Spring Boot Security Tests - Web Hello World</name>
 	<description>${project.name}</description>
 	<url>http://projects.spring.io/spring-boot/</url>
