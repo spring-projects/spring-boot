@@ -33,7 +33,7 @@ public class SampleLiquibaseApplicationTests {
 	@Test
 	public void testDefaultSettings() throws Exception {
 		try {
-			SampleLiquibaseApplication.main(new String[0]);
+			SampleLiquibaseApplication.main(new String[] { "--server.port=0" });
 		}
 		catch (IllegalStateException ex) {
 			if (serverNotRunning(ex)) {
