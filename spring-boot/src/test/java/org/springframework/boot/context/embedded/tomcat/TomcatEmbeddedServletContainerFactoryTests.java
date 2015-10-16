@@ -41,6 +41,7 @@ import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.util.SocketUtils;
 
@@ -278,7 +279,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
-				catch (IllegalStateException ex) {
+				catch (EmbeddedServletContainerException ex) {
 					// Ignore
 				}
 			}
@@ -308,7 +309,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
-				catch (IllegalStateException ex) {
+				catch (EmbeddedServletContainerException ex) {
 					// Ignore
 				}
 			}
@@ -382,7 +383,6 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	private void doWithBlockedPort(final int port, Runnable action) throws IOException {
 		ServerSocket serverSocket = new ServerSocket();
 		serverSocket.bind(new InetSocketAddress(port));
-
 		try {
 			action.run();
 		}
