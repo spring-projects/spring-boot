@@ -23,6 +23,7 @@ import java.util.Set;
 import org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration.ResourceBundleCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -50,7 +51,7 @@ import static org.springframework.util.StringUtils.trimAllWhitespace;
  * @author Phillip Webb
  */
 @Configuration
-@ConditionalOnMissingBean(MessageSource.class)
+@ConditionalOnMissingBean(value = MessageSource.class, search = SearchStrategy.CURRENT)
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Conditional(ResourceBundleCondition.class)
 @EnableConfigurationProperties
