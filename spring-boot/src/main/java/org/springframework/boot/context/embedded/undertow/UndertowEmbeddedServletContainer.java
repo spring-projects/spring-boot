@@ -99,32 +99,32 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	@Override
 	public synchronized void start() throws EmbeddedServletContainerException {
-		if (!this.autoStart) {
-			return;
-		}
-		if (this.undertow == null) {
-			this.undertow = createUndertowServer();
-		}
-		this.undertow.start();
-		this.started = true;
-		UndertowEmbeddedServletContainer.logger
-				.info("Undertow started on port(s) " + getPortsDescription());
-	}
-
-	private Undertow createUndertowServer() {
 		try {
-			HttpHandler httpHandler = this.manager.start();
-			httpHandler = getContextHandler(httpHandler);
-			if (this.useForwardHeaders) {
-				httpHandler = Handlers.proxyPeerAddress(httpHandler);
+			if (!this.autoStart) {
+				return;
 			}
-			this.builder.setHandler(httpHandler);
-			return this.builder.build();
+			if (this.undertow == null) {
+				this.undertow = createUndertowServer();
+			}
+			this.undertow.start();
+			this.started = true;
+			UndertowEmbeddedServletContainer.logger
+					.info("Undertow started on port(s) " + getPortsDescription());
 		}
 		catch (ServletException ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to start embdedded Undertow", ex);
 		}
+	}
+
+	private Undertow createUndertowServer() throws ServletException {
+		HttpHandler httpHandler = this.manager.start();
+		httpHandler = getContextHandler(httpHandler);
+		if (this.useForwardHeaders) {
+			httpHandler = Handlers.proxyPeerAddress(httpHandler);
+		}
+		this.builder.setHandler(httpHandler);
+		return this.builder.build();
 	}
 
 	private HttpHandler getContextHandler(HttpHandler httpHandler) {
