@@ -513,6 +513,17 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		assertThat(getJspServlet(), is(nullValue()));
 	}
 
+	@Test
+	public void cannotReadClassPathFiles() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory
+				.getEmbeddedServletContainer(exampleServletRegistration());
+		this.container.start();
+		ClientHttpResponse response = getClientResponse(
+				getLocalUrl("/org/springframework/boot/SpringApplication.class"));
+		assertThat(response.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
+	}
+
 	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore) {
 		return getSsl(clientAuth, keyPassword, keyStore, null);
 	}

@@ -87,6 +87,7 @@
 		<module>spring-boot-sample-undertow</module>
 		<module>spring-boot-sample-undertow-ssl</module>
 		<module>spring-boot-sample-velocity</module>
+		<module>spring-boot-sample-war</module>
 		<module>spring-boot-sample-web-freemarker</module>
 		<module>spring-boot-sample-web-groovy-templates</module>
 		<module>spring-boot-sample-web-method-security</module>

@@ -64,7 +64,6 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.AccessLogReceiver;
 import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
-import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.Resource;
 import io.undertow.server.handlers.resource.ResourceChangeListener;
@@ -372,10 +371,12 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private void configureAccessLog(DeploymentInfo deploymentInfo) {
 		deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
+
 			@Override
 			public HttpHandler wrap(HttpHandler handler) {
 				return createAccessLogHandler(handler);
 			}
+
 		});
 	}
 
@@ -433,10 +434,7 @@ public class UndertowEmbeddedServletContainerFactory
 		if (root != null && root.isFile()) {
 			return new JarResourcemanager(root);
 		}
-		if (this.resourceLoader != null) {
-			return new ClassPathResourceManager(this.resourceLoader.getClassLoader(), "");
-		}
-		return new ClassPathResourceManager(getClass().getClassLoader(), "");
+		return ResourceManager.EMPTY_RESOURCE_MANAGER;
 	}
 
 	private void configureErrorPages(DeploymentInfo servletBuilder) {
