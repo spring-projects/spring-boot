@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.FileNotFoundException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -30,7 +32,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
@@ -51,6 +55,7 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -94,6 +99,9 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  */
 public class EndpointWebMvcAutoConfigurationTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private final AnnotationConfigEmbeddedWebApplicationContext applicationContext = new AnnotationConfigEmbeddedWebApplicationContext();
 
@@ -232,6 +240,28 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/endpoint", ports.get().management, "endpointoutput");
 		this.applicationContext.close();
 		assertAllClosed();
+	}
+
+	@Test
+	public void specificPortsViaPropertiesWithClash() throws Exception {
+		int managementPort = ports.get().management;
+		ServerSocket serverSocket = new ServerSocket();
+		serverSocket.bind(new InetSocketAddress(managementPort));
+		try {
+			EnvironmentTestUtils.addEnvironment(this.applicationContext,
+					"server.port:" + ports.get().server,
+					"management.port:" + ports.get().management);
+			this.applicationContext.register(RootConfig.class, EndpointConfig.class,
+					BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+					ErrorMvcAutoConfiguration.class);
+			this.thrown.expect(EmbeddedServletContainerException.class);
+			this.applicationContext.refresh();
+			this.applicationContext.close();
+		}
+		finally {
+			serverSocket.close();
+			assertAllClosed();
+		}
 	}
 
 	@Test

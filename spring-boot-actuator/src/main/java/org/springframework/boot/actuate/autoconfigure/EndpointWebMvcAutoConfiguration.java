@@ -52,7 +52,6 @@ import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfigurat
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -141,11 +140,17 @@ public class EndpointWebMvcAutoConfiguration
 			managementPort = ManagementServerPort
 					.get(this.applicationContext.getEnvironment(), this.beanFactory);
 		}
-		if (managementPort == ManagementServerPort.DIFFERENT
-				&& this.applicationContext instanceof EmbeddedWebApplicationContext
-				&& ((EmbeddedWebApplicationContext) this.applicationContext)
-						.getEmbeddedServletContainer() != null) {
-			createChildManagementContext();
+		if (managementPort == ManagementServerPort.DIFFERENT) {
+			if (this.applicationContext instanceof EmbeddedWebApplicationContext
+					&& ((EmbeddedWebApplicationContext) this.applicationContext)
+							.getEmbeddedServletContainer() != null) {
+				createChildManagementContext();
+			}
+			else {
+				logger.warn("Could not start embedded management container on "
+						+ "different port (management endpoints are still available "
+						+ "through JMX)");
+			}
 		}
 		if (managementPort == ManagementServerPort.SAME && this.applicationContext
 				.getEnvironment() instanceof ConfigurableEnvironment) {
@@ -165,24 +170,8 @@ public class EndpointWebMvcAutoConfiguration
 				DispatcherServletAutoConfiguration.class);
 		CloseEventPropagationListener.addIfPossible(this.applicationContext,
 				childContext);
-		try {
-			childContext.refresh();
-			managementContextResolver().setApplicationContext(childContext);
-		}
-		catch (RuntimeException ex) {
-			// No support currently for deploying a war with management.port=<different>,
-			// and this is the signature of that happening
-			if (ex instanceof EmbeddedServletContainerException
-					|| ex.getCause() instanceof EmbeddedServletContainerException) {
-				logger.warn(
-						"Could not start embedded management container (management endpoints "
-								+ "are still available through JMX)");
-				logger.debug("Embedded management container startup failed", ex);
-			}
-			else {
-				throw ex;
-			}
-		}
+		childContext.refresh();
+		managementContextResolver().setApplicationContext(childContext);
 	}
 
 	/**
