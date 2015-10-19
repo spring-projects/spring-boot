@@ -16,15 +16,15 @@
 
 package org.springframework.boot.cli.compiler;
 
+import groovy.lang.Grab;
+import groovy.lang.GroovyClassLoader;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
+
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
-
-import groovy.lang.Grab;
-import groovy.lang.GroovyClassLoader;
 
 /**
  * Customizer that allows dependencies to be added during compilation. Adding a dependency

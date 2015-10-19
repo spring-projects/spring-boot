@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.social;
 
 import org.junit.After;
+
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.connect.ConnectionFactoryLocator;

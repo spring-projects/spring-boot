@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPoolConfig;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -40,9 +43,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Redis support.

@@ -21,15 +21,15 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Locale;
 
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Mustache.Compiler;
+import com.samskivert.mustache.Template;
+
 import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
-
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Mustache.Compiler;
-import com.samskivert.mustache.Template;
 
 /**
  * Spring MVC {@link ViewResolver} for Mustache.

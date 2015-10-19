@@ -19,17 +19,17 @@ package org.springframework.boot.context.embedded.undertow;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.undertow.Undertow.Builder;
+import io.undertow.servlet.api.DeploymentInfo;
 import org.junit.Test;
 import org.mockito.InOrder;
+
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.ExampleServlet;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.http.HttpStatus;
-
-import io.undertow.Undertow.Builder;
-import io.undertow.servlet.api.DeploymentInfo;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;

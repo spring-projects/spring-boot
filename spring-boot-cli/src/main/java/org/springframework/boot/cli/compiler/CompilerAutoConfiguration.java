@@ -16,14 +16,13 @@
 
 package org.springframework.boot.cli.compiler;
 
+import groovy.lang.GroovyClassLoader;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
-
-import groovy.lang.GroovyClassLoader;
 
 /**
  * Strategy that can be used to apply some auto-configuration during the

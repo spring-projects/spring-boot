@@ -16,11 +16,10 @@
 
 package org.springframework.boot.liquibase;
 
+import liquibase.logging.LogLevel;
 import org.apache.commons.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
-
-import liquibase.logging.LogLevel;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;

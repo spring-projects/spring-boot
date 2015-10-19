@@ -22,6 +22,7 @@ import java.net.URLClassLoader;
 import java.util.List;
 
 import org.junit.Test;
+
 import org.springframework.util.ClassUtils;
 
 import static org.junit.Assert.assertEquals;

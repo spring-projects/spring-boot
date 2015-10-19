@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.data;
 
 import org.junit.Test;
+
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 import org.springframework.util.FileCopyUtils;
 

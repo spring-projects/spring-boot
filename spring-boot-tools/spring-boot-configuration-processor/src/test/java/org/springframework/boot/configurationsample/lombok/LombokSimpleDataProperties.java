@@ -19,9 +19,9 @@ package org.springframework.boot.configurationsample.lombok;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-
 import lombok.Data;
+
+import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
  * Configuration properties using lombok @Data.

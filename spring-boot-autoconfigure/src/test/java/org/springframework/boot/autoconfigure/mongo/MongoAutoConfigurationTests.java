@@ -16,16 +16,16 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import com.mongodb.Mongo;
+import com.mongodb.MongoClientOptions;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.mongodb.Mongo;
-import com.mongodb.MongoClientOptions;
 
 import static org.junit.Assert.assertEquals;
 

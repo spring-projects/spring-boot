@@ -16,14 +16,14 @@
 
 package org.springframework.boot.liquibase;
 
+import liquibase.servicelocator.CustomResolverServiceLocator;
+import liquibase.servicelocator.ServiceLocator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.ClassUtils;
-
-import liquibase.servicelocator.CustomResolverServiceLocator;
-import liquibase.servicelocator.ServiceLocator;
 
 /**
  * {@link ApplicationListener} that replaces the liquibase {@link ServiceLocator} with a

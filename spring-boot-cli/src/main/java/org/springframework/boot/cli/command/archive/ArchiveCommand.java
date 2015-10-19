@@ -29,6 +29,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.jar.Manifest;
 
+import groovy.lang.Grab;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.AnnotatedNode;
 import org.codehaus.groovy.ast.AnnotationNode;
@@ -37,6 +40,7 @@ import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
+
 import org.springframework.boot.cli.app.SpringApplicationLauncher;
 import org.springframework.boot.cli.archive.PackagedSpringApplicationLauncher;
 import org.springframework.boot.cli.command.Command;
@@ -61,10 +65,6 @@ import org.springframework.boot.loader.tools.Repackager;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
-
-import groovy.lang.Grab;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 
 /**
  * Abstract {@link Command} to create a self-contained executable archive file from a CLI

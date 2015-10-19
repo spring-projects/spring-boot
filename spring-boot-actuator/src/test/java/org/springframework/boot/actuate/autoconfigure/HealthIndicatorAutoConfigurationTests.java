@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicator;

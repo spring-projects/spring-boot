@@ -20,8 +20,10 @@ import java.lang.reflect.Field;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -29,8 +31,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
-
-import com.zaxxer.hikari.HikariDataSource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

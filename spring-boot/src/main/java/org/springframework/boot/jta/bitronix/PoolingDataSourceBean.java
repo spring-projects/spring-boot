@@ -26,15 +26,15 @@ import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
+import bitronix.tm.resource.common.ResourceBean;
+import bitronix.tm.resource.common.XAStatefulHolder;
+import bitronix.tm.resource.jdbc.PoolingDataSource;
+
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.UsesJava7;
 import org.springframework.util.StringUtils;
-
-import bitronix.tm.resource.common.ResourceBean;
-import bitronix.tm.resource.common.XAStatefulHolder;
-import bitronix.tm.resource.jdbc.PoolingDataSource;
 
 /**
  * Spring friendly version of {@link PoolingDataSource}. Provides sensible defaults and

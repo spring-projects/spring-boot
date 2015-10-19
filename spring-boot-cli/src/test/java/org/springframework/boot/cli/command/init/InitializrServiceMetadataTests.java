@@ -22,6 +22,7 @@ import java.nio.charset.Charset;
 
 import org.json.JSONObject;
 import org.junit.Test;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;

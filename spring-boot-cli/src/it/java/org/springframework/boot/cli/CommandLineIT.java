@@ -19,6 +19,7 @@ package org.springframework.boot.cli;
 import java.io.IOException;
 
 import org.junit.Test;
+
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker.Invocation;
 

@@ -21,6 +21,7 @@ import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;

@@ -40,6 +40,7 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.junit.Test;
 import org.mockito.InOrder;
+
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.Ssl;

@@ -17,6 +17,7 @@
 package org.springframework.boot.logging;
 
 import org.slf4j.bridge.SLF4JBridgeHandler;
+
 import org.springframework.util.ClassUtils;
 
 /**

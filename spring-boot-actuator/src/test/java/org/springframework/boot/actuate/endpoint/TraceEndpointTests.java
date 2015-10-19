@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.Collections;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.Trace;
 import org.springframework.boot.actuate.trace.TraceRepository;

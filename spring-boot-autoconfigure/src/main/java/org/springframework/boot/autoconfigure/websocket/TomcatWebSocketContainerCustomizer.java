@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.websocket;
 import java.lang.reflect.Constructor;
 
 import org.apache.catalina.Context;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;

@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.health;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;

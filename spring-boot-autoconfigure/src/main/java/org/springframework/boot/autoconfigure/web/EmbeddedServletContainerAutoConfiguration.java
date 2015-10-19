@@ -18,10 +18,13 @@ package org.springframework.boot.autoconfigure.web;
 
 import javax.servlet.Servlet;
 
+import io.undertow.Undertow;
 import org.apache.catalina.startup.Tomcat;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Loader;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.xnio.SslClientAuthMode;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -47,9 +50,6 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ObjectUtils;
-import org.xnio.SslClientAuthMode;
-
-import io.undertow.Undertow;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for an embedded servlet containers.

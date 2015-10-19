@@ -16,9 +16,8 @@
 
 package org.springframework.boot.cli.command.shell;
 
-import org.junit.Test;
-
 import jline.console.completer.ArgumentCompleter.ArgumentList;
+import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

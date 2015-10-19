@@ -23,6 +23,7 @@ import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
 
 import org.junit.Test;
+
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.boot.context.config.RandomValuePropertySource;
 import org.springframework.context.support.StaticMessageSource;

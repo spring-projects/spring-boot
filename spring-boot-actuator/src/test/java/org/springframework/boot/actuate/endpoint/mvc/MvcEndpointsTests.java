@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.support.StaticApplicationContext;

@@ -27,6 +27,7 @@ import org.apache.struts.mock.MockHttpServletResponse;
 import org.apache.struts.mock.MockServletContext;
 import org.apache.velocity.tools.ToolContext;
 import org.junit.Test;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;

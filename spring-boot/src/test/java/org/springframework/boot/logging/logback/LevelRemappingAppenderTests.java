@@ -16,16 +16,16 @@
 
 package org.springframework.boot.logging.logback;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.logging.logback.LevelRemappingAppender.AppendableLogger;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.spi.ILoggingEvent;
+import org.springframework.boot.logging.logback.LevelRemappingAppender.AppendableLogger;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

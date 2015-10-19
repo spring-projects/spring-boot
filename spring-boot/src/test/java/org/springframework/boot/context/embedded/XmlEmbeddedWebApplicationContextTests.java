@@ -19,6 +19,7 @@ package org.springframework.boot.context.embedded;
 import javax.servlet.Servlet;
 
 import org.junit.Test;
+
 import org.springframework.core.io.ClassPathResource;
 
 import static org.mockito.Mockito.verify;

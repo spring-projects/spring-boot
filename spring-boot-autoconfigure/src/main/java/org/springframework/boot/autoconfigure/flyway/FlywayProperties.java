@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.flywaydb.core.Flyway;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

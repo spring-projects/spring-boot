@@ -16,12 +16,12 @@
 
 package org.springframework.boot.actuate.health;
 
-import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Value object to express state of a component or subsystem.

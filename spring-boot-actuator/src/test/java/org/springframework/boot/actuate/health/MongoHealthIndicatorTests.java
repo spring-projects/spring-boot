@@ -16,8 +16,11 @@
 
 package org.springframework.boot.actuate.health;
 
+import com.mongodb.CommandResult;
+import com.mongodb.MongoException;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -25,9 +28,6 @@ import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfigurat
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.mongodb.core.MongoTemplate;
-
-import com.mongodb.CommandResult;
-import com.mongodb.MongoException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
