@@ -46,7 +46,8 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass({ ConnectionFactory.class, ActiveMQConnectionFactory.class })
 @ConditionalOnMissingBean(ConnectionFactory.class)
 @EnableConfigurationProperties(ArtemisProperties.class)
-@Import({ ArtemisXAConnectionFactoryConfiguration.class,
+@Import({ ArtemisEmbeddedServerConfiguration.class,
+		ArtemisXAConnectionFactoryConfiguration.class,
 		ArtemisConnectionFactoryConfiguration.class })
 public class ArtemisAutoConfiguration {
 
