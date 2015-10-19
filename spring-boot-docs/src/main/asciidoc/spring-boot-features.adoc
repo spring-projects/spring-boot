@@ -1019,6 +1019,9 @@ NOTE: The logging system is initialized early in the application lifecycle and a
 logging properties will not be found in property files loaded via `@PropertySource`
 annotations.
 
+TIP: Logging properties are independent of the actual logging infrastructure. As a
+result, specific configuration keys (such as `logback.configurationFile` for Logback)
+are not managed by spring Boot.
 
 
 [[boot-features-custom-log-levels]]

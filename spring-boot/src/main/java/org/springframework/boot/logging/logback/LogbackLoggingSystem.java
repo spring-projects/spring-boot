@@ -56,6 +56,8 @@ import ch.qos.logback.core.status.Status;
  */
 public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
+	private static final String CONFIGURATION_FILE_PROPERTY = "logback.configurationFile";
+
 	private static final Map<LogLevel, Level> LEVELS;
 
 	static {
@@ -102,6 +104,11 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			String configLocation, LogFile logFile) {
 		getLogger(null).getLoggerContext().getTurboFilterList().remove(FILTER);
 		super.initialize(initializationContext, configLocation, logFile);
+		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {
+			getLogger(LogbackLoggingSystem.class.getName()).warn(
+					"Ignoring '"+CONFIGURATION_FILE_PROPERTY+"' system property. " +
+							"Please use 'logging.path' instead.");
+		}
 	}
 
 	@Override

@@ -141,6 +141,21 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertFalse(new File(tmpDir() + "/tmp.log").exists());
 	}
 
+	@Test
+	public void testLogbackSpecificSystemProperty() throws Exception {
+		System.setProperty("logback.configurationFile", "/foo/my-file.xml");
+		try {
+			this.loggingSystem.beforeInitialize();
+			this.loggingSystem.initialize(this.initializationContext, null, null);
+			String output = this.output.toString().trim();
+			assertTrue("Wrong output:\n" + output, output.contains("Ignoring " +
+					"'logback.configurationFile' system property. Please use 'logging.path' instead."));
+		}
+		finally {
+			System.clearProperty("logback.configurationFile");
+		}
+	}
+
 	@Test(expected = IllegalStateException.class)
 	public void testNonexistentConfigLocation() throws Exception {
 		this.loggingSystem.beforeInitialize();
