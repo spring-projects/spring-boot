@@ -357,8 +357,11 @@ public final class ConfigurationMetadataMatchers {
 	}
 
 	public static class ValueProviderMatcher extends BaseMatcher<ItemHint> {
+
 		private final int index;
+
 		private final String name;
+
 		private final Map<String, Object> parameters;
 
 		public ValueProviderMatcher(int index, String name,

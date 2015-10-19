@@ -148,8 +148,8 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			this.loggingSystem.beforeInitialize();
 			this.loggingSystem.initialize(this.initializationContext, null, null);
 			String output = this.output.toString().trim();
-			assertTrue("Wrong output:\n" + output, output.contains("Ignoring " +
-					"'logback.configurationFile' system property. Please use 'logging.path' instead."));
+			assertTrue("Wrong output:\n" + output, output.contains("Ignoring "
+					+ "'logback.configurationFile' system property. Please use 'logging.path' instead."));
 		}
 		finally {
 			System.clearProperty("logback.configurationFile");
