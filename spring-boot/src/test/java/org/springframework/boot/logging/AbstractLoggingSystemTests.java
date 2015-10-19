@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 import org.junit.After;
@@ -70,6 +71,16 @@ public abstract class AbstractLoggingSystemTests {
 			path = path.substring(0, path.length() - 1);
 		}
 		return path;
+	}
+
+	protected final void closeStream(Closeable c) {
+		try {
+			if (c != null) {
+				c.close();
+			}
+		}
+		catch (IOException ex) {
+		}
 	}
 
 }

@@ -18,6 +18,7 @@ package org.springframework.boot.logging.log4j2;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -118,6 +119,44 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		// attribute, so we check that a monitor is created
 		assertThat(this.loggingSystem.getConfiguration().getConfigurationMonitor(),
 				is(instanceOf(FileConfigurationMonitor.class)));
+	}
+
+	@Test
+	public void testSystemFileConfigLocation() throws Exception {
+		File systemFile = this.temp.newFile("log4j2-systemfile.xml");
+
+		PrintStream out = null;
+		try {
+			out = new PrintStream(systemFile);
+			out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<Configuration status=\"WARN\" monitorInterval=\"30\">\n" +
+				"    <Properties>\n" +
+				"        <Property name=\"PID\">????</Property>\n" +
+				"        <Property name=\"LOG_PATTERN\">${sys:LOG_FILE} %d{yyyy-MM-dd HH:mm:ss.SSS}] service%X{context} - ${sys:PID} %5p [%t] --- %c{1}: %m%n</Property>\n" +
+				"    </Properties>\n" +
+				"    <Appenders>\n" +
+				"        <Console name=\"Console\" target=\"SYSTEM_OUT\" follow=\"true\">\n" +
+				"            <PatternLayout pattern=\"${LOG_PATTERN}\"/>\n" +
+				"        </Console>\n" +
+				"    </Appenders>\n" +
+				"    <Loggers>\n" +
+				"        <Root level=\"info\">\n" +
+				"            <AppenderRef ref=\"Console\"/>\n" +
+				"        </Root>\n" +
+				"    </Loggers>\n" +
+				"</Configuration>");
+		}
+		finally {
+			closeStream(out);
+		}
+
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null,
+				this.temp.getRoot() + "/log4j2-systemfile.xml",
+				null);
+		this.logger.info("Hello log4j2 world");
+		String output = this.output.toString().trim();
+		assertTrue("Wrong output:\n" + output, output.contains("Hello log4j2 world"));
 	}
 
 	@Test(expected = IllegalStateException.class)

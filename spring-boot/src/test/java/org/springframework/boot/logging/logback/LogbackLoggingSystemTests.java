@@ -18,6 +18,7 @@ package org.springframework.boot.logging.logback;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.PrintStream;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
@@ -139,6 +140,38 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertTrue("Wrong output:\n" + output, output.contains(tmpDir() + "/tmp.log"));
 		assertTrue("Wrong output:\n" + output, output.endsWith("BOOTBOOT"));
 		assertFalse(new File(tmpDir() + "/tmp.log").exists());
+	}
+
+	@Test
+	public void testSystemFileConfigLocation() throws Exception {
+		File systemFile = this.temp.newFile("logback-systemfile.xml");
+
+		PrintStream out = null;
+		try {
+			out = new PrintStream(systemFile);
+			out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<configuration>\n" +
+				"    <appender name=\"CONSOLE\" class=\"ch.qos.logback.core.ConsoleAppender\">\n" +
+				"        <encoder>\n" +
+				"            <pattern>${LOG_FILE} [%t] ${PID:-????} %c{1}: %m%n BOOTBOOT</pattern>\n" +
+				"        </encoder>\n" +
+				"    </appender>\n" +
+				"    <root level=\"INFO\">\n" +
+				"        <appender-ref ref=\"CONSOLE\" />\n" +
+				"    </root>\n" +
+				"</configuration>\n");
+		}
+		finally {
+			closeStream(out);
+		}
+
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext,
+				this.temp.getRoot() + "/logback-systemfile.xml",
+				null);
+		this.logger.info("Hello logback world");
+		String output = this.output.toString().trim();
+		assertTrue("Wrong output:\n" + output, output.contains("Hello logback world"));
 	}
 
 	@Test(expected = IllegalStateException.class)
