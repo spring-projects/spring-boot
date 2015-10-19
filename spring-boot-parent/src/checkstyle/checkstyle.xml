@@ -77,7 +77,7 @@
 			<property name="processJavadoc" value="true" />
 		</module>
 		<module name="ImportOrder">
-			<property name="groups" value="java,/^javax?\./,org,com,*" />
+			<property name="groups" value="java,/^javax?\./,*,org.springframework" />
 			<property name="ordered" value="true" />
 			<property name="separated" value="true" />
 			<property name="option" value="bottom" />
