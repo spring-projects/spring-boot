@@ -106,8 +106,8 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		super.initialize(initializationContext, configLocation, logFile);
 		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {
 			getLogger(LogbackLoggingSystem.class.getName()).warn(
-					"Ignoring '"+CONFIGURATION_FILE_PROPERTY+"' system property. " +
-							"Please use 'logging.path' instead.");
+					"Ignoring '" + CONFIGURATION_FILE_PROPERTY + "' system property. "
+							+ "Please use 'logging.path' instead.");
 		}
 	}
 
