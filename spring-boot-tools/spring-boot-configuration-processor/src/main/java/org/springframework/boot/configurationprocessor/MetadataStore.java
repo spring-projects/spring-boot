@@ -28,6 +28,7 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import org.json.JSONException;
+
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;

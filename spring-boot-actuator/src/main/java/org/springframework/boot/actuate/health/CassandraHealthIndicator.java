@@ -16,12 +16,12 @@
 
 package org.springframework.boot.actuate.health;
 
-import org.springframework.data.cassandra.core.CassandraAdminOperations;
-import org.springframework.util.Assert;
-
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
+
+import org.springframework.data.cassandra.core.CassandraAdminOperations;
+import org.springframework.util.Assert;
 
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for

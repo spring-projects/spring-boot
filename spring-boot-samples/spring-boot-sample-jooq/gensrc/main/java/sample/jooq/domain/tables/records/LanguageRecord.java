@@ -10,7 +10,6 @@ import org.jooq.Record1;
 import org.jooq.Record3;
 import org.jooq.Row3;
 import org.jooq.impl.UpdatableRecordImpl;
-
 import sample.jooq.domain.tables.Language;
 
 /**

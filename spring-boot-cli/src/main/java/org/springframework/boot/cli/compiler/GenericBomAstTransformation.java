@@ -34,6 +34,7 @@ import org.codehaus.groovy.ast.expr.ListExpression;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
+
 import org.springframework.boot.groovy.DependencyManagementBom;
 import org.springframework.core.Ordered;
 

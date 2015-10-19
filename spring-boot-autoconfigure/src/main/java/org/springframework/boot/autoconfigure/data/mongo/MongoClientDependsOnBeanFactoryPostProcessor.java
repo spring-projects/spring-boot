@@ -16,14 +16,14 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
+import com.mongodb.MongoClient;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.mongodb.core.MongoClientFactoryBean;
-
-import com.mongodb.MongoClient;
 
 /**
  * {@link BeanFactoryPostProcessor} to automatically set up the recommended

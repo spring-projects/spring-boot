@@ -21,6 +21,10 @@ import java.io.File;
 import javax.jms.Message;
 import javax.transaction.TransactionManager;
 
+import bitronix.tm.BitronixTransactionManager;
+import bitronix.tm.TransactionManagerServices;
+import bitronix.tm.jndi.BitronixContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -36,10 +40,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.StringUtils;
-
-import bitronix.tm.BitronixTransactionManager;
-import bitronix.tm.TransactionManagerServices;
-import bitronix.tm.jndi.BitronixContext;
 
 /**
  * JTA Configuration for <A href="http://docs.codehaus.org/display/BTM/Home">Bitronix</A>.

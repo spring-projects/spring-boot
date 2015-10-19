@@ -16,11 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Simple wrapper around {@link Endpoint} implementations that provide actuator data of

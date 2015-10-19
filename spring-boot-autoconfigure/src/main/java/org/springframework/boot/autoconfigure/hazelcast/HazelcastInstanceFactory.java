@@ -19,15 +19,15 @@ package org.springframework.boot.autoconfigure.hazelcast;
 import java.io.IOException;
 import java.net.URL;
 
-import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
-import org.springframework.util.ResourceUtils;
-import org.springframework.util.StringUtils;
-
 import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+
+import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
+import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Factory that can be used to create a {@link HazelcastInstance}.

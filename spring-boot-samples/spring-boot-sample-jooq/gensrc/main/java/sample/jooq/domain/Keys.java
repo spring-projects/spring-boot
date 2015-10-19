@@ -8,7 +8,6 @@ import javax.annotation.Generated;
 import org.jooq.ForeignKey;
 import org.jooq.UniqueKey;
 import org.jooq.impl.AbstractKeys;
-
 import sample.jooq.domain.tables.Author;
 import sample.jooq.domain.tables.Book;
 import sample.jooq.domain.tables.BookStore;

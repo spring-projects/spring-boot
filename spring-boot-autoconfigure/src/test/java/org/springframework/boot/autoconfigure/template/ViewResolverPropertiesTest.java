@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.template;
 import java.nio.charset.Charset;
 
 import org.junit.Test;
+
 import org.springframework.util.MimeTypeUtils;
 
 import static org.hamcrest.Matchers.hasToString;

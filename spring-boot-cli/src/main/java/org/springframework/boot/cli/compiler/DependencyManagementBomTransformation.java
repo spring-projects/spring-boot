@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import groovy.grape.Grape;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.building.DefaultModelBuilder;
@@ -46,13 +47,12 @@ import org.codehaus.groovy.control.messages.Message;
 import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.codehaus.groovy.syntax.SyntaxException;
 import org.codehaus.groovy.transform.ASTTransformation;
+
 import org.springframework.boot.cli.compiler.dependencies.MavenModelDependencyManagement;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.boot.groovy.DependencyManagementBom;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-
-import groovy.grape.Grape;
 
 /**
  * {@link ASTTransformation} for processing {@link DependencyManagementBom} annotations.

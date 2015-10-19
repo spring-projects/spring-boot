@@ -21,6 +21,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
+
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.options.CompilerOptionHandler;
@@ -30,9 +33,6 @@ import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.compiler.GroovyCompilerScope;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
-
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 
 /**
  * {@link Command} to 'run' a groovy script or scripts.

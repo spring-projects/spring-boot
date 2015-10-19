@@ -18,9 +18,8 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import java.util.Map;
 
-import org.junit.Test;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 

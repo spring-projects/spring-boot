@@ -16,13 +16,13 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
+import com.datastax.driver.core.Cluster;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import com.datastax.driver.core.Cluster;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;

@@ -18,8 +18,12 @@ package org.springframework.boot.autoconfigure.mongo.embedded;
 
 import java.net.UnknownHostException;
 
+import com.mongodb.CommandResult;
+import com.mongodb.MongoClient;
+import de.flapdoodle.embed.mongo.distribution.Feature;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
@@ -31,11 +35,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.SocketUtils;
-
-import com.mongodb.CommandResult;
-import com.mongodb.MongoClient;
-
-import de.flapdoodle.embed.mongo.distribution.Feature;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;

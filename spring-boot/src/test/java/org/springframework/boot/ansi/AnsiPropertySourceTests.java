@@ -18,6 +18,7 @@ package org.springframework.boot.ansi;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 
 import static org.hamcrest.Matchers.equalTo;

@@ -23,6 +23,7 @@ import java.util.jar.JarFile;
 import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.notNullValue;

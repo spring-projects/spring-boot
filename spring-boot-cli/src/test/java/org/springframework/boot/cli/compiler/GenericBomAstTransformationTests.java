@@ -32,6 +32,7 @@ import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.io.ReaderSource;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.junit.Test;
+
 import org.springframework.boot.groovy.DependencyManagementBom;
 
 import static org.junit.Assert.assertEquals;

@@ -18,6 +18,7 @@ package sample.webstatic;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import sample.web.staticcontent.SampleWebStaticApplication;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
@@ -29,8 +30,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-
-import sample.web.staticcontent.SampleWebStaticApplication;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

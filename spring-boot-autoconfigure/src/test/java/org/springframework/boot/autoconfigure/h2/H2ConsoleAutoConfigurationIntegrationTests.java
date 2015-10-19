@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.h2;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfigurationIntegrationTests.TestConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;

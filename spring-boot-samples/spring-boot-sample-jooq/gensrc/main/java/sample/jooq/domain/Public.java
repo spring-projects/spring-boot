@@ -11,7 +11,6 @@ import javax.annotation.Generated;
 
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
-
 import sample.jooq.domain.tables.Author;
 import sample.jooq.domain.tables.Book;
 import sample.jooq.domain.tables.BookStore;

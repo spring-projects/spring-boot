@@ -19,6 +19,7 @@ package org.springframework.boot.cli;
 import java.io.File;
 
 import org.junit.Test;
+
 import org.springframework.boot.cli.command.archive.WarCommand;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker.Invocation;

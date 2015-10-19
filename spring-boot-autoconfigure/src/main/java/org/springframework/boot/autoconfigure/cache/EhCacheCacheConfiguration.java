@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,9 +29,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
 
 /**
  * EhCache cache configuration. Only kick in if a configuration file location is set or if

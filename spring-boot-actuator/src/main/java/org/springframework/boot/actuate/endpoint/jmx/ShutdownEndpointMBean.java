@@ -16,12 +16,12 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Special endpoint wrapper for {@link ShutdownEndpoint}.

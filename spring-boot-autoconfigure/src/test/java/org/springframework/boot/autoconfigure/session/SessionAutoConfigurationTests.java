@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.session;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;

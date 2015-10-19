@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jooq;
 
 import org.jooq.SQLDialect;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

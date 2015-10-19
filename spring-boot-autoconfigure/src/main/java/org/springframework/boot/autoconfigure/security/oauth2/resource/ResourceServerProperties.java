@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -27,8 +29,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Configuration properties for OAuth2 Resources.

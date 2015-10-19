@@ -19,10 +19,9 @@ package org.springframework.boot.actuate.metrics.dropwizard;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

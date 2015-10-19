@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.cache;
 
+import net.sf.ehcache.statistics.StatisticsGateway;
+
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCache;
-
-import net.sf.ehcache.statistics.StatisticsGateway;
 
 /**
  * {@link CacheStatisticsProvider} implementation for EhCache.

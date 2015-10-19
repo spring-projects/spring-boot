@@ -20,6 +20,7 @@ import java.net.URI;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import sample.web.ui.SampleWebUiApplication;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
@@ -32,8 +33,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import sample.web.ui.SampleWebUiApplication;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
