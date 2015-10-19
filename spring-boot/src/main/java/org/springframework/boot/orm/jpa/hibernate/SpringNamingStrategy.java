@@ -18,6 +18,7 @@ package org.springframework.boot.orm.jpa.hibernate;
 
 import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.internal.util.StringHelper;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 

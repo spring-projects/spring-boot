@@ -19,6 +19,7 @@ package org.springframework.boot.gradle.resolve;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+
 import org.springframework.boot.gradle.PluginFeatures;
 
 /**

@@ -16,10 +16,10 @@
 
 package org.springframework.boot.cli.command.shell;
 
+import jline.console.ConsoleReader;
+
 import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.status.ExitStatus;
-
-import jline.console.ConsoleReader;
 
 /**
  * Clear the {@link Shell} screen.

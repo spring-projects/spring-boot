@@ -18,8 +18,10 @@ package org.springframework.boot.autoconfigure.mustache;
 
 import java.util.Collections;
 
+import com.samskivert.mustache.Mustache;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheStandaloneIntegrationTests.Application;
@@ -28,8 +30,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.samskivert.mustache.Mustache;
 
 import static org.junit.Assert.assertEquals;
 

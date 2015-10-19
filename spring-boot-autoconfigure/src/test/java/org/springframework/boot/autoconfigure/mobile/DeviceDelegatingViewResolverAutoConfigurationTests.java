@@ -20,6 +20,8 @@ import java.lang.reflect.Field;
 
 import org.junit.After;
 import org.junit.Test;
+import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mobile.DeviceDelegatingViewResolverAutoConfiguration.DeviceDelegatingViewResolverConfiguration;
@@ -37,7 +39,6 @@ import org.springframework.mobile.device.view.AbstractDeviceDelegatingViewResolv
 import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

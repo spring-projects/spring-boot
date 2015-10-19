@@ -27,6 +27,7 @@ import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
 import org.hornetq.core.remoting.impl.netty.NettyConnectorFactory;
 import org.hornetq.core.remoting.impl.netty.TransportConstants;
 import org.hornetq.jms.client.HornetQConnectionFactory;
+
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;

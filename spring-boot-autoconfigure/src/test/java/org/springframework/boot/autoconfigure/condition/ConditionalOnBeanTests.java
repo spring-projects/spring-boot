@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.Date;
 
 import org.junit.Test;
+
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.EnvironmentTestUtils;

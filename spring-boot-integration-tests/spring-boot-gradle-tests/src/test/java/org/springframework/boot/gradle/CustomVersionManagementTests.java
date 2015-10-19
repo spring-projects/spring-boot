@@ -21,6 +21,7 @@ import java.io.IOException;
 import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 /**

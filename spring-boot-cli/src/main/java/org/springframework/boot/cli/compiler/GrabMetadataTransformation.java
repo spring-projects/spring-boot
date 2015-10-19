@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import groovy.grape.Grape;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
@@ -36,6 +37,7 @@ import org.codehaus.groovy.control.messages.Message;
 import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.codehaus.groovy.syntax.SyntaxException;
 import org.codehaus.groovy.transform.ASTTransformation;
+
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.boot.dependency.tools.Dependencies;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
@@ -43,8 +45,6 @@ import org.springframework.boot.dependency.tools.PropertiesFileDependencies;
 import org.springframework.boot.groovy.GrabMetadata;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-
-import groovy.grape.Grape;
 
 /**
  * {@link ASTTransformation} for processing {@link GrabMetadata @GrabMetadata}

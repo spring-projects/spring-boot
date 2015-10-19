@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.trace;
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;

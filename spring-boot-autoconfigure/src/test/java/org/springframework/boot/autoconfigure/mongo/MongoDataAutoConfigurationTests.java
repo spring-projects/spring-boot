@@ -19,9 +19,11 @@ package org.springframework.boot.autoconfigure.mongo;
 import java.util.Arrays;
 import java.util.Set;
 
+import com.mongodb.Mongo;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.city.City;
@@ -35,8 +37,6 @@ import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import com.mongodb.Mongo;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;

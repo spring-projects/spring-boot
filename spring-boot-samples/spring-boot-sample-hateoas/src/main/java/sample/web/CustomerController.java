@@ -16,6 +16,9 @@
 
 package sample.web;
 
+import sample.domain.Customer;
+import sample.domain.CustomerRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
@@ -28,9 +31,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import sample.domain.Customer;
-import sample.domain.CustomerRepository;
 
 @Controller
 @RequestMapping("/customers")

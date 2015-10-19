@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.mobile;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -35,7 +37,6 @@ import org.springframework.core.Ordered;
 import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Mobile's

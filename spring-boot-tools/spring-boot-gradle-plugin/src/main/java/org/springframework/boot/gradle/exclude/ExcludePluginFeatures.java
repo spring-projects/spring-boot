@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.exclude;
 
 import org.gradle.api.Project;
+
 import org.springframework.boot.gradle.PluginFeatures;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 

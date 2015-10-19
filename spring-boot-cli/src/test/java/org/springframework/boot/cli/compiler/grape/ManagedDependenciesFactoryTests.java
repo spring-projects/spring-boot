@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+
 import org.springframework.boot.dependency.tools.Dependency;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
 

@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import redis.clients.jedis.Jedis;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -27,8 +29,6 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.StringUtils;
-
-import redis.clients.jedis.Jedis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

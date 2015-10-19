@@ -16,12 +16,12 @@
 
 package sample.profile;
 
+import sample.profile.service.MessageService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import sample.profile.service.MessageService;
 
 @SpringBootApplication
 public class SampleProfileApplication implements CommandLineRunner {

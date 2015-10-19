@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
+
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

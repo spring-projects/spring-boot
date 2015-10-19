@@ -34,6 +34,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigFileApplicationListener.ConfigurationPropertySources;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;

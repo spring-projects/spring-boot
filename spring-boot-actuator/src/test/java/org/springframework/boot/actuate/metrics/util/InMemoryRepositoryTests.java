@@ -26,6 +26,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository.Callback;
 
 import static org.junit.Assert.assertEquals;

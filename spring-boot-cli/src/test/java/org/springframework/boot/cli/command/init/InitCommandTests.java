@@ -24,6 +24,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import joptsimple.OptionSet;
 import org.apache.http.Header;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.junit.Before;
@@ -33,9 +34,8 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.cli.command.status.ExitStatus;
 
-import joptsimple.OptionSet;
+import org.springframework.boot.cli.command.status.ExitStatus;
 
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;

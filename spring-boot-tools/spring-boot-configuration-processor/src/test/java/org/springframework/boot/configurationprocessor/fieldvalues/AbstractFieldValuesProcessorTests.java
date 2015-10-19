@@ -33,6 +33,7 @@ import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.configurationprocessor.TestCompiler;
 import org.springframework.boot.configurationsample.fieldvalues.FieldValues;
 

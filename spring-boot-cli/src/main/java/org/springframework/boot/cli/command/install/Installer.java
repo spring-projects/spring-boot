@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
+import joptsimple.OptionSet;
+
 import org.springframework.boot.cli.command.options.CompilerOptionHandler;
 import org.springframework.boot.cli.command.options.OptionSetGroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
@@ -31,8 +33,6 @@ import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.boot.cli.util.Log;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.SystemPropertyUtils;
-
-import joptsimple.OptionSet;
 
 /**
  * Shared logic for the {@link InstallCommand} and {@link UninstallCommand}.

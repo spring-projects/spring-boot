@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

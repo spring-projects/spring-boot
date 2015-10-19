@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure;
 import java.util.Properties;
 
 import org.jolokia.http.AgentServlet;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;

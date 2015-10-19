@@ -24,6 +24,7 @@ import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.artifacts.ResolvableDependencies;
 import org.gradle.api.internal.artifacts.DefaultExcludeRule;
 import org.gradle.api.logging.Logger;
+
 import org.springframework.boot.dependency.tools.Dependency.Exclusion;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
 import org.springframework.boot.gradle.VersionManagedDependencies;

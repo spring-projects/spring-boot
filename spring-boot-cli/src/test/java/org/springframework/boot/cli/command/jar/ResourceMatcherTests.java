@@ -26,6 +26,7 @@ import java.util.List;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
+
 import org.springframework.boot.cli.command.jar.ResourceMatcher.MatchedResource;
 import org.springframework.test.util.ReflectionTestUtils;
 

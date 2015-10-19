@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;

@@ -19,13 +19,13 @@ package org.springframework.boot.autoconfigure.jackson;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties to configure Jackson

@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.crsh.plugin.PluginLifeCycle;
 import org.junit.Assert;
 import org.junit.Test;
+
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.CrshShellProperties;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.JaasAuthenticationProperties;

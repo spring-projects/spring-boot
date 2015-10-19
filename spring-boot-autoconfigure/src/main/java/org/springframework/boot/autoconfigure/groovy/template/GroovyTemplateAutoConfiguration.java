@@ -22,6 +22,8 @@ import java.security.ProtectionDomain;
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
+import groovy.text.markup.MarkupTemplateEngine;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -42,8 +44,6 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
-
-import groovy.text.markup.MarkupTemplateEngine;
 
 /**
  * Autoconfiguration support for Groovy templates in MVC. By default creates a

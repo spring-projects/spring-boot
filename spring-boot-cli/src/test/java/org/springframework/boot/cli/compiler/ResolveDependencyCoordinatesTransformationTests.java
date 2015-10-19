@@ -18,6 +18,7 @@ package org.springframework.boot.cli.compiler;
 
 import java.util.Arrays;
 
+import groovy.lang.Grab;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
@@ -40,10 +41,9 @@ import org.codehaus.groovy.control.io.ReaderSource;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
-
-import groovy.lang.Grab;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;

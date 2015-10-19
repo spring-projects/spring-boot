@@ -19,8 +19,6 @@ package org.springframework.boot.logging.logback;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.util.Assert;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -31,6 +29,8 @@ import ch.qos.logback.core.pattern.Converter;
 import ch.qos.logback.core.spi.ContextAware;
 import ch.qos.logback.core.spi.LifeCycle;
 import ch.qos.logback.core.spi.PropertyContainer;
+
+import org.springframework.util.Assert;
 
 /**
  * Allows programmatic configuration of logback which is usually faster than parsing XML.

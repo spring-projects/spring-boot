@@ -25,9 +25,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Template;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -48,9 +51,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Template;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

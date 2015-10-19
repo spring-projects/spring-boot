@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jms.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 

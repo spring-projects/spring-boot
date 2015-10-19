@@ -20,6 +20,7 @@ import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;

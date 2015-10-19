@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

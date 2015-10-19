@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

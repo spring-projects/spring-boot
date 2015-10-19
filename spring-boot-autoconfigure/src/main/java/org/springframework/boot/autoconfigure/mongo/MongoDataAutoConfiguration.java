@@ -22,6 +22,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.mongodb.DB;
+import com.mongodb.Mongo;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +59,6 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
-
-import com.mongodb.DB;
-import com.mongodb.Mongo;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's mongo support.

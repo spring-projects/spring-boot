@@ -27,6 +27,7 @@ import javax.management.ObjectName;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;

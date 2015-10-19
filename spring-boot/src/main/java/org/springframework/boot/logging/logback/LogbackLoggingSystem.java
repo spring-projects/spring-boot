@@ -23,10 +23,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.jul.LevelChangePropagator;
+import ch.qos.logback.classic.turbo.TurboFilter;
+import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.core.spi.FilterReply;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.impl.StaticLoggerBinder;
+
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
@@ -34,13 +41,6 @@ import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.jul.LevelChangePropagator;
-import ch.qos.logback.classic.turbo.TurboFilter;
-import ch.qos.logback.classic.util.ContextInitializer;
-import ch.qos.logback.core.spi.FilterReply;
 
 /**
  * {@link LoggingSystem} for <a href="http://logback.qos.ch">logback</a>.

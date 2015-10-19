@@ -25,6 +25,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyClassLoader.ClassCollector;
+import groovy.lang.GroovyCodeSource;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.classgen.GeneratorContext;
@@ -38,16 +41,13 @@ import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.ASTTransformationVisitor;
+
 import org.springframework.boot.cli.compiler.grape.AetherGrapeEngine;
 import org.springframework.boot.cli.compiler.grape.AetherGrapeEngineFactory;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
 import org.springframework.boot.cli.util.ResourceUtils;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.GroovyClassLoader.ClassCollector;
-import groovy.lang.GroovyCodeSource;
 
 /**
  * Compiler for Groovy sources. Primarily a simple Facade for

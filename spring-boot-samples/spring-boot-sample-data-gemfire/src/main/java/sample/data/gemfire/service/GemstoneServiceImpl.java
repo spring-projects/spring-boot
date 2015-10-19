@@ -22,12 +22,12 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import sample.data.gemfire.domain.Gemstone;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
-import sample.data.gemfire.domain.Gemstone;
 
 /**
  * The GemstoneServiceImpl class is a Service object implementing the GemstoneService

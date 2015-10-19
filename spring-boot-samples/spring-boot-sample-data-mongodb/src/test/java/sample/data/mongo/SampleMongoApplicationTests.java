@@ -18,13 +18,13 @@ package sample.data.mongo;
 
 import java.util.regex.Pattern;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.springframework.boot.test.OutputCapture;
-import org.springframework.core.NestedCheckedException;
-
 import com.mongodb.MongoServerSelectionException;
 import com.mongodb.MongoTimeoutException;
+import org.junit.Rule;
+import org.junit.Test;
+
+import org.springframework.boot.test.OutputCapture;
+import org.springframework.core.NestedCheckedException;
 
 import static org.junit.Assert.assertTrue;
 

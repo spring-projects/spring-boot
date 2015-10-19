@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.hamcrest.Matcher;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

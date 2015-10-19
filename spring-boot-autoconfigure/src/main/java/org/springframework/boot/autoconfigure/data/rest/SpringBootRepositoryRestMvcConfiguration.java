@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -23,8 +25,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * A specialized {@link RepositoryRestMvcConfiguration} that applies configuration items

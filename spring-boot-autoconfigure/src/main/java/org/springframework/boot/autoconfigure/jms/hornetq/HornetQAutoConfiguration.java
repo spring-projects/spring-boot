@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jms.hornetq;
 import javax.jms.ConnectionFactory;
 
 import org.hornetq.api.jms.HornetQJMSClient;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

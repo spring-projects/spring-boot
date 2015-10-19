@@ -22,6 +22,7 @@ import java.net.URL;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.loader.jar.JarFile;
 
 import static org.hamcrest.Matchers.equalTo;

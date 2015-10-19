@@ -21,6 +21,7 @@ import java.util.jar.JarFile;
 
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Test;
+
 import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 import static org.hamcrest.Matchers.notNullValue;

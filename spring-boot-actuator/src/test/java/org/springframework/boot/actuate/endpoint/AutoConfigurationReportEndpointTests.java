@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint;
 import javax.annotation.PostConstruct;
 
 import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint.Report;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;

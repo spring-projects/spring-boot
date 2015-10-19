@@ -31,11 +31,15 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 import javax.transaction.xa.XAResource;
 
+import com.atomikos.icatch.config.UserTransactionService;
+import com.atomikos.icatch.jta.UserTransactionManager;
+import com.atomikos.jms.AtomikosConnectionFactoryBean;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -54,10 +58,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.FileSystemUtils;
-
-import com.atomikos.icatch.config.UserTransactionService;
-import com.atomikos.icatch.jta.UserTransactionManager;
-import com.atomikos.jms.AtomikosConnectionFactoryBean;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;

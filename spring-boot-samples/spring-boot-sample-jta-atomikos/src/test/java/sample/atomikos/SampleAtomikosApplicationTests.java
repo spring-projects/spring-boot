@@ -20,6 +20,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.SubstringMatcher;
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.springframework.boot.test.OutputCapture;
 
 import static org.junit.Assert.assertThat;

@@ -19,10 +19,10 @@ package org.springframework.boot.configurationsample.lombok;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
  * Configuration properties using lombok @Getter/@Setter at class level.

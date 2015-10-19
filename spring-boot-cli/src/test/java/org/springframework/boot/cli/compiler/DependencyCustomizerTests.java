@@ -18,6 +18,8 @@ package org.springframework.boot.cli.compiler;
 
 import java.util.List;
 
+import groovy.lang.Grab;
+import groovy.lang.GroovyClassLoader;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
@@ -27,11 +29,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
-
-import groovy.lang.Grab;
-import groovy.lang.GroovyClassLoader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

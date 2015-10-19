@@ -21,6 +21,7 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencyResolveDetails;
 import org.gradle.api.artifacts.ModuleVersionSelector;
+
 import org.springframework.boot.dependency.tools.Dependency;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
 import org.springframework.boot.gradle.VersionManagedDependencies;

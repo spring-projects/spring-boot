@@ -30,15 +30,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import groovy.lang.GroovyClassLoader;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.SourceUnit;
+
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
-
-import groovy.lang.GroovyClassLoader;
 
 /**
  * Extension of the {@link GroovyClassLoader} with support for obtaining '.class' files as

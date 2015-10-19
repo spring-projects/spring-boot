@@ -19,6 +19,7 @@ package org.springframework.boot.groovy;
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
+
 import org.springframework.boot.cli.command.test.TestRunner;
 
 /**

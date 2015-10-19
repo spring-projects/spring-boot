@@ -17,6 +17,7 @@
 package org.springframework.boot.cloudfoundry;
 
 import org.junit.Test;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;

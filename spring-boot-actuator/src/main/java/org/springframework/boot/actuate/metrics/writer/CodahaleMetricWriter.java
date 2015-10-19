@@ -16,14 +16,14 @@
 
 package org.springframework.boot.actuate.metrics.writer;
 
-import org.springframework.boot.actuate.metrics.Metric;
-
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+
+import org.springframework.boot.actuate.metrics.Metric;
 
 /**
  * A {@link MetricWriter} that send data to a Codahale {@link MetricRegistry} based on a

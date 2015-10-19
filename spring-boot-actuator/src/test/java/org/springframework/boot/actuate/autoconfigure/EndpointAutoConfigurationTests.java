@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
 import org.springframework.boot.actuate.endpoint.DumpEndpoint;

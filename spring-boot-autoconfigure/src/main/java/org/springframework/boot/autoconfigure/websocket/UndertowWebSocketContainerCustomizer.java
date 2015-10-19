@@ -16,11 +16,11 @@
 
 package org.springframework.boot.autoconfigure.websocket;
 
-import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer;
-import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
-
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
+
+import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 
 /**
  * {@link WebSocketContainerCustomizer} for

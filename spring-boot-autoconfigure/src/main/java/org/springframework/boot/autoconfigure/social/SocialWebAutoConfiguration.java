@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.social;
 
 import java.util.List;
 
+import org.thymeleaf.spring4.SpringTemplateEngine;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -52,7 +54,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
-import org.thymeleaf.spring4.SpringTemplateEngine;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social's web connection

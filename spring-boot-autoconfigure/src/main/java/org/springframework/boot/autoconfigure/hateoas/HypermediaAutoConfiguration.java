@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.hateoas;
 
 import javax.annotation.PostConstruct;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -48,8 +50,6 @@ import org.springframework.hateoas.hal.Jackson2HalModule;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.plugin.core.Plugin;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring HATEOAS's

@@ -20,6 +20,9 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import liquibase.integration.spring.SpringLiquibase;
+import liquibase.servicelocator.ServiceLocator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -42,9 +45,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
-
-import liquibase.integration.spring.SpringLiquibase;
-import liquibase.servicelocator.ServiceLocator;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Liquibase.

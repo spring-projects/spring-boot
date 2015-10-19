@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.autoconfigure;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+import com.codahale.metrics.MetricRegistry;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
@@ -47,8 +49,6 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.support.ExecutorSubscribableChannel;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import com.codahale.metrics.MetricRegistry;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for metrics services. Creates

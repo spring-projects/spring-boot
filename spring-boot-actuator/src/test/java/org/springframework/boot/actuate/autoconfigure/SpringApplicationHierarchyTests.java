@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.ApplicationContextTestUtils;

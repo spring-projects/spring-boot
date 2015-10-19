@@ -18,6 +18,7 @@ package org.springframework.boot.gradle;
 
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Test;
+
 import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 /**

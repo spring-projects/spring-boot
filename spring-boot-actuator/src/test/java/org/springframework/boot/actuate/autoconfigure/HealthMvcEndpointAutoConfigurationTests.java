@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;

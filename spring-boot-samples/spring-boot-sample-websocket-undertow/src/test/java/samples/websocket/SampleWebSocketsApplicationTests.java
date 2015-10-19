@@ -24,6 +24,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import samples.websocket.client.GreetingService;
+import samples.websocket.client.SimpleClientWebSocketHandler;
+import samples.websocket.client.SimpleGreetingService;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -38,10 +42,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-
-import samples.websocket.client.GreetingService;
-import samples.websocket.client.SimpleClientWebSocketHandler;
-import samples.websocket.client.SimpleGreetingService;
 
 import static org.junit.Assert.assertEquals;
 

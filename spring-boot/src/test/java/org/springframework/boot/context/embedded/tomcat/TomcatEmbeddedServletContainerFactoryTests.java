@@ -35,6 +35,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.junit.Test;
 import org.mockito.InOrder;
+
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.util.SocketUtils;

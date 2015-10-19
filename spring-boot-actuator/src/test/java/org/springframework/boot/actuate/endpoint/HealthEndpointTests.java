@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;

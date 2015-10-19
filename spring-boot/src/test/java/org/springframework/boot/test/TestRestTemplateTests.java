@@ -18,6 +18,7 @@ package org.springframework.boot.test;
 
 import org.apache.http.client.config.RequestConfig;
 import org.junit.Test;
+
 import org.springframework.boot.test.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
 import org.springframework.boot.test.TestRestTemplate.HttpClientOption;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;

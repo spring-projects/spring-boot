@@ -16,8 +16,11 @@
 
 package org.springframework.boot.autoconfigure.hateoas;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Configuration;
@@ -29,9 +32,6 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 import org.springframework.hateoas.hal.HalLinkDiscoverer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

@@ -16,12 +16,11 @@
 
 package org.springframework.boot.liquibase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import liquibase.logging.LogLevel;
 import liquibase.logging.Logger;
 import liquibase.logging.core.AbstractLogger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Liquibase {@link Logger} that delegates to an Apache Commons {@link Log}.

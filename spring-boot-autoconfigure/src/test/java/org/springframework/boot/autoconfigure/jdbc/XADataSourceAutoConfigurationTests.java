@@ -21,6 +21,7 @@ import javax.sql.XADataSource;
 
 import org.hsqldb.jdbc.pool.JDBCXADataSource;
 import org.junit.Test;
+
 import org.springframework.boot.jta.XADataSourceWrapper;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;

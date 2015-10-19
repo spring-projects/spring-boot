@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

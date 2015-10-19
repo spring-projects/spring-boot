@@ -22,15 +22,15 @@ import javax.jms.JMSException;
 import javax.jms.XAConnection;
 import javax.jms.XAConnectionFactory;
 
+import bitronix.tm.resource.common.ResourceBean;
+import bitronix.tm.resource.common.XAStatefulHolder;
+import bitronix.tm.resource.jms.PoolingConnectionFactory;
+
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
-
-import bitronix.tm.resource.common.ResourceBean;
-import bitronix.tm.resource.common.XAStatefulHolder;
-import bitronix.tm.resource.jms.PoolingConnectionFactory;
 
 /**
  * Spring friendly version of {@link PoolingConnectionFactory}. Provides sensible defaults

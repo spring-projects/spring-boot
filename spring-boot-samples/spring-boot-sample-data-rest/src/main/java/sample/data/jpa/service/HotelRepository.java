@@ -16,11 +16,11 @@
 
 package sample.data.jpa.service;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-
 import sample.data.jpa.domain.City;
 import sample.data.jpa.domain.Hotel;
+
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(collectionResourceRel = "hotels", path = "hotels")
 interface HotelRepository extends PagingAndSortingRepository<Hotel, Long> {

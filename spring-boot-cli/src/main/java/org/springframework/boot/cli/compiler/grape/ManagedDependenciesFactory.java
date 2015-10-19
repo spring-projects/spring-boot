@@ -23,6 +23,7 @@ import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.util.artifact.JavaScopes;
+
 import org.springframework.boot.dependency.tools.ManagedDependencies;
 import org.springframework.boot.dependency.tools.PomDependencies;
 

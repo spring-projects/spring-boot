@@ -18,9 +18,9 @@ package org.springframework.boot.autoconfigure.liquibase;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import liquibase.integration.spring.SpringLiquibase;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties to configure {@link SpringLiquibase}.

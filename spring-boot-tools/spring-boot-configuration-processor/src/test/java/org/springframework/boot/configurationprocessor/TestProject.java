@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.configurationprocessor.TestCompiler.TestCompilationTask;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationsample.ConfigurationProperties;

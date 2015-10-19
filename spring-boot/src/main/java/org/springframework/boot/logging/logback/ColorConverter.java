@@ -20,12 +20,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.ansi.AnsiElement;
-import org.springframework.boot.ansi.AnsiOutput;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.CompositeConverter;
+
+import org.springframework.boot.ansi.AnsiElement;
+import org.springframework.boot.ansi.AnsiOutput;
 
 /**
  * Logback {@link CompositeConverter} colors output using the {@link AnsiOutput} class. A

@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.health;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

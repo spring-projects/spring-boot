@@ -22,13 +22,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.atomikos.icatch.jta.UserTransactionManager;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.Ordered;
-
-import com.atomikos.icatch.jta.UserTransactionManager;
 
 /**
  * {@link BeanFactoryPostProcessor} to automatically setup the recommended

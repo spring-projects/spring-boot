@@ -25,6 +25,7 @@ import org.hornetq.core.config.Configuration;
 import org.hornetq.core.config.impl.ConfigurationImpl;
 import org.hornetq.core.remoting.impl.invm.InVMAcceptorFactory;
 import org.hornetq.core.server.JournalType;
+
 import org.springframework.boot.autoconfigure.jms.hornetq.HornetQProperties.Embedded;
 
 /**
