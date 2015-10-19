@@ -42,13 +42,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.core.SessionCallback;
@@ -305,7 +303,7 @@ public class ArtemisAutoConfigurationTests {
 			String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(config);
-		applicationContext.register(ArtemisAutoConfigurationWithoutXA.class,
+		applicationContext.register(ArtemisAutoConfiguration.class,
 				JmsAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.refresh();
@@ -410,14 +408,6 @@ public class ArtemisAutoConfigurationTests {
 				}
 			};
 		}
-
-	}
-
-	@Configuration
-	@EnableConfigurationProperties(ArtemisProperties.class)
-	@Import({ ArtemisEmbeddedServerConfiguration.class,
-			ArtemisConnectionFactoryConfiguration.class })
-	protected static class ArtemisAutoConfigurationWithoutXA {
 
 	}
 
