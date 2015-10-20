@@ -238,13 +238,19 @@ content into your application; rather pick only the properties that you need.
 	spring.freemarker.view-names= # whitelist of view names that can be resolved
 
 	# GROOVY TEMPLATES ({sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[GroovyTemplateAutoConfiguration])
+	spring.groovy.template.allow-request-override=false
+	spring.groovy.template.allow-session-override=false
 	spring.groovy.template.cache=true
 	spring.groovy.template.charset=UTF-8
 	spring.groovy.template.check-template-location=true # check that the templates location exists
 	spring.groovy.template.configuration.*= # See GroovyMarkupConfigurer
 	spring.groovy.template.content-type=text/html
 	spring.groovy.template.enabled=true # enable MVC view resolution
+	spring.groovy.template.expose-request-attributes=false
+	spring.groovy.template.expose-session-attributes=false
+	spring.groovy.template.expose-spring-macro-helpers=false
 	spring.groovy.template.prefix=
+	spring.groovy.template.request-context-attribute=
 	spring.groovy.template.resource-loader-path=classpath:/templates/
     spring.groovy.template.suffix=.tpl
 	spring.groovy.template.view-names= # whitelist of view names that can be resolved
