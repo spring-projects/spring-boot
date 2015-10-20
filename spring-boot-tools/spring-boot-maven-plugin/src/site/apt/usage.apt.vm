@@ -119,15 +119,37 @@ mvn spring-boot:run
   for more details. As a convenience, the   profiles to enable are handed by a specific
   property (<<<profiles>>>), see {{{./examples/run-profiles.html}Specify active profiles}}.
 
-  By default, any <<src/main/resources>> folder will be added to the application classpath
-  when you run the application and any duplicate found in <<target/classes>> will be
-  removed. This allows hot refreshing of resources which can be very  useful when developing
-  web applications. For example, you can work on HTML, CSS or JavaScipt files and see your
-  changes immediately without recompiling your application. It is also a helpful way of
-  allowing your front end developers to work without needing to download and install a Java IDE.
+  Spring Boot 1.3 has introduced <<<devtools>>>, a module to improve the development-time
+  experience when working on Spring Boot applications. To enable it, just add the following
+  dependency to your project:
 
-  Of course, if your resources are using tokens that are filtered by Maven, you may want
-  to disable that feature as follows:
+---
+<dependencies>
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+    <version>${project.version}</version>
+    <optional>true</optional>
+  </dependency>
+</dependencies>
+---
+
+  When <<<devtools>>> is running, it detects change when you recompile your application and
+  automatically refreshes it. This not only work for resources but code as well. It also
+  provides a LiveReload server so that it can automatically trigger a browser refresh whenever
+  things change.
+
+  Devtools can also be configured to only refresh the browser whenever a static resource has
+  changed (and ignore any change in the code). Just include the following property in your
+  project:
+
+---
+spring.devtools.remote.restart.enabled=false
+---
+
+  Prior to <<<devtools>>>, the plugin supported hot refreshing of resources by default which has
+  now be disabled in favor of the solution desribed above. You can restore it at any time by
+  configuring your project:
 
 ---
 <build>
@@ -139,7 +161,7 @@ mvn spring-boot:run
       <artifactId>${project.artifactId}</artifactId>
       <version>${project.version}</version>
       <configuration>
-        <addResources>false</addResources>
+        <addResources>true</addResources>
       </configuration>
     </plugin>
     ...
@@ -147,6 +169,17 @@ mvn spring-boot:run
   ...
 </build>
 ---
+
+  When <<<addResources>>> is enabled, any <<src/main/resources>> folder will be added to
+  the application classpath when you run the application and any duplicate found in
+  <<target/classes>> will be removed. This allows hot refreshing of resources which can be very
+  useful when developing web applications. For example, you can work on HTML, CSS or JavaScipt
+  files and see your changes immediately without recompiling your application. It is also a helpful
+  way of allowing your front end developers to work without needing to download and install a Java
+  IDE.
+
+  Note that a side effect of using this feature is that filtering of resources at build time will
+  not work.
 
   In order to be consistent with the <<<repackage>>> goal, the <<<run>>> goal builds the classpath
   in such a way that any dependency that is excluded in the plugin's configuration gets excluded
