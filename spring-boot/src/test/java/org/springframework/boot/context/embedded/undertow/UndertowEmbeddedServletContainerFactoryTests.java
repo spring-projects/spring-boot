@@ -17,10 +17,15 @@
 package org.springframework.boot.context.embedded.undertow;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
+import io.undertow.servlet.api.DeploymentManager;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -28,8 +33,10 @@ import org.springframework.boot.context.embedded.AbstractEmbeddedServletContaine
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.ExampleServlet;
+import org.springframework.boot.context.embedded.MimeMappings.Mapping;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -159,6 +166,22 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	@Override
 	protected Object getJspServlet() {
 		return null; // Undertow does not support JSPs
+	}
+
+	@Override
+	protected Map<String, String> getActualMimeMappings() {
+		return ((DeploymentManager) ReflectionTestUtils.getField(this.container,
+				"manager")).getDeployment().getMimeExtensionMappings();
+	}
+
+	@Override
+	protected Collection<Mapping> getExpectedMimeMappings() {
+		// Unlike Tomcat and Jetty, Undertow performs a case-sensitive match on file
+		// extension so it has a mapping for "z" and "Z".
+		Set<Mapping> expectedMappings = new HashSet<Mapping>(
+				super.getExpectedMimeMappings());
+		expectedMappings.add(new Mapping("Z", "application/x-compress"));
+		return expectedMappings;
 	}
 
 }

@@ -88,6 +88,7 @@ public final class MimeMappings implements Iterable<Mapping> {
 		mappings.add("jpg", "image/jpeg");
 		mappings.add("js", "application/javascript");
 		mappings.add("jsf", "text/plain");
+		mappings.add("json", "application/json");
 		mappings.add("jspf", "text/plain");
 		mappings.add("kar", "audio/midi");
 		mappings.add("latex", "application/x-latex");
@@ -111,6 +112,7 @@ public final class MimeMappings implements Iterable<Mapping> {
 		mappings.add("mpega", "audio/x-mpeg");
 		mappings.add("mpg", "video/mpeg");
 		mappings.add("mpv2", "video/mpeg2");
+		mappings.add("ms", "application/x-wais-source");
 		mappings.add("nc", "application/x-netcdf");
 		mappings.add("oda", "application/oda");
 		mappings.add("odb", "application/vnd.oasis.opendocument.database");
@@ -206,7 +208,6 @@ public final class MimeMappings implements Iterable<Mapping> {
 		mappings.add("wmv", "video/x-ms-wmv");
 		mappings.add("wrl", "model/vrml");
 		mappings.add("wspolicy", "application/wspolicy+xml");
-		mappings.add("Z", "application/x-compress");
 		mappings.add("z", "application/x-compress");
 		mappings.add("zip", "application/zip");
 		DEFAULT = unmodifiableMappings(mappings);
@@ -371,6 +372,12 @@ public final class MimeMappings implements Iterable<Mapping> {
 						&& this.mimeType.equals(other.mimeType);
 			}
 			return false;
+		}
+
+		@Override
+		public String toString() {
+			return "Mapping [extension=" + this.extension + ", mimeType=" + this.mimeType
+					+ "]";
 		}
 
 	}

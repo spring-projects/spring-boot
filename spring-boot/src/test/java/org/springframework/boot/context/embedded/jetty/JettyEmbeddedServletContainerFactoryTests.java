@@ -231,4 +231,11 @@ public class JettyEmbeddedServletContainerFactoryTests
 		return context.getServletHandler().getServlet("jsp");
 	}
 
+	@Override
+	protected Map<String, String> getActualMimeMappings() {
+		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
+				.getServer().getHandler();
+		return context.getMimeTypes().getMimeMap();
+	}
+
 }
