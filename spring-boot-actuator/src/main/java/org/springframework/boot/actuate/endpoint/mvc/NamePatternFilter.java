@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -29,6 +30,7 @@ import java.util.regex.Pattern;
  * @param <T> The source data type
  * @author Phillip Webb
  * @author Sergei Egorov
+ * @author Andy Wilkinson
  * @since 1.3.0
  */
 abstract class NamePatternFilter<T> {
@@ -41,9 +43,12 @@ abstract class NamePatternFilter<T> {
 		this.source = source;
 	}
 
-	public Object getResults(String name) {
+	public Map<String, Object> getResults(String name) {
 		if (!isRegex(name)) {
-			return getValue(this.source, name);
+			Object value = getValue(this.source, name);
+			Map<String, Object> result = new HashMap<String, Object>();
+			result.put(name, value);
+			return result;
 		}
 		Pattern pattern = Pattern.compile(name);
 		ResultCollectingNameCallback resultCollector = new ResultCollectingNameCallback(

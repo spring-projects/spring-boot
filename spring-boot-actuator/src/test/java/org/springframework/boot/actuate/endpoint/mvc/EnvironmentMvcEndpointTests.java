@@ -41,7 +41,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -79,7 +78,7 @@ public class EnvironmentMvcEndpointTests {
 	@Test
 	public void sub() throws Exception {
 		this.mvc.perform(get("/env/foo")).andExpect(status().isOk())
-				.andExpect(content().string(equalToIgnoringCase("bar")));
+				.andExpect(content().string("{\"foo\":\"bar\"}"));
 	}
 
 	@Test

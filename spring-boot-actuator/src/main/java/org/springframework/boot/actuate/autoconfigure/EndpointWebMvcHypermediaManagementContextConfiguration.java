@@ -49,7 +49,6 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.ResourceLoader;
@@ -134,12 +133,6 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 			path = server.getPath(path);
 		}
 		return new DefaultCurieProvider("boot", new UriTemplate(path));
-	}
-
-	@ConditionalOnProperty(prefix = "endpoints.actuator", name = "enabled", matchIfMissing = true)
-	@Configuration
-	static class ActuatorMvcEndpointConfiguration {
-
 	}
 
 	/**

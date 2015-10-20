@@ -372,6 +372,14 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindNestedProperties() throws Exception {
+		TargetWithNestedProperties target = new TargetWithNestedProperties();
+		bind(target, "nested.foo: bar\n" + "nested.value.foo: 123");
+		assertEquals("bar", target.getNested().get("foo"));
+		assertEquals("123", target.getNested().get("value.foo"));
+	}
+
+	@Test
 	public void testBindNestedMapOfEnum() throws Exception {
 		this.conversionService = new DefaultConversionService();
 		TargetWithNestedMapOfEnum target = new TargetWithNestedMapOfEnum();
@@ -775,6 +783,20 @@ public class RelaxedDataBinderTests {
 		}
 
 		public void setNested(Map nested) {
+			this.nested = nested;
+		}
+
+	}
+
+	public static class TargetWithNestedProperties {
+
+		private Properties nested;
+
+		public Properties getNested() {
+			return this.nested;
+		}
+
+		public void setNested(Properties nested) {
 			this.nested = nested;
 		}
 

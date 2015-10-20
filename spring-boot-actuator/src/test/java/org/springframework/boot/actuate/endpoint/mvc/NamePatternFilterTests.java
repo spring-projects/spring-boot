@@ -21,27 +21,29 @@ import java.util.Map;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link NamePatternFilter}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class NamePatternFilterTests {
 
 	@Test
 	public void nonRegex() throws Exception {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
-		assertThat(filter.getResults("not.a.regex"), equalTo((Object) "not.a.regex"));
+		assertThat(filter.getResults("not.a.regex"),
+				hasEntry("not.a.regex", (Object) "not.a.regex"));
 		assertThat(filter.isGetNamesCalled(), equalTo(false));
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void regex() throws Exception {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
-		Map<String, Object> results = (Map<String, Object>) filter.getResults("fo.*");
+		Map<String, Object> results = filter.getResults("fo.*");
 		assertThat(results.get("foo"), equalTo((Object) "foo"));
 		assertThat(results.get("fool"), equalTo((Object) "fool"));
 		assertThat(filter.isGetNamesCalled(), equalTo(true));
