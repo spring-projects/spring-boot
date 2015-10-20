@@ -358,7 +358,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.keyspace-name= # the keyspace name
 	spring.data.cassandra.port= # the connection port
 	spring.data.cassandra.compression= # compression method (none/snappy/lz4)
-	spring.data.cassandra.loadbalancing-policy= # class name for a LoadBalancingPolicy
+	spring.data.cassandra.load-balancing-policy= # class name for a LoadBalancingPolicy
 	spring.data.cassandra.consistency-level= # consistency level (any/one/two/three/quorum/all...)
 	spring.data.cassandra.serial-consistency-level= # serial consistency level (any/one/two/three/quorum/all...)
 	spring.data.cassandra.fetch-size=
