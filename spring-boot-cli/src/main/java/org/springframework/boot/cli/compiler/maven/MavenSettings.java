@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler;
+package org.springframework.boot.cli.compiler.maven;
 
 import java.io.File;
 import java.io.PrintWriter;
