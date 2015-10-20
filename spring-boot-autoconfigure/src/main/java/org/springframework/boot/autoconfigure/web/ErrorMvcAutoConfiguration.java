@@ -77,6 +77,7 @@ import org.springframework.web.util.HtmlUtils;
 @EnableConfigurationProperties(ErrorProperties.class)
 @Configuration
 public class ErrorMvcAutoConfiguration {
+
 	@Autowired
 	private ServerProperties properties;
 
