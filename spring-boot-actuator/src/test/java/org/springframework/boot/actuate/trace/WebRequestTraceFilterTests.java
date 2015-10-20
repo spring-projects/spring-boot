@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
 
@@ -37,6 +38,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link WebRequestTraceFilter}.
@@ -127,6 +129,25 @@ public class WebRequestTraceFilterTests {
 	}
 
 	@Test
+	@SuppressWarnings({ "unchecked" })
+	public void filterDoesNotAddResponseHeadersWithoutResponseHeadersInclude()
+			throws ServletException, IOException {
+		this.properties.setInclude(Collections.singleton(Include.REQUEST_HEADERS));
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		response.addHeader("Content-Type", "application/json");
+		this.filter.doFilterInternal(request, response, new FilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+			}
+		});
+		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
+		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
+		assertTrue(headers.get("response") == null);
+	}
+
+	@Test
 	public void filterHasResponseStatus() {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -156,4 +177,5 @@ public class WebRequestTraceFilterTests {
 		System.err.println(map);
 		assertEquals("Foo", map.get("message").toString());
 	}
+
 }
