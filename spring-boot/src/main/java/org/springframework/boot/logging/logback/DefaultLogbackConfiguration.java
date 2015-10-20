@@ -48,10 +48,10 @@ class DefaultLogbackConfiguration {
 	private static final String CONSOLE_LOG_PATTERN = "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} "
 			+ "%clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} "
 			+ "%clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} "
-			+ "%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%rEx}";
+			+ "%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}";
 
 	private static final String FILE_LOG_PATTERN = "%d{yyyy-MM-dd HH:mm:ss.SSS} "
-			+ "${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%rEx}";
+			+ "${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}";
 
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
@@ -90,6 +90,7 @@ class DefaultLogbackConfiguration {
 	private void base(LogbackConfigurator config) {
 		config.conversionRule("clr", ColorConverter.class);
 		config.conversionRule("wex", WhitespaceThrowableProxyConverter.class);
+		config.conversionRule("wEx", ExtendedWhitespaceThrowableProxyConverter.class);
 		LevelRemappingAppender debugRemapAppender = new LevelRemappingAppender(
 				"org.springframework.boot");
 		config.start(debugRemapAppender);

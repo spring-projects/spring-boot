@@ -296,21 +296,6 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void rootCauseIsLoggedFirst() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(this.initializationContext, null,
-				getLogFile(null, tmpDir()));
-		Matcher<String> expectedOutput = containsString(
-				"Wrapped by: " + "java.lang.RuntimeException: Expected");
-		this.output.expect(expectedOutput);
-		this.logger.warn("Expected exception",
-				new RuntimeException("Expected", new RuntimeException("Cause")));
-		String fileContents = FileCopyUtils
-				.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
-		assertThat(fileContents, is(expectedOutput));
-	}
-
-	@Test
 	public void customExceptionConversionWord() throws Exception {
 		System.setProperty("LOG_EXCEPTION_CONVERSION_WORD", "%ex");
 		try {

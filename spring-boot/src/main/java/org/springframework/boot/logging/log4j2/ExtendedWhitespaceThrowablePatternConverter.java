@@ -19,6 +19,7 @@ package org.springframework.boot.logging.log4j2;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.pattern.ConverterKeys;
+import org.apache.logging.log4j.core.pattern.ExtendedThrowablePatternConverter;
 import org.apache.logging.log4j.core.pattern.PatternConverter;
 import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
 
@@ -27,21 +28,26 @@ import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
  * trace.
  *
  * @author Vladimir Tsanev
+ * @author Phillip Webb
  * @since 1.3.0
  */
 @Plugin(name = "WhitespaceThrowablePatternConverter", category = PatternConverter.CATEGORY)
-@ConverterKeys({ "wEx", "wThrowable", "wException" })
-public final class WhitespaceThrowablePatternConverter extends ThrowablePatternConverter {
+@ConverterKeys({ "xwEx", "xwThrowable", "xwException" })
+public final class ExtendedWhitespaceThrowablePatternConverter
+		extends ThrowablePatternConverter {
 
-	private WhitespaceThrowablePatternConverter(String[] options) {
-		super("WhitespaceThrowable", "throwable", options);
+	private final ExtendedThrowablePatternConverter delegate;
+
+	private ExtendedWhitespaceThrowablePatternConverter(String[] options) {
+		super("WhitespaceExtendedThrowable", "throwable", options);
+		this.delegate = ExtendedThrowablePatternConverter.newInstance(options);
 	}
 
 	@Override
 	public void format(LogEvent event, StringBuilder buffer) {
 		if (event.getThrown() != null) {
 			buffer.append(this.options.getSeparator());
-			super.format(event, buffer);
+			this.delegate.format(event, buffer);
 			buffer.append(this.options.getSeparator());
 		}
 	}
@@ -52,8 +58,9 @@ public final class WhitespaceThrowablePatternConverter extends ThrowablePatternC
 	 * first line of the throwable will be formatted.
 	 * @return a new {@code WhitespaceThrowablePatternConverter}
 	 */
-	public static WhitespaceThrowablePatternConverter newInstance(String[] options) {
-		return new WhitespaceThrowablePatternConverter(options);
+	public static ExtendedWhitespaceThrowablePatternConverter newInstance(
+			String[] options) {
+		return new ExtendedWhitespaceThrowablePatternConverter(options);
 	}
 
 }
