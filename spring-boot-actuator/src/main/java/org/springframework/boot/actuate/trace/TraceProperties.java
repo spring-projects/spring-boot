@@ -43,18 +43,10 @@ public class TraceProperties {
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(defaultIncludes);
 	}
 
-	private static final int DEFAULT_MAX_CONTENT_LENGTH = 32768;
-
 	/**
-	 * Items to included in the trace. Defaults to request/response headers and errors.
+	 * Items to be included in the trace. Defaults to request/response headers and errors.
 	 */
 	private Set<Include> include = new HashSet<Include>(DEFAULT_INCLUDES);
-
-	/**
-	 * Maximum number of content bytes that can be traced before being truncated (-1 for
-	 * unlimited).
-	 */
-	private int maxContentLength = DEFAULT_MAX_CONTENT_LENGTH;
 
 	public Set<Include> getInclude() {
 		return this.include;
@@ -62,14 +54,6 @@ public class TraceProperties {
 
 	public void setInclude(Set<Include> include) {
 		this.include = include;
-	}
-
-	public int getMaxContentLength() {
-		return this.maxContentLength;
-	}
-
-	public void setMaxContentLength(int maxContentLength) {
-		this.maxContentLength = maxContentLength;
 	}
 
 	/**
