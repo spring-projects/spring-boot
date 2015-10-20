@@ -48,6 +48,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.filter.RequestContextFilter;
 
@@ -56,6 +57,7 @@ import org.springframework.web.filter.RequestContextFilter;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnClass(name = { "org.glassfish.jersey.server.spring.SpringComponentProvider",
@@ -77,8 +79,13 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 
 	@PostConstruct
 	public void path() {
-		this.path = findPath(AnnotationUtils.findAnnotation(this.config.getClass(),
-				ApplicationPath.class));
+		if (StringUtils.hasLength(this.jersey.getApplicationPath())) {
+			this.path = parseApplicationPath(this.jersey.getApplicationPath());
+		}
+		else {
+			this.path = findApplicationPath(AnnotationUtils.findAnnotation(this.config.getClass(),
+					ApplicationPath.class));
+		}
 	}
 
 	@Bean
@@ -138,15 +145,19 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 		servletContext.setInitParameter("contextConfigLocation", "<NONE>");
 	}
 
-	private static String findPath(ApplicationPath annotation) {
+	private static String findApplicationPath(ApplicationPath annotation) {
 		// Jersey doesn't like to be the default servlet, so map to /* as a fallback
 		if (annotation == null) {
 			return "/*";
 		}
-		String path = annotation.value();
-		if (!path.startsWith("/")) {
-			path = "/" + path;
-		}
-		return path.equals("/") ? "/*" : path + "/*";
+		return parseApplicationPath(annotation.value());
 	}
+
+	private static String parseApplicationPath(String applicationPath) {
+		if (!applicationPath.startsWith("/")) {
+			applicationPath = "/" + applicationPath;
+		}
+		return applicationPath.equals("/") ? "/*" : applicationPath + "/*";
+	}
+
 }
