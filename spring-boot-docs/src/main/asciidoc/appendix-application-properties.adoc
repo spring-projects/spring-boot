@@ -31,7 +31,7 @@ content into your application; rather pick only the properties that you need.
     banner.charset=UTF-8 # banner file encoding
     banner.location=classpath:banner.txt # banner file location
 
-	# SPRING CONFIG ({sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[ConfigFileApplicationListener])
+	# SPRING CONFIG ({sc-spring-boot}/context/config/ConfigFileEnvironmentPostProcessor.{sc-ext}[ConfigFileEnvironmentPostProcessor])
 	spring.config.name= # config file name (default to 'application')
 	spring.config.location= # location of config file
 
