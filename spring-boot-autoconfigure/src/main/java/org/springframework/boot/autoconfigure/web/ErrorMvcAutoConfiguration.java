@@ -24,8 +24,12 @@ import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.aop.framework.autoproxy.AutoProxyUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -100,6 +104,11 @@ public class ErrorMvcAutoConfiguration
 	public void customize(ConfigurableEmbeddedServletContainer container) {
 		container.addErrorPages(
 				new ErrorPage(this.properties.getServletPrefix() + this.errorPath));
+	}
+
+	@Bean
+	public static PreserveErrorControllerTargetClassPostProcessor preserveErrorControllerTargetClassPostProcessor() {
+		return new PreserveErrorControllerTargetClassPostProcessor();
 	}
 
 	@Configuration
@@ -220,6 +229,31 @@ public class ErrorMvcAutoConfiguration
 			}
 			catch (Exception ex) {
 				return null;
+			}
+		}
+
+	}
+
+	/**
+	 * {@link BeanFactoryPostProcessor} to ensure that the target class of ErrorController
+	 * MVC beans are preserved when using AOP.
+	 */
+	static class PreserveErrorControllerTargetClassPostProcessor
+			implements BeanFactoryPostProcessor {
+
+		@Override
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+				throws BeansException {
+			String[] errorControllerBeans = beanFactory
+					.getBeanNamesForType(ErrorController.class, false, false);
+			for (String errorControllerBean : errorControllerBeans) {
+				try {
+					beanFactory.getBeanDefinition(errorControllerBean).setAttribute(
+							AutoProxyUtils.PRESERVE_TARGET_CLASS_ATTRIBUTE, Boolean.TRUE);
+				}
+				catch (Throwable ex) {
+					// Ignore
+				}
 			}
 		}
 
