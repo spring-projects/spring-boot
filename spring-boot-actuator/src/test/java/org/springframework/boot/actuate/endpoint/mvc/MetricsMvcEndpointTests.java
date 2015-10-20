@@ -87,7 +87,7 @@ public class MetricsMvcEndpointTests {
 	@Test
 	public void specificMetric() throws Exception {
 		this.mvc.perform(get("/metrics/foo")).andExpect(status().isOk())
-				.andExpect(content().string(equalTo("1")));
+				.andExpect(content().string(equalTo("{\"foo\":1}")));
 	}
 
 	@Test

@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,7 +43,7 @@ public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 		this.delegate = delegate;
 	}
 
-	@RequestMapping(value = "/{name:.*}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{name:.*}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	@HypermediaDisabled
 	public Object value(@PathVariable String name) {
