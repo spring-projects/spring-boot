@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.springframework.beans.BeanWrapper;
@@ -310,6 +311,10 @@ public class RelaxedDataBinder extends DataBinder {
 	private boolean isMapValueStringType(TypeDescriptor descriptor) {
 		if (descriptor == null || descriptor.getMapValueTypeDescriptor() == null) {
 			return false;
+		}
+		if (Properties.class.isAssignableFrom(descriptor.getObjectType())) {
+			// Properties is declared as Map<Object,Object> but we know it's really Map<String,String>
+			return true;
 		}
 		Class<?> valueType = descriptor.getMapValueTypeDescriptor().getObjectType();
 		return (valueType != null && CharSequence.class.isAssignableFrom(valueType));
