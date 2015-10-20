@@ -17,6 +17,7 @@
 package org.springframework.boot.context.embedded.jetty;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.Handler;
@@ -159,6 +160,13 @@ public class JettyEmbeddedServletContainerFactoryTests
 	@Test
 	public void basicSslClasspathKeyStore() throws Exception {
 		testBasicSslWithKeyStore("classpath:test.jks");
+	}
+
+	@Override
+	protected Map<String, String> getActualMimeMappings() {
+		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
+				.getServer().getHandler();
+		return context.getMimeTypes().getMimeMap();
 	}
 
 }

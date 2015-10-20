@@ -25,7 +25,11 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLException;
@@ -61,6 +65,9 @@ import org.springframework.util.concurrent.ListenableFuture;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
@@ -525,6 +532,31 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void defaultSessionTimeout() throws Exception {
 		assertThat(getFactory().getSessionTimeout(), equalTo(30 * 60));
+	}
+
+	@Test
+	public void mimeMappingsAreCorrectlyConfigured() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory.getEmbeddedServletContainer();
+		Map<String, String> configuredMimeMappings = getActualMimeMappings();
+		Set<Entry<String, String>> entrySet = configuredMimeMappings.entrySet();
+		Collection<MimeMappings.Mapping> expectedMimeMappings = getExpectedMimeMappings();
+		for (Entry<String, String> entry : entrySet) {
+			assertThat(expectedMimeMappings,
+					hasItem(new MimeMappings.Mapping(entry.getKey(), entry.getValue())));
+		}
+		for (MimeMappings.Mapping mapping : expectedMimeMappings) {
+			assertThat(configuredMimeMappings,
+					hasEntry(mapping.getExtension(), mapping.getMimeType()));
+		}
+		assertThat(configuredMimeMappings.size(),
+				is(equalTo(expectedMimeMappings.size())));
+	}
+
+	protected abstract Map<String, String> getActualMimeMappings();
+
+	protected Collection<MimeMappings.Mapping> getExpectedMimeMappings() {
+		return MimeMappings.DEFAULT.getAll();
 	}
 
 	private void addTestTxtFile(AbstractEmbeddedServletContainerFactory factory)

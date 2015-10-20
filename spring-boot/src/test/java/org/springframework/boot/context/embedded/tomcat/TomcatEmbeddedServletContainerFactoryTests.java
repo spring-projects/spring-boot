@@ -38,6 +38,7 @@ import org.mockito.InOrder;
 
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -309,6 +310,15 @@ public class TomcatEmbeddedServletContainerFactoryTests
 
 		});
 
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Map<String, String> getActualMimeMappings() {
+		Context context = (Context) ((TomcatEmbeddedServletContainer) this.container)
+				.getTomcat().getHost().findChildren()[0];
+		return (Map<String, String>) ReflectionTestUtils.getField(context,
+				"mimeMappings");
 	}
 
 	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory,
