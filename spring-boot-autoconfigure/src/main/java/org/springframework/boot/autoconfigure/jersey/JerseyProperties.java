@@ -44,8 +44,8 @@ public class JerseyProperties {
 	private Filter filter = new Filter();
 
 	/**
-	 * Path that serves as the base URI for the application. Overrides
-	 * the value of "@ApplicationPath" if specified.
+	 * Path that serves as the base URI for the application. Overrides the value of
+	 * "@ApplicationPath" if specified.
 	 */
 	private String applicationPath;
 

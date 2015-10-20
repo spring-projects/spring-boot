@@ -313,7 +313,8 @@ public class RelaxedDataBinder extends DataBinder {
 			return false;
 		}
 		if (Properties.class.isAssignableFrom(descriptor.getObjectType())) {
-			// Properties is declared as Map<Object,Object> but we know it's really Map<String,String>
+			// Properties is declared as Map<Object,Object> but we know it's really
+			// Map<String,String>
 			return true;
 		}
 		Class<?> valueType = descriptor.getMapValueTypeDescriptor().getObjectType();

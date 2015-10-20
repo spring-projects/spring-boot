@@ -83,8 +83,8 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 			this.path = parseApplicationPath(this.jersey.getApplicationPath());
 		}
 		else {
-			this.path = findApplicationPath(AnnotationUtils.findAnnotation(this.config.getClass(),
-					ApplicationPath.class));
+			this.path = findApplicationPath(AnnotationUtils
+					.findAnnotation(this.config.getClass(), ApplicationPath.class));
 		}
 	}
 
