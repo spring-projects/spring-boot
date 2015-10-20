@@ -118,6 +118,10 @@ start() {
     pid=$(cat "$pid_file")
     isRunning $pid && { echoYellow "Already running [$pid]"; return 0; }
   fi
+  do_start
+}
+
+do_start() {
   pushd $(dirname "$jarfile") > /dev/null
   if [[ -n "$run_user" ]]; then
     mkdir "$PID_FOLDER" &> /dev/null
@@ -152,27 +156,40 @@ start() {
 }
 
 stop() {
-  [[ -f $pid_file ]] || { echoRed "Not running (pidfile not found)"; return 1; }
+  [[ -f $pid_file ]] || { echoYellow "Not running (pidfile not found)"; return 0; }
   pid=$(cat "$pid_file")
   rm -f "$pid_file"
-  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; return 1; }
-  kill -HUP $pid &> /dev/null || { echoRed "Unable to kill process ${pid}"; return 3; }
+  isRunning $pid || { echoYellow "Not running (process ${pid} not found)"; return 0; }
+  do_stop $pid $pid_file
+}
+
+do_stop() {
+  kill -HUP $1 &> /dev/null || { echoRed "Unable to kill process $1"; return 1; }
   for i in $(seq 1 60); do
-    isRunning ${pid} || { echoGreen "Stopped [$pid]"; rm -f $pid_file; return 0; }
+    isRunning $1 || { echoGreen "Stopped [$1]"; rm -f $2; return 0; }
     sleep 1
   done
-  echoRed "Unable to kill process ${pid}";
-  return 3;
+  echoRed "Unable to kill process $1";
+  return 1;
 }
 
 restart() {
   stop && start
 }
 
-status() {
-  [[ -f $pid_file ]] || { echoRed "Not running"; return 1; }
+force_reload() {
+  [[ -f $pid_file ]] || { echoRed "Not running (pidfile not found)"; return 7; }
   pid=$(cat "$pid_file")
-  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; return 3; }
+  rm -f "$pid_file"
+  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; return 7; }
+  do_stop $pid $pid_file
+  do_start
+}
+
+status() {
+  [[ -f $pid_file ]] || { echoRed "Not running"; return 3; }
+  pid=$(cat "$pid_file")
+  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; return 1; }
   echoGreen "Running [$pid]"
   return 0
 }
@@ -193,12 +210,14 @@ stop)
   stop "$@"; exit $?;;
 restart)
   restart "$@"; exit $?;;
+force-reload)
+  force_reload "$@"; exit $?;;
 status)
   status "$@"; exit $?;;
 run)
   run "$@"; exit $?;;
 *)
-  echo "Usage: $0 {start|stop|restart|status|run}"; exit 1;
+  echo "Usage: $0 {start|stop|restart|force-reload|status|run}"; exit 1;
 esac
 
 exit 0
