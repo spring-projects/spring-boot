@@ -25,6 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link ConfigurationProperties} for Jersey.
  *
  * @author Dave Syer
+ * @author Eddú Meléndez
  * @since 1.2.0
  */
 @ConfigurationProperties("spring.jersey")
@@ -41,6 +42,11 @@ public class JerseyProperties {
 	private Map<String, String> init = new HashMap<String, String>();
 
 	private Filter filter = new Filter();
+
+	/**
+	 * Path at which the application will be available.
+	 */
+	private String path;
 
 	public Filter getFilter() {
 		return this.filter;
@@ -64,6 +70,14 @@ public class JerseyProperties {
 
 	public void setInit(Map<String, String> init) {
 		this.init = init;
+	}
+
+	public String getPath() {
+		return this.path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 	public enum Type {
