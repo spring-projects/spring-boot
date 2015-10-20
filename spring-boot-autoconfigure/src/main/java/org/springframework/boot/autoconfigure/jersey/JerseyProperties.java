@@ -44,9 +44,10 @@ public class JerseyProperties {
 	private Filter filter = new Filter();
 
 	/**
-	 * Path at which the application will be available.
+	 * Path that serves as the base URI for the application. Overrides
+	 * the value of "@ApplicationPath" if specified.
 	 */
-	private String path;
+	private String applicationPath;
 
 	public Filter getFilter() {
 		return this.filter;
@@ -72,12 +73,12 @@ public class JerseyProperties {
 		this.init = init;
 	}
 
-	public String getPath() {
-		return this.path;
+	public String getApplicationPath() {
+		return this.applicationPath;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public void setApplicationPath(String applicationPath) {
+		this.applicationPath = applicationPath;
 	}
 
 	public enum Type {

@@ -28,6 +28,7 @@ import javax.ws.rs.Path;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -53,7 +54,7 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(Application.class)
-@IntegrationTest({ "server.port=0", "spring.jersey.path=/rest" })
+@IntegrationTest({ "server.port=0", "spring.jersey.application-path=/api" })
 @WebAppConfiguration
 public class JerseyAutoConfigurationWithoutApplicationPathTests {
 
@@ -65,7 +66,7 @@ public class JerseyAutoConfigurationWithoutApplicationPathTests {
 	@Test
 	public void contextLoads() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity(
-				"http://localhost:" + this.port + "/rest/hello", String.class);
+				"http://localhost:" + this.port + "/api/hello", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 

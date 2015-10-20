@@ -79,11 +79,11 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 
 	@PostConstruct
 	public void path() {
-		if (StringUtils.hasLength(this.jersey.getPath())) {
-			this.path = parsePath(this.jersey.getPath());
+		if (StringUtils.hasLength(this.jersey.getApplicationPath())) {
+			this.path = parseApplicationPath(this.jersey.getApplicationPath());
 		}
 		else {
-			this.path = findPath(AnnotationUtils.findAnnotation(this.config.getClass(),
+			this.path = findApplicationPath(AnnotationUtils.findAnnotation(this.config.getClass(),
 					ApplicationPath.class));
 		}
 	}
@@ -145,17 +145,15 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 		servletContext.setInitParameter("contextConfigLocation", "<NONE>");
 	}
 
-	private static String findPath(ApplicationPath annotation) {
+	private static String findApplicationPath(ApplicationPath annotation) {
 		// Jersey doesn't like to be the default servlet, so map to /* as a fallback
 		if (annotation == null) {
 			return "/*";
 		}
-		String path = annotation.value();
-
-		return parsePath(path);
+		return parseApplicationPath(annotation.value());
 	}
 
-	private static String parsePath(String applicationPath) {
+	private static String parseApplicationPath(String applicationPath) {
 		if (!applicationPath.startsWith("/")) {
 			applicationPath = "/" + applicationPath;
 		}
