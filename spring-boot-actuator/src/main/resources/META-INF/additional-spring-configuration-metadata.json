@@ -36,12 +36,6 @@
     "defaultValue": true
   },
   {
-    "name": "endpoints.links.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Enable hypermedia links endpoint.",
-    "defaultValue": true
-  },
-  {
     "name": "info",
     "type": "java.util.Map<java.lang.String,java.lang.Object>",
     "description": "Arbitrary properties to add to the info endpoint."
