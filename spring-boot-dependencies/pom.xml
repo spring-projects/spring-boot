@@ -116,7 +116,7 @@
 		<mariadb.version>1.2.3</mariadb.version>
 		<mockito.version>1.10.19</mockito.version>
 		<mongodb.version>2.13.2</mongodb.version>
-		<mysql.version>5.1.36</mysql.version>
+		<mysql.version>5.1.37</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<postgresql.version>9.4-1204-jdbc41</postgresql.version>
 		<reactor.version>2.0.6.RELEASE</reactor.version>
