@@ -435,6 +435,18 @@ public class ConfigFileEnvironmentPostProcessorTests {
 	}
 
 	@Test
+	public void profilesAddedToEnvironmentAndViaProperty() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"spring.profiles.active:foo");
+		this.environment.addActiveProfile("dev");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles(),
+				equalTo(new String[] { "foo", "dev" }));
+		assertThat(this.environment.getProperty("my.property"),
+				equalTo("fromdevpropertiesfile"));
+	}
+
+	@Test
 	public void yamlProfileCanBeChanged() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"spring.profiles.active:prod");
