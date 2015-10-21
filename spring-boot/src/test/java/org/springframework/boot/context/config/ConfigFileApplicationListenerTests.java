@@ -342,6 +342,18 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void profilesAddedToEnvironmentAndViaProperty() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"spring.profiles.active:foo");
+		this.environment.addActiveProfile("dev");
+		this.initializer.onApplicationEvent(this.event);
+		assertThat(this.environment.getActiveProfiles(),
+				equalTo(new String[] { "foo", "dev" }));
+		assertThat(this.environment.getProperty("my.property"),
+				equalTo("fromdevpropertiesfile"));
+	}
+
+	@Test
 	public void yamlProfiles() throws Exception {
 		this.initializer.setSearchNames("testprofiles");
 		this.environment.setActiveProfiles("dev");
