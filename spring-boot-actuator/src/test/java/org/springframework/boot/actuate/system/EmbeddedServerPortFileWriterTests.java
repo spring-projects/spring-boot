@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,16 @@ public class EmbeddedServerPortFileWriterTests {
 	}
 
 	@Test
-	public void overridePortFile() throws Exception {
+	public void overridePortFileWithDefault() throws Exception {
+		System.setProperty("PORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
+		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter();
+		listener.onApplicationEvent(mockEvent("", 8080));
+		assertThat(FileCopyUtils.copyToString(
+				new FileReader(System.getProperty("PORTFILE"))), equalTo("8080"));
+	}
+
+	@Test
+	public void overridePortFileWithExplicitFile() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		System.setProperty("PORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
 		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter(file);
