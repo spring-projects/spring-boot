@@ -248,9 +248,34 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private LaunchScript getLaunchScript() throws IOException {
 		if (this.executable || this.embeddedLaunchScript != null) {
 			return new DefaultLaunchScript(this.embeddedLaunchScript,
-					this.embeddedLaunchScriptProperties);
+					buildLaunchScriptProperties());
 		}
 		return null;
+	}
+
+	private Properties buildLaunchScriptProperties() {
+		Properties properties = new Properties();
+		if (this.embeddedLaunchScriptProperties != null) {
+			properties.putAll(this.embeddedLaunchScriptProperties);
+		}
+		putIfMissing(properties, "initInfoProvides", this.project.getArtifactId());
+		putIfMissing(properties, "initInfoShortDescription", this.project.getName(),
+				this.project.getArtifactId());
+		putIfMissing(properties, "initInfoDescription", this.project.getDescription(),
+				this.project.getName(), this.project.getArtifactId());
+		return properties;
+	}
+
+	private void putIfMissing(Properties properties, String key,
+			String... valueCandidates) {
+		if (!properties.containsKey(key)) {
+			for (String candidate : valueCandidates) {
+				if (candidate != null && candidate.length() > 0) {
+					properties.put(key, candidate);
+					return;
+				}
+			}
+		}
 	}
 
 	/**

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.web;
 
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.core.Ordered;
 import org.springframework.web.filter.RequestContextFilter;
 
@@ -27,8 +28,8 @@ import org.springframework.web.filter.RequestContextFilter;
  */
 public class OrderedRequestContextFilter extends RequestContextFilter implements Ordered {
 
-	// Order defaults to high but after Spring Session filter
-	private int order = Ordered.HIGHEST_PRECEDENCE + 100;
+	// Order defaults to after Spring Session filter
+	private int order = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER + 5;
 
 	@Override
 	public int getOrder() {

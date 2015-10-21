@@ -27,15 +27,16 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link WhitespaceThrowablePatternConverter}.
+ * Tests for {@link ExtendedWhitespaceThrowablePatternConverter}.
  *
  * @author Vladimir Tsanev
+ * @author Phillip Webb
  */
-public class WhitespaceThrowablePatternConverterTests {
+public class ExtendedWhitespaceThrowablePatternConverterTests {
 
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
-	private final ThrowablePatternConverter converter = WhitespaceThrowablePatternConverter
+	private final ThrowablePatternConverter converter = ExtendedWhitespaceThrowablePatternConverter
 			.newInstance(new String[] {});
 
 	@Test

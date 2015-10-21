@@ -454,6 +454,28 @@ the default behavior in a script or on the command line:
  in the script.
 |===
 
+In addition, the following properties can be changed when the script is written by using
+the `embeddedLaunchScriptProperties` option of the Spring Boot Maven or Gradle plugins.
+
+[cols="1,6"]
+|===
+|Name |Description
+
+|`mode`
+|The script mode. Defaults to `auto`.
+
+|`initInfoProvides`
+|The `Provides` section of "`INIT INFO`". Defaults to `spring-boot-application` for Gradle
+and to `${project.artifactId}` for Maven.
+
+|`initInfoShortDescription`
+|The `Short-Description` section of "`INIT INFO`". Defaults to `Spring Boot Application`
+for Gradle and to `${project.name}` for Maven.
+
+|`initInfoDescription`
+|The `Description` section of "`INIT INFO`". Defaults to `Spring Boot Application` for
+Gradle and to `${project.description}` (falling back to `${project.name}`) for Maven.
+|===
 
 
 [[deployment-script-customization-conf-file]]

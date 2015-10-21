@@ -4,6 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot.maven.it</groupId>
 	<artifactId>jar-executable</artifactId>
+	<name>MyFullyExecutableJarName</name>
+	<description>MyFullyExecutableJarDesc</description>
 	<version>0.0.1.BUILD-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

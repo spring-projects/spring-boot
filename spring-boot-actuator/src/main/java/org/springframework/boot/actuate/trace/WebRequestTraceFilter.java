@@ -170,8 +170,10 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 
 	@SuppressWarnings("unchecked")
 	protected void enhanceTrace(Map<String, Object> trace, HttpServletResponse response) {
-		Map<String, Object> headers = (Map<String, Object>) trace.get("headers");
-		headers.put("response", getResponseHeaders(response));
+		if (isIncluded(Include.RESPONSE_HEADERS)) {
+			Map<String, Object> headers = (Map<String, Object>) trace.get("headers");
+			headers.put("response", getResponseHeaders(response));
+		}
 	}
 
 	private Map<String, String> getResponseHeaders(HttpServletResponse response) {
