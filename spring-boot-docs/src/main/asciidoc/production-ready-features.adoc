@@ -363,9 +363,10 @@ Maven '`project properties`' via `@..@` placeholders, e.g.
 	info.build.version=@project.version@
 ----
 
-TIP: The `spring-boot:run` maven goal adds `src/main/resources` directly to the classpath
-(for hot reloading purposes). This circumvents the resource filtering and this feature.
-You can use the `exec:java` goal instead or customize the plugin's configuration, see the
+TIP: The `spring-boot:run` can add `src/main/resources` directly to the classpath
+(for hot reloading purposes) if you enable the `addResources` flag. This circumvents
+the resource filtering and this feature. You can use the `exec:java` goal instead
+or customize the plugin's configuration, see the
 {spring-boot-maven-plugin-site}/usage.html[plugin usage page] for more details.
 
 If you don't use the starter parent, in your `pom.xml` you need (inside the `<build/>`
