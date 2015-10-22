@@ -350,6 +350,7 @@ public class UndertowEmbeddedServletContainerFactory
 		configureErrorPages(deployment);
 		deployment.setServletStackTraces(ServletStackTraces.NONE);
 		deployment.setResourceManager(getDocumentRootResourceManager());
+		deployment.setAllowNonStandardWrappers(true);
 		configureMimeMappings(deployment);
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
 			customizer.customize(deployment);
