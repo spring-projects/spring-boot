@@ -369,6 +369,9 @@ Profile specific properties are loaded from the same locations as standard
 ones irrespective of whether the profile-specific files are inside or outside your
 packaged jar.
 
+If several profiles are specified, a last wins strategy applies. For example, profiles
+specified by the `spring.active.profiles` property are added after those configured via
+the `SpringApplication` API and therefore take precedence.
 
 
 [[boot-features-external-config-placeholders-in-properties]]

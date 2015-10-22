@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,20 +27,28 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import ch.qos.logback.classic.BasicConfigurator;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigFileApplicationListener.ConfigurationPropertySources;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnumerableCompositePropertySource;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
@@ -55,13 +63,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link ConfigFileApplicationListener}.
@@ -80,6 +83,17 @@ public class ConfigFileApplicationListenerTests {
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
+
+	@Rule
+	public OutputCapture out = new OutputCapture();
+
+	@Before
+	public void resetLogging() {
+		LoggerContext loggerContext = ((Logger) LoggerFactory.getLogger(getClass()))
+				.getLoggerContext();
+		loggerContext.reset();
+		BasicConfigurator.configure(loggerContext);
+	}
 
 	@After
 	public void cleanup() {
@@ -343,14 +357,63 @@ public class ConfigFileApplicationListenerTests {
 
 	@Test
 	public void profilesAddedToEnvironmentAndViaProperty() throws Exception {
+		// External profile takes precedence over profile added via the environment
 		EnvironmentTestUtils.addEnvironment(this.environment,
-				"spring.profiles.active:foo");
+				"spring.profiles.active:other");
 		this.environment.addActiveProfile("dev");
 		this.initializer.onApplicationEvent(this.event);
-		assertThat(this.environment.getActiveProfiles(),
-				equalTo(new String[] { "foo", "dev" }));
+		assertThat(Arrays.asList(this.environment.getActiveProfiles()), containsInAnyOrder("dev", "other"));
+		assertThat(this.environment.getProperty("my.property"),
+				equalTo("fromotherpropertiesfile"));
+		validateProfilePrecedence(null, "dev", "other");
+	}
+
+	@Test
+	public void profilesAddedToEnvironmentAndViaPropertyDuplicate() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"spring.profiles.active:dev,other");
+		this.environment.addActiveProfile("dev");
+		this.initializer.onApplicationEvent(this.event);
+		assertThat(Arrays.asList(this.environment.getActiveProfiles()), containsInAnyOrder("dev", "other"));
+		assertThat(this.environment.getProperty("my.property"),
+				equalTo("fromotherpropertiesfile"));
+		validateProfilePrecedence(null, "dev", "other");
+	}
+
+	@Test
+	public void profilesAddedToEnvironmentAndViaPropertyDuplicateEnvironmentWins() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"spring.profiles.active:other,dev");
+		this.environment.addActiveProfile("other");
+		this.initializer.onApplicationEvent(this.event);
+		assertThat(Arrays.asList(this.environment.getActiveProfiles()), containsInAnyOrder("dev", "other"));
 		assertThat(this.environment.getProperty("my.property"),
 				equalTo("fromdevpropertiesfile"));
+		validateProfilePrecedence(null, "other", "dev");
+	}
+
+	private void validateProfilePrecedence(String... profiles) {
+		this.initializer.onApplicationEvent(new ApplicationPreparedEvent(
+				new SpringApplication(), new String[0], new AnnotationConfigApplicationContext()));
+		String log = this.out.toString();
+
+		// First make sure that each profile got processed only once
+		for (String profile : profiles) {
+			assertThat("Wrong number of occurrences for profile '" + profile + "' --> " + log,
+					StringUtils.countOccurrencesOf(log, createLogForProfile(profile)), equalTo(1));
+		}
+		// Make sure the order of loading is the right one
+		for (String profile : profiles) {
+			String line = createLogForProfile(profile);
+			int index = log.indexOf(line);
+			assertTrue("Loading profile '" + profile + "' not found in '" + log + "'", index != -1);
+			log = log.substring(index + line.length(), log.length());
+		}
+	}
+
+	private String createLogForProfile(String profile) {
+		String suffix = profile != null ? "-" + profile : "";
+		return "Loaded config file 'classpath:/application" + suffix + ".properties'";
 	}
 
 	@Test
