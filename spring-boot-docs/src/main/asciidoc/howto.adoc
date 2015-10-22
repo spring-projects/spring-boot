@@ -1555,7 +1555,7 @@ Spring Boot exposes as set of useful properties from the `spring.data.rest` name
 customize the
 {spring-data-rest-javadoc}/core/config/RepositoryRestConfiguration.{dc-ext}[`RepositoryRestConfiguration`].
 If you need to provide additional customization, you should use a
-{spring-data-rest-javadoc}/core/config/RepositoryRestConfigurer.{dc-ext}[`RepositoryRestConfigurer`]
+{spring-data-rest-javadoc}/webmvc/config/RepositoryRestConfigurer.{dc-ext}[`RepositoryRestConfigurer`]
 bean.
 
 
