@@ -299,17 +299,15 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 				maybeActivateProfiles(
 						this.environment.getProperty(ACTIVE_PROFILES_PROPERTY));
 			}
-			else {
-				// Pre-existing active profiles set via Environment.setActiveProfiles()
-				// are additional profiles and config files are allowed to add more if
-				// they want to, so don't call addActiveProfiles() here.
-				List<String> list = new ArrayList<String>(
-						Arrays.asList(this.environment.getActiveProfiles()));
-				// Reverse them so the order is the same as from getProfilesForValue()
-				// (last one wins when properties are eventually resolved)
-				Collections.reverse(list);
-				this.profiles.addAll(list);
-			}
+			// Pre-existing active profiles set via Environment.setActiveProfiles()
+			// are additional profiles and config files are allowed to add more if
+			// they want to, so don't call addActiveProfiles() here.
+			List<String> list = new ArrayList<String>(
+					Arrays.asList(this.environment.getActiveProfiles()));
+			// Reverse them so the order is the same as from getProfilesForValue()
+			// (last one wins when properties are eventually resolved)
+			Collections.reverse(list);
+			this.profiles.addAll(list);
 
 			if (this.profiles.isEmpty()) {
 				for (String defaultProfile : this.environment.getDefaultProfiles()) {
