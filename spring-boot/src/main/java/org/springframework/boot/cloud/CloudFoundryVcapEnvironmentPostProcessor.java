@@ -99,7 +99,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 
 	private static final String VCAP_SERVICES = "VCAP_SERVICES";
 
-	// Before ConfigFileApplicationListener so values there can use these ones
+	// Before ConfigFileEnvironmentPostProcessor so values there can use these ones
 	private int order = ConfigFileEnvironmentPostProcessor.DEFAULT_ORDER - 1;
 
 	private final JsonParser parser = JsonParserFactory.getJsonParser();

@@ -188,7 +188,7 @@ extension are also added to the list by default.
 Spring Boot logs the configuration files that are loaded at `DEBUG` level and the
 candidates it has not found at `TRACE` level.
 
-See {sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[`ConfigFileApplicationListener`]
+See {sc-spring-boot}/context/config/ConfigFileEnvironmentPostProcessor.{sc-ext}[`ConfigFileEnvironmentPostProcessor`]
 for more detail.
 
 

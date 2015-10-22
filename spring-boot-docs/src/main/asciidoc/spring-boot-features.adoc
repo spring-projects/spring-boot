@@ -1570,7 +1570,7 @@ and less powerful approaches like IFRAME or JSONP.
 As of version 4.2, Spring MVC {spring-reference}/#cors[supports CORS] out of the box.
 Using {spring-reference}/#_controller_method_cors_configuration[controller method CORS
 configuration] with
-{spring-javadoc}/org/springframework/web/bind/annotation/CrossOrigin.html[`@CrossOrigin`]
+{spring-javadoc}/web/bind/annotation/CrossOrigin.html[`@CrossOrigin`]
 annotations in your Spring Boot application does not require any specific configuration.
 {spring-reference}/#_global_cors_configuration[Global CORS configuration] can be defined
 by registering a `WebMvcConfigurer` bean with a customized `addCorsMappings(CorsRegistry)`
@@ -3538,8 +3538,8 @@ the distributed transaction. DataSource and JMS auto-configuration will use JTA 
 as long as you have a `JtaTransactionManager` bean and appropriate XA wrapper beans
 registered within your `ApplicationContext`.
 
-The {sc-spring-boot}/jta/BitronixXAConnectionFactoryWrapper.{sc-ext}[BitronixXAConnectionFactoryWrapper]
-and {sc-spring-boot}/jta/BitronixXADataSourceWrapper.{sc-ext}[BitronixXADataSourceWrapper]
+The {sc-spring-boot}/jta/bitronix/BitronixXAConnectionFactoryWrapper.{sc-ext}[BitronixXAConnectionFactoryWrapper]
+and {sc-spring-boot}/jta/bitronix/BitronixXADataSourceWrapper.{sc-ext}[BitronixXADataSourceWrapper]
 provide good examples of how to write XA wrappers.
 
 
