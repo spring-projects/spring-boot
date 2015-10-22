@@ -330,7 +330,7 @@ public class TomcatEmbeddedServletContainerFactory
 		}
 		catch (FileNotFoundException ex) {
 			throw new EmbeddedServletContainerException(
-					"Could load key store: " + ex.getMessage(), ex);
+					"Could not load key store: " + ex.getMessage(), ex);
 		}
 		if (ssl.getKeyStoreType() != null) {
 			protocol.setKeystoreType(ssl.getKeyStoreType());
@@ -348,7 +348,7 @@ public class TomcatEmbeddedServletContainerFactory
 			}
 			catch (FileNotFoundException ex) {
 				throw new EmbeddedServletContainerException(
-						"Could load trust store: " + ex.getMessage(), ex);
+						"Could not load trust store: " + ex.getMessage(), ex);
 			}
 		}
 		protocol.setTruststorePass(ssl.getTrustStorePassword());
