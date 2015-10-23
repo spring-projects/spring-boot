@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.Session;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -42,6 +44,8 @@ import org.springframework.jms.config.SimpleJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.jms.support.converter.MessageConversionException;
+import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 import static org.junit.Assert.assertEquals;
@@ -330,6 +334,16 @@ public class JmsAutoConfigurationTests {
 		ctx.getBean(JmsListenerConfigUtils.JMS_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME);
 	}
 
+	@Test
+	public void testMessageConverterConfigured() {
+		load(TestConfigurationWithMessageConverter.class);
+		MessageConverter messageConverter = this.context.getBean(MessageConverter.class);
+		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
+		assertNotNull(messageConverter);
+		assertNotNull(jmsTemplate);
+		assertSame(messageConverter, jmsTemplate.getMessageConverter());
+	}
+
 	private AnnotationConfigApplicationContext createContext(
 			Class<?>... additionalClasses) {
 		return doLoad(additionalClasses);
@@ -454,6 +468,25 @@ public class JmsAutoConfigurationTests {
 
 	@Configuration
 	protected static class NoEnableJmsConfiguration {
+	}
+
+	@Configuration
+	protected static class TestConfigurationWithMessageConverter {
+
+		@Bean
+		public MessageConverter messageConverter() {
+			return new MessageConverter() {
+				@Override
+				public Message toMessage(Object o, Session session) throws JMSException, MessageConversionException {
+					return null;
+				}
+
+				@Override
+				public Object fromMessage(Message message) throws JMSException, MessageConversionException {
+					return null;
+				}
+			};
+		}
 	}
 
 }
