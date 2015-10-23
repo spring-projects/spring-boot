@@ -385,8 +385,8 @@ Systemd is the successor to `init.d` scripts, and now being used by many many mo
 distributions. Although you can continue to use `init.d` script with `systemd`, it is also
 possible to launch Spring Boot applications using `systemd` '`service`' scripts.
 
-For example, to run a Spring Boot application installed in `var/myapp` you can add the
-following script in `/etc/systemd/system/myapp.service`:
+For example, to run a Spring Boot application installed in `var/myapp` as user `myapp` you
+can add the following script in `/etc/systemd/system/myapp.service`:
 
 [indent=0]
 ----
@@ -395,6 +395,7 @@ following script in `/etc/systemd/system/myapp.service`:
 	After=syslog.target
 
 	[Service]
+	User=myapp
 	ExecStart=/var/myapp/myapp.jar
 
 	[Install]
