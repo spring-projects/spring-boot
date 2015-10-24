@@ -20,17 +20,16 @@ import java.net.URI;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.test.WebIntegrationTest;
 import sample.web.ui.SampleWebUiApplication;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -45,8 +44,7 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleWebUiApplication.class)
-@WebAppConfiguration
-@IntegrationTest("server.port:0")
+@WebIntegrationTest(randomPort = true)
 @DirtiesContext
 public class SampleWebUiApplicationTests {
 
