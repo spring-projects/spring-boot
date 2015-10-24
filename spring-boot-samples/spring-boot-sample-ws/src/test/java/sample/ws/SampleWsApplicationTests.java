@@ -26,11 +26,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
 import static org.hamcrest.Matchers.containsString;
@@ -38,8 +37,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleWsApplication.class)
-@WebAppConfiguration
-@IntegrationTest("server.port=0")
+@WebIntegrationTest(randomPort = true)
 public class SampleWsApplicationTests {
 
 	@Rule
