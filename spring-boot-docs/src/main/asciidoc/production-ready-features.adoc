@@ -630,10 +630,7 @@ users full access to the health endpoint in a secure application. To do so, set
 `sensitive` flag value "`false`" indicated in bold):
 
 |====
-|`management.security.enabled`
-|`endpoints.health.sensitive`
-|Unauthenticated
-|Authenticated
+| `management.security.enabled` | `endpoints.health.sensitive` | Unauthenticated | Authenticated
 
 |false
 |**false**
