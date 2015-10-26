@@ -79,6 +79,13 @@ public class RemoteUrlPropertyExtractorTests {
 				is(nullValue()));
 	}
 
+	@Test
+	public void cleanValidUrl() throws Exception {
+		ApplicationContext context = doTest("http://localhost:8080/");
+		assertThat(context.getEnvironment().getProperty("remoteUrl"),
+				equalTo("http://localhost:8080"));
+	}
+
 	private ApplicationContext doTest(String... args) {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);

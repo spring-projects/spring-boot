@@ -46,7 +46,7 @@ class RemoteUrlPropertyExtractor
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		ConfigurableEnvironment environment = event.getEnvironment();
-		String url = environment.getProperty(NON_OPTION_ARGS);
+		String url = cleanRemoteUrl(environment.getProperty(NON_OPTION_ARGS));
 		Assert.state(StringUtils.hasLength(url), "No remote URL specified");
 		Assert.state(url.indexOf(",") == -1, "Multiple URLs specified");
 		try {
@@ -58,6 +58,13 @@ class RemoteUrlPropertyExtractor
 		Map<String, Object> source = Collections.singletonMap("remoteUrl", (Object) url);
 		PropertySource<?> propertySource = new MapPropertySource("remoteUrl", source);
 		environment.getPropertySources().addLast(propertySource);
+	}
+
+	private String cleanRemoteUrl(String url) {
+		if (StringUtils.hasText(url) && url.endsWith("/")) {
+			return url.substring(0, url.length() - 1);
+		}
+		return url;
 	}
 
 	@Override
