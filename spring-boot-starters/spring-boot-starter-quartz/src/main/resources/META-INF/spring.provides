@@ -1,0 +1,1 @@
+provides: spring-context-support,spring-tx,quartz
