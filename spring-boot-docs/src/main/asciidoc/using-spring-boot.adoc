@@ -886,6 +886,10 @@ NOTE: If you use JRebel automatic restarts will be disabled in favor of dynamic 
 reloading. Other devtools features (such as LiveReload and property overrides) can still
 be used.
 
+NOTE: DevTools relies on the application context's shutdown hook to close it during a
+restart. It will not work correctly if you have disabled the shutdown hook (
+`SpringApplication.setRegisterShutdownHook(false)`).
+
 .Restart vs Reload
 ****
 The restart technology provided by Spring Boot works by using two classloaders.
