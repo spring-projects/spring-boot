@@ -155,10 +155,18 @@ public class DispatcherServletAutoConfigurationTests {
 				DispatcherServletAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.mvc.throw-exception-if-no-handler-found:true");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mvc.dispatch-options-request:true");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mvc.dispatch-trace-request:true");
 		this.context.refresh();
 		DispatcherServlet bean = this.context.getBean(DispatcherServlet.class);
 		assertEquals(true, new DirectFieldAccessor(bean)
 				.getPropertyValue("throwExceptionIfNoHandlerFound"));
+		assertEquals(true, new DirectFieldAccessor(bean)
+				.getPropertyValue("dispatchOptionsRequest"));
+		assertEquals(true, new DirectFieldAccessor(bean)
+				.getPropertyValue("dispatchTraceRequest"));
 	}
 
 	@Configuration

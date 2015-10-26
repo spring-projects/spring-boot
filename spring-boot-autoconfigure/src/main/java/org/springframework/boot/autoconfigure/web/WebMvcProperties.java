@@ -49,6 +49,16 @@ public class WebMvcProperties {
 	private String dateFormat;
 
 	/**
+	 * If TRACE requests should go through the regular dispatching chain.
+	 */
+	private boolean dispatchTraceRequest = false;
+
+	/**
+	 * If OPTIONS requests should go through the regular dispatching chain.
+	 */
+	private boolean dispatchOptionsRequest = false;
+
+	/**
 	 * If the content of the "default" model should be ignored during redirect scenarios.
 	 */
 	private boolean ignoreDefaultModelOnRedirect = true;
@@ -103,6 +113,22 @@ public class WebMvcProperties {
 	public void setThrowExceptionIfNoHandlerFound(
 			boolean throwExceptionIfNoHandlerFound) {
 		this.throwExceptionIfNoHandlerFound = throwExceptionIfNoHandlerFound;
+	}
+
+	public boolean isDispatchOptionsRequest() {
+		return this.dispatchOptionsRequest;
+	}
+
+	public void setDispatchOptionsRequest(boolean dispatchOptionsRequest) {
+		this.dispatchOptionsRequest = dispatchOptionsRequest;
+	}
+
+	public boolean isDispatchTraceRequest() {
+		return this.dispatchTraceRequest;
+	}
+
+	public void setDispatchTraceRequest(boolean dispatchTraceRequest) {
+		this.dispatchTraceRequest = dispatchTraceRequest;
 	}
 
 	public Async getAsync() {
