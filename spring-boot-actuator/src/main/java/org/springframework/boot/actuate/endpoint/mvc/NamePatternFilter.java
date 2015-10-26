@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
  */
 abstract class NamePatternFilter<T> {
 
-	private static final String[] REGEX_PARTS = { "*", "$", "^", "+" };
+	private static final String[] REGEX_PARTS = { "*", "$", "^", "+", "[" };
 
 	private final T source;
 

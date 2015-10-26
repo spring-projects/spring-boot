@@ -22,6 +22,8 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -41,13 +43,48 @@ public class NamePatternFilterTests {
 	}
 
 	@Test
-	public void regex() throws Exception {
+	public void regexRepetitionZeroOrMore() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("fo.*");
 		assertThat(results.get("foo"), equalTo((Object) "foo"));
 		assertThat(results.get("fool"), equalTo((Object) "fool"));
 		assertThat(filter.isGetNamesCalled(), equalTo(true));
+	}
 
+	@Test
+	public void regexRepetitionOneOrMore() {
+		MockNamePatternFilter filter = new MockNamePatternFilter();
+		Map<String, Object> results = filter.getResults("fo.+");
+		assertThat(results.get("foo"), equalTo((Object) "foo"));
+		assertThat(results.get("fool"), equalTo((Object) "fool"));
+		assertThat(filter.isGetNamesCalled(), equalTo(true));
+	}
+
+	@Test
+	public void regexEndAnchor() {
+		MockNamePatternFilter filter = new MockNamePatternFilter();
+		Map<String, Object> results = filter.getResults("foo$");
+		assertThat(results.get("foo"), equalTo((Object) "foo"));
+		assertThat(results.get("fool"), is(nullValue()));
+		assertThat(filter.isGetNamesCalled(), equalTo(true));
+	}
+
+	@Test
+	public void regexStartAnchor() {
+		MockNamePatternFilter filter = new MockNamePatternFilter();
+		Map<String, Object> results = filter.getResults("^foo");
+		assertThat(results.get("foo"), equalTo((Object) "foo"));
+		assertThat(results.get("fool"), is(nullValue()));
+		assertThat(filter.isGetNamesCalled(), equalTo(true));
+	}
+
+	@Test
+	public void regexCharacterClass() {
+		MockNamePatternFilter filter = new MockNamePatternFilter();
+		Map<String, Object> results = filter.getResults("fo[a-z]l");
+		assertThat(results.get("foo"), is(nullValue()));
+		assertThat(results.get("fool"), equalTo((Object) "fool"));
+		assertThat(filter.isGetNamesCalled(), equalTo(true));
 	}
 
 	private static class MockNamePatternFilter extends NamePatternFilter<Object> {
