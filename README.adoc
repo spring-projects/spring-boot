@@ -91,20 +91,25 @@ requests. If you want to raise an issue, please follow the recommendations bello
 
 == Building from Source
 You don't need to build from source to use Spring Boot (binaries in
-http://repo.spring.io[repo.spring.io], but if you want to try out the latest and greatest,
-Spring Boot can be http://maven.apache.org/run-maven/index.html[built with maven]
-v3.0.5 or above. You also need JDK 1.8 (although Boot applications can run on Java 1.6).
+http://repo.spring.io[repo.spring.io]), but if you want to try out the latest and
+greatest, Spring Boot can be easily built with the
+https://github.com/takari/maven-wrapper[maven wrapper]. You also need JDK 1.8 (although
+Boot applications can run on Java 1.6).
 
 [indent=0]
 ----
-	$ mvn clean install
+	$ ./mvnw clean install
 ----
+
+If you want to build with the regular `mvn` command, you will need
+http://maven.apache.org/run-maven/index.html[Maven v3.0.5 or above].
 
 NOTE: You may need to increase the amount of memory available to Maven by setting
 a `MAVEN_OPTS` environment variable with the value `-Xmx512m`. Remember
 to set the corresponding property in your IDE as well if you are building and running
 tests there (e.g. in Eclipse go to `Preferences->Java->Installed JREs` and edit the
-JRE definition so that all processes are launched with those arguments).
+JRE definition so that all processes are launched with those arguments). This property
+is automatically set if you use the maven wrapper.
 
 _Also see link:CONTRIBUTING.adoc[CONTRIBUTING.adoc] if you wish to submit pull requests,
 and in particular please fill out the
