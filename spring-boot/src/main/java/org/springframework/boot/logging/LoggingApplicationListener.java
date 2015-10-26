@@ -24,10 +24,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
@@ -107,6 +109,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 */
 	public static final String EXCEPTION_CONVERSION_WORD = "LOG_EXCEPTION_CONVERSION_WORD";
 
+	/**
+	 * The name of the {@link LoggingSystem} bean.
+	 */
+	private static final String LOGGING_SYSTEM_BEAN_NAME = "springBootLoggingSystem";
+
 	private static MultiValueMap<LogLevel, String> LOG_LEVEL_LOGGERS;
 
 	private static AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
@@ -123,7 +130,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private static Class<?>[] EVENT_TYPES = { ApplicationStartedEvent.class,
-			ApplicationEnvironmentPreparedEvent.class, ContextClosedEvent.class };
+			ApplicationEnvironmentPreparedEvent.class, ApplicationPreparedEvent.class,
+			ContextClosedEvent.class };
 
 	private static Class<?>[] SOURCE_TYPES = { SpringApplication.class,
 			ApplicationContext.class };
@@ -168,6 +176,9 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			onApplicationEnvironmentPreparedEvent(
 					(ApplicationEnvironmentPreparedEvent) event);
 		}
+		else if (event instanceof ApplicationPreparedEvent) {
+			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
+		}
 		else if (event instanceof ContextClosedEvent) {
 			onContextClosedEvent();
 		}
@@ -186,6 +197,13 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 					.get(event.getSpringApplication().getClassLoader());
 		}
 		initialize(event.getEnvironment(), event.getSpringApplication().getClassLoader());
+	}
+
+	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
+		ConfigurableListableBeanFactory beanFactory = event.getApplicationContext().getBeanFactory();
+		if (!beanFactory.containsBean(LOGGING_SYSTEM_BEAN_NAME)) {
+			beanFactory.registerSingleton(LOGGING_SYSTEM_BEAN_NAME, this.loggingSystem);
+		}
 	}
 
 	private void onContextClosedEvent() {
