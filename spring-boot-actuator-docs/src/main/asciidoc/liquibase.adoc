@@ -1,0 +1,12 @@
+=== /liquibase
+This endpoint provides information about database migrations that have been performed
+by Liquibase.
+
+Example curl request:
+include::{generated}/liquibase/curl-request.adoc[]
+
+Example HTTP request:
+include::{generated}/liquibase/http-request.adoc[]
+
+Example HTTP response:
+include::{generated}/liquibase/http-response.adoc[]
