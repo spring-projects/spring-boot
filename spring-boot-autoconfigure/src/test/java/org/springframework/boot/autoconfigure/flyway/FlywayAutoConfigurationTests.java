@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.MigrationVersion;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.After;
 import org.junit.Before;
@@ -56,6 +57,7 @@ import static org.junit.Assert.assertThat;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 public class FlywayAutoConfigurationTests {
 
@@ -193,6 +195,16 @@ public class FlywayAutoConfigurationTests {
 		registerAndRefresh(CustomFlywayWithJpaConfiguration.class,
 				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
+	}
+
+	@Test
+	public void overrideBaselineVersion() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context, "flyway.baseline-version=0");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertThat(flyway.getBaselineVersion(), equalTo(MigrationVersion.fromVersion("0")));
 	}
 
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
