@@ -142,7 +142,7 @@ public class JacksonAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(ParameterNamesModule.class)
-		public ParameterNamesModule parametersNameModule() {
+		public ParameterNamesModule parameterNamesModule() {
 			return new ParameterNamesModule(JsonCreator.Mode.PROPERTIES);
 		}
 

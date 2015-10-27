@@ -40,7 +40,7 @@ rules of thumb:
 * Look for classes called `+*AutoConfiguration+` and read their sources, in particular the
   `+@Conditional*+` annotations to find out what features they enable and when. Add
   `--debug` to the command line or a System property `-Ddebug` to get a log on the
-  console of all the autoconfiguration decisions that were made in your app. In a running
+  console of all the auto-configuration decisions that were made in your app. In a running
   Actuator app look at the `autoconfig` endpoint ('`/autoconfig`' or the JMX equivalent) for
   the same information.
 * Look for classes that are `@ConfigurationProperties` (e.g.
@@ -1810,8 +1810,8 @@ authentication manager is needed elsewhere), e.g.
 ----
 	@Configuration
 	public class AuthenticationManagerConfiguration extends
+	        GlobalAuthenticationConfigurerAdapter {
 
-		GlobalAuthenticationConfigurerAdapter {
 		@Override
 		public void init(AuthenticationManagerBuilder auth) {
 			auth.inMemoryAuthentication() // ... etc.
