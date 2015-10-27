@@ -1,4 +1,3 @@
-
 [[using-boot]]
 = Using Spring Boot
 
@@ -20,12 +19,33 @@ this section.
 
 [[using-boot-build-systems]]
 == Build systems
-It is strongly recommended that you choose a build system that supports _dependency
-management_, and one that can consume artifacts published to the "`Maven Central`"
-repository. We would recommend that you choose Maven or Gradle. It is possible to get
-Spring Boot to work with other build systems (Ant for example), but they will not be
-particularly well supported.
+It is strongly recommended that you choose a build system that supports
+<<using-boot-dependency-management,_dependency management_>>, and one
+that can consume artifacts published to the "`Maven Central`" repository. We
+would recommend that you choose Maven or Gradle. It is possible to get Spring Boot to
+work with other build systems (Ant for example), but they will not be particularly well
+supported.
 
+
+[[using-boot-dependency-management]]
+=== Dependency management
+
+Each release of Spring Boot provides a curated list of dependencies it supports. In
+practice, you do not need to provide a version for any of these dependencies in your
+build configuration as Spring Boot is managing that for you. When you upgrade Spring
+Boot itself, these dependencies will be upgraded as well in a consistent way.
+
+NOTE: You can still specify a version and override Spring Boot's recommendations if you
+feel that's necessary.
+
+The curated list contains all the spring modules that you can use with Spring Boot as
+well as a refined list of third party libraries. The list is available as a standard
+<<using-boot-maven-without-a-parent,Bills of Materials (`spring-boot-dependencies`)>>
+and additional dedicated support for <<using-boot-maven-parent-pom,Maven>> and
+<<build-tool-plugins-gradle-dependency-management,Gradle>> are available as well.
+
+WARNING: Each release of Spring Boot is associated with a base version of the Spring
+Framework so we **highly** recommend you to not specify its version on your own.
 
 
 [[using-boot-maven]]
@@ -35,8 +55,9 @@ defaults. The parent project provides the following features:
 
 * Java 1.6 as the default compiler level.
 * UTF-8 source encoding.
-* A Dependency Management section, allowing you to omit `<version>` tags for common
-  dependencies, inherited from the `spring-boot-dependencies` POM.
+* A <<using-boot-dependency-management,Dependency Management section>>, allowing you to
+  omit `<version>` tags for common dependencies, inherited from the
+  `spring-boot-dependencies` POM.
 * Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
 * Sensible plugin configuration (http://www.mojohaus.org/exec-maven-plugin/[exec plugin],
   http://maven.apache.org/surefire/maven-surefire-plugin/[surefire],
@@ -69,6 +90,19 @@ the `parent`:
 NOTE: You should only need to specify the Spring Boot version number on this dependency.
 If you import additional starters, you can safely omit the version number.
 
+With that setup, you can also override individual dependencies by overriding a property
+in your own project. For instance, to upgrade to another Spring Data release train you'd
+add the following to your `pom.xml
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<properties>
+		<spring-data-releasetrain.version>Fowler-SR2</spring-data-releasetrain.version>
+	</properties>
+----
+
+TIP: Check the {github-code}/spring-boot-dependencies/pom.xml[`spring-boot-dependencies` pom]
+for a list of supported properties.
 
 
 [[using-boot-maven-without-a-parent]]
@@ -97,6 +131,37 @@ dependency:
 	</dependencyManagement>
 ----
 
+That setup does not allow you to override individual dependencies using a property as
+explained above. To achieve the same result, you'd need to add an entry in the
+`dependencyManagement` of your project **before** the `spring-boot-dependencies`
+entry. For instance, to upgrade to another Spring Data release train you'd add the
+following to your `pom.xml
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependencyManagement>
+		<dependencies>
+			<!-- Override Spring Data release train provided by Spring Boot -->
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-releasetrain</artifactId>
+				<version>Fowler-SR2</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>{spring-boot-version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+----
+
+NOTE: In the example above, we specify a _BOM_ but any dependency type can be overridden
+that way.
 
 
 [[using-boot-maven-java-version]]
