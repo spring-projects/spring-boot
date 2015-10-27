@@ -29,7 +29,7 @@ import org.springframework.web.filter.RequestContextFilter;
 public class OrderedRequestContextFilter extends RequestContextFilter implements Ordered {
 
 	// Order defaults to after Spring Session filter
-	private int order = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER + 5;
+	private int order = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 105;
 
 	@Override
 	public int getOrder() {
