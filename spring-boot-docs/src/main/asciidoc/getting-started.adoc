@@ -798,6 +798,11 @@ http://spring.io/guides/[getting started] guides that solve specific
 "`How do I do that with Spring`" problems; we also have Spring Boot-specific
 _<<howto.adoc#howto, How-to>>_ reference documentation.
 
+The http://github.com/{github-repo}[Spring Boot repository] has also a
+{github-code}/spring-boot-samples[bunch of samples] you can run. The samples are
+independent of the rest of the code (that is you don't need to build the rest to run
+or use the samples).
+
 Otherwise, the next logical step is to read _<<using-spring-boot.adoc#using-boot>>_. If
 you're really impatient, you could also jump ahead and read about
 _<<spring-boot-features.adoc#boot-features, Spring Boot features>>_.
