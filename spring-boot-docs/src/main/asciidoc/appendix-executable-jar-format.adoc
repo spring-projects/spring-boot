@@ -61,7 +61,7 @@ Spring Boot Loader compatible war files should be structured in the following wa
 
 [indent=0]
 ----
-	example.jar
+	example.war
 	 |
 	 +-META-INF
 	 |  +-MANIFEST.MF
