@@ -458,27 +458,6 @@ public class TomcatEmbeddedServletContainerFactory
 	}
 
 	/**
-	 * Returns the absolute temp dir for given web server.
-	 * @param prefix webserver name
-	 * @return The temp dir for given web server.
-	 */
-	protected File createTempDir(String prefix) {
-		try {
-			File tempFolder = File.createTempFile(prefix + ".", "." + getPort());
-			tempFolder.delete();
-			tempFolder.mkdir();
-			tempFolder.deleteOnExit();
-			return tempFolder;
-		}
-		catch (IOException ex) {
-			throw new EmbeddedServletContainerException(
-					"Unable to create Tomcat tempdir. java.io.tmpdir is set to "
-							+ System.getProperty("java.io.tmpdir"),
-					ex);
-		}
-	}
-
-	/**
 	 * Set the Tomcat base directory. If not specified a temporary directory will be used.
 	 * @param baseDirectory the tomcat base directory
 	 */

@@ -319,21 +319,19 @@ public class JettyEmbeddedServletContainerFactory
 
 	private void configureDocumentRoot(WebAppContext handler) {
 		File root = getValidDocumentRoot();
-		if (root != null) {
-			try {
-				if (!root.isDirectory()) {
-					Resource resource = JarResource
-							.newJarResource(Resource.newResource(root));
-					handler.setBaseResource(resource);
-				}
-				else {
-					handler.setBaseResource(
-							Resource.newResource(root.getCanonicalFile()));
-				}
+		root = (root != null ? root : createTempDir("jetty-docbase"));
+		try {
+			if (!root.isDirectory()) {
+				Resource resource = JarResource
+						.newJarResource(Resource.newResource(root));
+				handler.setBaseResource(resource);
 			}
-			catch (Exception ex) {
-				throw new IllegalStateException(ex);
+			else {
+				handler.setBaseResource(Resource.newResource(root.getCanonicalFile()));
 			}
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
 		}
 	}
 

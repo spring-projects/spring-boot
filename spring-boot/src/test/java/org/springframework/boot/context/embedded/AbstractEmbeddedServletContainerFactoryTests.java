@@ -23,8 +23,10 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.Arrays;
@@ -36,6 +38,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLException;
@@ -84,6 +87,7 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
@@ -671,6 +675,27 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}
 		assertThat(configuredMimeMappings.size(),
 				is(equalTo(expectedMimeMappings.size())));
+	}
+
+	@Test
+	public void rootServletContextResource() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		AtomicReference<URL> rootResource = new AtomicReference<URL>();
+		this.container = factory
+				.getEmbeddedServletContainer(new ServletContextInitializer() {
+					@Override
+					public void onStartup(ServletContext servletContext)
+							throws ServletException {
+						try {
+							rootResource.set(servletContext.getResource("/"));
+						}
+						catch (MalformedURLException ex) {
+							throw new ServletException(ex);
+						}
+					}
+				});
+		this.container.start();
+		assertThat(rootResource.get(), is(not(nullValue())));
 	}
 
 	private boolean doTestCompression(int contentSize, String[] mimeTypes,

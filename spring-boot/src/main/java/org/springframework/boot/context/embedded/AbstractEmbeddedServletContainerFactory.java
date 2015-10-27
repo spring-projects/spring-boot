@@ -164,4 +164,25 @@ public abstract class AbstractEmbeddedServletContainerFactory
 		return dir;
 	}
 
+	/**
+	 * Returns the absolute temp dir for given servlet container.
+	 * @param prefix servlet container name
+	 * @return The temp dir for given servlet container.
+	 */
+	protected File createTempDir(String prefix) {
+		try {
+			File tempFolder = File.createTempFile(prefix + ".", "." + getPort());
+			tempFolder.delete();
+			tempFolder.mkdir();
+			tempFolder.deleteOnExit();
+			return tempFolder;
+		}
+		catch (IOException ex) {
+			throw new EmbeddedServletContainerException(
+					"Unable to create tempdir. java.io.tmpdir is set to "
+							+ System.getProperty("java.io.tmpdir"),
+					ex);
+		}
+	}
+
 }

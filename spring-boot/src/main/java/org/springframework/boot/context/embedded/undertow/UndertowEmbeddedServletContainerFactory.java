@@ -428,10 +428,11 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private ResourceManager getDocumentRootResourceManager() {
 		File root = getValidDocumentRoot();
-		if (root != null && root.isDirectory()) {
+		root = (root != null ? root : createTempDir("undertow-docbase"));
+		if (root.isDirectory()) {
 			return new FileResourceManager(root, 0);
 		}
-		if (root != null && root.isFile()) {
+		if (root.isFile()) {
 			return new JarResourcemanager(root);
 		}
 		return ResourceManager.EMPTY_RESOURCE_MANAGER;
