@@ -137,7 +137,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 
 	}
 
-	// In this one the Jpa repositories and the autoconfiguration packages overlap, so
+	// In this one the Jpa repositories and the auto-configuration packages overlap, so
 	// Mongo will try and configure the same repositories
 	@Configuration
 	@TestAutoConfigurationPackage(CityRepository.class)
