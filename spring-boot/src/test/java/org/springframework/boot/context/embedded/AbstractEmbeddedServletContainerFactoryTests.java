@@ -680,7 +680,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void rootServletContextResource() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		AtomicReference<URL> rootResource = new AtomicReference<URL>();
+		final AtomicReference<URL> rootResource = new AtomicReference<URL>();
 		this.container = factory
 				.getEmbeddedServletContainer(new ServletContextInitializer() {
 					@Override
