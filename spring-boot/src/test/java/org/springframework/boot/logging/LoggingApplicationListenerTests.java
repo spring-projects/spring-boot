@@ -18,6 +18,8 @@ package org.springframework.boot.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -44,6 +46,7 @@ import org.springframework.context.support.GenericApplicationContext;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -346,26 +349,29 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void shutdownHookIsNotRegisteredByDefault() throws Exception {
+		TestLoggingApplicationListener listener = new TestLoggingApplicationListener();
 		System.setProperty(LoggingSystem.class.getName(),
-				NullShutdownHandlerLoggingSystem.class.getName());
-		this.initializer.onApplicationEvent(
+				TestShutdownHandlerLoggingSystem.class.getName());
+		listener.onApplicationEvent(
 				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
-		assertThat(NullShutdownHandlerLoggingSystem.shutdownHandlerRequested, is(false));
+		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
+		assertThat(listener.shutdownHook, is(nullValue()));
 	}
 
 	@Test
 	public void shutdownHookCanBeRegistered() throws Exception {
+		TestLoggingApplicationListener listener = new TestLoggingApplicationListener();
 		System.setProperty(LoggingSystem.class.getName(),
-				NullShutdownHandlerLoggingSystem.class.getName());
+				TestShutdownHandlerLoggingSystem.class.getName());
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"logging.register_shutdown_hook:true");
-		this.initializer.onApplicationEvent(
+		listener.onApplicationEvent(
 				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
-		assertThat(NullShutdownHandlerLoggingSystem.shutdownHandlerRequested, is(true));
+		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
+		assertThat(listener.shutdownHook, is(not(nullValue())));
+		listener.shutdownHook.start();
+		assertThat(TestShutdownHandlerLoggingSystem.shutdownLatch.await(30,
+				TimeUnit.SECONDS), is(true));
 	}
 
 	private boolean bridgeHandlerInstalled() {
@@ -379,12 +385,13 @@ public class LoggingApplicationListenerTests {
 		return false;
 	}
 
-	public static class NullShutdownHandlerLoggingSystem extends AbstractLoggingSystem {
+	public static class TestShutdownHandlerLoggingSystem extends AbstractLoggingSystem {
 
-		static boolean shutdownHandlerRequested = false;
+		private static CountDownLatch shutdownLatch;
 
-		public NullShutdownHandlerLoggingSystem(ClassLoader classLoader) {
+		public TestShutdownHandlerLoggingSystem(ClassLoader classLoader) {
 			super(classLoader);
+			TestShutdownHandlerLoggingSystem.shutdownLatch = new CountDownLatch(1);
 		}
 
 		@Override
@@ -410,8 +417,26 @@ public class LoggingApplicationListenerTests {
 
 		@Override
 		public Runnable getShutdownHandler() {
-			shutdownHandlerRequested = true;
-			return null;
+			return new Runnable() {
+
+				@Override
+				public void run() {
+					TestShutdownHandlerLoggingSystem.shutdownLatch.countDown();
+				}
+
+			};
+		}
+
+	}
+
+	public static class TestLoggingApplicationListener
+			extends LoggingApplicationListener {
+
+		private Thread shutdownHook;
+
+		@Override
+		void registerShutdownHook(Thread shutdownHook) {
+			this.shutdownHook = shutdownHook;
 		}
 
 	}
