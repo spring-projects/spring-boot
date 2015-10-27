@@ -186,6 +186,26 @@ If the https://github.com/mikekelly/hal-browser[HAL Browser] is on the classpath
 via its webjar (`org.webjars:hal-browser`), or via the `spring-data-rest-hal-browser` then
 an HTML "`discovery page`", in the form of the HAL Browser, is also provided.
 
+[[production-ready-endpoint-cors]]
+=== CORS support
+
+http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
+(CORS) is a http://www.w3.org/TR/cors/[W3C specification] that allows you to specify in a
+flexible way what kind of cross domain requests are authorized. Actuator's MVC endpoints
+can be configured to support such scenario.
+
+CORS support is disabled by default and is only enabled once the
+`endpoints.cors.allowed-origins` property has been set. The configuration below permits
+`GET` and `POST` calls from the `example.com` domain:
+
+[source,properties,indent=0]
+----
+	endpoints.cors.allowed-origins=http://example.com
+	endpoints.cors.allowed-methods=GET,POST
+----
+
+TIP: Check {sc-spring-boot-actuator}/autoconfigure/EndpointCorsProperties.{sc-ext}[EndpointCorsProperties]
+for a complete list of options.
 
 
 [[production-ready-customizing-endpoints-programmatically]]
