@@ -92,6 +92,16 @@ public class OAuth2AuthorizationServerConfiguration
 						AuthorityUtils.authorityListToSet(this.details.getAuthorities())
 								.toArray(new String[0]))
 				.scopes(this.details.getScope().toArray(new String[0]));
+
+		if (this.details.getAutoApproveScopes() != null) {
+			builder.autoApprove(this.details.getAutoApproveScopes().toArray(new String[0]));
+		}
+		if (this.details.getAccessTokenValiditySeconds() != null) {
+			builder.accessTokenValiditySeconds(this.details.getAccessTokenValiditySeconds());
+		}
+		if (this.details.getRefreshTokenValiditySeconds() != null) {
+			builder.refreshTokenValiditySeconds(this.details.getRefreshTokenValiditySeconds());
+		}
 		if (this.details.getRegisteredRedirectUri() != null) {
 			builder.redirectUris(
 					this.details.getRegisteredRedirectUri().toArray(new String[0]));
