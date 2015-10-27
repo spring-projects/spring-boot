@@ -1810,7 +1810,7 @@ authentication manager is needed elsewhere), e.g.
 ----
 	@Configuration
 	public class AuthenticationManagerConfiguration extends
-	        GlobalAuthenticationConfigurerAdapter {
+			GlobalAuthenticationConfigurerAdapter {
 
 		@Override
 		public void init(AuthenticationManagerBuilder auth) {
