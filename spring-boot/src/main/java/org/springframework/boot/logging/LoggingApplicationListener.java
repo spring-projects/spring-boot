@@ -85,7 +85,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 * to shut down the logging system when the JVM exits.
 	 * @see LoggingSystem#getShutdownHandler
 	 */
-	public static final String REGISTER_SHOW_HOOK_PROPERTY = "logging.register-shutdown-hook";
+	public static final String REGISTER_SHUTDOWN_HOOK_PROPERTY = "logging.register-shutdown-hook";
 
 	/**
 	 * The name of the Spring property that contains the path where the logging
@@ -332,7 +332,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private void registerShutdownHookIfNecessary(Environment environment,
 			LoggingSystem loggingSystem) {
 		boolean registerShutdownHook = new RelaxedPropertyResolver(environment)
-				.getProperty(REGISTER_SHOW_HOOK_PROPERTY, Boolean.class, false);
+				.getProperty(REGISTER_SHUTDOWN_HOOK_PROPERTY, Boolean.class, false);
 		if (registerShutdownHook) {
 			Runnable shutdownHandler = loggingSystem.getShutdownHandler();
 			if (shutdownHandler != null
