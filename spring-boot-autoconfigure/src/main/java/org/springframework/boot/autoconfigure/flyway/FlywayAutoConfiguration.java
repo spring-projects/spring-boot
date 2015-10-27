@@ -21,6 +21,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.MigrationVersion;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -33,9 +34,11 @@ import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDepen
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -47,6 +50,7 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Vedran Pavic
  * @since 1.1.0
  */
 @Configuration
@@ -56,6 +60,12 @@ import org.springframework.util.Assert;
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
 public class FlywayAutoConfiguration {
+
+	@Bean
+	@ConfigurationPropertiesBinding
+	public StringToMigrationVersionConverter stringToMigrationVersionConverter() {
+		return new StringToMigrationVersionConverter();
+	}
 
 	@Configuration
 	@ConditionalOnMissingBean(Flyway.class)
@@ -154,6 +164,18 @@ public class FlywayAutoConfiguration {
 
 		public FlywayJpaDependencyConfiguration() {
 			super("flyway");
+		}
+
+	}
+
+	/**
+	 * Converts a String to a {@link MigrationVersion}.
+	 */
+	private static class StringToMigrationVersionConverter implements Converter<String, MigrationVersion> {
+
+		@Override
+		public MigrationVersion convert(String source) {
+			return MigrationVersion.fromVersion(source);
 		}
 
 	}
