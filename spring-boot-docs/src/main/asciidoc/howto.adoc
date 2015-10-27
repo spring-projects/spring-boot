@@ -370,6 +370,27 @@ In the case of `Filters` and `Servlets` you can also add mappings and init param
 adding a `FilterRegistrationBean` or `ServletRegistrationBean` instead of or as well as
 the underlying component.
 
+[NOTE]
+====
+If no `dispatcherType` is specified on a filter registration, it will match
+`FORWARD`,`INCLUDE` and `REQUEST`. If async has been enabled, it will match `ASYNC` as
+well.
+
+If you are migrating a filter that has no `dispatcher` element in `web.xml` you will
+need to specify a `dispatcherType` yourself:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+	public FilterRegistrationBean myFilterRegistration() {
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setDispatcherTypes(DispatcherType.REQUEST);
+		....
+
+		return registration;
+	}
+----
+====
 
 
 [[howto-disable-registration-of-a-servlet-or-filter]]
