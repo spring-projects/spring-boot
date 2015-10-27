@@ -337,9 +337,13 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			Runnable shutdownHandler = loggingSystem.getShutdownHandler();
 			if (shutdownHandler != null
 					&& shutdownHookRegistered.compareAndSet(false, true)) {
-				Runtime.getRuntime().addShutdownHook(new Thread(shutdownHandler));
+				registerShutdownHook(new Thread(shutdownHandler));
 			}
 		}
+	}
+
+	void registerShutdownHook(Thread shutdownHook) {
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
 	}
 
 	public void setOrder(int order) {
