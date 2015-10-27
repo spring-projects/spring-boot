@@ -21,6 +21,7 @@ import java.io.InputStream;
 
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 

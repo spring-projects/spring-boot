@@ -35,6 +35,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
+
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.Layout;
@@ -153,6 +155,13 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	@Parameter
 	private Properties embeddedLaunchScriptProperties;
 
+	/**
+	 * Exclude Spring Boot devtools.
+	 * @since 1.3
+	 */
+	@Parameter(defaultValue = "false")
+	private boolean excludeDevtools;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.project.getPackaging().equals("pom")) {
@@ -190,7 +199,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		}
 
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
-				getFilters());
+				getFilters(getAdditionalFilters()));
 
 		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack,
 				getLog());
@@ -213,6 +222,17 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
+	private ArtifactsFilter[] getAdditionalFilters() {
+		if (this.excludeDevtools) {
+			Exclude exclude = new Exclude();
+			exclude.setGroupId("org.springframework.boot");
+			exclude.setArtifactId("spring-boot-devtools");
+			ExcludeFilter filter = new ExcludeFilter(exclude);
+			return new ArtifactsFilter[] { filter };
+		}
+		return new ArtifactsFilter[] {};
+	}
+
 	private File getTargetFile() {
 		String classifier = (this.classifier == null ? "" : this.classifier.trim());
 		if (classifier.length() > 0 && !classifier.startsWith("-")) {
@@ -228,9 +248,34 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private LaunchScript getLaunchScript() throws IOException {
 		if (this.executable || this.embeddedLaunchScript != null) {
 			return new DefaultLaunchScript(this.embeddedLaunchScript,
-					this.embeddedLaunchScriptProperties);
+					buildLaunchScriptProperties());
 		}
 		return null;
+	}
+
+	private Properties buildLaunchScriptProperties() {
+		Properties properties = new Properties();
+		if (this.embeddedLaunchScriptProperties != null) {
+			properties.putAll(this.embeddedLaunchScriptProperties);
+		}
+		putIfMissing(properties, "initInfoProvides", this.project.getArtifactId());
+		putIfMissing(properties, "initInfoShortDescription", this.project.getName(),
+				this.project.getArtifactId());
+		putIfMissing(properties, "initInfoDescription", this.project.getDescription(),
+				this.project.getName(), this.project.getArtifactId());
+		return properties;
+	}
+
+	private void putIfMissing(Properties properties, String key,
+			String... valueCandidates) {
+		if (!properties.containsKey(key)) {
+			for (String candidate : valueCandidates) {
+				if (candidate != null && candidate.length() > 0) {
+					properties.put(key, candidate);
+					return;
+				}
+			}
+		}
 	}
 
 	/**

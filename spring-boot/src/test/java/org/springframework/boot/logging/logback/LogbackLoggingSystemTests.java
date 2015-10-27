@@ -21,6 +21,8 @@ import java.io.FileReader;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.impl.SLF4JLogFactory;
 import org.hamcrest.Matcher;
@@ -32,6 +34,7 @@ import org.junit.Test;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
+
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
@@ -40,9 +43,6 @@ import org.springframework.boot.test.OutputCapture;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
-
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -139,6 +139,21 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertTrue("Wrong output:\n" + output, output.contains(tmpDir() + "/tmp.log"));
 		assertTrue("Wrong output:\n" + output, output.endsWith("BOOTBOOT"));
 		assertFalse(new File(tmpDir() + "/tmp.log").exists());
+	}
+
+	@Test
+	public void testLogbackSpecificSystemProperty() throws Exception {
+		System.setProperty("logback.configurationFile", "/foo/my-file.xml");
+		try {
+			this.loggingSystem.beforeInitialize();
+			this.loggingSystem.initialize(this.initializationContext, null, null);
+			String output = this.output.toString().trim();
+			assertTrue("Wrong output:\n" + output, output.contains("Ignoring "
+					+ "'logback.configurationFile' system property. Please use 'logging.path' instead."));
+		}
+		finally {
+			System.clearProperty("logback.configurationFile");
+		}
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -275,21 +290,6 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		Matcher<String> expectedOutput = containsString("[junit-");
 		this.output.expect(expectedOutput);
 		this.logger.warn("Expected exception", new RuntimeException("Expected"));
-		String fileContents = FileCopyUtils
-				.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
-		assertThat(fileContents, is(expectedOutput));
-	}
-
-	@Test
-	public void rootCauseIsLoggedFirst() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(this.initializationContext, null,
-				getLogFile(null, tmpDir()));
-		Matcher<String> expectedOutput = containsString(
-				"Wrapped by: " + "java.lang.RuntimeException: Expected");
-		this.output.expect(expectedOutput);
-		this.logger.warn("Expected exception",
-				new RuntimeException("Expected", new RuntimeException("Cause")));
 		String fileContents = FileCopyUtils
 				.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
 		assertThat(fileContents, is(expectedOutput));

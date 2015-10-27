@@ -25,6 +25,7 @@ import java.util.Set;
 import org.gradle.api.internal.file.collections.SimpleFileCollection;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
+
 import org.springframework.boot.loader.tools.FileUtils;
 
 /**
@@ -37,12 +38,12 @@ public class BootRunTask extends JavaExec {
 
 	/**
 	 * Whether or not resources (typically in {@code src/main/resources} are added
-	 * directly to the classpath. When enabled (the default), this allows live in-place
-	 * editing of resources. Duplicate resources are removed from the resource output
+	 * directly to the classpath. When enabled, this allows live in-place editing
+	 * of resources. Duplicate resources are removed from the resource output
 	 * directory to prevent them from appearing twice if
 	 * {@code ClassLoader.getResources()} is called.
 	 */
-	private boolean addResources = true;
+	private boolean addResources = false;
 
 	public boolean getAddResources() {
 		return this.addResources;

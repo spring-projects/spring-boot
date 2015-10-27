@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
+import com.datastax.driver.core.Session;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -25,8 +27,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 import org.springframework.data.cassandra.repository.support.CassandraRepositoryFactoryBean;
-
-import com.datastax.driver.core.Session;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Cassandra

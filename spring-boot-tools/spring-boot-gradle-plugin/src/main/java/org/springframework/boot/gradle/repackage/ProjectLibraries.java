@@ -29,6 +29,7 @@ import org.gradle.api.artifacts.FileCollectionDependency;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.artifacts.ResolvedArtifact;
+
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Library;
@@ -155,10 +156,24 @@ class ProjectLibraries implements Libraries {
 		if (libraries != null) {
 			Set<String> duplicates = getDuplicates(libraries);
 			for (GradleLibrary library : libraries) {
-				library.setIncludeGroupName(duplicates.contains(library.getName()));
-				callback.library(library);
+				if (!isExcluded(library)) {
+					library.setIncludeGroupName(duplicates.contains(library.getName()));
+					callback.library(library);
+				}
 			}
 		}
+	}
+
+	private boolean isExcluded(GradleLibrary library) {
+		if (this.extension.isExcludeDevtools() && isDevToolsJar(library)) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isDevToolsJar(GradleLibrary library) {
+		return "org.springframework.boot".equals(library.getGroup())
+				&& library.getName().startsWith("spring-boot-devtools");
 	}
 
 	private Set<String> getDuplicates(Set<GradleLibrary> libraries) {
@@ -185,6 +200,10 @@ class ProjectLibraries implements Libraries {
 
 		public void setIncludeGroupName(boolean includeGroupName) {
 			this.includeGroupName = includeGroupName;
+		}
+
+		public String getGroup() {
+			return this.group;
 		}
 
 		@Override

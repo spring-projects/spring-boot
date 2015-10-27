@@ -20,6 +20,7 @@ import javax.jms.ConnectionFactory;
 import javax.transaction.TransactionManager;
 
 import org.apache.activemq.artemis.jms.client.ActiveMQXAConnectionFactory;
+
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

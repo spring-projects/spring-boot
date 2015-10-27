@@ -32,6 +32,7 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
 import org.junit.Test;
+
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;

@@ -20,10 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Marker;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -32,6 +28,10 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.LoggerContextVO;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.AppenderBase;
+import org.slf4j.Marker;
+
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Appender} that can remap {@link ILoggingEvent} {@link Level}s as they are

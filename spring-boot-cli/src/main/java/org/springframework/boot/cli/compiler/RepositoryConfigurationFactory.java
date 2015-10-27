@@ -23,7 +23,10 @@ import java.util.List;
 
 import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Repository;
+
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
+import org.springframework.boot.cli.compiler.maven.MavenSettings;
+import org.springframework.boot.cli.compiler.maven.MavenSettingsReader;
 import org.springframework.util.StringUtils;
 
 /**

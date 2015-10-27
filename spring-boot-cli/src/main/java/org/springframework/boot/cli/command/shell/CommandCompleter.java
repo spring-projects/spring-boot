@@ -22,10 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.cli.command.Command;
-import org.springframework.boot.cli.command.options.OptionHelp;
-import org.springframework.boot.cli.util.Log;
-
 import jline.console.ConsoleReader;
 import jline.console.completer.AggregateCompleter;
 import jline.console.completer.ArgumentCompleter;
@@ -33,6 +29,10 @@ import jline.console.completer.ArgumentCompleter.ArgumentDelimiter;
 import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
+
+import org.springframework.boot.cli.command.Command;
+import org.springframework.boot.cli.command.options.OptionHelp;
+import org.springframework.boot.cli.util.Log;
 
 /**
  * JLine {@link Completer} for Spring Boot {@link Command}s.

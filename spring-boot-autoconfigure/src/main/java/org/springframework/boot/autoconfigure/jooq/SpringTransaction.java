@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jooq;
 
 import org.jooq.Transaction;
+
 import org.springframework.transaction.TransactionStatus;
 
 /**

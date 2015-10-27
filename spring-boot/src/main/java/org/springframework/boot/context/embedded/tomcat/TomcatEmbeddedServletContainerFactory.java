@@ -51,8 +51,8 @@ import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -326,13 +326,11 @@ public class TomcatEmbeddedServletContainerFactory
 
 	private void configureSslKeyStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		try {
-			assertNotClasspathResource(ssl.getKeyStore());
-			File file = ResourceUtils.getFile(ssl.getKeyStore());
-			protocol.setKeystoreFile(file.getAbsolutePath());
+			protocol.setKeystoreFile(ResourceUtils.getURL(ssl.getKeyStore()).toString());
 		}
 		catch (FileNotFoundException ex) {
 			throw new EmbeddedServletContainerException(
-					"Could load key store: " + ex.getMessage(), ex);
+					"Could not load key store: " + ex.getMessage(), ex);
 		}
 		if (ssl.getKeyStoreType() != null) {
 			protocol.setKeystoreType(ssl.getKeyStoreType());
@@ -345,13 +343,12 @@ public class TomcatEmbeddedServletContainerFactory
 	private void configureSslTrustStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		if (ssl.getTrustStore() != null) {
 			try {
-				assertNotClasspathResource(ssl.getTrustStore());
-				File file = ResourceUtils.getFile(ssl.getTrustStore());
-				protocol.setTruststoreFile(file.getAbsolutePath());
+				protocol.setTruststoreFile(
+						ResourceUtils.getURL(ssl.getTrustStore()).toString());
 			}
 			catch (FileNotFoundException ex) {
 				throw new EmbeddedServletContainerException(
-						"Could load trust store: " + ex.getMessage(), ex);
+						"Could not load trust store: " + ex.getMessage(), ex);
 			}
 		}
 		protocol.setTruststorePass(ssl.getTrustStorePassword());
@@ -360,14 +357,6 @@ public class TomcatEmbeddedServletContainerFactory
 		}
 		if (ssl.getTrustStoreProvider() != null) {
 			protocol.setTruststoreProvider(ssl.getTrustStoreProvider());
-		}
-	}
-
-	private void assertNotClasspathResource(String resource)
-			throws FileNotFoundException {
-		if (resource.startsWith(ResourceUtils.CLASSPATH_URL_PREFIX)) {
-			throw new FileNotFoundException("Unable to load '" + resource
-					+ "' since Tomcat doesn't support classpath resources");
 		}
 	}
 
@@ -405,18 +394,31 @@ public class TomcatEmbeddedServletContainerFactory
 	private void configureSession(Context context) {
 		long sessionTimeout = getSessionTimeoutInMinutes();
 		context.setSessionTimeout((int) sessionTimeout);
+		Manager manager = context.getManager();
+		if (manager == null) {
+			manager = new StandardManager();
+			context.setManager(manager);
+		}
 		if (isPersistSession()) {
-			Manager manager = context.getManager();
-			if (manager == null) {
-				manager = new StandardManager();
-				context.setManager(manager);
-			}
-			Assert.state(manager instanceof StandardManager,
-					"Unable to persist HTTP session state using manager type "
-							+ manager.getClass().getName());
-			File folder = new ApplicationTemp().getFolder("tomcat-sessions");
-			File file = new File(folder, "SESSIONS.ser");
-			((StandardManager) manager).setPathname(file.getAbsolutePath());
+			configurePersistSession(manager);
+		}
+		else {
+			disablePersistSession(manager);
+		}
+	}
+
+	private void configurePersistSession(Manager manager) {
+		Assert.state(manager instanceof StandardManager,
+				"Unable to persist HTTP session state using manager type "
+						+ manager.getClass().getName());
+		File folder = getValidSessionStoreDir();
+		File file = new File(folder, "SESSIONS.ser");
+		((StandardManager) manager).setPathname(file.getAbsolutePath());
+	}
+
+	private void disablePersistSession(Manager manager) {
+		if (manager instanceof StandardManager) {
+			((StandardManager) manager).setPathname(null);
 		}
 	}
 

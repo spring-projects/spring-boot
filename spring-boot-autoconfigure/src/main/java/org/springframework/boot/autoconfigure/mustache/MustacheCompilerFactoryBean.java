@@ -16,14 +16,14 @@
 
 package org.springframework.boot.autoconfigure.mustache;
 
-import org.springframework.beans.factory.FactoryBean;
-
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Collector;
 import com.samskivert.mustache.Mustache.Compiler;
 import com.samskivert.mustache.Mustache.Escaper;
 import com.samskivert.mustache.Mustache.Formatter;
 import com.samskivert.mustache.Mustache.TemplateLoader;
+
+import org.springframework.beans.factory.FactoryBean;
 
 /**
  * Factory for a Mustache compiler with custom strategies. For building a {@code @Bean}

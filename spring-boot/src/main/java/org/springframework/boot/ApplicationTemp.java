@@ -23,7 +23,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Provides access to an application specific temporary folder. Generally speaking
+ * Provides access to an application specific temporary directory. Generally speaking
  * different Spring Boot applications will get different locations, however, simply
  * restarting an application will give the same location.
  *
@@ -36,7 +36,7 @@ public class ApplicationTemp {
 
 	private final Class<?> sourceClass;
 
-	private volatile File folder;
+	private volatile File dir;
 
 	/**
 	 * Create a new {@link ApplicationTemp} instance.
@@ -55,43 +55,43 @@ public class ApplicationTemp {
 
 	@Override
 	public String toString() {
-		return getFolder().getAbsolutePath();
+		return getDir().getAbsolutePath();
 	}
 
 	/**
-	 * Return a subfolder of the application temp.
-	 * @param subFolder the subfolder name
-	 * @return a subfolder
+	 * Return a sub-directory of the application temp.
+	 * @param subDir the sub-directory name
+	 * @return a sub-directory
 	 */
-	public File getFolder(String subFolder) {
-		File folder = new File(getFolder(), subFolder);
-		folder.mkdirs();
-		return folder;
+	public File getDir(String subDir) {
+		File dir = new File(getDir(), subDir);
+		dir.mkdirs();
+		return dir;
 	}
 
 	/**
-	 * Return the folder to be used for application specific temp files.
-	 * @return the application temp folder
+	 * Return the directory to be used for application specific temp files.
+	 * @return the application temp directory
 	 */
-	public File getFolder() {
-		if (this.folder == null) {
+	public File getDir() {
+		if (this.dir == null) {
 			synchronized (this) {
 				byte[] hash = generateHash(this.sourceClass);
-				this.folder = new File(getTempDirectory(), toHexString(hash));
-				this.folder.mkdirs();
-				Assert.state(this.folder.exists(),
-						"Unable to create temp folder " + this.folder);
+				this.dir = new File(getTempDirectory(), toHexString(hash));
+				this.dir.mkdirs();
+				Assert.state(this.dir.exists(),
+						"Unable to create temp directory " + this.dir);
 			}
 		}
-		return this.folder;
+		return this.dir;
 	}
 
 	private File getTempDirectory() {
 		String property = System.getProperty("java.io.tmpdir");
 		Assert.state(StringUtils.hasLength(property), "No 'java.io.tmpdir' property set");
 		File file = new File(property);
-		Assert.state(file.exists(), "Temp folder " + file + " does not exist");
-		Assert.state(file.isDirectory(), "Temp location " + file + " is not a folder");
+		Assert.state(file.exists(), "Temp directory" + file + " does not exist");
+		Assert.state(file.isDirectory(), "Temp location " + file + " is not a directory");
 		return file;
 	}
 

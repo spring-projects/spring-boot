@@ -17,6 +17,7 @@
 package org.springframework.boot.test;
 
 import org.junit.Test;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 

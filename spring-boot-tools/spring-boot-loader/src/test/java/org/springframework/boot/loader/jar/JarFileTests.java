@@ -35,6 +35,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 import org.springframework.boot.loader.util.AsciiBytes;
@@ -91,6 +92,7 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName(), equalTo("special/"));
 		assertThat(entries.nextElement().getName(), equalTo("special/\u00EB.dat"));
 		assertThat(entries.nextElement().getName(), equalTo("nested.jar"));
+		assertThat(entries.nextElement().getName(), equalTo("another-nested.jar"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
 		URL jarUrl = new URL("jar:" + this.rootJarFile.toURI() + "!/");
 		URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarUrl });
@@ -132,6 +134,7 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName(), equalTo("special/"));
 		assertThat(entries.nextElement().getName(), equalTo("special/\u00EB.dat"));
 		assertThat(entries.nextElement().getName(), equalTo("nested.jar"));
+		assertThat(entries.nextElement().getName(), equalTo("another-nested.jar"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
 	}
 

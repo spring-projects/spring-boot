@@ -10,13 +10,13 @@
 #
 
 ### BEGIN INIT INFO
-# Provides:          spring-boot-application
+# Provides:          {{initInfoProvides:spring-boot-application}}
 # Required-Start:    $remote_fs $syslog $network
 # Required-Stop:     $remote_fs $syslog $network
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Spring Boot Application
-# Description:       Spring Boot Application
+# Short-Description: {{initInfoShortDescription:Spring Boot Application}}
+# Description:       {{initInfoDescription:Spring Boot Application}}
 # chkconfig:         2345 99 01
 ### END INIT INFO
 
@@ -61,7 +61,8 @@ if [[ -z "$identity" ]]; then
   fi
 fi
 
-
+# Initialize log file name if not provided by the config file
+[[ -z "$LOG_FILENAME" ]] && LOG_FILENAME="${identity}.log"
 
 
 # ANSI Colors
@@ -91,7 +92,7 @@ if [[ "$identity" == "$init_script" ]] || [[ "$identity" == "$APP_NAME" ]]; then
   PID_FOLDER="$PID_FOLDER/${identity}"
 fi
 pid_file="$PID_FOLDER/${identity}.pid"
-log_file="$LOG_FOLDER/${identity}.log"
+log_file="$LOG_FOLDER/$LOG_FILENAME"
 
 # Determine the user to run as if we are root
 [[ $(id -u) == "0" ]] && run_user=$(ls -ld "$jarfile" | awk '{print $3}')
@@ -100,7 +101,7 @@ log_file="$LOG_FOLDER/${identity}.log"
 if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
     javaexe="$JAVA_HOME/bin/java"
 elif type -p java 2>&1> /dev/null; then
-    javaexe=java
+    javaexe=$(type -p java)
 elif [[ -x "/usr/bin/java" ]];  then
     javaexe="/usr/bin/java"
 else
@@ -117,6 +118,10 @@ start() {
     pid=$(cat "$pid_file")
     isRunning $pid && { echoYellow "Already running [$pid]"; return 0; }
   fi
+  do_start
+}
+
+do_start() {
   pushd $(dirname "$jarfile") > /dev/null
   if [[ -n "$run_user" ]]; then
     mkdir "$PID_FOLDER" &> /dev/null
@@ -124,7 +129,20 @@ start() {
     chown "$run_user" "$PID_FOLDER"
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
-    su -s /bin/sh -c "$command &> \"$log_file\" & echo \$!" $run_user > "$pid_file"
+    if which start-stop-daemon >/dev/null; then
+      start-stop-daemon --start --quiet \
+        --chuid $run_user \
+        --name $identity \
+        --make-pidfile --pidfile $pid_file \
+        --background --no-close \
+        --startas $javaexe \
+        -- \
+        -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS \
+        -jar $jarfile $RUN_ARGS "$@" \
+        > $log_file 2>&1
+    else
+      su -s /bin/sh -c "$command &> \"$log_file\" & echo \$!" $run_user > "$pid_file"
+    fi
     pid=$(cat "$pid_file")
   else
     checkPermissions || return $?
@@ -138,27 +156,40 @@ start() {
 }
 
 stop() {
-  [[ -f $pid_file ]] || { echoRed "Not running (pidfile not found)"; return 1; }
+  [[ -f $pid_file ]] || { echoYellow "Not running (pidfile not found)"; return 0; }
   pid=$(cat "$pid_file")
   rm -f "$pid_file"
-  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; return 1; }
-  kill -HUP $pid &> /dev/null || { echoRed "Unable to kill process ${pid}"; return 3; }
+  isRunning $pid || { echoYellow "Not running (process ${pid} not found)"; return 0; }
+  do_stop $pid $pid_file
+}
+
+do_stop() {
+  kill -HUP $1 &> /dev/null || { echoRed "Unable to kill process $1"; return 1; }
   for i in $(seq 1 60); do
-    isRunning ${pid} || { echoGreen "Stopped [$pid]"; rm -f $pid_file; return 0; }
+    isRunning $1 || { echoGreen "Stopped [$1]"; rm -f $2; return 0; }
     sleep 1
   done
-  echoRed "Unable to kill process ${pid}";
-  return 3;
+  echoRed "Unable to kill process $1";
+  return 1;
 }
 
 restart() {
   stop && start
 }
 
-status() {
-  [[ -f $pid_file ]] || { echoRed "Not running"; return 1; }
+force_reload() {
+  [[ -f $pid_file ]] || { echoRed "Not running (pidfile not found)"; return 7; }
   pid=$(cat "$pid_file")
-  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; return 3; }
+  rm -f "$pid_file"
+  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; return 7; }
+  do_stop $pid $pid_file
+  do_start
+}
+
+status() {
+  [[ -f $pid_file ]] || { echoRed "Not running"; return 3; }
+  pid=$(cat "$pid_file")
+  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; return 1; }
   echoGreen "Running [$pid]"
   return 0
 }
@@ -166,7 +197,7 @@ status() {
 run() {
   pushd $(dirname "$jarfile") > /dev/null
   exec $command
-  result = $?
+  result=$?
   popd
   return $result
 }
@@ -179,12 +210,14 @@ stop)
   stop "$@"; exit $?;;
 restart)
   restart "$@"; exit $?;;
+force-reload)
+  force_reload "$@"; exit $?;;
 status)
   status "$@"; exit $?;;
 run)
   run "$@"; exit $?;;
 *)
-  echo "Usage: $0 {start|stop|restart|status|run}"; exit 1;
+  echo "Usage: $0 {start|stop|restart|force-reload|status|run}"; exit 1;
 esac
 
 exit 0

@@ -17,6 +17,7 @@
 package sample;
 
 import org.junit.Test;
+
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

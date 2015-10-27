@@ -16,13 +16,13 @@
 
 package org.springframework.boot.logging.logback;
 
-import org.springframework.boot.logging.LoggingInitializationContext;
-import org.springframework.core.env.Environment;
-
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.action.NOPAction;
 import ch.qos.logback.core.joran.spi.ElementSelector;
 import ch.qos.logback.core.joran.spi.RuleStore;
+
+import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.core.env.Environment;
 
 /**
  * Extended version of the Logback {@link JoranConfigurator} that adds additional Spring

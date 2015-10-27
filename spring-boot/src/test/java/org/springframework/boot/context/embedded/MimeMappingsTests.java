@@ -21,22 +21,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.catalina.Context;
-import org.apache.catalina.Wrapper;
-import org.apache.catalina.startup.Tomcat;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MimeMappings}.
@@ -47,11 +38,6 @@ public class MimeMappingsTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-
-	@Test
-	public void defaults() throws Exception {
-		assertThat(MimeMappings.DEFAULT, equalTo(getTomatDefaults()));
-	}
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void defaultsCannotBeModified() throws Exception {
@@ -153,23 +139,6 @@ public class MimeMappingsTests {
 		}
 		mappings.remove("foo");
 		assertThat(unmodifiable.get("foo"), nullValue());
-	}
-
-	private MimeMappings getTomatDefaults() {
-		final MimeMappings mappings = new MimeMappings();
-		Context ctx = mock(Context.class);
-		Wrapper wrapper = mock(Wrapper.class);
-		given(ctx.createWrapper()).willReturn(wrapper);
-		willAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				Object[] args = invocation.getArguments();
-				mappings.add((String) args[0], (String) args[1]);
-				return null;
-			}
-		}).given(ctx).addMimeMapping(anyString(), anyString());
-		Tomcat.initWebappDefaults(ctx);
-		return mappings;
 	}
 
 }

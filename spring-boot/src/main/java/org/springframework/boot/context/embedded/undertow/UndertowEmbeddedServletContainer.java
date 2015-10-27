@@ -24,18 +24,6 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.context.embedded.Compression;
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.MimeType;
-import org.springframework.util.MimeTypeUtils;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
-import org.xnio.channels.BoundChannel;
-
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
@@ -49,6 +37,18 @@ import io.undertow.server.handlers.encoding.EncodingHandler;
 import io.undertow.server.handlers.encoding.GzipEncodingProvider;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.util.HttpString;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.xnio.channels.BoundChannel;
+
+import org.springframework.boot.context.embedded.Compression;
+import org.springframework.boot.context.embedded.EmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.util.MimeType;
+import org.springframework.util.MimeTypeUtils;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EmbeddedServletContainer} that can be used to control an embedded Undertow
@@ -99,32 +99,32 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	@Override
 	public synchronized void start() throws EmbeddedServletContainerException {
-		if (!this.autoStart) {
-			return;
-		}
-		if (this.undertow == null) {
-			this.undertow = createUndertowServer();
-		}
-		this.undertow.start();
-		this.started = true;
-		UndertowEmbeddedServletContainer.logger
-				.info("Undertow started on port(s) " + getPortsDescription());
-	}
-
-	private Undertow createUndertowServer() {
 		try {
-			HttpHandler httpHandler = this.manager.start();
-			httpHandler = getContextHandler(httpHandler);
-			if (this.useForwardHeaders) {
-				httpHandler = Handlers.proxyPeerAddress(httpHandler);
+			if (!this.autoStart) {
+				return;
 			}
-			this.builder.setHandler(httpHandler);
-			return this.builder.build();
+			if (this.undertow == null) {
+				this.undertow = createUndertowServer();
+			}
+			this.undertow.start();
+			this.started = true;
+			UndertowEmbeddedServletContainer.logger
+					.info("Undertow started on port(s) " + getPortsDescription());
 		}
 		catch (ServletException ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to start embdedded Undertow", ex);
 		}
+	}
+
+	private Undertow createUndertowServer() throws ServletException {
+		HttpHandler httpHandler = this.manager.start();
+		httpHandler = getContextHandler(httpHandler);
+		if (this.useForwardHeaders) {
+			httpHandler = Handlers.proxyPeerAddress(httpHandler);
+		}
+		this.builder.setHandler(httpHandler);
+		return this.builder.build();
 	}
 
 	private HttpHandler getContextHandler(HttpHandler httpHandler) {

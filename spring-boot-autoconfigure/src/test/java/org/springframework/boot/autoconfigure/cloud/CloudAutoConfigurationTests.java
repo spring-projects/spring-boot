@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.TestAutoConfigurationSorter;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration;

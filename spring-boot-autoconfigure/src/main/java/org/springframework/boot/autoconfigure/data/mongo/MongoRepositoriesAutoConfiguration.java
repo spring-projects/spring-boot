@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
+import com.mongodb.Mongo;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,8 +29,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.data.mongodb.repository.config.MongoRepositoryConfigurationExtension;
 import org.springframework.data.mongodb.repository.support.MongoRepositoryFactoryBean;
-
-import com.mongodb.Mongo;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Mongo

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.ProtocolOptions;
 import com.datastax.driver.core.ProtocolOptions.Compression;
@@ -26,6 +24,8 @@ import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.policies.LoadBalancingPolicy;
 import com.datastax.driver.core.policies.ReconnectionPolicy;
 import com.datastax.driver.core.policies.RetryPolicy;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for Cassandra.

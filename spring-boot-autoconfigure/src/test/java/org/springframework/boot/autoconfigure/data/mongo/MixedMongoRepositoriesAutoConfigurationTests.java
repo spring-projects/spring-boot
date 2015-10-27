@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.city.City;
@@ -136,7 +137,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 
 	}
 
-	// In this one the Jpa repositories and the autoconfiguration packages overlap, so
+	// In this one the Jpa repositories and the auto-configuration packages overlap, so
 	// Mongo will try and configure the same repositories
 	@Configuration
 	@TestAutoConfigurationPackage(CityRepository.class)

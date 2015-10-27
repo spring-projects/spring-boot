@@ -37,6 +37,7 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.message.Message;
+
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -197,6 +198,11 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		getLoggerContext().updateLoggers();
 	}
 
+	@Override
+	public Runnable getShutdownHandler() {
+		return new ShutdownHandler();
+	}
+
 	private LoggerConfig getRootLoggerConfig() {
 		return getLoggerContext().getConfiguration().getLoggerConfig("");
 	}
@@ -209,4 +215,12 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		return (LoggerContext) LogManager.getContext(false);
 	}
 
+	private final class ShutdownHandler implements Runnable {
+
+		@Override
+		public void run() {
+			getLoggerContext().stop();
+		}
+
+	}
 }

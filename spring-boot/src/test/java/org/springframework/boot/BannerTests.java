@@ -21,6 +21,7 @@ import java.io.PrintStream;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -51,6 +52,14 @@ public class BannerTests {
 
 	@Test
 	public void testDefaultBanner() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		assertThat(this.out.toString(), containsString(":: Spring Boot ::"));
+	}
+
+	@Test
+	public void testDefaultBannerInLog() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		this.context = application.run();

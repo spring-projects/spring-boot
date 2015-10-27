@@ -26,6 +26,7 @@ import org.apache.tomcat.jdbc.pool.interceptor.SlowQueryReport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;

@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
@@ -115,12 +116,13 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	/*
 	 * The error controller is present but not mapped as an endpoint in this context
-	 * because of the DispatcherServlet having had it's HandlerMapping explicitly
-	 * disabled. So we expose the same feature but only for machine endpoints.
+	 * because of the DispatcherServlet having had its HandlerMapping explicitly disabled.
+	 * So we expose the same feature but only for machine endpoints.
 	 */
 	@Bean
+	@ConditionalOnBean(ErrorAttributes.class)
 	public ManagementErrorEndpoint errorEndpoint(ServerProperties serverProperties,
-			final ErrorAttributes errorAttributes) {
+			ErrorAttributes errorAttributes) {
 		return new ManagementErrorEndpoint(serverProperties.getError().getPath(),
 				errorAttributes);
 	}

@@ -16,11 +16,11 @@
 
 package org.springframework.boot.actuate.cache;
 
-import org.springframework.cache.CacheManager;
-
 import com.hazelcast.core.IMap;
 import com.hazelcast.monitor.LocalMapStats;
 import com.hazelcast.spring.cache.HazelcastCache;
+
+import org.springframework.cache.CacheManager;
 
 /**
  * {@link CacheStatisticsProvider} implementation for Hazelcast.

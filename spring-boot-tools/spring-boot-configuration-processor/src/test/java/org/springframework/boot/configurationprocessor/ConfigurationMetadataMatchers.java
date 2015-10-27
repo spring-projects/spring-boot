@@ -25,6 +25,7 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.collection.IsMapContaining;
+
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
 import org.springframework.boot.configurationprocessor.metadata.ItemHint;
@@ -356,8 +357,11 @@ public final class ConfigurationMetadataMatchers {
 	}
 
 	public static class ValueProviderMatcher extends BaseMatcher<ItemHint> {
+
 		private final int index;
+
 		private final String name;
+
 		private final Map<String, Object> parameters;
 
 		public ValueProviderMatcher(int index, String name,

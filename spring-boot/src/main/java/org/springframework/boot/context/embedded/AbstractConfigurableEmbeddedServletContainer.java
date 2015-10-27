@@ -66,6 +66,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 
 	private boolean persistSession;
 
+	private File sessionStoreDir;
+
 	private Ssl ssl;
 
 	private JspServlet jspServlet = new JspServlet();
@@ -189,6 +191,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 
 	public boolean isPersistSession() {
 		return this.persistSession;
+	}
+
+	@Override
+	public void setSessionStoreDir(File sessionStoreDir) {
+		this.sessionStoreDir = sessionStoreDir;
+	}
+
+	public File getSessionStoreDir() {
+		return this.sessionStoreDir;
 	}
 
 	@Override

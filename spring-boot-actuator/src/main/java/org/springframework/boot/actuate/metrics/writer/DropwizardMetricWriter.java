@@ -20,15 +20,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
-
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+
+import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
 
 /**
  * A {@link MetricWriter} that send data to a Dropwizard {@link MetricRegistry} based on a

@@ -40,6 +40,7 @@ import javax.validation.constraints.NotNull;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.context.support.StaticMessageSource;
@@ -366,6 +367,14 @@ public class RelaxedDataBinderTests {
 	public void testBindNestedMapOfStringReferenced() throws Exception {
 		TargetWithNestedMapOfString target = new TargetWithNestedMapOfString();
 		bind(target, "nested.foo: bar\n" + "nested[value.foo]: 123");
+		assertEquals("bar", target.getNested().get("foo"));
+		assertEquals("123", target.getNested().get("value.foo"));
+	}
+
+	@Test
+	public void testBindNestedProperties() throws Exception {
+		TargetWithNestedProperties target = new TargetWithNestedProperties();
+		bind(target, "nested.foo: bar\n" + "nested.value.foo: 123");
 		assertEquals("bar", target.getNested().get("foo"));
 		assertEquals("123", target.getNested().get("value.foo"));
 	}
@@ -774,6 +783,20 @@ public class RelaxedDataBinderTests {
 		}
 
 		public void setNested(Map nested) {
+			this.nested = nested;
+		}
+
+	}
+
+	public static class TargetWithNestedProperties {
+
+		private Properties nested;
+
+		public Properties getNested() {
+			return this.nested;
+		}
+
+		public void setNested(Properties nested) {
 			this.nested = nested;
 		}
 

@@ -40,6 +40,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class JavaLoggingSystem extends AbstractLoggingSystem {
 
@@ -112,6 +113,20 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		Assert.notNull(level, "Level must not be null");
 		Logger logger = Logger.getLogger(loggerName == null ? "" : loggerName);
 		logger.setLevel(LEVELS.get(level));
+	}
+
+	@Override
+	public Runnable getShutdownHandler() {
+		return new ShutdownHandler();
+	}
+
+	private final class ShutdownHandler implements Runnable {
+
+		@Override
+		public void run() {
+			LogManager.getLogManager().reset();
+		}
+
 	}
 
 }

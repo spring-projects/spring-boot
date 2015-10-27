@@ -21,6 +21,7 @@ import java.util.Collection;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;

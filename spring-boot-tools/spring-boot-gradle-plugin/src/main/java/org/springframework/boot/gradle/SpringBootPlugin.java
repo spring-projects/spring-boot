@@ -22,6 +22,7 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.compile.JavaCompile;
+
 import org.springframework.boot.gradle.agent.AgentPluginFeatures;
 import org.springframework.boot.gradle.dependencymanagement.DependencyManagementPluginFeatures;
 import org.springframework.boot.gradle.repackage.RepackagePluginFeatures;
@@ -34,7 +35,7 @@ import org.springframework.boot.gradle.run.RunPluginFeatures;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-class SpringBootPlugin implements Plugin<Project> {
+public class SpringBootPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {

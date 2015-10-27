@@ -24,12 +24,15 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.CacheConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -41,6 +44,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
 
 /**
@@ -58,6 +63,7 @@ import org.springframework.util.Assert;
 @ConditionalOnBean(CacheAspectSupport.class)
 @ConditionalOnMissingBean({ CacheManager.class, CacheResolver.class })
 @EnableConfigurationProperties(CacheProperties.class)
+@AutoConfigureBefore(HibernateJpaAutoConfiguration.class)
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 @Import(CacheConfigurationImportSelector.class)
 public class CacheAutoConfiguration {
@@ -73,6 +79,18 @@ public class CacheAutoConfiguration {
 	@Bean(name = VALIDATOR_BEAN_NAME)
 	public CacheManagerValidator cacheAutoConfigurationValidator() {
 		return new CacheManagerValidator();
+	}
+
+	@Configuration
+	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
+	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
+	protected static class CacheManagerJpaDependencyConfiguration
+			extends EntityManagerFactoryDependsOnPostProcessor {
+
+		public CacheManagerJpaDependencyConfiguration() {
+			super("cacheManager");
+		}
+
 	}
 
 	/**

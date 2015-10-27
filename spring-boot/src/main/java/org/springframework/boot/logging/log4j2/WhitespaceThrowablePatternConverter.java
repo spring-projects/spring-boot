@@ -37,17 +37,6 @@ public final class WhitespaceThrowablePatternConverter extends ThrowablePatternC
 		super("WhitespaceThrowable", "throwable", options);
 	}
 
-	/**
-	 * Creates a new instance of the class. Required by Log4J2.
-	 *
-	 * @param options pattern options, may be null. If first element is "short", only the
-	 * first line of the throwable will be formatted.
-	 * @return a new {@code WhitespaceThrowablePatternConverter}
-	 */
-	public static WhitespaceThrowablePatternConverter newInstance(String[] options) {
-		return new WhitespaceThrowablePatternConverter(options);
-	}
-
 	@Override
 	public void format(LogEvent event, StringBuilder buffer) {
 		if (event.getThrown() != null) {
@@ -55,6 +44,16 @@ public final class WhitespaceThrowablePatternConverter extends ThrowablePatternC
 			super.format(event, buffer);
 			buffer.append(this.options.getSeparator());
 		}
+	}
+
+	/**
+	 * Creates a new instance of the class. Required by Log4J2.
+	 * @param options pattern options, may be null. If first element is "short", only the
+	 * first line of the throwable will be formatted.
+	 * @return a new {@code WhitespaceThrowablePatternConverter}
+	 */
+	public static WhitespaceThrowablePatternConverter newInstance(String[] options) {
+		return new WhitespaceThrowablePatternConverter(options);
 	}
 
 }

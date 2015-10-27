@@ -40,6 +40,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.SpringApplication;
@@ -204,7 +205,7 @@ public class Restarter {
 	 */
 	public void addUrls(Collection<URL> urls) {
 		Assert.notNull(urls, "Urls must not be null");
-		this.urls.addAll(ChangeableUrls.fromUrls(urls).toList());
+		this.urls.addAll(urls);
 	}
 
 	/**

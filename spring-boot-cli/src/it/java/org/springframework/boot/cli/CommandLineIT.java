@@ -19,6 +19,7 @@ package org.springframework.boot.cli;
 import java.io.IOException;
 
 import org.junit.Test;
+
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker.Invocation;
 
@@ -44,7 +45,7 @@ public class CommandLineIT {
 		assertThat(cli.await(), equalTo(0));
 		assertThat("Unexpected error: \n" + cli.getErrorOutput(),
 				cli.getErrorOutput().length(), equalTo(0));
-		assertThat(cli.getStandardOutputLines().size(), equalTo(10));
+		assertThat(cli.getStandardOutputLines().size(), equalTo(11));
 	}
 
 	@Test

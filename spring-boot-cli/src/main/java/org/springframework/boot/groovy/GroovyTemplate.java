@@ -23,12 +23,11 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
 
-import org.codehaus.groovy.control.CompilationFailedException;
-
 import groovy.lang.Writable;
 import groovy.text.GStringTemplateEngine;
 import groovy.text.Template;
 import groovy.text.TemplateEngine;
+import org.codehaus.groovy.control.CompilationFailedException;
 
 /**
  * Helpful utilties for working with Groovy {@link Template}s.

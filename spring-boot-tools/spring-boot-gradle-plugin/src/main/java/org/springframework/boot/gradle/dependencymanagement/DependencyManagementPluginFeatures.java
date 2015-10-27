@@ -16,13 +16,13 @@
 
 package org.springframework.boot.gradle.dependencymanagement;
 
-import org.gradle.api.Project;
-import org.springframework.boot.gradle.PluginFeatures;
-import org.springframework.util.ReflectionUtils;
-
 import groovy.lang.Closure;
 import io.spring.gradle.dependencymanagement.DependencyManagementExtension;
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
+import org.gradle.api.Project;
+
+import org.springframework.boot.gradle.PluginFeatures;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link PluginFeatures} to configure dependency management.

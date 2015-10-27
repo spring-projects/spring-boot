@@ -16,9 +16,9 @@
 
 package sample.data.gemfire.service;
 
-import org.springframework.data.gemfire.repository.GemfireRepository;
-
 import sample.data.gemfire.domain.Gemstone;
+
+import org.springframework.data.gemfire.repository.GemfireRepository;
 
 /**
  * The GemstoneRepository interface is an extension of the GemfireRepository abstraction

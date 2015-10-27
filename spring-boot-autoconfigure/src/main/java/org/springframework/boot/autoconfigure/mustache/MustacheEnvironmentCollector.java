@@ -19,16 +19,16 @@ package org.springframework.boot.autoconfigure.mustache;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.samskivert.mustache.DefaultCollector;
+import com.samskivert.mustache.Mustache.Collector;
+import com.samskivert.mustache.Mustache.VariableFetcher;
+
 import org.springframework.boot.bind.PropertySourcesPropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-
-import com.samskivert.mustache.DefaultCollector;
-import com.samskivert.mustache.Mustache.Collector;
-import com.samskivert.mustache.Mustache.VariableFetcher;
 
 /**
  * Mustache {@link Collector} to expose properties from the Spring {@link Environment}.

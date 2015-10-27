@@ -18,15 +18,15 @@ package org.springframework.boot.actuate.metrics.statsd;
 
 import java.io.Closeable;
 
+import com.timgroup.statsd.NonBlockingStatsDClient;
+import com.timgroup.statsd.StatsDClientErrorHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.util.StringUtils;
-
-import com.timgroup.statsd.NonBlockingStatsDClient;
-import com.timgroup.statsd.StatsDClientErrorHandler;
 
 /**
  * A {@link MetricWriter} that pushes data to statsd. Statsd has the concept of counters

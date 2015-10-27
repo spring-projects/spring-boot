@@ -77,7 +77,7 @@
 			<property name="processJavadoc" value="true" />
 		</module>
 		<module name="ImportOrder">
-			<property name="groups" value="java,/^javax?\./,org,com,*" />
+			<property name="groups" value="java,/^javax?\./,*,org.springframework" />
 			<property name="ordered" value="true" />
 			<property name="separated" value="true" />
 			<property name="option" value="bottom" />
@@ -147,7 +147,7 @@
 			<property name="tokens" value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS, ARRAY_DECLARATOR"/>
 		</module>
 		<module name="NoWhitespaceBefore" />
-		<!-- <module name="ParenPad" /> -->
+		<module name="ParenPad" />
 		<module name="TypecastParenPad" />
 		<module name="WhitespaceAfter" />
 		<module name="WhitespaceAround" />

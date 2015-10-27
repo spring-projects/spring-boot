@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
@@ -41,6 +42,7 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.support.GenericApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -86,6 +88,8 @@ public class LoggingApplicationListenerTests {
 
 	@After
 	public void clear() {
+		LoggingSystem.get(getClass().getClassLoader()).cleanUp();
+		System.clearProperty(LoggingSystem.class.getName());
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
@@ -93,7 +97,6 @@ public class LoggingApplicationListenerTests {
 		if (this.context != null) {
 			this.context.close();
 		}
-		LoggingSystem.get(getClass().getClassLoader()).cleanUp();
 	}
 
 	private String tmpDir() {
@@ -341,6 +344,30 @@ public class LoggingApplicationListenerTests {
 		this.logger.info("Hello world", new RuntimeException("Expected"));
 	}
 
+	@Test
+	public void shutdownHookIsNotRegisteredByDefault() throws Exception {
+		System.setProperty(LoggingSystem.class.getName(),
+				NullShutdownHandlerLoggingSystem.class.getName());
+		this.initializer.onApplicationEvent(
+				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertThat(NullShutdownHandlerLoggingSystem.shutdownHandlerRequested, is(false));
+	}
+
+	@Test
+	public void shutdownHookCanBeRegistered() throws Exception {
+		System.setProperty(LoggingSystem.class.getName(),
+				NullShutdownHandlerLoggingSystem.class.getName());
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.register_shutdown_hook:true");
+		this.initializer.onApplicationEvent(
+				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertThat(NullShutdownHandlerLoggingSystem.shutdownHandlerRequested, is(true));
+	}
+
 	private boolean bridgeHandlerInstalled() {
 		Logger rootLogger = LogManager.getLogManager().getLogger("");
 		Handler[] handlers = rootLogger.getHandlers();
@@ -351,4 +378,42 @@ public class LoggingApplicationListenerTests {
 		}
 		return false;
 	}
+
+	public static class NullShutdownHandlerLoggingSystem extends AbstractLoggingSystem {
+
+		static boolean shutdownHandlerRequested = false;
+
+		public NullShutdownHandlerLoggingSystem(ClassLoader classLoader) {
+			super(classLoader);
+		}
+
+		@Override
+		protected String[] getStandardConfigLocations() {
+			return new String[] { "foo.bar" };
+		}
+
+		@Override
+		protected void loadDefaults(LoggingInitializationContext initializationContext,
+				LogFile logFile) {
+		}
+
+		@Override
+		protected void loadConfiguration(
+				LoggingInitializationContext initializationContext, String location,
+				LogFile logFile) {
+		}
+
+		@Override
+		public void setLogLevel(String loggerName, LogLevel level) {
+
+		}
+
+		@Override
+		public Runnable getShutdownHandler() {
+			shutdownHandlerRequested = true;
+			return null;
+		}
+
+	}
+
 }

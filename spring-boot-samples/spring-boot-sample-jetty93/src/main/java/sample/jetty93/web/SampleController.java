@@ -16,12 +16,12 @@
 
 package sample.jetty93.web;
 
+import sample.jetty93.service.HelloWorldService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import sample.jetty93.service.HelloWorldService;
 
 @Controller
 public class SampleController {

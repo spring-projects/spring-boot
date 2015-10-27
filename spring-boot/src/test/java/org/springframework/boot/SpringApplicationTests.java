@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
@@ -82,6 +83,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -95,6 +97,7 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Christian Dupuis
  * @author Stephane Nicoll
+ * @author Jeremy Rickard
  */
 public class SpringApplicationTests {
 
@@ -161,7 +164,17 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void disableBanner() throws Exception {
+	public void disableBannerWithMode() throws Exception {
+		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
+		application.setWebEnvironment(false);
+		application.setBannerMode(Banner.Mode.OFF);
+		this.context = application.run();
+		verify(application, never()).printBanner((Environment) anyObject());
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	public void disableBannerWithBoolean() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
 		application.setShowBanner(false);
@@ -170,10 +183,18 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void disableBannerViaProperty() throws Exception {
+	public void disableBannerViaShowBannerProperty() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
 		this.context = application.run("--spring.main.show_banner=false");
+		verify(application, never()).printBanner((Environment) anyObject());
+	}
+
+	@Test
+	public void disableBannerViaBannerModeProperty() throws Exception {
+		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
+		application.setWebEnvironment(false);
+		this.context = application.run("--spring.main.banner-mode=off");
 		verify(application, never()).printBanner((Environment) anyObject());
 	}
 
@@ -211,6 +232,15 @@ public class SpringApplicationTests {
 		this.context = application.run("--spring.profiles.active=myprofiles");
 		assertThat(this.output.toString(),
 				containsString("The following profiles are active: myprofile"));
+	}
+
+	@Test
+	public void enableBannerInLogViaProperty() throws Exception {
+		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
+		application.setWebEnvironment(false);
+		this.context = application.run("--spring.main.banner-mode=log");
+		verify(application, atLeastOnce()).setBannerMode(Banner.Mode.LOG);
+		assertThat(this.output.toString(), containsString("o.s.boot.SpringApplication"));
 	}
 
 	@Test
@@ -545,8 +575,8 @@ public class SpringApplicationTests {
 		TestSpringApplication application = new TestSpringApplication(
 				ExampleConfig.class);
 		application.setWebEnvironment(false);
-		this.context = application.run("--spring.main.show_banner=false");
-		assertThat(application.getShowBanner(), is(false));
+		this.context = application.run("--spring.main.banner-mode=OFF");
+		assertThat(application.getBannerMode(), is(Banner.Mode.OFF));
 	}
 
 	@Test
@@ -713,7 +743,7 @@ public class SpringApplicationTests {
 
 		private boolean useMockLoader;
 
-		private boolean showBanner;
+		private Banner.Mode bannerMode;
 
 		TestSpringApplication(Object... sources) {
 			super(sources);
@@ -744,13 +774,13 @@ public class SpringApplicationTests {
 		}
 
 		@Override
-		public void setShowBanner(boolean showBanner) {
-			super.setShowBanner(showBanner);
-			this.showBanner = showBanner;
+		public void setBannerMode(Banner.Mode bannerMode) {
+			super.setBannerMode(bannerMode);
+			this.bannerMode = bannerMode;
 		}
 
-		public boolean getShowBanner() {
-			return this.showBanner;
+		public Banner.Mode getBannerMode() {
+			return this.bannerMode;
 		}
 
 	}

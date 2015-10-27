@@ -20,9 +20,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import de.flapdoodle.embed.mongo.distribution.Feature;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for Embedded Mongo.

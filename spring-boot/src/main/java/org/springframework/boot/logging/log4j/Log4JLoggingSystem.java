@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -114,6 +115,20 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 		Logger logger = (StringUtils.hasLength(loggerName)
 				? LogManager.getLogger(loggerName) : LogManager.getRootLogger());
 		logger.setLevel(LEVELS.get(level));
+	}
+
+	@Override
+	public Runnable getShutdownHandler() {
+		return new ShutdownHandler();
+	}
+
+	private static final class ShutdownHandler implements Runnable {
+
+		@Override
+		public void run() {
+			LogManager.shutdown();
+		}
+
 	}
 
 }

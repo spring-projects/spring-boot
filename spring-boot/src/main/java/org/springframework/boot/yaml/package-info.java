@@ -21,4 +21,3 @@
  * @see org.springframework.beans.factory.config.YamlMapFactoryBean
  */
 package org.springframework.boot.yaml;
-

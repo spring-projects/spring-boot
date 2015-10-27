@@ -116,7 +116,7 @@ public class BasicErrorController extends AbstractErrorController {
 	 * Provide access to the error properties.
 	 * @return the error properties
 	 */
-	protected final ErrorProperties getErrorProperties() {
+	protected ErrorProperties getErrorProperties() {
 		return this.errorProperties;
 	}
 

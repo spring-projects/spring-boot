@@ -16,9 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jdbc.metadata;
 
-import org.junit.Before;
-
 import com.zaxxer.hikari.HikariDataSource;
+import org.junit.Before;
 
 import static org.junit.Assert.assertEquals;
 

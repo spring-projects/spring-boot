@@ -18,6 +18,7 @@ package org.springframework.boot.context;
 
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer.ComponentScanDefaultPackageCheck;
 import org.springframework.boot.context.configwarnings.InDefaultPackageConfiguration;
 import org.springframework.boot.context.configwarnings.InDefaultPackageWithBasePackageClassesConfiguration;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,18 +27,28 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import ch.qos.logback.classic.BasicConfigurator;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor.ConfigurationPropertySources;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnumerableCompositePropertySource;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
@@ -54,12 +64,14 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ConfigFileEnvironmentPostProcessor}.
@@ -78,7 +90,18 @@ public class ConfigFileEnvironmentPostProcessorTests {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 
+	@Rule
+	public OutputCapture out = new OutputCapture();
+
 	private ConfigurableApplicationContext context;
+
+	@Before
+	public void resetLogging() {
+		LoggerContext loggerContext = ((Logger) LoggerFactory.getLogger(getClass()))
+				.getLoggerContext();
+		loggerContext.reset();
+		BasicConfigurator.configure(loggerContext);
+	}
 
 	@After
 	public void cleanup() {
@@ -87,7 +110,7 @@ public class ConfigFileEnvironmentPostProcessorTests {
 		}
 		System.clearProperty("the.property");
 		System.clearProperty("spring.config.location");
-		System.clearProperty("spring.main.showBanner");
+		System.clearProperty("spring.main.banner-mode");
 	}
 
 	@Test
@@ -380,6 +403,67 @@ public class ConfigFileEnvironmentPostProcessorTests {
 	}
 
 	@Test
+	public void profilesAddedToEnvironmentAndViaProperty() throws Exception {
+		// External profile takes precedence over profile added via the environment
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"spring.profiles.active:other");
+		this.environment.addActiveProfile("dev");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(Arrays.asList(this.environment.getActiveProfiles()), containsInAnyOrder("dev", "other"));
+		assertThat(this.environment.getProperty("my.property"),
+				equalTo("fromotherpropertiesfile"));
+		validateProfilePrecedence(null, "dev", "other");
+	}
+
+	@Test
+	public void profilesAddedToEnvironmentAndViaPropertyDuplicate() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"spring.profiles.active:dev,other");
+		this.environment.addActiveProfile("dev");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(Arrays.asList(this.environment.getActiveProfiles()), containsInAnyOrder("dev", "other"));
+		assertThat(this.environment.getProperty("my.property"),
+				equalTo("fromotherpropertiesfile"));
+		validateProfilePrecedence(null, "dev", "other");
+	}
+
+	@Test
+	public void profilesAddedToEnvironmentAndViaPropertyDuplicateEnvironmentWins() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"spring.profiles.active:other,dev");
+		this.environment.addActiveProfile("other");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(Arrays.asList(this.environment.getActiveProfiles()), containsInAnyOrder("dev", "other"));
+		assertThat(this.environment.getProperty("my.property"),
+				equalTo("fromdevpropertiesfile"));
+		validateProfilePrecedence(null, "other", "dev");
+	}
+
+	private void validateProfilePrecedence(String... profiles) {
+		this.initializer.onApplicationEvent(new ApplicationPreparedEvent(
+				new SpringApplication(), new String[0], new AnnotationConfigApplicationContext()));
+		String log = this.out.toString();
+
+		// First make sure that each profile got processed only once
+		for (String profile : profiles) {
+			assertThat("Wrong number of occurrences for profile '" + profile + "' --> " + log,
+					StringUtils.countOccurrencesOf(log, createLogForProfile(profile)), equalTo(1));
+		}
+		// Make sure the order of loading is the right one
+		for (String profile : profiles) {
+			String line = createLogForProfile(profile);
+			int index = log.indexOf(line);
+			assertTrue("Loading profile '" + profile + "' not found in '" + log + "'", index != -1);
+			log = log.substring(index + line.length(), log.length());
+		}
+	}
+
+	private String createLogForProfile(String profile) {
+		String suffix = profile != null ? "-" + profile : "";
+		return "Loaded config file 'classpath:/application" + suffix + ".properties'";
+	}
+
+	@Test
 	public void yamlProfiles() throws Exception {
 		this.initializer.setSearchNames("testprofiles");
 		this.environment.setActiveProfiles("dev");
@@ -608,7 +692,7 @@ public class ConfigFileEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void profileSubDocumentInProfileSpecificFile() throws Exception {
+	public void profileSubDocumentInSameProfileSpecificFile() throws Exception {
 		// gh-340
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
@@ -623,19 +707,30 @@ public class ConfigFileEnvironmentPostProcessorTests {
 		// gh-346
 		this.initializer.setSearchNames("bindtoapplication");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
-		Field field = ReflectionUtils.findField(SpringApplication.class, "showBanner");
+		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
 		field.setAccessible(true);
-		assertThat((Boolean) field.get(this.application), equalTo(false));
+		assertThat((Banner.Mode) field.get(this.application), equalTo(Banner.Mode.OFF));
 	}
 
 	@Test
 	public void bindsSystemPropertyToSpringApplication() throws Exception {
 		// gh-951
-		System.setProperty("spring.main.showBanner", "false");
+		System.setProperty("spring.main.banner-mode", "off");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
-		Field field = ReflectionUtils.findField(SpringApplication.class, "showBanner");
+		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
 		field.setAccessible(true);
-		assertThat((Boolean) field.get(this.application), equalTo(false));
+		assertThat((Banner.Mode) field.get(this.application), equalTo(Banner.Mode.OFF));
+	}
+
+	@Test
+	public void profileSubDocumentInDifferentProfileSpecificFile() throws Exception {
+		// gh-4132
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		this.context = application.run(
+				"--spring.profiles.active=activeprofilewithdifferentsubdoc,activeprofilewithdifferentsubdoc2");
+		String property = this.context.getEnvironment().getProperty("foobar");
+		assertThat(property, equalTo("baz"));
 	}
 
 	private static Matcher<? super ConfigurableEnvironment> containsPropertySource(

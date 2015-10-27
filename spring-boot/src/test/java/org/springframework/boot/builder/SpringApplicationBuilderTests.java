@@ -22,6 +22,7 @@ import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.test.ApplicationContextTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -98,11 +99,23 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void parentContextCreation() throws Exception {
+	public void parentContextCreationThatIsRunDirectly() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ChildConfig.class).contextClass(SpyApplicationContext.class);
 		application.parent(ExampleConfig.class);
 		this.context = application.run();
+		verify(((SpyApplicationContext) this.context).getApplicationContext())
+				.setParent(any(ApplicationContext.class));
+		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),
+				equalTo(false));
+	}
+
+	@Test
+	public void parentContextCreationThatIsBuiltThenRun() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder(
+				ChildConfig.class).contextClass(SpyApplicationContext.class);
+		application.parent(ExampleConfig.class);
+		this.context = application.build().run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext())
 				.setParent(any(ApplicationContext.class));
 		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),

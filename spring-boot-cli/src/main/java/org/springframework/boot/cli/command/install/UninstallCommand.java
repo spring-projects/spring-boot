@@ -18,14 +18,14 @@ package org.springframework.boot.cli.command.install;
 
 import java.util.List;
 
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
+
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.options.CompilerOptionHandler;
 import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
-
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 
 /**
  * {@link Command} to uninstall dependencies from the CLI's lib directory.

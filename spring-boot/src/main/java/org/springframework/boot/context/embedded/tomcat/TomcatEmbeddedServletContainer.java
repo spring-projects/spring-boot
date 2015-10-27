@@ -29,6 +29,7 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.util.Assert;
@@ -146,18 +147,24 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	@Override
 	public void start() throws EmbeddedServletContainerException {
-		addPreviouslyRemovedConnectors();
-		Connector connector = this.tomcat.getConnector();
-		if (connector != null && this.autoStart) {
-			startConnector(connector);
+		try {
+			addPreviouslyRemovedConnectors();
+			Connector connector = this.tomcat.getConnector();
+			if (connector != null && this.autoStart) {
+				startConnector(connector);
+			}
+			// Ensure process isn't left running if it actually failed to start
+			if (connectorsHaveFailedToStart()) {
+				stopSilently();
+				throw new IllegalStateException("Tomcat connector in failed state");
+			}
+			TomcatEmbeddedServletContainer.logger
+					.info("Tomcat started on port(s): " + getPortsDescription(true));
 		}
-		// Ensure process isn't left running if it actually failed to start
-		if (connectorsHaveFailedToStart()) {
-			stopSilently();
-			throw new IllegalStateException("Tomcat connector in failed state");
+		catch (Exception ex) {
+			throw new EmbeddedServletContainerException(
+					"Unable to start embedded Tomcat servlet container", ex);
 		}
-		TomcatEmbeddedServletContainer.logger
-				.info("Tomcat started on port(s): " + getPortsDescription(true));
 	}
 
 	private boolean connectorsHaveFailedToStart() {

@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jms.artemis;
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -37,6 +38,7 @@ import org.springframework.context.annotation.Import;
  * settings.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @since 1.3.0
  * @see ArtemisProperties
  */
@@ -46,7 +48,8 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass({ ConnectionFactory.class, ActiveMQConnectionFactory.class })
 @ConditionalOnMissingBean(ConnectionFactory.class)
 @EnableConfigurationProperties(ArtemisProperties.class)
-@Import({ ArtemisXAConnectionFactoryConfiguration.class,
+@Import({ ArtemisEmbeddedServerConfiguration.class,
+		ArtemisXAConnectionFactoryConfiguration.class,
 		ArtemisConnectionFactoryConfiguration.class })
 public class ArtemisAutoConfiguration {
 

@@ -844,6 +844,10 @@ applied to other modules using your project. Gradle does not support `optional`
 dependencies out-of-the-box so you may want to have a look to the
 {propdeps-plugin}[`propdeps-plugin`] in the meantime.
 
+TIP: If you want to ensure that devtools is never included in a production build, you can
+use set the `excludeDevtools` build property to completely remove the JAR. The property is
+supported with both the Maven and Gradle plugins.
+
 
 
 [[using-boot-devtools-property-defaults]]
@@ -881,6 +885,10 @@ TIP: Automatic restart works very well when used with LiveReload.
 NOTE: If you use JRebel automatic restarts will be disabled in favor of dynamic class
 reloading. Other devtools features (such as LiveReload and property overrides) can still
 be used.
+
+NOTE: DevTools relies on the application context's shutdown hook to close it during a
+restart. It will not work correctly if you have disabled the shutdown hook (
+`SpringApplication.setRegisterShutdownHook(false)`).
 
 .Restart vs Reload
 ****

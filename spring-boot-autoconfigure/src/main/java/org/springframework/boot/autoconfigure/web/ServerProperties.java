@@ -37,6 +37,7 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+
 import org.springframework.boot.autoconfigure.web.ServerProperties.Session.Cookie;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.embedded.Compression;
@@ -162,6 +163,7 @@ public class ServerProperties
 			container.setSessionTimeout(getSession().getTimeout());
 		}
 		container.setPersistSession(getSession().isPersistent());
+		container.setSessionStoreDir(getSession().getStoreDir());
 		if (getSsl() != null) {
 			container.setSsl(getSsl());
 		}
@@ -392,6 +394,11 @@ public class ServerProperties
 		 */
 		private boolean persistent;
 
+		/**
+		 * Directory used to store session data.
+		 */
+		private File storeDir;
+
 		private Cookie cookie = new Cookie();
 
 		public Cookie getCookie() {
@@ -420,6 +427,14 @@ public class ServerProperties
 
 		public void setPersistent(boolean persistent) {
 			this.persistent = persistent;
+		}
+
+		public File getStoreDir() {
+			return this.storeDir;
+		}
+
+		public void setStoreDir(File storeDir) {
+			this.storeDir = storeDir;
 		}
 
 		public static class Cookie {

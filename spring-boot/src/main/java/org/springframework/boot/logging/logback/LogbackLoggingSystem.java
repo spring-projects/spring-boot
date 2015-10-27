@@ -24,19 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.ILoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.Marker;
-import org.slf4j.impl.StaticLoggerBinder;
-import org.springframework.boot.logging.LogFile;
-import org.springframework.boot.logging.LogLevel;
-import org.springframework.boot.logging.LoggingInitializationContext;
-import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.boot.logging.Slf4JLoggingSystem;
-import org.springframework.util.Assert;
-import org.springframework.util.ResourceUtils;
-import org.springframework.util.StringUtils;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -46,6 +33,19 @@ import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.spi.FilterReply;
 import ch.qos.logback.core.status.Status;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.Marker;
+import org.slf4j.impl.StaticLoggerBinder;
+
+import org.springframework.boot.logging.LogFile;
+import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.boot.logging.Slf4JLoggingSystem;
+import org.springframework.util.Assert;
+import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link LoggingSystem} for <a href="http://logback.qos.ch">logback</a>.
@@ -55,6 +55,8 @@ import ch.qos.logback.core.status.Status;
  * @author Andy Wilkinson
  */
 public class LogbackLoggingSystem extends Slf4JLoggingSystem {
+
+	private static final String CONFIGURATION_FILE_PROPERTY = "logback.configurationFile";
 
 	private static final Map<LogLevel, Level> LEVELS;
 
@@ -102,6 +104,11 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			String configLocation, LogFile logFile) {
 		getLogger(null).getLoggerContext().getTurboFilterList().remove(FILTER);
 		super.initialize(initializationContext, configLocation, logFile);
+		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {
+			getLogger(LogbackLoggingSystem.class.getName()).warn(
+					"Ignoring '" + CONFIGURATION_FILE_PROPERTY + "' system property. "
+							+ "Please use 'logging.path' instead.");
+		}
 	}
 
 	@Override
@@ -199,6 +206,11 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		getLogger(loggerName).setLevel(LEVELS.get(level));
 	}
 
+	@Override
+	public Runnable getShutdownHandler() {
+		return new ShutdownHandler();
+	}
+
 	private ch.qos.logback.classic.Logger getLogger(String name) {
 		LoggerContext factory = getLoggerContext();
 		return factory
@@ -231,6 +243,15 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			// Unable to determine location
 		}
 		return "unknown location";
+	}
+
+	private final class ShutdownHandler implements Runnable {
+
+		@Override
+		public void run() {
+			getLoggerContext().stop();
+		}
+
 	}
 
 }

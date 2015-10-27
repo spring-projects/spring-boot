@@ -24,6 +24,7 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.ParentContextApplicationContextInitializer;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -62,7 +63,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 public abstract class SpringBootServletInitializer implements WebApplicationInitializer {
 
-	protected final Log logger = LogFactory.getLog(getClass());
+	protected Log logger; // Don't initialize early
 
 	private boolean registerErrorPageFilter = true;
 
@@ -78,6 +79,9 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
+		// Logger initialization is deferred in case a ordered
+		// LogServletContextInitializer is being used
+		this.logger = LogFactory.getLog(getClass());
 		WebApplicationContext rootAppContext = createRootApplicationContext(
 				servletContext);
 		if (rootAppContext != null) {

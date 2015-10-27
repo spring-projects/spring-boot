@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -171,6 +172,9 @@ public class ResourceServerTokenServicesConfiguration {
 			@Qualifier("userInfoRestTemplate")
 			private OAuth2RestOperations restTemplate;
 
+			@Autowired(required = false)
+			private AuthoritiesExtractor authoritiesExtractor;
+
 			@Bean
 			@ConditionalOnBean(ConnectionFactoryLocator.class)
 			@ConditionalOnMissingBean(ResourceServerTokenServices.class)
@@ -187,6 +191,9 @@ public class ResourceServerTokenServicesConfiguration {
 						this.sso.getUserInfoUri(), this.sso.getClientId());
 				services.setTokenType(this.sso.getTokenType());
 				services.setRestTemplate(this.restTemplate);
+				if (this.authoritiesExtractor != null) {
+					services.setAuthoritiesExtractor(this.authoritiesExtractor);
+				}
 				return services;
 			}
 
@@ -204,6 +211,9 @@ public class ResourceServerTokenServicesConfiguration {
 			@Qualifier("userInfoRestTemplate")
 			private OAuth2RestOperations restTemplate;
 
+			@Autowired(required = false)
+			private AuthoritiesExtractor authoritiesExtractor;
+
 			@Bean
 			@ConditionalOnMissingBean(ResourceServerTokenServices.class)
 			public UserInfoTokenServices userInfoTokenServices() {
@@ -211,6 +221,9 @@ public class ResourceServerTokenServicesConfiguration {
 						this.sso.getUserInfoUri(), this.sso.getClientId());
 				services.setRestTemplate(this.restTemplate);
 				services.setTokenType(this.sso.getTokenType());
+				if (this.authoritiesExtractor != null) {
+					services.setAuthoritiesExtractor(this.authoritiesExtractor);
+				}
 				return services;
 			}
 

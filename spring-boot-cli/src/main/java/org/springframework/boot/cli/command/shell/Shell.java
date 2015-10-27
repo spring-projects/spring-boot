@@ -26,7 +26,10 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import jline.console.ConsoleReader;
+import jline.console.completer.CandidateListCompletionHandler;
 import org.fusesource.jansi.AnsiRenderer.Code;
+
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.CommandFactory;
 import org.springframework.boot.cli.command.CommandRunner;
@@ -34,9 +37,6 @@ import org.springframework.boot.cli.command.core.HelpCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
 import org.springframework.boot.loader.tools.SignalUtils;
 import org.springframework.util.StringUtils;
-
-import jline.console.ConsoleReader;
-import jline.console.completer.CandidateListCompletionHandler;
 
 /**
  * A shell for Spring Boot. Drops the user into an event loop (REPL) where command line

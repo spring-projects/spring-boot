@@ -40,7 +40,7 @@ rules of thumb:
 * Look for classes called `+*AutoConfiguration+` and read their sources, in particular the
   `+@Conditional*+` annotations to find out what features they enable and when. Add
   `--debug` to the command line or a System property `-Ddebug` to get a log on the
-  console of all the autoconfiguration decisions that were made in your app. In a running
+  console of all the auto-configuration decisions that were made in your app. In a running
   Actuator app look at the `autoconfig` endpoint ('`/autoconfig`' or the JMX equivalent) for
   the same information.
 * Look for classes that are `@ConfigurationProperties` (e.g.
@@ -123,7 +123,7 @@ might have.
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.main.web_environment=false
-	spring.main.show_banner=false
+	spring.main.banner_mode=off
 ----
 
 and then the Spring Boot banner will not be printed on startup, and the application will
@@ -139,7 +139,7 @@ consider this application
 [source,java,indent=0]
 ----
 	new SpringApplicationBuilder()
-		.showBanner(false)
+		.bannerMode(Banner.Mode.OFF)
 		.sources(demo.MyApp.class)
 		.run(args);
 ----
@@ -149,7 +149,7 @@ used with the following configuration:
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.main.sources=com.acme.Config,com.acme.ExtraConfig
-	spring.main.show-banner=true
+	spring.main.banner_mode=console
 ----
 
 The actual application will _now_ show the banner (as overridden by configuration) and use
@@ -188,7 +188,7 @@ extension are also added to the list by default.
 Spring Boot logs the configuration files that are loaded at `DEBUG` level and the
 candidates it has not found at `TRACE` level.
 
-See {sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[`ConfigFileApplicationListener`]
+See {sc-spring-boot}/context/config/ConfigFileEnvironmentPostProcessor.{sc-ext}[`ConfigFileEnvironmentPostProcessor`]
 for more detail.
 
 
@@ -475,10 +475,6 @@ typically in `application.properties` or `application.yml`. For example:
 
 See {sc-spring-boot}/context/embedded/Ssl.{sc-ext}[`Ssl`] for details of all of the
 supported properties.
-
-NOTE: Tomcat requires the key store (and trust store if you're using one) to be directly
-accessible on the filesystem, i.e. it cannot be read from within a jar file. This
-limitation doesn't apply to Jetty and Undertow.
 
 Using configuration like the example above means the application will no longer support
 plain HTTP connector at port 8080. Spring Boot doesn't support the configuration of both
@@ -1559,7 +1555,7 @@ Spring Boot exposes as set of useful properties from the `spring.data.rest` name
 customize the
 {spring-data-rest-javadoc}/core/config/RepositoryRestConfiguration.{dc-ext}[`RepositoryRestConfiguration`].
 If you need to provide additional customization, you should use a
-{spring-data-rest-javadoc}/core/config/RepositoryRestConfigurer.{dc-ext}[`RepositoryRestConfigurer`]
+{spring-data-rest-javadoc}/webmvc/config/RepositoryRestConfigurer.{dc-ext}[`RepositoryRestConfigurer`]
 bean.
 
 
@@ -1814,8 +1810,8 @@ authentication manager is needed elsewhere), e.g.
 ----
 	@Configuration
 	public class AuthenticationManagerConfiguration extends
+			GlobalAuthenticationConfigurerAdapter {
 
-		GlobalAuthenticationConfigurerAdapter {
 		@Override
 		public void init(AuthenticationManagerBuilder auth) {
 			auth.inMemoryAuthentication() // ... etc.
@@ -1862,14 +1858,15 @@ requests). To switch that on in a Spring Boot application you just need to set
 === Reload static content
 There are several options for hot reloading. Running in an IDE (especially with debugging
 on) is a good way to do development (all modern IDEs allow reloading of static resources
-and usually also hot-swapping of Java class changes). The
-<<build-tool-plugins.adoc#build-tool-plugins, Maven and Gradle plugins>> also
-support running from the command line with reloading of static files. You can use that
-with an external css/js compiler process if you are writing that code with higher level
-tools.
+and usually also hot-swapping of Java class changes).
 
 The <<using-spring-boot.adoc#using-boot-devtools,`spring-boot-devtools`>> module is also
 available with support for fast application restarts and LiveReload.
+
+Finally, the <<build-tool-plugins.adoc#build-tool-plugins, Maven and Gradle plugins>> can
+be configured to support running from the command line with reloading of static files. You
+can use that with an external css/js compiler process if you are writing that code with
+higher level tools.
 
 
 

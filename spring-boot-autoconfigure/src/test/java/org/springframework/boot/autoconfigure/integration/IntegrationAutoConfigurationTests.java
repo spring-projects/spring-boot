@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.integration;
 
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

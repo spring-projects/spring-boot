@@ -19,6 +19,7 @@ package org.springframework.boot.context.embedded;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -27,9 +28,12 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.GZIPInputStream;
@@ -58,6 +62,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
+
+import org.springframework.boot.ApplicationHome;
+import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -72,6 +79,9 @@ import org.springframework.util.concurrent.ListenableFuture;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.notNullValue;
@@ -330,14 +340,19 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
-	public void basicSsl() throws Exception {
+	public void basicSslFromClassPath() throws Exception {
+		testBasicSslWithKeyStore("classpath:test.jks");
+	}
+
+	@Test
+	public void basicSslFromFileSystem() throws Exception {
 		testBasicSslWithKeyStore("src/test/resources/test.jks");
 	}
 
 	@Test
 	public void sslDisabled() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		Ssl ssl = getSsl(null, "password", "src/test/resources/test.jks");
+		Ssl ssl = getSsl(null, "password", "classpath:test.jks");
 		ssl.setEnabled(false);
 		factory.setSsl(ssl);
 		this.container = factory.getEmbeddedServletContainer(
@@ -393,8 +408,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	public void pkcs12KeyStoreAndTrustStore() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		factory.setSsl(getSsl(ClientAuth.NEED, null, "src/test/resources/test.p12",
-				"src/test/resources/test.p12"));
+		factory.setSsl(getSsl(ClientAuth.NEED, null, "classpath:test.p12",
+				"classpath:test.p12"));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		KeyStore keyStore = KeyStore.getInstance("pkcs12");
@@ -417,8 +432,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		factory.setSsl(getSsl(ClientAuth.NEED, "password", "src/test/resources/test.jks",
-				"src/test/resources/test.jks"));
+		factory.setSsl(getSsl(ClientAuth.NEED, "password", "classpath:test.jks",
+				"classpath:test.jks"));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -441,8 +456,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		factory.setSsl(
-				getSsl(ClientAuth.NEED, "password", "src/test/resources/test.jks"));
+		factory.setSsl(getSsl(ClientAuth.NEED, "password", "classpath:test.jks"));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
@@ -460,8 +474,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		factory.setSsl(
-				getSsl(ClientAuth.WANT, "password", "src/test/resources/test.jks"));
+		factory.setSsl(getSsl(ClientAuth.WANT, "password", "classpath:test.jks"));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -484,8 +497,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		factory.setSsl(
-				getSsl(ClientAuth.WANT, "password", "src/test/resources/test.jks"));
+		factory.setSsl(getSsl(ClientAuth.WANT, "password", "classpath:test.jks"));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
@@ -505,6 +517,17 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		factory.getJspServlet().setRegistered(false);
 		this.container = factory.getEmbeddedServletContainer();
 		assertThat(getJspServlet(), is(nullValue()));
+	}
+
+	@Test
+	public void cannotReadClassPathFiles() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory
+				.getEmbeddedServletContainer(exampleServletRegistration());
+		this.container.start();
+		ClientHttpResponse response = getClientResponse(
+				getLocalUrl("/org/springframework/boot/SpringApplication.class"));
+		assertThat(response.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
 	}
 
 	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore) {
@@ -563,6 +586,54 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
+	public void persistSessionInSpecificSessionStoreDir() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		File sessionStoreDir = this.temporaryFolder.newFolder();
+		factory.setPersistSession(true);
+		factory.setSessionStoreDir(sessionStoreDir);
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		this.container.start();
+		getResponse(getLocalUrl("/session"));
+		this.container.stop();
+		File[] dirContents = sessionStoreDir.listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return !(".".equals(name) || "..".equals(name));
+			}
+
+		});
+		assertThat(dirContents.length, greaterThan(0));
+	}
+
+	@Test
+	public void getValidSessionStoreWhenSessionStoreNotSet() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		File dir = factory.getValidSessionStoreDir(false);
+		assertThat(dir.getName(), equalTo("servlet-sessions"));
+		assertThat(dir.getParentFile(), equalTo(new ApplicationTemp().getDir()));
+	}
+
+	@Test
+	public void getValidSessionStoreWhenSessionStoreIsRelative() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSessionStoreDir(new File("sessions"));
+		File dir = factory.getValidSessionStoreDir(false);
+		assertThat(dir.getName(), equalTo("sessions"));
+		assertThat(dir.getParentFile(), equalTo(new ApplicationHome().getDir()));
+	}
+
+	@Test
+	public void getValidSessionStoreWhenSessionStoreReferencesFile() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSessionStoreDir(this.temporaryFolder.newFile());
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("points to a file");
+		factory.getValidSessionStoreDir(false);
+	}
+
+	@Test
 	public void compression() throws Exception {
 		assertTrue(doTestCompression(10000, null, null));
 	}
@@ -581,6 +652,25 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void noCompressionForUserAgent() throws Exception {
 		assertFalse(doTestCompression(10000, null, new String[] { "testUserAgent" }));
+	}
+
+	@Test
+	public void mimeMappingsAreCorrectlyConfigured() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory.getEmbeddedServletContainer();
+		Map<String, String> configuredMimeMappings = getActualMimeMappings();
+		Set<Entry<String, String>> entrySet = configuredMimeMappings.entrySet();
+		Collection<MimeMappings.Mapping> expectedMimeMappings = getExpectedMimeMappings();
+		for (Entry<String, String> entry : entrySet) {
+			assertThat(expectedMimeMappings,
+					hasItem(new MimeMappings.Mapping(entry.getKey(), entry.getValue())));
+		}
+		for (MimeMappings.Mapping mapping : expectedMimeMappings) {
+			assertThat(configuredMimeMappings,
+					hasEntry(mapping.getExtension(), mapping.getMimeType()));
+		}
+		assertThat(configuredMimeMappings.size(),
+				is(equalTo(expectedMimeMappings.size())));
 	}
 
 	private boolean doTestCompression(int contentSize, String[] mimeTypes,
@@ -619,6 +709,12 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		return testContent;
+	}
+
+	protected abstract Map<String, String> getActualMimeMappings();
+
+	protected Collection<MimeMappings.Mapping> getExpectedMimeMappings() {
+		return MimeMappings.DEFAULT.getAll();
 	}
 
 	private void addTestTxtFile(AbstractEmbeddedServletContainerFactory factory)
@@ -721,7 +817,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		return bean;
 	}
 
-	private ServletContextInitializer sessionServletRegistration() {
+	protected final ServletContextInitializer sessionServletRegistration() {
 		ServletRegistrationBean bean = new ServletRegistrationBean(new ExampleServlet() {
 
 			@Override

@@ -18,6 +18,7 @@ package org.springframework.boot.logging.log4j2;
 
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
+import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.endsWith;
@@ -34,7 +35,7 @@ public class WhitespaceThrowablePatternConverterTests {
 
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
-	private final WhitespaceThrowablePatternConverter converter = WhitespaceThrowablePatternConverter
+	private final ThrowablePatternConverter converter = WhitespaceThrowablePatternConverter
 			.newInstance(new String[] {});
 
 	@Test

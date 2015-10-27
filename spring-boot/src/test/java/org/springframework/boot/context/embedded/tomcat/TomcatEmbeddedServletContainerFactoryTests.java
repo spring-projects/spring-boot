@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -39,13 +40,16 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.junit.Test;
 import org.mockito.InOrder;
+
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -277,7 +281,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
-				catch (IllegalStateException ex) {
+				catch (EmbeddedServletContainerException ex) {
 					// Ignore
 				}
 			}
@@ -307,20 +311,13 @@ public class TomcatEmbeddedServletContainerFactoryTests
 					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
-				catch (IllegalStateException ex) {
+				catch (EmbeddedServletContainerException ex) {
 					// Ignore
 				}
 			}
 
 		});
 
-	}
-
-	@Test
-	public void basicSslClasspathKeyStore() throws Exception {
-		this.thrown.expect(EmbeddedServletContainerException.class);
-		this.thrown.expectMessage("Tomcat doesn't support classpath resources");
-		testBasicSslWithKeyStore("classpath:test.jks");
 	}
 
 	@Test
@@ -341,11 +338,45 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		assertForwardHeaderIsUsed(factory);
 	}
 
+	@Test
+	public void disableDoesNotSaveSessionFiles() throws Exception {
+		File baseDir = this.temporaryFolder.newFolder();
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		// If baseDir is not set SESSIONS.ser is written to a different temp folder
+		// each time. By setting it we can really ensure that data isn't saved
+		factory.setBaseDirectory(baseDir);
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		this.container.start();
+		String s1 = getResponse(getLocalUrl("/session"));
+		String s2 = getResponse(getLocalUrl("/session"));
+		this.container.stop();
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		this.container.start();
+		String s3 = getResponse(getLocalUrl("/session"));
+		System.out.println(s1);
+		System.out.println(s2);
+		System.out.println(s3);
+		String message = "Session error s1=" + s1 + " s2=" + s2 + " s3=" + s3;
+		assertThat(message, s2.split(":")[0], equalTo(s1.split(":")[1]));
+		assertThat(message, s3.split(":")[0], not(equalTo(s2.split(":")[1])));
+	}
+
 	@Override
 	protected Wrapper getJspServlet() {
 		Container context = ((TomcatEmbeddedServletContainer) this.container).getTomcat()
 				.getHost().findChildren()[0];
 		return (Wrapper) context.findChild("jsp");
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Map<String, String> getActualMimeMappings() {
+		Context context = (Context) ((TomcatEmbeddedServletContainer) this.container)
+				.getTomcat().getHost().findChildren()[0];
+		return (Map<String, String>) ReflectionTestUtils.getField(context,
+				"mimeMappings");
 	}
 
 	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory,
@@ -363,7 +394,6 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	private void doWithBlockedPort(final int port, Runnable action) throws IOException {
 		ServerSocket serverSocket = new ServerSocket();
 		serverSocket.bind(new InetSocketAddress(port));
-
 		try {
 			action.run();
 		}

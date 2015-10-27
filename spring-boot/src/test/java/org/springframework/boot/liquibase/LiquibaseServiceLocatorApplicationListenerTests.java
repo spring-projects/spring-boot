@@ -18,14 +18,14 @@ package org.springframework.boot.liquibase;
 
 import java.lang.reflect.Field;
 
+import liquibase.servicelocator.ServiceLocator;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
-
-import liquibase.servicelocator.ServiceLocator;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;

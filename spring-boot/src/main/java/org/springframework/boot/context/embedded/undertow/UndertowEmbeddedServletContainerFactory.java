@@ -38,25 +38,6 @@ import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.springframework.boot.ApplicationTemp;
-import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.ErrorPage;
-import org.springframework.boot.context.embedded.MimeMappings.Mapping;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
-import org.springframework.boot.context.embedded.Ssl;
-import org.springframework.boot.context.embedded.Ssl.ClientAuth;
-import org.springframework.context.ResourceLoaderAware;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.Assert;
-import org.springframework.util.ResourceUtils;
-import org.xnio.OptionMap;
-import org.xnio.Options;
-import org.xnio.SslClientAuthMode;
-import org.xnio.Xnio;
-import org.xnio.XnioWorker;
-
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowMessages;
@@ -65,7 +46,6 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.AccessLogReceiver;
 import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
-import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.Resource;
 import io.undertow.server.handlers.resource.ResourceChangeListener;
@@ -80,6 +60,24 @@ import io.undertow.servlet.api.ServletContainerInitializerInfo;
 import io.undertow.servlet.api.ServletStackTraces;
 import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
+import org.xnio.OptionMap;
+import org.xnio.Options;
+import org.xnio.SslClientAuthMode;
+import org.xnio.Xnio;
+import org.xnio.XnioWorker;
+
+import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.EmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.ErrorPage;
+import org.springframework.boot.context.embedded.MimeMappings.Mapping;
+import org.springframework.boot.context.embedded.ServletContextInitializer;
+import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.context.embedded.Ssl.ClientAuth;
+import org.springframework.context.ResourceLoaderAware;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.Assert;
+import org.springframework.util.ResourceUtils;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create
@@ -360,7 +358,7 @@ public class UndertowEmbeddedServletContainerFactory
 			configureAccessLog(deployment);
 		}
 		if (isPersistSession()) {
-			File folder = new ApplicationTemp().getFolder("undertow-sessions");
+			File folder = getValidSessionStoreDir();
 			deployment.setSessionPersistenceManager(new FileSessionPersistence(folder));
 		}
 		DeploymentManager manager = Servlets.defaultContainer().addDeployment(deployment);
@@ -373,10 +371,12 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private void configureAccessLog(DeploymentInfo deploymentInfo) {
 		deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
+
 			@Override
 			public HttpHandler wrap(HttpHandler handler) {
 				return createAccessLogHandler(handler);
 			}
+
 		});
 	}
 
@@ -434,10 +434,7 @@ public class UndertowEmbeddedServletContainerFactory
 		if (root != null && root.isFile()) {
 			return new JarResourcemanager(root);
 		}
-		if (this.resourceLoader != null) {
-			return new ClassPathResourceManager(this.resourceLoader.getClassLoader(), "");
-		}
-		return new ClassPathResourceManager(getClass().getClassLoader(), "");
+		return ResourceManager.EMPTY_RESOURCE_MANAGER;
 	}
 
 	private void configureErrorPages(DeploymentInfo servletBuilder) {

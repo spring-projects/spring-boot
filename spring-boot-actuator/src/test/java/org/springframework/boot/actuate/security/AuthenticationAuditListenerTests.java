@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.security;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.BadCredentialsException;

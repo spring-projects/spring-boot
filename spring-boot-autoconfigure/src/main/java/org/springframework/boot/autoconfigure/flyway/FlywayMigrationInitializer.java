@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.flyway;
 
 import org.flywaydb.core.Flyway;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;

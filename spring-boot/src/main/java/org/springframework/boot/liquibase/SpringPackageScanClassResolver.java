@@ -18,7 +18,10 @@ package org.springframework.boot.liquibase;
 
 import java.io.IOException;
 
+import liquibase.servicelocator.DefaultPackageScanClassResolver;
+import liquibase.servicelocator.PackageScanClassResolver;
 import org.apache.commons.logging.Log;
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -26,9 +29,6 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.ClassUtils;
-
-import liquibase.servicelocator.DefaultPackageScanClassResolver;
-import liquibase.servicelocator.PackageScanClassResolver;
 
 /**
  * Liquibase {@link PackageScanClassResolver} implementation that uses Spring's resource

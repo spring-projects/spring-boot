@@ -21,6 +21,7 @@ import org.cassandraunit.spring.EmbeddedCassandra;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.IntegrationTestPropertiesListener;
 import org.springframework.boot.test.OutputCapture;

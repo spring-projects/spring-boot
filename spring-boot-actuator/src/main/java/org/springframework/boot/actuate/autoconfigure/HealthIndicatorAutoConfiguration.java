@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.elasticsearch.client.Client;
+
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

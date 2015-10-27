@@ -30,6 +30,7 @@ import org.apache.http.message.BasicHeader;
 import org.hamcrest.Matcher;
 import org.json.JSONObject;
 import org.mockito.ArgumentMatcher;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;

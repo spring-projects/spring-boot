@@ -19,13 +19,13 @@ package org.springframework.boot.autoconfigure.mustache;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Mustache.TemplateLoader;
+
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Mustache.TemplateLoader;
 
 /**
  * Mustache TemplateLoader implementation that uses a prefix, suffix and the Spring

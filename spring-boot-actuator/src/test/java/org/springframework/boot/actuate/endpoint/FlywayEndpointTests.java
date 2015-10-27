@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint;
 
 import org.flywaydb.core.Flyway;
 import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;

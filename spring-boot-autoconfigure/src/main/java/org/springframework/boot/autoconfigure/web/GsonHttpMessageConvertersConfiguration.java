@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import com.google.gson.Gson;
+
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -26,8 +28,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-
-import com.google.gson.Gson;
 
 /**
  * Configuration for HTTP Message converters that use Gson.

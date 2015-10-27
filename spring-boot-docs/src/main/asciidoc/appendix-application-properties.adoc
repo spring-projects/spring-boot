@@ -31,7 +31,7 @@ content into your application; rather pick only the properties that you need.
     banner.charset=UTF-8 # banner file encoding
     banner.location=classpath:banner.txt # banner file location
 
-	# SPRING CONFIG ({sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[ConfigFileApplicationListener])
+	# SPRING CONFIG ({sc-spring-boot}/context/config/ConfigFileEnvironmentPostProcessor.{sc-ext}[ConfigFileEnvironmentPostProcessor])
 	spring.config.name= # config file name (default to 'application')
 	spring.config.location= # location of config file
 
@@ -43,6 +43,7 @@ content into your application; rather pick only the properties that you need.
 	spring.main.sources= # sources (class name, package name or XML resource location) to include
 	spring.main.web-environment= # detect by default
 	spring.main.show-banner=true
+	spring.main.banner-mode=console # mode used to display the banner when the application runs (console, off, or log)
 	spring.main....= # see class for all properties
 
 	# AUTO-CONFIGURATION
@@ -64,6 +65,7 @@ content into your application; rather pick only the properties that you need.
 	logging.pattern.console= # appender pattern for output to the console (only supported with the default logback setup)
 	logging.pattern.file= # appender pattern for output to the file (only supported with the default logback setup)
 	logging.pattern.level= # appender pattern for the log level (default %5p, only supported with the default logback setup)
+	logging.register-shutdown-hook=false # register a shutdown hook for the logging system when it is initialized
 
 	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
 	spring.application.name=
@@ -85,6 +87,7 @@ content into your application; rather pick only the properties that you need.
 	server.display-name= # the display name of the application
 	server.use-forward-headers= # if X-Forwarded-* headers should be used (default is off unless running in a known cloud)
 	server.session.persistent=false # true if session should be saved across restarts
+	server.session.store-dir= # dir used to save session data
 	server.session.timeout= # session timeout in seconds
 	server.session.tracking-modes= # tracking modes (one or more of "cookie" ,"url", "ssl")
 	server.session.cookie.name= # session cookie name
@@ -149,6 +152,7 @@ content into your application; rather pick only the properties that you need.
 	spring.mvc.favicon.enabled=true
 	spring.mvc.message-codes-resolver-format= # PREFIX_ERROR_CODE / POSTFIX_ERROR_CODE
 	spring.mvc.ignore-default-model-on-redirect=true # if the content of the "default" model should be ignored redirects
+	spring.mvc.throw-exception-if-no-handler-found=false # if a "NoHandlerFoundException" should be thrown if no Handler was found to process a request
 	spring.mvc.async.request-timeout= # async request timeout in milliseconds
 	spring.mvc.view.prefix= # MVC view prefix
 	spring.mvc.view.suffix= # ... and suffix
@@ -234,13 +238,19 @@ content into your application; rather pick only the properties that you need.
 	spring.freemarker.view-names= # whitelist of view names that can be resolved
 
 	# GROOVY TEMPLATES ({sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[GroovyTemplateAutoConfiguration])
+	spring.groovy.template.allow-request-override=false
+	spring.groovy.template.allow-session-override=false
 	spring.groovy.template.cache=true
 	spring.groovy.template.charset=UTF-8
 	spring.groovy.template.check-template-location=true # check that the templates location exists
 	spring.groovy.template.configuration.*= # See GroovyMarkupConfigurer
 	spring.groovy.template.content-type=text/html
 	spring.groovy.template.enabled=true # enable MVC view resolution
+	spring.groovy.template.expose-request-attributes=false
+	spring.groovy.template.expose-session-attributes=false
+	spring.groovy.template.expose-spring-macro-helpers=false
 	spring.groovy.template.prefix=
+	spring.groovy.template.request-context-attribute=
 	spring.groovy.template.resource-loader-path=classpath:/templates/
     spring.groovy.template.suffix=.tpl
 	spring.groovy.template.view-names= # whitelist of view names that can be resolved
@@ -277,7 +287,8 @@ content into your application; rather pick only the properties that you need.
 	spring.mustache.suffix=.html
 	spring.mustache.view-names= # whitelist of view names that can be resolved
 
-	# JERSEY ({sc-spring-boot-autoconfigure}}/jersey/JerseyProperties.{sc-ext}[JerseyProperties])
+	# JERSEY ({sc-spring-boot-autoconfigure}/jersey/JerseyProperties.{sc-ext}[JerseyProperties])
+	spring.jersey.application-path # path that serves as the base URI for the application
 	spring.jersey.type=servlet # servlet or filter
 	spring.jersey.init= # init params
 	spring.jersey.filter.order=
@@ -300,10 +311,10 @@ content into your application; rather pick only the properties that you need.
 	security.basic.path= # /**
 	security.basic.authorize-mode= # ROLE, AUTHENTICATED, NONE
 	security.filter-order=0
-	security.headers.xss=false
-	security.headers.cache=false
-	security.headers.frame=false
-	security.headers.content-type=false
+	security.headers.xss=true
+	security.headers.cache=true
+	security.headers.frame=true
+	security.headers.content-type=true
 	security.headers.hsts=all # none / domain / all
 	security.sessions=stateless # always / never / if_required / stateless
 	security.ignored= # Comma-separated list of paths to exclude from the default secured paths
@@ -353,7 +364,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.keyspace-name= # the keyspace name
 	spring.data.cassandra.port= # the connection port
 	spring.data.cassandra.compression= # compression method (none/snappy/lz4)
-	spring.data.cassandra.loadbalancing-policy= # class name for a LoadBalancingPolicy
+	spring.data.cassandra.load-balancing-policy= # class name for a LoadBalancingPolicy
 	spring.data.cassandra.consistency-level= # consistency level (any/one/two/three/quorum/all...)
 	spring.data.cassandra.serial-consistency-level= # serial consistency level (any/one/two/three/quorum/all...)
 	spring.data.cassandra.fetch-size=
@@ -780,6 +791,9 @@ content into your application; rather pick only the properties that you need.
 	management.health.redis.enabled=true
 	management.health.solr.enabled=true
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP
+
+	# TRACING (({sc-spring-boot-actuator}/trace/TraceProperties.{sc-ext}[TraceProperties])
+	management.trace.include=request-headers,response-headers,errors # See TraceProperties.Include for options
 
 	# MVC ONLY ENDPOINTS
 	endpoints.jolokia.path=/jolokia

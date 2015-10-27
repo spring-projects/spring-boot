@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -56,7 +57,7 @@ public class EmbeddedServerPortFileWriter
 	 * 'application.port'.
 	 */
 	public EmbeddedServerPortFileWriter() {
-		this.file = new File(DEFAULT_FILE_NAME);
+		this(new File(DEFAULT_FILE_NAME));
 	}
 
 	/**

@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.cache;
 
+import com.google.common.cache.CacheStats;
+
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.guava.GuavaCache;
-
-import com.google.common.cache.CacheStats;
 
 /**
  * {@link CacheStatisticsProvider} implementation for Guava.

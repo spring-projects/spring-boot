@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.h2;
 
 import org.h2.server.web.WebServlet;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

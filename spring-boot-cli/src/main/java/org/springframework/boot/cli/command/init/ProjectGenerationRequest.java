@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.client.utils.URIBuilder;
+
 import org.springframework.util.StringUtils;
 
 /**

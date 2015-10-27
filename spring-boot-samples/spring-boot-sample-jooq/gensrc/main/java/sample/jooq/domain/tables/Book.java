@@ -14,7 +14,6 @@ import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.TableImpl;
-
 import sample.jooq.domain.Keys;
 import sample.jooq.domain.Public;
 import sample.jooq.domain.tables.records.BookRecord;
