@@ -1809,7 +1809,8 @@ authentication manager is needed elsewhere), e.g.
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Configuration
-	public class AuthenticationManagerConfiguration extends GlobalAuthenticationConfigurerAdapter {
+	public class AuthenticationManagerConfiguration extends
+	        GlobalAuthenticationConfigurerAdapter {
 
 		@Override
 		public void init(AuthenticationManagerBuilder auth) {
