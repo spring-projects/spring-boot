@@ -169,9 +169,10 @@ public class FlywayAutoConfiguration {
 	}
 
 	/**
-	 * Converts a String to a {@link MigrationVersion}.
+	 * Convert a String to a {@link MigrationVersion}.
 	 */
-	private static class StringToMigrationVersionConverter implements Converter<String, MigrationVersion> {
+	private static class StringToMigrationVersionConverter
+			implements Converter<String, MigrationVersion> {
 
 		@Override
 		public MigrationVersion convert(String source) {
