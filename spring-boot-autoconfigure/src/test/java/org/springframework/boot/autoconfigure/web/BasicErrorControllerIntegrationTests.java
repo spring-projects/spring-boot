@@ -91,7 +91,7 @@ public class BasicErrorControllerIntegrationTests {
 		load();
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity(createUrl("?trace=true"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
 		assertFalse("trace parameter should not be set",
 				entity.getBody().containsKey("trace"));
@@ -103,7 +103,7 @@ public class BasicErrorControllerIntegrationTests {
 		load("--server.error.include-stacktrace=on-trace-param");
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity(createUrl("?trace=true"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
 		assertTrue("trace parameter should be set",
 				entity.getBody().containsKey("trace"));
@@ -115,7 +115,7 @@ public class BasicErrorControllerIntegrationTests {
 		load("--server.error.include-stacktrace=never");
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity(createUrl("?trace=true"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
 		assertFalse("trace parameter should not be set",
 				entity.getBody().containsKey("trace"));
@@ -127,7 +127,7 @@ public class BasicErrorControllerIntegrationTests {
 		load("--server.error.include-stacktrace=always");
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity(createUrl("?trace=false"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
 		assertTrue("trace parameter should be set",
 				entity.getBody().containsKey("trace"));
