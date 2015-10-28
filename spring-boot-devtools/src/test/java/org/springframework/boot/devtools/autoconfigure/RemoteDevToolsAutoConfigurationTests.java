@@ -138,6 +138,17 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
+	public void invokeRestartWithCustomServerContextPath() throws Exception {
+		loadContext("spring.devtools.remote.secret:supersecret",
+				"server.context-path:/test");
+		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
+		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH + "/restart");
+		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
+		filter.doFilter(this.request, this.response, this.chain);
+		assertRestartInvoked(true);
+	}
+
+	@Test
 	public void disableRestart() throws Exception {
 		loadContext("spring.devtools.remote.secret:supersecret",
 				"spring.devtools.remote.restart.enabled:false");
@@ -150,6 +161,17 @@ public class RemoteDevToolsAutoConfigurationTests {
 		loadContext("spring.devtools.remote.secret:supersecret");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/debug");
+		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
+		filter.doFilter(this.request, this.response, this.chain);
+		assertTunnelInvoked(true);
+	}
+
+	@Test
+	public void invokeTunnelWithCustomServerContextPath() throws Exception {
+		loadContext("spring.devtools.remote.secret:supersecret",
+				"server.context-path:/test");
+		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
+		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH + "/debug");
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
 		filter.doFilter(this.request, this.response, this.chain);
 		assertTunnelInvoked(true);
@@ -179,6 +201,18 @@ public class RemoteDevToolsAutoConfigurationTests {
 		loadContext("spring.devtools.remote.secret:supersecret");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI(DEFAULT_CONTEXT_PATH);
+		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
+		this.response.setStatus(500);
+		filter.doFilter(this.request, this.response, this.chain);
+		assertThat(this.response.getStatus(), equalTo(200));
+	}
+
+	@Test
+	public void devToolsHealthWithCustomServerContextPathReturns200() throws Exception {
+		loadContext("spring.devtools.remote.secret:supersecret",
+				"server.context-path:/test");
+		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
+		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH);
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
 		this.response.setStatus(500);
 		filter.doFilter(this.request, this.response, this.chain);
