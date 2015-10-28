@@ -813,7 +813,7 @@ as `@Valid` to trigger its validation. For example, building upon the above
 
 		// ... getters and setters
 
-		private static class RemoteAddress {
+		public static class RemoteAddress {
 
 			@NotEmpty
 			public String hostname;
