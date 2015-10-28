@@ -19,14 +19,12 @@ org.springframework.context.ApplicationListener=\
 org.springframework.boot.builder.ParentContextCloserApplicationListener,\
 org.springframework.boot.context.FileEncodingApplicationListener,\
 org.springframework.boot.context.config.AnsiOutputApplicationListener,\
-org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor,\
+org.springframework.boot.context.config.ConfigFileApplicationListener,\
 org.springframework.boot.context.config.DelegatingApplicationListener,\
-org.springframework.boot.env.EnvironmentPostProcessingApplicationListener,\
 org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener,\
 org.springframework.boot.logging.ClasspathLoggingApplicationListener,\
 org.springframework.boot.logging.LoggingApplicationListener
 
 # Environment Post Processors
 org.springframework.boot.env.EnvironmentPostProcessor=\
-org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor,\
-org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor
+org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor

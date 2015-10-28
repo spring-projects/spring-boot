@@ -510,7 +510,7 @@ public class SpringApplication {
 	 * @param environment this application's environment
 	 * @param args arguments passed to the {@code run} method
 	 * @see #configureEnvironment(ConfigurableEnvironment, String[])
-	 * @see org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor
+	 * @see org.springframework.boot.context.config.ConfigFileApplicationListener
 	 */
 	protected void configureProfiles(ConfigurableEnvironment environment, String[] args) {
 		environment.getActiveProfiles(); // ensure they are initialized

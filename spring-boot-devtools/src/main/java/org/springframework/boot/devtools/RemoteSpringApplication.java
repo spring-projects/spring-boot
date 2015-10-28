@@ -24,12 +24,11 @@ import org.springframework.boot.Banner;
 import org.springframework.boot.ResourceBanner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.AnsiOutputApplicationListener;
-import org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor;
+import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.boot.devtools.remote.client.RemoteClientConfiguration;
 import org.springframework.boot.devtools.restart.RestartInitializer;
 import org.springframework.boot.devtools.restart.RestartScopeInitializer;
 import org.springframework.boot.devtools.restart.Restarter;
-import org.springframework.boot.env.EnvironmentPostProcessingApplicationListener;
 import org.springframework.boot.logging.ClasspathLoggingApplicationListener;
 import org.springframework.boot.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationContextInitializer;
@@ -73,8 +72,7 @@ public final class RemoteSpringApplication {
 	private Collection<ApplicationListener<?>> getListeners() {
 		List<ApplicationListener<?>> listeners = new ArrayList<ApplicationListener<?>>();
 		listeners.add(new AnsiOutputApplicationListener());
-		listeners.add(new ConfigFileEnvironmentPostProcessor());
-		listeners.add(new EnvironmentPostProcessingApplicationListener());
+		listeners.add(new ConfigFileApplicationListener());
 		listeners.add(new ClasspathLoggingApplicationListener());
 		listeners.add(new LoggingApplicationListener());
 		listeners.add(new RemoteUrlPropertyExtractor());

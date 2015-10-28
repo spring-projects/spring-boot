@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor.ConfigurationPropertySources;
+import org.springframework.boot.context.config.ConfigFileApplicationListener.ConfigurationPropertySources;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnumerableCompositePropertySource;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -74,18 +74,18 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link ConfigFileEnvironmentPostProcessor}.
+ * Tests for {@link ConfigFileApplicationListener}.
  *
  * @author Phillip Webb
  * @author Dave Syer
  */
-public class ConfigFileEnvironmentPostProcessorTests {
+public class ConfigFileApplicationListenerTests {
 
 	private final StandardEnvironment environment = new StandardEnvironment();
 
 	private final SpringApplication application = new SpringApplication();
 
-	private final ConfigFileEnvironmentPostProcessor initializer = new ConfigFileEnvironmentPostProcessor();
+	private final ConfigFileApplicationListener initializer = new ConfigFileApplicationListener();
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();

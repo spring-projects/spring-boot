@@ -34,11 +34,13 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnumerableCompositePropertySource;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.env.PropertySourcesLoader;
 import org.springframework.boot.logging.DeferredLog;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
@@ -52,6 +54,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
@@ -90,8 +93,8 @@ import org.springframework.validation.BindException;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProcessor,
-		ApplicationListener<ApplicationPreparedEvent>, Ordered {
+public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
+		ApplicationListener<ApplicationEvent>, Ordered {
 
 	private static final String DEFAULT_PROPERTIES = "defaultProperties";
 
@@ -136,16 +139,38 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 	private final ConversionService conversionService = new DefaultConversionService();
 
 	@Override
+	public void onApplicationEvent(ApplicationEvent event) {
+		if (event instanceof ApplicationEnvironmentPreparedEvent) {
+			onApplicationEnvironmentPreparedEvent(
+					(ApplicationEnvironmentPreparedEvent) event);
+		}
+		if (event instanceof ApplicationPreparedEvent) {
+			onApplicationPreparedEvent(event);
+		}
+	}
+
+	private void onApplicationEnvironmentPreparedEvent(
+			ApplicationEnvironmentPreparedEvent event) {
+		List<EnvironmentPostProcessor> postProcessors = SpringFactoriesLoader
+				.loadFactories(EnvironmentPostProcessor.class,
+						getClass().getClassLoader());
+		postProcessors.add(this);
+		for (EnvironmentPostProcessor postProcessor : postProcessors) {
+			postProcessor.postProcessEnvironment(event.getEnvironment(),
+					event.getSpringApplication());
+		}
+	}
+
+	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
 			SpringApplication application) {
 		addPropertySources(environment, application.getResourceLoader());
 		bindToSpringApplication(environment, application);
 	}
 
-	@Override
-	public void onApplicationEvent(ApplicationPreparedEvent event) {
-		this.logger.replayTo(ConfigFileEnvironmentPostProcessor.class);
-		addPostProcessors(event.getApplicationContext());
+	private void onApplicationPreparedEvent(ApplicationEvent event) {
+		this.logger.replayTo(ConfigFileApplicationListener.class);
+		addPostProcessors(((ApplicationPreparedEvent) event).getApplicationContext());
 	}
 
 	/**
@@ -268,7 +293,7 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 	 */
 	private class Loader {
 
-		private final Log logger = ConfigFileEnvironmentPostProcessor.this.logger;
+		private final Log logger = ConfigFileApplicationListener.this.logger;
 
 		private final ConfigurableEnvironment environment;
 
@@ -417,18 +442,19 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 
 		/**
 		 * Return the active profiles that have not been processed yet.
-		 * <p>If a profile is enabled via both {@link #ACTIVE_PROFILES_PROPERTY} and
+		 * <p>
+		 * If a profile is enabled via both {@link #ACTIVE_PROFILES_PROPERTY} and
 		 * {@link ConfigurableEnvironment#addActiveProfile(String)} it needs to be
-		 * filtered so that the {@link #ACTIVE_PROFILES_PROPERTY} value takes
-		 * precedence.
-		 * <p>Concretely, if the "cloud" profile is enabled via the environment,
-		 * it will take less precedence that any profile set via the
-		 * {@link #ACTIVE_PROFILES_PROPERTY}.
+		 * filtered so that the {@link #ACTIVE_PROFILES_PROPERTY} value takes precedence.
+		 * <p>
+		 * Concretely, if the "cloud" profile is enabled via the environment, it will take
+		 * less precedence that any profile set via the {@link #ACTIVE_PROFILES_PROPERTY}.
 		 * @param initialActiveProfiles the profiles that have been enabled via
 		 * {@link #ACTIVE_PROFILES_PROPERTY}
 		 * @return the additional profiles from the environment to enable
 		 */
-		private List<String> filterEnvironmentProfiles(Set<String> initialActiveProfiles) {
+		private List<String> filterEnvironmentProfiles(
+				Set<String> initialActiveProfiles) {
 			List<String> additionalProfiles = new ArrayList<String>();
 			for (String profile : this.environment.getActiveProfiles()) {
 				if (!initialActiveProfiles.contains(profile)) {
@@ -501,7 +527,7 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 				}
 			}
 			locations.addAll(
-					asResolvedSet(ConfigFileEnvironmentPostProcessor.this.searchLocations,
+					asResolvedSet(ConfigFileApplicationListener.this.searchLocations,
 							DEFAULT_SEARCH_LOCATIONS));
 			return locations;
 		}
@@ -511,8 +537,7 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 				return asResolvedSet(this.environment.getProperty(CONFIG_NAME_PROPERTY),
 						null);
 			}
-			return asResolvedSet(ConfigFileEnvironmentPostProcessor.this.names,
-					DEFAULT_NAMES);
+			return asResolvedSet(ConfigFileApplicationListener.this.names, DEFAULT_NAMES);
 		}
 
 		private Set<String> asResolvedSet(String value, String fallback) {
