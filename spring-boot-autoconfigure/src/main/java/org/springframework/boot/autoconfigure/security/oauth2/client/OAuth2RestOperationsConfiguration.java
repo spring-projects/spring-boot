@@ -114,16 +114,6 @@ public class OAuth2RestOperationsConfiguration {
 	@ConditionalOnWebApplication
 	protected static class SessionScopedConfiguration extends BaseConfiguration {
 
-		@Resource
-		@Qualifier("accessTokenRequest")
-		protected AccessTokenRequest accessTokenRequest;
-
-		@Bean
-		@Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
-		public DefaultOAuth2ClientContext oauth2ClientContext() {
-			return new DefaultOAuth2ClientContext(this.accessTokenRequest);
-		}
-
 		@Bean
 		public FilterRegistrationBean oauth2ClientFilterRegistration(
 				OAuth2ClientContextFilter filter) {
@@ -131,6 +121,21 @@ public class OAuth2RestOperationsConfiguration {
 			registration.setFilter(filter);
 			registration.setOrder(-100);
 			return registration;
+		}
+
+		@Configuration
+		protected static class ClientContextConfiguration {
+
+			@Resource
+			@Qualifier("accessTokenRequest")
+			protected AccessTokenRequest accessTokenRequest;
+
+			@Bean
+			@Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
+			public DefaultOAuth2ClientContext oauth2ClientContext() {
+				return new DefaultOAuth2ClientContext(this.accessTokenRequest);
+			}
+
 		}
 
 	}
