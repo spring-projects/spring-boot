@@ -200,7 +200,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
-		ConfigurableListableBeanFactory beanFactory = event.getApplicationContext().getBeanFactory();
+		ConfigurableListableBeanFactory beanFactory = event.getApplicationContext()
+				.getBeanFactory();
 		if (!beanFactory.containsBean(LOGGING_SYSTEM_BEAN_NAME)) {
 			beanFactory.registerSingleton(LOGGING_SYSTEM_BEAN_NAME, this.loggingSystem);
 		}
@@ -236,7 +237,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private String getExceptionConversionWord(ConfigurableEnvironment environment) {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
 				"logging.");
-		return resolver.getProperty("exception-conversion-word", "%rEx");
+		return resolver.getProperty("exception-conversion-word", "%wEx");
 	}
 
 	private void initializeEarlyLoggingLevel(ConfigurableEnvironment environment) {

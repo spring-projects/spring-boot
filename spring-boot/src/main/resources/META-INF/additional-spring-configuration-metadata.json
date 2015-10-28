@@ -33,7 +33,7 @@
     "name": "logging.exception-conversion-word",
     "type": "java.lang.String",
     "description": "Conversion word used when logging exceptions.",
-    "defaultValue": "%rEx",
+    "defaultValue": "%wEx",
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {

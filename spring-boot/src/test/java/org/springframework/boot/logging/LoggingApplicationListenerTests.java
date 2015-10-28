@@ -336,15 +336,27 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void overrideExceptionConversionWord() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"logging.exceptionConversionWord:%ex");
+	public void defaultExceptionConversionWord() throws Exception {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.outputCapture.expect(containsString("Hello world"));
-		this.outputCapture.expect(not(containsString("???")));
-		this.outputCapture.expect(not(containsString("[junit-")));
-		this.logger.info("Hello world", new RuntimeException("Expected"));
+		this.outputCapture.expect(
+				not(containsString("Wrapped by: java.lang.RuntimeException: Wrapper")));
+		this.logger.info("Hello world",
+				new RuntimeException("Wrapper", new RuntimeException("Expected")));
+	}
+
+	@Test
+	public void overrideExceptionConversionWord() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.exceptionConversionWord:%rEx");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.outputCapture.expect(containsString("Hello world"));
+		this.outputCapture.expect(
+				containsString("Wrapped by: java.lang.RuntimeException: Wrapper"));
+		this.logger.info("Hello world",
+				new RuntimeException("Wrapper", new RuntimeException("Expected")));
 	}
 
 	@Test
