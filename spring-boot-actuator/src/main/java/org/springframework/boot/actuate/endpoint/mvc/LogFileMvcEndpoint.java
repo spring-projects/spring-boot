@@ -18,6 +18,9 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.io.IOException;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -31,19 +34,18 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 /**
  * Controller that provides an API for logfiles, i.e. downloading the main logfile
  * configured in environment property 'logging.file' that is standard, but optional
  * property for spring-boot applications.
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  * @author Phillip Webb
  * @since 1.3.0
  */
@@ -51,6 +53,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 
 	private static final Log logger = LogFactory.getLog(LogFileMvcEndpoint.class);
+
+	private LogfileResourceHttpRequestHandler handler = new LogfileResourceHttpRequestHandler();
 
 	/**
 	 * Endpoint URL path.
@@ -108,44 +112,38 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		return null;
 	}
 
-	@RequestMapping(method = RequestMethod.HEAD)
-	@ResponseBody
-	public ResponseEntity<?> available() {
-		return getResponse(false);
-	}
-
-	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
-	public ResponseEntity<?> invoke() throws IOException {
-		return getResponse(true);
-	}
-
-	private ResponseEntity<?> getResponse(boolean includeBody) {
+	@RequestMapping(method = { RequestMethod.GET, RequestMethod.HEAD })
+	public void invoke(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		if (!isEnabled()) {
-			return (includeBody ? DISABLED_RESPONSE : ResponseEntity.notFound().build());
+			response.setStatus(HttpStatus.NOT_FOUND.value());
 		}
-		Resource resource = getLogFileResource();
-		if (resource == null) {
-			return ResponseEntity.notFound().build();
+		else {
+			this.handler.handleRequest(request, response);
 		}
-		BodyBuilder response = ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN);
-		return (includeBody ? response.body(resource) : response.build());
 	}
 
-	private Resource getLogFileResource() {
-		LogFile logFile = LogFile.get(this.environment);
-		if (logFile == null) {
-			logger.debug("Missing 'logging.file' or 'logging.path' properties");
-			return null;
-		}
-		FileSystemResource resource = new FileSystemResource(logFile.toString());
-		if (!resource.exists()) {
-			if (logger.isWarnEnabled()) {
-				logger.debug("Log file '" + resource + "' does not exist");
+	private class LogfileResourceHttpRequestHandler extends ResourceHttpRequestHandler {
+		@Override
+		protected Resource getResource(HttpServletRequest request) throws IOException {
+			LogFile logFile = LogFile.get(LogFileMvcEndpoint.this.environment);
+			if (logFile == null) {
+				logger.debug("Missing 'logging.file' or 'logging.path' properties");
+				return null;
 			}
-			return null;
+			FileSystemResource resource = new FileSystemResource(logFile.toString());
+			if (!resource.exists()) {
+				if (logger.isWarnEnabled()) {
+					logger.debug("Log file '" + resource + "' does not exist");
+				}
+				return null;
+			}
+			return resource;
 		}
-		return resource;
-	}
 
+		@Override
+		protected MediaType getMediaType(Resource resource) {
+			return MediaType.TEXT_PLAIN;
+		}
+	}
 }
