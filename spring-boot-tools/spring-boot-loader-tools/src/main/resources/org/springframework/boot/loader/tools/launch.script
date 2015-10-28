@@ -57,7 +57,7 @@ if [[ -z "$identity" ]]; then
   if [[ -n "$init_script" ]]; then
     identity="${init_script}"
   else
-    identity=$(basename "${jarfile%.*}")_${jar_folder//\//}
+    identity=$(basename "${jarfile%.*}")_${jarfolder//\//}
   fi
 fi
 
