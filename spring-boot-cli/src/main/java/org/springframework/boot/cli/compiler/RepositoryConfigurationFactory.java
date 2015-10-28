@@ -27,6 +27,7 @@ import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.interpolation.Interpolator;
 import org.codehaus.plexus.interpolation.PropertiesBasedValueSource;
 import org.codehaus.plexus.interpolation.RegexBasedInterpolator;
+
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.boot.cli.compiler.maven.MavenSettings;
 import org.springframework.boot.cli.compiler.maven.MavenSettingsReader;
@@ -101,7 +102,8 @@ public final class RepositoryConfigurationFactory {
 	private static String interpolateIfAble(Interpolator interpolator, String value) {
 		try {
 			return interpolator.interpolate(value);
-		} catch (InterpolationException e) {
+		}
+		catch (InterpolationException e) {
 			return value;
 		}
 	}
