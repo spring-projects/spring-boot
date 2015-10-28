@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -122,9 +121,9 @@ public class ResourceServerTokenServicesConfigurationTests {
 	}
 
 	@Test
-	public void userInfoNoClient() {
+	public void userInfoWithClient() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.client.clientId=acme",
+				"security.oauth2.client.client-id=acme",
 				"security.oauth2.resource.userInfoUri:http://example.com",
 				"server.port=-1", "debug=true");
 		this.context = new SpringApplicationBuilder(ResourceNoClientConfiguration.class)

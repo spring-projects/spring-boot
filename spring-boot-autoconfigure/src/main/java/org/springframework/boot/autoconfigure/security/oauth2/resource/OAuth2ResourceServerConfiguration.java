@@ -115,7 +115,7 @@ public class OAuth2ResourceServerConfiguration {
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
 					"security.oauth2.resource.");
 			String client = environment
-					.resolvePlaceholders("${security.oauth2.client.clientId:}");
+					.resolvePlaceholders("${security.oauth2.client.client-id:}");
 			if (StringUtils.hasText(client)) {
 				return ConditionOutcome.match("found client id");
 			}
