@@ -78,14 +78,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, "test.foo:spam");
 		this.context.register(TestConfigurationWithValidatingSetter.class);
-		try {
-			this.context.refresh();
-			fail("Expected exception");
-		}
-		catch (BeanCreationException ex) {
-			BindException bex = (BindException) ex.getRootCause();
-			assertEquals(1, bex.getErrorCount());
-		}
+		assertBindingFailure(1);
 	}
 
 	@Test
@@ -110,28 +103,14 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	public void testValidationWithoutJSR303() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfigurationWithoutJSR303.class);
-		try {
-			this.context.refresh();
-			fail("Expected exception");
-		}
-		catch (BeanCreationException ex) {
-			BindException bex = (BindException) ex.getRootCause();
-			assertEquals(1, bex.getErrorCount());
-		}
+		assertBindingFailure(1);
 	}
 
 	@Test
 	public void testValidationWithJSR303() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfigurationWithJSR303.class);
-		try {
-			this.context.refresh();
-			fail("Expected exception");
-		}
-		catch (BeanCreationException ex) {
-			BindException bex = (BindException) ex.getRootCause();
-			assertEquals(2, bex.getErrorCount());
-		}
+		assertBindingFailure(2);
 	}
 
 	@Test
@@ -159,14 +138,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	public void testValidationWithCustomValidator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfigurationWithCustomValidator.class);
-		try {
-			this.context.refresh();
-			fail("Expected exception");
-		}
-		catch (BeanCreationException ex) {
-			BindException bex = (BindException) ex.getRootCause();
-			assertEquals(1, bex.getErrorCount());
-		}
+		assertBindingFailure(1);
 	}
 
 	@Test
@@ -177,15 +149,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.setEnvironment(env);
 		this.context.register(TestConfigurationWithCustomValidator.class,
 				PropertyWithValidatingSetter.class);
-		try {
-			// PropertyWithValidatingSetter should not use validator
-			this.context.refresh();
-			fail("Expected exception");
-		}
-		catch (BeanCreationException ex) {
-			BindException bex = (BindException) ex.getRootCause();
-			assertEquals(1, bex.getErrorCount());
-		}
+		assertBindingFailure(1);
 	}
 
 	@Test
@@ -294,21 +258,17 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Test
 	public void relaxedPropertyNamesSame() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "test.FOO_BAR:test1");
-		EnvironmentTestUtils.addEnvironment(this.context, "test.FOO_BAR:test2");
-		this.context.register(RelaxedPropertyNames.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(RelaxedPropertyNames.class).getFooBar(),
-				equalTo("test2"));
+		testRelaxedPropertyNames("test.FOO_BAR:test1", "test.FOO_BAR:test2");
 	}
 
 	@Test
 	public void relaxedPropertyNamesMixed() throws Exception {
-		// gh-3385
+		testRelaxedPropertyNames("test.foo-bar:test1", "test.FOO_BAR:test2");
+	}
+
+	private void testRelaxedPropertyNames(String... environment) {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "test.foo-bar:test1");
-		EnvironmentTestUtils.addEnvironment(this.context, "test.FOO_BAR:test2");
+		EnvironmentTestUtils.addEnvironment(this.context, environment);
 		this.context.register(RelaxedPropertyNames.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(RelaxedPropertyNames.class).getFooBar(),
@@ -324,6 +284,17 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(PropertyWithNestedValue.class).getNested()
 				.getValue(), equalTo("test1"));
+	}
+
+	private void assertBindingFailure(int errorCount) {
+		try {
+			this.context.refresh();
+			fail("Expected exception");
+		}
+		catch (BeanCreationException ex) {
+			BindException bex = (BindException) ex.getRootCause();
+			assertEquals(errorCount, bex.getErrorCount());
+		}
 	}
 
 	@Configuration
