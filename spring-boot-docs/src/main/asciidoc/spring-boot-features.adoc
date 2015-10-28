@@ -372,7 +372,7 @@ them using `SpringApplication.setAddCommandLineProperties(false)`.
 `SpringApplication` will load properties from `application.properties` files in the
 following locations and add them to the Spring `Environment`:
 
-. A `/config` subdir of the current directory.
+. A `/config` subdirectory of the current directory.
 . The current directory
 . A classpath `/config` package
 . The classpath root
@@ -605,7 +605,7 @@ case that you need to load values that way, you need to use a properties file.
 
 
 [[boot-features-external-config-typesafe-configuration-properties]]
-=== Typesafe Configuration Properties
+=== Type-safe Configuration Properties
 Using the `@Value("${property}")` annotation to inject configuration properties can
 sometimes be cumbersome, especially if you are working with multiple properties or
 your data is hierarchical in nature. Spring Boot provides an alternative method
@@ -1187,7 +1187,7 @@ attribute if you need to store the property somewhere other than in `local` scop
 
 [source,xml,indent=0]
 ----
-	<springProperty scope="context" name="fluentHost" source="myapp.fulentd.host"/>
+	<springProperty scope="context" name="fluentHost" source="myapp.fluentd.host"/>
 	<appender name="FLUENT" class="ch.qos.logback.more.appenders.DataFluentAppender">
 		<remoteHost>${fluentHost}</remoteHost>
 		...
@@ -1598,7 +1598,7 @@ method:
 [[boot-features-jersey]]
 === JAX-RS and Jersey
 If you prefer the JAX-RS programming model for REST endpoints you can use one of the
-available implementations instead of Spring MVC. Jersey 1.x and Apache Celtix work quite
+available implementations instead of Spring MVC. Jersey 1.x and Apache CXF work quite
 well out of the box if you just register their `Servlet` or `Filter` as a `@Bean` in your
 application context. Jersey 2.x has some native Spring support so we also provide
 auto-configuration support for it in Spring Boot together with a starter.
@@ -1735,7 +1735,7 @@ class for a complete list.
 
 [[boot-features-programmatic-embedded-container-customization]]
 ===== Programmatic customization
-If you need to configure your embdedded servlet container programmatically you can
+If you need to configure your embedded servlet container programmatically you can
 register a Spring bean that implements the `EmbeddedServletContainerCustomizer` interface.
 `EmbeddedServletContainerCustomizer` provides access to the
 `ConfigurableEmbeddedServletContainer` which includes numerous customization setter
@@ -1840,7 +1840,7 @@ The basic features you get out of the box in a web application are:
 
 * An `AuthenticationManager` bean with in-memory store and a single user (see
   `SecurityProperties.User` for the properties of the user).
-* Ignored (unsecure) paths for common static resource locations (`+/css/**+`, `+/js/**+`,
+* Ignored (insecure) paths for common static resource locations (`+/css/**+`, `+/js/**+`,
   `+/images/**+` and `+**/favicon.ico+`).
 * HTTP Basic security for all other endpoints.
 * Security events published to Spring's `ApplicationEventPublisher` (successful and
@@ -1849,7 +1849,7 @@ The basic features you get out of the box in a web application are:
   on by default.
 
 All of the above can be switched on and off or modified using external properties
-(`+security.*+`). To override the access rules without changing any other autoconfigured
+(`+security.*+`). To override the access rules without changing any other auto-configured
 features add a `@Bean` of type `WebSecurityConfigurerAdapter` with
 `@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)`.
 
@@ -1891,7 +1891,7 @@ yourself just add a `@Bean` of type `AuthorizationServerConfigurer`.
 To use the access token you need a Resource Server (which can be the same as the
 Authorization Server). Creating a Resource Server is easy, just add
 `@EnableResourceServer` and provide some configuration to allow the server to decode
-access tokens. If your appplication is also an Authorization Server it already knows how
+access tokens. If your application is also an Authorization Server it already knows how
 to decode tokens, so there is nothing else to do. If your app is a standalone service then you
 need to give it some more configuration, one of the following options:
 
@@ -2068,7 +2068,7 @@ to the home page at "/" and keep the default for everything else:
 === Actuator Security
 If the Actuator is also in use, you will find:
 
-* The management endpoints are secure even if the application endpoints are unsecure.
+* The management endpoints are secure even if the application endpoints are insecure.
 * Security events are transformed into `AuditEvents` and published to the `AuditService`.
 * The default user will have the `ADMIN` role as well as the `USER` role.
 
@@ -2431,7 +2431,7 @@ commercial and open source editions can be used with Spring Boot.
 
 
 === Code Generation
-In oder to use jOOQ type-safe queries, you need to generate Java classes from your
+In order to use jOOQ type-safe queries, you need to generate Java classes from your
 database schema. You can follow the instructions in the
 http://www.jooq.org/doc/3.6/manual-single-page/#jooq-in-7-steps-step3[jOOQ user manual].
 If you are using the `jooq-codegen-maven` plugin (and you also use the
@@ -2749,7 +2749,7 @@ Mongo instance's configuration and logging routing.
 === Gemfire
 https://github.com/spring-projects/spring-data-gemfire[Spring Data Gemfire] provides
 convenient Spring-friendly tools for accessing the
-http://www.gopivotal.com/big-data/pivotal-gemfire#details[Pivotal Gemfire] data management
+http://pivotal.io/big-data/pivotal-gemfire#details[Pivotal Gemfire] data management
 platform. There is a `spring-boot-starter-data-gemfire` '`Starter POM`' for collecting the
 dependencies in a convenient way. There is currently no auto-configuration support for
 Gemfire, but you can enable Spring Data Repositories with a
@@ -4021,7 +4021,7 @@ initialized.
 
 TIP: You should mark the dependencies to the library as optional so that you can include
 the autoconfigure module in your projects more easily. If you do it that way, the library
-won't be provided and Spring Boot will backoff by default.
+won't be provided and Spring Boot will back off by default.
 
 
 
@@ -4056,7 +4056,7 @@ be easily accessed via the `spring-boot-starter-websocket` module.
 If you want to learn more about any of the classes discussed in this section you can
 check out the {dc-root}[Spring Boot API documentation] or you can browse the
 {github-code}[source code directly]. If you have specific questions, take a look at the
-<<howto.aoc#howto, how-to>> section.
+<<howto.adoc#howto, how-to>> section.
 
 If you are comfortable with Spring Boot's core features, you can carry on and read
 about <<production-ready-features.adoc#production-ready, production-ready features>>.
