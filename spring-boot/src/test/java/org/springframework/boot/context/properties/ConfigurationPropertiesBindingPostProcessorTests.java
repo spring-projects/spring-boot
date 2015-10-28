@@ -286,6 +286,17 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 				.getValue(), equalTo("test1"));
 	}
 
+	@Test
+	public void bindWithoutConfigurationPropertiesAnnotation() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
+		this.context.register(ConfigurationPropertiesWithoutAnnotation.class);
+
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("No ConfigurationProperties annotation found");
+		this.context.refresh();
+	}
+
 	private void assertBindingFailure(int errorCount) {
 		try {
 			this.context.refresh();
@@ -664,6 +675,26 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 		}
 
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(PropertyWithoutConfigurationPropertiesAnnotation.class)
+	public static class ConfigurationPropertiesWithoutAnnotation {
+
+
+	}
+
+	public static class PropertyWithoutConfigurationPropertiesAnnotation {
+
+		private String name;
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
 	}
 
 }

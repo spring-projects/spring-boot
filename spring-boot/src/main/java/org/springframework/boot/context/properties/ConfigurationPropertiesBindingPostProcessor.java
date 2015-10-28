@@ -269,7 +269,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			throws BeansException {
 		ConfigurationProperties annotation = AnnotationUtils
 				.findAnnotation(bean.getClass(), ConfigurationProperties.class);
-		if (annotation != null || bean instanceof ConfigurationPropertiesHolder) {
+		if (annotation != null) {
 			postProcessBeforeInitialization(bean, beanName, annotation);
 		}
 		annotation = this.beans.findFactoryAnnotation(beanName,
@@ -288,8 +288,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private void postProcessBeforeInitialization(Object bean, String beanName,
 			ConfigurationProperties annotation) {
-		Object target = (bean instanceof ConfigurationPropertiesHolder
-				? ((ConfigurationPropertiesHolder) bean).getTarget() : bean);
+		Object target = bean;
 		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
 				target);
 		if (annotation != null && annotation.locations().length != 0) {

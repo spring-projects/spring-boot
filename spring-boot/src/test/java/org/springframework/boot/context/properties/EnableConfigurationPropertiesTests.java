@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,13 +47,14 @@ import static org.junit.Assert.assertNotNull;
  * Tests for {@link EnableConfigurationProperties}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class EnableConfigurationPropertiesTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Rule
-	public ExpectedException expected = ExpectedException.none();
+	public ExpectedException thrown = ExpectedException.none();
 
 	@After
 	public void close() {
@@ -158,7 +159,7 @@ public class EnableConfigurationPropertiesTests {
 	public void testExceptionOnValidation() {
 		this.context.register(ExceptionIfInvalidTestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
-		this.expected.expectCause(Matchers.<Throwable>instanceOf(BindException.class));
+		this.thrown.expectCause(Matchers.<Throwable>instanceOf(BindException.class));
 		this.context.refresh();
 	}
 
@@ -211,6 +212,16 @@ public class EnableConfigurationPropertiesTests {
 
 	@Test
 	public void testPropertiesBindingWithoutAnnotation() {
+		this.context.register(InvalidConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
+
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("No ConfigurationProperties annotation found");
+		this.context.refresh();
+	}
+
+	@Test
+	public void testPropertiesBindingWithoutAnnotationValue() {
 		this.context.register(MoreConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.context.refresh();
@@ -548,6 +559,13 @@ public class EnableConfigurationPropertiesTests {
 	protected static class MoreConfiguration {
 	}
 
+
+	@Configuration
+	@EnableConfigurationProperties(InvalidConfiguration.class)
+	protected static class InvalidConfiguration {
+	}
+
+
 	@ConfigurationProperties
 	protected static class NestedProperties {
 
@@ -662,6 +680,7 @@ public class EnableConfigurationPropertiesTests {
 
 	}
 
+	@ConfigurationProperties
 	protected static class MoreProperties {
 
 		private String name;
@@ -671,6 +690,20 @@ public class EnableConfigurationPropertiesTests {
 		}
 
 		// No getter - you should be able to bind to a write-only bean
+	}
+
+	// No annotation
+	protected static class InvalidProperties {
+
+		private String name;
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
 	}
 
 	@ConfigurationProperties(locations = "${binding.location:classpath:name.yml}")
