@@ -459,6 +459,7 @@ can add the following script in `/etc/systemd/system/myapp.service`:
 	[Service]
 	User=myapp
 	ExecStart=/var/myapp/myapp.jar
+	SuccessExitStatus=143
 
 	[Install]
 	WantedBy=multi-user.target
@@ -516,6 +517,12 @@ the default behavior in a script or on the command line:
 |if not empty will set the `-x` flag on the shell process, making it easy to see the logic
  in the script.
 |===
+
+NOTE: The `PID_FOLDER`, `LOG_FOLDER` and `LOG_FILENAME` variables are only valid for an
+`init.d` service. With `systemd` the equivalent customizations are made using '`service`'
+script. Check the
+http://www.freedesktop.org/software/systemd/man/systemd.service.html[service unit
+configuration man page] for more details.
 
 In addition, the following properties can be changed when the script is written by using
 the `embeddedLaunchScriptProperties` option of the Spring Boot Maven or Gradle plugins.
