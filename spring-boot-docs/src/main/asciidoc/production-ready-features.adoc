@@ -1164,7 +1164,7 @@ structure you need on the server. By default it just passes through the metric n
 Open TSDB metric name, and adds the tags "`domain`" (with value
 "`org.springframework.metrics`") and "`process`" (with the value equal to the object hash
 of the naming strategy). Thus, after running the application and generating some metrics
-you can inspect the metrics in the TDB UI (http://localhost:4242 by default).
+you can inspect the metrics in the TSD UI (http://localhost:4242 by default).
 
 Example:
 
