@@ -24,8 +24,8 @@
 	</properties>
 	<modules>
 		<module>spring-boot-deployment-test-glassfish</module>
-		<module>spring-boot-deployment-test-tomcat</module>
 		<module>spring-boot-deployment-test-tomee</module>
+		<module>spring-boot-deployment-test-tomcat</module>
 		<module>spring-boot-deployment-test-wildfly</module>
 	</modules>
 	<build>
