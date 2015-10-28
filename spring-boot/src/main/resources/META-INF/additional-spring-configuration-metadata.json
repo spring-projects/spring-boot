@@ -99,14 +99,14 @@
   {
     "name": "spring.config.name",
     "type": "java.lang.String",
-    "sourceType": "org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor",
+    "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
     "description": "Config file name.",
     "defaultValue": "application"
   },
   {
     "name": "spring.config.location",
     "type": "java.lang.String",
-    "sourceType": "org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor",
+    "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
     "description": "Config file locations."
   },
   {
@@ -145,13 +145,13 @@
   {
     "name": "spring.profiles.active",
     "type": "java.lang.String",
-    "sourceType": "org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor",
+    "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
     "description": "Comma-separated list of active profiles. Can be overridden by a command line switch."
   },
   {
     "name": "spring.profiles.include",
     "type": "java.lang.String",
-    "sourceType": "org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor",
+    "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
     "description": "Unconditionally activate the specified comma separated profiles."
   }
 ],"hints": [
