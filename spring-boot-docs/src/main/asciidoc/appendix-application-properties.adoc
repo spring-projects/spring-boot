@@ -143,7 +143,7 @@ content into your application; rather pick only the properties that you need.
 
 	# ERROR HANDLING ({sc-spring-boot-autoconfigure}/web/ErrorProperties.{sc-ext}[ErrorProperties])
 	server.error.path=/error # the error path
-	server.error.include-stacktrace=never # when to include a stacktrace attribute (never/alway/on-trace-param)
+	server.error.include-stacktrace=never # when to include a stacktrace attribute (never/always/on-trace-param)
 	server.error.whitelabel.enabled=true # enable the default error page displayed in browsers in case of a server error
 
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/WebMvcProperties.{sc-ext}[WebMvcProperties])
