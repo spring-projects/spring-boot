@@ -108,6 +108,8 @@ public class Restarter {
 
 	private final BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<LeakSafeThread>();
 
+	private final RestartListener[] listeners;
+
 	private boolean finished = false;
 
 	private Lock stopLock = new ReentrantLock();
@@ -118,10 +120,11 @@ public class Restarter {
 	 * @param args the application arguments
 	 * @param forceReferenceCleanup if soft/weak reference cleanup should be forced
 	 * @param initializer the restart initializer
+	 * @param listeners listeners to be notified of restarts
 	 * @see #initialize(String[])
 	 */
 	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer) {
+			RestartInitializer initializer, RestartListener... listeners) {
 		Assert.notNull(thread, "Thread must not be null");
 		Assert.notNull(args, "Args must not be null");
 		Assert.notNull(initializer, "Initializer must not be null");
@@ -134,6 +137,7 @@ public class Restarter {
 		this.args = args;
 		this.exceptionHandler = thread.getUncaughtExceptionHandler();
 		this.leakSafeThreads.add(new LeakSafeThread());
+		this.listeners = listeners;
 	}
 
 	private String getMainClassName(Thread thread) {
@@ -246,6 +250,7 @@ public class Restarter {
 
 			@Override
 			public Void call() throws Exception {
+				Restarter.this.beforeRestart();
 				Restarter.this.stop();
 				Restarter.this.start(failureHandler);
 				return null;
@@ -322,6 +327,12 @@ public class Restarter {
 		}
 		System.gc();
 		System.runFinalization();
+	}
+
+	private void beforeRestart() {
+		for (RestartListener listener : this.listeners) {
+			listener.beforeRestart();
+		}
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -512,13 +523,15 @@ public class Restarter {
 	 * @param initializer the restart initializer
 	 * @param restartOnInitialize if the restarter should be restarted immediately when
 	 * the {@link RestartInitializer} returns non {@code null} results
+	 * @param listeners listeners to be notified of restarts
 	 */
 	public static void initialize(String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer, boolean restartOnInitialize) {
+			RestartInitializer initializer, boolean restartOnInitialize,
+			RestartListener... listeners) {
 		if (instance == null) {
 			synchronized (Restarter.class) {
 				instance = new Restarter(Thread.currentThread(), args,
-						forceReferenceCleanup, initializer);
+						forceReferenceCleanup, initializer, listeners);
 			}
 			instance.initialize(restartOnInitialize);
 		}

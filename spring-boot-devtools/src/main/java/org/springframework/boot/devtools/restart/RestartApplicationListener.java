@@ -16,12 +16,15 @@
 
 package org.springframework.boot.devtools.restart;
 
+import java.util.List;
+
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * {@link ApplicationListener} to initialize the {@link Restarter}.
@@ -56,7 +59,11 @@ public class RestartApplicationListener
 			String[] args = event.getArgs();
 			DefaultRestartInitializer initializer = new DefaultRestartInitializer();
 			boolean restartOnInitialize = !AgentReloader.isActive();
-			Restarter.initialize(args, false, initializer, restartOnInitialize);
+			List<RestartListener> restartListeners = SpringFactoriesLoader
+					.loadFactories(RestartListener.class, getClass().getClassLoader());
+			Restarter.initialize(args, false, initializer, restartOnInitialize,
+					restartListeners
+							.toArray(new RestartListener[restartListeners.size()]));
 		}
 		else {
 			Restarter.disable();

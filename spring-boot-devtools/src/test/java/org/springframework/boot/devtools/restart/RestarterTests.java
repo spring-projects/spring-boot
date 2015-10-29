@@ -96,6 +96,7 @@ public class RestarterTests {
 		String output = this.out.toString();
 		assertThat(StringUtils.countOccurrencesOf(output, "Tick 0"), greaterThan(1));
 		assertThat(StringUtils.countOccurrencesOf(output, "Tick 1"), greaterThan(1));
+		assertThat(TestRestartListener.restarts, greaterThan(1));
 	}
 
 	@Test
@@ -214,7 +215,8 @@ public class RestarterTests {
 		}
 
 		public static void main(String... args) {
-			Restarter.initialize(args, false, new MockRestartInitializer());
+			Restarter.initialize(args, false, new MockRestartInitializer(), true,
+					new TestRestartListener());
 			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 					SampleApplication.class);
 			context.registerShutdownHook();
@@ -272,6 +274,17 @@ public class RestarterTests {
 
 		public ClassLoader getRelaunchClassLoader() {
 			return this.relaunchClassLoader;
+		}
+
+	}
+
+	private static class TestRestartListener implements RestartListener {
+
+		private static int restarts;
+
+		@Override
+		public void beforeRestart() {
+			restarts++;
 		}
 
 	}
