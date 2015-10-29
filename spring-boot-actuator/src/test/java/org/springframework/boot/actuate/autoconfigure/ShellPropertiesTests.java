@@ -300,7 +300,7 @@ public class ShellPropertiesTests {
 		Properties p = new Properties();
 		props.applyToCrshShellConfig(p);
 
-		assertEquals("role1, role2", p.get("crash.auth.spring.roles"));
+		assertEquals("role1,role2", p.get("crash.auth.spring.roles"));
 	}
 
 	@Test
