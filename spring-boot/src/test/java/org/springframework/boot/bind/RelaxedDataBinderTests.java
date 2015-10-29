@@ -53,6 +53,7 @@ import org.springframework.validation.DataBinder;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
@@ -671,6 +672,14 @@ public class RelaxedDataBinderTests {
 		result = bind(target, "bingo: The_Other");
 		assertThat(result.getErrorCount(), equalTo(0));
 		assertThat(target.getBingo(), equalTo(Bingo.THE_OTHER));
+
+		result = bind(target, "bingos: The_Other");
+		assertThat(result.getErrorCount(), equalTo(0));
+		assertThat(target.getBingos(), contains(Bingo.THE_OTHER));
+
+		result = bind(target, "bingos: The_Other, that");
+		assertThat(result.getErrorCount(), equalTo(0));
+		assertThat(target.getBingos(), contains(Bingo.THE_OTHER, Bingo.THAT));
 	}
 
 	private BindingResult bind(Object target, String values) throws Exception {
@@ -995,6 +1004,8 @@ public class RelaxedDataBinderTests {
 
 		private Bingo bingo;
 
+		private List<Bingo> bingos;
+
 		public char[] getBar() {
 			return this.bar;
 		}
@@ -1043,6 +1054,13 @@ public class RelaxedDataBinderTests {
 			this.bingo = bingo;
 		}
 
+		public List<Bingo> getBingos() {
+			return this.bingos;
+		}
+
+		public void setBingos(List<Bingo> bingos) {
+			this.bingos = bingos;
+		}
 	}
 
 	enum Bingo {

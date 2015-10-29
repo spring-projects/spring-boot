@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 
@@ -43,6 +45,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
@@ -172,6 +175,24 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValue(),
 				equalTo(FooEnum.FOO));
+		this.context.close();
+	}
+
+	@Test
+	public void testRelaxedPropertyWithSetOfEnum() {
+		doEnumSetTest("test.the-values:foo,bar", FooEnum.FOO, FooEnum.BAR);
+		doEnumSetTest("test.the-values:foo", FooEnum.FOO);
+		doEnumSetTest("TEST_THE_VALUES:FoO", FooEnum.FOO);
+		doEnumSetTest("test_the_values:BaR,FoO", FooEnum.BAR, FooEnum.FOO);
+	}
+
+	private void doEnumSetTest(String property, FooEnum... expected) {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, property);
+		this.context.register(PropertyWithEnum.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValues(),
+				contains(expected));
 		this.context.close();
 	}
 
@@ -524,12 +545,22 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 		private FooEnum theValue;
 
+		private List<FooEnum> theValues;
+
 		public void setTheValue(FooEnum value) {
 			this.theValue = value;
 		}
 
 		public FooEnum getTheValue() {
 			return this.theValue;
+		}
+
+		public List<FooEnum> getTheValues() {
+			return this.theValues;
+		}
+
+		public void setTheValues(List<FooEnum> theValues) {
+			this.theValues = theValues;
 		}
 
 	}
