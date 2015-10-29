@@ -413,7 +413,7 @@ public class JacksonAutoConfigurationTests {
 
 	@Test
 	public void parameterNamesModuleIsAutoConfigured() {
-		assertParameterNamesModuleCreatorBinding(Mode.PROPERTIES,
+		assertParameterNamesModuleCreatorBinding(Mode.DEFAULT,
 				JacksonAutoConfiguration.class);
 	}
 
