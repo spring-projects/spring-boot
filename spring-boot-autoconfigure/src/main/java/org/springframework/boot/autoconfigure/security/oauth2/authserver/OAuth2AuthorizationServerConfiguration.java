@@ -24,7 +24,6 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -44,6 +43,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
@@ -60,7 +60,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 @ConditionalOnClass(EnableAuthorizationServer.class)
 @ConditionalOnMissingBean(AuthorizationServerConfigurer.class)
 @ConditionalOnBean(AuthorizationServerEndpointsConfiguration.class)
-@EnableConfigurationProperties
+@EnableConfigurationProperties(AuthorizationServerProperties.class)
 public class OAuth2AuthorizationServerConfiguration
 		extends AuthorizationServerConfigurerAdapter {
 
@@ -75,6 +75,9 @@ public class OAuth2AuthorizationServerConfiguration
 
 	@Autowired(required = false)
 	private TokenStore tokenStore;
+
+	@Autowired
+	private AuthorizationServerProperties properties;
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -102,6 +105,20 @@ public class OAuth2AuthorizationServerConfiguration
 		}
 		if (this.details.getAuthorizedGrantTypes().contains("password")) {
 			endpoints.authenticationManager(this.authenticationManager);
+		}
+	}
+
+	@Override
+	public void configure(AuthorizationServerSecurityConfigurer security)
+			throws Exception {
+		if (this.properties.getCheckTokenAccess() != null) {
+			security.checkTokenAccess(this.properties.getCheckTokenAccess());
+		}
+		if (this.properties.getTokenKeyAccess() != null) {
+			security.tokenKeyAccess(this.properties.getTokenKeyAccess());
+		}
+		if (this.properties.getRealm() != null) {
+			security.realm(this.properties.getRealm());
 		}
 	}
 
