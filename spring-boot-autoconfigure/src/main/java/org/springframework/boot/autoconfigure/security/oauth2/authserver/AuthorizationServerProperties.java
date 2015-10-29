@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.security.oauth2.authserver;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
+ * Configuration properties for OAuth2 Authorization server.
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties("security.oauth2.authorization")
