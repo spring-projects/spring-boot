@@ -38,7 +38,7 @@ public class SpringApplicationConfigurationXmlConventionConfigurationTests {
 	private String foo;
 
 	@Test
-	public void groovyConfigLoaded() {
+	public void xmlConfigLoaded() {
 		assertThat(this.foo, equalTo("World"));
 	}
 
