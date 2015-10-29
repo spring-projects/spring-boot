@@ -143,13 +143,22 @@ public class OAuth2AutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"security.oauth2.client.clientId:myclientid",
-				"security.oauth2.client.clientSecret:mysecret");
+				"security.oauth2.client.clientSecret:mysecret",
+				"security.oauth2.client.autoApproveScopes:read,write",
+				"security.oauth2.client.accessTokenValiditySeconds:40",
+				"security.oauth2.client.refreshTokenValiditySeconds:80"
+		);
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
 		ClientDetails config = this.context.getBean(ClientDetails.class);
 		assertThat(config.getClientId(), equalTo("myclientid"));
 		assertThat(config.getClientSecret(), equalTo("mysecret"));
+		assertThat(config.isAutoApprove("read"), equalTo(true));
+		assertThat(config.isAutoApprove("write"), equalTo(true));
+		assertThat(config.isAutoApprove("foo"), equalTo(false));
+		assertThat(config.getAccessTokenValiditySeconds(), equalTo(40));
+		assertThat(config.getRefreshTokenValiditySeconds(), equalTo(80));
 		verifyAuthentication(config);
 	}
 
