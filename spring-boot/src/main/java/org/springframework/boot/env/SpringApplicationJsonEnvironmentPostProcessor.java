@@ -53,7 +53,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 	/**
 	 * The default order for the processor.
 	 */
-	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 20;
+	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 5;
 
 	private int order = DEFAULT_ORDER;
 
