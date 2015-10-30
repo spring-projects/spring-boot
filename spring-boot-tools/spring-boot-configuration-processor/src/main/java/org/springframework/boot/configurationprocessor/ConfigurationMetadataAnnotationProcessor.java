@@ -204,9 +204,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				.entrySet()) {
 			String name = entry.getKey();
 			ExecutableElement getter = entry.getValue();
-			ExecutableElement setter = members.getPublicSetters().get(name);
-			VariableElement field = members.getFields().get(name);
 			TypeMirror returnType = getter.getReturnType();
+			ExecutableElement setter = members.getPublicSetter(name, returnType);
+			VariableElement field = members.getFields().get(name);
 			Element returnTypeElement = this.processingEnv.getTypeUtils()
 					.asElement(returnType);
 			boolean isExcluded = this.typeExcludeFilter.isExcluded(returnType);

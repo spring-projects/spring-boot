@@ -125,6 +125,9 @@ public final class ConfigurationMetadataMatchers {
 					&& !this.description.equals(itemMetadata.getDescription())) {
 				return false;
 			}
+			if (this.deprecation == null && itemMetadata.getDeprecation() != null) {
+				return false;
+			}
 			if (this.deprecation != null
 					&& !this.deprecation.equals(itemMetadata.getDeprecation())) {
 				return false;
@@ -198,6 +201,11 @@ public final class ConfigurationMetadataMatchers {
 			return new ContainsItemMatcher(this.itemType, this.name, this.type,
 					this.sourceType, this.description, this.defaultValue,
 					new ItemDeprecation(reason, replacement));
+		}
+
+		public ContainsItemMatcher withNoDeprecation() {
+			return new ContainsItemMatcher(this.itemType, this.name, this.type,
+					this.sourceType, this.description, this.defaultValue, null);
 		}
 
 		private ItemMetadata getFirstItemWithName(ConfigurationMetadata metadata,

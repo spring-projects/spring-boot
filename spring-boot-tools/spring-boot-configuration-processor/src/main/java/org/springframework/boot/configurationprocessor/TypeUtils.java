@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import javax.lang.model.util.Types;
 class TypeUtils {
 
 	private static final Map<TypeKind, Class<?>> PRIMITIVE_WRAPPERS;
+	private static final Map<String, TypeKind> WRAPPER_TO_PRIMITIVE;
 
 	static {
 		Map<TypeKind, Class<?>> wrappers = new HashMap<TypeKind, Class<?>>();
@@ -52,6 +53,17 @@ class TypeUtils {
 		wrappers.put(TypeKind.LONG, Long.class);
 		wrappers.put(TypeKind.SHORT, Short.class);
 		PRIMITIVE_WRAPPERS = Collections.unmodifiableMap(wrappers);
+
+		Map<String, TypeKind> primitives = new HashMap<String, TypeKind>();
+		primitives.put(Boolean.class.getName(), TypeKind.BOOLEAN);
+		primitives.put(Byte.class.getName(), TypeKind.BYTE);
+		primitives.put(Character.class.getName(), TypeKind.CHAR);
+		primitives.put(Double.class.getName(), TypeKind.DOUBLE);
+		primitives.put(Float.class.getName(), TypeKind.FLOAT);
+		primitives.put(Integer.class.getName(), TypeKind.INT);
+		primitives.put(Long.class.getName(), TypeKind.LONG);
+		primitives.put(Short.class.getName(), TypeKind.SHORT);
+		WRAPPER_TO_PRIMITIVE = primitives;
 	}
 
 	private final ProcessingEnvironment env;
@@ -79,7 +91,7 @@ class TypeUtils {
 		if (type == null) {
 			return null;
 		}
-		Class<?> wrapper = PRIMITIVE_WRAPPERS.get(type.getKind());
+		Class<?> wrapper = getWrapperFor(type);
 		if (wrapper != null) {
 			return wrapper.getName();
 		}
@@ -99,6 +111,7 @@ class TypeUtils {
 				|| this.env.getTypeUtils().isAssignable(type, this.mapType);
 	}
 
+
 	public boolean isEnclosedIn(Element candidate, TypeElement element) {
 		if (candidate == null || element == null) {
 			return false;
@@ -116,6 +129,26 @@ class TypeUtils {
 			javadoc = javadoc.trim();
 		}
 		return ("".equals(javadoc) ? null : javadoc);
+	}
+
+	public TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
+		Class<?> candidate = getWrapperFor(typeMirror);
+		if (candidate != null) {
+			return this.env.getElementUtils().getTypeElement(candidate.getName()).asType();
+		}
+		TypeKind primitiveKind = getPrimitiveFor(typeMirror);
+		if (primitiveKind != null) {
+			return this.env.getTypeUtils().getPrimitiveType(primitiveKind);
+		}
+		return null;
+	}
+
+	private Class<?> getWrapperFor(TypeMirror type) {
+		return PRIMITIVE_WRAPPERS.get(type.getKind());
+	}
+
+	private TypeKind getPrimitiveFor(TypeMirror type) {
+		return WRAPPER_TO_PRIMITIVE.get(type.toString());
 	}
 
 }

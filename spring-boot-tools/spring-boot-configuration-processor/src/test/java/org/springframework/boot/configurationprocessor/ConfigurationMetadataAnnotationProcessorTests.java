@@ -51,7 +51,9 @@ import org.springframework.boot.configurationsample.simple.SimpleCollectionPrope
 import org.springframework.boot.configurationsample.simple.SimplePrefixValueProperties;
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
 import org.springframework.boot.configurationsample.simple.SimpleTypeProperties;
+import org.springframework.boot.configurationsample.specific.BoxingPojo;
 import org.springframework.boot.configurationsample.specific.BuilderPojo;
+import org.springframework.boot.configurationsample.specific.DeprecatedUnrelatedMethodPojo;
 import org.springframework.boot.configurationsample.specific.ExcludedTypesPojo;
 import org.springframework.boot.configurationsample.specific.InnerClassAnnotatedGetterConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
@@ -195,6 +197,30 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata,
 				containsProperty("singledeprecated.name", String.class).fromSource(type)
 						.withDeprecation("renamed", "singledeprecated.new-name"));
+	}
+
+	@Test
+	public void deprecatedOnUnrelatedSetter() throws Exception {
+		Class<?> type = DeprecatedUnrelatedMethodPojo.class;
+		ConfigurationMetadata metadata = compile(type);
+		assertThat(metadata, containsGroup("not.deprecated").fromSource(type));
+		assertThat(metadata, containsProperty("not.deprecated.counter", Integer.class)
+				.withNoDeprecation()
+				.fromSource(type));
+		assertThat(metadata, containsProperty("not.deprecated.flag", Boolean.class)
+				.withNoDeprecation()
+				.fromSource(type));
+	}
+
+	@Test
+	public void boxingOnSetter() throws IOException {
+		Class<?> type = BoxingPojo.class;
+		ConfigurationMetadata metadata = compile(type);
+		assertThat(metadata, containsGroup("boxing").fromSource(type));
+		assertThat(metadata, containsProperty("boxing.flag", Boolean.class)
+				.fromSource(type));
+		assertThat(metadata, containsProperty("boxing.counter", Integer.class)
+				.fromSource(type));
 	}
 
 	@Test
@@ -343,7 +369,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata,
 				containsProperty("simple.flag", Boolean.class)
 						.fromSource(SimpleProperties.class)
-						.withDescription("A simple flag.").withDefaultValue(is(true)));
+						.withDescription("A simple flag.")
+						.withDeprecation(null, null)
+						.withDefaultValue(is(true)));
 		assertThat(metadata.getItems().size(), is(4));
 	}
 
