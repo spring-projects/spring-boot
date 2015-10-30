@@ -122,7 +122,8 @@ start() {
 }
 
 do_start() {
-  pushd $(dirname "$jarfile") > /dev/null
+  working_dir=$(dirname "$jarfile")
+  pushd "$working_dir" > /dev/null
   if [[ -n "$run_user" ]]; then
     mkdir "$PID_FOLDER" &> /dev/null
     checkPermissions || return $?
@@ -136,6 +137,7 @@ do_start() {
         --make-pidfile --pidfile $pid_file \
         --background --no-close \
         --startas $javaexe \
+        --chdir "$working_dir"
         -- \
         -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS \
         -jar $jarfile $RUN_ARGS "$@" \
