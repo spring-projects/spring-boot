@@ -39,7 +39,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -49,6 +48,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 import org.springframework.security.web.header.writers.HstsHeaderWriter;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -147,13 +147,14 @@ public class SpringBootWebSecurityConfiguration {
 
 		@Override
 		public void init(WebSecurity builder) throws Exception {
-			IgnoredRequestConfigurer ignoring = builder.ignoring();
 			List<String> ignored = getIgnored(this.security);
 			if (this.errorController != null) {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
 			String[] paths = this.server.getPathsArray(ignored);
-			ignoring.antMatchers(paths);
+			if (!ObjectUtils.isEmpty(paths)) {
+				builder.ignoring().antMatchers(paths);
+			}
 		}
 
 		private String normalizePath(String errorPath) {

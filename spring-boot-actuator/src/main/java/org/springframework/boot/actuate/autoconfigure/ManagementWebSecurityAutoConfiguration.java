@@ -69,6 +69,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -163,7 +164,9 @@ public class ManagementWebSecurityAutoConfiguration {
 			}
 			if (this.server != null) {
 				String[] paths = this.server.getPathsArray(ignored);
-				ignoring.antMatchers(paths);
+				if (!ObjectUtils.isEmpty(paths)) {
+					ignoring.antMatchers(paths);
+				}
 			}
 		}
 

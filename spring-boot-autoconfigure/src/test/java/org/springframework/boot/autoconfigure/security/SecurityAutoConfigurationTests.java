@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.security;
 
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Test;
 
@@ -56,7 +54,6 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.FilterChainProxy;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
@@ -91,10 +88,9 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
-		// 5 for static resources and one for the rest
-		List<SecurityFilterChain> filterChains = this.context
-				.getBean(FilterChainProxy.class).getFilterChains();
-		assertEquals(5, filterChains.size());
+		// 4 for static resources and one for the rest
+		assertEquals(5,
+				this.context.getBean(FilterChainProxy.class).getFilterChains().size());
 	}
 
 	@Test
@@ -165,7 +161,7 @@ public class SecurityAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
 		this.context.refresh();
 		// Just the application endpoints now
-		assertEquals(2,
+		assertEquals(1,
 				this.context.getBean(FilterChainProxy.class).getFilterChains().size());
 	}
 
