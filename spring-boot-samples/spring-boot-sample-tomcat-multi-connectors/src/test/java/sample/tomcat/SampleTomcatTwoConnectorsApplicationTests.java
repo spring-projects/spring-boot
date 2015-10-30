@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,9 +46,10 @@ import org.springframework.web.client.RestTemplate;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Basic integration tests for 2 connector demo application.
+ * Basic integration tests for {@link SampleTomcatTwoConnectorsApplication}.
  *
  * @author Brock Mills
+ * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleTomcatTwoConnectorsApplication.class)
@@ -109,14 +110,14 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 				});
 		template.setRequestFactory(factory);
 
-		ResponseEntity<String> entity = template
-				.getForEntity("http://localhost:" + this.port + "/hello", String.class);
+		ResponseEntity<String> entity = template.getForEntity(
+				"http://localhost:" + this.context.getBean("port") + "/hello",
+				String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("hello", entity.getBody());
 
-		ResponseEntity<String> httpsEntity = template.getForEntity(
-				"https://localhost:" + this.context.getBean("port") + "/hello",
-				String.class);
+		ResponseEntity<String> httpsEntity = template
+				.getForEntity("https://localhost:" + this.port + "/hello", String.class);
 		assertEquals(HttpStatus.OK, httpsEntity.getStatusCode());
 		assertEquals("hello", httpsEntity.getBody());
 
