@@ -144,7 +144,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
 		this.context.refresh();
 		// Just the application and management endpoints now
-		assertEquals(2,
+		assertEquals(3,
 				this.context.getBean(FilterChainProxy.class).getFilterChains().size());
 	}
 
