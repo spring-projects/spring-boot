@@ -119,7 +119,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 				(long) threadMxBean.getPeakThreadCount()));
 		result.add(new Metric<Long>("threads.daemon",
 				(long) threadMxBean.getDaemonThreadCount()));
-        result.add(new Metric<Long>("threads.totalStarted",
+		result.add(new Metric<Long>("threads.totalStarted",
                  threadMxBean.getTotalStartedThreadCount()));
 		result.add(new Metric<Long>("threads", (long) threadMxBean.getThreadCount()));
 	}
