@@ -291,6 +291,7 @@ Spring Boot uses a very particular `PropertySource` order that is designed to al
 sensible overriding of values, properties are considered in the following order:
 
 . Command line arguments.
+. Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment variable or system property)
 . JNDI attributes from `java:comp/env`.
 . Java System properties (`System.getProperties()`).
 . OS environment variables.
@@ -333,6 +334,33 @@ default `name`. When running in production, an `application.properties` can be p
 outside of your jar that overrides `name`; and for one-off testing, you can launch with
 a specific command line switch (e.g. `java -jar app.jar --name="Spring"`).
 
+[TIP]
+====
+
+The `SPRING_APPLICATION_JSON` properties can be supplied on the
+command line with an environment variable. For example in a
+UN{asterisk}X shell:
+
+----
+$ SPRING_APPLICATION_JSON='{"foo":{"bar":"spam"}}' java -jar myapp.jar
+----
+
+In this example you will end up with `foo.bar=spam` in the Spring
+`Environment`. You can also supply the JSON as
+`spring.application.json` in a System variable:
+
+----
+$ java -Dspring.application.json='{"foo":"bar"}' -jar myapp.jar
+----
+
+or command line argument:
+
+----
+$ java -jar myapp.jar --spring.application.json='{"foo":"bar"}'
+----
+
+or as a JNDI variable `java:comp/env/spring.application.json`.
+====
 
 
 [[boot-features-external-config-random-values]]
