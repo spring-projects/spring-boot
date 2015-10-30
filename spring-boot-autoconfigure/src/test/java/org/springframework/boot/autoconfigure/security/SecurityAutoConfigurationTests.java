@@ -165,7 +165,7 @@ public class SecurityAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
 		this.context.refresh();
 		// Just the application endpoints now
-		assertEquals(1,
+		assertEquals(2,
 				this.context.getBean(FilterChainProxy.class).getFilterChains().size());
 	}
 
