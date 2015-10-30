@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.bind;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -126,6 +129,21 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 			throws IllegalArgumentException {
 		throw new UnsupportedOperationException(
 				"Unable to resolve placeholders with relaxed properties");
+	}
+
+	/**
+	 * Return the property values associated with the given key, or an empty
+	 * list if the key cannot be resolved.
+	 * @param key the property name to resolve
+	 * @return the property values for that key
+	 */
+	public List<Object> getProperties(String key) {
+		Object[] singular = getProperty(key, Object[].class);
+		if (singular != null) {
+			return Arrays.asList(singular);
+		}
+		Map<String, Object> subProperties = getSubProperties(key);
+		return new ArrayList<Object>(subProperties.values());
 	}
 
 	/**

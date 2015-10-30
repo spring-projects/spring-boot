@@ -45,7 +45,7 @@
   },
   {
     "name": "spring.autoconfigure.exclude",
-    "type": "java.lang.Class[]",
+    "type": "java.util.List<java.lang.Class>",
     "description": "Auto-configuration classes to exclude."
   },
   {

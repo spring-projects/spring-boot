@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.bind;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -30,6 +31,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.StandardEnvironment;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
@@ -39,6 +41,7 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link RelaxedPropertyResolver}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class RelaxedPropertyResolverTests {
 
@@ -164,6 +167,34 @@ public class RelaxedPropertyResolverTests {
 		assertThat(this.resolver.containsProperty("b"), equalTo(true));
 		assertThat(this.resolver.getProperty("b"), equalTo("test"));
 		assertThat(this.resolver.getProperty("foo-bar"), equalTo("spam"));
+	}
+
+	@Test
+	public void commaSeparatedProperties() throws Exception {
+		this.source.put("x.y.foo", "1,2");
+		this.resolver = new RelaxedPropertyResolver(this.environment, "x.y.");
+		List<Object> properties = this.resolver.getProperties("foo");
+		assertThat(properties.size(), equalTo(2));
+		assertThat(properties, contains((Object) "1", (Object) "2"));
+	}
+
+	@Test
+	public void commaSeparatedPropertiesSingleValue() throws Exception {
+		this.source.put("x.y.foo", "1");
+		this.resolver = new RelaxedPropertyResolver(this.environment, "x.y.");
+		List<Object> properties = this.resolver.getProperties("foo");
+		assertThat(properties.size(), equalTo(1));
+		assertThat(properties, contains((Object) "1"));
+	}
+
+	@Test
+	public void indexedProperties() throws Exception {
+		this.source.put("x.y.foo[0]", "1");
+		this.source.put("x.y.foo[1]", "2");
+		this.resolver = new RelaxedPropertyResolver(this.environment, "x.y.");
+		List<Object> properties = this.resolver.getProperties("foo");
+		assertThat(properties.size(), equalTo(2));
+		assertThat(properties, contains((Object) "1", (Object) "2"));
 	}
 
 	@Test

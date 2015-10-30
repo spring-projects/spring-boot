@@ -153,8 +153,12 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 	private List<String> getExcludeAutoConfigurationsProperty() {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(getEnvironment(),
 				"spring.autoconfigure.");
-		String[] exclude = resolver.getProperty("exclude", String[].class);
-		return (Arrays.asList(exclude == null ? new String[0] : exclude));
+		Collection<Object> raw = resolver.getProperties("exclude");
+		List<String> values = new ArrayList<String>();
+		for (Object r : raw) {
+			values.add(r.toString());
+		}
+		return values;
 	}
 
 	private List<String> sort(List<String> configurations) throws IOException {

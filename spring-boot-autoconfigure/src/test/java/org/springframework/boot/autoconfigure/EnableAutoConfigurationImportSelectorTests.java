@@ -135,6 +135,21 @@ public class EnableAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
+	public void severalPropertyYamlExclusionsAreApplied() {
+		configureExclusions(new String[0], new String[0], new String[0]);
+		this.environment.setProperty("spring.autoconfigure.exclude[0]",
+				FreeMarkerAutoConfiguration.class.getName());
+		this.environment.setProperty("spring.autoconfigure.exclude[1]",
+				VelocityAutoConfiguration.class.getName());
+		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
+		assertThat(imports.length,
+				is(equalTo(getAutoConfigurationClassNames().size() - 2)));
+		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions(),
+				containsInAnyOrder(FreeMarkerAutoConfiguration.class.getName(),
+						VelocityAutoConfiguration.class.getName()));
+	}
+
+	@Test
 	public void combinedExclusionsAreApplied() {
 		configureExclusions(new String[] { VelocityAutoConfiguration.class.getName() },
 				new String[] { FreeMarkerAutoConfiguration.class.getName() },
