@@ -329,10 +329,13 @@ To provide a concrete example, suppose you develop a `@Component` that uses a
 	}
 ----
 
-You can bundle an `application.properties` inside your jar that provides a sensible
-default `name`. When running in production, an `application.properties` can be provided
-outside of your jar that overrides `name`; and for one-off testing, you can launch with
-a specific command line switch (e.g. `java -jar app.jar --name="Spring"`).
+On your application classpath (e.g. inside your jar) you can have an
+`application.properties` that provides a sensible default property
+value for `name`. When running in a new environment, an
+`application.properties` can be provided outside of your jar that
+overrides the `name`; and for one-off testing, you can launch with a
+specific command line switch (e.g. `java -jar app.jar
+--name="Spring"`).
 
 [TIP]
 ====
