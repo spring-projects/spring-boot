@@ -17,7 +17,6 @@
 package org.springframework.boot.bind;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -31,7 +30,6 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.StandardEnvironment;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
@@ -167,34 +165,6 @@ public class RelaxedPropertyResolverTests {
 		assertThat(this.resolver.containsProperty("b"), equalTo(true));
 		assertThat(this.resolver.getProperty("b"), equalTo("test"));
 		assertThat(this.resolver.getProperty("foo-bar"), equalTo("spam"));
-	}
-
-	@Test
-	public void commaSeparatedProperties() throws Exception {
-		this.source.put("x.y.foo", "1,2");
-		this.resolver = new RelaxedPropertyResolver(this.environment, "x.y.");
-		List<Object> properties = this.resolver.getProperties("foo");
-		assertThat(properties.size(), equalTo(2));
-		assertThat(properties, contains((Object) "1", (Object) "2"));
-	}
-
-	@Test
-	public void commaSeparatedPropertiesSingleValue() throws Exception {
-		this.source.put("x.y.foo", "1");
-		this.resolver = new RelaxedPropertyResolver(this.environment, "x.y.");
-		List<Object> properties = this.resolver.getProperties("foo");
-		assertThat(properties.size(), equalTo(1));
-		assertThat(properties, contains((Object) "1"));
-	}
-
-	@Test
-	public void indexedProperties() throws Exception {
-		this.source.put("x.y.foo[0]", "1");
-		this.source.put("x.y.foo[1]", "2");
-		this.resolver = new RelaxedPropertyResolver(this.environment, "x.y.");
-		List<Object> properties = this.resolver.getProperties("foo");
-		assertThat(properties.size(), equalTo(2));
-		assertThat(properties, contains((Object) "1", (Object) "2"));
 	}
 
 	@Test
