@@ -52,6 +52,7 @@ public class SystemPublicMetricsTests {
 
 		assertTrue(results.containsKey("threads.peak"));
 		assertTrue(results.containsKey("threads.daemon"));
+		assertTrue(results.containsKey("threads.totalStarted"));
 		assertTrue(results.containsKey("threads"));
 
 		assertTrue(results.containsKey("classes.loaded"));
