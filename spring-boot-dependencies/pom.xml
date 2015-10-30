@@ -93,7 +93,7 @@
 		<javax-mail.version>1.5.4</javax-mail.version>
 		<javax-transaction.version>1.2</javax-transaction.version>
 		<jaxen.version>1.1.6</jaxen.version>
-		<jaybird.version>2.2.8</jaybird.version>
+		<jaybird.version>2.2.9</jaybird.version>
 		<jboss-logging.version>3.3.0.Final</jboss-logging.version>
 		<jdom2.version>2.0.6</jdom2.version>
 		<jedis.version>2.7.3</jedis.version>
