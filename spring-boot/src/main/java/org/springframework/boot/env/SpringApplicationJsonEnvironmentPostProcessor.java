@@ -96,6 +96,8 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 
 	/**
 	 * Flatten the map keys using period separator.
+	 * @param map The map that should be flattened
+	 * @return the flattened map
 	 */
 	private Map<String, Object> flatten(Map<String, Object> map) {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
