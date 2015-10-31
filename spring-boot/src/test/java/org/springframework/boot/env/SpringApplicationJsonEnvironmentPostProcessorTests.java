@@ -95,4 +95,22 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 		assertEquals("spam", this.environment.resolvePlaceholders("${foo.bar:}"));
 	}
 
+	@Test
+	public void list() {
+		assertEquals("", this.environment.resolvePlaceholders("${foo[1]:}"));
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"SPRING_APPLICATION_JSON={\"foo\":[\"bar\",\"spam\"]}");
+		this.processor.postProcessEnvironment(this.environment, null);
+		assertEquals("spam", this.environment.resolvePlaceholders("${foo[1]:}"));
+	}
+
+	@Test
+	public void listOfObject() {
+		assertEquals("", this.environment.resolvePlaceholders("${foo[0].bar:}"));
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"SPRING_APPLICATION_JSON={\"foo\":[{\"bar\":\"spam\"}]}");
+		this.processor.postProcessEnvironment(this.environment, null);
+		assertEquals("spam", this.environment.resolvePlaceholders("${foo[0].bar:}"));
+	}
+
 }

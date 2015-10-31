@@ -16,6 +16,7 @@
 
 package org.springframework.boot.env;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -116,14 +117,27 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 		for (String key : map.keySet()) {
 			String name = prefix + key;
 			Object value = map.get(key);
-			if (value instanceof Map) {
-				@SuppressWarnings("unchecked")
-				Map<String, Object> nested = (Map<String, Object>) value;
-				flatten(name, result, nested);
+			extract(name, result, value);
+		}
+	}
+
+	private void extract(String name, Map<String, Object> result, Object value) {
+		if (value instanceof Map) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> nested = (Map<String, Object>) value;
+			flatten(name, result, nested);
+		}
+		if (value instanceof Collection) {
+			@SuppressWarnings("unchecked")
+			Collection<Object> nested = (Collection<Object>) value;
+			int index = 0;
+			for (Object object : nested) {
+				extract(name + "[" + index + "]", result, object);
+				index++;
 			}
-			else {
-				result.put(name, value);
-			}
+		}
+		else {
+			result.put(name, value);
 		}
 	}
 
