@@ -1155,9 +1155,9 @@ recommendations.
 
 [[production-ready-metric-writers-export-to-open-tsdb]]
 ==== Example: Export to Open TSDB
-If you provide a `@Bean` of type `OpenTsdbMetricWriter` and mark it
+If you provide a `@Bean` of type `OpenTsdbGaugeWriter` and mark it
 `@ExportMetricWriter` metrics are exported to http://opentsdb.net/[Open TSDB] for
-aggregation. The `OpenTsdbMetricWriter` has a `url` property that you need to set
+aggregation. The `OpenTsdbGaugeWriter` has a `url` property that you need to set
 to the Open TSDB "`/put`" endpoint, e.g. `http://localhost:4242/api/put`). It also has a
 `namingStrategy` that you can customize or configure to make the metrics match the data
 structure you need on the server. By default it just passes through the metric name as an
