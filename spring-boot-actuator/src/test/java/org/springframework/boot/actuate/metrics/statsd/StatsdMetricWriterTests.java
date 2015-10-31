@@ -71,7 +71,7 @@ public class StatsdMetricWriterTests {
 		this.writer.set(new Metric<Double>("gauge.foo", 3.7));
 		this.server.waitForMessage();
 		// Doubles are truncated
-		assertEquals("me.gauge.foo:3|g", this.server.messagesReceived().get(0));
+		assertEquals("me.gauge.foo:3.7|g", this.server.messagesReceived().get(0));
 	}
 
 	@Test

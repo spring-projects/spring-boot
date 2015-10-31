@@ -82,15 +82,18 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 			this.client.recordExecutionTime(name, value.getValue().longValue());
 		}
 		else {
-			this.client.gauge(name, value.getValue().longValue());
+			if (name.contains("counter.")) {
+				this.client.count(name, value.getValue().longValue());
+			}
+			else {
+				this.client.gauge(name, value.getValue().doubleValue());
+			}
 		}
 	}
 
 	@Override
 	public void reset(String name) {
-		if (name.contains("counter.")) {
-			this.client.gauge(name, 0L);
-		}
+		// Not implemented
 	}
 
 	@Override

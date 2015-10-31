@@ -19,10 +19,16 @@ package org.springframework.boot.actuate.metrics.writer;
 import org.springframework.boot.actuate.metrics.Metric;
 
 /**
- * Basic strategy for write operations on {@link Metric} data.
+ * Writer for gauge values (simple metric with a number value).
  *
  * @author Dave Syer
  */
-public interface MetricWriter extends GaugeWriter, CounterWriter {
+public interface GaugeWriter {
+
+	/**
+	 * Set the value of a metric.
+	 * @param value the value
+	 */
+	void set(Metric<?> value);
 
 }

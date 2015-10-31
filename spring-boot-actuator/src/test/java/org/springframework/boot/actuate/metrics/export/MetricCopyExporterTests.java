@@ -22,6 +22,8 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
+import org.springframework.boot.actuate.metrics.writer.Delta;
+import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 
 import static org.junit.Assert.assertEquals;
 
@@ -44,6 +46,29 @@ public class MetricCopyExporterTests {
 		this.reader.set(new Metric<Number>("foo", 2.3));
 		this.exporter.export();
 		assertEquals(1, this.writer.count());
+	}
+
+	@Test
+	public void counter() {
+		this.reader.increment(new Delta<Number>("counter.foo", 2));
+		this.exporter.export();
+		assertEquals(1, this.writer.count());
+		this.reader.increment(new Delta<Number>("counter.foo", 3));
+		this.exporter.export();
+		this.exporter.flush();
+		assertEquals(5L, this.writer.findOne("counter.foo").getValue());
+	}
+
+	@Test
+	public void counterWithGaugeWriter() {
+		SimpleGaugeWriter writer = new SimpleGaugeWriter();
+		MetricCopyExporter exporter = new MetricCopyExporter(this.reader, writer);
+		this.reader.increment(new Delta<Number>("counter.foo", 2));
+		exporter.export();
+		this.reader.increment(new Delta<Number>("counter.foo", 3));
+		exporter.export();
+		exporter.flush();
+		assertEquals(5L, writer.getValue().getValue());
 	}
 
 	@Test
@@ -88,6 +113,21 @@ public class MetricCopyExporterTests {
 		this.exporter.setEarliestTimestamp(new Date(System.currentTimeMillis() + 10000));
 		this.exporter.export();
 		assertEquals(1, this.writer.count());
+	}
+
+	private static class SimpleGaugeWriter implements GaugeWriter {
+
+		private Metric<?> value;
+
+		@Override
+		public void set(Metric<?> value) {
+			this.value = value;
+		}
+
+		public Metric<?> getValue() {
+			return this.value;
+		}
+
 	}
 
 }

@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.writer.Delta;
+import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -48,7 +48,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Thomas Badie
  * @since 1.3.0
  */
-public class OpenTsdbMetricWriter implements MetricWriter {
+public class OpenTsdbMetricWriter implements GaugeWriter {
 
 	private static final Log logger = LogFactory.getLog(OpenTsdbMetricWriter.class);
 
@@ -100,11 +100,6 @@ public class OpenTsdbMetricWriter implements MetricWriter {
 	}
 
 	@Override
-	public void increment(Delta<?> delta) {
-		throw new UnsupportedOperationException("Counters not supported via increment");
-	}
-
-	@Override
 	public void set(Metric<?> value) {
 		OpenTsdbData data = new OpenTsdbData(this.namingStrategy.getName(value.getName()),
 				value.getValue(), value.getTimestamp().getTime());
@@ -145,11 +140,6 @@ public class OpenTsdbMetricWriter implements MetricWriter {
 			this.buffer.clear();
 			return snapshot;
 		}
-	}
-
-	@Override
-	public void reset(String metricName) {
-		set(new Metric<Long>(metricName, 0L));
 	}
 
 }
