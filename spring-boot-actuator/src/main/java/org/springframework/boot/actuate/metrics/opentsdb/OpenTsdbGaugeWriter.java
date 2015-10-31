@@ -27,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
-import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -37,7 +36,7 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * A {@link MetricWriter} for the Open TSDB database (version 2.0), writing metrics to the
+ * A {@link GaugeWriter} for the Open TSDB database (version 2.0), writing metrics to the
  * HTTP endpoint provided by the server. Data are buffered according to the
  * {@link #setBufferSize(int) bufferSize} property, and only flushed automatically when
  * the buffer size is reached. Users should either manually {@link #flush()} after writing
@@ -48,9 +47,9 @@ import org.springframework.web.client.RestTemplate;
  * @author Thomas Badie
  * @since 1.3.0
  */
-public class OpenTsdbMetricWriter implements GaugeWriter {
+public class OpenTsdbGaugeWriter implements GaugeWriter {
 
-	private static final Log logger = LogFactory.getLog(OpenTsdbMetricWriter.class);
+	private static final Log logger = LogFactory.getLog(OpenTsdbGaugeWriter.class);
 
 	private RestOperations restTemplate = new RestTemplate();
 

@@ -34,19 +34,19 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link OpenTsdbMetricWriter}.
+ * Tests for {@link OpenTsdbGaugeWriter}.
  *
  * @author Dave Syer
  */
-public class OpenTsdbMetricWriterTests {
+public class OpenTsdbGaugeWriterTests {
 
-	private OpenTsdbMetricWriter writer;
+	private OpenTsdbGaugeWriter writer;
 
 	private RestOperations restTemplate = Mockito.mock(RestOperations.class);
 
 	@Before
 	public void init() {
-		this.writer = new OpenTsdbMetricWriter();
+		this.writer = new OpenTsdbGaugeWriter();
 		this.writer.setRestTemplate(this.restTemplate);
 	}
 
