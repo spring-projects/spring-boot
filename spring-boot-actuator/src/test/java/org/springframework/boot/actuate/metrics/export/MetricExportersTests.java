@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
+import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
@@ -41,7 +42,7 @@ public class MetricExportersTests {
 
 	private MetricExportProperties export = new MetricExportProperties();
 
-	private Map<String, MetricWriter> writers = new LinkedHashMap<String, MetricWriter>();
+	private Map<String, GaugeWriter> writers = new LinkedHashMap<String, GaugeWriter>();
 
 	private MetricReader reader = Mockito.mock(MetricReader.class);
 

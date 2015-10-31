@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
-import org.springframework.boot.actuate.metrics.writer.MetricWriter;
+import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.IntervalTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
@@ -36,7 +36,7 @@ public class MetricExporters implements SchedulingConfigurer {
 
 	private MetricReader reader;
 
-	private Map<String, MetricWriter> writers = new HashMap<String, MetricWriter>();
+	private Map<String, GaugeWriter> writers = new HashMap<String, GaugeWriter>();
 
 	private final MetricExportProperties properties;
 
@@ -50,7 +50,7 @@ public class MetricExporters implements SchedulingConfigurer {
 		this.reader = reader;
 	}
 
-	public void setWriters(Map<String, MetricWriter> writers) {
+	public void setWriters(Map<String, GaugeWriter> writers) {
 		this.writers.putAll(writers);
 	}
 
@@ -71,9 +71,9 @@ public class MetricExporters implements SchedulingConfigurer {
 				taskRegistrar.addFixedDelayTask(task);
 			}
 		}
-		for (Entry<String, MetricWriter> entry : this.writers.entrySet()) {
+		for (Entry<String, GaugeWriter> entry : this.writers.entrySet()) {
 			String name = entry.getKey();
-			MetricWriter writer = entry.getValue();
+			GaugeWriter writer = entry.getValue();
 			TriggerProperties trigger = this.properties.findTrigger(name);
 			if (trigger != null) {
 				MetricCopyExporter exporter = getExporter(writer, trigger);
@@ -86,7 +86,7 @@ public class MetricExporters implements SchedulingConfigurer {
 		}
 	}
 
-	private MetricCopyExporter getExporter(MetricWriter writer,
+	private MetricCopyExporter getExporter(GaugeWriter writer,
 			TriggerProperties trigger) {
 		MetricCopyExporter exporter = new MetricCopyExporter(this.reader, writer);
 		exporter.setIncludes(trigger.getIncludes());

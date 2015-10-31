@@ -30,7 +30,7 @@ import org.springframework.boot.actuate.metrics.export.MetricExporters;
 import org.springframework.boot.actuate.metrics.reader.CompositeMetricReader;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.statsd.StatsdMetricWriter;
-import org.springframework.boot.actuate.metrics.writer.MetricWriter;
+import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -67,7 +67,7 @@ public class MetricExportAutoConfiguration {
 
 	@Autowired(required = false)
 	@ExportMetricWriter
-	private Map<String, MetricWriter> writers = Collections.emptyMap();
+	private Map<String, GaugeWriter> writers = Collections.emptyMap();
 
 	@Autowired(required = false)
 	private Map<String, Exporter> exporters = Collections.emptyMap();
@@ -75,7 +75,7 @@ public class MetricExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(name = "metricWritersMetricExporter")
 	public SchedulingConfigurer metricWritersMetricExporter() {
-		Map<String, MetricWriter> writers = new HashMap<String, MetricWriter>();
+		Map<String, GaugeWriter> writers = new HashMap<String, GaugeWriter>();
 		MetricReader reader = this.endpointReader;
 		if (reader == null && !CollectionUtils.isEmpty(this.readers)) {
 			reader = new CompositeMetricReader(
