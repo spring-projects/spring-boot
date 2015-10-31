@@ -137,7 +137,7 @@ do_start() {
         --make-pidfile --pidfile $pid_file \
         --background --no-close \
         --startas $javaexe \
-        --chdir "$working_dir"
+        --chdir "$working_dir" \
         -- \
         -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS \
         -jar $jarfile $RUN_ARGS "$@" \
