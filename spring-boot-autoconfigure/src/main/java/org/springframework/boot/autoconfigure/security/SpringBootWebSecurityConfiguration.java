@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -60,8 +61,7 @@ import org.springframework.util.StringUtils;
  * externalized application properties (or via an bean definition of that type to set the
  * defaults). The user details for authentication are just placeholders
  * {@code (username=user, password=password)} but can easily be customized by providing a
- * bean definition of type {@link AuthenticationManager}. Also provides audit logging of
- * authentication events.
+ * an {@link AuthenticationManager}. Also provides audit logging of authentication events.
  * <p>
  * Some common simple customizations:
  * <ul>
@@ -69,7 +69,9 @@ import org.springframework.util.StringUtils;
  * classpath or {@link EnableAutoConfiguration#exclude() exclude} this configuration.</li>
  * <li>Switch off security temporarily (e.g. for a dev environment): set
  * {@code security.basic.enabled: false}</li>
- * <li>Customize the user details: add an AuthenticationManager bean</li>
+ * <li>Customize the user details: autowire an {@link AuthenticationManagerBuilder} into a
+ * method in one of your configuration classes or equivalently add a bean of type
+ * AuthenticationManager</li>
  * <li>Add form login for user facing resources: add a
  * {@link WebSecurityConfigurerAdapter} and use {@link HttpSecurity#formLogin()}</li>
  * </ul>

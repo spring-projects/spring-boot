@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,11 +51,13 @@ import org.springframework.util.ReflectionUtils;
 
 /**
  * Configuration for a Spring Security in-memory {@link AuthenticationManager}. Can be
- * disabled by providing a bean of type AuthenticationManager. The value provided by this
- * configuration will become the "global" authentication manager (from Spring Security),
- * or the parent of the global instance. Thus it acts as a fallback when no others are
- * provided, is used by method security if enabled, and as a parent authentication manager
- * for "local" authentication managers in individual filter chains.
+ * disabled by providing a bean of type AuthenticationManager, or by autowiring an
+ * {@link AuthenticationManagerBuilder} into a method in one of your configuration
+ * classes. The value provided by this configuration will become the "global"
+ * authentication manager (from Spring Security), or the parent of the global instance.
+ * Thus it acts as a fallback when no others are provided, is used by method security if
+ * enabled, and as a parent authentication manager for "local" authentication managers in
+ * individual filter chains.
  *
  * @author Dave Syer
  * @author Rob Winch
