@@ -116,13 +116,16 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 	@SuppressWarnings({ "unchecked" })
 	private Map<String, Object> getMap(String path, String accessToken) {
 		this.logger.info("Getting user info from: " + path);
+		OAuth2AccessToken originalToken = null;
+		OAuth2RestOperations restTemplate = null;
 		try {
-			OAuth2RestOperations restTemplate = this.restTemplate;
+			restTemplate = this.restTemplate;
 			if (restTemplate == null) {
 				BaseOAuth2ProtectedResourceDetails resource = new BaseOAuth2ProtectedResourceDetails();
 				resource.setClientId(this.clientId);
 				restTemplate = new OAuth2RestTemplate(resource);
 			}
+			originalToken = restTemplate.getOAuth2ClientContext().getAccessToken();
 			DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken(accessToken);
 			token.setTokenType(this.tokenType);
 			restTemplate.getOAuth2ClientContext().setAccessToken(token);
@@ -133,6 +136,12 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 					+ ex.getMessage());
 			return Collections.<String, Object>singletonMap("error",
 					"Could not fetch user details");
+		}
+		finally {
+			//don't change state of externally wired "this.restTemplate" object, revert token back
+			if (restTemplate != null) {
+				restTemplate.getOAuth2ClientContext().setAccessToken(originalToken);
+			}
 		}
 	}
 }

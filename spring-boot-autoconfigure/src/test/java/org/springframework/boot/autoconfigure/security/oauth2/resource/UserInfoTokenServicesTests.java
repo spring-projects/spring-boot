@@ -27,7 +27,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.OAuth2ClientContext;
+import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.resource.BaseOAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.resource.UserRedirectRequiredException;
@@ -59,6 +59,8 @@ public class UserInfoTokenServicesTests {
 
 	private Map<String, Object> map = new LinkedHashMap<String, Object>();
 
+	private DefaultOAuth2ClientContext oAuth2ClientContext = new DefaultOAuth2ClientContext();
+
 	@SuppressWarnings("rawtypes")
 	@Before
 	public void init() {
@@ -69,7 +71,7 @@ public class UserInfoTokenServicesTests {
 				.willReturn(new DefaultOAuth2AccessToken("FOO"));
 		given(this.template.getResource()).willReturn(this.resource);
 		given(this.template.getOAuth2ClientContext())
-				.willReturn(mock(OAuth2ClientContext.class));
+				.willReturn(this.oAuth2ClientContext);
 	}
 
 	@Test
@@ -95,4 +97,13 @@ public class UserInfoTokenServicesTests {
 		assertEquals("spencer", this.services.loadAuthentication("FOO").getName());
 	}
 
+	@Test
+	public void restTemplateStateUnchanged() {
+		this.map.put("userid", "spencer");
+		this.services.setRestTemplate(this.template);
+		this.oAuth2ClientContext.setAccessToken(new DefaultOAuth2AccessToken("Immutable access token"));
+
+		assertEquals("spencer", this.services.loadAuthentication("FOO").getName());
+		assertEquals("Immutable access token", this.oAuth2ClientContext.getAccessToken().getValue());
+	}
 }
