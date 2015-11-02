@@ -18,19 +18,20 @@ package org.springframework.boot.actuate.security;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.event.AuthenticationFailureExpiredEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
+import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent;
 
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -53,6 +54,14 @@ public class AuthenticationAuditListenerTests {
 		this.listener.onApplicationEvent(new AuthenticationSuccessEvent(
 				new UsernamePasswordAuthenticationToken("user", "password")));
 		verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
+	}
+
+	@Test
+	public void testOtherAuthenticationSuccess() {
+		this.listener.onApplicationEvent(new InteractiveAuthenticationSuccessEvent(
+				new UsernamePasswordAuthenticationToken("user", "password"), getClass()));
+		// No need to audit this one (it shadows a regular AuthenticationSuccessEvent)
+		verify(this.publisher, never()).publishEvent((ApplicationEvent) anyObject());
 	}
 
 	@Test

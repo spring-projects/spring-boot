@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent;
 import org.springframework.util.ClassUtils;
 
@@ -64,8 +65,8 @@ public class AuthenticationAuditListener implements
 		else if (this.webListener != null && this.webListener.accepts(event)) {
 			this.webListener.process(this, event);
 		}
-		else {
-			onAuthenticationEvent(event);
+		else if (event instanceof AuthenticationSuccessEvent) {
+			onAuthenticationEvent((AuthenticationSuccessEvent) event);
 		}
 	}
 
@@ -77,7 +78,7 @@ public class AuthenticationAuditListener implements
 				"AUTHENTICATION_FAILURE", data));
 	}
 
-	private void onAuthenticationEvent(AbstractAuthenticationEvent event) {
+	private void onAuthenticationEvent(AuthenticationSuccessEvent event) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		if (event.getAuthentication().getDetails() != null) {
 			data.put("details", event.getAuthentication().getDetails());
