@@ -160,8 +160,7 @@ do_start() {
 stop() {
   [[ -f $pid_file ]] || { echoYellow "Not running (pidfile not found)"; return 0; }
   pid=$(cat "$pid_file")
-  rm -f "$pid_file"
-  isRunning $pid || { echoYellow "Not running (process ${pid} not found)"; return 0; }
+  isRunning $pid || { echoYellow "Not running (process ${pid}). Removing stale pid file."; rm -f "$pid_file"; return 0; }
   do_stop $pid $pid_file
 }
 
