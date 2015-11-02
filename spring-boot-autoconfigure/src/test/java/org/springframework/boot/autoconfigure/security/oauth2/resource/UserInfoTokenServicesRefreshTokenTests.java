@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServicesRefreshTokenTests.Application;
@@ -120,7 +121,7 @@ public class UserInfoTokenServicesRefreshTokenTests {
 	@RestController
 	protected static class Application {
 
-		@RequestMapping(value = "/user")
+		@RequestMapping("/user")
 		public User user(@RequestHeader("Authorization") String authorization) {
 			if (authorization.endsWith("EXPIRED")) {
 				throw new InvalidTokenException("Expired");
