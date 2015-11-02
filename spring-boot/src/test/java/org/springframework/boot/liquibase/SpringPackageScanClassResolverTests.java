@@ -19,7 +19,6 @@ package org.springframework.boot.liquibase;
 import java.util.Set;
 
 import liquibase.logging.Logger;
-
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 

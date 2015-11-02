@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.metrics.writer;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+
 import org.springframework.boot.actuate.metrics.Metric;
 
 import static org.junit.Assert.assertEquals;

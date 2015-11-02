@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -64,8 +65,8 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		this.context.refresh();
 		JpaProperties bean = this.context.getBean(JpaProperties.class);
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		String actual = bean.getHibernateProperties(dataSource).get(
-				"hibernate.hbm2ddl.auto");
+		String actual = bean.getHibernateProperties(dataSource)
+				.get("hibernate.hbm2ddl.auto");
 		// Default is generic and safe
 		assertThat(actual, nullValue());
 	}
@@ -81,8 +82,8 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		this.context.refresh();
 		JpaProperties bean = this.context.getBean(JpaProperties.class);
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		String actual = bean.getHibernateProperties(dataSource).get(
-				"hibernate.hbm2ddl.auto");
+		String actual = bean.getHibernateProperties(dataSource)
+				.get("hibernate.hbm2ddl.auto");
 		assertThat(actual, equalTo("create-drop"));
 	}
 

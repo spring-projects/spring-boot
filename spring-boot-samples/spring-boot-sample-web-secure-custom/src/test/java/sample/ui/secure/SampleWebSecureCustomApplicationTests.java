@@ -22,8 +22,10 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.test.WebIntegrationTest;
+import sample.web.secure.custom.SampleWebSecureCustomApplication;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpEntity;
@@ -34,11 +36,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import sample.web.secure.custom.SampleWebSecureCustomApplication;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -50,8 +50,7 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleWebSecureCustomApplication.class)
-@WebAppConfiguration
-@IntegrationTest("server.port:0")
+@WebIntegrationTest(randomPort = true)
 @DirtiesContext
 public class SampleWebSecureCustomApplicationTests {
 
@@ -63,11 +62,11 @@ public class SampleWebSecureCustomApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port, HttpMethod.GET, new HttpEntity<Void>(
-						headers), String.class);
+				"http://localhost:" + this.port, HttpMethod.GET,
+				new HttpEntity<Void>(headers), String.class);
 		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
-		assertTrue("Wrong location:\n" + entity.getHeaders(), entity.getHeaders()
-				.getLocation().toString().endsWith(port + "/login"));
+		assertTrue("Wrong location:\n" + entity.getHeaders(),
+				entity.getHeaders().getLocation().toString().endsWith(port + "/login"));
 	}
 
 	@Test
@@ -95,16 +94,16 @@ public class SampleWebSecureCustomApplicationTests {
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
 		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
-		assertTrue("Wrong location:\n" + entity.getHeaders(), entity.getHeaders()
-				.getLocation().toString().endsWith(port + "/"));
+		assertTrue("Wrong location:\n" + entity.getHeaders(),
+				entity.getHeaders().getLocation().toString().endsWith(port + "/"));
 		assertNotNull("Missing cookie:\n" + entity.getHeaders(),
 				entity.getHeaders().get("Set-Cookie"));
 	}
 
 	private HttpHeaders getHeaders() {
 		HttpHeaders headers = new HttpHeaders();
-		ResponseEntity<String> page = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/login", String.class);
+		ResponseEntity<String> page = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + "/login", String.class);
 		assertEquals(HttpStatus.OK, page.getStatusCode());
 		String cookie = page.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);

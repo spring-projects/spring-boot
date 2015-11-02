@@ -27,7 +27,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * {@link Condition} that checks for a required version of Java
+ * {@link Condition} that checks for a required version of Java.
  *
  * @author Oliver Gierke
  * @author Phillip Webb
@@ -55,9 +55,10 @@ class OnJavaCondition extends SpringBootCondition {
 		return new ConditionOutcome(match, getMessage(range, runningVersion, version));
 	}
 
-	private String getMessage(Range range, JavaVersion runningVersion, JavaVersion version) {
-		String expected = String.format(range == Range.EQUAL_OR_NEWER ? "%s or newer"
-				: "older than %s", version);
+	private String getMessage(Range range, JavaVersion runningVersion,
+			JavaVersion version) {
+		String expected = String.format(
+				range == Range.EQUAL_OR_NEWER ? "%s or newer" : "older than %s", version);
 		return "Required JVM version " + expected + " found " + runningVersion;
 	}
 }

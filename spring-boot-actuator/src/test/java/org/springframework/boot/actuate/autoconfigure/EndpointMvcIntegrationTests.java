@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.EndpointMvcIntegrationTests.Application;
@@ -86,8 +87,8 @@ public class EndpointMvcIntegrationTests {
 
 	@Test
 	public void envEndpointHidden() throws InterruptedException {
-		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port
-				+ "/env/user.dir", String.class);
+		String body = new TestRestTemplate().getForObject(
+				"http://localhost:" + this.port + "/env/user.dir", String.class);
 		assertNotNull(body);
 		assertTrue("Wrong body: \n" + body, body.contains("spring-boot-actuator"));
 		assertTrue(this.interceptor.invoked());
@@ -95,8 +96,8 @@ public class EndpointMvcIntegrationTests {
 
 	@Test
 	public void healthEndpointNotHidden() throws InterruptedException {
-		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port
-				+ "/health", String.class);
+		String body = new TestRestTemplate()
+				.getForObject("http://localhost:" + this.port + "/health", String.class);
 		assertNotNull(body);
 		assertTrue("Wrong body: \n" + body, body.contains("status"));
 		assertTrue(this.interceptor.invoked());

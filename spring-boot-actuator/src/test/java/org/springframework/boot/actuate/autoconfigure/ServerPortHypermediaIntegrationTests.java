@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.ServerPortHypermediaIntegrationTests.SpringBootHypermediaApplication;
 import org.springframework.boot.actuate.endpoint.mvc.ActuatorHalBrowserEndpoint;
@@ -82,7 +83,8 @@ public class ServerPortHypermediaIntegrationTests {
 				"http://localhost:" + this.port + "/actuator/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(), entity.getBody().contains("<title"));
+		assertTrue("Wrong body: " + entity.getBody(),
+				entity.getBody().contains("<title"));
 	}
 
 	@MinimalActuatorHypermediaApplication

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

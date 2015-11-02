@@ -27,6 +27,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * Condition used to check that the actual local port is available.
+ *
+ * @author Phillip Webb
  */
 class LocalDebugPortAvailableCondition extends SpringBootCondition {
 

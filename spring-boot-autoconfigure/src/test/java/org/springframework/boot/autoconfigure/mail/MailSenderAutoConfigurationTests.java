@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.jndi.JndiPropertiesHidingClassLoader;
 import org.springframework.boot.autoconfigure.jndi.TestableInitialContextFactory;
@@ -151,8 +152,8 @@ public class MailSenderAutoConfigurationTests {
 		load(EmptyConfig.class, "spring.mail.jndi-name:foo");
 		Session sessionBean = this.context.getBean(Session.class);
 		assertEquals(session, sessionBean);
-		assertEquals(sessionBean, this.context.getBean(JavaMailSenderImpl.class)
-				.getSession());
+		assertEquals(sessionBean,
+				this.context.getBean(JavaMailSenderImpl.class).getSession());
 	}
 
 	@Test
@@ -194,8 +195,8 @@ public class MailSenderAutoConfigurationTests {
 		verify(mailSender, never()).testConnection();
 	}
 
-	private Session configureJndiSession(String name) throws IllegalStateException,
-			NamingException {
+	private Session configureJndiSession(String name)
+			throws IllegalStateException, NamingException {
 		Properties properties = new Properties();
 		Session session = Session.getDefaultInstance(properties);
 		TestableInitialContextFactory.bind(name, session);

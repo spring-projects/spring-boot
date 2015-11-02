@@ -24,6 +24,7 @@ import javax.sql.XADataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.jdbc.pool.DataSourceProxy;
+
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,8 +79,8 @@ public class DataSourceAutoConfiguration {
 			ConfigurableListableBeanFactory beanFactory) {
 		try {
 			BeanDefinition beanDefinition = beanFactory.getBeanDefinition("dataSource");
-			return EmbeddedDataSourceConfiguration.class.getName().equals(
-					beanDefinition.getFactoryBeanName());
+			return EmbeddedDataSourceConfiguration.class.getName()
+					.equals(beanDefinition.getFactoryBeanName());
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			return false;
@@ -117,8 +118,7 @@ public class DataSourceAutoConfiguration {
 			DataSourceBuilder factory = DataSourceBuilder
 					.create(this.properties.getClassLoader())
 					.driverClassName(this.properties.getDriverClassName())
-					.url(this.properties.getUrl())
-					.username(this.properties.getUsername())
+					.url(this.properties.getUrl()).username(this.properties.getUsername())
 					.password(this.properties.getPassword());
 			if (this.properties.getType() != null) {
 				factory.type(this.properties.getType());
@@ -188,6 +188,8 @@ public class DataSourceAutoConfiguration {
 		/**
 		 * Returns the class loader for the {@link DataSource} class. Used to ensure that
 		 * the driver class can actually be loaded by the data source.
+		 * @param context the condition context
+		 * @return the class loader
 		 */
 		private ClassLoader getDataSourceClassLoader(ConditionContext context) {
 			Class<?> dataSourceClass = new DataSourceBuilder(context.getClassLoader())
@@ -210,8 +212,8 @@ public class DataSourceAutoConfiguration {
 				return ConditionOutcome
 						.noMatch("existing non-embedded database detected");
 			}
-			EmbeddedDatabaseType type = EmbeddedDatabaseConnection.get(
-					context.getClassLoader()).getType();
+			EmbeddedDatabaseType type = EmbeddedDatabaseConnection
+					.get(context.getClassLoader()).getType();
 			if (type == null) {
 				return ConditionOutcome.noMatch("no embedded database detected");
 			}
@@ -222,7 +224,7 @@ public class DataSourceAutoConfiguration {
 
 	/**
 	 * {@link Condition} to detect when a {@link DataSource} is available (either because
-	 * the user provided one or because one will be auto-configured)
+	 * the user provided one or because one will be auto-configured).
 	 */
 	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	static class DataSourceAvailableCondition extends SpringBootCondition {

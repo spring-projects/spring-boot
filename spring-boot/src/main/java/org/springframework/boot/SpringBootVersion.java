@@ -28,7 +28,10 @@ package org.springframework.boot;
  * @author Drummond Dawson
  * @since 1.3.0
  */
-public class SpringBootVersion {
+public final class SpringBootVersion {
+
+	private SpringBootVersion() {
+	}
 
 	/**
 	 * Return the full version string of the present Spring Boot codebase, or {@code null}

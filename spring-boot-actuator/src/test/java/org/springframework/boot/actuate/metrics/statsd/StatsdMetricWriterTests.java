@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.util.SocketUtils;
@@ -70,7 +71,7 @@ public class StatsdMetricWriterTests {
 		this.writer.set(new Metric<Double>("gauge.foo", 3.7));
 		this.server.waitForMessage();
 		// Doubles are truncated
-		assertEquals("me.gauge.foo:3|g", this.server.messagesReceived().get(0));
+		assertEquals("me.gauge.foo:3.7|g", this.server.messagesReceived().get(0));
 	}
 
 	@Test
@@ -102,7 +103,7 @@ public class StatsdMetricWriterTests {
 
 		private final DatagramSocket server;
 
-		public DummyStatsDServer(int port) {
+		DummyStatsDServer(int port) {
 			try {
 				this.server = new DatagramSocket(port);
 			}
@@ -116,10 +117,12 @@ public class StatsdMetricWriterTests {
 						final DatagramPacket packet = new DatagramPacket(new byte[256],
 								256);
 						DummyStatsDServer.this.server.receive(packet);
-						DummyStatsDServer.this.messagesReceived.add(new String(packet
-								.getData(), Charset.forName("UTF-8")).trim());
+						DummyStatsDServer.this.messagesReceived.add(
+								new String(packet.getData(), Charset.forName("UTF-8"))
+										.trim());
 					}
 					catch (Exception e) {
+						// Ignore
 					}
 				}
 			}).start();
@@ -135,6 +138,7 @@ public class StatsdMetricWriterTests {
 					Thread.sleep(50L);
 				}
 				catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
 				}
 			}
 		}

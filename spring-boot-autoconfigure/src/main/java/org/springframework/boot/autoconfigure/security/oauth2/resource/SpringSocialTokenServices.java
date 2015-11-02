@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -69,8 +70,8 @@ public class SpringSocialTokenServices implements ResourceServerTokenServices {
 				.commaSeparatedStringToAuthorityList("ROLE_USER");
 		OAuth2Request request = new OAuth2Request(null, this.clientId, null, true, null,
 				null, null, null, null);
-		return new OAuth2Authentication(request, new UsernamePasswordAuthenticationToken(
-				principal, "N/A", authorities));
+		return new OAuth2Authentication(request,
+				new UsernamePasswordAuthenticationToken(principal, "N/A", authorities));
 	}
 
 	@Override

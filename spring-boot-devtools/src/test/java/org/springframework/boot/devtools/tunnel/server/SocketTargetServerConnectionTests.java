@@ -26,8 +26,7 @@ import java.nio.channels.SocketChannel;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.devtools.tunnel.server.SocketTargetServerConnection;
-import org.springframework.boot.devtools.tunnel.server.StaticPortProvider;
+
 import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -111,7 +110,7 @@ public class SocketTargetServerConnectionTests {
 
 		private ServerThread thread;
 
-		public MockServer(int port) throws IOException {
+		MockServer(int port) throws IOException {
 			this.serverSocket = ServerSocketChannel.open();
 			this.serverSocket.bind(new InetSocketAddress(port));
 		}

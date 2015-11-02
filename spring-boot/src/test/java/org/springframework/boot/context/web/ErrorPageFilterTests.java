@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.http.HttpStatus;
@@ -97,9 +98,8 @@ public class ErrorPageFilterTests {
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(((HttpServletResponse) this.chain.getResponse()).getStatus(),
 				equalTo(201));
-		assertThat(
-				((HttpServletResponse) ((HttpServletResponseWrapper) this.chain.getResponse())
-						.getResponse()).getStatus(), equalTo(201));
+		assertThat(((HttpServletResponse) ((HttpServletResponseWrapper) this.chain
+				.getResponse()).getResponse()).getStatus(), equalTo(201));
 		assertTrue(this.response.isCommitted());
 	}
 
@@ -364,7 +364,8 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
-	public void responseIsCommitedWhenRequestIsAsyncAndStatusIs400Plus() throws Exception {
+	public void responseIsCommitedWhenRequestIsAsyncAndStatusIs400Plus()
+			throws Exception {
 		this.filter.addErrorPages(new ErrorPage("/error"));
 		this.request.setAsyncStarted(true);
 		this.chain = new MockFilterChain() {
@@ -443,8 +444,8 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
-	public void errorMessageForRequestWithoutPathInfo() throws IOException,
-			ServletException {
+	public void errorMessageForRequestWithoutPathInfo()
+			throws IOException, ServletException {
 		this.request.setServletPath("/test");
 		this.filter.addErrorPages(new ErrorPage("/error"));
 		this.chain = new MockFilterChain() {
@@ -460,7 +461,8 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
-	public void errorMessageForRequestWithPathInfo() throws IOException, ServletException {
+	public void errorMessageForRequestWithPathInfo()
+			throws IOException, ServletException {
 		this.request.setServletPath("/test");
 		this.request.setPathInfo("/alpha");
 		this.filter.addErrorPages(new ErrorPage("/error"));
@@ -507,8 +509,8 @@ public class ErrorPageFilterTests {
 		this.request.setAsyncStarted(true);
 		DeferredResult<String> result = new DeferredResult<String>();
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(this.request);
-		asyncManager.setAsyncWebRequest(new StandardServletAsyncWebRequest(this.request,
-				this.response));
+		asyncManager.setAsyncWebRequest(
+				new StandardServletAsyncWebRequest(this.request, this.response));
 		asyncManager.startDeferredResultProcessing(result);
 	}
 

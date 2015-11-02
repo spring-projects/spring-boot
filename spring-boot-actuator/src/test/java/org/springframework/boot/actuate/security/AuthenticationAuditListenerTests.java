@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.security;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -39,7 +40,8 @@ public class AuthenticationAuditListenerTests {
 
 	private final AuthenticationAuditListener listener = new AuthenticationAuditListener();
 
-	private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
+	private final ApplicationEventPublisher publisher = mock(
+			ApplicationEventPublisher.class);
 
 	@Before
 	public void init() {
@@ -64,9 +66,9 @@ public class AuthenticationAuditListenerTests {
 	@Test
 	public void testAuthenticationSwitch() {
 		this.listener.onApplicationEvent(new AuthenticationSwitchUserEvent(
-				new UsernamePasswordAuthenticationToken("user", "password"), new User(
-						"user", "password", AuthorityUtils
-								.commaSeparatedStringToAuthorityList("USER"))));
+				new UsernamePasswordAuthenticationToken("user", "password"),
+				new User("user", "password",
+						AuthorityUtils.commaSeparatedStringToAuthorityList("USER"))));
 		verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
 	}
 

@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -38,15 +39,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
-public class DataSourceTransactionManagerAutoConfiguration implements Ordered {
-
-	@Override
-	public int getOrder() {
-		return Integer.MAX_VALUE;
-	}
+@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
+public class DataSourceTransactionManagerAutoConfiguration {
 
 	@Autowired(required = false)
 	private DataSource dataSource;

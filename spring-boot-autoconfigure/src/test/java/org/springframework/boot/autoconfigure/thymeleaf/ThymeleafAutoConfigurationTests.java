@@ -21,10 +21,18 @@ import java.util.Collections;
 import java.util.Locale;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.beans.factory.BeanCreationException;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring4.view.ThymeleafView;
+import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.templateresolver.TemplateResolver;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -33,12 +41,6 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.spring4.view.ThymeleafView;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
-import org.thymeleaf.templateresolver.ITemplateResolver;
-import org.thymeleaf.templateresolver.TemplateResolver;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertArrayEquals;
@@ -54,6 +56,9 @@ import static org.junit.Assert.assertTrue;
  * @author Stephane Nicoll
  */
 public class ThymeleafAutoConfigurationTests {
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
@@ -116,13 +121,14 @@ public class ThymeleafAutoConfigurationTests {
 		assertArrayEquals(new String[] { "foo", "bar" }, views.getViewNames());
 	}
 
-	@Test(expected = BeanCreationException.class)
+	@Test
 	public void templateLocationDoesNotExist() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
 		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
+		this.output.expect(containsString("Cannot find template location"));
 	}
 
 	@Test
@@ -185,8 +191,8 @@ public class ThymeleafAutoConfigurationTests {
 		assertEquals(0, context.getBeanNamesForType(ViewResolver.class).length);
 		try {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
-			Context attrs = new Context(Locale.UK, Collections.singletonMap("greeting",
-					"Hello World"));
+			Context attrs = new Context(Locale.UK,
+					Collections.singletonMap("greeting", "Hello World"));
 			String result = engine.process("message", attrs);
 			assertThat(result, containsString("Hello World"));
 		}
@@ -200,11 +206,13 @@ public class ThymeleafAutoConfigurationTests {
 		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(0, this.context.getBeansOfType(ResourceUrlEncodingFilter.class).size());
+		assertEquals(0,
+				this.context.getBeansOfType(ResourceUrlEncodingFilter.class).size());
 	}
 
 	@Test
-	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled() throws Exception {
+	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled()
+			throws Exception {
 		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,

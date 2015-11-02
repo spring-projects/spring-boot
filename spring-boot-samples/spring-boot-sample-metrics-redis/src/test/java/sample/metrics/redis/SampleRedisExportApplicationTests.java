@@ -18,11 +18,11 @@ package sample.metrics.redis;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.IntegrationTest;
+
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  * Basic integration tests for {@link SampleRedisExportApplication}.
@@ -31,8 +31,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleRedisExportApplication.class)
-@WebAppConfiguration
-@IntegrationTest({ "server.port=0", "spring.jmx.enabled=true" })
+@WebIntegrationTest(value = { "spring.jmx.enabled=true" }, randomPort = true)
 @DirtiesContext
 public class SampleRedisExportApplicationTests {
 

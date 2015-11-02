@@ -73,8 +73,8 @@ public class OAuth2ResourceServerConfiguration {
 		return new ResourceSecurityConfigurer(this.resource);
 	}
 
-	protected static class ResourceSecurityConfigurer extends
-			ResourceServerConfigurerAdapter {
+	protected static class ResourceSecurityConfigurer
+			extends ResourceServerConfigurerAdapter {
 
 		private ResourceServerProperties resource;
 
@@ -96,8 +96,8 @@ public class OAuth2ResourceServerConfiguration {
 
 	}
 
-	protected static class ResourceServerCondition extends SpringBootCondition implements
-			ConfigurationCondition {
+	protected static class ResourceServerCondition extends SpringBootCondition
+			implements ConfigurationCondition {
 
 		private static final String AUTHORIZATION_ANNOTATION = "org.springframework."
 				+ "security.oauth2.config.annotation.web.configuration."
@@ -115,7 +115,7 @@ public class OAuth2ResourceServerConfiguration {
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
 					"security.oauth2.resource.");
 			String client = environment
-					.resolvePlaceholders("${security.oauth2.client.clientId:}");
+					.resolvePlaceholders("${security.oauth2.client.client-id:}");
 			if (StringUtils.hasText(client)) {
 				return ConditionOutcome.match("found client id");
 			}
@@ -123,14 +123,14 @@ public class OAuth2ResourceServerConfiguration {
 				return ConditionOutcome.match("found JWT resource configuration");
 			}
 			if (StringUtils.hasText(resolver.getProperty("user-info-uri"))) {
-				return ConditionOutcome.match("found UserInfo "
-						+ "URI resource configuration");
+				return ConditionOutcome
+						.match("found UserInfo " + "URI resource configuration");
 			}
 			if (ClassUtils.isPresent(AUTHORIZATION_ANNOTATION, null)) {
 				if (AuthorizationServerEndpointsConfigurationBeanCondition
 						.matches(context)) {
-					return ConditionOutcome.match("found authorization "
-							+ "server endpoints configuration");
+					return ConditionOutcome.match(
+							"found authorization " + "server endpoints configuration");
 				}
 			}
 			return ConditionOutcome.noMatch("found neither client id nor "

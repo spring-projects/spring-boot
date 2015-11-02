@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.batch;
 
 import org.junit.Test;
+
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 

@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -107,16 +108,12 @@ public class DataSourceInitializerTests {
 	public void testDataSourceInitializedWithExplicitScript() throws Exception {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils
-				.addEnvironment(
-						this.context,
-						"spring.datasource.initialize:true",
-						"spring.datasource.schema:"
-								+ ClassUtils.addResourcePathToPackagePath(getClass(),
-										"schema.sql"),
-						"spring.datasource.data:"
-								+ ClassUtils.addResourcePathToPackagePath(getClass(),
-										"data.sql"));
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.schema:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "schema.sql"),
+				"spring.datasource.data:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "data.sql"));
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
@@ -128,19 +125,16 @@ public class DataSourceInitializerTests {
 
 	@Test
 	public void testDataSourceInitializedWithMultipleScripts() throws Exception {
-		EnvironmentTestUtils
-				.addEnvironment(
-						this.context,
-						"spring.datasource.initialize:true",
-						"spring.datasource.schema:"
-								+ ClassUtils.addResourcePathToPackagePath(getClass(),
-										"schema.sql")
-								+ ","
-								+ ClassUtils.addResourcePathToPackagePath(getClass(),
-										"another.sql"),
-						"spring.datasource.data:"
-								+ ClassUtils.addResourcePathToPackagePath(getClass(),
-										"data.sql"));
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.schema:"
+						+ ClassUtils.addResourcePathToPackagePath(getClass(),
+								"schema.sql")
+						+ ","
+						+ ClassUtils.addResourcePathToPackagePath(getClass(),
+								"another.sql"),
+				"spring.datasource.data:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "data.sql"));
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -155,19 +149,17 @@ public class DataSourceInitializerTests {
 	}
 
 	@Test
-	public void testDataSourceInitializedWithExplicitSqlScriptEncoding() throws Exception {
+	public void testDataSourceInitializedWithExplicitSqlScriptEncoding()
+			throws Exception {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(
-				this.context,
+		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.initialize:true",
 				"spring.datasource.sqlScriptEncoding:UTF-8",
-				"spring.datasource.schema:"
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-								"encoding-schema.sql"),
-				"spring.datasource.data:"
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-								"encoding-data.sql"));
+				"spring.datasource.schema:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "encoding-schema.sql"),
+				"spring.datasource.data:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "encoding-data.sql"));
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);

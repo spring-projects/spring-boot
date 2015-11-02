@@ -53,7 +53,8 @@ import org.springframework.util.StringUtils;
 public class JndiConnectionFactoryAutoConfiguration {
 
 	// Keep these in sync with the condition below
-	private static String[] JNDI_LOCATIONS = { "java:/JmsXA", "java:/XAConnectionFactory" };
+	private static String[] JNDI_LOCATIONS = { "java:/JmsXA",
+			"java:/XAConnectionFactory" };
 
 	@Autowired
 	private JmsProperties properties;
@@ -82,11 +83,11 @@ public class JndiConnectionFactoryAutoConfiguration {
 	}
 
 	/**
-	 * Condition for JNDI name or a specific property
+	 * Condition for JNDI name or a specific property.
 	 */
 	static class JndiOrPropertyCondition extends AnyNestedCondition {
 
-		public JndiOrPropertyCondition() {
+		JndiOrPropertyCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 

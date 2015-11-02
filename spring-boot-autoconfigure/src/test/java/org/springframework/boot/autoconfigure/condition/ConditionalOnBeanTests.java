@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.Date;
 
 import org.junit.Test;
+
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -210,8 +211,8 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	protected static class WithPropertyPlaceholderClassNameRegistrar implements
-			ImportBeanDefinitionRegistrar {
+	protected static class WithPropertyPlaceholderClassNameRegistrar
+			implements ImportBeanDefinitionRegistrar {
 
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,

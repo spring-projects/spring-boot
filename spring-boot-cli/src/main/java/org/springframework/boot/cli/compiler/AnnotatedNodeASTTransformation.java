@@ -103,8 +103,8 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 					.iterator();
 			while (annotationNodes.hasNext()) {
 				AnnotationNode annotationNode = annotationNodes.next();
-				if (this.interestingAnnotationNames.contains(annotationNode
-						.getClassNode().getName())) {
+				if (this.interestingAnnotationNames
+						.contains(annotationNode.getClassNode().getName())) {
 					this.annotationNodes.add(annotationNode);
 					if (this.removeAnnotations) {
 						annotationNodes.remove();
@@ -118,7 +118,7 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 
 		private final SourceUnit source;
 
-		public ClassVisitor(SourceUnit source) {
+		ClassVisitor(SourceUnit source) {
 			this.source = source;
 		}
 

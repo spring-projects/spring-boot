@@ -35,32 +35,32 @@ public class ActiveMQPropertiesTests {
 
 	@Test
 	public void getBrokerUrlIsInMemoryByDefault() {
-		assertEquals(DEFAULT_EMBEDDED_BROKER_URL, new ActiveMQConnectionFactoryFactory(
-				this.properties).determineBrokerUrl());
-	}
-
-	@Test
-	public void getBrokerUrlUseExplicitBrokerUrl() {
-		this.properties.setBrokerUrl("vm://foo-bar");
-		assertEquals("vm://foo-bar",
+		assertEquals(DEFAULT_EMBEDDED_BROKER_URL,
 				new ActiveMQConnectionFactoryFactory(this.properties)
 						.determineBrokerUrl());
 	}
 
 	@Test
+	public void getBrokerUrlUseExplicitBrokerUrl() {
+		this.properties.setBrokerUrl("vm://foo-bar");
+		assertEquals("vm://foo-bar", new ActiveMQConnectionFactoryFactory(this.properties)
+				.determineBrokerUrl());
+	}
+
+	@Test
 	public void getBrokerUrlWithInMemorySetToFalse() {
 		this.properties.setInMemory(false);
-		assertEquals(DEFAULT_NETWORK_BROKER_URL, new ActiveMQConnectionFactoryFactory(
-				this.properties).determineBrokerUrl());
+		assertEquals(DEFAULT_NETWORK_BROKER_URL,
+				new ActiveMQConnectionFactoryFactory(this.properties)
+						.determineBrokerUrl());
 	}
 
 	@Test
 	public void getExplicitBrokerUrlAlwaysWins() {
 		this.properties.setBrokerUrl("vm://foo-bar");
 		this.properties.setInMemory(false);
-		assertEquals("vm://foo-bar",
-				new ActiveMQConnectionFactoryFactory(this.properties)
-						.determineBrokerUrl());
+		assertEquals("vm://foo-bar", new ActiveMQConnectionFactoryFactory(this.properties)
+				.determineBrokerUrl());
 	}
 
 }

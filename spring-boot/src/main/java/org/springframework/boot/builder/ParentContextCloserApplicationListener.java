@@ -36,9 +36,9 @@ import org.springframework.util.ObjectUtils;
  * @author Dave Syer
  * @author Eric Bottard
  */
-public class ParentContextCloserApplicationListener implements
-		ApplicationListener<ParentContextAvailableEvent>, ApplicationContextAware,
-		Ordered {
+public class ParentContextCloserApplicationListener
+		implements ApplicationListener<ParentContextAvailableEvent>,
+		ApplicationContextAware, Ordered {
 
 	private int order = Ordered.LOWEST_PRECEDENCE - 10;
 
@@ -83,8 +83,8 @@ public class ParentContextCloserApplicationListener implements
 	/**
 	 * {@link ApplicationListener} to close the context.
 	 */
-	protected static class ContextCloserListener implements
-			ApplicationListener<ContextClosedEvent> {
+	protected static class ContextCloserListener
+			implements ApplicationListener<ContextClosedEvent> {
 
 		private WeakReference<ConfigurableApplicationContext> childContext;
 

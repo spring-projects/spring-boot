@@ -21,6 +21,7 @@ import javax.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -56,7 +57,8 @@ public class ActiveMQAutoConfigurationTests {
 	@Test
 	public void configurationBacksOffWhenCustomConnectionFactoryExists() {
 		load(CustomConnectionFactoryConfiguration.class);
-		assertTrue(mockingDetails(this.context.getBean(ConnectionFactory.class)).isMock());
+		assertTrue(
+				mockingDetails(this.context.getBean(ConnectionFactory.class)).isMock());
 	}
 
 	@Test

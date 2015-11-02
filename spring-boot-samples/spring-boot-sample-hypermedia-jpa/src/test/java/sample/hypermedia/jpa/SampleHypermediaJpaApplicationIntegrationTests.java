@@ -19,8 +19,8 @@ package sample.hypermedia.jpa;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -44,9 +44,6 @@ public class SampleHypermediaJpaApplicationIntegrationTests {
 
 	@Autowired
 	private WebApplicationContext context;
-
-	@Autowired
-	private MvcEndpoints mvcEndpoints;
 
 	private MockMvc mockMvc;
 
@@ -85,8 +82,8 @@ public class SampleHypermediaJpaApplicationIntegrationTests {
 	public void browser() throws Exception {
 		MvcResult response = this.mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isFound()).andReturn();
-		assertEquals("/browser/index.html#", response.getResponse()
-				.getHeaders("location").get(0));
+		assertEquals("/browser/index.html#",
+				response.getResponse().getHeaders("location").get(0));
 	}
 
 }

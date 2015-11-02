@@ -76,8 +76,8 @@ public class JarWriter {
 	 * @throws IOException if the file cannot be opened
 	 * @throws FileNotFoundException if the file cannot be found
 	 */
-	public JarWriter(File file, LaunchScript launchScript) throws FileNotFoundException,
-			IOException {
+	public JarWriter(File file, LaunchScript launchScript)
+			throws FileNotFoundException, IOException {
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		if (launchScript != null) {
 			fileOutputStream.write(launchScript.toByteArray());
@@ -198,8 +198,8 @@ public class JarWriter {
 	 */
 	public void writeLoaderClasses() throws IOException {
 		URL loaderJar = getClass().getClassLoader().getResource(NESTED_LOADER_JAR);
-		JarInputStream inputStream = new JarInputStream(new BufferedInputStream(
-				loaderJar.openStream()));
+		JarInputStream inputStream = new JarInputStream(
+				new BufferedInputStream(loaderJar.openStream()));
 		JarEntry entry;
 		while ((entry = inputStream.getNextJarEntry()) != null) {
 			if (entry.getName().endsWith(".class")) {
@@ -222,7 +222,7 @@ public class JarWriter {
 	 * delegate to this one.
 	 * @param entry the entry to write
 	 * @param entryWriter the entry writer or {@code null} if there is no content
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	private void writeEntry(JarEntry entry, EntryWriter entryWriter) throws IOException {
 		String parent = entry.getName();
@@ -251,9 +251,9 @@ public class JarWriter {
 	private interface EntryWriter {
 
 		/**
-		 * Write entry data to the specified output stream
+		 * Write entry data to the specified output stream.
 		 * @param outputStream the destination for the data
-		 * @throws IOException
+		 * @throws IOException in case of I/O errors
 		 */
 		void write(OutputStream outputStream) throws IOException;
 
@@ -268,7 +268,7 @@ public class JarWriter {
 
 		private final boolean close;
 
-		public InputStreamEntryWriter(InputStream inputStream, boolean close) {
+		InputStreamEntryWriter(InputStream inputStream, boolean close) {
 			this.inputStream = inputStream;
 			this.close = close;
 		}
@@ -323,8 +323,8 @@ public class JarWriter {
 
 		@Override
 		public int read(byte[] b, int off, int len) throws IOException {
-			int read = (this.headerStream == null ? -1 : this.headerStream.read(b, off,
-					len));
+			int read = (this.headerStream == null ? -1
+					: this.headerStream.read(b, off, len));
 			if (read != -1) {
 				this.headerStream = null;
 				return read;
@@ -338,7 +338,7 @@ public class JarWriter {
 	}
 
 	/**
-	 * Data holder for CRC and Size
+	 * Data holder for CRC and Size.
 	 */
 	private static class CrcAndSize {
 
@@ -346,7 +346,7 @@ public class JarWriter {
 
 		private long size;
 
-		public CrcAndSize(File file) throws IOException {
+		CrcAndSize(File file) throws IOException {
 			FileInputStream inputStream = new FileInputStream(file);
 			try {
 				load(inputStream);
@@ -356,7 +356,7 @@ public class JarWriter {
 			}
 		}
 
-		public CrcAndSize(InputStream inputStream) throws IOException {
+		CrcAndSize(InputStream inputStream) throws IOException {
 			load(inputStream);
 		}
 

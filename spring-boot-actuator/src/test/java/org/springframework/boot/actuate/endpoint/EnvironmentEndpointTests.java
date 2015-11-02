@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -56,10 +57,10 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	public void testCompositeSource() throws Exception {
 		EnvironmentEndpoint report = getEndpointBean();
 		CompositePropertySource source = new CompositePropertySource("composite");
-		source.addPropertySource(new MapPropertySource("one", Collections.singletonMap(
-				"foo", (Object) "bar")));
-		source.addPropertySource(new MapPropertySource("two", Collections.singletonMap(
-				"foo", (Object) "spam")));
+		source.addPropertySource(new MapPropertySource("one",
+				Collections.singletonMap("foo", (Object) "bar")));
+		source.addPropertySource(new MapPropertySource("two",
+				Collections.singletonMap("foo", (Object) "spam")));
 		this.context.getEnvironment().getPropertySources().addFirst(source);
 		Map<String, Object> env = report.invoke();
 		assertEquals("bar", ((Map<String, Object>) env.get("composite:one")).get("foo"));
@@ -96,18 +97,14 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		System.setProperty("foo.mycredentials.uri", "123456");
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties"))
-						.get("my.services.amqp-free.credentials.uri"));
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties"))
-						.get("credentials.http_api_uri"));
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties"))
-						.get("my.services.cleardb-free.credentials"));
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties"))
-						.get("foo.mycredentials.uri"));
+		assertEquals("******", ((Map<String, Object>) env.get("systemProperties"))
+				.get("my.services.amqp-free.credentials.uri"));
+		assertEquals("******", ((Map<String, Object>) env.get("systemProperties"))
+				.get("credentials.http_api_uri"));
+		assertEquals("******", ((Map<String, Object>) env.get("systemProperties"))
+				.get("my.services.cleardb-free.credentials"));
+		assertEquals("******", ((Map<String, Object>) env.get("systemProperties"))
+				.get("foo.mycredentials.uri"));
 
 	}
 

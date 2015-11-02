@@ -23,6 +23,7 @@ import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
@@ -86,7 +87,7 @@ public class MetricsMvcEndpointTests {
 	@Test
 	public void specificMetric() throws Exception {
 		this.mvc.perform(get("/metrics/foo")).andExpect(status().isOk())
-				.andExpect(content().string(equalTo("1")));
+				.andExpect(content().string(equalTo("{\"foo\":1}")));
 	}
 
 	@Test

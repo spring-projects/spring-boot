@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mobile;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -82,8 +83,8 @@ public class DeviceResolverAutoConfigurationTests {
 		this.context.refresh();
 		RequestMappingHandlerMapping mapping = this.context
 				.getBean(RequestMappingHandlerMapping.class);
-		HandlerInterceptor[] interceptors = mapping.getHandler(
-				new MockHttpServletRequest()).getInterceptors();
+		HandlerInterceptor[] interceptors = mapping
+				.getHandler(new MockHttpServletRequest()).getInterceptors();
 		assertThat(interceptors,
 				hasItemInArray(instanceOf(DeviceResolverHandlerInterceptor.class)));
 	}

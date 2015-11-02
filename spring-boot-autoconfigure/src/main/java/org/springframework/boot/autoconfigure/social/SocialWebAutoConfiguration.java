@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.social;
 
 import java.util.List;
 
+import org.thymeleaf.spring4.SpringTemplateEngine;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -51,7 +53,6 @@ import org.springframework.social.connect.web.thymeleaf.SpringSocialDialect;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
-import org.thymeleaf.spring4.SpringTemplateEngine;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social's web connection
@@ -70,7 +71,8 @@ public class SocialWebAutoConfiguration {
 	@Configuration
 	@EnableSocial
 	@ConditionalOnWebApplication
-	protected static class SocialAutoConfigurationAdapter extends SocialConfigurerAdapter {
+	protected static class SocialAutoConfigurationAdapter
+			extends SocialConfigurerAdapter {
 
 		@Autowired(required = false)
 		private List<ConnectInterceptor<?>> connectInterceptors;
@@ -84,7 +86,8 @@ public class SocialWebAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(ConnectController.class)
 		public ConnectController connectController(
-				ConnectionFactoryLocator factoryLocator, ConnectionRepository repository) {
+				ConnectionFactoryLocator factoryLocator,
+				ConnectionRepository repository) {
 			ConnectController controller = new ConnectController(factoryLocator,
 					repository);
 			if (!CollectionUtils.isEmpty(this.connectInterceptors)) {
@@ -142,8 +145,8 @@ public class SocialWebAutoConfiguration {
 	@EnableSocial
 	@ConditionalOnWebApplication
 	@ConditionalOnClass(SecurityContextHolder.class)
-	protected static class AuthenticationUserIdSourceConfig extends
-			SocialConfigurerAdapter {
+	protected static class AuthenticationUserIdSourceConfig
+			extends SocialConfigurerAdapter {
 
 		@Override
 		public UserIdSource getUserIdSource() {
@@ -170,8 +173,8 @@ public class SocialWebAutoConfiguration {
 		public String getUserId() {
 			SecurityContext context = SecurityContextHolder.getContext();
 			Authentication authentication = context.getAuthentication();
-			Assert.state(authentication != null, "Unable to get a "
-					+ "ConnectionRepository: no user signed in");
+			Assert.state(authentication != null,
+					"Unable to get a " + "ConnectionRepository: no user signed in");
 			return authentication.getName();
 		}
 

@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.core.Ordered;
 import org.springframework.core.io.DefaultResourceLoader;
 
@@ -65,8 +66,8 @@ public class AutoConfigurationSorterTests {
 
 	@Test
 	public void byOrderAnnotation() throws Exception {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(LOWEST,
-				HIGHEST));
+		List<String> actual = this.sorter
+				.getInPriorityOrder(Arrays.asList(LOWEST, HIGHEST));
 		assertThat(actual, nameMatcher(HIGHEST, LOWEST));
 	}
 
@@ -97,8 +98,8 @@ public class AutoConfigurationSorterTests {
 
 	@Test
 	public void byAutoConfigureMixedBeforeAndAfterWithClassNames() throws Exception {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A2, B, C, W2,
-				X));
+		List<String> actual = this.sorter
+				.getInPriorityOrder(Arrays.asList(A2, B, C, W2, X));
 		assertThat(actual, nameMatcher(C, W2, B, A2, X));
 	}
 

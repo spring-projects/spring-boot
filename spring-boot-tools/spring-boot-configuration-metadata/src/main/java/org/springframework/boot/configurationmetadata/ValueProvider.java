@@ -31,7 +31,7 @@ import java.util.Map;
  * @since 1.3.0
  */
 @SuppressWarnings("serial")
-public class ValueProvider implements Serializable{
+public class ValueProvider implements Serializable {
 
 	private String name;
 
@@ -59,8 +59,8 @@ public class ValueProvider implements Serializable{
 
 	@Override
 	public String toString() {
-		return "ValueProvider{" + "name='" + this.name + ", parameters="
-				+ this.parameters + '}';
+		return "ValueProvider{" + "name='" + this.name + ", parameters=" + this.parameters
+				+ '}';
 	}
 
 }

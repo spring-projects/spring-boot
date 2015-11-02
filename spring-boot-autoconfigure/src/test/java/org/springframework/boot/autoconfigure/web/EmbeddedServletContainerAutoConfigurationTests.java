@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -241,8 +242,8 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	}
 
 	@Component
-	public static class CallbackEmbeddedContainerCustomizer implements
-			EmbeddedServletContainerCustomizer {
+	public static class CallbackEmbeddedContainerCustomizer
+			implements EmbeddedServletContainerCustomizer {
 		@Override
 		public void customize(ConfigurableEmbeddedServletContainer container) {
 			container.setPort(9000);

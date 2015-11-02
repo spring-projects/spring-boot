@@ -34,9 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
-import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
-import org.springframework.boot.devtools.restart.classloader.RestartClassLoader;
+
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
@@ -115,29 +113,30 @@ public class RestartClassLoaderTests {
 
 	@Test
 	public void getResourceFromReloadableUrl() throws Exception {
-		String content = readString(this.reloadClassLoader
-				.getResourceAsStream(PACKAGE_PATH + "/Sample.txt"));
+		String content = readString(
+				this.reloadClassLoader.getResourceAsStream(PACKAGE_PATH + "/Sample.txt"));
 		assertThat(content, startsWith("fromchild"));
 	}
 
 	@Test
 	public void getResourceFromParent() throws Exception {
-		String content = readString(this.reloadClassLoader
-				.getResourceAsStream(PACKAGE_PATH + "/Parent.txt"));
+		String content = readString(
+				this.reloadClassLoader.getResourceAsStream(PACKAGE_PATH + "/Parent.txt"));
 		assertThat(content, startsWith("fromparent"));
 	}
 
 	@Test
 	public void getResourcesFiltersDuplicates() throws Exception {
-		List<URL> resources = toList(this.reloadClassLoader.getResources(PACKAGE_PATH
-				+ "/Sample.txt"));
+		List<URL> resources = toList(
+				this.reloadClassLoader.getResources(PACKAGE_PATH + "/Sample.txt"));
 		assertThat(resources.size(), equalTo(1));
 	}
 
 	@Test
 	public void loadClassFromReloadableUrl() throws Exception {
 		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".Sample");
-		assertThat(loaded.getClassLoader(), equalTo((ClassLoader) this.reloadClassLoader));
+		assertThat(loaded.getClassLoader(),
+				equalTo((ClassLoader) this.reloadClassLoader));
 	}
 
 	@Test
@@ -206,11 +205,12 @@ public class RestartClassLoaderTests {
 	@Test
 	public void getAddedClass() throws Exception {
 		String name = PACKAGE_PATH + "/SampleParent.class";
-		byte[] bytes = FileCopyUtils.copyToByteArray(getClass().getResourceAsStream(
-				"SampleParent.class"));
+		byte[] bytes = FileCopyUtils
+				.copyToByteArray(getClass().getResourceAsStream("SampleParent.class"));
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.ADDED, bytes));
 		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".SampleParent");
-		assertThat(loaded.getClassLoader(), equalTo((ClassLoader) this.reloadClassLoader));
+		assertThat(loaded.getClassLoader(),
+				equalTo((ClassLoader) this.reloadClassLoader));
 	}
 
 	private String readString(InputStream in) throws IOException {

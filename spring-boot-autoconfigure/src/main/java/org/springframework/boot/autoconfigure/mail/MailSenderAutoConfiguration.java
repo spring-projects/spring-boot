@@ -100,7 +100,7 @@ public class MailSenderAutoConfiguration {
 	 */
 	static class MailSenderCondition extends AnyNestedCondition {
 
-		public MailSenderCondition() {
+		MailSenderCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 

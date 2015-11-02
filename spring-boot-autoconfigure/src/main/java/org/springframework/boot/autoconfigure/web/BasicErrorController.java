@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -40,65 +39,85 @@ import org.springframework.web.servlet.ModelAndView;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Michael Stummvoll
+ * @author Stephane Nicoll
  * @see ErrorAttributes
+ * @see ErrorProperties
  */
 @Controller
-public class BasicErrorController implements ErrorController {
+@RequestMapping("${server.error.path:${error.path:/error}}")
+public class BasicErrorController extends AbstractErrorController {
 
-	@Value("${error.path:/error}")
-	private String errorPath;
+	private final ErrorProperties errorProperties;
 
-	private final ErrorAttributes errorAttributes;
-
+	/**
+	 * Create a new {@link BasicErrorController} instance.
+	 * @param errorAttributes the error attributes
+	 * @deprecated since 1.3.0 in favor of
+	 * {@link #BasicErrorController(ErrorAttributes, ErrorProperties)}
+	 */
+	@Deprecated
 	public BasicErrorController(ErrorAttributes errorAttributes) {
-		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
-		this.errorAttributes = errorAttributes;
+		this(errorAttributes, new ErrorProperties());
+	}
+
+	/**
+	 * Create a new {@link BasicErrorController} instance.
+	 * @param errorAttributes the error attributes
+	 * @param errorProperties configuration properties
+	 */
+	public BasicErrorController(ErrorAttributes errorAttributes,
+			ErrorProperties errorProperties) {
+		super(errorAttributes);
+		Assert.notNull(errorProperties, "ErrorProperties must not be null");
+		this.errorProperties = errorProperties;
 	}
 
 	@Override
 	public String getErrorPath() {
-		return this.errorPath;
+		return this.errorProperties.getPath();
 	}
 
-	@RequestMapping(value = "${error.path:/error}", produces = "text/html")
+	@RequestMapping(produces = "text/html")
 	public ModelAndView errorHtml(HttpServletRequest request) {
-		return new ModelAndView("error", getErrorAttributes(request, false));
+		Map<String, Object> model = getErrorAttributes(request,
+				isIncludeStackTrace(request, MediaType.TEXT_HTML));
+		return new ModelAndView("error", model);
 	}
 
-	@RequestMapping(value = "${error.path:/error}")
+	@RequestMapping
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
-		Map<String, Object> body = getErrorAttributes(request, getTraceParameter(request));
+		Map<String, Object> body = getErrorAttributes(request,
+				isIncludeStackTrace(request, MediaType.ALL));
 		HttpStatus status = getStatus(request);
 		return new ResponseEntity<Map<String, Object>>(body, status);
 	}
 
-	private boolean getTraceParameter(HttpServletRequest request) {
-		String parameter = request.getParameter("trace");
-		if (parameter == null) {
-			return false;
+	/**
+	 * Determine if the stacktrace attribute should be included.
+	 * @param request the source request
+	 * @param produces the media type produced (or {@code MediaType.ALL})
+	 * @return if the stacktrace attribute should be included
+	 */
+	protected boolean isIncludeStackTrace(HttpServletRequest request,
+			MediaType produces) {
+		IncludeStacktrace include = getErrorProperties().getIncludeStacktrace();
+		if (include == IncludeStacktrace.ALWAYS) {
+			return true;
 		}
-		return !"false".equals(parameter.toLowerCase());
+		if (include == IncludeStacktrace.ON_TRACE_PARAM) {
+			return getTraceParameter(request);
+		}
+		return false;
 	}
 
-	private Map<String, Object> getErrorAttributes(HttpServletRequest request,
-			boolean includeStackTrace) {
-		RequestAttributes requestAttributes = new ServletRequestAttributes(request);
-		return this.errorAttributes.getErrorAttributes(requestAttributes,
-				includeStackTrace);
-	}
-
-	private HttpStatus getStatus(HttpServletRequest request) {
-		Integer statusCode = (Integer) request
-				.getAttribute("javax.servlet.error.status_code");
-		if (statusCode != null) {
-			try {
-				return HttpStatus.valueOf(statusCode);
-			}
-			catch (Exception ex) {
-			}
-		}
-		return HttpStatus.INTERNAL_SERVER_ERROR;
+	/**
+	 * Provide access to the error properties.
+	 * @return the error properties
+	 */
+	protected ErrorProperties getErrorProperties() {
+		return this.errorProperties;
 	}
 
 }

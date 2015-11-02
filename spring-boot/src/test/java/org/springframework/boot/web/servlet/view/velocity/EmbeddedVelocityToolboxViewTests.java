@@ -27,6 +27,7 @@ import org.apache.struts.mock.MockHttpServletResponse;
 import org.apache.struts.mock.MockServletContext;
 import org.apache.velocity.tools.ToolContext;
 import org.junit.Test;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -43,8 +44,8 @@ import static org.junit.Assert.assertThat;
  */
 public class EmbeddedVelocityToolboxViewTests {
 
-	private static final String PATH = EmbeddedVelocityToolboxViewTests.class
-			.getPackage().getName().replace(".", "/");
+	private static final String PATH = EmbeddedVelocityToolboxViewTests.class.getPackage()
+			.getName().replace(".", "/");
 
 	@Test
 	public void loadsContextFromClassPath() throws Exception {
@@ -69,8 +70,8 @@ public class EmbeddedVelocityToolboxViewTests {
 		Map<String, Object> model = new LinkedHashMap<String, Object>();
 		HttpServletRequest request = new MockHttpServletRequest();
 		HttpServletResponse response = new MockHttpServletResponse();
-		ToolContext toolContext = (ToolContext) view.createVelocityContext(model,
-				request, response);
+		ToolContext toolContext = (ToolContext) view.createVelocityContext(model, request,
+				response);
 		context.close();
 		return toolContext;
 	}

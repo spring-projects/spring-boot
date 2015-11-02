@@ -20,6 +20,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.junit.Test;
+
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -75,8 +76,8 @@ public class EmbeddedServletContainerServletContextListenerTests {
 	private void servletContextListenerBeanIsCalled(Class<?> configuration) {
 		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ServletContextListenerBeanConfiguration.class, configuration);
-		ServletContextListener servletContextListener = context.getBean(
-				"servletContextListener", ServletContextListener.class);
+		ServletContextListener servletContextListener = context
+				.getBean("servletContextListener", ServletContextListener.class);
 		verify(servletContextListener).contextInitialized(any(ServletContextEvent.class));
 		context.close();
 	}

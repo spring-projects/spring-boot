@@ -40,6 +40,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.SpringApplication;
@@ -107,6 +108,8 @@ public class Restarter {
 
 	private final BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<LeakSafeThread>();
 
+	private final RestartListener[] listeners;
+
 	private boolean finished = false;
 
 	private Lock stopLock = new ReentrantLock();
@@ -117,10 +120,11 @@ public class Restarter {
 	 * @param args the application arguments
 	 * @param forceReferenceCleanup if soft/weak reference cleanup should be forced
 	 * @param initializer the restart initializer
+	 * @param listeners listeners to be notified of restarts
 	 * @see #initialize(String[])
 	 */
 	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer) {
+			RestartInitializer initializer, RestartListener... listeners) {
 		Assert.notNull(thread, "Thread must not be null");
 		Assert.notNull(args, "Args must not be null");
 		Assert.notNull(initializer, "Initializer must not be null");
@@ -133,6 +137,7 @@ public class Restarter {
 		this.args = args;
 		this.exceptionHandler = thread.getUncaughtExceptionHandler();
 		this.leakSafeThreads.add(new LeakSafeThread());
+		this.listeners = listeners;
 	}
 
 	private String getMainClassName(Thread thread) {
@@ -204,7 +209,7 @@ public class Restarter {
 	 */
 	public void addUrls(Collection<URL> urls) {
 		Assert.notNull(urls, "Urls must not be null");
-		this.urls.addAll(ChangeableUrls.fromUrls(urls).toList());
+		this.urls.addAll(urls);
 	}
 
 	/**
@@ -245,6 +250,7 @@ public class Restarter {
 
 			@Override
 			public Void call() throws Exception {
+				Restarter.this.beforeRestart();
 				Restarter.this.stop();
 				Restarter.this.start(failureHandler);
 				return null;
@@ -256,7 +262,7 @@ public class Restarter {
 	/**
 	 * Start the application.
 	 * @param failureHandler a failure handler for application that won't start
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	protected void start(FailureHandler failureHandler) throws Exception {
 		do {
@@ -282,8 +288,8 @@ public class Restarter {
 		ClassLoader classLoader = new RestartClassLoader(parent, urls, updatedFiles,
 				this.logger);
 		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Starting application " + this.mainClassName
-					+ " with URLs " + Arrays.asList(urls));
+			this.logger.debug("Starting application " + this.mainClassName + " with URLs "
+					+ Arrays.asList(urls));
 		}
 		return relaunch(classLoader);
 	}
@@ -292,7 +298,7 @@ public class Restarter {
 	 * Relaunch the application using the specified classloader.
 	 * @param classLoader the classloader to use
 	 * @return any exception that caused the launch to fail or {@code null}
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	protected Throwable relaunch(ClassLoader classLoader) throws Exception {
 		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName,
@@ -304,7 +310,7 @@ public class Restarter {
 
 	/**
 	 * Stop the application.
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	protected void stop() throws Exception {
 		this.logger.debug("Stopping application");
@@ -321,6 +327,12 @@ public class Restarter {
 		}
 		System.gc();
 		System.runFinalization();
+	}
+
+	private void beforeRestart() {
+		for (RestartListener listener : this.listeners) {
+			listener.beforeRestart();
+		}
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -374,8 +386,8 @@ public class Restarter {
 			Map<?, ?> map = ((Map<?, ?>) instance);
 			for (Iterator<?> iterator = map.keySet().iterator(); iterator.hasNext();) {
 				Object value = iterator.next();
-				if (value instanceof Class
-						&& ((Class<?>) value).getClassLoader() instanceof RestartClassLoader) {
+				if (value instanceof Class && ((Class<?>) value)
+						.getClassLoader() instanceof RestartClassLoader) {
 					iterator.remove();
 				}
 
@@ -394,6 +406,7 @@ public class Restarter {
 			}
 		}
 		catch (final OutOfMemoryError ex) {
+			// Expected
 		}
 	}
 
@@ -510,13 +523,15 @@ public class Restarter {
 	 * @param initializer the restart initializer
 	 * @param restartOnInitialize if the restarter should be restarted immediately when
 	 * the {@link RestartInitializer} returns non {@code null} results
+	 * @param listeners listeners to be notified of restarts
 	 */
 	public static void initialize(String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer, boolean restartOnInitialize) {
+			RestartInitializer initializer, boolean restartOnInitialize,
+			RestartListener... listeners) {
 		if (instance == null) {
 			synchronized (Restarter.class) {
 				instance = new Restarter(Thread.currentThread(), args,
-						forceReferenceCleanup, initializer);
+						forceReferenceCleanup, initializer, listeners);
 			}
 			instance.initialize(restartOnInitialize);
 		}
@@ -557,7 +572,7 @@ public class Restarter {
 
 		private Object result;
 
-		public LeakSafeThread() {
+		LeakSafeThread() {
 			setDaemon(false);
 		}
 

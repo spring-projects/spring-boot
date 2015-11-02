@@ -42,8 +42,8 @@ import org.springframework.util.ClassUtils;
  */
 @Configuration
 @Conditional(NeedsWebSecurityCondition.class)
-public class OAuth2SsoDefaultConfiguration extends WebSecurityConfigurerAdapter implements
-		Ordered {
+public class OAuth2SsoDefaultConfiguration extends WebSecurityConfigurerAdapter
+		implements Ordered {
 
 	@Autowired
 	BeanFactory beanFactory;
@@ -62,10 +62,9 @@ public class OAuth2SsoDefaultConfiguration extends WebSecurityConfigurerAdapter 
 		if (this.sso.getFilterOrder() != null) {
 			return this.sso.getFilterOrder();
 		}
-		if (ClassUtils
-				.isPresent(
-						"org.springframework.boot.actuate.autoconfigure.ManagementServerProperties",
-						null)) {
+		if (ClassUtils.isPresent(
+				"org.springframework.boot.actuate.autoconfigure.ManagementServerProperties",
+				null)) {
 			// If > BASIC_AUTH_ORDER then the existing rules for the actuator
 			// endpoints will take precedence. This value is < BASIC_AUTH_ORDER.
 			return SecurityProperties.ACCESS_OVERRIDE_ORDER - 5;
@@ -78,13 +77,13 @@ public class OAuth2SsoDefaultConfiguration extends WebSecurityConfigurerAdapter 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			String[] enablers = context.getBeanFactory().getBeanNamesForAnnotation(
-					EnableOAuth2Sso.class);
+			String[] enablers = context.getBeanFactory()
+					.getBeanNamesForAnnotation(EnableOAuth2Sso.class);
 			for (String name : enablers) {
 				if (context.getBeanFactory().isTypeMatch(name,
 						WebSecurityConfigurerAdapter.class)) {
-					return ConditionOutcome
-							.noMatch("found @EnableOAuth2Sso on a WebSecurityConfigurerAdapter");
+					return ConditionOutcome.noMatch(
+							"found @EnableOAuth2Sso on a WebSecurityConfigurerAdapter");
 				}
 			}
 			return ConditionOutcome

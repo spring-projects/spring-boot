@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -75,7 +76,8 @@ public class ApplicationPidFileWriterTests {
 		File file = this.temporaryFolder.newFile();
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.onApplicationEvent(EVENT);
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
+		assertThat(FileCopyUtils.copyToString(new FileReader(file)),
+				not(isEmptyString()));
 	}
 
 	@Test
@@ -92,24 +94,26 @@ public class ApplicationPidFileWriterTests {
 	@Test
 	public void overridePidFileWithSpring() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		SpringApplicationEvent event = createPreparedEvent("spring.pidfile",
+		SpringApplicationEvent event = createPreparedEvent("spring.pid.file",
 				file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
 		listener.onApplicationEvent(event);
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
+		assertThat(FileCopyUtils.copyToString(new FileReader(file)),
+				not(isEmptyString()));
 	}
 
 	@Test
 	public void differentEventTypes() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		SpringApplicationEvent event = createEnvironmentPreparedEvent("spring.pidfile",
+		SpringApplicationEvent event = createEnvironmentPreparedEvent("spring.pid.file",
 				file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
 		listener.onApplicationEvent(event);
 		assertThat(FileCopyUtils.copyToString(new FileReader(file)), isEmptyString());
 		listener.setTriggerEventType(ApplicationEnvironmentPreparedEvent.class);
 		listener.onApplicationEvent(event);
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
+		assertThat(FileCopyUtils.copyToString(new FileReader(file)),
+				not(isEmptyString()));
 	}
 
 	@Test
@@ -117,9 +121,10 @@ public class ApplicationPidFileWriterTests {
 		File file = this.temporaryFolder.newFile();
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.setTriggerEventType(ApplicationStartedEvent.class);
-		listener.onApplicationEvent(new ApplicationStartedEvent(new SpringApplication(),
-				new String[] {}));
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
+		listener.onApplicationEvent(
+				new ApplicationStartedEvent(new SpringApplication(), new String[] {}));
+		assertThat(FileCopyUtils.copyToString(new FileReader(file)),
+				not(isEmptyString()));
 	}
 
 	@Test
@@ -161,9 +166,11 @@ public class ApplicationPidFileWriterTests {
 				new String[] {}, environment);
 	}
 
-	private SpringApplicationEvent createPreparedEvent(String propName, String propValue) {
+	private SpringApplicationEvent createPreparedEvent(String propName,
+			String propValue) {
 		ConfigurableEnvironment environment = createEnvironment(propName, propValue);
-		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
+		ConfigurableApplicationContext context = mock(
+				ConfigurableApplicationContext.class);
 		given(context.getEnvironment()).willReturn(environment);
 		return new ApplicationPreparedEvent(new SpringApplication(), new String[] {},
 				context);

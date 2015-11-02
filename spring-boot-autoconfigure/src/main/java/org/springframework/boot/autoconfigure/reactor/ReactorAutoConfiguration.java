@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.reactor;
 
+import reactor.Environment;
+import reactor.bus.EventBus;
+import reactor.spring.context.config.EnableReactor;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -23,10 +27,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import reactor.Environment;
-import reactor.bus.EventBus;
-import reactor.spring.context.config.EnableReactor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Reactor.

@@ -107,10 +107,10 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		for (ArtifactsFilter additionalFilter : additionalFilters) {
 			filters.addFilter(additionalFilter);
 		}
-		filters.addFilter(new ArtifactIdFilter("",
-				cleanFilterConfig(this.excludeArtifactIds)));
-		filters.addFilter(new MatchingGroupIdFilter(
-				cleanFilterConfig(this.excludeGroupIds)));
+		filters.addFilter(
+				new ArtifactIdFilter("", cleanFilterConfig(this.excludeArtifactIds)));
+		filters.addFilter(
+				new MatchingGroupIdFilter(cleanFilterConfig(this.excludeGroupIds)));
 		if (this.includes != null && !this.includes.isEmpty()) {
 			filters.addFilter(new IncludeFilter(this.includes));
 		}

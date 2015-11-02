@@ -19,6 +19,7 @@ package org.springframework.boot.devtools.classpath;
 import java.io.File;
 
 import org.junit.Test;
+
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 
@@ -72,6 +73,15 @@ public class PatternClassPathRestartStrategyTests {
 		String mavenFolder = "META-INF/maven/org.springframework.boot/spring-boot-devtools";
 		assertRestartRequired(strategy, mavenFolder + "/pom.xml", false);
 		assertRestartRequired(strategy, mavenFolder + "/pom.properties", false);
+	}
+
+	@Test
+	public void testChange() {
+		ClassPathRestartStrategy strategy = createStrategy(
+				"**/*Test.class,**/*Tests.class");
+		assertRestartRequired(strategy, "com/example/ExampleTests.class", false);
+		assertRestartRequired(strategy, "com/example/ExampleTest.class", false);
+		assertRestartRequired(strategy, "com/example/Example.class", true);
 	}
 
 	private ClassPathRestartStrategy createStrategy(String pattern) {

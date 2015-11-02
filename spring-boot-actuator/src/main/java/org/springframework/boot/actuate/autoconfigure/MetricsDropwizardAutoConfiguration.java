@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import com.codahale.metrics.MetricRegistry;
+
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
@@ -27,8 +29,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.codahale.metrics.MetricRegistry;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Dropwizard-based metrics.
@@ -50,13 +50,16 @@ public class MetricsDropwizardAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean({ DropwizardMetricServices.class, CounterService.class,
 			GaugeService.class })
-	public DropwizardMetricServices dropwizardMetricServices(MetricRegistry metricRegistry) {
+	public DropwizardMetricServices dropwizardMetricServices(
+			MetricRegistry metricRegistry) {
 		return new DropwizardMetricServices(metricRegistry);
 	}
 
 	@Bean
-	public MetricReaderPublicMetrics dropwizardPublicMetrics(MetricRegistry metricRegistry) {
-		MetricRegistryMetricReader reader = new MetricRegistryMetricReader(metricRegistry);
+	public MetricReaderPublicMetrics dropwizardPublicMetrics(
+			MetricRegistry metricRegistry) {
+		MetricRegistryMetricReader reader = new MetricRegistryMetricReader(
+				metricRegistry);
 		return new MetricReaderPublicMetrics(reader);
 	}
 

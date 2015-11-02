@@ -20,6 +20,7 @@ import javax.jms.ConnectionFactory;
 import javax.transaction.TransactionManager;
 
 import org.apache.activemq.artemis.jms.client.ActiveMQXAConnectionFactory;
+
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -46,10 +47,10 @@ class ArtemisXAConnectionFactoryConfiguration {
 	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
 	public ConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory,
 			ArtemisProperties properties, XAConnectionFactoryWrapper wrapper)
-			throws Exception {
-		return wrapper.wrapConnectionFactory(new ArtemisConnectionFactoryFactory(
-				beanFactory, properties)
-				.createConnectionFactory(ActiveMQXAConnectionFactory.class));
+					throws Exception {
+		return wrapper.wrapConnectionFactory(
+				new ArtemisConnectionFactoryFactory(beanFactory, properties)
+						.createConnectionFactory(ActiveMQXAConnectionFactory.class));
 	}
 
 	@Bean

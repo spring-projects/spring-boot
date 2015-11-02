@@ -19,6 +19,7 @@ package org.springframework.boot.devtools.restart;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -85,7 +86,8 @@ public class RestartApplicationListenerTests {
 		Restarter.clearInstance();
 		RestartApplicationListener listener = new RestartApplicationListener();
 		SpringApplication application = new SpringApplication();
-		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
+		ConfigurableApplicationContext context = mock(
+				ConfigurableApplicationContext.class);
 		listener.onApplicationEvent(new ApplicationStartedEvent(application, ARGS));
 		assertThat(Restarter.getInstance(), not(nullValue()));
 		assertThat(Restarter.getInstance().isFinished(), equalTo(false));
@@ -94,8 +96,8 @@ public class RestartApplicationListenerTests {
 					context, new RuntimeException()));
 		}
 		else {
-			listener.onApplicationEvent(new ApplicationReadyEvent(application, ARGS,
-					context));
+			listener.onApplicationEvent(
+					new ApplicationReadyEvent(application, ARGS, context));
 		}
 	}
 

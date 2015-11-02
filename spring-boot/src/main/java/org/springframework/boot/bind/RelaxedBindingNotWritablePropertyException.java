@@ -20,14 +20,14 @@ import org.springframework.beans.NotWritablePropertyException;
 
 /**
  * A custom {@link NotWritablePropertyException} that is thrown when a failure occurs
- * during relaxed binding
+ * during relaxed binding.
  *
- * @see RelaxedDataBinder
  * @author Andy Wilkinson
  * @since 1.3.0
+ * @see RelaxedDataBinder
  */
-public class RelaxedBindingNotWritablePropertyException extends
-		NotWritablePropertyException {
+public class RelaxedBindingNotWritablePropertyException
+		extends NotWritablePropertyException {
 
 	private final String message;
 

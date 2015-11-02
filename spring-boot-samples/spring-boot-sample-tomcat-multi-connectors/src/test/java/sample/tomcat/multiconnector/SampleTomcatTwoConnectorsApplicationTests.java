@@ -29,31 +29,30 @@ import javax.net.ssl.X509TrustManager;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
-import sample.tomcat.multiconnector.SampleTomcatTwoConnectorsApplication;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Basic integration tests for 2 connector demo application.
+ * Basic integration tests for {@link SampleTomcatTwoConnectorsApplication}.
  *
  * @author Brock Mills
+ * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleTomcatTwoConnectorsApplication.class)
-@WebAppConfiguration
-@IntegrationTest("server.port=0")
+@WebIntegrationTest(randomPort = true)
 @DirtiesContext
 public class SampleTomcatTwoConnectorsApplicationTests {
 
@@ -72,15 +71,13 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 			X509TrustManager tm = new X509TrustManager() {
 
 				@Override
-				public void checkClientTrusted(
-						java.security.cert.X509Certificate[] chain, String authType)
-						throws java.security.cert.CertificateException {
+				public void checkClientTrusted(java.security.cert.X509Certificate[] chain,
+						String authType) throws java.security.cert.CertificateException {
 				}
 
 				@Override
-				public void checkServerTrusted(
-						java.security.cert.X509Certificate[] chain, String authType)
-						throws java.security.cert.CertificateException {
+				public void checkServerTrusted(java.security.cert.X509Certificate[] chain,
+						String authType) throws java.security.cert.CertificateException {
 				}
 
 				@Override
@@ -104,19 +101,21 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 				new HostnameVerifier() {
 
 					@Override
-					public boolean verify(final String hostname, final SSLSession session) {
+					public boolean verify(final String hostname,
+							final SSLSession session) {
 						return true; // these guys are alright by me...
 					}
 				});
 		template.setRequestFactory(factory);
 
-		ResponseEntity<String> entity = template.getForEntity("http://localhost:"
-				+ this.port + "/hello", String.class);
+		ResponseEntity<String> entity = template.getForEntity(
+				"http://localhost:" + this.context.getBean("port") + "/hello",
+				String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("hello", entity.getBody());
 
-		ResponseEntity<String> httpsEntity = template.getForEntity("https://localhost:"
-				+ this.context.getBean("port") + "/hello", String.class);
+		ResponseEntity<String> httpsEntity = template
+				.getForEntity("https://localhost:" + this.port + "/hello", String.class);
 		assertEquals(HttpStatus.OK, httpsEntity.getStatusCode());
 		assertEquals("hello", httpsEntity.getBody());
 

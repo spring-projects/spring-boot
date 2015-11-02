@@ -32,10 +32,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.zeroturnaround.zip.ZipUtil;
+
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
 import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
 import org.springframework.util.FileCopyUtils;
-import org.zeroturnaround.zip.ZipUtil;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -62,6 +63,7 @@ public class RepackagerTests {
 
 	private static final long JAN_1_1980;
 	private static final long JAN_1_1985;
+
 	static {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(1980, 0, 1, 0, 0, 0);
@@ -303,8 +305,8 @@ public class RepackagerTests {
 			@Override
 			public void doWithLibraries(LibraryCallback callback) throws IOException {
 				callback.library(new Library(libJarFile, LibraryScope.COMPILE));
-				callback.library(new Library(libJarFileToUnpack, LibraryScope.COMPILE,
-						true));
+				callback.library(
+						new Library(libJarFileToUnpack, LibraryScope.COMPILE, true));
 				callback.library(new Library(libNonJarFile, LibraryScope.COMPILE));
 			}
 		});
@@ -368,9 +370,8 @@ public class RepackagerTests {
 		Repackager repackager = new Repackager(file);
 		repackager.repackage(NO_LIBRARIES);
 		Manifest actualManifest = getManifest(file);
-		assertThat(
-				actualManifest.getMainAttributes().containsKey(
-						new Attributes.Name("Spring-Boot-Version")), equalTo(true));
+		assertThat(actualManifest.getMainAttributes()
+				.containsKey(new Attributes.Name("Spring-Boot-Version")), equalTo(true));
 	}
 
 	@Test
@@ -431,7 +432,8 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void unpackLibrariesTakePrecedenceOverExistingSourceEntries() throws Exception {
+	public void unpackLibrariesTakePrecedenceOverExistingSourceEntries()
+			throws Exception {
 		TestJarFile nested = new TestJarFile(this.temporaryFolder);
 		nested.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		final File nestedFile = nested.getFile();
@@ -522,7 +524,7 @@ public class RepackagerTests {
 
 		private final byte[] bytes;
 
-		public MockLauncherScript(String script) {
+		MockLauncherScript(String script) {
 			this.bytes = script.getBytes();
 		}
 

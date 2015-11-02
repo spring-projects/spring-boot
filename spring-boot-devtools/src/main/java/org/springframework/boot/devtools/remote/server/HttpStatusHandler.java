@@ -33,16 +33,16 @@ public class HttpStatusHandler implements Handler {
 	private final HttpStatus status;
 
 	/**
-	 * Create a new {@link HttpStatusHandler} instance that will respond with a HTTP OK 200
-	 * status.
+	 * Create a new {@link HttpStatusHandler} instance that will respond with a HTTP OK
+	 * 200 status.
 	 */
 	public HttpStatusHandler() {
 		this(HttpStatus.OK);
 	}
 
 	/**
-	 * Create a new {@link HttpStatusHandler} instance that will respond with the specified
-	 * status.
+	 * Create a new {@link HttpStatusHandler} instance that will respond with the
+	 * specified status.
 	 * @param status the status
 	 */
 	public HttpStatusHandler(HttpStatus status) {

@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mobile;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
@@ -90,8 +91,8 @@ public class SitePreferenceAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context
-				.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
+		assertNotNull(
+				this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
 	}
 
 	@Test
@@ -101,8 +102,8 @@ public class SitePreferenceAutoConfigurationTests {
 				"spring.mobile.sitepreference.enabled:true");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context
-				.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
+		assertNotNull(
+				this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -126,8 +127,8 @@ public class SitePreferenceAutoConfigurationTests {
 		this.context.refresh();
 		RequestMappingHandlerMapping mapping = this.context
 				.getBean(RequestMappingHandlerMapping.class);
-		HandlerInterceptor[] interceptors = mapping.getHandler(
-				new MockHttpServletRequest()).getInterceptors();
+		HandlerInterceptor[] interceptors = mapping
+				.getHandler(new MockHttpServletRequest()).getInterceptors();
 		assertThat(interceptors,
 				hasItemInArray(instanceOf(SitePreferenceHandlerInterceptor.class)));
 	}

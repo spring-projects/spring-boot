@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,16 +25,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
-
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
@@ -43,6 +33,16 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.MetricRegistryListener;
 import com.codahale.metrics.Sampling;
 import com.codahale.metrics.Timer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 /**
  * A Spring Boot {@link MetricReader} that reads metrics from a Dropwizard
@@ -240,8 +240,8 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 			result = new HashSet<String>();
 		}
 		if (result.isEmpty()) {
-			for (PropertyDescriptor descriptor : BeanUtils.getPropertyDescriptors(metric
-					.getClass())) {
+			for (PropertyDescriptor descriptor : BeanUtils
+					.getPropertyDescriptors(metric.getClass())) {
 				if (ClassUtils.isAssignable(Number.class, descriptor.getPropertyType())) {
 					result.add(descriptor.getName());
 				}

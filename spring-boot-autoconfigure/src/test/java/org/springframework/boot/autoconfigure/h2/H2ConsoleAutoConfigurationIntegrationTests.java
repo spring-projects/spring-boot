@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.h2;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfigurationIntegrationTests.TestConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
@@ -74,8 +75,8 @@ public class H2ConsoleAutoConfigurationIntegrationTests {
 	public void someOtherPrincipal() throws Exception {
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
 				.apply(springSecurity()).build();
-		mockMvc.perform(get("/h2-console/").with(user("test").roles("FOO"))).andExpect(
-				status().isForbidden());
+		mockMvc.perform(get("/h2-console/").with(user("test").roles("FOO")))
+				.andExpect(status().isForbidden());
 	}
 
 	@Configuration

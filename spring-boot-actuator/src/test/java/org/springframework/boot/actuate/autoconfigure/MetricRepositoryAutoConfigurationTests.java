@@ -16,8 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.actuate.metrics.buffer.BufferCounterService;
@@ -29,9 +32,6 @@ import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.MetricRegistry;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -65,8 +65,8 @@ public class MetricRepositoryAutoConfigurationTests {
 		assertNotNull(this.context.getBean(BufferCounterService.class));
 		assertNotNull(this.context.getBean(PrefixMetricReader.class));
 		gaugeService.submit("foo", 2.7);
-		assertEquals(2.7, this.context.getBean(MetricReader.class).findOne("gauge.foo")
-				.getValue());
+		assertEquals(2.7,
+				this.context.getBean(MetricReader.class).findOne("gauge.foo").getValue());
 	}
 
 	@Test

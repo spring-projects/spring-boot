@@ -20,6 +20,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -66,8 +67,8 @@ public class JpaRepositoriesAutoConfigurationTests {
 	public void testOverrideRepositoryConfiguration() throws Exception {
 		prepareApplicationContext(CustomConfiguration.class);
 
-		assertNotNull(this.context
-				.getBean(org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class));
+		assertNotNull(this.context.getBean(
+				org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class));
 		assertNotNull(this.context.getBean(PlatformTransactionManager.class));
 		assertNotNull(this.context.getBean(EntityManagerFactory.class));
 	}

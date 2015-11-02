@@ -29,6 +29,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
@@ -80,7 +81,8 @@ public class ClassPathFileChangeListenerTests {
 	public void restartStrategyMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("RestartStrategy must not be null");
-		new ClassPathFileChangeListener(this.eventPublisher, null, this.fileSystemWatcher);
+		new ClassPathFileChangeListener(this.eventPublisher, null,
+				this.fileSystemWatcher);
 	}
 
 	@Test

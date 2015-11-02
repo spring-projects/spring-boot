@@ -31,11 +31,15 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 import javax.transaction.xa.XAResource;
 
+import com.atomikos.icatch.config.UserTransactionService;
+import com.atomikos.icatch.jta.UserTransactionManager;
+import com.atomikos.jms.AtomikosConnectionFactoryBean;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -55,17 +59,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.FileSystemUtils;
 
-import com.atomikos.icatch.config.UserTransactionService;
-import com.atomikos.icatch.jta.UserTransactionManager;
-import com.atomikos.jms.AtomikosConnectionFactoryBean;
-
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link JtaAutoConfiguration}.
@@ -109,8 +109,8 @@ public class JtaAutoConfigurationTests {
 		this.context.refresh();
 		assertEquals(0, this.context.getBeansOfType(JtaTransactionManager.class).size());
 		assertEquals(0, this.context.getBeansOfType(XADataSourceWrapper.class).size());
-		assertEquals(0, this.context.getBeansOfType(XAConnectionFactoryWrapper.class)
-				.size());
+		assertEquals(0,
+				this.context.getBeansOfType(XAConnectionFactoryWrapper.class).size());
 	}
 
 	@Test
@@ -276,10 +276,10 @@ public class JtaAutoConfigurationTests {
 			XASession session = mock(XASession.class);
 			TemporaryQueue queue = mock(TemporaryQueue.class);
 			XAResource resource = mock(XAResource.class);
-			when(connectionFactory.createXAConnection()).thenReturn(connection);
-			when(connection.createXASession()).thenReturn(session);
-			when(session.createTemporaryQueue()).thenReturn(queue);
-			when(session.getXAResource()).thenReturn(resource);
+			given(connectionFactory.createXAConnection()).willReturn(connection);
+			given(connection.createXASession()).willReturn(session);
+			given(session.createTemporaryQueue()).willReturn(queue);
+			given(session.getXAResource()).willReturn(resource);
 			return wrapper.wrapConnectionFactory(connectionFactory);
 		}
 

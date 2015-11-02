@@ -18,6 +18,8 @@ package org.springframework.boot.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -32,6 +34,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
@@ -41,7 +44,9 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.support.GenericApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -78,14 +83,16 @@ public class LoggingApplicationListenerTests {
 	public void init() throws SecurityException, IOException {
 		LogManager.getLogManager().readConfiguration(
 				JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
-		this.initializer.onApplicationEvent(new ApplicationStartedEvent(
-				new SpringApplication(), NO_ARGS));
+		this.initializer.onApplicationEvent(
+				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
 		new File("target/foo.log").delete();
 		new File(tmpDir() + "/spring.log").delete();
 	}
 
 	@After
 	public void clear() {
+		LoggingSystem.get(getClass().getClassLoader()).cleanUp();
+		System.clearProperty(LoggingSystem.class.getName());
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
@@ -93,12 +100,11 @@ public class LoggingApplicationListenerTests {
 		if (this.context != null) {
 			this.context.close();
 		}
-		LoggingSystem.get(getClass().getClassLoader()).cleanUp();
 	}
 
 	private String tmpDir() {
-		String path = this.context.getEnvironment().resolvePlaceholders(
-				"${java.io.tmpdir}");
+		String path = this.context.getEnvironment()
+				.resolvePlaceholders("${java.io.tmpdir}");
 		path = path.replace("\\", "/");
 		if (path.endsWith("/")) {
 			path = path.substring(0, path.length() - 1);
@@ -127,7 +133,8 @@ public class LoggingApplicationListenerTests {
 		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Wrong output:\n" + output, output.contains("???"));
-		assertTrue("Wrong output:\n" + output, output.startsWith("LOG_FILE_IS_UNDEFINED"));
+		assertTrue("Wrong output:\n" + output,
+				output.startsWith("LOG_FILE_IS_UNDEFINED"));
 		assertTrue("Wrong output:\n" + output, output.endsWith("BOOTBOOT"));
 	}
 
@@ -136,18 +143,16 @@ public class LoggingApplicationListenerTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"logging.config: doesnotexist.xml");
 		this.thrown.expect(IllegalStateException.class);
-		this.outputCapture
-				.expect(containsString("Logging system failed to initialize using configuration from 'doesnotexist.xml'"));
+		this.outputCapture.expect(containsString(
+				"Logging system failed to initialize using configuration from 'doesnotexist.xml'"));
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 	}
 
 	@Test
 	public void azureDefaultLoggingConfigDoesNotCauseAFailure() throws Exception {
-		EnvironmentTestUtils
-				.addEnvironment(
-						this.context,
-						"logging.config: -Djava.util.logging.config.file=\"d:\\home\\site\\wwwroot\\bin\\apache-tomcat-7.0.52\\conf\\logging.properties\"");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.config: -Djava.util.logging.config.file=\"d:\\home\\site\\wwwroot\\bin\\apache-tomcat-7.0.52\\conf\\logging.properties\"");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.info("Hello world");
@@ -162,8 +167,8 @@ public class LoggingApplicationListenerTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"logging.config: classpath:logback-broken.xml");
 		this.thrown.expect(IllegalStateException.class);
-		this.outputCapture
-				.expect(containsString("Logging system failed to initialize using configuration from 'classpath:logback-broken.xml'"));
+		this.outputCapture.expect(containsString(
+				"Logging system failed to initialize using configuration from 'classpath:logback-broken.xml'"));
 		this.outputCapture.expect(containsString("ConsolAppender"));
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -203,7 +208,8 @@ public class LoggingApplicationListenerTests {
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.startsWith("target/foo/spring.log"));
+		assertTrue("Wrong output:\n" + output,
+				output.startsWith("target/foo/spring.log"));
 	}
 
 	@Test
@@ -330,15 +336,54 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void overrideExceptionConversionWord() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"logging.exceptionConversionWord:%ex");
+	public void defaultExceptionConversionWord() throws Exception {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.outputCapture.expect(containsString("Hello world"));
-		this.outputCapture.expect(not(containsString("???")));
-		this.outputCapture.expect(not(containsString("[junit-")));
-		this.logger.info("Hello world", new RuntimeException("Expected"));
+		this.outputCapture.expect(
+				not(containsString("Wrapped by: java.lang.RuntimeException: Wrapper")));
+		this.logger.info("Hello world",
+				new RuntimeException("Wrapper", new RuntimeException("Expected")));
+	}
+
+	@Test
+	public void overrideExceptionConversionWord() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.exceptionConversionWord:%rEx");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.outputCapture.expect(containsString("Hello world"));
+		this.outputCapture.expect(
+				containsString("Wrapped by: java.lang.RuntimeException: Wrapper"));
+		this.logger.info("Hello world",
+				new RuntimeException("Wrapper", new RuntimeException("Expected")));
+	}
+
+	@Test
+	public void shutdownHookIsNotRegisteredByDefault() throws Exception {
+		TestLoggingApplicationListener listener = new TestLoggingApplicationListener();
+		System.setProperty(LoggingSystem.class.getName(),
+				TestShutdownHandlerLoggingSystem.class.getName());
+		listener.onApplicationEvent(
+				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
+		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
+		assertThat(listener.shutdownHook, is(nullValue()));
+	}
+
+	@Test
+	public void shutdownHookCanBeRegistered() throws Exception {
+		TestLoggingApplicationListener listener = new TestLoggingApplicationListener();
+		System.setProperty(LoggingSystem.class.getName(),
+				TestShutdownHandlerLoggingSystem.class.getName());
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.register_shutdown_hook:true");
+		listener.onApplicationEvent(
+				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
+		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
+		assertThat(listener.shutdownHook, is(not(nullValue())));
+		listener.shutdownHook.start();
+		assertThat(TestShutdownHandlerLoggingSystem.shutdownLatch.await(30,
+				TimeUnit.SECONDS), is(true));
 	}
 
 	private boolean bridgeHandlerInstalled() {
@@ -351,4 +396,61 @@ public class LoggingApplicationListenerTests {
 		}
 		return false;
 	}
+
+	public static class TestShutdownHandlerLoggingSystem extends AbstractLoggingSystem {
+
+		private static CountDownLatch shutdownLatch;
+
+		public TestShutdownHandlerLoggingSystem(ClassLoader classLoader) {
+			super(classLoader);
+			TestShutdownHandlerLoggingSystem.shutdownLatch = new CountDownLatch(1);
+		}
+
+		@Override
+		protected String[] getStandardConfigLocations() {
+			return new String[] { "foo.bar" };
+		}
+
+		@Override
+		protected void loadDefaults(LoggingInitializationContext initializationContext,
+				LogFile logFile) {
+		}
+
+		@Override
+		protected void loadConfiguration(
+				LoggingInitializationContext initializationContext, String location,
+				LogFile logFile) {
+		}
+
+		@Override
+		public void setLogLevel(String loggerName, LogLevel level) {
+
+		}
+
+		@Override
+		public Runnable getShutdownHandler() {
+			return new Runnable() {
+
+				@Override
+				public void run() {
+					TestShutdownHandlerLoggingSystem.shutdownLatch.countDown();
+				}
+
+			};
+		}
+
+	}
+
+	public static class TestLoggingApplicationListener
+			extends LoggingApplicationListener {
+
+		private Thread shutdownHook;
+
+		@Override
+		void registerShutdownHook(Thread shutdownHook) {
+			this.shutdownHook = shutdownHook;
+		}
+
+	}
+
 }

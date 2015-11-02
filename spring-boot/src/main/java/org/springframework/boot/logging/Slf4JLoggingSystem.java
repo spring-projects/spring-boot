@@ -17,6 +17,7 @@
 package org.springframework.boot.logging;
 
 import org.slf4j.bridge.SLF4JBridgeHandler;
+
 import org.springframework.util.ClassUtils;
 
 /**
@@ -46,7 +47,7 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 
 	private void configureJdkLoggingBridgeHandler() {
 		try {
-			if (bridgeHandlerIsAvailable()) {
+			if (isBridgeHandlerAvailable()) {
 				removeJdkLoggingBridgeHandler();
 				SLF4JBridgeHandler.install();
 			}
@@ -56,13 +57,13 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
-	private boolean bridgeHandlerIsAvailable() {
+	protected final boolean isBridgeHandlerAvailable() {
 		return ClassUtils.isPresent(BRIDGE_HANDLER, getClassLoader());
 	}
 
 	private void removeJdkLoggingBridgeHandler() {
 		try {
-			if (bridgeHandlerIsAvailable()) {
+			if (isBridgeHandlerAvailable()) {
 				try {
 					SLF4JBridgeHandler.removeHandlersForRootLogger();
 				}

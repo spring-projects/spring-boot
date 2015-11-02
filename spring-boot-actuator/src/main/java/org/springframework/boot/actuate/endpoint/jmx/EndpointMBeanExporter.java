@@ -26,8 +26,10 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -48,8 +50,6 @@ import org.springframework.jmx.export.naming.SelfNaming;
 import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.util.ObjectUtils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 /**
  * {@link ApplicationListener} that registers all known {@link Endpoint}s with an
  * {@link MBeanServer} using the {@link MBeanExporter} located from the application
@@ -58,9 +58,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecycle,
-		ApplicationContextAware {
+public class EndpointMBeanExporter extends MBeanExporter
+		implements SmartLifecycle, ApplicationContextAware {
 
+	/**
+	 * The default JMX domain.
+	 */
 	public static final String DEFAULT_DOMAIN = "org.springframework.boot";
 
 	private static Log logger = LogFactory.getLog(EndpointMBeanExporter.class);
@@ -136,7 +139,8 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 	}
 
 	@Override
-	public void setEnsureUniqueRuntimeObjectNames(boolean ensureUniqueRuntimeObjectNames) {
+	public void setEnsureUniqueRuntimeObjectNames(
+			boolean ensureUniqueRuntimeObjectNames) {
 		super.setEnsureUniqueRuntimeObjectNames(ensureUniqueRuntimeObjectNames);
 		this.ensureUniqueRuntimeObjectNames = ensureUniqueRuntimeObjectNames;
 	}
@@ -206,9 +210,8 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 						+ ObjectUtils.getIdentityHexString(this.applicationContext));
 			}
 			if (this.ensureUniqueRuntimeObjectNames) {
-				builder.append(",identity="
-						+ ObjectUtils.getIdentityHexString(((EndpointMBean) bean)
-								.getEndpoint()));
+				builder.append(",identity=" + ObjectUtils
+						.getIdentityHexString(((EndpointMBean) bean).getEndpoint()));
 			}
 			builder.append(getStaticNames());
 			return ObjectNameManager.getInstance(builder.toString());

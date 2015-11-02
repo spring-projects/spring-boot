@@ -18,14 +18,14 @@ package org.springframework.boot.logging.logback;
 
 import java.util.Collections;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.LoggingEvent;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.boot.ansi.AnsiOutput;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.spi.LoggingEvent;
+import org.springframework.boot.ansi.AnsiOutput;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

@@ -27,9 +27,13 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  */
-class CacheConfigurations {
+final class CacheConfigurations {
+
+	private CacheConfigurations() {
+	}
 
 	private static final Map<CacheType, Class<?>> MAPPINGS;
+
 	static {
 		Map<CacheType, Class<?>> mappings = new HashMap<CacheType, Class<?>>();
 		mappings.put(CacheType.GENERIC, GenericCacheConfiguration.class);
@@ -56,8 +60,8 @@ class CacheConfigurations {
 				return entry.getKey();
 			}
 		}
-		throw new IllegalStateException("Unknown configuration class "
-				+ configurationClassName);
+		throw new IllegalStateException(
+				"Unknown configuration class " + configurationClassName);
 	}
 
 }

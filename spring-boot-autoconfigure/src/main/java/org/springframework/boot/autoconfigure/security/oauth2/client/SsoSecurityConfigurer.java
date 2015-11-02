@@ -31,7 +31,7 @@ class SsoSecurityConfigurer {
 
 	private BeanFactory beanFactory;
 
-	public SsoSecurityConfigurer(BeanFactory beanFactory) {
+	SsoSecurityConfigurer(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 	}
 
@@ -57,12 +57,12 @@ class SsoSecurityConfigurer {
 		return filter;
 	}
 
-	private static class OAuth2ClientAuthenticationConfigurer extends
-			SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
+	private static class OAuth2ClientAuthenticationConfigurer
+			extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
 		private OAuth2ClientAuthenticationProcessingFilter filter;
 
-		public OAuth2ClientAuthenticationConfigurer(
+		OAuth2ClientAuthenticationConfigurer(
 				OAuth2ClientAuthenticationProcessingFilter filter) {
 			this.filter = filter;
 		}
@@ -70,8 +70,8 @@ class SsoSecurityConfigurer {
 		@Override
 		public void configure(HttpSecurity builder) throws Exception {
 			OAuth2ClientAuthenticationProcessingFilter ssoFilter = this.filter;
-			ssoFilter.setSessionAuthenticationStrategy(builder
-					.getSharedObject(SessionAuthenticationStrategy.class));
+			ssoFilter.setSessionAuthenticationStrategy(
+					builder.getSharedObject(SessionAuthenticationStrategy.class));
 			builder.addFilterAfter(ssoFilter,
 					AbstractPreAuthenticatedProcessingFilter.class);
 		}

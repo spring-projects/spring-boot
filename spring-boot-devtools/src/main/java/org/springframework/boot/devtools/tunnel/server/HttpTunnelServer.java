@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayload;
 import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayloadForwarder;
 import org.springframework.http.HttpStatus;
@@ -37,11 +38,11 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.util.Assert;
 
 /**
- * A server that can be used to tunnel TCP traffic over HTTP. Similar in design to the <a
- * href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over Synchronous
- * HTTP (BOSH)</a> XMPP extension protocol, the server uses long polling with HTTP
- * requests held open until a response is available. A typical traffic pattern would be as
- * follows:
+ * A server that can be used to tunnel TCP traffic over HTTP. Similar in design to the
+ * <a href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over
+ * Synchronous HTTP (BOSH)</a> XMPP extension protocol, the server uses long polling with
+ * HTTP requests held open until a response is available. A typical traffic pattern would
+ * be as follows:
  *
  * <pre>
  * [ CLIENT ]                      [ SERVER ]
@@ -132,7 +133,7 @@ public class HttpTunnelServer {
 	 * Handle an incoming HTTP connection.
 	 * @param request the HTTP request
 	 * @param response the HTTP response
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public void handle(ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException {
@@ -142,7 +143,7 @@ public class HttpTunnelServer {
 	/**
 	 * Handle an incoming HTTP connection.
 	 * @param httpConnection the HTTP connection
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	protected void handle(HttpConnection httpConnection) throws IOException {
 		try {
@@ -157,7 +158,7 @@ public class HttpTunnelServer {
 	/**
 	 * Returns the active server thread, creating and starting it if necessary.
 	 * @return the {@code ServerThread} (never {@code null})
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	protected ServerThread getServerThread() throws IOException {
 		synchronized (this) {
@@ -193,7 +194,8 @@ public class HttpTunnelServer {
 	 * @param disconnectTimeout the disconnect timeout in milliseconds
 	 */
 	public void setDisconnectTimeout(long disconnectTimeout) {
-		Assert.isTrue(disconnectTimeout > 0, "DisconnectTimeout must be a positive value");
+		Assert.isTrue(disconnectTimeout > 0,
+				"DisconnectTimeout must be a positive value");
 		this.disconnectTimeout = disconnectTimeout;
 	}
 
@@ -277,7 +279,8 @@ public class HttpTunnelServer {
 				Iterator<HttpConnection> iterator = this.httpConnections.iterator();
 				while (iterator.hasNext()) {
 					HttpConnection httpConnection = iterator.next();
-					if (httpConnection.isOlderThan(HttpTunnelServer.this.longPollTimeout)) {
+					if (httpConnection
+							.isOlderThan(HttpTunnelServer.this.longPollTimeout)) {
 						httpConnection.respond(HttpStatus.NO_CONTENT);
 						iterator.remove();
 					}
@@ -316,7 +319,7 @@ public class HttpTunnelServer {
 		/**
 		 * Handle an incoming {@link HttpConnection}.
 		 * @param httpConnection the connection to handle.
-		 * @throws IOException
+		 * @throws IOException in case of I/O errors
 		 */
 		public void handleIncomingHttp(HttpConnection httpConnection) throws IOException {
 			if (this.closed) {
@@ -324,8 +327,8 @@ public class HttpTunnelServer {
 			}
 			synchronized (this.httpConnections) {
 				while (this.httpConnections.size() > 1) {
-					this.httpConnections.removeFirst().respond(
-							HttpStatus.TOO_MANY_REQUESTS);
+					this.httpConnections.removeFirst()
+							.respond(HttpStatus.TOO_MANY_REQUESTS);
 				}
 				this.lastHttpRequestTime = System.currentTimeMillis();
 				this.httpConnections.addLast(httpConnection);
@@ -428,6 +431,7 @@ public class HttpTunnelServer {
 						}
 					}
 					catch (InterruptedException ex) {
+						// Ignore
 					}
 				}
 			}
@@ -438,14 +442,14 @@ public class HttpTunnelServer {
 		 * @return if the request is a signal to disconnect
 		 */
 		public boolean isDisconnectRequest() {
-			return DISCONNECT_MEDIA_TYPE.equals(this.request.getHeaders()
-					.getContentType());
+			return DISCONNECT_MEDIA_TYPE
+					.equals(this.request.getHeaders().getContentType());
 		}
 
 		/**
 		 * Send a HTTP status response.
 		 * @param status the status to send
-		 * @throws IOException
+		 * @throws IOException in case of I/O errors
 		 */
 		public void respond(HttpStatus status) throws IOException {
 			Assert.notNull(status, "Status must not be null");
@@ -456,7 +460,7 @@ public class HttpTunnelServer {
 		/**
 		 * Send a payload response.
 		 * @param payload the payload to send
-		 * @throws IOException
+		 * @throws IOException in case of I/O errors
 		 */
 		public void respond(HttpTunnelPayload payload) throws IOException {
 			Assert.notNull(payload, "Payload must not be null");

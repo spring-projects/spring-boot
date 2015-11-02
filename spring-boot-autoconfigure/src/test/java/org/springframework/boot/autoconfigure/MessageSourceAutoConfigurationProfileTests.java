@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.MessageSourceAutoConfigurationProfileTests.Config;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -35,8 +36,8 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Dave Syer
  */
-@SpringApplicationConfiguration({ Config.class,
-		MessageSourceAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+@SpringApplicationConfiguration({ Config.class, MessageSourceAutoConfiguration.class,
+		PropertyPlaceholderAutoConfiguration.class })
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("switch-messages")
 public class MessageSourceAutoConfigurationProfileTests {

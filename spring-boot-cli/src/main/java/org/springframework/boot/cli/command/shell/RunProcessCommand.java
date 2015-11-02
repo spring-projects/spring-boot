@@ -37,7 +37,7 @@ class RunProcessCommand extends AbstractCommand {
 
 	private volatile RunProcess process;
 
-	public RunProcessCommand(String... command) {
+	RunProcessCommand(String... command) {
 		super(null, null);
 		this.command = command;
 	}

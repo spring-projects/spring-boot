@@ -113,7 +113,7 @@ public abstract class Archive {
 		boolean isDirectory();
 
 		/**
-		 * Returns the name of the entry
+		 * Returns the name of the entry.
 		 * @return the name of the entry
 		 */
 		AsciiBytes getName();

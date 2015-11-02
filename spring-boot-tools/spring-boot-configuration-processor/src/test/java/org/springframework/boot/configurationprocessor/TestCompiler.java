@@ -73,9 +73,10 @@ public class TestCompiler {
 		return getTask(javaFileObjects);
 	}
 
-	private TestCompilationTask getTask(Iterable<? extends JavaFileObject> javaFileObjects) {
-		return new TestCompilationTask(this.compiler.getTask(null, this.fileManager,
-				null, null, null, javaFileObjects));
+	private TestCompilationTask getTask(
+			Iterable<? extends JavaFileObject> javaFileObjects) {
+		return new TestCompilationTask(this.compiler.getTask(null, this.fileManager, null,
+				null, null, javaFileObjects));
 	}
 
 	public File getOutputLocation() {

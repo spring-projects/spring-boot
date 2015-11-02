@@ -24,6 +24,7 @@ import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Result;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.jdbc.core.JdbcTemplate;

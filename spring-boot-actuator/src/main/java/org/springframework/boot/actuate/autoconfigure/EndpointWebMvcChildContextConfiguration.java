@@ -26,12 +26,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration.ManagementWebSecurityConfigurerAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementErrorEndpoint;
@@ -41,6 +41,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.hateoas.HypermediaHttpMessageConverterConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -53,6 +54,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.hateoas.LinkDiscoverer;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -69,6 +72,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  * @see EndpointWebMvcAutoConfiguration
  */
 @Configuration
@@ -78,12 +82,6 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	private static Log logger = LogFactory
 			.getLog(EndpointWebMvcChildContextConfiguration.class);
-
-	@Value("${error.path:/error}")
-	private String errorPath = "/error";
-
-	@Autowired
-	private ManagementServerProperties managementServerProperties;
 
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 	public DispatcherServlet dispatcherServlet() {
@@ -118,12 +116,15 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	/*
 	 * The error controller is present but not mapped as an endpoint in this context
-	 * because of the DispatcherServlet having had it's HandlerMapping explicitly
-	 * disabled. So we expose the same feature but only for machine endpoints.
+	 * because of the DispatcherServlet having had its HandlerMapping explicitly disabled.
+	 * So we expose the same feature but only for machine endpoints.
 	 */
 	@Bean
-	public ManagementErrorEndpoint errorEndpoint(final ErrorAttributes errorAttributes) {
-		return new ManagementErrorEndpoint(this.errorPath, errorAttributes);
+	@ConditionalOnBean(ErrorAttributes.class)
+	public ManagementErrorEndpoint errorEndpoint(ServerProperties serverProperties,
+			ErrorAttributes errorAttributes) {
+		return new ManagementErrorEndpoint(serverProperties.getError().getPath(),
+				errorAttributes);
 	}
 
 	/**
@@ -160,8 +161,8 @@ public class EndpointWebMvcChildContextConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
-	protected static class SecureEndpointHandlerMappingConfiguration extends
-			EndpointHandlerMappingConfiguration {
+	protected static class SecureEndpointHandlerMappingConfiguration
+			extends EndpointHandlerMappingConfiguration {
 
 		@Override
 		protected void postProcessMapping(ListableBeanFactory beanFactory,
@@ -196,11 +197,16 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	static class ServerCustomization implements EmbeddedServletContainerCustomizer,
-			Ordered {
+	@Configuration
+	@ConditionalOnClass({ LinkDiscoverer.class })
+	@Import(HypermediaHttpMessageConverterConfiguration.class)
+	@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
+	static class HypermediaConfiguration {
 
-		@Value("${error.path:/error}")
-		private String errorPath = "/error";
+	}
+
+	static class ServerCustomization
+			implements EmbeddedServletContainerCustomizer, Ordered {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
@@ -229,11 +235,11 @@ public class EndpointWebMvcChildContextConfiguration {
 			// the same place)
 			this.server.customize(container);
 			// Then reset the error pages
-			container.setErrorPages(Collections.<ErrorPage> emptySet());
+			container.setErrorPages(Collections.<ErrorPage>emptySet());
 			// and add the management-specific bits
 			container.setPort(this.managementServerProperties.getPort());
 			container.setAddress(this.managementServerProperties.getAddress());
-			container.addErrorPages(new ErrorPage(this.errorPath));
+			container.addErrorPages(new ErrorPage(this.server.getError().getPath()));
 		}
 
 	}

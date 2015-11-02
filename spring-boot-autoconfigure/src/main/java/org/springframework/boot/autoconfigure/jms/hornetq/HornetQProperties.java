@@ -22,10 +22,11 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hornetq.core.remoting.impl.invm.TransportConstants;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for HornetQ
+ * Configuration properties for HornetQ.
  *
  * @author Stephane Nicoll
  * @since 1.1.0

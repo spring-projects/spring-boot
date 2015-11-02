@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.thymeleaf;
 
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -40,8 +41,8 @@ public class ThymeleafTemplateAvailabilityProviderTests {
 
 	@Test
 	public void availabilityOfTemplateInDefaultLocation() {
-		assertTrue(this.provider.isTemplateAvailable("home", this.environment, getClass()
-				.getClassLoader(), this.resourceLoader));
+		assertTrue(this.provider.isTemplateAvailable("home", this.environment,
+				getClass().getClassLoader(), this.resourceLoader));
 	}
 
 	@Test

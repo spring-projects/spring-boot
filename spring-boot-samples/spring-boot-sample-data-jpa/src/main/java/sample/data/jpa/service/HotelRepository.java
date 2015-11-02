@@ -18,15 +18,15 @@ package sample.data.jpa.service;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.Repository;
-
 import sample.data.jpa.domain.City;
 import sample.data.jpa.domain.Hotel;
 import sample.data.jpa.domain.HotelSummary;
 import sample.data.jpa.domain.RatingCount;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.Repository;
 
 interface HotelRepository extends Repository<Hotel, Long> {
 

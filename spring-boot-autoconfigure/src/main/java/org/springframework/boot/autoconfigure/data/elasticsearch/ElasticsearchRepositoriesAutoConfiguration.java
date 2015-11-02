@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import org.elasticsearch.client.Client;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

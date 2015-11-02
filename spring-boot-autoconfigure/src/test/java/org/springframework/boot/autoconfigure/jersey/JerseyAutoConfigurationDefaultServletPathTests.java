@@ -28,6 +28,7 @@ import javax.ws.rs.Path;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -64,8 +65,8 @@ public class JerseyAutoConfigurationDefaultServletPathTests {
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity(
-				"http://localhost:" + this.port + "/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("http://localhost:" + this.port + "/hello", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 

@@ -23,7 +23,18 @@ import java.util.LinkedHashMap;
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
+import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
 import nz.net.ultraq.thymeleaf.LayoutDialect;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.extras.conditionalcomments.dialect.ConditionalCommentsDialect;
+import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
+import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring4.resourceresolver.SpringResourceResourceResolver;
+import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.templateresolver.TemplateResolver;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -40,19 +51,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.util.Assert;
 import org.springframework.util.MimeType;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
-import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.extras.conditionalcomments.dialect.ConditionalCommentsDialect;
-import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
-import org.thymeleaf.spring4.SpringTemplateEngine;
-import org.thymeleaf.spring4.resourceresolver.SpringResourceResourceResolver;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
-import org.thymeleaf.templateresolver.ITemplateResolver;
-import org.thymeleaf.templateresolver.TemplateResolver;
-
-import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Thymeleaf.
@@ -67,6 +67,8 @@ import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDiale
 @ConditionalOnClass(SpringTemplateEngine.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class ThymeleafAutoConfiguration {
+
+	private static final Log logger = LogFactory.getLog(ThymeleafAutoConfiguration.class);
 
 	@Configuration
 	@ConditionalOnMissingBean(name = "defaultTemplateResolver")
@@ -84,10 +86,11 @@ public class ThymeleafAutoConfiguration {
 			if (checkTemplateLocation) {
 				TemplateLocation location = new TemplateLocation(
 						this.properties.getPrefix());
-				Assert.state(location.exists(this.applicationContext),
-						"Cannot find template location: " + location
-								+ " (please add some templates or check "
-								+ "your Thymeleaf configuration)");
+				if (!location.exists(this.applicationContext)) {
+					logger.warn("Cannot find template location: " + location
+							+ " (please add some templates or check "
+							+ "your Thymeleaf configuration)");
+				}
 			}
 		}
 

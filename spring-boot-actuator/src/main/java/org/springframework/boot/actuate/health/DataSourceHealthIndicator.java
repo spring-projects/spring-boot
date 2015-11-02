@@ -46,8 +46,8 @@ import org.springframework.util.StringUtils;
  * @author Arthur Kalimullin
  * @since 1.1.0
  */
-public class DataSourceHealthIndicator extends AbstractHealthIndicator implements
-		InitializingBean {
+public class DataSourceHealthIndicator extends AbstractHealthIndicator
+		implements InitializingBean {
 
 	private static final String DEFAULT_QUERY = "SELECT 1";
 
@@ -121,8 +121,8 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	private String getProduct() {
 		return this.jdbcTemplate.execute(new ConnectionCallback<String>() {
 			@Override
-			public String doInConnection(Connection connection) throws SQLException,
-					DataAccessException {
+			public String doInConnection(Connection connection)
+					throws SQLException, DataAccessException {
 				return connection.getMetaData().getDatabaseProductName();
 			}
 		});
@@ -185,6 +185,9 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 
 	}
 
+	/**
+	 * Known database products.
+	 */
 	protected enum Product {
 
 		HSQLDB("HSQL Database Engine",
@@ -202,6 +205,14 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 						|| product.toLowerCase().startsWith("db2/");
 			}
 
+		},
+
+		DB2_AS400("DB2 UDB for AS/400", "SELECT 1 FROM SYSIBM.SYSDUMMY1") {
+			@Override
+			protected boolean matchesProduct(String product) {
+				return super.matchesProduct(product)
+						|| product.toLowerCase().contains("as/400");
+			}
 		},
 
 		INFORMIX("Informix Dynamic Server", "select count(*) from systables"),

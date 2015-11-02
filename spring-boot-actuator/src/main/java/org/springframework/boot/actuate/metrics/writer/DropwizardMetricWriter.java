@@ -20,9 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
-
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
@@ -30,9 +27,12 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
+import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
+
 /**
  * A {@link MetricWriter} that send data to a Dropwizard {@link MetricRegistry} based on a
- * naming convention:
+ * naming convention.
  *
  * <ul>
  * <li>Updates to {@link #increment(Delta)} with names in "meter.*" are treated as
@@ -121,7 +121,7 @@ public class DropwizardMetricWriter implements MetricWriter {
 	/**
 	 * Simple {@link Gauge} implementation to {@literal double} value.
 	 */
-	private static class SimpleGauge implements Gauge<Double> {
+	private final static class SimpleGauge implements Gauge<Double> {
 
 		private final double value;
 

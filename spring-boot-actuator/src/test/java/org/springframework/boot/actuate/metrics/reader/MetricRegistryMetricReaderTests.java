@@ -19,11 +19,11 @@ package org.springframework.boot.actuate.metrics.reader;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
-import org.springframework.boot.actuate.metrics.Metric;
-
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
+import org.junit.Test;
+
+import org.springframework.boot.actuate.metrics.Metric;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;

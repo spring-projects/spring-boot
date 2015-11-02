@@ -62,8 +62,8 @@ class SampleClient {
 
 	@Scheduled(fixedDelay = 500)
 	public void retrieveCountry() {
-		String randomCode = SAMPLE_COUNTRY_CODES.get(this.random
-				.nextInt(SAMPLE_COUNTRY_CODES.size()));
+		String randomCode = SAMPLE_COUNTRY_CODES
+				.get(this.random.nextInt(SAMPLE_COUNTRY_CODES.size()));
 		System.out.println("Looking for country with code '" + randomCode + "'");
 		this.countryService.findByCode(randomCode);
 	}

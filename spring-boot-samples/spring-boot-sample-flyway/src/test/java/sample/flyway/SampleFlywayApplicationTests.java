@@ -18,6 +18,7 @@ package sample.flyway;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,8 +35,8 @@ public class SampleFlywayApplicationTests {
 
 	@Test
 	public void testDefaultSettings() throws Exception {
-		assertEquals(new Integer(1), this.template.queryForObject(
-				"SELECT COUNT(*) from PERSON", Integer.class));
+		assertEquals(new Integer(1), this.template
+				.queryForObject("SELECT COUNT(*) from PERSON", Integer.class));
 	}
 
 }

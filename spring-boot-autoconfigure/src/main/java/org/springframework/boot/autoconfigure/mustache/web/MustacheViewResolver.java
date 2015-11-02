@@ -21,15 +21,15 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Locale;
 
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Mustache.Compiler;
+import com.samskivert.mustache.Template;
+
 import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
-
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Mustache.Compiler;
-import com.samskivert.mustache.Template;
 
 /**
  * Spring MVC {@link ViewResolver} for Mustache.
@@ -55,14 +55,16 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 	}
 
 	/**
-	 * @param compiler the compiler to set
+	 * Set the compiler.
+	 * @param compiler the compiler
 	 */
 	public void setCompiler(Compiler compiler) {
 		this.compiler = compiler;
 	}
 
 	/**
-	 * @param charset the charset to set
+	 * Set the charset.
+	 * @param charset the charset
 	 */
 	public void setCharset(String charset) {
 		this.charset = charset;
@@ -84,8 +86,8 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 	}
 
 	private Resource resolveFromLocale(String viewName, String locale) {
-		Resource resource = getApplicationContext().getResource(
-				getPrefix() + viewName + locale + getSuffix());
+		Resource resource = getApplicationContext()
+				.getResource(getPrefix() + viewName + locale + getSuffix());
 		if (resource == null || !resource.exists()) {
 			if (locale.isEmpty()) {
 				return null;

@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.metrics.export;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.metrics.Iterables;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;

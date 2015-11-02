@@ -21,6 +21,7 @@ import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -56,15 +57,15 @@ public class EndpointHandlerMappingTests {
 	public void withoutPrefix() throws Exception {
 		TestMvcEndpoint endpointA = new TestMvcEndpoint(new TestEndpoint("/a"));
 		TestMvcEndpoint endpointB = new TestMvcEndpoint(new TestEndpoint("/b"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(
-				endpointA, endpointB));
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
+				Arrays.asList(endpointA, endpointB));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a"))
-				.getHandler(),
+		assertThat(
+				mapping.getHandler(new MockHttpServletRequest("GET", "/a")).getHandler(),
 				equalTo((Object) new HandlerMethod(endpointA, this.method)));
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/b"))
-				.getHandler(),
+		assertThat(
+				mapping.getHandler(new MockHttpServletRequest("GET", "/b")).getHandler(),
 				equalTo((Object) new HandlerMethod(endpointB, this.method)));
 		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/c")),
 				nullValue());
@@ -74,16 +75,18 @@ public class EndpointHandlerMappingTests {
 	public void withPrefix() throws Exception {
 		TestMvcEndpoint endpointA = new TestMvcEndpoint(new TestEndpoint("/a"));
 		TestMvcEndpoint endpointB = new TestMvcEndpoint(new TestEndpoint("/b"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(
-				endpointA, endpointB));
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
+				Arrays.asList(endpointA, endpointB));
 		mapping.setApplicationContext(this.context);
 		mapping.setPrefix("/a");
 		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a/a"))
-				.getHandler(),
+		assertThat(
+				mapping.getHandler(new MockHttpServletRequest("GET", "/a/a"))
+						.getHandler(),
 				equalTo((Object) new HandlerMethod(endpointA, this.method)));
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a/b"))
-				.getHandler(),
+		assertThat(
+				mapping.getHandler(new MockHttpServletRequest("GET", "/a/b"))
+						.getHandler(),
 				equalTo((Object) new HandlerMethod(endpointB, this.method)));
 		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a")),
 				nullValue());
@@ -137,8 +140,8 @@ public class EndpointHandlerMappingTests {
 	public void duplicatePath() throws Exception {
 		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("/a"));
 		TestActionEndpoint other = new TestActionEndpoint(new TestEndpoint("/a"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(
-				endpoint, other));
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
+				Arrays.asList(endpoint, other));
 		mapping.setDisabled(true);
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
@@ -150,7 +153,7 @@ public class EndpointHandlerMappingTests {
 
 	private static class TestEndpoint extends AbstractEndpoint<Object> {
 
-		public TestEndpoint(String path) {
+		TestEndpoint(String path) {
 			super(path);
 		}
 
@@ -163,7 +166,7 @@ public class EndpointHandlerMappingTests {
 
 	private static class TestMvcEndpoint extends EndpointMvcAdapter {
 
-		public TestMvcEndpoint(TestEndpoint delegate) {
+		TestMvcEndpoint(TestEndpoint delegate) {
 			super(delegate);
 		}
 
@@ -171,7 +174,7 @@ public class EndpointHandlerMappingTests {
 
 	private static class TestActionEndpoint extends EndpointMvcAdapter {
 
-		public TestActionEndpoint(TestEndpoint delegate) {
+		TestActionEndpoint(TestEndpoint delegate) {
 			super(delegate);
 		}
 

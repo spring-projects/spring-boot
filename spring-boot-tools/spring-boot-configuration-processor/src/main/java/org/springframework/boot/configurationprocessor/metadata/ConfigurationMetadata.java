@@ -84,14 +84,16 @@ public class ConfigurationMetadata {
 	}
 
 	/**
-	 * @return the meta-data properties.
+	 * Return item meta-data.
+	 * @return the items
 	 */
 	public List<ItemMetadata> getItems() {
 		return flattenValues(this.items);
 	}
 
 	/**
-	 * @return the meta-data hints.
+	 * Return hint meta-data.
+	 * @return the hints
 	 */
 	public List<ItemHint> getHints() {
 		return flattenValues(this.hints);
@@ -138,17 +140,17 @@ public class ConfigurationMetadata {
 				it.remove();
 			}
 		}
-		if (candidates.size() == 1)  {
+		if (candidates.size() == 1) {
 			return candidates.get(0);
 		}
 		for (ItemMetadata candidate : candidates) {
-			if (ObjectUtils.nullSafeEquals(candidate.getSourceType(), metadata.getSourceType())) {
+			if (ObjectUtils.nullSafeEquals(candidate.getSourceType(),
+					metadata.getSourceType())) {
 				return candidate;
 			}
 		}
 		return null;
 	}
-
 
 	public static String nestedPrefix(String prefix, String name) {
 		String nestedPrefix = (prefix == null ? "" : prefix);
@@ -177,7 +179,8 @@ public class ConfigurationMetadata {
 		return first + "-" + second;
 	}
 
-	private static <T extends Comparable> List<T> flattenValues(MultiValueMap<?, T> map) {
+	private static <T extends Comparable<T>> List<T> flattenValues(
+			MultiValueMap<?, T> map) {
 		List<T> content = new ArrayList<T>();
 		for (List<T> values : map.values()) {
 			content.addAll(values);

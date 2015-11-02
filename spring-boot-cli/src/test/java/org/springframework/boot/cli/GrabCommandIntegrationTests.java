@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.util.FileSystemUtils;
 
@@ -78,9 +79,9 @@ public class GrabCommandIntegrationTests {
 	@Test
 	public void customMetadata() throws Exception {
 		System.setProperty("grape.root", "target");
-		FileSystemUtils.copyRecursively(new File(
-				"src/test/resources/grab-samples/repository"), new File(
-				"target/repository"));
+		FileSystemUtils.copyRecursively(
+				new File("src/test/resources/grab-samples/repository"),
+				new File("target/repository"));
 		this.cli.grab("customDependencyManagement.groovy", "--autoconfigure=false");
 		assertTrue(new File("target/repository/javax/ejb/ejb-api/3.0").isDirectory());
 	}

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *	  http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,28 +18,29 @@ package org.springframework.boot.autoconfigure.mongo.embedded;
 
 import java.net.UnknownHostException;
 
+import com.mongodb.CommandResult;
+import com.mongodb.MongoClient;
+import de.flapdoodle.embed.mongo.distribution.Feature;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
-
-import com.mongodb.CommandResult;
-import com.mongodb.MongoClient;
-
-import de.flapdoodle.embed.mongo.distribution.Feature;
+import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.springframework.boot.test.EnvironmentTestUtils.addEnvironment;
-import static org.springframework.util.SocketUtils.findAvailableTcpPort;
 
 /**
  * Tests for {@link EmbeddedMongoAutoConfiguration}.
@@ -71,8 +72,9 @@ public class EmbeddedMongoAutoConfigurationTests {
 	@Test
 	public void customFeatures() {
 		this.context = new AnnotationConfigApplicationContext();
-		int mongoPort = findAvailableTcpPort();
-		addEnvironment(this.context, "spring.data.mongodb.port=" + mongoPort,
+		int mongoPort = SocketUtils.findAvailableTcpPort();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.mongodb.port=" + mongoPort,
 				"spring.mongodb.embedded.features=TEXT_SEARCH, SYNC_DELAY");
 		this.context.register(EmbeddedMongoAutoConfiguration.class);
 		this.context.refresh();
@@ -83,25 +85,46 @@ public class EmbeddedMongoAutoConfigurationTests {
 	@Test
 	public void randomlyAllocatedPortIsAvailableWhenCreatingMongoClient() {
 		this.context = new AnnotationConfigApplicationContext();
-		addEnvironment(this.context, "spring.data.mongodb.port=0");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.data.mongodb.port=0");
 		this.context.register(EmbeddedMongoAutoConfiguration.class,
 				MongoClientConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(
-				this.context.getBean(MongoClient.class).getAddress().getPort(),
-				is(equalTo(Integer.valueOf(this.context.getEnvironment().getProperty(
-						"local.mongo.port")))));
+		assertThat(this.context.getBean(MongoClient.class).getAddress().getPort(),
+				equalTo(Integer.valueOf(
+						this.context.getEnvironment().getProperty("local.mongo.port"))));
+	}
+
+	@Test
+	public void portIsAvailableInParentContext() {
+		ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext();
+		parent.refresh();
+		try {
+			this.context = new AnnotationConfigApplicationContext();
+			this.context.setParent(parent);
+			EnvironmentTestUtils.addEnvironment(this.context,
+					"spring.data.mongodb.port=0");
+			this.context.register(EmbeddedMongoAutoConfiguration.class,
+					MongoClientConfiguration.class,
+					PropertyPlaceholderAutoConfiguration.class);
+			this.context.refresh();
+			assertThat(parent.getEnvironment().getProperty("local.mongo.port"),
+					is(notNullValue()));
+		}
+		finally {
+			parent.close();
+		}
 	}
 
 	private void assertVersionConfiguration(String configuredVersion,
 			String expectedVersion) {
 		this.context = new AnnotationConfigApplicationContext();
-		int mongoPort = findAvailableTcpPort();
-		addEnvironment(this.context, "spring.data.mongodb.port=" + mongoPort);
+		int mongoPort = SocketUtils.findAvailableTcpPort();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.mongodb.port=" + mongoPort);
 		if (configuredVersion != null) {
-			addEnvironment(this.context, "spring.mongodb.embedded.version="
-					+ configuredVersion);
+			EnvironmentTestUtils.addEnvironment(this.context,
+					"spring.mongodb.embedded.version=" + configuredVersion);
 		}
 		this.context.register(MongoAutoConfiguration.class,
 				MongoDataAutoConfiguration.class, EmbeddedMongoAutoConfiguration.class);
@@ -120,5 +143,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 				throws UnknownHostException {
 			return new MongoClient("localhost", port);
 		}
+
 	}
+
 }

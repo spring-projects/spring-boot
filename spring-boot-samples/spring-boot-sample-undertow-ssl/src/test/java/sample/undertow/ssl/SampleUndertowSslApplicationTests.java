@@ -23,16 +23,16 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertEquals;
 
@@ -43,8 +43,7 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleUndertowSslApplication.class)
-@WebAppConfiguration
-@IntegrationTest("server.port:0")
+@WebIntegrationTest(randomPort = true)
 @DirtiesContext
 public class SampleUndertowSslApplicationTests {
 
@@ -54,8 +53,8 @@ public class SampleUndertowSslApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
-				new SSLContextBuilder().loadTrustMaterial(null,
-						new TrustSelfSignedStrategy()).build());
+				new SSLContextBuilder()
+						.loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
 
 		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
 				.build();
@@ -63,8 +62,8 @@ public class SampleUndertowSslApplicationTests {
 		TestRestTemplate testRestTemplate = new TestRestTemplate();
 		((HttpComponentsClientHttpRequestFactory) testRestTemplate.getRequestFactory())
 				.setHttpClient(httpClient);
-		ResponseEntity<String> entity = testRestTemplate.getForEntity(
-				"https://localhost:" + this.port, String.class);
+		ResponseEntity<String> entity = testRestTemplate
+				.getForEntity("https://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("Hello World", entity.getBody());
 	}

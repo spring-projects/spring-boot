@@ -27,6 +27,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -70,15 +71,15 @@ public class MustacheAutoConfigurationIntegrationTests {
 
 	@Test
 	public void testHomePage() throws Exception {
-		String body = new TestRestTemplate().getForObject(
-				"http://localhost:" + this.port, String.class);
+		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port,
+				String.class);
 		assertTrue(body.contains("Hello World"));
 	}
 
 	@Test
 	public void testPartialPage() throws Exception {
-		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port
-				+ "/partial", String.class);
+		String body = new TestRestTemplate()
+				.getForObject("http://localhost:" + this.port + "/partial", String.class);
 		assertTrue(body.contains("Hello World"));
 	}
 

@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure;
 import java.util.Properties;
 
 import org.jolokia.http.AgentServlet;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration.JolokiaCondition;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
@@ -50,8 +51,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  *
  * <p>
  * Additional configuration parameters for Jolokia can be provided by specifying
- * {@code jolokia.config.*} properties. See the <a
- * href="http://jolokia.org">http://jolokia.org</a> web site for more information on
+ * {@code jolokia.config.*} properties. See the
+ * <a href="http://jolokia.org">http://jolokia.org</a> web site for more information on
  * supported configuration parameters.
  *
  * @author Christian Dupuis

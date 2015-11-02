@@ -30,6 +30,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 @Data
 @ConfigurationProperties(prefix = "data")
+@SuppressWarnings("unused")
 public class LombokSimpleDataProperties {
 
 	private final String id = "super-id";

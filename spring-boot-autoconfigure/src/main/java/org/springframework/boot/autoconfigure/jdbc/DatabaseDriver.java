@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Maciej Walkowiak
+ * @author Marten Deinum
  * @since 1.2.0
  */
 enum DatabaseDriver {
@@ -69,48 +70,61 @@ enum DatabaseDriver {
 	GOOGLE("com.google.appengine.api.rdbms.AppEngineDriver"),
 
 	/**
-	 * Oracle
+	 * Oracle.
 	 */
-	ORACLE("oracle.jdbc.OracleDriver", "oracle.jdbc.xa.OracleXADataSource"),
+	ORACLE("oracle.jdbc.OracleDriver", "oracle.jdbc.xa.client.OracleXADataSource"),
 
 	/**
-	 * Postres
+	 * Postres.
 	 */
 	POSTGRESQL("org.postgresql.Driver", "org.postgresql.xa.PGXADataSource"),
 
 	/**
-	 * JTDS
+	 * JTDS.
 	 */
 	JTDS("net.sourceforge.jtds.jdbc.Driver"),
 
 	/**
-	 * SQL Server
+	 * SQL Server.
 	 */
 	SQLSERVER("com.microsoft.sqlserver.jdbc.SQLServerDriver",
-			"com.microsoft.sqlserver.jdbc.SQLServerXADataSource");
+			"com.microsoft.sqlserver.jdbc.SQLServerXADataSource"),
+
+	/**
+	 * DB2 Server.
+	 */
+	DB2("com.ibm.db2.jcc.DB2Driver", "com.ibm.db2.jcc.DB2XADataSource"),
+
+	/**
+	 * DB2 AS400 Server.
+	 */
+	AS400("com.ibm.as400.access.AS400JDBCDriver",
+			"com.ibm.as400.access.AS400JDBCXADataSource");
 
 	private final String driverClassName;
 
 	private final String xaDataSourceClassName;
 
-	private DatabaseDriver(String driverClassName) {
+	DatabaseDriver(String driverClassName) {
 		this(driverClassName, null);
 	}
 
-	private DatabaseDriver(String driverClassName, String xaDataSourceClassName) {
+	DatabaseDriver(String driverClassName, String xaDataSourceClassName) {
 		this.driverClassName = driverClassName;
 		this.xaDataSourceClassName = xaDataSourceClassName;
 	}
 
 	/**
-	 * @return the driverClassName or {@code null}
+	 * Return the driver class name.
+	 * @return the class name or {@code null}
 	 */
 	public String getDriverClassName() {
 		return this.driverClassName;
 	}
 
 	/**
-	 * @return the xaDataSourceClassName or {@code null}
+	 * Return the XA driver source class name.
+	 * @return the class name or {@code null}
 	 */
 	public String getXaDataSourceClassName() {
 		return this.xaDataSourceClassName;

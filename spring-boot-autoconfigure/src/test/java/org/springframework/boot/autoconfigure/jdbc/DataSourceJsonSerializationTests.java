@@ -22,14 +22,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.tomcat.jdbc.pool.DataSource;
-import org.junit.Test;
-import org.springframework.beans.BeanUtils;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.BeanDescription;
@@ -43,6 +35,14 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.SerializerFactory;
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.junit.Test;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -90,8 +90,7 @@ public class DataSourceJsonSerializationTests {
 			for (PropertyDescriptor property : BeanUtils
 					.getPropertyDescriptors(DataSource.class)) {
 				Method reader = property.getReadMethod();
-				if (reader != null
-						&& property.getWriteMethod() != null
+				if (reader != null && property.getWriteMethod() != null
 						&& this.conversionService.canConvert(String.class,
 								property.getPropertyType())) {
 					jgen.writeObjectField(property.getName(),
@@ -115,9 +114,8 @@ public class DataSourceJsonSerializationTests {
 				AnnotatedMethod setter = beanDesc.findMethod(
 						"set" + StringUtils.capitalize(writer.getName()),
 						new Class<?>[] { writer.getPropertyType() });
-				if (setter != null
-						&& this.conversionService.canConvert(String.class,
-								writer.getPropertyType())) {
+				if (setter != null && this.conversionService.canConvert(String.class,
+						writer.getPropertyType())) {
 					result.add(writer);
 				}
 			}

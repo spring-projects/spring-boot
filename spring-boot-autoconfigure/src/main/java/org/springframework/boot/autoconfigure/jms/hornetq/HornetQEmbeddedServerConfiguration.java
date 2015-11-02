@@ -26,6 +26,7 @@ import org.hornetq.jms.server.config.impl.JMSConfigurationImpl;
 import org.hornetq.jms.server.config.impl.JMSQueueConfigurationImpl;
 import org.hornetq.jms.server.config.impl.TopicConfigurationImpl;
 import org.hornetq.jms.server.embedded.EmbeddedJMS;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -106,16 +107,15 @@ class HornetQEmbeddedServerConfiguration {
 	private void addQueues(JMSConfiguration configuration, String[] queues) {
 		boolean persistent = this.properties.getEmbedded().isPersistent();
 		for (String queue : queues) {
-			configuration.getQueueConfigurations().add(
-					new JMSQueueConfigurationImpl(queue, null, persistent, "/queue/"
-							+ queue));
+			configuration.getQueueConfigurations().add(new JMSQueueConfigurationImpl(
+					queue, null, persistent, "/queue/" + queue));
 		}
 	}
 
 	private void addTopics(JMSConfiguration configuration, String[] topics) {
 		for (String topic : topics) {
-			configuration.getTopicConfigurations().add(
-					new TopicConfigurationImpl(topic, "/topic/" + topic));
+			configuration.getTopicConfigurations()
+					.add(new TopicConfigurationImpl(topic, "/topic/" + topic));
 		}
 	}
 

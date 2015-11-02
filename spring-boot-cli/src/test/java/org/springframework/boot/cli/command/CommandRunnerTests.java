@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.boot.cli.command.core.HelpCommand;
 import org.springframework.boot.cli.command.core.HintCommand;
 
@@ -155,8 +156,8 @@ public class CommandRunnerTests {
 		willThrow(new NullPointerException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command");
 		assertThat(status, equalTo(1));
-		assertThat(this.calls, equalTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE,
-				Call.PRINT_STACK_TRACE)));
+		assertThat(this.calls, equalTo(
+				(Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE)));
 	}
 
 	@Test
@@ -165,8 +166,8 @@ public class CommandRunnerTests {
 		int status = this.commandRunner.runAndHandleErrors("command", "-d");
 		assertEquals("true", System.getProperty("debug"));
 		assertThat(status, equalTo(1));
-		assertThat(this.calls, equalTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE,
-				Call.PRINT_STACK_TRACE)));
+		assertThat(this.calls, equalTo(
+				(Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE)));
 	}
 
 	@Test
@@ -175,8 +176,8 @@ public class CommandRunnerTests {
 		int status = this.commandRunner.runAndHandleErrors("command", "--debug");
 		assertEquals("true", System.getProperty("debug"));
 		assertThat(status, equalTo(1));
-		assertThat(this.calls, equalTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE,
-				Call.PRINT_STACK_TRACE)));
+		assertThat(this.calls, equalTo(
+				(Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE)));
 	}
 
 	@Test

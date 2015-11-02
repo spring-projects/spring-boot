@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
@@ -40,7 +41,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -65,8 +65,8 @@ public class EnvironmentMvcEndpointTests {
 	public void setUp() {
 		this.context.getBean(EnvironmentEndpoint.class).setEnabled(true);
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		EnvironmentTestUtils.addEnvironment(
-				(ConfigurableApplicationContext) this.context, "foo:bar", "fool:baz");
+		EnvironmentTestUtils.addEnvironment((ConfigurableApplicationContext) this.context,
+				"foo:bar", "fool:baz");
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class EnvironmentMvcEndpointTests {
 	@Test
 	public void sub() throws Exception {
 		this.mvc.perform(get("/env/foo")).andExpect(status().isOk())
-				.andExpect(content().string(equalToIgnoringCase("bar")));
+				.andExpect(content().string("{\"foo\":\"bar\"}"));
 	}
 
 	@Test

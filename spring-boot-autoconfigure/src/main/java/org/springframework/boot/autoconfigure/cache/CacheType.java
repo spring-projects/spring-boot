@@ -32,12 +32,17 @@ public enum CacheType {
 	GENERIC,
 
 	/**
+	 * JCache (JSR-107) backed caching.
+	 */
+	JCACHE,
+
+	/**
 	 * EhCache backed caching.
 	 */
 	EHCACHE,
 
 	/**
-	 * Hazelcast backed caching
+	 * Hazelcast backed caching.
 	 */
 	HAZELCAST,
 
@@ -45,11 +50,6 @@ public enum CacheType {
 	 * Infinispan backed caching.
 	 */
 	INFINISPAN,
-
-	/**
-	 * JCache (JSR-107) backed caching.
-	 */
-	JCACHE,
 
 	/**
 	 * Redis backed caching.

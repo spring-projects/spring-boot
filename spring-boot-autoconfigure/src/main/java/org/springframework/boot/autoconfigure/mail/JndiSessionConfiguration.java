@@ -51,8 +51,9 @@ class JndiSessionConfiguration {
 			return new JndiLocatorDelegate().lookup(jndiName, Session.class);
 		}
 		catch (NamingException ex) {
-			throw new IllegalStateException(String.format(
-					"Unable to find Session in JNDI location %s", jndiName), ex);
+			throw new IllegalStateException(
+					String.format("Unable to find Session in JNDI location %s", jndiName),
+					ex);
 		}
 	}
 

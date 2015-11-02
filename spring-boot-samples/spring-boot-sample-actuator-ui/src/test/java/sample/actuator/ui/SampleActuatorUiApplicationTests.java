@@ -21,10 +21,11 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -33,7 +34,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -45,8 +45,7 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleActuatorUiApplication.class)
-@IntegrationTest("server.port=0")
-@WebAppConfiguration
+@WebIntegrationTest(randomPort = true)
 @DirtiesContext
 public class SampleActuatorUiApplicationTests {
 
@@ -58,11 +57,11 @@ public class SampleActuatorUiApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port, HttpMethod.GET, new HttpEntity<Void>(
-						headers), String.class);
+				"http://localhost:" + this.port, HttpMethod.GET,
+				new HttpEntity<Void>(headers), String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
-				.getBody().contains("<title>Hello"));
+		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(),
+				entity.getBody().contains("<title>Hello"));
 	}
 
 	@Test
@@ -76,8 +75,8 @@ public class SampleActuatorUiApplicationTests {
 	@Test
 	public void testMetrics() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/metrics", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + "/metrics", Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
@@ -89,14 +88,12 @@ public class SampleActuatorUiApplicationTests {
 				"http://localhost:" + this.port + "/error", HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertTrue("Wrong body:\n" + entity.getBody(),
+				entity.getBody().contains("<html>"));
+		assertTrue("Wrong body:\n" + entity.getBody(),
+				entity.getBody().contains("<body>"));
 		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
-				.contains("<html>"));
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
-				.contains("<body>"));
-		assertTrue(
-				"Wrong body:\n" + entity.getBody(),
-				entity.getBody().contains(
-						"Please contact the operator with the above information"));
+				.contains("Please contact the operator with the above information"));
 	}
 
 }

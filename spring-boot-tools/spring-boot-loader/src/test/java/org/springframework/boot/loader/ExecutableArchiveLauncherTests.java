@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.boot.loader.archive.Archive.Entry;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -90,20 +91,8 @@ public class ExecutableArchiveLauncherTests {
 		assertArrayEquals(urls, ((URLClassLoader) classLoader).getURLs());
 	}
 
-	private static final class UnitTestExecutableArchiveLauncher extends
-			ExecutableArchiveLauncher {
-
-		public UnitTestExecutableArchiveLauncher(JavaAgentDetector javaAgentDetector) {
-			super(javaAgentDetector);
-		}
-
-		@Override
-		protected boolean isNestedArchive(Entry entry) {
-			return false;
-		}
-	}
-
-	private void doWithTccl(ClassLoader classLoader, Callable<?> action) throws Exception {
+	private void doWithTccl(ClassLoader classLoader, Callable<?> action)
+			throws Exception {
 		ClassLoader old = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(classLoader);
@@ -111,6 +100,19 @@ public class ExecutableArchiveLauncherTests {
 		}
 		finally {
 			Thread.currentThread().setContextClassLoader(old);
+		}
+	}
+
+	private static final class UnitTestExecutableArchiveLauncher
+			extends ExecutableArchiveLauncher {
+
+		UnitTestExecutableArchiveLauncher(JavaAgentDetector javaAgentDetector) {
+			super(javaAgentDetector);
+		}
+
+		@Override
+		protected boolean isNestedArchive(Entry entry) {
+			return false;
 		}
 	}
 

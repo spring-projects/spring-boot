@@ -133,10 +133,12 @@ class ServiceCapabilitiesReportGenerator {
 		report.append("]");
 	}
 
-	private void reportDefaults(StringBuilder report, InitializrServiceMetadata metadata) {
+	private void reportDefaults(StringBuilder report,
+			InitializrServiceMetadata metadata) {
 		report.append("Defaults:" + NEW_LINE);
 		report.append("---------" + NEW_LINE);
-		List<String> defaultsKeys = new ArrayList<String>(metadata.getDefaults().keySet());
+		List<String> defaultsKeys = new ArrayList<String>(
+				metadata.getDefaults().keySet());
 		Collections.sort(defaultsKeys);
 		for (String defaultsKey : defaultsKeys) {
 			String defaultsValue = metadata.getDefaults().get(defaultsKey);

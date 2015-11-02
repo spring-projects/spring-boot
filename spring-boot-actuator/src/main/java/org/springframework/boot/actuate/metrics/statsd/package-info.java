@@ -18,4 +18,3 @@
  * Metrics integration with Statsd.
  */
 package org.springframework.boot.actuate.metrics.statsd;
-

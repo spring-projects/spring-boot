@@ -26,6 +26,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -68,6 +69,7 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link BatchAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class BatchAutoConfigurationTests {
 
@@ -99,8 +101,8 @@ public class BatchAutoConfigurationTests {
 	@Test
 	public void testNoDatabase() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestCustomConfiguration.class,
-				BatchAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(TestCustomConfiguration.class, BatchAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
 		JobExplorer explorer = this.context.getBean(JobExplorer.class);
@@ -128,8 +130,8 @@ public class BatchAutoConfigurationTests {
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
 		this.context.getBean(JobLauncherCommandLineRunner.class).run();
-		assertNotNull(this.context.getBean(JobRepository.class).getLastJobExecution(
-				"job", new JobParameters()));
+		assertNotNull(this.context.getBean(JobRepository.class).getLastJobExecution("job",
+				new JobParameters()));
 	}
 
 	@Test
@@ -159,8 +161,8 @@ public class BatchAutoConfigurationTests {
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
 		this.context.getBean(JobLauncherCommandLineRunner.class).run();
-		assertNotNull(this.context.getBean(JobRepository.class).getLastJobExecution(
-				"discreteLocalJob", new JobParameters()));
+		assertNotNull(this.context.getBean(JobRepository.class)
+				.getLastJobExecution("discreteLocalJob", new JobParameters()));
 	}
 
 	@Test
@@ -215,18 +217,21 @@ public class BatchAutoConfigurationTests {
 	public void testRenamePrefix() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-			"spring.datasource.name:batchtest",
-			"spring.batch.schema:classpath:batch/custom-schema-hsql.sql",
-			"spring.batch.tablePrefix:PREFIX_");
+				"spring.datasource.name:batchtest",
+				"spring.batch.schema:classpath:batch/custom-schema-hsql.sql",
+				"spring.batch.tablePrefix:PREFIX_");
 		this.context.register(TestConfiguration.class,
-			EmbeddedDataSourceConfiguration.class,
-			HibernateJpaAutoConfiguration.class, BatchAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class);
+				EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class, BatchAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
-		assertNotNull(this.context.getBean(JobExplorer.class));
 		assertEquals(0, new JdbcTemplate(this.context.getBean(DataSource.class))
-			.queryForList("select * from PREFIX_JOB_EXECUTION").size());
+				.queryForList("select * from PREFIX_JOB_EXECUTION").size());
+		JobExplorer jobExplorer = this.context.getBean(JobExplorer.class);
+		assertEquals(0, jobExplorer.findRunningJobExecutions("test").size());
+		JobRepository jobRepository = this.context.getBean(JobRepository.class);
+		assertNull(jobRepository.getLastJobExecution("test", new JobParameters()));
 	}
 
 	@Configuration

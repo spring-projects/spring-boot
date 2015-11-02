@@ -17,6 +17,11 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -25,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.core.Ordered;
@@ -42,6 +48,9 @@ import org.springframework.web.util.UrlPathHelper;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 final class MetricsFilter extends OncePerRequestFilter {
 
+	private static final String ATTRIBUTE_STOP_WATCH = MetricsFilter.class.getName()
+			+ ".StopWatch";
+
 	private static final int UNDEFINED_HTTP_STATUS = 999;
 
 	private static final String UNKNOWN_PATH_SUFFIX = "/unmapped";
@@ -52,17 +61,42 @@ final class MetricsFilter extends OncePerRequestFilter {
 
 	private final GaugeService gaugeService;
 
-	public MetricsFilter(CounterService counterService, GaugeService gaugeService) {
+	private static final Set<PatternReplacer> STATUS_REPLACERS;
+
+	static {
+		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
+		replacements.add(new PatternReplacer("[{}]", 0, "-"));
+		replacements.add(new PatternReplacer("**", Pattern.LITERAL, "-star-star-"));
+		replacements.add(new PatternReplacer("*", Pattern.LITERAL, "-star-"));
+		replacements.add(new PatternReplacer("/-", Pattern.LITERAL, "/"));
+		replacements.add(new PatternReplacer("-/", Pattern.LITERAL, "/"));
+		STATUS_REPLACERS = Collections.unmodifiableSet(replacements);
+	}
+
+	private static final Set<PatternReplacer> KEY_REPLACERS;
+
+	static {
+		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
+		replacements.add(new PatternReplacer("/", Pattern.LITERAL, "."));
+		replacements.add(new PatternReplacer("..", Pattern.LITERAL, "."));
+		KEY_REPLACERS = Collections.unmodifiableSet(replacements);
+	}
+
+	MetricsFilter(CounterService counterService, GaugeService gaugeService) {
 		this.counterService = counterService;
 		this.gaugeService = gaugeService;
 	}
 
 	@Override
+	protected boolean shouldNotFilterAsyncDispatch() {
+		return false;
+	}
+
+	@Override
 	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain chain) throws ServletException,
-			IOException {
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
+			HttpServletResponse response, FilterChain chain)
+					throws ServletException, IOException {
+		StopWatch stopWatch = createStopWatchIfNecessary(request);
 		String path = new UrlPathHelper().getPathWithinApplication(request);
 		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
 		try {
@@ -70,9 +104,22 @@ final class MetricsFilter extends OncePerRequestFilter {
 			status = getStatus(response);
 		}
 		finally {
-			stopWatch.stop();
-			recordMetrics(request, path, status, stopWatch.getTotalTimeMillis());
+			if (!request.isAsyncStarted()) {
+				stopWatch.stop();
+				request.removeAttribute(ATTRIBUTE_STOP_WATCH);
+				recordMetrics(request, path, status, stopWatch.getTotalTimeMillis());
+			}
 		}
+	}
+
+	private StopWatch createStopWatchIfNecessary(HttpServletRequest request) {
+		StopWatch stopWatch = (StopWatch) request.getAttribute(ATTRIBUTE_STOP_WATCH);
+		if (stopWatch == null) {
+			stopWatch = new StopWatch();
+			stopWatch.start();
+			request.setAttribute(ATTRIBUTE_STOP_WATCH, stopWatch);
+		}
+		return stopWatch;
 	}
 
 	private int getStatus(HttpServletResponse response) {
@@ -105,11 +152,10 @@ final class MetricsFilter extends OncePerRequestFilter {
 	}
 
 	private String fixSpecialCharacters(String value) {
-		String result = value.replaceAll("[{}]", "-");
-		result = result.replace("**", "-star-star-");
-		result = result.replace("*", "-star-");
-		result = result.replace("/-", "/");
-		result = result.replace("-/", "/");
+		String result = value;
+		for (PatternReplacer replacer : STATUS_REPLACERS) {
+			result = replacer.apply(result);
+		}
 		if (result.endsWith("-")) {
 			result = result.substring(0, result.length() - 1);
 		}
@@ -131,15 +177,17 @@ final class MetricsFilter extends OncePerRequestFilter {
 
 	private String getKey(String string) {
 		// graphite compatible metric names
-		String value = string.replace("/", ".");
-		value = value.replace("..", ".");
-		if (value.endsWith(".")) {
-			value = value + "root";
+		String key = string;
+		for (PatternReplacer replacer : KEY_REPLACERS) {
+			key = replacer.apply(key);
 		}
-		if (value.startsWith("_")) {
-			value = value.substring(1);
+		if (key.endsWith(".")) {
+			key = key + "root";
 		}
-		return value;
+		if (key.startsWith("_")) {
+			key = key.substring(1);
+		}
+		return key;
 	}
 
 	private void submitToGauge(String metricName, double value) {
@@ -158,6 +206,24 @@ final class MetricsFilter extends OncePerRequestFilter {
 		catch (Exception ex) {
 			logger.warn("Unable to submit counter metric '" + metricName + "'", ex);
 		}
+	}
+
+	private static class PatternReplacer {
+
+		private final Pattern pattern;
+
+		private final String replacement;
+
+		PatternReplacer(String regex, int flags, String replacement) {
+			this.pattern = Pattern.compile(regex, flags);
+			this.replacement = replacement;
+		}
+
+		public String apply(String input) {
+			return this.pattern.matcher(input)
+					.replaceAll(Matcher.quoteReplacement(this.replacement));
+		}
+
 	}
 
 }

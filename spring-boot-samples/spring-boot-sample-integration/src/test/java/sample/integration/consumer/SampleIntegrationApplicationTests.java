@@ -27,6 +27,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import sample.integration.SampleIntegrationApplication;
+import sample.integration.producer.ProducerApplication;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -34,9 +37,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
-
-import sample.integration.SampleIntegrationApplication;
-import sample.integration.producer.ProducerApplication;
 
 import static org.junit.Assert.assertTrue;
 
@@ -75,8 +75,8 @@ public class SampleIntegrationApplicationTests {
 	}
 
 	private String getOutput() throws Exception {
-		Future<String> future = Executors.newSingleThreadExecutor().submit(
-				new Callable<String>() {
+		Future<String> future = Executors.newSingleThreadExecutor()
+				.submit(new Callable<String>() {
 					@Override
 					public String call() throws Exception {
 						Resource[] resources = getResourcesWithContent();
@@ -96,8 +96,9 @@ public class SampleIntegrationApplicationTests {
 	}
 
 	private Resource[] getResourcesWithContent() throws IOException {
-		Resource[] candidates = ResourcePatternUtils.getResourcePatternResolver(
-				new DefaultResourceLoader()).getResources("file:target/output/**");
+		Resource[] candidates = ResourcePatternUtils
+				.getResourcePatternResolver(new DefaultResourceLoader())
+				.getResources("file:target/output/**");
 		for (Resource candidate : candidates) {
 			if (candidate.contentLength() == 0) {
 				return new Resource[0];

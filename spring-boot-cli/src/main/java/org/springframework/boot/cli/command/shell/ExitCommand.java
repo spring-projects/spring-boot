@@ -27,7 +27,7 @@ import org.springframework.boot.cli.command.status.ExitStatus;
  */
 class ExitCommand extends AbstractCommand {
 
-	public ExitCommand() {
+	ExitCommand() {
 		super("exit", "Quit the embedded shell");
 	}
 

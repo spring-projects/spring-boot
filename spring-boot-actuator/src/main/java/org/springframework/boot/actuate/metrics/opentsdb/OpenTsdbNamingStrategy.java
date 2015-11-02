@@ -25,7 +25,7 @@ package org.springframework.boot.actuate.metrics.opentsdb;
 public interface OpenTsdbNamingStrategy {
 
 	/**
-	 * Convert the metric name into a {@link OpenTsdbName}
+	 * Convert the metric name into a {@link OpenTsdbName}.
 	 * @param metricName the name of the metric
 	 * @return an Open TSDB name
 	 */

@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.hypermedia;
 
-import groovy.text.Template;
-import groovy.text.TemplateEngine;
-
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -31,16 +28,20 @@ import java.util.Map;
 
 import javax.servlet.Filter;
 
+import groovy.text.Template;
+import groovy.text.TemplateEngine;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentation;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -52,8 +53,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.restdocs.RestDocumentation.document;
-import static org.springframework.restdocs.RestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,6 +65,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 		"endpoints.health.sensitive=true", "endpoints.actuator.enabled=false" })
 @DirtiesContext
 public class EndpointDocumentation {
+
+	private static final String RESTDOCS_OUTPUT_DIR = "target/generated-snippets";
+
+	@Rule
+	public final RestDocumentation restDocumentation = new RestDocumentation(
+			RESTDOCS_OUTPUT_DIR);
 
 	@Autowired
 	private WebApplicationContext context;
@@ -82,18 +89,13 @@ public class EndpointDocumentation {
 	@Autowired
 	private TemplateEngine templates;
 
-	@Value("${org.springframework.restdocs.outputDir:${user.dir}/target/generated-snippets}")
-	private String restdocsOutputDir;
-
 	private MockMvc mockMvc;
 
 	@Before
 	public void setUp() {
-		System.setProperty("org.springframework.restdocs.outputDir",
-				this.restdocsOutputDir);
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
 				.addFilters(this.metricFilter, this.traceFilter)
-				.apply(documentationConfiguration()).build();
+				.apply(documentationConfiguration(this.restDocumentation)).build();
 	}
 
 	@Test
@@ -111,30 +113,30 @@ public class EndpointDocumentation {
 		final List<EndpointDoc> endpoints = new ArrayList<EndpointDoc>();
 		model.put("endpoints", endpoints);
 		for (MvcEndpoint endpoint : getEndpoints()) {
-			final String endpointPath = StringUtils.hasText(endpoint.getPath()) ? endpoint
-					.getPath() : "/";
+			final String endpointPath = StringUtils.hasText(endpoint.getPath())
+					? endpoint.getPath() : "/";
 
 			if (!endpointPath.equals("/docs") && !endpointPath.equals("/logfile")) {
 				String output = endpointPath.substring(1);
 				output = output.length() > 0 ? output : "./";
-				this.mockMvc
-						.perform(get(endpointPath).accept(MediaType.APPLICATION_JSON))
+				this.mockMvc.perform(get(endpointPath).accept(MediaType.APPLICATION_JSON))
 						.andExpect(status().isOk()).andDo(document(output))
 						.andDo(new ResultHandler() {
 							@Override
 							public void handle(MvcResult mvcResult) throws Exception {
-								EndpointDoc endpoint = new EndpointDoc(docs, endpointPath);
+								EndpointDoc endpoint = new EndpointDoc(docs,
+										endpointPath);
 								endpoints.add(endpoint);
 							}
 						});
 			}
 		}
-		File file = new File(this.restdocsOutputDir + "/endpoints.adoc");
+		File file = new File(RESTDOCS_OUTPUT_DIR + "/endpoints.adoc");
 		file.getParentFile().mkdirs();
 		PrintWriter writer = new PrintWriter(file, "UTF-8");
 		try {
-			Template template = this.templates.createTemplate(new File(
-					"src/restdoc/resources/templates/endpoints.adoc.tpl"));
+			Template template = this.templates.createTemplate(
+					new File("src/restdoc/resources/templates/endpoints.adoc.tpl"));
 			template.make(model).writeTo(writer);
 		}
 		finally {

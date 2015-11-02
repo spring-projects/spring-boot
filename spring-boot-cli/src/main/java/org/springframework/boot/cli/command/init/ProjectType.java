@@ -38,7 +38,7 @@ class ProjectType {
 
 	private final Map<String, String> tags = new HashMap<String, String>();
 
-	public ProjectType(String id, String name, String action, boolean defaultType,
+	ProjectType(String id, String name, String action, boolean defaultType,
 			Map<String, String> tags) {
 		this.id = id;
 		this.name = name;

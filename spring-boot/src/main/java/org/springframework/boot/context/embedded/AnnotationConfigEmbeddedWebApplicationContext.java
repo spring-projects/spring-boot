@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,8 +46,8 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * @see EmbeddedWebApplicationContext
  * @see AnnotationConfigWebApplicationContext
  */
-public class AnnotationConfigEmbeddedWebApplicationContext extends
-		EmbeddedWebApplicationContext {
+public class AnnotationConfigEmbeddedWebApplicationContext
+		extends EmbeddedWebApplicationContext {
 
 	private final AnnotatedBeanDefinitionReader reader;
 
@@ -145,7 +145,7 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 	 * {@link #refresh()} must be called in order for the context to fully process the new
 	 * class.
 	 * <p>
-	 * Calls to {@link #register} are idempotent; adding the same annotated class more
+	 * Calls to {@code #register} are idempotent; adding the same annotated class more
 	 * than once has no additional effect.
 	 * @param annotatedClasses one or more annotated classes, e.g. {@code @Configuration}
 	 * classes

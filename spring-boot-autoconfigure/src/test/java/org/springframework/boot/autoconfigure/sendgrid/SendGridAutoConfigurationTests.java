@@ -16,19 +16,19 @@
 
 package org.springframework.boot.autoconfigure.sendgrid;
 
+import com.sendgrid.SendGrid;
 import org.apache.http.conn.routing.HttpRoutePlanner;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import com.sendgrid.SendGrid;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
@@ -76,12 +76,13 @@ public class SendGridAutoConfigurationTests {
 	@Test
 	public void expectedSendGridBeanWithProxyCreated() {
 		loadContext("spring.sendgrid.username:user", "spring.sendgrid.password:secret",
-				"spring.sendgrid.proxy.host:localhost", "spring.sendgrid.proxy.port:5678");
+				"spring.sendgrid.proxy.host:localhost",
+				"spring.sendgrid.proxy.port:5678");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		CloseableHttpClient client = (CloseableHttpClient) ReflectionTestUtils.getField(
-				sendGrid, "client");
-		HttpRoutePlanner routePlanner = (HttpRoutePlanner) ReflectionTestUtils.getField(
-				client, "routePlanner");
+		CloseableHttpClient client = (CloseableHttpClient) ReflectionTestUtils
+				.getField(sendGrid, "client");
+		HttpRoutePlanner routePlanner = (HttpRoutePlanner) ReflectionTestUtils
+				.getField(client, "routePlanner");
 		assertThat(routePlanner, instanceOf(DefaultProxyRoutePlanner.class));
 	}
 

@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -34,21 +36,28 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.NestedServletException;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Matchers.anyDouble;
@@ -57,7 +66,10 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -99,10 +111,10 @@ public class MetricFilterAutoConfigurationTests {
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
 				.addFilter(filter).build();
 		mvc.perform(get("/templateVarTest/foo")).andExpect(status().isOk());
-		verify(context.getBean(CounterService.class)).increment(
-				"status.200.templateVarTest.someVariable");
-		verify(context.getBean(GaugeService.class)).submit(
-				eq("response.templateVarTest.someVariable"), anyDouble());
+		verify(context.getBean(CounterService.class))
+				.increment("status.200.templateVarTest.someVariable");
+		verify(context.getBean(GaugeService.class))
+				.submit(eq("response.templateVarTest.someVariable"), anyDouble());
 		context.close();
 	}
 
@@ -115,10 +127,10 @@ public class MetricFilterAutoConfigurationTests {
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
 				.addFilter(filter).build();
 		mvc.perform(get("/knownPath/foo")).andExpect(status().isNotFound());
-		verify(context.getBean(CounterService.class)).increment(
-				"status.404.knownPath.someVariable");
-		verify(context.getBean(GaugeService.class)).submit(
-				eq("response.knownPath.someVariable"), anyDouble());
+		verify(context.getBean(CounterService.class))
+				.increment("status.404.knownPath.someVariable");
+		verify(context.getBean(GaugeService.class))
+				.submit(eq("response.knownPath.someVariable"), anyDouble());
 		context.close();
 	}
 
@@ -131,10 +143,10 @@ public class MetricFilterAutoConfigurationTests {
 				.addFilter(filter).build();
 		mvc.perform(get("/unknownPath/1")).andExpect(status().isNotFound());
 		mvc.perform(get("/unknownPath/2")).andExpect(status().isNotFound());
-		verify(context.getBean(CounterService.class), times(2)).increment(
-				"status.404.unmapped");
-		verify(context.getBean(GaugeService.class), times(2)).submit(
-				eq("response.unmapped"), anyDouble());
+		verify(context.getBean(CounterService.class), times(2))
+				.increment("status.404.unmapped");
+		verify(context.getBean(GaugeService.class), times(2))
+				.submit(eq("response.unmapped"), anyDouble());
 		context.close();
 	}
 
@@ -148,10 +160,10 @@ public class MetricFilterAutoConfigurationTests {
 				.build();
 		mvc.perform(get("/unknownPath/1")).andExpect(status().is3xxRedirection());
 		mvc.perform(get("/unknownPath/2")).andExpect(status().is3xxRedirection());
-		verify(context.getBean(CounterService.class), times(2)).increment(
-				"status.302.unmapped");
-		verify(context.getBean(GaugeService.class), times(2)).submit(
-				eq("response.unmapped"), anyDouble());
+		verify(context.getBean(CounterService.class), times(2))
+				.increment("status.302.unmapped");
+		verify(context.getBean(GaugeService.class), times(2))
+				.submit(eq("response.unmapped"), anyDouble());
 		context.close();
 	}
 
@@ -171,16 +183,16 @@ public class MetricFilterAutoConfigurationTests {
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
 				.addFilter(filter).build();
 		try {
-			mvc.perform(get("/unhandledException")).andExpect(
-					status().isInternalServerError());
+			mvc.perform(get("/unhandledException"))
+					.andExpect(status().isInternalServerError());
 		}
 		catch (NestedServletException ex) {
 			// Expected
 		}
-		verify(context.getBean(CounterService.class)).increment(
-				"status.500.unhandledException");
-		verify(context.getBean(GaugeService.class)).submit(
-				eq("response.unhandledException"), anyDouble());
+		verify(context.getBean(CounterService.class))
+				.increment("status.500.unhandledException");
+		verify(context.getBean(GaugeService.class))
+				.submit(eq("response.unhandledException"), anyDouble());
 		context.close();
 	}
 
@@ -195,11 +207,62 @@ public class MetricFilterAutoConfigurationTests {
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
 				.addFilter(filter).build();
 		mvc.perform(get("/templateVarTest/foo")).andExpect(status().isOk());
-		verify(context.getBean(CounterService.class)).increment(
-				"status.200.templateVarTest.someVariable");
-		verify(context.getBean(GaugeService.class)).submit(
-				eq("response.templateVarTest.someVariable"), anyDouble());
+		verify(context.getBean(CounterService.class))
+				.increment("status.200.templateVarTest.someVariable");
+		verify(context.getBean(GaugeService.class))
+				.submit(eq("response.templateVarTest.someVariable"), anyDouble());
 		context.close();
+	}
+
+	@Test
+	public void correctlyRecordsMetricsForDeferredResultResponse() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		MetricsFilter filter = context.getBean(MetricsFilter.class);
+		CountDownLatch latch = new CountDownLatch(1);
+		MockMvc mvc = MockMvcBuilders
+				.standaloneSetup(new MetricFilterTestController(latch)).addFilter(filter)
+				.build();
+		String attributeName = MetricsFilter.class.getName() + ".StopWatch";
+		MvcResult result = mvc.perform(post("/create")).andExpect(status().isOk())
+				.andExpect(request().asyncStarted())
+				.andExpect(request().attribute(attributeName, is(notNullValue())))
+				.andReturn();
+		latch.countDown();
+		mvc.perform(asyncDispatch(result)).andExpect(status().isCreated())
+				.andExpect(request().attribute(attributeName, is(nullValue())));
+		verify(context.getBean(CounterService.class)).increment("status.201.create");
+		context.close();
+	}
+
+	@Test
+	public void correctlyRecordsMetricsForFailedDeferredResultResponse()
+			throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		MetricsFilter filter = context.getBean(MetricsFilter.class);
+		CountDownLatch latch = new CountDownLatch(1);
+		MockMvc mvc = MockMvcBuilders
+				.standaloneSetup(new MetricFilterTestController(latch)).addFilter(filter)
+				.build();
+		String attributeName = MetricsFilter.class.getName() + ".StopWatch";
+		MvcResult result = mvc.perform(post("/createFailure")).andExpect(status().isOk())
+				.andExpect(request().asyncStarted())
+				.andExpect(request().attribute(attributeName, is(notNullValue())))
+				.andReturn();
+		latch.countDown();
+		try {
+			mvc.perform(asyncDispatch(result));
+			fail();
+		}
+		catch (Exception ex) {
+			assertThat(result.getRequest().getAttribute(attributeName), is(nullValue()));
+			verify(context.getBean(CounterService.class))
+					.increment("status.500.createFailure");
+		}
+		finally {
+			context.close();
+		}
 	}
 
 	@Configuration
@@ -220,6 +283,16 @@ public class MetricFilterAutoConfigurationTests {
 	@RestController
 	class MetricFilterTestController {
 
+		private final CountDownLatch latch;
+
+		MetricFilterTestController() {
+			this(null);
+		}
+
+		MetricFilterTestController(CountDownLatch latch) {
+			this.latch = latch;
+		}
+
 		@RequestMapping("templateVarTest/{someVariable}")
 		public String testTemplateVariableResolution(@PathVariable String someVariable) {
 			return someVariable;
@@ -237,6 +310,43 @@ public class MetricFilterAutoConfigurationTests {
 		public String testException() {
 			throw new RuntimeException();
 		}
+
+		@RequestMapping("create")
+		public DeferredResult<ResponseEntity<String>> create() {
+			final DeferredResult<ResponseEntity<String>> result = new DeferredResult<ResponseEntity<String>>();
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						MetricFilterTestController.this.latch.await();
+						result.setResult(
+								new ResponseEntity<String>("Done", HttpStatus.CREATED));
+					}
+					catch (InterruptedException ex) {
+					}
+				}
+			}).start();
+			return result;
+		}
+
+		@RequestMapping("createFailure")
+		public DeferredResult<ResponseEntity<String>> createFailure() {
+			final DeferredResult<ResponseEntity<String>> result = new DeferredResult<ResponseEntity<String>>();
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						MetricFilterTestController.this.latch.await();
+						result.setErrorResult(new Exception("It failed"));
+					}
+					catch (InterruptedException ex) {
+
+					}
+				}
+			}).start();
+			return result;
+		}
+
 	}
 
 	@Component
@@ -245,8 +355,8 @@ public class MetricFilterAutoConfigurationTests {
 
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
-				HttpServletResponse response, FilterChain chain) throws ServletException,
-				IOException {
+				HttpServletResponse response, FilterChain chain)
+						throws ServletException, IOException {
 			// send redirect before filter chain is executed, like Spring Security sending
 			// us back to a login page
 			response.sendRedirect("http://example.com");

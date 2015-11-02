@@ -38,8 +38,14 @@ import org.springframework.util.ObjectUtils;
  */
 public class DefaultOpenTsdbNamingStrategy implements OpenTsdbNamingStrategy {
 
+	/**
+	 * The domain key.
+	 */
 	public static final String DOMAIN_KEY = "domain";
 
+	/**
+	 * The process key.
+	 */
 	public static final String PROCESS_KEY = "process";
 
 	/**

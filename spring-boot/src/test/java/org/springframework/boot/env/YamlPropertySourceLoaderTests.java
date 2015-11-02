@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ByteArrayResource;
@@ -42,7 +43,8 @@ public class YamlPropertySourceLoaderTests {
 
 	@Test
 	public void load() throws Exception {
-		ByteArrayResource resource = new ByteArrayResource("foo:\n  bar: spam".getBytes());
+		ByteArrayResource resource = new ByteArrayResource(
+				"foo:\n  bar: spam".getBytes());
 		PropertySource<?> source = this.loader.load("resource", resource, null);
 		assertNotNull(source);
 		assertEquals("spam", source.getProperty("foo.bar"));

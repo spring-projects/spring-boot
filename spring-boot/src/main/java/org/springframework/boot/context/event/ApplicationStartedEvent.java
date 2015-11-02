@@ -34,6 +34,7 @@ import org.springframework.core.env.Environment;
 public class ApplicationStartedEvent extends SpringApplicationEvent {
 
 	/**
+	 * Create a new {@link ApplicationStartedEvent} instance.
 	 * @param application the current application
 	 * @param args the arguments the application is running with
 	 */

@@ -21,7 +21,7 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for some health properties
+ * Configuration properties for some health properties.
  *
  * @author Christian Dupuis
  * @since 1.2.0

@@ -23,7 +23,10 @@ import java.util.List;
 
 import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Repository;
+
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
+import org.springframework.boot.cli.compiler.maven.MavenSettings;
+import org.springframework.boot.cli.compiler.maven.MavenSettingsReader;
 import org.springframework.util.StringUtils;
 
 /**
@@ -47,6 +50,7 @@ public final class RepositoryConfigurationFactory {
 	}
 
 	/**
+	 * Create a new default repository configuration.
 	 * @return the newly-created default repository configuration
 	 */
 	public static List<RepositoryConfiguration> createDefaultRepositoryConfiguration() {
@@ -77,10 +81,10 @@ public final class RepositoryConfigurationFactory {
 			List<RepositoryConfiguration> repositoryConfiguration) {
 		for (Profile activeProfile : activeProfiles) {
 			for (Repository repository : activeProfile.getRepositories()) {
-				repositoryConfiguration.add(new RepositoryConfiguration(repository
-						.getId(), URI.create(repository.getUrl()), repository
-						.getSnapshots() != null ? repository.getSnapshots().isEnabled()
-						: false));
+				repositoryConfiguration.add(new RepositoryConfiguration(
+						repository.getId(), URI.create(repository.getUrl()),
+						repository.getSnapshots() != null
+								? repository.getSnapshots().isEnabled() : false));
 			}
 		}
 	}
