@@ -16,9 +16,7 @@
 
 package org.springframework.boot.gradle;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import org.gradle.tooling.GradleConnector;
@@ -48,8 +46,7 @@ public class ProjectCreator {
 		projectDirectory.mkdirs();
 
 		File gradleScript = new File(projectDirectory, "build.gradle");
-		writeGradleProperties(projectDirectory);
-        
+
 		if (new File("src/test/resources", name).isDirectory()) {
 			FileSystemUtils.copyRecursively(new File("src/test/resources", name),
 					projectDirectory);
@@ -64,22 +61,5 @@ public class ProjectCreator {
 
 		((DefaultGradleConnector) gradleConnector).embedded(true);
 		return gradleConnector.forProjectDirectory(projectDirectory).connect();
-	}
-
-	private void writeGradleProperties(File projectDirectory) throws IOException {
-		File gradleProperties = new File(projectDirectory, "gradle.properties");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(gradleProperties));
-        writeProperty(writer, "http.proxyHost");
-        writeProperty(writer, "https.proxyHost");
-        writeProperty(writer, "http.proxyPort");
-        writeProperty(writer, "https.proxyPort");
-        writer.close();		
-	}
-
-	private void writeProperty(BufferedWriter writer, String name) throws IOException {
-		String value = System.getProperty(name);
-        if (value != null) {
-        	writer.write("systemProp." + name + "=" + value + "\n");
-        }
 	}
 }
