@@ -110,7 +110,7 @@
 	</build>
 	<repositories>
 		<repository>
-			<id>gradle</id>
+			<id>gradle-libs-releases-local</id>
 			<url>http://repo.gradle.org/gradle/libs-releases-local</url>
 			<releases>
 				<enabled>true</enabled>
