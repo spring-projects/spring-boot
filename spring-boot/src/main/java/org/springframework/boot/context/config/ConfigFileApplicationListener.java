@@ -307,25 +307,14 @@ public class ConfigFileApplicationListener
 
 		public void load() throws IOException {
 			this.propertiesLoader = new PropertySourcesLoader();
-			this.profiles = Collections.asLifoQueue(new LinkedList<String>());
 			this.activatedProfiles = false;
+			this.profiles = Collections.asLifoQueue(new LinkedList<String>());
 
-			Set<String> initialActiveProfiles = null;
-			if (this.environment.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
-				// Any pre-existing active profiles set via property sources (e.g. System
-				// properties) take precedence over those added in config files.
-				initialActiveProfiles = maybeActivateProfiles(
-						this.environment.getProperty(ACTIVE_PROFILES_PROPERTY));
-			}
 			// Pre-existing active profiles set via Environment.setActiveProfiles()
 			// are additional profiles and config files are allowed to add more if
 			// they want to, so don't call addActiveProfiles() here.
-			List<String> list = filterEnvironmentProfiles(initialActiveProfiles != null
-					? initialActiveProfiles : Collections.<String>emptySet());
-			// Reverse them so the order is the same as from getProfilesForValue()
-			// (last one wins when properties are eventually resolved)
-			Collections.reverse(list);
-			this.profiles.addAll(list);
+			Set<String> initialActiveProfiles = initializeActiveProfiles();
+			this.profiles.addAll(getUnprocessedActiveProfiles(initialActiveProfiles));
 
 			// The default profile for these purposes is represented as null. We add it
 			// last so that it is first out of the queue (active profiles will then
@@ -349,6 +338,44 @@ public class ConfigFileApplicationListener
 			}
 
 			addConfigurationProperties(this.propertiesLoader.getPropertySources());
+		}
+
+		private Set<String> initializeActiveProfiles() {
+			if (!this.environment.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
+				return Collections.emptySet();
+			}
+			// Any pre-existing active profiles set via property sources (e.g. System
+			// properties) take precedence over those added in config files.
+			Set<String> activeProfiles = getProfilesForValue(
+					this.environment.getProperty(ACTIVE_PROFILES_PROPERTY));
+			maybeActivateProfiles(activeProfiles);
+			return activeProfiles;
+		}
+
+		/**
+		 * Return the active profiles that have not been processed yet. If a profile is
+		 * enabled via both {@link #ACTIVE_PROFILES_PROPERTY} and
+		 * {@link ConfigurableEnvironment#addActiveProfile(String)} it needs to be
+		 * filtered so that the {@link #ACTIVE_PROFILES_PROPERTY} value takes precedence.
+		 * <p>
+		 * Concretely, if the "cloud" profile is enabled via the environment, it will take
+		 * less precedence that any profile set via the {@link #ACTIVE_PROFILES_PROPERTY}.
+		 * @param initialActiveProfiles the profiles that have been enabled via
+		 * {@link #ACTIVE_PROFILES_PROPERTY}
+		 * @return the unprocessed active profiles from the environment to enable
+		 */
+		private List<String> getUnprocessedActiveProfiles(
+				Set<String> initialActiveProfiles) {
+			List<String> unprocessedActiveProfiles = new ArrayList<String>();
+			for (String profile : this.environment.getActiveProfiles()) {
+				if (!initialActiveProfiles.contains(profile)) {
+					unprocessedActiveProfiles.add(profile);
+				}
+			}
+			// Reverse them so the order is the same as from getProfilesForValue()
+			// (last one wins when properties are eventually resolved)
+			Collections.reverse(unprocessedActiveProfiles);
+			return unprocessedActiveProfiles;
 		}
 
 		private void load(String location, String name, String profile)
@@ -387,10 +414,7 @@ public class ConfigFileApplicationListener
 				propertySource = this.propertiesLoader.load(resource, group, name,
 						profile);
 				if (propertySource != null) {
-					maybeActivateProfiles(
-							propertySource.getProperty(ACTIVE_PROFILES_PROPERTY));
-					addIncludeProfiles(
-							propertySource.getProperty(INCLUDE_PROFILES_PROPERTY));
+					handleProfileProperties(propertySource);
 				}
 			}
 			StringBuilder msg = new StringBuilder();
@@ -407,58 +431,37 @@ public class ConfigFileApplicationListener
 			return propertySource;
 		}
 
-		/**
-		 * Return the active profiles that have not been processed yet.
-		 * <p>If a profile is enabled via both {@link #ACTIVE_PROFILES_PROPERTY} and
-		 * {@link ConfigurableEnvironment#addActiveProfile(String)} it needs to be
-		 * filtered so that the {@link #ACTIVE_PROFILES_PROPERTY} value takes
-		 * precedence.
-		 * <p>Concretely, if the "cloud" profile is enabled via the environment,
-		 * it will take less precedence that any profile set via the
-		 * {@link #ACTIVE_PROFILES_PROPERTY}.
-		 * @param initialActiveProfiles the profiles that have been enabled via
-		 * {@link #ACTIVE_PROFILES_PROPERTY}
-		 * @return the additional profiles from the environment to enable
-		 */
-		private List<String> filterEnvironmentProfiles(Set<String> initialActiveProfiles) {
-			List<String> additionalProfiles = new ArrayList<String>();
-			for (String profile : this.environment.getActiveProfiles()) {
-				if (!initialActiveProfiles.contains(profile)) {
-					additionalProfiles.add(profile);
-				}
-			}
-			return additionalProfiles;
+		private void handleProfileProperties(PropertySource<?> propertySource) {
+			Set<String> activeProfiles = getProfilesForValue(
+					propertySource.getProperty(ACTIVE_PROFILES_PROPERTY));
+			maybeActivateProfiles(activeProfiles);
+			Set<String> includeProfiles = getProfilesForValue(
+					propertySource.getProperty(INCLUDE_PROFILES_PROPERTY));
+			addProfiles(includeProfiles);
 		}
 
-		private Set<String> maybeActivateProfiles(Object value) {
+		private void maybeActivateProfiles(Set<String> profiles) {
 			if (this.activatedProfiles) {
-				if (value != null) {
-					this.debug.add("Profiles already activated, '" + value
+				if (!profiles.isEmpty()) {
+					this.debug.add("Profiles already activated, '" + profiles
 							+ "' will not be applied");
 				}
-				return Collections.emptySet();
+				return;
 			}
-
-			Set<String> profiles = getProfilesForValue(value);
-			activateProfiles(profiles);
 			if (profiles.size() > 0) {
+				addProfiles(profiles);
 				this.debug.add("Activated profiles "
 						+ StringUtils.collectionToCommaDelimitedString(profiles));
 				this.activatedProfiles = true;
 			}
-			return profiles;
-		}
-
-		private void addIncludeProfiles(Object value) {
-			Set<String> profiles = getProfilesForValue(value);
-			activateProfiles(profiles);
 		}
 
 		private Set<String> getProfilesForValue(Object property) {
-			return asResolvedSet((property == null ? null : property.toString()), null);
+			String value = (property == null ? null : property.toString());
+			return asResolvedSet(value, null);
 		}
 
-		private void activateProfiles(Set<String> profiles) {
+		private void addProfiles(Set<String> profiles) {
 			for (String profile : profiles) {
 				this.profiles.add(profile);
 				if (!this.environment.acceptsProfiles(profile)) {
