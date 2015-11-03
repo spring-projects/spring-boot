@@ -467,6 +467,7 @@ specified by the `spring.active.profiles` property are added after those configu
 the `SpringApplication` API and therefore take precedence.
 
 
+
 [[boot-features-external-config-placeholders-in-properties]]
 === Placeholders in properties
 The values in `application.properties` are filtered through the existing `Environment`
