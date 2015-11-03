@@ -61,6 +61,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link ManagementWebSecurityAutoConfiguration}.
@@ -229,6 +232,27 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				MockMvcRequestBuilders.get("/beans").header("authorization", "Basic xxx"))
 				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
 				.andExpect(springAuthenticateRealmHeader());
+	}
+
+	@Test
+	public void testMarkAllEndpointsSensitive() throws Exception {
+		// gh-4368
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(WebConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "endpoints.sensitive:true");
+		this.context.refresh();
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context) //
+				.apply(springSecurity()) //
+				.build();
+
+		mockMvc //
+				.perform(get("/health")) //
+				.andExpect(status().isUnauthorized());
+		mockMvc //
+				.perform(get("/info")) //
+				.andExpect(status().isUnauthorized());
 	}
 
 	private ResultMatcher springAuthenticateRealmHeader() {
