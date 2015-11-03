@@ -31,6 +31,7 @@ import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -77,6 +78,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @@author Stephane Nicoll
  */
 public class MetricFilterAutoConfigurationTests {
 
@@ -171,6 +173,16 @@ public class MetricFilterAutoConfigurationTests {
 	public void skipsFilterIfMissingServices() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				MetricFilterAutoConfiguration.class);
+		assertThat(context.getBeansOfType(Filter.class).size(), equalTo(0));
+		context.close();
+	}
+
+	@Test
+	public void skipsFilterIfPropertyDisabled() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "endpoints.metrics.enabled:false");
+		context.register(Config.class, MetricFilterAutoConfiguration.class);
+		context.refresh();
 		assertThat(context.getBeansOfType(Filter.class).size(), equalTo(0));
 		context.close();
 	}
