@@ -67,6 +67,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.ObjectUtils;
@@ -332,7 +333,8 @@ public class ManagementWebSecurityAutoConfiguration {
 				for (String path : this.endpointPaths.getPaths(endpointHandlerMapping)) {
 					matchers.add(new AntPathRequestMatcher(server.getPath(path)));
 				}
-				return (matchers.isEmpty() ? AnyRequestMatcher.INSTANCE
+				return (matchers.isEmpty()
+						? new NegatedRequestMatcher(AnyRequestMatcher.INSTANCE)
 						: new OrRequestMatcher(matchers));
 			}
 
