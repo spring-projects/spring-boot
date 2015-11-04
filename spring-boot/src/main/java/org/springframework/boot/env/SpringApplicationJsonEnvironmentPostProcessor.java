@@ -31,6 +31,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -38,23 +39,28 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
  * An {@link EnvironmentPostProcessor} that parses JSON from
- * <code>spring.application.json</code> or equivalently
+ * {@code spring.application.json} or equivalently
  * {@link SpringApplicationJsonEnvironmentPostProcessor} and adds it as a map property
  * source to the {@link Environment}. The new properties are added with higher priority
  * than the system properties.
  *
  * @author Dave Syer
+ * @author Phillip Webb
+ * @since 1.3.0
  */
 public class SpringApplicationJsonEnvironmentPostProcessor
 		implements EnvironmentPostProcessor, Ordered {
 
-	private static final Log logger = LogFactory
-			.getLog(SpringApplicationJsonEnvironmentPostProcessor.class);
+	private static final String SERVLET_ENVIRONMENT_CLASS = "org.springframework.web."
+			+ "context.support.StandardServletEnvironment";
 
 	/**
 	 * The default order for the processor.
 	 */
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 5;
+
+	private static final Log logger = LogFactory
+			.getLog(SpringApplicationJsonEnvironmentPostProcessor.class);
 
 	private int order = DEFAULT_ORDER;
 
@@ -73,25 +79,21 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 		String json = environment.resolvePlaceholders(
 				"${spring.application.json:${SPRING_APPLICATION_JSON:}}");
 		if (StringUtils.hasText(json)) {
-			try {
-				JsonParser parser = JsonParserFactory.getJsonParser();
-				Map<String, Object> map = parser.parseMap(json);
-				if (!map.isEmpty()) {
-					MapPropertySource source = new MapPropertySource(
-							"spring.application.json", flatten(map));
-					MutablePropertySources sources = environment.getPropertySources();
-					String name = findPropertySource(sources);
-					if (sources.contains(name)) {
-						sources.addBefore(name, source);
-					}
-					else {
-						sources.addFirst(source);
-					}
-				}
+			processJson(environment, json);
+		}
+	}
+
+	private void processJson(ConfigurableEnvironment environment, String json) {
+		try {
+			JsonParser parser = JsonParserFactory.getJsonParser();
+			Map<String, Object> map = parser.parseMap(json);
+			if (!map.isEmpty()) {
+				addJsonPropertySource(environment,
+						new MapPropertySource("spring.application.json", flatten(map)));
 			}
-			catch (Exception e) {
-				logger.warn("Cannot parse JSON for spring.application.json: " + json, e);
-			}
+		}
+		catch (Exception ex) {
+			logger.warn("Cannot parse JSON for spring.application.json: " + json, ex);
 		}
 	}
 
@@ -108,30 +110,20 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 
 	private void flatten(String prefix, Map<String, Object> result,
 			Map<String, Object> map) {
-		if (prefix == null) {
-			prefix = "";
-		}
-		else {
-			prefix = prefix + ".";
-		}
-		for (String key : map.keySet()) {
-			String name = prefix + key;
-			Object value = map.get(key);
-			extract(name, result, value);
+		prefix = (prefix == null ? "" : prefix + ".");
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
+			extract(prefix + entry.getKey(), result, entry.getValue());
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void extract(String name, Map<String, Object> result, Object value) {
 		if (value instanceof Map) {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> nested = (Map<String, Object>) value;
-			flatten(name, result, nested);
+			flatten(name, result, (Map<String, Object>) value);
 		}
 		if (value instanceof Collection) {
-			@SuppressWarnings("unchecked")
-			Collection<Object> nested = (Collection<Object>) value;
 			int index = 0;
-			for (Object object : nested) {
+			for (Object object : (Collection<Object>) value) {
 				extract(name + "[" + index + "]", result, object);
 				index++;
 			}
@@ -141,12 +133,21 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 		}
 	}
 
+	private void addJsonPropertySource(ConfigurableEnvironment environment,
+			PropertySource<?> source) {
+		MutablePropertySources sources = environment.getPropertySources();
+		String name = findPropertySource(sources);
+		if (sources.contains(name)) {
+			sources.addBefore(name, source);
+		}
+		else {
+			sources.addFirst(source);
+		}
+	}
+
 	private String findPropertySource(MutablePropertySources sources) {
-		if (ClassUtils.isPresent(
-				"org.springframework.web.context.support.StandardServletEnvironment",
-				null)
-				&& sources
-						.contains(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME)) {
+		if (ClassUtils.isPresent(SERVLET_ENVIRONMENT_CLASS, null) && sources
+				.contains(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME)) {
 			return StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME;
 
 		}

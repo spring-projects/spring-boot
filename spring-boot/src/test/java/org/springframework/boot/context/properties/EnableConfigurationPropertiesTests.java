@@ -415,41 +415,49 @@ public class EnableConfigurationPropertiesTests {
 	@Configuration
 	@EnableConfigurationProperties(TestProperties.class)
 	protected static class TestConfiguration {
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(StrictTestProperties.class)
 	protected static class StrictTestConfiguration {
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(EmbeddedTestProperties.class)
 	protected static class EmbeddedTestConfiguration {
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(IgnoreNestedTestProperties.class)
 	protected static class IgnoreNestedTestConfiguration {
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(ExceptionIfInvalidTestProperties.class)
 	protected static class ExceptionIfInvalidTestConfiguration {
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(NoExceptionIfInvalidTestProperties.class)
 	protected static class NoExceptionIfInvalidTestConfiguration {
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(DerivedProperties.class)
 	protected static class DerivedConfiguration {
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(NestedProperties.class)
 	protected static class NestedConfiguration {
+
 	}
 
 	@Configuration
@@ -467,6 +475,7 @@ public class EnableConfigurationPropertiesTests {
 	@Configuration
 	@ImportResource("org/springframework/boot/context/properties/testProperties.xml")
 	protected static class DefaultXmlConfiguration {
+
 	}
 
 	@EnableConfigurationProperties
@@ -483,16 +492,19 @@ public class EnableConfigurationPropertiesTests {
 	@EnableConfigurationProperties(External.class)
 	@Configuration
 	public static class AnotherExampleConfig {
+
 	}
 
 	@EnableConfigurationProperties({ External.class, Another.class })
 	@Configuration
 	public static class FurtherExampleConfig {
+
 	}
 
 	@EnableConfigurationProperties({ SystemEnvVar.class })
 	@Configuration
 	public static class SystemExampleConfig {
+
 	}
 
 	@ConfigurationProperties(prefix = "external")
@@ -507,6 +519,7 @@ public class EnableConfigurationPropertiesTests {
 		public void setName(String name) {
 			this.name = name;
 		}
+
 	}
 
 	@ConfigurationProperties(prefix = "another")
@@ -521,10 +534,13 @@ public class EnableConfigurationPropertiesTests {
 		public void setName(String name) {
 			this.name = name;
 		}
+
 	}
 
 	@ConfigurationProperties(prefix = "spring_test_external")
 	public static class SystemEnvVar {
+
+		private String val;
 
 		public String getVal() {
 			return this.val;
@@ -533,8 +549,6 @@ public class EnableConfigurationPropertiesTests {
 		public void setVal(String val) {
 			this.val = val;
 		}
-
-		private String val;
 
 	}
 
@@ -552,19 +566,20 @@ public class EnableConfigurationPropertiesTests {
 		public String getName() {
 			return this.properties.name;
 		}
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(MoreProperties.class)
 	protected static class MoreConfiguration {
-	}
 
+	}
 
 	@Configuration
 	@EnableConfigurationProperties(InvalidConfiguration.class)
 	protected static class InvalidConfiguration {
-	}
 
+	}
 
 	@ConfigurationProperties
 	protected static class NestedProperties {
@@ -605,6 +620,7 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	protected static class DerivedProperties extends BaseProperties {
+
 	}
 
 	@ConfigurationProperties
@@ -638,14 +654,17 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties(ignoreUnknownFields = false)
 	protected static class StrictTestProperties extends TestProperties {
+
 	}
 
 	@ConfigurationProperties(prefix = "spring.foo")
 	protected static class EmbeddedTestProperties extends TestProperties {
+
 	}
 
 	@ConfigurationProperties(ignoreUnknownFields = false, ignoreNestedProperties = true)
 	protected static class IgnoreNestedTestProperties extends TestProperties {
+
 	}
 
 	@ConfigurationProperties
@@ -704,6 +723,7 @@ public class EnableConfigurationPropertiesTests {
 		public void setName(String name) {
 			this.name = name;
 		}
+
 	}
 
 	@ConfigurationProperties(locations = "${binding.location:classpath:name.yml}")
@@ -731,5 +751,7 @@ public class EnableConfigurationPropertiesTests {
 		public Map<String, String> getMymap() {
 			return this.mymap;
 		}
+
 	}
+
 }

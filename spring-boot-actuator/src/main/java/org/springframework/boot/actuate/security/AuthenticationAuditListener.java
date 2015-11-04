@@ -66,7 +66,7 @@ public class AuthenticationAuditListener implements
 			this.webListener.process(this, event);
 		}
 		else if (event instanceof AuthenticationSuccessEvent) {
-			onAuthenticationEvent((AuthenticationSuccessEvent) event);
+			onAuthenticationSuccessEvent((AuthenticationSuccessEvent) event);
 		}
 	}
 
@@ -78,7 +78,7 @@ public class AuthenticationAuditListener implements
 				"AUTHENTICATION_FAILURE", data));
 	}
 
-	private void onAuthenticationEvent(AuthenticationSuccessEvent event) {
+	private void onAuthenticationSuccessEvent(AuthenticationSuccessEvent event) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		if (event.getAuthentication().getDetails() != null) {
 			data.put("details", event.getAuthentication().getDetails());

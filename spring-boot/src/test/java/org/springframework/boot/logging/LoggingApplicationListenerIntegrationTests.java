@@ -32,7 +32,6 @@ import static org.junit.Assert.assertNotNull;
  */
 public class LoggingApplicationListenerIntegrationTests {
 
-
 	@Test
 	public void loggingSystemRegisteredInTheContext() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
@@ -46,7 +45,6 @@ public class LoggingApplicationListenerIntegrationTests {
 		}
 	}
 
-
 	@Component
 	static class SampleService {
 
@@ -56,7 +54,7 @@ public class LoggingApplicationListenerIntegrationTests {
 		SampleService(LoggingSystem loggingSystem) {
 			this.loggingSystem = loggingSystem;
 		}
+
 	}
 
 }
-

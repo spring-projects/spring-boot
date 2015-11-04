@@ -25,6 +25,8 @@ import org.springframework.core.env.StandardEnvironment;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link SpringApplicationJsonEnvironmentPostProcessor}.
+ *
  * @author Dave Syer
  */
 public class SpringApplicationJsonEnvironmentPostProcessorTests {

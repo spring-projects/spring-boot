@@ -40,7 +40,6 @@ import javax.lang.model.util.Types;
 class TypeUtils {
 
 	private static final Map<TypeKind, Class<?>> PRIMITIVE_WRAPPERS;
-	private static final Map<String, TypeKind> WRAPPER_TO_PRIMITIVE;
 
 	static {
 		Map<TypeKind, Class<?>> wrappers = new HashMap<TypeKind, Class<?>>();
@@ -53,16 +52,15 @@ class TypeUtils {
 		wrappers.put(TypeKind.LONG, Long.class);
 		wrappers.put(TypeKind.SHORT, Short.class);
 		PRIMITIVE_WRAPPERS = Collections.unmodifiableMap(wrappers);
+	}
 
+	private static final Map<String, TypeKind> WRAPPER_TO_PRIMITIVE;
+
+	static {
 		Map<String, TypeKind> primitives = new HashMap<String, TypeKind>();
-		primitives.put(Boolean.class.getName(), TypeKind.BOOLEAN);
-		primitives.put(Byte.class.getName(), TypeKind.BYTE);
-		primitives.put(Character.class.getName(), TypeKind.CHAR);
-		primitives.put(Double.class.getName(), TypeKind.DOUBLE);
-		primitives.put(Float.class.getName(), TypeKind.FLOAT);
-		primitives.put(Integer.class.getName(), TypeKind.INT);
-		primitives.put(Long.class.getName(), TypeKind.LONG);
-		primitives.put(Short.class.getName(), TypeKind.SHORT);
+		for (Map.Entry<TypeKind, Class<?>> entry : PRIMITIVE_WRAPPERS.entrySet()) {
+			primitives.put(entry.getValue().getName(), entry.getKey());
+		}
 		WRAPPER_TO_PRIMITIVE = primitives;
 	}
 
@@ -111,7 +109,6 @@ class TypeUtils {
 				|| this.env.getTypeUtils().isAssignable(type, this.mapType);
 	}
 
-
 	public boolean isEnclosedIn(Element candidate, TypeElement element) {
 		if (candidate == null || element == null) {
 			return false;
@@ -134,7 +131,8 @@ class TypeUtils {
 	public TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
 		Class<?> candidate = getWrapperFor(typeMirror);
 		if (candidate != null) {
-			return this.env.getElementUtils().getTypeElement(candidate.getName()).asType();
+			return this.env.getElementUtils().getTypeElement(candidate.getName())
+					.asType();
 		}
 		TypeKind primitiveKind = getPrimitiveFor(typeMirror);
 		if (primitiveKind != null) {

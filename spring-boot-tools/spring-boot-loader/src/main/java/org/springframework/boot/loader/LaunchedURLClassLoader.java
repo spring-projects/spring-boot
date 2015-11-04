@@ -63,11 +63,9 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Gets the resource with the given {@code name}.
-	 * <p>
-	 * Unlike a standard {@link ClassLoader}, this method will first search the root class
-	 * loader. If the resource is not found, this method will call
-	 * {@link #findResource(String)}.
+	 * Gets the resource with the given {@code name}. Unlike a standard
+	 * {@link ClassLoader}, this method will first search the root class loader. If the
+	 * resource is not found, this method will call {@link #findResource(String)}.
 	 */
 	@Override
 	public URL getResource(String name) {
@@ -104,11 +102,10 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Gets the resources with the given {@code name}.
-	 * <p>
-	 * Returns a combination of the resources found by {@link #findResources(String)} and
-	 * from {@link ClassLoader#getResources(String) getResources(String)} on the root
-	 * class loader, if any.
+	 * Gets the resources with the given {@code name}. Returns a combination of the
+	 * resources found by {@link #findResources(String)} and from
+	 * {@link ClassLoader#getResources(String) getResources(String)} on the root class
+	 * loader, if any.
 	 */
 	@Override
 	public Enumeration<URL> getResources(String name) throws IOException {

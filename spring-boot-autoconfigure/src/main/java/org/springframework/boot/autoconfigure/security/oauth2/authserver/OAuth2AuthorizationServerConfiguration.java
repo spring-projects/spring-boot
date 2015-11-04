@@ -94,13 +94,16 @@ public class OAuth2AuthorizationServerConfiguration
 				.scopes(this.details.getScope().toArray(new String[0]));
 
 		if (this.details.getAutoApproveScopes() != null) {
-			builder.autoApprove(this.details.getAutoApproveScopes().toArray(new String[0]));
+			builder.autoApprove(
+					this.details.getAutoApproveScopes().toArray(new String[0]));
 		}
 		if (this.details.getAccessTokenValiditySeconds() != null) {
-			builder.accessTokenValiditySeconds(this.details.getAccessTokenValiditySeconds());
+			builder.accessTokenValiditySeconds(
+					this.details.getAccessTokenValiditySeconds());
 		}
 		if (this.details.getRefreshTokenValiditySeconds() != null) {
-			builder.refreshTokenValiditySeconds(this.details.getRefreshTokenValiditySeconds());
+			builder.refreshTokenValiditySeconds(
+					this.details.getRefreshTokenValiditySeconds());
 		}
 		if (this.details.getRegisteredRedirectUri() != null) {
 			builder.redirectUris(

@@ -140,4 +140,5 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 					"Could not fetch user details");
 		}
 	}
+
 }

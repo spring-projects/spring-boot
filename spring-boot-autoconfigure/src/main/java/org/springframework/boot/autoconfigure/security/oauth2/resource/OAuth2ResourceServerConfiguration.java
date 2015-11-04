@@ -114,9 +114,7 @@ public class OAuth2ResourceServerConfiguration {
 			Environment environment = context.getEnvironment();
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
 					"security.oauth2.resource.");
-			String client = environment
-					.resolvePlaceholders("${security.oauth2.client.client-id:}");
-			if (StringUtils.hasText(client)) {
+			if (hasOAuthClientId(environment)) {
 				return ConditionOutcome.match("found client id");
 			}
 			if (!resolver.getSubProperties("jwt").isEmpty()) {
@@ -135,6 +133,12 @@ public class OAuth2ResourceServerConfiguration {
 			}
 			return ConditionOutcome.noMatch("found neither client id nor "
 					+ "JWT resource nor authorization server");
+		}
+
+		private boolean hasOAuthClientId(Environment environment) {
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
+					"security.oauth2.client.");
+			return StringUtils.hasLength(resolver.getProperty("client-id", ""));
 		}
 
 	}

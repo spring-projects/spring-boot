@@ -22,6 +22,8 @@ import org.springframework.boot.actuate.metrics.Metric;
  * Basic strategy for write operations on {@link Metric} data.
  *
  * @author Dave Syer
+ * @see GaugeWriter
+ * @see CounterWriter
  */
 public interface MetricWriter extends GaugeWriter, CounterWriter {
 

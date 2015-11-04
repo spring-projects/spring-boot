@@ -19,8 +19,8 @@ package org.springframework.boot.configurationsample.specific;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
- * Demonstrate that an unrelated setter is not taken into account
- * to detect the deprecated flag.
+ * Demonstrate that an unrelated setter is not taken into account to detect the deprecated
+ * flag.
  *
  * @author Stephane Nicoll
  */

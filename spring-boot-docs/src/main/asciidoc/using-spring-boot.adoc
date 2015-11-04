@@ -27,9 +27,9 @@ work with other build systems (Ant for example), but they will not be particular
 supported.
 
 
+
 [[using-boot-dependency-management]]
 === Dependency management
-
 Each release of Spring Boot provides a curated list of dependencies it supports. In
 practice, you do not need to provide a version for any of these dependencies in your
 build configuration as Spring Boot is managing that for you. When you upgrade Spring
@@ -46,6 +46,7 @@ and additional dedicated support for <<using-boot-maven-parent-pom,Maven>> and
 
 WARNING: Each release of Spring Boot is associated with a base version of the Spring
 Framework so we **highly** recommend you to not specify its version on your own.
+
 
 
 [[using-boot-maven]]
@@ -105,6 +106,7 @@ TIP: Check the {github-code}/spring-boot-dependencies/pom.xml[`spring-boot-depen
 for a list of supported properties.
 
 
+
 [[using-boot-maven-without-a-parent]]
 ==== Using Spring Boot without the parent POM
 Not everyone likes inheriting from the `spring-boot-starter-parent` POM. You may have your
@@ -162,6 +164,7 @@ following to your `pom.xml
 
 NOTE: In the example above, we specify a _BOM_ but any dependency type can be overridden
 that way.
+
 
 
 [[using-boot-maven-java-version]]

@@ -20,6 +20,7 @@ package org.springframework.boot.devtools.restart;
  * Listener that is notified of application restarts.
  *
  * @author Andy Wilkinson
+ * @since 1.3.0
  */
 public interface RestartListener {
 

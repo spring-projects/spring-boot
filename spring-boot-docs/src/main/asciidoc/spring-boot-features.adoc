@@ -330,16 +330,13 @@ To provide a concrete example, suppose you develop a `@Component` that uses a
 ----
 
 On your application classpath (e.g. inside your jar) you can have an
-`application.properties` that provides a sensible default property
-value for `name`. When running in a new environment, an
-`application.properties` can be provided outside of your jar that
-overrides the `name`; and for one-off testing, you can launch with a
-specific command line switch (e.g. `java -jar app.jar
---name="Spring"`).
+`application.properties` that provides a sensible default property value for `name`. When
+running in a new environment, an `application.properties` can be provided outside of your
+jar that overrides the `name`; and for one-off testing, you can launch with a specific
+command line switch (e.g. `java -jar app.jar --name="Spring"`).
 
 [TIP]
 ====
-
 The `SPRING_APPLICATION_JSON` properties can be supplied on the
 command line with an environment variable. For example in a
 UN{asterisk}X shell:
@@ -364,6 +361,7 @@ $ java -jar myapp.jar --spring.application.json='{"foo":"bar"}'
 
 or as a JNDI variable `java:comp/env/spring.application.json`.
 ====
+
 
 
 [[boot-features-external-config-random-values]]

@@ -712,7 +712,6 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	@EnableConfigurationProperties(PropertyWithoutConfigurationPropertiesAnnotation.class)
 	public static class ConfigurationPropertiesWithoutAnnotation {
 
-
 	}
 
 	public static class PropertyWithoutConfigurationPropertiesAnnotation {
@@ -726,6 +725,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		public void setName(String name) {
 			this.name = name;
 		}
+
 	}
 
 }

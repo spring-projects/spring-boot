@@ -51,8 +51,7 @@ class TypeElementMembers {
 
 	private final Map<String, ExecutableElement> publicGetters = new LinkedHashMap<String, ExecutableElement>();
 
-	private final Map<String, List<ExecutableElement>> publicSetters =
-			new LinkedHashMap<String, List<ExecutableElement>>();
+	private final Map<String, List<ExecutableElement>> publicSetters = new LinkedHashMap<String, List<ExecutableElement>>();
 
 	TypeElementMembers(ProcessingEnvironment env, TypeElement element) {
 		this.env = env;
@@ -84,7 +83,8 @@ class TypeElementMembers {
 			}
 			else if (isSetter(method)) {
 				String propertyName = getAccessorName(name);
-				List<ExecutableElement> matchingSetters = this.publicSetters.get(propertyName);
+				List<ExecutableElement> matchingSetters = this.publicSetters
+						.get(propertyName);
 				if (matchingSetters == null) {
 					matchingSetters = new ArrayList<ExecutableElement>();
 					this.publicSetters.put(propertyName, matchingSetters);
@@ -97,7 +97,8 @@ class TypeElementMembers {
 		}
 	}
 
-	private ExecutableElement getMatchingSetter(List<ExecutableElement> candidates, TypeMirror type) {
+	private ExecutableElement getMatchingSetter(List<ExecutableElement> candidates,
+			TypeMirror type) {
 		for (ExecutableElement candidate : candidates) {
 			TypeMirror paramType = candidate.getParameters().get(0).asType();
 			if (this.env.getTypeUtils().isSameType(paramType, type)) {

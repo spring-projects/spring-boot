@@ -20,13 +20,13 @@ package org.springframework.boot.actuate.metrics.writer;
  * Simple writer for counters (metrics that increment).
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 public interface CounterWriter {
 
 	/**
 	 * Increment the value of a metric (or decrement if the delta is negative). The name
 	 * of the delta is the name of the metric to increment.
-	 *
 	 * @param delta the amount to increment by
 	 */
 	void increment(Delta<?> delta);
@@ -34,9 +34,8 @@ public interface CounterWriter {
 	/**
 	 * Reset the value of a metric, usually to zero value. Implementations can discard the
 	 * old values if desired, but may choose not to. This operation is optional (some
-	 * implementations may not be able to fulfil the contract, in which case they should
+	 * implementations may not be able to fulfill the contract, in which case they should
 	 * simply do nothing).
-	 *
 	 * @param metricName the name to reset
 	 */
 	void reset(String metricName);

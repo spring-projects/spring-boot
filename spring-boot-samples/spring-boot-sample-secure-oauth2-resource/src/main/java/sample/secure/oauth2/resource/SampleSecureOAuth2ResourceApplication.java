@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sample.secure.oauth2;
+
+package sample.secure.oauth2.resource;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,8 +24,9 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 
 @SpringBootApplication
 @EnableResourceServer
-public class SampleSecureOAuth2ResourceApplication extends ResourceServerConfigurerAdapter {
-	
+public class SampleSecureOAuth2ResourceApplication
+		extends ResourceServerConfigurerAdapter {
+
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http.antMatcher("/flights/**").authorizeRequests().anyRequest().authenticated();

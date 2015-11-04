@@ -115,8 +115,9 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 
 			ConfigurationProperties properties = AnnotationUtils.findAnnotation(type,
 					ConfigurationProperties.class);
-			Assert.notNull(properties, "No " + ConfigurationProperties.class.getSimpleName()
-					+ " annotation found on  '" + type.getName() + "'.");
+			Assert.notNull(properties,
+					"No " + ConfigurationProperties.class.getSimpleName()
+							+ " annotation found on  '" + type.getName() + "'.");
 		}
 
 	}

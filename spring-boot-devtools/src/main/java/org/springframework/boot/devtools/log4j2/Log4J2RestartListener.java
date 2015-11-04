@@ -32,6 +32,7 @@ import org.springframework.util.ReflectionUtils;
  * {@link RestartListener} that prepares Log4J2 for an application restart.
  *
  * @author Andy Wilkinson
+ * @since 1.3.0
  */
 public class Log4J2RestartListener implements RestartListener {
 

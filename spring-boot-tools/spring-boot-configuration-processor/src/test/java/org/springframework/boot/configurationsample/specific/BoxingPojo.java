@@ -19,8 +19,8 @@ package org.springframework.boot.configurationsample.specific;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
- * Demonstrate the use of boxing/unboxing. Even if the type does not
- * strictly match, it should still be detected.
+ * Demonstrate the use of boxing/unboxing. Even if the type does not strictly match, it
+ * should still be detected.
  *
  * @author Stephane Nicoll
  */

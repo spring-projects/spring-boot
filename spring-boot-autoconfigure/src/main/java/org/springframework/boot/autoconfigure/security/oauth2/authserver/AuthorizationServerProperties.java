@@ -22,6 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for OAuth2 Authorization server.
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 @ConfigurationProperties("security.oauth2.authorization")
 public class AuthorizationServerProperties {

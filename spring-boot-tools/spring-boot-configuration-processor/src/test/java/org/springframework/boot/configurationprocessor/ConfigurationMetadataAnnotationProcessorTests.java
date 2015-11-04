@@ -205,11 +205,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata, containsGroup("not.deprecated").fromSource(type));
 		assertThat(metadata, containsProperty("not.deprecated.counter", Integer.class)
-				.withNoDeprecation()
-				.fromSource(type));
+				.withNoDeprecation().fromSource(type));
 		assertThat(metadata, containsProperty("not.deprecated.flag", Boolean.class)
-				.withNoDeprecation()
-				.fromSource(type));
+				.withNoDeprecation().fromSource(type));
 	}
 
 	@Test
@@ -217,10 +215,10 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		Class<?> type = BoxingPojo.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata, containsGroup("boxing").fromSource(type));
-		assertThat(metadata, containsProperty("boxing.flag", Boolean.class)
-				.fromSource(type));
-		assertThat(metadata, containsProperty("boxing.counter", Integer.class)
-				.fromSource(type));
+		assertThat(metadata,
+				containsProperty("boxing.flag", Boolean.class).fromSource(type));
+		assertThat(metadata,
+				containsProperty("boxing.counter", Integer.class).fromSource(type));
 	}
 
 	@Test
@@ -366,12 +364,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				null, null, true, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata,
-				containsProperty("simple.flag", Boolean.class)
-						.fromSource(SimpleProperties.class)
-						.withDescription("A simple flag.")
-						.withDeprecation(null, null)
-						.withDefaultValue(is(true)));
+		assertThat(metadata, containsProperty("simple.flag", Boolean.class)
+				.fromSource(SimpleProperties.class).withDescription("A simple flag.")
+				.withDeprecation(null, null).withDefaultValue(is(true)));
 		assertThat(metadata.getItems().size(), is(4));
 	}
 

@@ -22,6 +22,7 @@ import org.springframework.boot.actuate.metrics.Metric;
  * Writer for gauge values (simple metric with a number value).
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 public interface GaugeWriter {
 
