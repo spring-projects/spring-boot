@@ -51,6 +51,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -60,6 +61,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
@@ -280,6 +282,33 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				getLineWithText(output, "Hello world").contains("INFO"));
 		assertFalse("Wrong file output pattern:\n" + output,
 				getLineWithText(file, "Hello world").contains("INFO"));
+	}
+
+	@Test
+	public void testConsoleThresholdProperty() throws Exception {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.threshold.console", "WARN");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		this.loggingSystem.initialize(loggingInitializationContext, null, null);
+		this.logger.info("Hello world");
+		String output = this.output.toString().trim();
+		assertNull(getLineWithText(output, "Hello world"));
+	}
+
+	@Test
+	public void testFileThresholdProperty() throws Exception {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.threshold.file", "WARN");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		String output = this.output.toString().trim();
+		assertTrue(getLineWithText(output, "Hello world").contains("INFO"));
+		assertNull(getLineWithText(file, "Hello world"));
 	}
 
 	@Test

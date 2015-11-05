@@ -20,6 +20,7 @@ import java.nio.charset.Charset;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
@@ -41,6 +42,7 @@ import org.springframework.core.env.PropertySourcesPropertyResolver;
  * and {@code file-appender.xml} files provided for classic {@code logback.xml} use.
  *
  * @author Phillip Webb
+ * @author Vedran Pavic
  * @since 1.1.2
  */
 class DefaultLogbackConfiguration {
@@ -56,12 +58,14 @@ class DefaultLogbackConfiguration {
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
 	private final PropertyResolver patterns;
+	private final PropertyResolver thresholds;
 
 	private final LogFile logFile;
 
 	DefaultLogbackConfiguration(LoggingInitializationContext initializationContext,
 			LogFile logFile) {
 		this.patterns = getPatternsResolver(initializationContext.getEnvironment());
+		this.thresholds = getThresholdsResolver(initializationContext.getEnvironment());
 		this.logFile = logFile;
 	}
 
@@ -70,6 +74,13 @@ class DefaultLogbackConfiguration {
 			return new PropertySourcesPropertyResolver(null);
 		}
 		return new RelaxedPropertyResolver(environment, "logging.pattern.");
+	}
+
+	private PropertyResolver getThresholdsResolver(Environment environment) {
+		if (environment == null) {
+			return new PropertySourcesPropertyResolver(null);
+		}
+		return new RelaxedPropertyResolver(environment, "logging.threshold.");
 	}
 
 	public void apply(LogbackConfigurator config) {
@@ -120,6 +131,13 @@ class DefaultLogbackConfiguration {
 		encoder.setCharset(UTF8);
 		config.start(encoder);
 		appender.setEncoder(encoder);
+
+		String consoleAppenderThreshold = this.thresholds.getProperty("console");
+		if (consoleAppenderThreshold != null) {
+			ThresholdFilter thresholdFilter = thresholdFilter(consoleAppenderThreshold, appender);
+			config.start(thresholdFilter);
+		}
+
 		config.appender("CONSOLE", appender);
 		return appender;
 	}
@@ -146,8 +164,21 @@ class DefaultLogbackConfiguration {
 		appender.setTriggeringPolicy(triggeringPolicy);
 		config.start(triggeringPolicy);
 
+		String fileAppenderThreshold = this.thresholds.getProperty("file");
+		if (fileAppenderThreshold != null) {
+			ThresholdFilter thresholdFilter = thresholdFilter(fileAppenderThreshold, appender);
+			config.start(thresholdFilter);
+		}
+
 		config.appender("FILE", appender);
 		return appender;
+	}
+
+	private ThresholdFilter thresholdFilter(String level, Appender<ILoggingEvent> appender) {
+		ThresholdFilter thresholdFilter = new ThresholdFilter();
+		thresholdFilter.setLevel(level);
+		appender.addFilter(thresholdFilter);
+		return thresholdFilter;
 	}
 
 }

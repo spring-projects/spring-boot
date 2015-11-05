@@ -42,6 +42,8 @@ content into your application; rather pick only the properties that you need.
 	logging.pattern.file= # Appender pattern for output to the file. Only supported with the default logback setup.
 	logging.pattern.level= # Appender pattern for log level (default %5p). Only supported with the default logback setup.
 	logging.register-shutdown-hook=false # Register a shutdown hook for the logging system when it is initialized.
+	logging.threshold.console= # Threshold level to filter output to the console. Only supported with the default logback setup.
+	logging.threshold.file= # Threshold level to filter output to the file. Only supported with the default logback setup.
 
 	# AOP
 	spring.aop.auto=true # Add @EnableAspectJAutoProxy.

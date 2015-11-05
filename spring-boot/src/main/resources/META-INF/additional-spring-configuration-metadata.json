@@ -79,6 +79,18 @@
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
+    "name": "logging.threshold.console",
+    "type": "java.lang.String",
+    "description": "Threshold level to filter output to the console. Only supported with the default logback setup.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+  },
+  {
+    "name": "logging.threshold.file",
+    "type": "java.lang.String",
+    "description": "Threshold level to filter output to the file. Only supported with the default logback setup.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+  },
+  {
     "name": "spring.mandatory-file-encoding",
     "sourceType": "org.springframework.boot.context.FileEncodingApplicationListener",
     "type": "java.nio.charset.Charset",
