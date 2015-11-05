@@ -78,7 +78,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	 * {@code WebSphereExtendedJtaPlatform} implementations for various Hibernate
 	 * versions.
 	 */
-	private static final String[] WEBSHERE_JTA_PLATFORM_CLASSES = {
+	private static final String[] WEBSPHERE_JTA_PLATFORM_CLASSES = {
 			"org.hibernate.engine.transaction.jta.platform.internal.WebSphereExtendedJtaPlatform",
 			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform", };
 
@@ -139,7 +139,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	}
 
 	private Object getWebSphereJtaPlatformManager() {
-		return getJtaPlatformManager(WEBSHERE_JTA_PLATFORM_CLASSES);
+		return getJtaPlatformManager(WEBSPHERE_JTA_PLATFORM_CLASSES);
 	}
 
 	private void configureSpringJtaPlatform(Map<String, Object> vendorProperties,
