@@ -63,8 +63,15 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ConfigFileApplicationListener}.
@@ -362,7 +369,8 @@ public class ConfigFileApplicationListenerTests {
 				"spring.profiles.active:other");
 		this.environment.addActiveProfile("dev");
 		this.initializer.onApplicationEvent(this.event);
-		assertThat(Arrays.asList(this.environment.getActiveProfiles()), containsInAnyOrder("dev", "other"));
+		assertThat(Arrays.asList(this.environment.getActiveProfiles()),
+				containsInAnyOrder("dev", "other"));
 		assertThat(this.environment.getProperty("my.property"),
 				equalTo("fromotherpropertiesfile"));
 		validateProfilePrecedence(null, "dev", "other");
@@ -374,39 +382,48 @@ public class ConfigFileApplicationListenerTests {
 				"spring.profiles.active:dev,other");
 		this.environment.addActiveProfile("dev");
 		this.initializer.onApplicationEvent(this.event);
-		assertThat(Arrays.asList(this.environment.getActiveProfiles()), containsInAnyOrder("dev", "other"));
+		assertThat(Arrays.asList(this.environment.getActiveProfiles()),
+				containsInAnyOrder("dev", "other"));
 		assertThat(this.environment.getProperty("my.property"),
 				equalTo("fromotherpropertiesfile"));
 		validateProfilePrecedence(null, "dev", "other");
 	}
 
 	@Test
-	public void profilesAddedToEnvironmentAndViaPropertyDuplicateEnvironmentWins() throws Exception {
+	public void profilesAddedToEnvironmentAndViaPropertyDuplicateEnvironmentWins()
+			throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"spring.profiles.active:other,dev");
 		this.environment.addActiveProfile("other");
 		this.initializer.onApplicationEvent(this.event);
-		assertThat(Arrays.asList(this.environment.getActiveProfiles()), containsInAnyOrder("dev", "other"));
+		assertThat(Arrays.asList(this.environment.getActiveProfiles()),
+				containsInAnyOrder("dev", "other"));
 		assertThat(this.environment.getProperty("my.property"),
 				equalTo("fromdevpropertiesfile"));
 		validateProfilePrecedence(null, "other", "dev");
 	}
 
 	private void validateProfilePrecedence(String... profiles) {
-		this.initializer.onApplicationEvent(new ApplicationPreparedEvent(
-				new SpringApplication(), new String[0], new AnnotationConfigApplicationContext()));
+		ApplicationPreparedEvent event = new ApplicationPreparedEvent(
+				new SpringApplication(), new String[0],
+				new AnnotationConfigApplicationContext());
+		this.initializer.onApplicationEvent(event);
 		String log = this.out.toString();
 
 		// First make sure that each profile got processed only once
 		for (String profile : profiles) {
-			assertThat("Wrong number of occurrences for profile '" + profile + "' --> " + log,
-					StringUtils.countOccurrencesOf(log, createLogForProfile(profile)), equalTo(1));
+			String reason = "Wrong number of occurrences for profile '" + profile
+					+ "' --> " + log;
+			assertThat(reason,
+					StringUtils.countOccurrencesOf(log, createLogForProfile(profile)),
+					equalTo(1));
 		}
 		// Make sure the order of loading is the right one
 		for (String profile : profiles) {
 			String line = createLogForProfile(profile);
 			int index = log.indexOf(line);
-			assertTrue("Loading profile '" + profile + "' not found in '" + log + "'", index != -1);
+			assertTrue("Loading profile '" + profile + "' not found in '" + log + "'",
+					index != -1);
 			log = log.substring(index + line.length(), log.length());
 		}
 	}
