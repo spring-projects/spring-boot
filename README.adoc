@@ -157,6 +157,35 @@ and your user's `settings.xml` for the Maven child process, forked by the Maven 
 plugin. Without the proxy configuration in your user's settings.xml those test-cases
 are going to fail.
 
+=== Maven Mirror
+
+In case your are using a Maven mirror for all external repositories:
+ 
+[indent=0]
+----
+    <mirror>
+        <!-- ... -->
+        <mirrorOf>external:*</mirrorOf>
+    </mirror>
+----
+
+You need to exclude the clojars.org repository by adding a mirror to your 
+user's `$HOME/.m2/settings.xml` file:
+
+[indent=0]
+----
+    <mirror>
+        <id>clojars.org</id>
+        <name>clojars.org mirror</name>
+        <url>http://clojars.org/repo</url>
+        <mirrorOf>clojars.org</mirrorOf>
+    </mirror>
+----
+
+The clojars.org repository is used by the Spring Boot CLI test-cases to check whether the
+Groovy dependency resolution mechanism works correctly. Without the mirror the test-case
+is going to fail.
+
 === Building reference documentation
 
 The reference documentation requires the documentation of the maven plugin to be
