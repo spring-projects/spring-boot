@@ -62,14 +62,14 @@ public class WebMvcProperties {
 	 */
 	private boolean throwExceptionIfNoHandlerFound = false;
 
-	private final Async async = new Async();
-
-	private final View view = new View();
-
 	/**
 	 * Maps file extensions to media types for content negotiation, e.g. yml->text/yaml.
 	 */
 	private Map<String, MediaType> mediaTypes = new LinkedHashMap<String, MediaType>();
+
+	private final Async async = new Async();
+
+	private final View view = new View();
 
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
@@ -113,20 +113,20 @@ public class WebMvcProperties {
 		this.throwExceptionIfNoHandlerFound = throwExceptionIfNoHandlerFound;
 	}
 
-	public Async getAsync() {
-		return this.async;
-	}
-
-	public View getView() {
-		return this.view;
-	}
-
 	public Map<String, MediaType> getMediaTypes() {
 		return this.mediaTypes;
 	}
 
 	public void setMediaTypes(Map<String, MediaType> mediaTypes) {
 		this.mediaTypes = mediaTypes;
+	}
+
+	public Async getAsync() {
+		return this.async;
+	}
+
+	public View getView() {
+		return this.view;
 	}
 
 	public static class Async {
