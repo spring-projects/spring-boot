@@ -19,10 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Properties used to configure resource handling.
- *
- * @author Phillip Webb
- * @since 1.1.0
+ * Properties used to configure resource handling0
  */
 @ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)
 public class ResourceProperties {

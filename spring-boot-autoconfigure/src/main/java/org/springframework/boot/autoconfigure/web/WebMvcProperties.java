@@ -16,7 +16,11 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.MediaType;
 import org.springframework.validation.DefaultMessageCodesResolver;
 
 /**
@@ -49,6 +53,11 @@ public class WebMvcProperties {
 	 */
 	private boolean ignoreDefaultModelOnRedirect = true;
 
+	/**
+	 * Maps file extensions to media types for content negotiation, e.g. yml->text/yaml.
+	 */
+	private Map<String, MediaType> mediaTypes = new LinkedHashMap<String, MediaType>();
+
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
 	}
@@ -80,6 +89,14 @@ public class WebMvcProperties {
 
 	public void setIgnoreDefaultModelOnRedirect(boolean ignoreDefaultModelOnRedirect) {
 		this.ignoreDefaultModelOnRedirect = ignoreDefaultModelOnRedirect;
+	}
+
+	public Map<String, MediaType> getMediaTypes() {
+		return this.mediaTypes;
+	}
+
+	public void setMediaTypes(Map<String, MediaType> mediaTypes) {
+		this.mediaTypes = mediaTypes;
 	}
 
 }

@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.Servlet;
 
@@ -56,6 +57,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
@@ -67,6 +69,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -167,6 +170,14 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 			converters.addAll(this.messageConverters.getConverters());
+		}
+
+		@Override
+		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+			Map<String, MediaType> mediaTypes = this.mvcProperties.getMediaTypes();
+			for (String extension : mediaTypes.keySet()) {
+				configurer.mediaType(extension, mediaTypes.get(extension));
+			}
 		}
 
 		@Bean
