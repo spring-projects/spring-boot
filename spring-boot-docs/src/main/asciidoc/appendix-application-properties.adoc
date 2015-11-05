@@ -306,6 +306,7 @@ content into your application; rather pick only the properties that you need.
 	spring.mvc.favicon.enabled=true # Enable resolution of favicon.ico.
 	spring.mvc.ignore-default-model-on-redirect=true # If the content of the "default" model should be ignored during redirect scenarios.
 	spring.mvc.locale= # Locale to use.
+	spring.mvc.media-types.*= # Maps file extensions to media types for content negotiation.
 	spring.mvc.message-codes-resolver-format= # Formatting strategy for message codes. For instance `PREFIX_ERROR_CODE`.
 	spring.mvc.throw-exception-if-no-handler-found=false # If a "NoHandlerFoundException" should be thrown if no Handler was found to process a request.
 	spring.mvc.view.prefix= # Spring MVC view prefix.
