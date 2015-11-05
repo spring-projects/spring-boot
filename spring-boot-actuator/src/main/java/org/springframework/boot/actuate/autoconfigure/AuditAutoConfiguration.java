@@ -23,6 +23,8 @@ import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.audit.listener.AuditListener;
 import org.springframework.boot.actuate.security.AuthenticationAuditListener;
 import org.springframework.boot.actuate.security.AuthorizationAuditListener;
+import org.springframework.boot.actuate.security.DefaultAuthenticationAuditListener;
+import org.springframework.boot.actuate.security.DefaultAuthorizationAuditListener;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -33,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link AuditEvent}s.
  *
  * @author Dave Syer
+ * @author Vedran Pavic
  */
 @Configuration
 public class AuditAutoConfiguration {
@@ -47,14 +50,16 @@ public class AuditAutoConfiguration {
 
 	@Bean
 	@ConditionalOnClass(name = "org.springframework.security.authentication.event.AbstractAuthenticationEvent")
+	@ConditionalOnMissingBean(AuthenticationAuditListener.class)
 	public AuthenticationAuditListener authenticationAuditListener() throws Exception {
-		return new AuthenticationAuditListener();
+		return new DefaultAuthenticationAuditListener();
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
+	@ConditionalOnMissingBean(AuthorizationAuditListener.class)
 	public AuthorizationAuditListener authorizationAuditListener() throws Exception {
-		return new AuthorizationAuditListener();
+		return new DefaultAuthorizationAuditListener();
 	}
 
 	@ConditionalOnMissingBean(AuditEventRepository.class)
