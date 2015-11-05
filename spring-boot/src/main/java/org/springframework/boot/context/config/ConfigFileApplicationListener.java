@@ -30,10 +30,12 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnumerableCompositePropertySource;
@@ -165,7 +167,19 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
 			SpringApplication application) {
 		addPropertySources(environment, application.getResourceLoader());
+		configureIgnoreBeanInfo(environment);
 		bindToSpringApplication(environment, application);
+	}
+
+	private void configureIgnoreBeanInfo(ConfigurableEnvironment environment) {
+		if (System.getProperty(
+				CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME) == null) {
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
+					"spring.beaninfo.");
+			Boolean ignore = resolver.getProperty("ignore", Boolean.class, Boolean.TRUE);
+			System.setProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME,
+					ignore.toString());
+		}
 	}
 
 	private void onApplicationPreparedEvent(ApplicationEvent event) {

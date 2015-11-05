@@ -58,6 +58,9 @@ content into your application; rather pick only the properties that you need.
 	# AUTO-CONFIGURATION
 	spring.autoconfigure.exclude= # Auto-configuration classes to exclude.
 
+	# SPRING CORE
+	spring.beaninfo.ignore=true # Skip search of BeanInfo classes.
+
 	# SPRING CACHE ({sc-spring-boot-autoconfigure}/cache/CacheProperties.{sc-ext}[CacheProperties])
 	spring.cache.cache-names= # Comma-separated list of cache names to create if supported by the underlying cache manager.
 	spring.cache.ehcache.config= # The location of the configuration file to use to initialize EhCache.

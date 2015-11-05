@@ -97,6 +97,13 @@
     "description": "Application index."
   },
   {
+    "name": "spring.beaninfo.ignore",
+    "type": "java.lang.Boolean",
+    "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+    "description": "Skip search of BeanInfo classes.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.config.name",
     "type": "java.lang.String",
     "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",

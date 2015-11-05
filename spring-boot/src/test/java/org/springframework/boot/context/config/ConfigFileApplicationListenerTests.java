@@ -40,6 +40,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigFileApplicationListener.ConfigurationPropertySources;
@@ -111,6 +112,7 @@ public class ConfigFileApplicationListenerTests {
 		System.clearProperty("the.property");
 		System.clearProperty("spring.config.location");
 		System.clearProperty("spring.main.banner-mode");
+		System.clearProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
 	}
 
 	@Test
@@ -741,6 +743,26 @@ public class ConfigFileApplicationListenerTests {
 				"--spring.profiles.active=activeprofilewithdifferentsubdoc,activeprofilewithdifferentsubdoc2");
 		String property = this.context.getEnvironment().getProperty("foobar");
 		assertThat(property, equalTo("baz"));
+	}
+
+	@Test
+	public void setIgnoreBeanInfoPropertyByDefault() throws Exception {
+		this.initializer.setSearchNames("testproperties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		String property = System
+				.getProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
+		assertThat(property, equalTo("true"));
+	}
+
+	@Test
+	public void disableIgnoreBeanInfoProperty() throws Exception {
+		this.initializer.setSearchNames("testproperties");
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"spring.beaninfo.ignore=false");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		String property = System
+				.getProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
+		assertThat(property, equalTo("false"));
 	}
 
 	private static Matcher<? super ConfigurableEnvironment> containsPropertySource(
