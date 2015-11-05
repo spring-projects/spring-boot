@@ -53,6 +53,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.HandlerAdapter;
@@ -90,6 +91,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link WebMvcAutoConfiguration}.
@@ -428,6 +430,16 @@ public class WebMvcAutoConfigurationTests {
 				.getBean(RequestMappingHandlerAdapter.class);
 		Object actual = ReflectionTestUtils.getField(adapter, "asyncRequestTimeout");
 		assertEquals(123456L, actual);
+	}
+
+	@Test
+	public void customMediaTypes() throws Exception {
+		load("spring.mvc.mediaTypes.yaml:text/yaml");
+		RequestMappingHandlerAdapter adapter = this.context
+				.getBean(RequestMappingHandlerAdapter.class);
+		ContentNegotiationManager actual = (ContentNegotiationManager) ReflectionTestUtils
+				.getField(adapter, "contentNegotiationManager");
+		assertTrue(actual.getAllFileExtensions().contains("yaml"));
 	}
 
 	@Test
