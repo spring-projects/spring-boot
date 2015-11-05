@@ -2,6 +2,10 @@
 org.springframework.context.ApplicationContextInitializer=\
 org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingInitializer
 
+# Application Listeners
+org.springframework.context.ApplicationListener=\
+org.springframework.boot.autoconfigure.BackgroundPreinitializer
+
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration,\
