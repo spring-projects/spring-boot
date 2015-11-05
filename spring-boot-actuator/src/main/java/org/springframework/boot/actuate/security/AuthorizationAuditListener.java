@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,20 +22,16 @@ import java.util.Map;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.context.ApplicationListener;
 import org.springframework.security.access.event.AbstractAuthorizationEvent;
 import org.springframework.security.access.event.AuthenticationCredentialsNotFoundEvent;
 import org.springframework.security.access.event.AuthorizationFailureEvent;
 
 /**
- * {@link ApplicationListener} expose Spring Security {@link AbstractAuthorizationEvent
- * authorization events} as {@link AuditEvent}s.
+ * Default implementation of {@link AuthorizationAuditListener}.
  *
  * @author Dave Syer
  */
-public class AuthorizationAuditListener implements
-		ApplicationListener<AbstractAuthorizationEvent>, ApplicationEventPublisherAware {
+public class AuthorizationAuditListener extends AbstractAuthorizationAuditListener {
 
 	private ApplicationEventPublisher publisher;
 
