@@ -36,6 +36,20 @@
 			<version>${ant.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- The antunit tests require joda-time -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>${joda-time.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- This is an optional depencency in the joda-time 2.8.1 pom.xml but Ivy tries to resolve it -->
+		<dependency>
+			<groupId>org.joda</groupId>
+			<artifactId>joda-convert</artifactId>
+			<version>1.2</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -89,7 +103,7 @@
 									<propertyset>
 										<propertyref name="build.compiler" />
 									</propertyset>
-									<plainlistener />
+									<plainlistener logLevel="verbose"/>
 									<fileset dir="${project.build.directory}/it" includes="**/build.xml"
 										xmlns="antlib:org.apache.tools.ant" />
 								</antunit>
