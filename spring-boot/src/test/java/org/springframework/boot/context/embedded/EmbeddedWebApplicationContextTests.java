@@ -37,14 +37,11 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 
 import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.Scope;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory.MockEmbeddedServletContainer;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -58,7 +55,6 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertEquals;
@@ -434,22 +430,6 @@ public class EmbeddedWebApplicationContextTests {
 				sameInstance(scope));
 	}
 
-	@Test
-	public void containerIsStoppedBeforeContextIsClosed() {
-		addEmbeddedServletContainerFactoryBean();
-		this.context.registerBeanDefinition("shutdownOrderingValidator",
-				BeanDefinitionBuilder.rootBeanDefinition(ShutdownOrderingValidator.class)
-						.addConstructorArgReference("embeddedServletContainerFactory")
-						.getBeanDefinition());
-		this.context.refresh();
-		ShutdownOrderingValidator validator = this.context
-				.getBean(ShutdownOrderingValidator.class);
-		this.context.close();
-		assertThat(validator.destroyed, is(true));
-		assertThat(validator.containerStoppedFirst, is(true));
-
-	}
-
 	private void addEmbeddedServletContainerFactoryBean() {
 		this.context.registerBeanDefinition("embeddedServletContainerFactory",
 				new RootBeanDefinition(MockEmbeddedServletContainerFactory.class));
@@ -495,27 +475,6 @@ public class EmbeddedWebApplicationContextTests {
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response,
 				FilterChain chain) throws IOException, ServletException {
-		}
-
-	}
-
-	protected static class ShutdownOrderingValidator implements DisposableBean {
-
-		private final MockEmbeddedServletContainer servletContainer;
-
-		private boolean destroyed = false;
-
-		private boolean containerStoppedFirst = false;
-
-		ShutdownOrderingValidator(
-				MockEmbeddedServletContainerFactory servletContainerFactory) {
-			this.servletContainer = servletContainerFactory.getContainer();
-		}
-
-		@Override
-		public void destroy() {
-			this.destroyed = true;
-			this.containerStoppedFirst = this.servletContainer.isStopped();
 		}
 
 	}
