@@ -8,5 +8,6 @@ sudo: false
 install: true
 before_script:
 - mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true || true
-- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true
+#- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true
+- mvn install -X -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -pl :spring-boot-antlib -am
 script: mvn install -q -nsu -Dmaven.test.redirectTestOutputToFile=true -P '!integration'
