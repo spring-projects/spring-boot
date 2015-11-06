@@ -90,8 +90,6 @@ public class MockEmbeddedServletContainerFactory
 
 		private final int port;
 
-		private boolean stopped = false;
-
 		public MockEmbeddedServletContainer(ServletContextInitializer[] initializers,
 				int port) {
 			this.initializers = initializers;
@@ -176,11 +174,6 @@ public class MockEmbeddedServletContainerFactory
 		public void stop() {
 			this.servletContext = null;
 			this.registeredServlets.clear();
-			this.stopped = true;
-		}
-
-		public boolean isStopped() {
-			return this.stopped;
 		}
 
 		public Servlet[] getServlets() {
