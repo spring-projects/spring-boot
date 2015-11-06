@@ -33,15 +33,16 @@ import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
- * Additional configuration to ensure that {@link EntityManagerFactory} beans
- * depend-on the {@code hazelcastInstance} bean.
+ * Additional configuration to ensure that {@link EntityManagerFactory} beans depend-on
+ * the {@code hazelcastInstance} bean.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 @Configuration
-@ConditionalOnClass({ HazelcastInstance.class, LocalContainerEntityManagerFactoryBean.class })
-@AutoConfigureAfter({ HazelcastAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
+@ConditionalOnClass({ HazelcastInstance.class,
+		LocalContainerEntityManagerFactoryBean.class })
+@AutoConfigureAfter({ HazelcastAutoConfiguration.class,
+		HibernateJpaAutoConfiguration.class })
 class HazelcastJpaDependencyAutoConfiguration {
 
 	@Bean
@@ -56,6 +57,7 @@ class HazelcastJpaDependencyAutoConfiguration {
 		HazelcastInstanceJpaDependencyPostProcessor() {
 			super("hazelcastInstance");
 		}
+
 	}
 
 	static class OnHazelcastAndJpaCondition extends AllNestedConditions {

@@ -382,8 +382,8 @@ public class CacheAutoConfigurationTests {
 	public void hazelcastCacheWithMainHazelcastAutoConfiguration() throws IOException {
 		String mainConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(applicationContext, "spring.cache.type=hazelcast",
-				"spring.hazelcast.config=" + mainConfig);
+		EnvironmentTestUtils.addEnvironment(applicationContext,
+				"spring.cache.type=hazelcast", "spring.hazelcast.config=" + mainConfig);
 		applicationContext.register(DefaultCacheConfiguration.class);
 		applicationContext.register(HazelcastAndCacheConfiguration.class);
 		applicationContext.refresh();
@@ -404,14 +404,14 @@ public class CacheAutoConfigurationTests {
 		String mainConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
 		String cacheConfig = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(applicationContext,  "spring.cache.type=hazelcast",
+		EnvironmentTestUtils.addEnvironment(applicationContext,
+				"spring.cache.type=hazelcast",
 				"spring.cache.hazelcast.config=" + cacheConfig,
 				"spring.hazelcast.config=" + mainConfig);
 		applicationContext.register(DefaultCacheConfiguration.class);
 		applicationContext.register(HazelcastAndCacheConfiguration.class);
 		applicationContext.refresh();
 		this.context = applicationContext;
-
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
 		HazelcastCacheManager cacheManager = validateCacheManager(
@@ -681,7 +681,8 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Configuration
-	@ImportAutoConfiguration({CacheAutoConfiguration.class, HazelcastAutoConfiguration.class})
+	@ImportAutoConfiguration({ CacheAutoConfiguration.class,
+			HazelcastAutoConfiguration.class })
 	static class HazelcastAndCacheConfiguration {
 
 	}

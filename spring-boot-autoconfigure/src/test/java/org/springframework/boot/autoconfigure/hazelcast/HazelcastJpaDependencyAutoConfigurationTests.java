@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.hazelcast;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.hazelcast.core.HazelcastInstance;
 import org.junit.After;
@@ -57,7 +58,7 @@ public class HazelcastJpaDependencyAutoConfigurationTests {
 	@Test
 	public void registrationIfHazelcastInstanceHasRegularBeanName() {
 		load(HazelcastConfiguration.class);
-		assertThat(this.context.getBeansOfType(EntityManagerFactoryDependsOnPostProcessor.class),
+		assertThat(getPostProcessor(),
 				hasKey("hazelcastInstanceJpaDependencyPostProcessor"));
 		assertThat(getEntityManagerFactoryDependencies(), hasItem("hazelcastInstance"));
 	}
@@ -65,16 +66,18 @@ public class HazelcastJpaDependencyAutoConfigurationTests {
 	@Test
 	public void noRegistrationIfHazelcastInstanceHasCustomBeanName() {
 		load(HazelcastCustomNameConfiguration.class);
-		assertThat(getEntityManagerFactoryDependencies(), not(hasItem("hazelcastInstance")));
-		assertThat(this.context.getBeansOfType(EntityManagerFactoryDependsOnPostProcessor.class),
+		assertThat(getEntityManagerFactoryDependencies(),
+				not(hasItem("hazelcastInstance")));
+		assertThat(getPostProcessor(),
 				not(hasKey("hazelcastInstanceJpaDependencyPostProcessor")));
 	}
 
 	@Test
 	public void noRegistrationWithNoHazelcastInstance() {
 		load(null);
-		assertThat(getEntityManagerFactoryDependencies(), not(hasItem("hazelcastInstance")));
-		assertThat(this.context.getBeansOfType(EntityManagerFactoryDependsOnPostProcessor.class),
+		assertThat(getEntityManagerFactoryDependencies(),
+				not(hasItem("hazelcastInstance")));
+		assertThat(getPostProcessor(),
 				not(hasKey("hazelcastInstanceJpaDependencyPostProcessor")));
 	}
 
@@ -84,13 +87,20 @@ public class HazelcastJpaDependencyAutoConfigurationTests {
 		this.context.register(HazelcastConfiguration.class,
 				HazelcastJpaDependencyAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeansOfType(EntityManagerFactoryDependsOnPostProcessor.class),
+		assertThat(getPostProcessor(),
 				not(hasKey("hazelcastInstanceJpaDependencyPostProcessor")));
 	}
 
+	private Map<String, EntityManagerFactoryDependsOnPostProcessor> getPostProcessor() {
+		return this.context
+				.getBeansOfType(EntityManagerFactoryDependsOnPostProcessor.class);
+	}
+
 	private List<String> getEntityManagerFactoryDependencies() {
-		String[] dependsOn = this.context.getBeanDefinition("entityManagerFactory").getDependsOn();
-		return dependsOn != null ? Arrays.asList(dependsOn) : Collections.<String>emptyList();
+		String[] dependsOn = this.context.getBeanDefinition("entityManagerFactory")
+				.getDependsOn();
+		return dependsOn != null ? Arrays.asList(dependsOn)
+				: Collections.<String>emptyList();
 	}
 
 	public void load(Class<?> config) {
