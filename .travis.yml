@@ -7,7 +7,8 @@ services:
 sudo: false
 install: true
 before_script:
-- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true || true
+- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true || true > /dev/null
 #- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true
-- mvn install -X -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -pl :spring-boot-antlib -am
+- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -pl :spring-boot-antlib,:spring-boot-dependencies,:spring-boot-parent,:spring-boot-tools,:spring-boot-loader,:spring-boot-loader-tools > /dev/null
+- mvn install -X -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -pl :spring-boot-antlib 
 script: mvn install -q -nsu -Dmaven.test.redirectTestOutputToFile=true -P '!integration'
