@@ -12,5 +12,5 @@ before_script:
 - mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -P !standard-with-extra-repos > /dev/null || true
 #- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true
 - mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -pl :spring-boot-dependencies,:spring-boot-parent,:spring-boot-tools,:spring-boot-loader,:spring-boot-loader-tools -P !standard-with-extra-repos > /dev/null
-- mvn install -X -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -pl :spring-boot-antlib -P !standard-with-extra-repos
+- mvn install -X -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -pl :spring-boot-antlib -P !standard-with-extra-repos,fast
 script: mvn install -q -nsu -Dmaven.test.redirectTestOutputToFile=true -P '!integration'
