@@ -7,10 +7,6 @@ services:
 sudo: false
 install: true
 before_script:
-- echo "###################\n" && cat /home/travis/.m2/settings.xml
-- find ~/.m2 -type f -exec ls -la {} \;
-- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -P !standard-with-extra-repos > /dev/null || true
-#- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true
-- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -pl :spring-boot-dependencies,:spring-boot-parent,:spring-boot-tools,:spring-boot-loader,:spring-boot-loader-tools -P !standard-with-extra-repos > /dev/null
-- mvn install -X -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -pl :spring-boot-antlib -P !standard-with-extra-repos,fast
+- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -P !standard-with-extra-repos || true
+- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -P !standard-with-extra-repos
 script: mvn install -q -nsu -Dmaven.test.redirectTestOutputToFile=true -P '!integration'
