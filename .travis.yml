@@ -7,6 +7,9 @@ services:
 sudo: false
 install: true
 before_script:
+- echo "###################\n" && cat /home/travis/.m2/settings.xml
+- echo "###################\n" && cat /usr/local/maven/conf/settings.xml
+- find /home/travis/.m2/repository
 - mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true > /dev/null || true
 #- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true
 - mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -pl :spring-boot-dependencies,:spring-boot-parent,:spring-boot-tools,:spring-boot-loader,:spring-boot-loader-tools > /dev/null
