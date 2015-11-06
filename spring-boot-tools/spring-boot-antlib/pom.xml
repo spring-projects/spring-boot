@@ -103,7 +103,7 @@
 									<propertyset>
 										<propertyref name="build.compiler" />
 									</propertyset>
-									<plainlistener />
+									<plainlistener logLevel="debug" />
 									<fileset dir="${project.build.directory}/it" includes="**/build.xml"
 										xmlns="antlib:org.apache.tools.ant" />
 								</antunit>
