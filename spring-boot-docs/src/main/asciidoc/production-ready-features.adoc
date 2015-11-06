@@ -914,6 +914,7 @@ endpoint you should see a response similar to this:
 		"threads": 15,
 		"threads.daemon": 11,
 		"threads.peak": 15,
+		"threads.totalStarted": 42,
 		"uptime": 494836,
 		"instance.uptime": 489782,
 		"datasource.primary.active": 5,
