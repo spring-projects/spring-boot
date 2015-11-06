@@ -24,18 +24,14 @@ import com.hazelcast.core.HazelcastInstance;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Hazelcast. Creates a
@@ -78,18 +74,6 @@ public class HazelcastAutoConfiguration {
 		@Bean
 		public HazelcastInstance hazelcastInstance(Config config) {
 			return new HazelcastInstanceFactory(config).getHazelcastInstance();
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
-	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	protected static class HazelcastInstanceJpaDependencyConfiguration
-			extends EntityManagerFactoryDependsOnPostProcessor {
-
-		public HazelcastInstanceJpaDependencyConfiguration() {
-			super("hazelcastInstance");
 		}
 
 	}
