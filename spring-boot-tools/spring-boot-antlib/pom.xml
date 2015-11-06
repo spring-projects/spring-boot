@@ -104,7 +104,7 @@
 										<propertyref name="build.compiler" />
 									</propertyset>
 									<!-- Debug antunit output: set logLevel to "debug" (default: info) -->
-									<plainlistener logLevel="debug" />
+									<plainlistener logLevel="info" />
 									<fileset dir="${project.build.directory}/it" includes="**/build.xml"
 										xmlns="antlib:org.apache.tools.ant" />
 								</antunit>
