@@ -103,6 +103,7 @@ public class SpringBootMockServletContext extends MockServletContext {
 				return this.emptyRootFolder.toURI().toURL();
 			}
 			catch (IOException ex) {
+				// Ignore
 			}
 		}
 		return resource;

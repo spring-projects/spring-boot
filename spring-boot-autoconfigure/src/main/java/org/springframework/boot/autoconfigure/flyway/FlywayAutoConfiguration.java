@@ -21,7 +21,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
-import org.springframework.beans.factory.InitializingBean;
+import org.flywaydb.core.api.MigrationVersion;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -33,10 +34,11 @@ import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDepen
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -48,6 +50,7 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Vedran Pavic
  * @since 1.1.0
  */
 @Configuration
@@ -58,10 +61,15 @@ import org.springframework.util.Assert;
 		HibernateJpaAutoConfiguration.class })
 public class FlywayAutoConfiguration {
 
+	@Bean
+	@ConfigurationPropertiesBinding
+	public StringToMigrationVersionConverter stringToMigrationVersionConverter() {
+		return new StringToMigrationVersionConverter();
+	}
+
 	@Configuration
 	@ConditionalOnMissingBean(Flyway.class)
 	@EnableConfigurationProperties(FlywayProperties.class)
-	@Import(FlywayJpaDependencyConfiguration.class)
 	public static class FlywayConfiguration {
 
 		@Autowired
@@ -86,8 +94,9 @@ public class FlywayAutoConfiguration {
 				Assert.state(!this.properties.getLocations().isEmpty(),
 						"Migration script locations not configured");
 				boolean exists = hasAtLeastOneLocation();
-				Assert.state(exists, "Cannot find migrations location in: "
-						+ this.properties.getLocations()
+				Assert.state(exists,
+						"Cannot find migrations location in: " + this.properties
+								.getLocations()
 						+ " (please add migrations or check your Flyway configuration)");
 			}
 		}
@@ -107,8 +116,8 @@ public class FlywayAutoConfiguration {
 			Flyway flyway = new Flyway();
 			if (this.properties.isCreateDataSource()) {
 				flyway.setDataSource(this.properties.getUrl(), this.properties.getUser(),
-						this.properties.getPassword(), this.properties.getInitSqls()
-								.toArray(new String[0]));
+						this.properties.getPassword(),
+						this.properties.getInitSqls().toArray(new String[0]));
 			}
 			else if (this.flywayDataSource != null) {
 				flyway.setDataSource(this.flywayDataSource);
@@ -120,8 +129,24 @@ public class FlywayAutoConfiguration {
 		}
 
 		@Bean
+		@ConditionalOnMissingBean
 		public FlywayMigrationInitializer flywayInitializer(Flyway flyway) {
 			return new FlywayMigrationInitializer(flyway, this.migrationStrategy);
+		}
+
+		/**
+		 * Additional configuration to ensure that {@link EntityManagerFactory} beans
+		 * depend-on the {@code flywayInitializer} bean.
+		 */
+		@Configuration
+		@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
+		@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
+		protected static class FlywayInitializerJpaDependencyConfiguration
+				extends EntityManagerFactoryDependsOnPostProcessor {
+
+			public FlywayInitializerJpaDependencyConfiguration() {
+				super("flywayInitializer");
+			}
 
 		}
 
@@ -129,44 +154,29 @@ public class FlywayAutoConfiguration {
 
 	/**
 	 * Additional configuration to ensure that {@link EntityManagerFactory} beans
-	 * depend-on the flyway bean.
+	 * depend-on the {@code flyway} bean.
 	 */
 	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	protected static class FlywayJpaDependencyConfiguration extends
-			EntityManagerFactoryDependsOnPostProcessor {
+	protected static class FlywayJpaDependencyConfiguration
+			extends EntityManagerFactoryDependsOnPostProcessor {
 
 		public FlywayJpaDependencyConfiguration() {
-			super("flywayInitializer", "flyway");
+			super("flyway");
 		}
 
 	}
 
 	/**
-	 * {@link InitializingBean} used to trigger {@link Flyway} migration via the
-	 * {@link FlywayMigrationStrategy}.
+	 * Convert a String to a {@link MigrationVersion}.
 	 */
-	private static class FlywayMigrationInitializer implements InitializingBean {
-
-		private final Flyway flyway;
-
-		private final FlywayMigrationStrategy migrationStrategy;
-
-		public FlywayMigrationInitializer(Flyway flyway,
-				FlywayMigrationStrategy migrationStrategy) {
-			this.flyway = flyway;
-			this.migrationStrategy = migrationStrategy;
-		}
+	private static class StringToMigrationVersionConverter
+			implements Converter<String, MigrationVersion> {
 
 		@Override
-		public void afterPropertiesSet() throws Exception {
-			if (this.migrationStrategy != null) {
-				this.migrationStrategy.migrate(this.flyway);
-			}
-			else {
-				this.flyway.migrate();
-			}
+		public MigrationVersion convert(String source) {
+			return MigrationVersion.fromVersion(source);
 		}
 
 	}

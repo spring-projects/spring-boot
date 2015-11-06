@@ -19,7 +19,7 @@ package org.springframework.boot.configurationprocessor.metadata;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ConfigurationMetadata}.
@@ -40,7 +40,8 @@ public class ConfigurationMetadataTests {
 
 	@Test
 	public void toDashedCaseWordsSeveralUnderScores() {
-		assertThat(toDashedCase("Word___With__underscore"), is("word___with__underscore"));
+		assertThat(toDashedCase("Word___With__underscore"),
+				is("word___with__underscore"));
 	}
 
 	@Test

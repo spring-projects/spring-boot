@@ -22,6 +22,7 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages.Registrar;
 import org.springframework.boot.autoconfigure.packagestest.one.FirstConfiguration;
 import org.springframework.boot.autoconfigure.packagestest.two.SecondConfiguration;
@@ -59,8 +60,8 @@ public class AutoConfigurationPackagesTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				EmptyConfig.class);
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown
-				.expectMessage("Unable to retrieve @EnableAutoConfiguration base packages");
+		this.thrown.expectMessage(
+				"Unable to retrieve @EnableAutoConfiguration base packages");
 		AutoConfigurationPackages.get(context.getBeanFactory());
 	}
 

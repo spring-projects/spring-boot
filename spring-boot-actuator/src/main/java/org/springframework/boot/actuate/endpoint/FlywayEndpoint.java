@@ -24,6 +24,7 @@ import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationState;
 import org.flywaydb.core.api.MigrationType;
+
 import org.springframework.boot.actuate.endpoint.FlywayEndpoint.FlywayMigration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
@@ -55,6 +56,9 @@ public class FlywayEndpoint extends AbstractEndpoint<List<FlywayMigration>> {
 		return migrations;
 	}
 
+	/**
+	 * Migration properties.
+	 */
 	public static class FlywayMigration {
 
 		private MigrationType type;

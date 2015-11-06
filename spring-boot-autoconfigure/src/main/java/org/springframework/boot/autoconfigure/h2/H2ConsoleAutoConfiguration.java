@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.h2;
 
 import org.h2.server.web.WebServlet;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -37,7 +38,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for H2's web console
+ * {@link EnableAutoConfiguration Auto-configuration} for H2's web console.
  *
  * @author Andy Wilkinson
  * @since 1.3.0
@@ -72,8 +73,8 @@ public class H2ConsoleAutoConfiguration {
 		}
 
 		@Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
-		private static class H2ConsoleSecurityConfigurer extends
-				WebSecurityConfigurerAdapter {
+		private static class H2ConsoleSecurityConfigurer
+				extends WebSecurityConfigurerAdapter {
 
 			@Autowired
 			private H2ConsoleProperties console;

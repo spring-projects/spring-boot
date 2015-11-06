@@ -37,6 +37,7 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.message.Message;
+
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -57,6 +58,7 @@ import org.springframework.util.ResourceUtils;
 public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	private static final Map<LogLevel, Level> LEVELS;
+
 	static {
 		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
 		levels.put(LogLevel.TRACE, Level.TRACE);
@@ -114,8 +116,8 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 			Collections.addAll(supportedConfigLocations, "log4j2.json", "log4j2.jsn");
 		}
 		supportedConfigLocations.add("log4j2.xml");
-		return supportedConfigLocations.toArray(new String[supportedConfigLocations
-				.size()]);
+		return supportedConfigLocations
+				.toArray(new String[supportedConfigLocations.size()]);
 	}
 
 	protected boolean isClassAvailable(String className) {
@@ -164,8 +166,8 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 			ctx.start(ConfigurationFactory.getInstance().getConfiguration(source));
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Could not initialize Log4J2 logging from "
-					+ location, ex);
+			throw new IllegalStateException(
+					"Could not initialize Log4J2 logging from " + location, ex);
 		}
 	}
 
@@ -196,6 +198,11 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		getLoggerContext().updateLoggers();
 	}
 
+	@Override
+	public Runnable getShutdownHandler() {
+		return new ShutdownHandler();
+	}
+
 	private LoggerConfig getRootLoggerConfig() {
 		return getLoggerContext().getConfiguration().getLoggerConfig("");
 	}
@@ -208,4 +215,12 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		return (LoggerContext) LogManager.getContext(false);
 	}
 
+	private final class ShutdownHandler implements Runnable {
+
+		@Override
+		public void run() {
+			getLoggerContext().stop();
+		}
+
+	}
 }

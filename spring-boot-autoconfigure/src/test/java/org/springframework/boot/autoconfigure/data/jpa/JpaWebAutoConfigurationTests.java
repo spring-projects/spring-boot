@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.data.jpa;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.jpa.city.City;
@@ -63,8 +64,8 @@ public class JpaWebAutoConfigurationTests {
 		this.context.refresh();
 		assertNotNull(this.context.getBean(CityRepository.class));
 		assertNotNull(this.context.getBean(PageableHandlerMethodArgumentResolver.class));
-		assertTrue(this.context.getBean(FormattingConversionService.class).canConvert(
-				Long.class, City.class));
+		assertTrue(this.context.getBean(FormattingConversionService.class)
+				.canConvert(Long.class, City.class));
 	}
 
 	@Configuration

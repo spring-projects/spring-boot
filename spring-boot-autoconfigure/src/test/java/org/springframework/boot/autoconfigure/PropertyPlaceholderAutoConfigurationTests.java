@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -80,8 +81,8 @@ public class PropertyPlaceholderAutoConfigurationTests {
 		@Bean
 		public static PropertySourcesPlaceholderConfigurer morePlaceholders() {
 			PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
-			configurer.setProperties(StringUtils.splitArrayElementsIntoProperties(
-					new String[] { "foo=spam" }, "="));
+			configurer.setProperties(StringUtils
+					.splitArrayElementsIntoProperties(new String[] { "foo=spam" }, "="));
 			configurer.setLocalOverride(true);
 			configurer.setOrder(0);
 			return configurer;

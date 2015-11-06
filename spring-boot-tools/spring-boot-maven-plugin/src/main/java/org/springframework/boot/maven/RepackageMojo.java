@@ -35,6 +35,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
+
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.Layout;
@@ -121,9 +123,10 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private LayoutType layout;
 
 	/**
-	 * A list of the libraries that must be unpacked from fat jars in order to run. Specify
-	 * each library as a <code>&lt;dependency&gt;</code> with a <code>&lt;groupId&gt;</code> and a
-	 * <code>&lt;artifactId&gt;</code> and they will be unpacked at runtime in <code>$TMPDIR/spring-boot-libs</code>.
+	 * A list of the libraries that must be unpacked from fat jars in order to run.
+	 * Specify each library as a <code>&lt;dependency&gt;</code> with a
+	 * <code>&lt;groupId&gt;</code> and a <code>&lt;artifactId&gt;</code> and they will be
+	 * unpacked at runtime in <code>$TMPDIR/spring-boot-libs</code>.
 	 * @since 1.1
 	 */
 	@Parameter
@@ -152,6 +155,13 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	@Parameter
 	private Properties embeddedLaunchScriptProperties;
 
+	/**
+	 * Exclude Spring Boot devtools.
+	 * @since 1.3
+	 */
+	@Parameter(defaultValue = "false")
+	private boolean excludeDevtools;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.project.getPackaging().equals("pom")) {
@@ -175,10 +185,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 				finally {
 					long duration = System.currentTimeMillis() - startTime;
 					if (duration > FIND_WARNING_TIMEOUT) {
-						getLog().warn(
-								"Searching for the main-class is taking some time, "
-										+ "consider using the mainClass configuration "
-										+ "parameter");
+						getLog().warn("Searching for the main-class is taking some time, "
+								+ "consider using the mainClass configuration "
+								+ "parameter");
 					}
 				}
 			}
@@ -190,7 +199,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		}
 
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
-				getFilters());
+				getFilters(getAdditionalFilters()));
 
 		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack,
 				getLog());
@@ -202,9 +211,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
 		if (this.classifier != null) {
-			getLog().info(
-					"Attaching archive: " + target + ", with classifier: "
-							+ this.classifier);
+			getLog().info("Attaching archive: " + target + ", with classifier: "
+					+ this.classifier);
 			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(),
 					this.classifier, target);
 		}
@@ -212,6 +220,17 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			this.project.getArtifact().setFile(target);
 			getLog().info("Replacing main artifact " + source + " to " + target);
 		}
+	}
+
+	private ArtifactsFilter[] getAdditionalFilters() {
+		if (this.excludeDevtools) {
+			Exclude exclude = new Exclude();
+			exclude.setGroupId("org.springframework.boot");
+			exclude.setArtifactId("spring-boot-devtools");
+			ExcludeFilter filter = new ExcludeFilter(exclude);
+			return new ArtifactsFilter[] { filter };
+		}
+		return new ArtifactsFilter[] {};
 	}
 
 	private File getTargetFile() {
@@ -229,40 +248,68 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private LaunchScript getLaunchScript() throws IOException {
 		if (this.executable || this.embeddedLaunchScript != null) {
 			return new DefaultLaunchScript(this.embeddedLaunchScript,
-					this.embeddedLaunchScriptProperties);
+					buildLaunchScriptProperties());
 		}
 		return null;
 	}
 
+	private Properties buildLaunchScriptProperties() {
+		Properties properties = new Properties();
+		if (this.embeddedLaunchScriptProperties != null) {
+			properties.putAll(this.embeddedLaunchScriptProperties);
+		}
+		putIfMissing(properties, "initInfoProvides", this.project.getArtifactId());
+		putIfMissing(properties, "initInfoShortDescription", this.project.getName(),
+				this.project.getArtifactId());
+		putIfMissing(properties, "initInfoDescription", this.project.getDescription(),
+				this.project.getName(), this.project.getArtifactId());
+		return properties;
+	}
+
+	private void putIfMissing(Properties properties, String key,
+			String... valueCandidates) {
+		if (!properties.containsKey(key)) {
+			for (String candidate : valueCandidates) {
+				if (candidate != null && candidate.length() > 0) {
+					properties.put(key, candidate);
+					return;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Archive layout types.
+	 */
 	public enum LayoutType {
 
 		/**
-		 * Jar Layout
+		 * Jar Layout.
 		 */
 		JAR(new Layouts.Jar()),
 
 		/**
-		 * War Layout
+		 * War Layout.
 		 */
 		WAR(new Layouts.War()),
 
 		/**
-		 * Zip Layout
+		 * Zip Layout.
 		 */
 		ZIP(new Layouts.Expanded()),
 
 		/**
-		 * Dir Layout
+		 * Dir Layout.
 		 */
 		DIR(new Layouts.Expanded()),
 
 		/**
-		 * Module Layout
+		 * Module Layout.
 		 */
 		MODULE(new Layouts.Module()),
 
 		/**
-		 * No Layout
+		 * No Layout.
 		 */
 		NONE(new Layouts.None());
 
@@ -272,7 +319,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			return this.layout;
 		}
 
-		private LayoutType(Layout layout) {
+		LayoutType(Layout layout) {
 			this.layout = layout;
 		}
 	}

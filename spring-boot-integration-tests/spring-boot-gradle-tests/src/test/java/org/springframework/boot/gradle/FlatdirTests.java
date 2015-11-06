@@ -21,6 +21,7 @@ import java.io.File;
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 
@@ -50,8 +51,8 @@ public class FlatdirTests {
 		if (!this.libs.exists()) {
 			this.libs.mkdirs();
 		}
-		FileCopyUtils.copy(new File("src/test/resources/foo.jar"), new File(this.libs,
-				"foo-1.0.0.jar"));
+		FileCopyUtils.copy(new File("src/test/resources/foo.jar"),
+				new File(this.libs, "foo-1.0.0.jar"));
 		this.project.newBuild().forTasks("build")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
 	}

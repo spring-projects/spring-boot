@@ -61,7 +61,7 @@ Spring Boot Loader compatible war files should be structured in the following wa
 
 [indent=0]
 ----
-	example.jar
+	example.war
 	 |
 	 +-META-INF
 	 |  +-MANIFEST.MF
@@ -229,6 +229,10 @@ properties (System properties, environment variables, manifest entries or
 Manifest entry keys are formed by capitalizing initial letters of words and changing the
 separator to "`-`" from "`.`" (e.g. `Loader-Path`). The exception is `loader.main` which
 is looked up as `Start-Class` in the manifest for compatibility with `JarLauncher`).
+
+TIP: Build plugins automatically move the `Main-Class` attribute to `Start-Class` when
+the fat jar is built. If you are using that, specify the name of the class to launch using
+the `Main-Class` attribute and leave out `Start-Class`.
 
 Environment variables can be capitalized with underscore separators instead of periods.
 

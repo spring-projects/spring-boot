@@ -39,7 +39,7 @@ class ArtemisEmbeddedConfigurationFactory {
 
 	private final ArtemisProperties.Embedded properties;
 
-	public ArtemisEmbeddedConfigurationFactory(ArtemisProperties properties) {
+	ArtemisEmbeddedConfigurationFactory(ArtemisProperties properties) {
 		this.properties = properties.getEmbedded();
 	}
 

@@ -22,6 +22,7 @@ import org.junit.Assume;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
@@ -75,7 +76,7 @@ public class RedisTestServer implements TestRule {
 
 		private final JedisConnectionFactory connectionFactory;
 
-		public RedisStatement(Statement base, JedisConnectionFactory connectionFactory) {
+		RedisStatement(Statement base, JedisConnectionFactory connectionFactory) {
 			this.base = base;
 			this.connectionFactory = connectionFactory;
 		}

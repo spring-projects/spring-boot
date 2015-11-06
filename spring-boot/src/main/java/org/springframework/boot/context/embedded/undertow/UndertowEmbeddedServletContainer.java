@@ -16,6 +16,14 @@
 
 package org.springframework.boot.context.embedded.undertow;
 
+import java.lang.reflect.Field;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.ServletException;
+
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
@@ -29,16 +37,10 @@ import io.undertow.server.handlers.encoding.EncodingHandler;
 import io.undertow.server.handlers.encoding.GzipEncodingProvider;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.util.HttpString;
-
-import java.lang.reflect.Field;
-import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.ServletException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.xnio.channels.BoundChannel;
+
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
@@ -69,6 +71,8 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	private final String contextPath;
 
+	private final boolean useForwardHeaders;
+
 	private final boolean autoStart;
 
 	private final Compression compression;
@@ -79,37 +83,48 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
 			String contextPath, int port, boolean autoStart, Compression compression) {
+		this(builder, manager, contextPath, port, false, autoStart, compression);
+	}
+
+	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
+			String contextPath, int port, boolean useForwardHeaders, boolean autoStart,
+			Compression compression) {
 		this.builder = builder;
 		this.manager = manager;
 		this.contextPath = contextPath;
+		this.useForwardHeaders = useForwardHeaders;
 		this.autoStart = autoStart;
 		this.compression = compression;
 	}
 
 	@Override
 	public synchronized void start() throws EmbeddedServletContainerException {
-		if (!this.autoStart) {
-			return;
-		}
-		if (this.undertow == null) {
-			this.undertow = createUndertowServer();
-		}
-		this.undertow.start();
-		this.started = true;
-		UndertowEmbeddedServletContainer.logger.info("Undertow started on port(s) "
-				+ getPortsDescription());
-	}
-
-	private Undertow createUndertowServer() {
 		try {
-			HttpHandler httpHandler = this.manager.start();
-			this.builder.setHandler(getContextHandler(httpHandler));
-			return this.builder.build();
+			if (!this.autoStart) {
+				return;
+			}
+			if (this.undertow == null) {
+				this.undertow = createUndertowServer();
+			}
+			this.undertow.start();
+			this.started = true;
+			UndertowEmbeddedServletContainer.logger
+					.info("Undertow started on port(s) " + getPortsDescription());
 		}
 		catch (ServletException ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to start embdedded Undertow", ex);
 		}
+	}
+
+	private Undertow createUndertowServer() throws ServletException {
+		HttpHandler httpHandler = this.manager.start();
+		httpHandler = getContextHandler(httpHandler);
+		if (this.useForwardHeaders) {
+			httpHandler = Handlers.proxyPeerAddress(httpHandler);
+		}
+		this.builder.setHandler(httpHandler);
+		return this.builder.build();
 	}
 
 	private HttpHandler getContextHandler(HttpHandler httpHandler) {
@@ -152,25 +167,15 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		return "unknown";
 	}
 
-	@SuppressWarnings("rawtypes")
 	private List<Port> getPorts() {
 		List<Port> ports = new ArrayList<Port>();
 		try {
-			// Use reflection if possible to get the underlying XNIO channels
 			if (!this.autoStart) {
 				ports.add(new Port(-1, "unknown"));
 			}
 			else {
-				Field channelsField = ReflectionUtils.findField(Undertow.class,
-						"channels");
-				ReflectionUtils.makeAccessible(channelsField);
-				List channels = (List) ReflectionUtils.getField(channelsField,
-						this.undertow);
-				for (Object channel : channels) {
-					Port port = getPortFromChannel(channel);
-					if (port != null) {
-						ports.add(port);
-					}
+				for (BoundChannel channel : extractChannels()) {
+					ports.add(getPortFromChannel(channel));
 				}
 			}
 		}
@@ -180,34 +185,22 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		return ports;
 	}
 
-	private Port getPortFromChannel(Object channel) {
-		Object tcpServer = channel;
-		String protocol = "http";
-		Field sslContext = ReflectionUtils.findField(channel.getClass(), "sslContext");
-		if (sslContext != null) {
-			tcpServer = getTcpServer(channel);
-			protocol = "https";
-		}
-		ServerSocket socket = getSocket(tcpServer);
-		if (socket != null) {
-			return new Port(socket.getLocalPort(), protocol);
+	@SuppressWarnings("unchecked")
+	private List<BoundChannel> extractChannels() {
+		Field channelsField = ReflectionUtils.findField(Undertow.class, "channels");
+		ReflectionUtils.makeAccessible(channelsField);
+		return (List<BoundChannel>) ReflectionUtils.getField(channelsField,
+				this.undertow);
+	}
+
+	private Port getPortFromChannel(BoundChannel channel) {
+		String protocol = ReflectionUtils.findField(channel.getClass(), "ssl") != null
+				? "https" : "http";
+		SocketAddress socketAddress = channel.getLocalAddress();
+		if (socketAddress instanceof InetSocketAddress) {
+			return new Port(((InetSocketAddress) socketAddress).getPort(), protocol);
 		}
 		return null;
-	}
-
-	private Object getTcpServer(Object channel) {
-		Field field = ReflectionUtils.findField(channel.getClass(), "tcpServer");
-		ReflectionUtils.makeAccessible(field);
-		return ReflectionUtils.getField(field, channel);
-	}
-
-	private ServerSocket getSocket(Object tcpServer) {
-		Field socketField = ReflectionUtils.findField(tcpServer.getClass(), "socket");
-		if (socketField == null) {
-			return null;
-		}
-		ReflectionUtils.makeAccessible(socketField);
-		return (ServerSocket) ReflectionUtils.getField(socketField, tcpServer);
 	}
 
 	@Override
@@ -219,7 +212,8 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 				this.undertow.stop();
 			}
 			catch (Exception ex) {
-				throw new EmbeddedServletContainerException("Unable to stop undertow", ex);
+				throw new EmbeddedServletContainerException("Unable to stop undertow",
+						ex);
 			}
 		}
 	}
@@ -236,7 +230,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	/**
 	 * An active undertow port.
 	 */
-	private static class Port {
+	private final static class Port {
 
 		private final int number;
 
@@ -271,12 +265,12 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 		@Override
 		public boolean resolve(HttpServerExchange value) {
-			String contentType = value.getResponseHeaders().getFirst(
-					HttpHeaders.CONTENT_TYPE);
+			String contentType = value.getResponseHeaders()
+					.getFirst(HttpHeaders.CONTENT_TYPE);
 			if (contentType != null) {
 				for (MimeType mimeType : this.mimeTypes) {
-					if (mimeType.isCompatibleWith(MimeTypeUtils
-							.parseMimeType(contentType))) {
+					if (mimeType
+							.isCompatibleWith(MimeTypeUtils.parseMimeType(contentType))) {
 						return true;
 					}
 				}

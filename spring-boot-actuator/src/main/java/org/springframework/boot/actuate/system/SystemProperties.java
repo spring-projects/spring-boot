@@ -21,7 +21,10 @@ package org.springframework.boot.actuate.system;
  *
  * @author Phillip Webb
  */
-class SystemProperties {
+final class SystemProperties {
+
+	private SystemProperties() {
+	}
 
 	public static String get(String... properties) {
 		for (String property : properties) {
@@ -33,8 +36,8 @@ class SystemProperties {
 				}
 			}
 			catch (Throwable ex) {
-				System.err.println("Could not resolve '" + property
-						+ "' as system property: " + ex);
+				System.err.println(
+						"Could not resolve '" + property + "' as system property: " + ex);
 			}
 		}
 		return null;

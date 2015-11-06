@@ -18,9 +18,8 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import java.util.Map;
 
-import org.junit.Test;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -48,8 +47,8 @@ public class ResourceServerPropertiesTests {
 	@Test
 	public void tokenKeyDerived() throws Exception {
 		this.properties.setUserInfoUri("http://example.com/userinfo");
-		assertNotNull("Wrong properties: " + this.properties, this.properties.getJwt()
-				.getKeyUri());
+		assertNotNull("Wrong properties: " + this.properties,
+				this.properties.getJwt().getKeyUri());
 	}
 
 }

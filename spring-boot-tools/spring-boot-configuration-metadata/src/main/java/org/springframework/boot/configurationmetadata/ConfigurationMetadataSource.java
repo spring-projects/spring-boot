@@ -45,7 +45,7 @@ public class ConfigurationMetadataSource implements Serializable {
 	private final Map<String, ConfigurationMetadataProperty> properties = new HashMap<String, ConfigurationMetadataProperty>();
 
 	/**
-	 * The identifier of the group to which this source is associated
+	 * The identifier of the group to which this source is associated.
 	 * @return the group id
 	 */
 	public String getGroupId() {

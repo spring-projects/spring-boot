@@ -27,6 +27,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.OutputCapture;
@@ -43,13 +44,14 @@ import static org.junit.Assert.assertTrue;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
+@SuppressWarnings("deprecation")
 public class Log4JLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
-	private final Log4JLoggingSystem loggingSystem = new Log4JLoggingSystem(getClass()
-			.getClassLoader());
+	private final Log4JLoggingSystem loggingSystem = new Log4JLoggingSystem(
+			getClass().getClassLoader());
 
 	private Log4JLogger logger;
 

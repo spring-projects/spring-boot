@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.client.utils.URIBuilder;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -76,8 +77,8 @@ class ProjectGenerationRequest {
 
 	/**
 	 * The URL of the service to use.
-	 * @see #DEFAULT_SERVICE_URL
 	 * @return the service URL
+	 * @see #DEFAULT_SERVICE_URL
 	 */
 	public String getServiceUrl() {
 		return this.serviceUrl;
@@ -184,7 +185,7 @@ class ProjectGenerationRequest {
 	 * @return the package name or {@code null}
 	 */
 	public String getPackageName() {
-		return packageName;
+		return this.packageName;
 	}
 
 	public void setPackageName(String packageName) {
@@ -299,7 +300,7 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * Generates the URI to use to generate a project represented by this request
+	 * Generates the URI to use to generate a project represented by this request.
 	 * @param metadata the metadata that describes the service
 	 * @return the project generation URI
 	 */
@@ -367,8 +368,8 @@ class ProjectGenerationRequest {
 		if (this.type != null) {
 			ProjectType result = metadata.getProjectTypes().get(this.type);
 			if (result == null) {
-				throw new ReportableException(
-						("No project type with id '" + this.type + "' - check the service capabilities (--list)"));
+				throw new ReportableException(("No project type with id '" + this.type
+						+ "' - check the service capabilities (--list)"));
 			}
 			return result;
 		}
@@ -423,8 +424,8 @@ class ProjectGenerationRequest {
 
 	private static void filter(Map<String, ProjectType> projects, String tag,
 			String tagValue) {
-		for (Iterator<Map.Entry<String, ProjectType>> it = projects.entrySet().iterator(); it
-				.hasNext();) {
+		for (Iterator<Map.Entry<String, ProjectType>> it = projects.entrySet()
+				.iterator(); it.hasNext();) {
 			Map.Entry<String, ProjectType> entry = it.next();
 			String value = entry.getValue().getTags().get(tag);
 			if (!tagValue.equals(value)) {

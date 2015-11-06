@@ -18,4 +18,3 @@
  * General actuator system support classes.
  */
 package org.springframework.boot.actuate.system;
-

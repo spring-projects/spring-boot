@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -84,19 +85,19 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 					ConditionalOnBean.class);
 			List<String> matching = getMatchingBeans(context, spec);
 			if (matching.isEmpty()) {
-				return ConditionOutcome.noMatch("@ConditionalOnBean " + spec
-						+ " found no beans");
+				return ConditionOutcome
+						.noMatch("@ConditionalOnBean " + spec + " found no beans");
 			}
-			matchMessage.append("@ConditionalOnBean " + spec + " found the following "
-					+ matching);
+			matchMessage.append(
+					"@ConditionalOnBean " + spec + " found the following " + matching);
 		}
 		if (metadata.isAnnotated(ConditionalOnSingleCandidate.class.getName())) {
 			BeanSearchSpec spec = new SingleCandidateBeanSearchSpec(context, metadata,
 					ConditionalOnSingleCandidate.class);
 			List<String> matching = getMatchingBeans(context, spec);
 			if (matching.isEmpty()) {
-				return ConditionOutcome.noMatch("@ConditionalOnSingleCandidate " + spec
-						+ " found no beans");
+				return ConditionOutcome.noMatch(
+						"@ConditionalOnSingleCandidate " + spec + " found no beans");
 			}
 			else if (!hasSingleAutowireCandidate(context.getBeanFactory(), matching)) {
 				return ConditionOutcome.noMatch("@ConditionalOnSingleCandidate " + spec
@@ -120,7 +121,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 		return ConditionOutcome.match(matchMessage.toString());
 	}
 
-	private List<String> getMatchingBeans(ConditionContext context, BeanSearchSpec beans) {
+	private List<String> getMatchingBeans(ConditionContext context,
+			BeanSearchSpec beans) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beans.getStrategy() == SearchStrategy.PARENTS) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
@@ -163,7 +165,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 	private Collection<String> getBeanNamesForType(ListableBeanFactory beanFactory,
 			String type, ClassLoader classLoader, boolean considerHierarchy)
-			throws LinkageError {
+					throws LinkageError {
 		try {
 			Set<String> result = new LinkedHashSet<String>();
 			collectBeanNamesForType(result, beanFactory,
@@ -198,7 +200,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 					.forName(type, classLoader);
 			result = beanFactory.getBeanNamesForAnnotation(typeClass);
 			if (considerHierarchy) {
-				if (beanFactory.getParentBeanFactory() instanceof ConfigurableListableBeanFactory) {
+				if (beanFactory
+						.getParentBeanFactory() instanceof ConfigurableListableBeanFactory) {
 					String[] parentResult = getBeanNamesForAnnotation(
 							(ConfigurableListableBeanFactory) beanFactory
 									.getParentBeanFactory(),
@@ -223,7 +226,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 	private boolean hasSingleAutowireCandidate(
 			ConfigurableListableBeanFactory beanFactory, List<String> beanNames) {
-		return (beanNames.size() == 1 || getPrimaryBeans(beanFactory, beanNames).size() == 1);
+		return (beanNames.size() == 1
+				|| getPrimaryBeans(beanFactory, beanNames).size() == 1);
 	}
 
 	private List<String> getPrimaryBeans(ConfigurableListableBeanFactory beanFactory,
@@ -252,7 +256,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 		private final SearchStrategy strategy;
 
-		public BeanSearchSpec(ConditionContext context, AnnotatedTypeMetadata metadata,
+		BeanSearchSpec(ConditionContext context, AnnotatedTypeMetadata metadata,
 				Class<?> annotationType) {
 			this.annotationType = annotationType;
 			MultiValueMap<String, Object> attributes = metadata
@@ -266,8 +270,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			if (this.types.isEmpty() && this.names.isEmpty()) {
 				addDeducedBeanType(context, metadata, this.types);
 			}
-			this.strategy = (SearchStrategy) metadata.getAnnotationAttributes(
-					annotationType.getName()).get("search");
+			this.strategy = (SearchStrategy) metadata
+					.getAnnotationAttributes(annotationType.getName()).get("search");
 			validate();
 		}
 
@@ -324,8 +328,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 						methodMetadata.getDeclaringClassName(), context.getClassLoader());
 				ReflectionUtils.doWithMethods(configClass, new MethodCallback() {
 					@Override
-					public void doWith(Method method) throws IllegalArgumentException,
-							IllegalAccessException {
+					public void doWith(Method method)
+							throws IllegalArgumentException, IllegalAccessException {
 						if (methodMetadata.getMethodName().equals(method.getName())) {
 							beanTypes.add(method.getReturnType().getName());
 						}
@@ -335,10 +339,9 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			catch (Throwable ex) {
 				// swallow exception and continue
 				if (logger.isDebugEnabled()) {
-					logger.debug(
-							"Unable to deduce bean type for "
-									+ methodMetadata.getDeclaringClassName() + "."
-									+ methodMetadata.getMethodName(), ex);
+					logger.debug("Unable to deduce bean type for "
+							+ methodMetadata.getDeclaringClassName() + "."
+							+ methodMetadata.getMethodName(), ex);
 				}
 			}
 		}
@@ -388,7 +391,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 	private static class SingleCandidateBeanSearchSpec extends BeanSearchSpec {
 
-		public SingleCandidateBeanSearchSpec(ConditionContext context,
+		SingleCandidateBeanSearchSpec(ConditionContext context,
 				AnnotatedTypeMetadata metadata, Class<?> annotationType) {
 			super(context, metadata, annotationType);
 		}

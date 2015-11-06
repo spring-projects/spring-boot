@@ -18,4 +18,3 @@
  * Test utilities related to auto-configuration.
  */
 package org.springframework.boot.autoconfigure.test;
-

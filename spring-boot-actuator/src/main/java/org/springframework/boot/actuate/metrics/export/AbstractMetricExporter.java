@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.util.StringUtils;
 
@@ -52,8 +53,8 @@ public abstract class AbstractMetricExporter implements Exporter {
 	private Date latestTimestamp = new Date(0L);
 
 	public AbstractMetricExporter(String prefix) {
-		this.prefix = (!StringUtils.hasText(prefix) ? "" : (prefix.endsWith(".") ? prefix
-				: prefix + "."));
+		this.prefix = (!StringUtils.hasText(prefix) ? ""
+				: (prefix.endsWith(".") ? prefix : prefix + "."));
 	}
 
 	/**

@@ -28,6 +28,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -102,7 +103,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		setupTestConfiguration();
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
-		assertTrue(this.context.getBean("transactionManager") instanceof JpaTransactionManager);
+		assertTrue(this.context
+				.getBean("transactionManager") instanceof JpaTransactionManager);
 	}
 
 	@Test
@@ -157,7 +159,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	public void usesManuallyDefinedLocalContainerEntityManagerFactoryBeanIfAvailable() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.initialize:false");
-		setupTestConfiguration(TestConfigurationWithLocalContainerEntityManagerFactoryBean.class);
+		setupTestConfiguration(
+				TestConfigurationWithLocalContainerEntityManagerFactoryBean.class);
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean factoryBean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
@@ -251,8 +254,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class TestConfigurationWithEntityManagerFactory extends
-			TestConfiguration {
+	protected static class TestConfigurationWithEntityManagerFactory
+			extends TestConfiguration {
 
 		@Bean
 		public EntityManagerFactory entityManagerFactory(DataSource dataSource,

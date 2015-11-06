@@ -27,6 +27,7 @@
 		<module>spring-boot-starter-batch</module>
 		<module>spring-boot-starter-cache</module>
 		<module>spring-boot-starter-cloud-connectors</module>
+		<module>spring-boot-starter-data-cassandra</module>
 		<module>spring-boot-starter-data-elasticsearch</module>
 		<module>spring-boot-starter-data-gemfire</module>
 		<module>spring-boot-starter-data-jpa</module>

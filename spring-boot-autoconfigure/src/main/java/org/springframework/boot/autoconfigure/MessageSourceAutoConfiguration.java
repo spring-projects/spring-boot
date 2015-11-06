@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure;
 
-import static org.springframework.util.StringUtils.commaDelimitedListToStringArray;
-import static org.springframework.util.StringUtils.trimAllWhitespace;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Iterator;
@@ -52,7 +49,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  */
 @Configuration
-@ConditionalOnMissingBean(value=MessageSource.class, search=SearchStrategy.CURRENT)
+@ConditionalOnMissingBean(value = MessageSource.class, search = SearchStrategy.CURRENT)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Conditional(ResourceBundleCondition.class)
 @EnableConfigurationProperties
@@ -81,8 +78,8 @@ public class MessageSourceAutoConfiguration {
 
 	/**
 	 * Set whether to fall back to the system Locale if no files for a specific Locale
-	 * have been found.  if this is turned off, the only fallback will be the default
-	 * file (e.g. "messages.properties" for basename "messages").
+	 * have been found. if this is turned off, the only fallback will be the default file
+	 * (e.g. "messages.properties" for basename "messages").
 	 */
 	private boolean fallbackToSystemLocale = true;
 
@@ -90,8 +87,8 @@ public class MessageSourceAutoConfiguration {
 	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		if (StringUtils.hasText(this.basename)) {
-			messageSource
-			.setBasenames(commaDelimitedListToStringArray(trimAllWhitespace(this.basename)));
+			messageSource.setBasenames(StringUtils.commaDelimitedListToStringArray(
+					StringUtils.trimAllWhitespace(this.basename)));
 		}
 		if (this.encoding != null) {
 			messageSource.setDefaultEncoding(this.encoding.name());
@@ -140,8 +137,8 @@ public class MessageSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			String basename = context.getEnvironment().getProperty(
-					"spring.messages.basename", "messages");
+			String basename = context.getEnvironment()
+					.getProperty("spring.messages.basename", "messages");
 			ConditionOutcome outcome = cache.get(basename);
 			if (outcome == null) {
 				outcome = getMatchOutcomeForBasename(context, basename);
@@ -152,7 +149,8 @@ public class MessageSourceAutoConfiguration {
 
 		private ConditionOutcome getMatchOutcomeForBasename(ConditionContext context,
 				String basename) {
-			for (String name : commaDelimitedListToStringArray(trimAllWhitespace(basename))) {
+			for (String name : StringUtils.commaDelimitedListToStringArray(
+					StringUtils.trimAllWhitespace(basename))) {
 				for (Resource resource : getResources(context.getClassLoader(), name)) {
 					if (resource.exists()) {
 						return ConditionOutcome.match("Bundle found for "
@@ -160,14 +158,14 @@ public class MessageSourceAutoConfiguration {
 					}
 				}
 			}
-			return ConditionOutcome.noMatch("No bundle found for "
-					+ "spring.messages.basename: " + basename);
+			return ConditionOutcome.noMatch(
+					"No bundle found for " + "spring.messages.basename: " + basename);
 		}
 
 		private Resource[] getResources(ClassLoader classLoader, String name) {
 			try {
 				return new SkipPatternPathMatchingResourcePatternResolver(classLoader)
-				.getResources("classpath*:" + name + "*.properties");
+						.getResources("classpath*:" + name + "*.properties");
 			}
 			catch (Exception ex) {
 				return NO_RESOURCES;
@@ -180,10 +178,11 @@ public class MessageSourceAutoConfiguration {
 	 * {@link PathMatchingResourcePatternResolver} that skips well known JARs that don't
 	 * contain messages.properties.
 	 */
-	private static class SkipPatternPathMatchingResourcePatternResolver extends
-	PathMatchingResourcePatternResolver {
+	private static class SkipPatternPathMatchingResourcePatternResolver
+			extends PathMatchingResourcePatternResolver {
 
 		private static final ClassLoader ROOT_CLASSLOADER;
+
 		static {
 			ClassLoader classLoader = null;
 			try {
@@ -193,21 +192,22 @@ public class MessageSourceAutoConfiguration {
 				}
 			}
 			catch (Throwable ex) {
+				// Ignore
 			}
 			ROOT_CLASSLOADER = classLoader;
 		}
 
 		private static final String[] SKIPPED = { "aspectjweaver-", "hibernate-core-",
-			"hsqldb-", "jackson-annotations-", "jackson-core-", "jackson-databind-",
-			"javassist-", "snakeyaml-", "spring-aop-", "spring-beans-",
-			"spring-boot-", "spring-boot-actuator-", "spring-boot-autoconfigure-",
-			"spring-core-", "spring-context-", "spring-data-commons-",
-			"spring-expression-", "spring-jdbc-", "spring-orm-", "spring-tx-",
-			"spring-web-", "spring-webmvc-", "tomcat-embed-", "joda-time-",
-			"hibernate-entitymanager-", "hibernate-validator-", "logback-classic-",
-			"logback-core-", "thymeleaf-" };
+				"hsqldb-", "jackson-annotations-", "jackson-core-", "jackson-databind-",
+				"javassist-", "snakeyaml-", "spring-aop-", "spring-beans-",
+				"spring-boot-", "spring-boot-actuator-", "spring-boot-autoconfigure-",
+				"spring-core-", "spring-context-", "spring-data-commons-",
+				"spring-expression-", "spring-jdbc-", "spring-orm-", "spring-tx-",
+				"spring-web-", "spring-webmvc-", "tomcat-embed-", "joda-time-",
+				"hibernate-entitymanager-", "hibernate-validator-", "logback-classic-",
+				"logback-core-", "thymeleaf-" };
 
-		public SkipPatternPathMatchingResourcePatternResolver(ClassLoader classLoader) {
+		SkipPatternPathMatchingResourcePatternResolver(ClassLoader classLoader) {
 			super(classLoader);
 		}
 
@@ -223,7 +223,8 @@ public class MessageSourceAutoConfiguration {
 		protected Set<Resource> doFindAllClassPathResources(String path)
 				throws IOException {
 			Set<Resource> resources = super.doFindAllClassPathResources(path);
-			for (Iterator<Resource> iterator = resources.iterator(); iterator.hasNext();) {
+			for (Iterator<Resource> iterator = resources.iterator(); iterator
+					.hasNext();) {
 				Resource resource = iterator.next();
 				for (String skipped : SKIPPED) {
 					if (resource.getFilename().startsWith(skipped)) {

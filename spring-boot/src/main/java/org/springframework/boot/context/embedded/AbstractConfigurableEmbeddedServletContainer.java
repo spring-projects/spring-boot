@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,8 +38,8 @@ import org.springframework.util.ClassUtils;
  * @author Ivan Sopov
  * @see AbstractEmbeddedServletContainerFactory
  */
-public abstract class AbstractConfigurableEmbeddedServletContainer implements
-		ConfigurableEmbeddedServletContainer {
+public abstract class AbstractConfigurableEmbeddedServletContainer
+		implements ConfigurableEmbeddedServletContainer {
 
 	private static final int DEFAULT_SESSION_TIMEOUT = (int) TimeUnit.MINUTES
 			.toSeconds(30);
@@ -65,6 +65,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	private int sessionTimeout = DEFAULT_SESSION_TIMEOUT;
 
 	private boolean persistSession;
+
+	private File sessionStoreDir;
 
 	private Ssl ssl;
 
@@ -156,7 +158,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	/**
-	 * @return the address the embedded container binds to
+	 * Return the address that the embedded container binds to.
+	 * @return the address
 	 */
 	public InetAddress getAddress() {
 		return this.address;
@@ -174,7 +177,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	/**
-	 * @return the session timeout in seconds
+	 * Return the session timeout in seconds.
+	 * @return the timeout in seconds
 	 */
 	public int getSessionTimeout() {
 		return this.sessionTimeout;
@@ -187,6 +191,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 
 	public boolean isPersistSession() {
 		return this.persistSession;
+	}
+
+	@Override
+	public void setSessionStoreDir(File sessionStoreDir) {
+		this.sessionStoreDir = sessionStoreDir;
+	}
+
+	public File getSessionStoreDir() {
+		return this.sessionStoreDir;
 	}
 
 	@Override
@@ -323,10 +336,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	 * @return {@code true} if the container should be registered, otherwise {@code false}
 	 */
 	protected boolean shouldRegisterJspServlet() {
-		return this.jspServlet != null
-				&& this.jspServlet.getRegistered()
-				&& ClassUtils.isPresent(this.jspServlet.getClassName(), getClass()
-						.getClassLoader());
+		return this.jspServlet != null && this.jspServlet.getRegistered() && ClassUtils
+				.isPresent(this.jspServlet.getClassName(), getClass().getClassLoader());
 	}
 
 }

@@ -21,6 +21,7 @@ import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationEvent;
@@ -36,8 +37,8 @@ import org.springframework.core.ResolvableType;
  *
  * @author Andy Wilkinson
  */
-public final class ClasspathLoggingApplicationListener implements
-		GenericApplicationListener {
+public final class ClasspathLoggingApplicationListener
+		implements GenericApplicationListener {
 
 	private static final int ORDER = LoggingApplicationListener.DEFAULT_ORDER + 1;
 
@@ -53,8 +54,8 @@ public final class ClasspathLoggingApplicationListener implements
 		}
 		else if (event instanceof ApplicationFailedEvent) {
 			if (this.logger.isInfoEnabled()) {
-				this.logger.info("Application failed to start with classpath: "
-						+ getClasspath());
+				this.logger.info(
+						"Application failed to start with classpath: " + getClasspath());
 			}
 		}
 	}

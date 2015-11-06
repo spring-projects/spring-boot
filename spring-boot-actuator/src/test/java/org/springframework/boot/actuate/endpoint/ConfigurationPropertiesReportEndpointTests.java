@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -37,8 +38,8 @@ import static org.junit.Assert.assertThat;
  *
  * @author Dave Syer
  */
-public class ConfigurationPropertiesReportEndpointTests extends
-		AbstractEndpointTests<ConfigurationPropertiesReportEndpoint> {
+public class ConfigurationPropertiesReportEndpointTests
+		extends AbstractEndpointTests<ConfigurationPropertiesReportEndpoint> {
 
 	public ConfigurationPropertiesReportEndpointTests() {
 		super(Config.class, ConfigurationPropertiesReportEndpoint.class, "configprops",

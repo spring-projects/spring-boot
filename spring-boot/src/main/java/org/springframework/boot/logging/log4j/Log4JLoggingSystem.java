@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -38,10 +39,14 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @deprecated in Spring Boot 1.3 in favor of Apache Log4j 2 (following Apache's EOL
+ * declaration for log4j 1.x)
  */
+@Deprecated
 public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 
 	private static final Map<LogLevel, Level> LEVELS;
+
 	static {
 		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
 		levels.put(LogLevel.TRACE, Level.TRACE);
@@ -95,8 +100,8 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 			Log4jConfigurer.initLogging(location);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Could not initialize Log4J logging from "
-					+ location, ex);
+			throw new IllegalStateException(
+					"Could not initialize Log4J logging from " + location, ex);
 		}
 	}
 
@@ -107,9 +112,23 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
-		Logger logger = (StringUtils.hasLength(loggerName) ? LogManager
-				.getLogger(loggerName) : LogManager.getRootLogger());
+		Logger logger = (StringUtils.hasLength(loggerName)
+				? LogManager.getLogger(loggerName) : LogManager.getRootLogger());
 		logger.setLevel(LEVELS.get(level));
+	}
+
+	@Override
+	public Runnable getShutdownHandler() {
+		return new ShutdownHandler();
+	}
+
+	private static final class ShutdownHandler implements Runnable {
+
+		@Override
+		public void run() {
+			LogManager.shutdown();
+		}
+
 	}
 
 }

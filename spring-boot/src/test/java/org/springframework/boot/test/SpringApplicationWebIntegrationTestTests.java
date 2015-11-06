@@ -18,6 +18,7 @@ package org.springframework.boot.test;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -55,8 +56,8 @@ public class SpringApplicationWebIntegrationTestTests {
 	public void runAndTestHttpEndpoint() {
 		assertNotEquals(8080, this.port);
 		assertNotEquals(0, this.port);
-		String body = new RestTemplate().getForObject("http://localhost:" + this.port
-				+ "/", String.class);
+		String body = new RestTemplate()
+				.getForObject("http://localhost:" + this.port + "/", String.class);
 		assertEquals("Hello World", body);
 	}
 

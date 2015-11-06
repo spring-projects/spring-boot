@@ -20,6 +20,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import sample.secure.SampleSecureApplicationTests.TestConfiguration;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -32,8 +34,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import sample.secure.SampleSecureApplicationTests.TestConfiguration;
 
 import static org.junit.Assert.assertEquals;
 
@@ -59,8 +59,8 @@ public class SampleSecureApplicationTests {
 	public void init() {
 		AuthenticationManager authenticationManager = this.context
 				.getBean(AuthenticationManager.class);
-		this.authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken("user", "password"));
+		this.authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken("user", "password"));
 	}
 
 	@After

@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jooq;
 
 import org.jooq.Transaction;
+
 import org.springframework.transaction.TransactionStatus;
 
 /**
@@ -32,7 +33,7 @@ class SpringTransaction implements Transaction {
 
 	private final TransactionStatus transactionStatus;
 
-	public SpringTransaction(TransactionStatus transactionStatus) {
+	SpringTransaction(TransactionStatus transactionStatus) {
 		this.transactionStatus = transactionStatus;
 	}
 

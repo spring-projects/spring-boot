@@ -30,11 +30,11 @@ class MainMethod {
 
 	private final Method method;
 
-	public MainMethod() {
+	MainMethod() {
 		this(Thread.currentThread());
 	}
 
-	public MainMethod(Thread thread) {
+	MainMethod(Thread thread) {
 		Assert.notNull(thread, "Thread must not be null");
 		this.method = getMainMethod(thread);
 	}

@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
@@ -51,9 +52,8 @@ public class PropertiesConfigurationFactoryParameterizedTests {
 
 	@Parameters
 	public static Object[] parameters() {
-		return new Object[] { new Object[] { false, false },
-				new Object[] { false, true }, new Object[] { true, false },
-				new Object[] { true, true } };
+		return new Object[] { new Object[] { false, false }, new Object[] { false, true },
+				new Object[] { true, false }, new Object[] { true, true } };
 	}
 
 	public PropertiesConfigurationFactoryParameterizedTests(boolean ignoreUnknownFields,

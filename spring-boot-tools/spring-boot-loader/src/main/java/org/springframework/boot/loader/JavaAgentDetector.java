@@ -19,7 +19,7 @@ package org.springframework.boot.loader;
 import java.net.URL;
 
 /**
- * A strategy for detecting Java agents
+ * A strategy for detecting Java agents.
  *
  * @author Andy Wilkinson
  * @since 1.1.0

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,11 +29,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-
 /**
- * Configuration for HTTP message converters that use Jackson
+ * Configuration for HTTP message converters that use Jackson.
  *
  * @author Andy Wilkinson
  * @since 1.2.2
@@ -64,8 +64,8 @@ class JacksonHttpMessageConvertersConfiguration {
 		@ConditionalOnMissingBean
 		public MappingJackson2XmlHttpMessageConverter mappingJackson2XmlHttpMessageConverter(
 				Jackson2ObjectMapperBuilder builder) {
-			return new MappingJackson2XmlHttpMessageConverter(builder.createXmlMapper(
-					true).build());
+			return new MappingJackson2XmlHttpMessageConverter(
+					builder.createXmlMapper(true).build());
 		}
 
 	}

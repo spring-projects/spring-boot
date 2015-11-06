@@ -16,10 +16,9 @@
 
 package org.springframework.boot.logging.logback;
 
-import org.junit.Test;
-
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
+import org.junit.Test;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;

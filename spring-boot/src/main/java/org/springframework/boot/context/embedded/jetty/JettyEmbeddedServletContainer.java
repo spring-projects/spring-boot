@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,6 +25,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.util.Assert;
@@ -96,6 +97,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			this.server.stop();
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 	}
 
@@ -114,8 +116,8 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			for (Connector connector : connectors) {
 				connector.start();
 			}
-			JettyEmbeddedServletContainer.logger.info("Jetty started on port(s) "
-					+ getActualPortsDescription());
+			JettyEmbeddedServletContainer.logger
+					.info("Jetty started on port(s) " + getActualPortsDescription());
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
@@ -140,8 +142,8 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 					connector);
 		}
 		catch (Exception ex) {
-			JettyEmbeddedServletContainer.logger.info("could not determine port ( "
-					+ ex.getMessage() + ")");
+			JettyEmbeddedServletContainer.logger
+					.info("could not determine port ( " + ex.getMessage() + ")");
 			return 0;
 		}
 	}

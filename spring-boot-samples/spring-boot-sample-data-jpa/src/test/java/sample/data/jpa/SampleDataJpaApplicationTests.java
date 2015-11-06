@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@ import javax.management.ObjectName;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
@@ -73,12 +74,9 @@ public class SampleDataJpaApplicationTests {
 
 	@Test
 	public void testJmx() throws Exception {
-		assertEquals(
-				1,
-				ManagementFactory
-						.getPlatformMBeanServer()
-						.queryMBeans(new ObjectName("jpa.sample:type=ConnectionPool,*"),
-								null).size());
+		assertEquals(1, ManagementFactory.getPlatformMBeanServer()
+				.queryMBeans(new ObjectName("jpa.sample:type=ConnectionPool,*"), null)
+				.size());
 	}
 
 }

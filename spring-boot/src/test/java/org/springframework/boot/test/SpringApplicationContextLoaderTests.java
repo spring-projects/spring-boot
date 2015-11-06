@@ -19,6 +19,7 @@ package org.springframework.boot.test;
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestContextManager;
@@ -65,7 +66,8 @@ public class SpringApplicationContextLoaderTests {
 
 	@Test
 	public void environmentPropertiesAnotherSeparatorInValue() throws Exception {
-		Map<String, Object> config = getEnvironmentProperties(AnotherSeparatorInValue.class);
+		Map<String, Object> config = getEnvironmentProperties(
+				AnotherSeparatorInValue.class);
 		assertKey(config, "key", "my:Value");
 		assertKey(config, "anotherKey", "another=Value");
 	}
@@ -77,8 +79,8 @@ public class SpringApplicationContextLoaderTests {
 		new IntegrationTestPropertiesListener().prepareTestInstance(context);
 		MergedContextConfiguration config = (MergedContextConfiguration) ReflectionTestUtils
 				.getField(context, "mergedContextConfiguration");
-		return this.loader.extractEnvironmentProperties(config
-				.getPropertySourceProperties());
+		return this.loader
+				.extractEnvironmentProperties(config.getPropertySourceProperties());
 	}
 
 	private void assertKey(Map<String, Object> actual, String key, Object value) {
@@ -111,7 +113,7 @@ public class SpringApplicationContextLoaderTests {
 	 */
 	private static class ExposedTestContextManager extends TestContextManager {
 
-		public ExposedTestContextManager(Class<?> testClass) {
+		ExposedTestContextManager(Class<?> testClass) {
 			super(testClass);
 		}
 

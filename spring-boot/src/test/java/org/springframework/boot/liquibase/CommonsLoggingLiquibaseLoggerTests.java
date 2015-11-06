@@ -17,7 +17,6 @@
 package org.springframework.boot.liquibase;
 
 import liquibase.logging.LogLevel;
-
 import org.apache.commons.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
@@ -143,7 +142,8 @@ public class CommonsLoggingLiquibaseLoggerTests {
 		verify(this.delegate, never()).error("severe");
 	}
 
-	private class MockCommonsLoggingLiquibaseLogger extends CommonsLoggingLiquibaseLogger {
+	private class MockCommonsLoggingLiquibaseLogger
+			extends CommonsLoggingLiquibaseLogger {
 
 		@Override
 		protected Log createLogger(String name) {

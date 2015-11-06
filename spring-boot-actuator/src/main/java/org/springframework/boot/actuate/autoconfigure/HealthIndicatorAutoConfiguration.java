@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.elasticsearch.client.Client;
+
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,9 @@ import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
@@ -58,8 +61,6 @@ import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetada
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -134,8 +135,8 @@ public class HealthIndicatorAutoConfiguration {
 
 		@SuppressWarnings("unchecked")
 		protected H createHealthIndicator(S source) {
-			Class<?>[] generics = ResolvableType.forClass(
-					CompositeHealthIndicatorConfiguration.class, getClass())
+			Class<?>[] generics = ResolvableType
+					.forClass(CompositeHealthIndicatorConfiguration.class, getClass())
 					.resolveGenerics();
 			Class<H> indicatorClass = (Class<H>) generics[0];
 			Class<S> sourceClass = (Class<S>) generics[1];
@@ -211,8 +212,7 @@ public class HealthIndicatorAutoConfiguration {
 	@Configuration
 	@ConditionalOnBean(RedisConnectionFactory.class)
 	@ConditionalOnEnabledHealthIndicator("redis")
-	public static class RedisHealthIndicatorConfiguration
-			extends
+	public static class RedisHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<RedisHealthIndicator, RedisConnectionFactory> {
 
 		@Autowired
@@ -281,8 +281,7 @@ public class HealthIndicatorAutoConfiguration {
 	@Configuration
 	@ConditionalOnBean(JavaMailSenderImpl.class)
 	@ConditionalOnEnabledHealthIndicator("mail")
-	public static class MailHealthIndicatorConfiguration
-			extends
+	public static class MailHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<MailHealthIndicator, JavaMailSenderImpl> {
 
 		@Autowired(required = false)

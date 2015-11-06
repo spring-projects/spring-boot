@@ -21,7 +21,6 @@ import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -33,8 +32,16 @@ import org.springframework.web.servlet.resource.ResourceTransformer;
 import org.springframework.web.servlet.resource.ResourceTransformerChain;
 import org.springframework.web.servlet.resource.TransformedResource;
 
-public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint implements
-		ResourceLoaderAware {
+/**
+ * {@link MvcEndpoint} to expose a HAL browser.
+ *
+ * @author Dave Syer
+ * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @since 1.3.0
+ */
+public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint
+		implements ResourceLoaderAware {
 
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
@@ -42,18 +49,18 @@ public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint implemen
 			new HalBrowserLocation("classpath:/META-INF/spring-data-rest/hal-browser/",
 					"index.html"),
 			new HalBrowserLocation(
-					"classpath:/META-INF/resources/webjars/hal-browser/b7669f1-1/",
+					"classpath:/META-INF/resources/webjars/hal-browser/9f96c74/",
 					"browser.html") };
 
 	private HalBrowserLocation location;
 
-	public ActuatorHalBrowserEndpoint(ManagementServerProperties management) {
-		super(management);
+	public ActuatorHalBrowserEndpoint(ManagementServletContext managementServletContext) {
+		super(managementServletContext);
 	}
 
 	@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
 	public String browse(HttpServletRequest request) {
-		String contextPath = getManagement().getContextPath()
+		String contextPath = getManagementServletContext().getContextPath()
 				+ (getPath().endsWith("/") ? getPath() : getPath() + "/");
 		if (request.getRequestURI().endsWith("/")) {
 			return "forward:" + contextPath + this.location.getHtmlFile();
@@ -71,7 +78,7 @@ public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint implemen
 		// Make sure the root path is not cached so the browser comes back for the JSON
 		// and add a transformer to set the initial link
 		if (this.location != null) {
-			String start = getManagement().getContextPath() + getPath();
+			String start = getManagementServletContext().getContextPath() + getPath();
 			registry.addResourceHandler(start + "/", start + "/**")
 					.addResourceLocations(this.location.getResourceLocation())
 					.setCachePeriod(0).resourceChain(true)
@@ -79,7 +86,8 @@ public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint implemen
 		}
 	}
 
-	public static HalBrowserLocation getHalBrowserLocation(ResourceLoader resourceLoader) {
+	public static HalBrowserLocation getHalBrowserLocation(
+			ResourceLoader resourceLoader) {
 		for (HalBrowserLocation candidate : HAL_BROWSER_RESOURCE_LOCATIONS) {
 			try {
 				Resource resource = resourceLoader.getResource(candidate.toString());
@@ -88,11 +96,15 @@ public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint implemen
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return null;
 	}
 
+	/**
+	 * HAL Browser properties.
+	 */
 	public static class HalBrowserLocation {
 
 		private final String resourceLocation;
@@ -138,9 +150,8 @@ public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint implemen
 		private Resource replaceInitialLink(Resource resource) throws IOException {
 			byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
 			String content = new String(bytes, DEFAULT_CHARSET);
-			String initialLink = getManagement().getContextPath() + getPath();
-			content = content.replace("entryPoint: '/'", "entryPoint: '" + initialLink
-					+ "'");
+			String initial = getManagementServletContext().getContextPath() + getPath();
+			content = content.replace("entryPoint: '/'", "entryPoint: '" + initial + "'");
 			return new TransformedResource(resource, content.getBytes(DEFAULT_CHARSET));
 		}
 

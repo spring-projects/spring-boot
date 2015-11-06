@@ -25,7 +25,10 @@ import java.util.Map.Entry;
  *
  * @author Andy Wilkinson
  */
-public class SystemProperties {
+public final class SystemProperties {
+
+	private SystemProperties() {
+	}
 
 	/**
 	 * Performs the given {@code action} with the given system properties set. System

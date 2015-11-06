@@ -27,6 +27,7 @@ import javax.servlet.Filter;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -51,6 +52,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -59,6 +61,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -68,6 +72,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Dave Syer
  * @author Rob Winch
+ * @author Andy Wilkinson
  */
 public class SpringBootWebSecurityConfigurationTests {
 
@@ -82,8 +87,8 @@ public class SpringBootWebSecurityConfigurationTests {
 
 	@Test
 	public void testDefaultIgnores() {
-		assertTrue(SpringBootWebSecurityConfiguration
-				.getIgnored(new SecurityProperties()).contains("/css/**"));
+		assertTrue(SpringBootWebSecurityConfiguration.getIgnored(new SecurityProperties())
+				.contains("/css/**"));
 	}
 
 	@Test
@@ -91,8 +96,8 @@ public class SpringBootWebSecurityConfigurationTests {
 		this.context = SpringApplication.run(TestWebConfiguration.class,
 				"--server.port=0");
 		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
-		assertNotNull(this.context.getBean(AuthenticationManager.class).authenticate(
-				new UsernamePasswordAuthenticationToken("dave", "secret")));
+		assertNotNull(this.context.getBean(AuthenticationManager.class)
+				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")));
 	}
 
 	@Test
@@ -106,9 +111,8 @@ public class SpringBootWebSecurityConfigurationTests {
 				.build();
 		mockMvc.perform(MockMvcRequestBuilders.get("/"))
 				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
-				.andExpect(
-						MockMvcResultMatchers.header().string("www-authenticate",
-								Matchers.containsString("realm=\"Spring\"")));
+				.andExpect(MockMvcResultMatchers.header().string("www-authenticate",
+						Matchers.containsString("realm=\"Spring\"")));
 	}
 
 	@Test
@@ -121,8 +125,8 @@ public class SpringBootWebSecurityConfigurationTests {
 				.addFilters(
 						this.context.getBean("springSecurityFilterChain", Filter.class))
 				.build();
-		mockMvc.perform(MockMvcRequestBuilders.get("/")).andExpect(
-				MockMvcResultMatchers.status().isNotFound());
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.status().isNotFound());
 	}
 
 	@Test
@@ -137,9 +141,8 @@ public class SpringBootWebSecurityConfigurationTests {
 				.build();
 		mockMvc.perform(MockMvcRequestBuilders.get("/"))
 				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
-				.andExpect(
-						MockMvcResultMatchers.header().string("www-authenticate",
-								Matchers.containsString("realm=\"Spring\"")));
+				.andExpect(MockMvcResultMatchers.header().string("www-authenticate",
+						Matchers.containsString("realm=\"Spring\"")));
 	}
 
 	@Test
@@ -154,9 +157,8 @@ public class SpringBootWebSecurityConfigurationTests {
 		mockMvc.perform(
 				MockMvcRequestBuilders.get("/").header("authorization", "Basic xxx"))
 				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
-				.andExpect(
-						MockMvcResultMatchers.header().string("www-authenticate",
-								Matchers.containsString("realm=\"Spring\"")));
+				.andExpect(MockMvcResultMatchers.header().string("www-authenticate",
+						Matchers.containsString("realm=\"Spring\"")));
 	}
 
 	@Test
@@ -164,8 +166,8 @@ public class SpringBootWebSecurityConfigurationTests {
 		this.context = SpringApplication.run(TestInjectWebConfiguration.class,
 				"--server.port=0");
 		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
-		assertNotNull(this.context.getBean(AuthenticationManager.class).authenticate(
-				new UsernamePasswordAuthenticationToken("dave", "secret")));
+		assertNotNull(this.context.getBean(AuthenticationManager.class)
+				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")));
 	}
 
 	// gh-3447
@@ -173,15 +175,15 @@ public class SpringBootWebSecurityConfigurationTests {
 	public void testHiddenHttpMethodFilterOrderedFirst() throws Exception {
 		this.context = SpringApplication.run(DenyPostRequestConfig.class,
 				"--server.port=0");
-		int port = Integer.parseInt(this.context.getEnvironment().getProperty(
-				"local.server.port"));
+		int port = Integer
+				.parseInt(this.context.getEnvironment().getProperty("local.server.port"));
 		TestRestTemplate rest = new TestRestTemplate();
 
 		// not overriding causes forbidden
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 
-		ResponseEntity<Object> result = rest.postForEntity("http://localhost:" + port
-				+ "/", form, Object.class);
+		ResponseEntity<Object> result = rest
+				.postForEntity("http://localhost:" + port + "/", form, Object.class);
 		assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
 
 		// override method with GET
@@ -192,11 +194,54 @@ public class SpringBootWebSecurityConfigurationTests {
 		assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
 	}
 
+	@Test
+	public void defaultHeaderConfiguration() throws Exception {
+		this.context = SpringApplication.run(VanillaWebConfiguration.class,
+				"--server.port=0");
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters((FilterChainProxy) this.context
+						.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.header().string("X-Content-Type-Options",
+						is(notNullValue())))
+				.andExpect(MockMvcResultMatchers.header().string("X-XSS-Protection",
+						is(notNullValue())))
+				.andExpect(MockMvcResultMatchers.header().string("Cache-Control",
+						is(notNullValue())))
+				.andExpect(MockMvcResultMatchers.header().string("X-Frame-Options",
+						is(notNullValue())));
+	}
+
+	@Test
+	public void securityHeadersCanBeDisabled() throws Exception {
+		this.context = SpringApplication.run(VanillaWebConfiguration.class,
+				"--server.port=0", "--security.headers.content-type=false",
+				"--security.headers.xss=false", "--security.headers.cache=false",
+				"--security.headers.frame=false");
+
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters(
+						this.context.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+				.andExpect(MockMvcResultMatchers.header()
+						.doesNotExist("X-Content-Type-Options"))
+				.andExpect(
+						MockMvcResultMatchers.header().doesNotExist("X-XSS-Protection"))
+				.andExpect(MockMvcResultMatchers.header().doesNotExist("Cache-Control"))
+				.andExpect(
+						MockMvcResultMatchers.header().doesNotExist("X-Frame-Options"));
+	}
+
 	@Configuration
 	@Import(TestWebConfiguration.class)
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	protected static class TestInjectWebConfiguration extends
-			WebSecurityConfigurerAdapter {
+	protected static class TestInjectWebConfiguration
+			extends WebSecurityConfigurerAdapter {
 
 		// It's a bad idea to inject an AuthenticationManager into a
 		// WebSecurityConfigurerAdapter because it can cascade early instantiation,
@@ -245,8 +290,8 @@ public class SpringBootWebSecurityConfigurationTests {
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}

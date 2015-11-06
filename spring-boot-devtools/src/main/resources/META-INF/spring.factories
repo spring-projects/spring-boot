@@ -15,3 +15,7 @@ org.springframework.boot.devtools.autoconfigure.RemoteDevToolsAutoConfiguration
 org.springframework.boot.env.EnvironmentPostProcessor=\
 org.springframework.boot.devtools.env.DevToolsHomePropertiesPostProcessor,\
 org.springframework.boot.devtools.env.DevToolsPropertyDefaultsPostProcessor
+
+# Restart Listeners
+org.springframework.boot.devtools.restart.RestartListener=\
+org.springframework.boot.devtools.log4j2.Log4J2RestartListener

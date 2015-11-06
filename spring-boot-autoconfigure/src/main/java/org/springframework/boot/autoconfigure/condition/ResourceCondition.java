@@ -60,8 +60,8 @@ public abstract class ResourceCondition extends SpringBootCondition {
 			AnnotatedTypeMetadata metadata) {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 				context.getEnvironment(), this.prefix);
-		if (resolver.containsProperty(propertyName)) {
-			return ConditionOutcome.match("A '" + this.prefix + propertyName +"' "
+		if (resolver.containsProperty(this.propertyName)) {
+			return ConditionOutcome.match("A '" + this.prefix + this.propertyName + "' "
 					+ "property is specified");
 		}
 		return getResourceOutcome(context, metadata);
@@ -78,12 +78,12 @@ public abstract class ResourceCondition extends SpringBootCondition {
 		for (String location : this.resourceLocations) {
 			Resource resource = context.getResourceLoader().getResource(location);
 			if (resource != null && resource.exists()) {
-				return ConditionOutcome.match("Found " + this.name + " config in "
-						+ resource);
+				return ConditionOutcome
+						.match("Found " + this.name + " config in " + resource);
 			}
 		}
-		return ConditionOutcome.noMatch("No specific " + this.name
-				+ " configuration found");
+		return ConditionOutcome
+				.noMatch("No specific " + this.name + " configuration found");
 	}
 
 }

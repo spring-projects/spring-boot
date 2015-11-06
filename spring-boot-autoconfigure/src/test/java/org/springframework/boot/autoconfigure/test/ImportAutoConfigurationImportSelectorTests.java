@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
@@ -79,8 +80,8 @@ public class ImportAutoConfigurationImportSelectorTests {
 
 	private void configureValue(String... value) {
 		String name = ImportAutoConfiguration.class.getName();
-		given(this.annotationMetadata.getAnnotationAttributes(name, true)).willReturn(
-				this.annotationAttributes);
+		given(this.annotationMetadata.getAnnotationAttributes(name, true))
+				.willReturn(this.annotationAttributes);
 		given(this.annotationAttributes.getStringArray("value")).willReturn(value);
 	}
 

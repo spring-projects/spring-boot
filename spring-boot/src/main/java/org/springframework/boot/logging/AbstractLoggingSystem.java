@@ -95,7 +95,8 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	private String findConfig(String[] locations) {
 		for (String location : locations) {
-			ClassPathResource resource = new ClassPathResource(location, this.classLoader);
+			ClassPathResource resource = new ClassPathResource(location,
+					this.classLoader);
 			if (resource.exists()) {
 				return "classpath:" + location;
 			}
@@ -121,8 +122,8 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		for (int i = 0; i < locations.length; i++) {
 			String extension = StringUtils.getFilenameExtension(locations[i]);
 			locations[i] = locations[i].substring(0,
-					locations[i].length() - extension.length() - 1)
-					+ "-spring." + extension;
+					locations[i].length() - extension.length() - 1) + "-spring."
+					+ extension;
 		}
 		return locations;
 	}

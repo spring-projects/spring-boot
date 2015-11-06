@@ -18,6 +18,7 @@ package org.springframework.boot.context;
 
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer.ComponentScanDefaultPackageCheck;
 import org.springframework.boot.context.configwarnings.InDefaultPackageConfiguration;
 import org.springframework.boot.context.configwarnings.InDefaultPackageWithBasePackageClassesConfiguration;
@@ -106,8 +107,8 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	/**
 	 * Testable version of {@link ConfigurationWarningsApplicationContextInitializer}.
 	 */
-	public static class TestConfigurationWarningsApplicationContextInitializer extends
-			ConfigurationWarningsApplicationContextInitializer {
+	public static class TestConfigurationWarningsApplicationContextInitializer
+			extends ConfigurationWarningsApplicationContextInitializer {
 
 		@Override
 		protected Check[] getChecks() {
@@ -120,8 +121,8 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	 * Testable ComponentScanDefaultPackageCheck that doesn't need to use the default
 	 * package.
 	 */
-	static class TestComponentScanDefaultPackageCheck extends
-			ComponentScanDefaultPackageCheck {
+	static class TestComponentScanDefaultPackageCheck
+			extends ComponentScanDefaultPackageCheck {
 
 		@Override
 		protected boolean isInDefaultPackage(String className) {

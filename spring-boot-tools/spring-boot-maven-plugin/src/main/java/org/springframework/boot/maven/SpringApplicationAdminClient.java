@@ -46,7 +46,7 @@ class SpringApplicationAdminClient {
 
 	private final ObjectName objectName;
 
-	public SpringApplicationAdminClient(MBeanServerConnection connection, String jmxName) {
+	SpringApplicationAdminClient(MBeanServerConnection connection, String jmxName) {
 		this.connection = connection;
 		this.objectName = toObjectName(jmxName);
 	}
@@ -66,8 +66,8 @@ class SpringApplicationAdminClient {
 			return false; // Instance not available yet
 		}
 		catch (AttributeNotFoundException ex) {
-			throw new IllegalStateException(
-					"Unexpected: attribute 'Ready' not available", ex);
+			throw new IllegalStateException("Unexpected: attribute 'Ready' not available",
+					ex);
 		}
 		catch (ReflectionException ex) {
 			throw new MojoExecutionException("Failed to retrieve Ready attribute",
@@ -87,8 +87,8 @@ class SpringApplicationAdminClient {
 	 * @throws IOException if an I/O error occurs
 	 * @throws InstanceNotFoundException if the lifecycle mbean cannot be found
 	 */
-	public void stop() throws MojoExecutionException, IOException,
-			InstanceNotFoundException {
+	public void stop()
+			throws MojoExecutionException, IOException, InstanceNotFoundException {
 		try {
 			this.connection.invoke(this.objectName, "shutdown", null, null);
 		}

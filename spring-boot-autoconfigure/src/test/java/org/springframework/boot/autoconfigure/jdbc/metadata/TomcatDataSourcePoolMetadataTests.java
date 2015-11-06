@@ -26,14 +26,15 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Stephane Nicoll
  */
-public class TomcatDataSourcePoolMetadataTests extends
-		AbstractDataSourcePoolMetadataTests<TomcatDataSourcePoolMetadata> {
+public class TomcatDataSourcePoolMetadataTests
+		extends AbstractDataSourcePoolMetadataTests<TomcatDataSourcePoolMetadata> {
 
 	private TomcatDataSourcePoolMetadata dataSourceMetadata;
 
 	@Before
 	public void setup() {
-		this.dataSourceMetadata = new TomcatDataSourcePoolMetadata(createDataSource(0, 2));
+		this.dataSourceMetadata = new TomcatDataSourcePoolMetadata(
+				createDataSource(0, 2));
 	}
 
 	@Override

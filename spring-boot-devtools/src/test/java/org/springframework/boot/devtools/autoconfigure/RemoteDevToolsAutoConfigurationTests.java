@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
@@ -137,6 +138,17 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
+	public void invokeRestartWithCustomServerContextPath() throws Exception {
+		loadContext("spring.devtools.remote.secret:supersecret",
+				"server.context-path:/test");
+		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
+		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH + "/restart");
+		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
+		filter.doFilter(this.request, this.response, this.chain);
+		assertRestartInvoked(true);
+	}
+
+	@Test
 	public void disableRestart() throws Exception {
 		loadContext("spring.devtools.remote.secret:supersecret",
 				"spring.devtools.remote.restart.enabled:false");
@@ -149,6 +161,17 @@ public class RemoteDevToolsAutoConfigurationTests {
 		loadContext("spring.devtools.remote.secret:supersecret");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/debug");
+		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
+		filter.doFilter(this.request, this.response, this.chain);
+		assertTunnelInvoked(true);
+	}
+
+	@Test
+	public void invokeTunnelWithCustomServerContextPath() throws Exception {
+		loadContext("spring.devtools.remote.secret:supersecret",
+				"server.context-path:/test");
+		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
+		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH + "/debug");
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
 		filter.doFilter(this.request, this.response, this.chain);
 		assertTunnelInvoked(true);
@@ -184,6 +207,18 @@ public class RemoteDevToolsAutoConfigurationTests {
 		assertThat(this.response.getStatus(), equalTo(200));
 	}
 
+	@Test
+	public void devToolsHealthWithCustomServerContextPathReturns200() throws Exception {
+		loadContext("spring.devtools.remote.secret:supersecret",
+				"server.context-path:/test");
+		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
+		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH);
+		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
+		this.response.setStatus(500);
+		filter.doFilter(this.request, this.response, this.chain);
+		assertThat(this.response.getStatus(), equalTo(200));
+	}
+
 	private void assertTunnelInvoked(boolean value) {
 		assertThat(this.context.getBean(MockHttpTunnelServer.class).invoked,
 				equalTo(value));
@@ -209,13 +244,14 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 		@Bean
 		public HttpTunnelServer remoteDebugHttpTunnelServer() {
-			return new MockHttpTunnelServer(new SocketTargetServerConnection(
-					new RemoteDebugPortProvider()));
+			return new MockHttpTunnelServer(
+					new SocketTargetServerConnection(new RemoteDebugPortProvider()));
 		}
 
 		@Bean
 		public HttpRestartServer remoteRestartHttpRestartServer() {
-			SourceFolderUrlFilter sourceFolderUrlFilter = mock(SourceFolderUrlFilter.class);
+			SourceFolderUrlFilter sourceFolderUrlFilter = mock(
+					SourceFolderUrlFilter.class);
 			return new MockHttpRestartServer(sourceFolderUrlFilter);
 		}
 
@@ -228,7 +264,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 		private boolean invoked;
 
-		public MockHttpTunnelServer(TargetServerConnection serverConnection) {
+		MockHttpTunnelServer(TargetServerConnection serverConnection) {
 			super(serverConnection);
 		}
 
@@ -247,7 +283,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 		private boolean invoked;
 
-		public MockHttpRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter) {
+		MockHttpRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter) {
 			super(sourceFolderUrlFilter);
 		}
 

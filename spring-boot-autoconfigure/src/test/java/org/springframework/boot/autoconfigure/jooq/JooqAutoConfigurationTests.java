@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -92,24 +93,26 @@ public class JooqAutoConfigurationTests {
 
 	@Test
 	public void jooqWithoutTx() throws Exception {
-		registerAndRefresh(JooqDataSourceConfiguration.class,
-				JooqAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		registerAndRefresh(JooqDataSourceConfiguration.class, JooqAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		assertThat(getBeanNames(PlatformTransactionManager.class), equalTo(NO_BEANS));
 		assertThat(getBeanNames(SpringTransactionProvider.class), equalTo(NO_BEANS));
 		DSLContext dsl = this.context.getBean(DSLContext.class);
 		dsl.execute("create table jooqtest (name varchar(255) primary key);");
 		dsl.transaction(new AssertFetch(dsl, "select count(*) as total from jooqtest;",
 				equalTo("0")));
-		dsl.transaction(new ExecuteSql(dsl, "insert into jooqtest (name) values ('foo');"));
+		dsl.transaction(
+				new ExecuteSql(dsl, "insert into jooqtest (name) values ('foo');"));
 		dsl.transaction(new AssertFetch(dsl, "select count(*) as total from jooqtest;",
 				equalTo("1")));
 		try {
-			dsl.transaction(new ExecuteSql(dsl,
-					"insert into jooqtest (name) values ('bar');",
-					"insert into jooqtest (name) values ('foo');"));
+			dsl.transaction(
+					new ExecuteSql(dsl, "insert into jooqtest (name) values ('bar');",
+							"insert into jooqtest (name) values ('foo');"));
 			fail("An DataIntegrityViolationException should have been thrown.");
 		}
 		catch (DataIntegrityViolationException ex) {
+			// Ignore
 		}
 		dsl.transaction(new AssertFetch(dsl, "select count(*) as total from jooqtest;",
 				equalTo("2")));
@@ -124,22 +127,23 @@ public class JooqAutoConfigurationTests {
 		DSLContext dsl = this.context.getBean(DSLContext.class);
 		assertEquals(SQLDialect.H2, dsl.configuration().dialect());
 		dsl.execute("create table jooqtest_tx (name varchar(255) primary key);");
-		dsl.transaction(new AssertFetch(dsl,
-				"select count(*) as total from jooqtest_tx;", equalTo("0")));
-		dsl.transaction(new ExecuteSql(dsl,
-				"insert into jooqtest_tx (name) values ('foo');"));
-		dsl.transaction(new AssertFetch(dsl,
-				"select count(*) as total from jooqtest_tx;", equalTo("1")));
+		dsl.transaction(new AssertFetch(dsl, "select count(*) as total from jooqtest_tx;",
+				equalTo("0")));
+		dsl.transaction(
+				new ExecuteSql(dsl, "insert into jooqtest_tx (name) values ('foo');"));
+		dsl.transaction(new AssertFetch(dsl, "select count(*) as total from jooqtest_tx;",
+				equalTo("1")));
 		try {
-			dsl.transaction(new ExecuteSql(dsl,
-					"insert into jooqtest (name) values ('bar');",
-					"insert into jooqtest (name) values ('foo');"));
+			dsl.transaction(
+					new ExecuteSql(dsl, "insert into jooqtest (name) values ('bar');",
+							"insert into jooqtest (name) values ('foo');"));
 			fail("A DataIntegrityViolationException should have been thrown.");
 		}
 		catch (DataIntegrityViolationException ex) {
+			// Ignore
 		}
-		dsl.transaction(new AssertFetch(dsl,
-				"select count(*) as total from jooqtest_tx;", equalTo("1")));
+		dsl.transaction(new AssertFetch(dsl, "select count(*) as total from jooqtest_tx;",
+				equalTo("1")));
 	}
 
 	@Test
@@ -150,8 +154,8 @@ public class JooqAutoConfigurationTests {
 				TestExecuteListenerProvider.class, TestVisitListenerProvider.class,
 				JooqAutoConfiguration.class);
 		DSLContext dsl = this.context.getBean(DSLContext.class);
-		assertEquals(TestRecordMapperProvider.class, dsl.configuration()
-				.recordMapperProvider().getClass());
+		assertEquals(TestRecordMapperProvider.class,
+				dsl.configuration().recordMapperProvider().getClass());
 		assertThat(dsl.configuration().recordListenerProviders().length, equalTo(1));
 		assertThat(dsl.configuration().executeListenerProviders().length, equalTo(2));
 		assertThat(dsl.configuration().visitListenerProviders().length, equalTo(1));
@@ -161,7 +165,8 @@ public class JooqAutoConfigurationTests {
 	public void relaxedBindingOfSqlDialect() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jooq.sql-dialect:PoSTGrES");
-		registerAndRefresh(JooqDataSourceConfiguration.class, JooqAutoConfiguration.class);
+		registerAndRefresh(JooqDataSourceConfiguration.class,
+				JooqAutoConfiguration.class);
 		assertThat(this.context.getBean(org.jooq.Configuration.class).dialect(),
 				is(equalTo(SQLDialect.POSTGRES)));
 	}
@@ -183,7 +188,7 @@ public class JooqAutoConfigurationTests {
 
 		private final Matcher<? super String> matcher;
 
-		public AssertFetch(DSLContext dsl, String sql, Matcher<? super String> matcher) {
+		AssertFetch(DSLContext dsl, String sql, Matcher<? super String> matcher) {
 			this.dsl = dsl;
 			this.sql = sql;
 			this.matcher = matcher;
@@ -202,7 +207,7 @@ public class JooqAutoConfigurationTests {
 
 		private final String[] sql;
 
-		public ExecuteSql(DSLContext dsl, String... sql) {
+		ExecuteSql(DSLContext dsl, String... sql) {
 			this.dsl = dsl;
 			this.sql = sql;
 		}
@@ -256,7 +261,8 @@ public class JooqAutoConfigurationTests {
 
 	}
 
-	protected static class TestExecuteListenerProvider implements ExecuteListenerProvider {
+	protected static class TestExecuteListenerProvider
+			implements ExecuteListenerProvider {
 
 		@Override
 		public ExecuteListener provide() {

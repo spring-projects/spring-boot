@@ -39,19 +39,19 @@ class Frame {
 	 * payload.
 	 * @param payload the text payload
 	 */
-	public Frame(String payload) {
+	Frame(String payload) {
 		Assert.notNull(payload, "Payload must not be null");
 		this.type = Type.TEXT;
 		this.payload = payload.getBytes();
 	}
 
-	public Frame(Type type) {
+	Frame(Type type) {
 		Assert.notNull(type, "Type must not be null");
 		this.type = type;
 		this.payload = NO_BYTES;
 	}
 
-	private Frame(Type type, byte[] payload) {
+	Frame(Type type, byte[] payload) {
 		this.type = type;
 		this.payload = payload;
 	}
@@ -107,6 +107,9 @@ class Frame {
 		return new Frame(Type.forCode(firstByte & 0x0F), payload);
 	}
 
+	/**
+	 * Frame types.
+	 */
 	public enum Type {
 
 		/**
@@ -141,7 +144,7 @@ class Frame {
 
 		private final int code;
 
-		private Type(int code) {
+		Type(int code) {
 			this.code = code;
 		}
 

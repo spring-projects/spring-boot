@@ -16,8 +16,10 @@
 
 package org.springframework.boot.autoconfigure.sendgrid;
 
+import com.sendgrid.SendGrid;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.HttpClientBuilder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,10 +29,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.sendgrid.SendGrid;
-
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for SendGrid
+ * {@link EnableAutoConfiguration Auto-configuration} for SendGrid.
  *
  * @author Maciej Walkowiak
  * @since 1.3.0

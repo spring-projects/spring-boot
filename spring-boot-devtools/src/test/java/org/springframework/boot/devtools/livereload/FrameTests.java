@@ -23,8 +23,6 @@ import java.util.Arrays;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.devtools.livereload.ConnectionInputStream;
-import org.springframework.boot.devtools.livereload.Frame;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

@@ -20,10 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Marker;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -32,6 +28,10 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.LoggerContextVO;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.AppenderBase;
+import org.slf4j.Marker;
+
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Appender} that can remap {@link ILoggingEvent} {@link Level}s as they are
@@ -43,8 +43,8 @@ import ch.qos.logback.core.AppenderBase;
  */
 public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 
-	private static final Map<Level, Level> DEFAULT_REMAPS = Collections.singletonMap(
-			Level.INFO, Level.DEBUG);
+	private static final Map<Level, Level> DEFAULT_REMAPS = Collections
+			.singletonMap(Level.INFO, Level.DEBUG);
 
 	private String destinationLogger = Logger.ROOT_LOGGER_NAME;
 
@@ -126,7 +126,7 @@ public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 
 		private final ILoggingEvent event;
 
-		public RemappedLoggingEvent(ILoggingEvent event) {
+		RemappedLoggingEvent(ILoggingEvent event) {
 			this.event = event;
 		}
 
@@ -137,8 +137,8 @@ public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 
 		@Override
 		public Level getLevel() {
-			Level remappedLevel = LevelRemappingAppender.this.remapLevels.get(this.event
-					.getLevel());
+			Level remappedLevel = LevelRemappingAppender.this.remapLevels
+					.get(this.event.getLevel());
 			return (remappedLevel == null ? this.event.getLevel() : remappedLevel);
 		}
 

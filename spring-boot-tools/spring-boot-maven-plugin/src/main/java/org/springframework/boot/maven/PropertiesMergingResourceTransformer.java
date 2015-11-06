@@ -41,7 +41,8 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 	private final Properties data = new Properties();
 
 	/**
-	 * @return the data the properties being merged
+	 * Return the data the properties being merged.
+	 * @return the data
 	 */
 	public Properties getData() {
 		return this.data;
@@ -65,8 +66,8 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 			String name = (String) key;
 			String value = properties.getProperty(name);
 			String existing = this.data.getProperty(name);
-			this.data
-					.setProperty(name, existing == null ? value : existing + "," + value);
+			this.data.setProperty(name,
+					existing == null ? value : existing + "," + value);
 		}
 	}
 

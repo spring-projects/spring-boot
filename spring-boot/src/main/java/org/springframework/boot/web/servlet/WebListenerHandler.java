@@ -26,7 +26,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.context.embedded.ServletListenerRegistrationBean;
 
 /**
- * Handler for {@link WebListener}-annotated classes
+ * Handler for {@link WebListener}-annotated classes.
  *
  * @author Andy Wilkinson
  */
@@ -37,8 +37,8 @@ class WebListenerHandler extends ServletComponentHandler {
 	}
 
 	@Override
-	protected void doHandle(Map<String, Object> attributes,
-			BeanDefinition beanDefinition, BeanDefinitionRegistry registry) {
+	protected void doHandle(Map<String, Object> attributes, BeanDefinition beanDefinition,
+			BeanDefinitionRegistry registry) {
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder
 				.rootBeanDefinition(ServletListenerRegistrationBean.class);
 		builder.addPropertyValue("listener", beanDefinition);

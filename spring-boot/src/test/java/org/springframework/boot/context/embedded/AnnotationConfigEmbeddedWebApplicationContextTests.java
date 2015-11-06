@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,6 +26,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.config.ExampleEmbeddedWebApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -91,8 +92,8 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 	@Test
 	public void scanAndRefresh() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.scan(ExampleEmbeddedWebApplicationConfiguration.class.getPackage()
-				.getName());
+		this.context.scan(
+				ExampleEmbeddedWebApplicationConfiguration.class.getPackage().getName());
 		this.context.refresh();
 		verifyContext();
 	}
@@ -152,8 +153,8 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 
 	@Configuration
 	@EnableWebMvc
-	public static class ServletContextAwareEmbeddedConfiguration implements
-			ServletContextAware {
+	public static class ServletContextAwareEmbeddedConfiguration
+			implements ServletContextAware {
 
 		private ServletContext servletContext;
 

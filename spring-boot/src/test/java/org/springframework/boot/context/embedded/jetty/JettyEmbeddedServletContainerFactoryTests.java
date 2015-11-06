@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,6 +38,7 @@ import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Test;
 import org.mockito.InOrder;
+
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.Compression;
@@ -60,8 +61,8 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class JettyEmbeddedServletContainerFactoryTests extends
-		AbstractEmbeddedServletContainerFactoryTests {
+public class JettyEmbeddedServletContainerFactoryTests
+		extends AbstractEmbeddedServletContainerFactoryTests {
 
 	@Override
 	protected JettyEmbeddedServletContainerFactory getFactory() {
@@ -137,11 +138,12 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 				equalTo(new String[] { "ALPHA", "BRAVO", "CHARLIE" }));
 	}
 
-	private void assertTimeout(JettyEmbeddedServletContainerFactory factory, int expected) {
+	private void assertTimeout(JettyEmbeddedServletContainerFactory factory,
+			int expected) {
 		this.container = factory.getEmbeddedServletContainer();
 		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
-		Handler[] handlers = jettyContainer.getServer().getChildHandlersByClass(
-				WebAppContext.class);
+		Handler[] handlers = jettyContainer.getServer()
+				.getChildHandlersByClass(WebAppContext.class);
 		WebAppContext webAppContext = (WebAppContext) handlers[0];
 		int actual = webAppContext.getSessionHandler().getSessionManager()
 				.getMaxInactiveInterval();
@@ -183,11 +185,18 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 		assertThat(getJspServlet().getInitParameters(), is(equalTo(initParameters)));
 	}
 
+	@Test
+	public void useForwardHeaders() throws Exception {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		factory.setUseForwardHeaders(true);
+		assertForwardHeaderIsUsed(factory);
+	}
+
 	@Override
 	@SuppressWarnings("serial")
 	// Workaround for Jetty issue - https://bugs.eclipse.org/bugs/show_bug.cgi?id=470646
-	protected String setUpFactoryForCompression(final int contentSize,
-			String[] mimeTypes, String[] excludedUserAgents) throws Exception {
+	protected String setUpFactoryForCompression(final int contentSize, String[] mimeTypes,
+			String[] excludedUserAgents) throws Exception {
 		char[] chars = new char[contentSize];
 		Arrays.fill(chars, 'F');
 		final String testContent = new String(chars);
@@ -201,8 +210,8 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 			compression.setExcludedUserAgents(excludedUserAgents);
 		}
 		factory.setCompression(compression);
-		this.container = factory.getEmbeddedServletContainer(new ServletRegistrationBean(
-				new HttpServlet() {
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new HttpServlet() {
 					@Override
 					protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 							throws ServletException, IOException {
@@ -220,6 +229,13 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
 				.getServer().getHandler();
 		return context.getServletHandler().getServlet("jsp");
+	}
+
+	@Override
+	protected Map<String, String> getActualMimeMappings() {
+		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
+				.getServer().getHandler();
+		return context.getMimeTypes().getMimeMap();
 	}
 
 }

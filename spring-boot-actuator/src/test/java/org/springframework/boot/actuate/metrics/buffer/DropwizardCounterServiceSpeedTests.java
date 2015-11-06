@@ -27,11 +27,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
 
+import com.codahale.metrics.MetricRegistry;
 import org.junit.BeforeClass;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
+
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
@@ -39,8 +41,6 @@ import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.reader.MetricRegistryMetricReader;
 import org.springframework.lang.UsesJava8;
 import org.springframework.util.StopWatch;
-
-import com.codahale.metrics.MetricRegistry;
 
 import static org.junit.Assert.assertEquals;
 

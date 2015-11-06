@@ -91,8 +91,8 @@ public class Metric<T extends Number> {
 	 * @return a new {@link Metric} instance
 	 */
 	public Metric<Long> increment(int amount) {
-		return new Metric<Long>(this.getName(), new Long(this.getValue().longValue()
-				+ amount));
+		return new Metric<Long>(this.getName(),
+				new Long(this.getValue().longValue() + amount));
 	}
 
 	/**

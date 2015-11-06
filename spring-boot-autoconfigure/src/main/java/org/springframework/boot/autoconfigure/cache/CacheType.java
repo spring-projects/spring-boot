@@ -42,7 +42,7 @@ public enum CacheType {
 	EHCACHE,
 
 	/**
-	 * Hazelcast backed caching
+	 * Hazelcast backed caching.
 	 */
 	HAZELCAST,
 

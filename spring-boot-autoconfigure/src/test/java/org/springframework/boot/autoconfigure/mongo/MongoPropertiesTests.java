@@ -19,15 +19,15 @@ package org.springframework.boot.autoconfigure.mongo;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import org.junit.Test;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-
-import com.mongodb.MongoClient;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -90,7 +90,8 @@ public class MongoPropertiesTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = properties.createMongoClient(null, null);
-		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret", "foo");
+		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret",
+				"foo");
 	}
 
 	@Test
@@ -100,7 +101,8 @@ public class MongoPropertiesTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = properties.createMongoClient(null, null);
-		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret", "foo");
+		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret",
+				"foo");
 	}
 
 	@Test

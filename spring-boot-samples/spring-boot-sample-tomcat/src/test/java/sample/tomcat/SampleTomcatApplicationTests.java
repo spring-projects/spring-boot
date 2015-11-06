@@ -22,6 +22,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
@@ -55,8 +56,8 @@ public class SampleTomcatApplicationTests {
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("Hello World", entity.getBody());
 	}
@@ -67,11 +68,12 @@ public class SampleTomcatApplicationTests {
 		requestHeaders.set("Accept-Encoding", "gzip");
 		HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
 		RestTemplate restTemplate = new TestRestTemplate();
-		ResponseEntity<byte[]> entity = restTemplate.exchange("http://localhost:"
-				+ this.port, HttpMethod.GET, requestEntity, byte[].class);
+		ResponseEntity<byte[]> entity = restTemplate.exchange(
+				"http://localhost:" + this.port, HttpMethod.GET, requestEntity,
+				byte[].class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		GZIPInputStream inflater = new GZIPInputStream(new ByteArrayInputStream(
-				entity.getBody()));
+		GZIPInputStream inflater = new GZIPInputStream(
+				new ByteArrayInputStream(entity.getBody()));
 		try {
 			assertEquals("Hello World",
 					StreamUtils.copyToString(inflater, Charset.forName("UTF-8")));

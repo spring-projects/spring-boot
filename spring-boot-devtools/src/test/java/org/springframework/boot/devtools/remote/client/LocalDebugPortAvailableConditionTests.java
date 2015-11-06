@@ -21,6 +21,7 @@ import java.net.ServerSocket;
 import javax.net.ServerSocketFactory;
 
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.ConditionContext;

@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -132,8 +133,8 @@ public class BasicErrorControllerMockMvcTests {
 			EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 	}
 
@@ -152,7 +153,7 @@ public class BasicErrorControllerMockMvcTests {
 				@Override
 				protected void renderMergedOutputModel(Map<String, Object> model,
 						HttpServletRequest request, HttpServletResponse response)
-						throws Exception {
+								throws Exception {
 					response.getWriter().write("ERROR_BEAN");
 				}
 			};
@@ -186,10 +187,10 @@ public class BasicErrorControllerMockMvcTests {
 
 	}
 
-	@ResponseStatus(value = HttpStatus.NOT_FOUND)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
 	private static class NotFoundException extends RuntimeException {
 
-		public NotFoundException(String string) {
+		NotFoundException(String string) {
 			super(string);
 		}
 
@@ -198,9 +199,10 @@ public class BasicErrorControllerMockMvcTests {
 	private class ErrorDispatcher implements RequestBuilder {
 
 		private MvcResult result;
+
 		private String path;
 
-		public ErrorDispatcher(MvcResult result, String path) {
+		ErrorDispatcher(MvcResult result, String path) {
 			this.result = result;
 			this.path = path;
 		}

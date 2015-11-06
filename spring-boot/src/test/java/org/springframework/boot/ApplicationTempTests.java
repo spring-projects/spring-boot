@@ -36,17 +36,17 @@ public class ApplicationTempTests {
 	public void generatesConsistentTemp() throws Exception {
 		ApplicationTemp t1 = new ApplicationTemp();
 		ApplicationTemp t2 = new ApplicationTemp();
-		assertThat(t1.getFolder(), notNullValue());
-		assertThat(t1.getFolder(), equalTo(t2.getFolder()));
+		assertThat(t1.getDir(), notNullValue());
+		assertThat(t1.getDir(), equalTo(t2.getDir()));
 	}
 
 	@Test
 	public void differentBasedOnUserDir() throws Exception {
 		String userDir = System.getProperty("user.dir");
 		try {
-			File t1 = new ApplicationTemp().getFolder();
+			File t1 = new ApplicationTemp().getDir();
 			System.setProperty("user.dir", "abc");
-			File t2 = new ApplicationTemp().getFolder();
+			File t2 = new ApplicationTemp().getDir();
 			assertThat(t1, not(equalTo(t2)));
 		}
 		finally {
@@ -57,7 +57,7 @@ public class ApplicationTempTests {
 	@Test
 	public void getSubFolder() throws Exception {
 		ApplicationTemp temp = new ApplicationTemp();
-		assertThat(temp.getFolder("abc"), equalTo(new File(temp.getFolder(), "abc")));
+		assertThat(temp.getDir("abc"), equalTo(new File(temp.getDir(), "abc")));
 	}
 
 }

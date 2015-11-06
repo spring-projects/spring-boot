@@ -19,7 +19,8 @@ package org.springframework.boot.cli;
 import java.io.File;
 
 import org.junit.Test;
-import org.springframework.boot.cli.command.jar.JarCommand;
+
+import org.springframework.boot.cli.command.archive.JarCommand;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker.Invocation;
 import org.springframework.boot.loader.tools.JavaExecutable;
@@ -38,8 +39,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class JarCommandIT {
 
-	private final CommandLineInvoker cli = new CommandLineInvoker(new File(
-			"src/it/resources/jar-command"));
+	private final CommandLineInvoker cli = new CommandLineInvoker(
+			new File("src/it/resources/jar-command"));
 
 	@Test
 	public void noArguments() throws Exception {
@@ -68,11 +69,12 @@ public class JarCommandIT {
 		assertThat(invocation.getErrorOutput(), equalTo(""));
 		invocation = this.cli.invoke("jar", jar.getAbsolutePath(), "bad.groovy");
 		invocation.await();
-		assertEquals(invocation.getErrorOutput(), 0, invocation.getErrorOutput().length());
+		assertEquals(invocation.getErrorOutput(), 0,
+				invocation.getErrorOutput().length());
 		assertTrue(jar.exists());
 
-		Process process = new JavaExecutable().processBuilder("-jar",
-				jar.getAbsolutePath()).start();
+		Process process = new JavaExecutable()
+				.processBuilder("-jar", jar.getAbsolutePath()).start();
 		invocation = new Invocation(process);
 		invocation.await();
 
@@ -85,11 +87,12 @@ public class JarCommandIT {
 		Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(),
 				"jar.groovy");
 		invocation.await();
-		assertEquals(invocation.getErrorOutput(), 0, invocation.getErrorOutput().length());
+		assertEquals(invocation.getErrorOutput(), 0,
+				invocation.getErrorOutput().length());
 		assertTrue(jar.exists());
 
-		Process process = new JavaExecutable().processBuilder("-jar",
-				jar.getAbsolutePath()).start();
+		Process process = new JavaExecutable()
+				.processBuilder("-jar", jar.getAbsolutePath()).start();
 		invocation = new Invocation(process);
 		invocation.await();
 
@@ -107,14 +110,15 @@ public class JarCommandIT {
 	@Test
 	public void jarCreationWithIncludes() throws Exception {
 		File jar = new File("target/test-app.jar");
-		Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(),
-				"--include", "-public/**,-resources/**", "jar.groovy");
+		Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(), "--include",
+				"-public/**,-resources/**", "jar.groovy");
 		invocation.await();
-		assertEquals(invocation.getErrorOutput(), 0, invocation.getErrorOutput().length());
+		assertEquals(invocation.getErrorOutput(), 0,
+				invocation.getErrorOutput().length());
 		assertTrue(jar.exists());
 
-		Process process = new JavaExecutable().processBuilder("-jar",
-				jar.getAbsolutePath()).start();
+		Process process = new JavaExecutable()
+				.processBuilder("-jar", jar.getAbsolutePath()).start();
 		invocation = new Invocation(process);
 		invocation.await();
 

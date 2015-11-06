@@ -79,6 +79,9 @@ public class YamlJavaBeanPropertyConstructor extends Constructor {
 		}
 	}
 
+	/**
+	 * Custom {@code ConstructMapping} to resolve properties.
+	 */
 	class CustomPropertyConstructMapping extends ConstructMapping {
 
 		@Override

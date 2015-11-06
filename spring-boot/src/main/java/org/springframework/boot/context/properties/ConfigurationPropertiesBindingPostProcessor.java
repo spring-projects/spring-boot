@@ -72,13 +72,16 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * @author Stephane Nicoll
  */
 public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
-BeanFactoryAware, ResourceLoaderAware, EnvironmentAware, ApplicationContextAware,
-InitializingBean, DisposableBean, PriorityOrdered {
+		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware, ApplicationContextAware,
+		InitializingBean, DisposableBean, PriorityOrdered {
 
+	/**
+	 * The bean name of the configuration properties validator.
+	 */
 	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
 
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
-	"javax.validation.ValidatorFactory" };
+			"javax.validation.ValidatorFactory" };
 
 	private ConfigurationBeanFactoryMetaData beans = new ConfigurationBeanFactoryMetaData();
 
@@ -105,8 +108,8 @@ InitializingBean, DisposableBean, PriorityOrdered {
 	private int order = Ordered.HIGHEST_PRECEDENCE + 1;
 
 	/**
-	 * A list of custom converters (in addition to the defaults) to use when
-	 * converting properties for binding.
+	 * A list of custom converters (in addition to the defaults) to use when converting
+	 * properties for binding.
 	 * @param converters the converters to set
 	 */
 	@Autowired(required = false)
@@ -116,13 +119,15 @@ InitializingBean, DisposableBean, PriorityOrdered {
 	}
 
 	/**
-	 * @param order the order to set
+	 * Set the order of the bean.
+	 * @param order the order
 	 */
 	public void setOrder(int order) {
 		this.order = order;
 	}
 
 	/**
+	 * Return the order of the bean.
 	 * @return the order
 	 */
 	@Override
@@ -264,7 +269,7 @@ InitializingBean, DisposableBean, PriorityOrdered {
 			throws BeansException {
 		ConfigurationProperties annotation = AnnotationUtils
 				.findAnnotation(bean.getClass(), ConfigurationProperties.class);
-		if (annotation != null || bean instanceof ConfigurationPropertiesHolder) {
+		if (annotation != null) {
 			postProcessBeforeInitialization(bean, beanName, annotation);
 		}
 		annotation = this.beans.findFactoryAnnotation(beanName,
@@ -283,8 +288,7 @@ InitializingBean, DisposableBean, PriorityOrdered {
 
 	private void postProcessBeforeInitialization(Object bean, String beanName,
 			ConfigurationProperties annotation) {
-		Object target = (bean instanceof ConfigurationPropertiesHolder
-				? ((ConfigurationPropertiesHolder) bean).getTarget() : bean);
+		Object target = bean;
 		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
 				target);
 		if (annotation != null && annotation.locations().length != 0) {
@@ -316,8 +320,7 @@ InitializingBean, DisposableBean, PriorityOrdered {
 		catch (Exception ex) {
 			String targetClass = ClassUtils.getShortName(target.getClass());
 			throw new BeanCreationException(beanName, "Could not bind properties to "
-					+ targetClass + " (" + getAnnotationDetails(annotation) + ")",
-					ex);
+					+ targetClass + " (" + getAnnotationDetails(annotation) + ")", ex);
 		}
 	}
 
@@ -331,7 +334,7 @@ InitializingBean, DisposableBean, PriorityOrdered {
 		details.append(", ignoreInvalidFields=").append(annotation.ignoreInvalidFields());
 		details.append(", ignoreUnknownFields=").append(annotation.ignoreUnknownFields());
 		details.append(", ignoreNestedProperties=")
-		.append(annotation.ignoreNestedProperties());
+				.append(annotation.ignoreNestedProperties());
 		return details.toString();
 	}
 
@@ -377,8 +380,7 @@ InitializingBean, DisposableBean, PriorityOrdered {
 	private ConversionService getDefaultConversionService() {
 		if (this.defaultConversionService == null) {
 			DefaultConversionService conversionService = new DefaultConversionService();
-			this.applicationContext.getAutowireCapableBeanFactory()
-			.autowireBean(this);
+			this.applicationContext.getAutowireCapableBeanFactory().autowireBean(this);
 			for (Converter<?, ?> converter : this.converters) {
 				conversionService.addConverter(converter);
 			}
@@ -388,8 +390,8 @@ InitializingBean, DisposableBean, PriorityOrdered {
 	}
 
 	/**
-	 * Factory to create JSR 303 LocalValidatorFactoryBean. Inner class to prevent
-	 * class loader issues.
+	 * Factory to create JSR 303 LocalValidatorFactoryBean. Inner class to prevent class
+	 * loader issues.
 	 */
 	private static class Jsr303ValidatorFactory {
 
@@ -403,14 +405,14 @@ InitializingBean, DisposableBean, PriorityOrdered {
 	}
 
 	/**
-	 * {@link Validator} implementation that wraps {@link Validator} instances and
-	 * chains their execution.
+	 * {@link Validator} implementation that wraps {@link Validator} instances and chains
+	 * their execution.
 	 */
 	private static class ChainingValidator implements Validator {
 
 		private Validator[] validators;
 
-		public ChainingValidator(Validator... validators) {
+		ChainingValidator(Validator... validators) {
 			Assert.notNull(validators, "Validators must not be null");
 			this.validators = validators;
 		}
@@ -438,14 +440,13 @@ InitializingBean, DisposableBean, PriorityOrdered {
 
 	/**
 	 * Convenience class to flatten out a tree of property sources without losing the
-	 * reference to the backing data (which can therefore be updated in the
-	 * background).
+	 * reference to the backing data (which can therefore be updated in the background).
 	 */
 	private static class FlatPropertySources implements PropertySources {
 
 		private PropertySources propertySources;
 
-		public FlatPropertySources(PropertySources propertySources) {
+		FlatPropertySources(PropertySources propertySources) {
 			this.propertySources = propertySources;
 		}
 

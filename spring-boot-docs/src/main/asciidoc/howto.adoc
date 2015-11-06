@@ -40,7 +40,7 @@ rules of thumb:
 * Look for classes called `+*AutoConfiguration+` and read their sources, in particular the
   `+@Conditional*+` annotations to find out what features they enable and when. Add
   `--debug` to the command line or a System property `-Ddebug` to get a log on the
-  console of all the autoconfiguration decisions that were made in your app. In a running
+  console of all the auto-configuration decisions that were made in your app. In a running
   Actuator app look at the `autoconfig` endpoint ('`/autoconfig`' or the JMX equivalent) for
   the same information.
 * Look for classes that are `@ConfigurationProperties` (e.g.
@@ -123,7 +123,7 @@ might have.
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.main.web_environment=false
-	spring.main.show_banner=false
+	spring.main.banner_mode=off
 ----
 
 and then the Spring Boot banner will not be printed on startup, and the application will
@@ -139,7 +139,7 @@ consider this application
 [source,java,indent=0]
 ----
 	new SpringApplicationBuilder()
-		.showBanner(false)
+		.bannerMode(Banner.Mode.OFF)
 		.sources(demo.MyApp.class)
 		.run(args);
 ----
@@ -149,7 +149,7 @@ used with the following configuration:
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.main.sources=com.acme.Config,com.acme.ExtraConfig
-	spring.main.show-banner=true
+	spring.main.banner_mode=console
 ----
 
 The actual application will _now_ show the banner (as overridden by configuration) and use
@@ -370,6 +370,27 @@ In the case of `Filters` and `Servlets` you can also add mappings and init param
 adding a `FilterRegistrationBean` or `ServletRegistrationBean` instead of or as well as
 the underlying component.
 
+[NOTE]
+====
+If no `dispatcherType` is specified on a filter registration, it will match
+`FORWARD`,`INCLUDE` and `REQUEST`. If async has been enabled, it will match `ASYNC` as
+well.
+
+If you are migrating a filter that has no `dispatcher` element in `web.xml` you will
+need to specify a `dispatcherType` yourself:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+	public FilterRegistrationBean myFilterRegistration() {
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setDispatcherTypes(DispatcherType.REQUEST);
+		....
+
+		return registration;
+	}
+----
+====
 
 
 [[howto-disable-registration-of-a-servlet-or-filter]]
@@ -420,9 +441,6 @@ code.
 === Use a random unassigned HTTP port
 To scan for a free port (using OS natives to prevent clashes) use `server.port=0`.
 
-TIP: You can know what port got allocated at runtime by looking at the `local.server.port`
-property in the `Environment`.
-
 
 
 [[howto-discover-the-http-port-at-runtime]]
@@ -454,6 +472,13 @@ and then inject the actual ('`local`') port as a `@Value`. For example:
 	}
 ----
 
+[NOTE]
+====
+Don't try to inject the port with `@Value` in a regular application. As we just saw, the
+value is only set once the container has initialized; contrary to a test, application code
+callbacks are processed early (i.e. before the value is actually available).
+====
+
 
 
 [[howto-configure-ssl]]
@@ -472,10 +497,6 @@ typically in `application.properties` or `application.yml`. For example:
 See {sc-spring-boot}/context/embedded/Ssl.{sc-ext}[`Ssl`] for details of all of the
 supported properties.
 
-NOTE: Tomcat requires the key store (and trust store if you're using one) to be directly
-accessible on the filesystem, i.e. it cannot be read from within a jar file. This
-limitation doesn't apply to Jetty and Undertow.
-
 Using configuration like the example above means the application will no longer support
 plain HTTP connector at port 8080. Spring Boot doesn't support the configuration of both
 an HTTP connector and an HTTPS connector via `application.properties`. If you want to
@@ -484,6 +505,59 @@ to use `application.properties` to configure HTTPS as the HTTP connector is the 
 the two to configure programmatically. See the
 {github-code}/spring-boot-samples/spring-boot-sample-tomcat-multi-connectors[`spring-boot-sample-tomcat-multi-connectors`]
 sample project for an example.
+
+
+
+[[howto-use-behind-a-proxy-server]]
+[[howto-use-tomcat-behind-a-proxy-server]]
+=== Use behind a front-end proxy server
+Your application might need to send `302` redirects or render content with absolute links
+back to itself. When running behind a proxy, the caller wants a link to the proxy, and not
+to the physical address of the machine hosting your app. Typically such situations are
+handled via a contract with the proxy, which will add headers to tell the back end how to
+construct links to itself.
+
+If the proxy adds conventional `X-Forwarded-For` and `X-Forwarded-Proto` headers (most do
+this out of the box) the absolute links should be rendered correctly as long as
+`server.use-forward-headers` is set to `true` in your `application.properties`.
+
+NOTE: If your application is running in Cloud Foundry or Heroku the
+`server.use-forward-headers` property will default to `true` if not specified. In all
+other instances it defaults to `false`.
+
+
+
+[[howto-customize-tomcat-behind-a-proxy-server]]
+==== Customize Tomcat's proxy configuration
+If you are using Tomcat you can additionally configure the names of the headers used to
+carry "`forwarded`" information:
+
+[indent=0]
+----
+	server.tomcat.remote-ip-header=x-your-remote-ip-header
+	server.tomcat.protocol-header=x-your-protocol-header
+----
+
+Tomcat is also configured with a default regular expression that matches internal
+proxies that are to be trusted. By default, IP addresses in `10/8`, `192.168/16`,
+`169.254/16` and `127/8` are trusted. You can customize the valve's configuration by
+adding an entry to `application.properties`, e.g.
+
+[indent=0]
+----
+	server.tomcat.internal-proxies=192\\.168\\.\\d{1,3}\\.\\d{1,3}
+----
+
+NOTE: The double backslashes are only required when you're using a properties file for
+configuration. If you are using YAML, single backslashes are sufficient and a value
+that's equivalent to the one shown above would be `192\.168\.\d{1,3}\.\d{1,3}`.
+
+NOTE: You can trust all proxies by setting the `internal-proxies` to empty (but don't do
+this in production).
+
+You can take complete control of the configuration of Tomcat's `RemoteIpValve` by
+switching the automatic one off (i.e. set `server.use-forward-headers=false`) and adding
+a new  valve instance in a `TomcatEmbeddedServletContainerFactory` bean.
 
 
 
@@ -537,65 +611,6 @@ HTTPS connector:
 		}
 	}
 ----
-
-
-
-[[howto-use-tomcat-behind-a-proxy-server]]
-=== Use Tomcat behind a front-end proxy server
-Your app might need to send 302 redirects, or render UI templates with
-absolute links to itself, or hypermedia links back to itself in the
-case of a RESTful service. If the app is behind a proxy, the caller
-wants a link to the proxy not to the physical address of the app, so
-something has to be done in the backend. Typically this is handled via
-a contract with the proxy, which will add headers to tell the back end
-how to construct links to itself. If the proxy adds conventional
-headers (most do this out of the box) the absolute links should be
-rendered correctly by default using the Tomcat server.
-
-Spring Boot using Tomcat automatically adds a `RemoteIpValve`. This
-transparently takes the standard `x-forwarded-for` and
-`x-forwarded-proto` headers and uses them to change local URLs created
-in the `HttpServletRequest`. You can configure the header names in
-Spring Boot and the valve is switched on unless one or both of these
-properties is empty. These values are the defaults and are the
-conventional values used by most proxies, so you don't need to set
-them unless you need different values:
-
-[indent=0]
-----
-	server.tomcat.remote_ip_header=x-forwarded-for
-	server.tomcat.protocol_header=x-forwarded-proto
-----
-
-If your proxy uses different headers you can customize the valve's configuration by adding
-some entries to `application.properties`, e.g.
-
-[indent=0]
-----
-	server.tomcat.remote_ip_header=x-your-remote-ip-header
-	server.tomcat.protocol_header=x-your-protocol-header
-----
-
-The valve is also configured with a default regular expression that matches internal
-proxies that are to be trusted. By default, IP addresses in 10/8, 192.168/16, 169.254/16
-and 127/8 are trusted. You can customize the valve's configuration by adding an entry
-to `application.properties`, e.g.
-
-[indent=0]
-----
-	server.tomcat.internal_proxies=192\\.168\\.\\d{1,3}\\.\\d{1,3}
-----
-
-NOTE: The double backslashes are only required when you're using a properties file for
-configuration. If you are using YAML, single backslashes are sufficient and a value
-that's equivalent to the one shown above would be `192\.168\.\d{1,3}\.\d{1,3}`.
-
-NOTE: You can trust all proxies by setting the `internal_proxies` to empty (but don't do this in production).
-
-You can take complete control of the configuration of the
-`RemoteIpValve` by switching the automatic one off (i.e. set one of
-the headers to empty) and adding a new valve instance in a
-`TomcatEmbeddedServletContainerFactory` bean.
 
 
 
@@ -1164,16 +1179,17 @@ Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`W
 {sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[`VelocityAutoConfiguration`]
 
 
+
 [[howto-customize-view-resolvers-velocity]]
 === Velocity
-
-By default, Spring Boot configures a `VelocityViewResolver`. If you need a `VelocityLayoutViewResolver`
-instead, you can easily configure your own by creating a bean with name `velocityViewResolver`. You can
-also inject the `VelocityProperties` instance to apply the base defaults to your custom view resolver.
+By default, Spring Boot configures a `VelocityViewResolver`. If you need a
+`VelocityLayoutViewResolver` instead, you can easily configure your own by creating a bean
+with name `velocityViewResolver`. You can also inject the `VelocityProperties` instance to
+apply the base defaults to your custom view resolver.
 
 The following example replaces the auto-configured velocity view resolver with a
-`VelocityLayoutViewResolver` defining a customized `layoutUrl` and all settings that would have been
-applied from the auto-configuration:
+`VelocityLayoutViewResolver` defining a customized `layoutUrl` and all settings that would
+have been applied from the auto-configuration:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1185,6 +1201,7 @@ applied from the auto-configuration:
 		return resolver;
 	}
 ----
+
 
 
 [[howto-logging]]
@@ -1456,7 +1473,6 @@ entity manager based on the presence of a bean of that type.
 
 [[howto-use-two-entity-managers]]
 === Use Two EntityManagers
-
 Even if the default `EntityManagerFactory` works fine, you will need to define a new one
 because otherwise the presence of the second bean of that type will switch off the
 default. To make it easy to do that you can use the convenient `EntityManagerBuilder`
@@ -1488,7 +1504,6 @@ Example:
 				.persistenceUnit("orders")
 				.build();
 	}
-
 ----
 
 The configuration above almost works on its own. To complete the picture you need to
@@ -1501,7 +1516,6 @@ If you are using Spring Data, you need to configure `@EnableJpaRepositories` acc
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-
 	@Configuration
 	@EnableJpaRepositories(basePackageClasses = Customer.class,
 			entityManagerFactoryRef = "customerEntityManagerFactory")
@@ -1515,9 +1529,8 @@ If you are using Spring Data, you need to configure `@EnableJpaRepositories` acc
 	public class OrderConfiguration {
 		...
 	}
-
-
 ----
+
 
 
 [[howto-use-traditional-persistence-xml]]
@@ -1563,7 +1576,7 @@ Spring Boot exposes as set of useful properties from the `spring.data.rest` name
 customize the
 {spring-data-rest-javadoc}/core/config/RepositoryRestConfiguration.{dc-ext}[`RepositoryRestConfiguration`].
 If you need to provide additional customization, you should use a
-{spring-data-rest-javadoc}/core/config/RepositoryRestConfigurer.{dc-ext}[`RepositoryRestConfigurer`]
+{spring-data-rest-javadoc}/webmvc/config/RepositoryRestConfigurer.{dc-ext}[`RepositoryRestConfigurer`]
 bean.
 
 
@@ -1748,7 +1761,7 @@ in the '`Production-ready features`' section.
 Spring Boot installs a '`whitelabel`' error page that you will see in browser client if
 you encounter a server error (machine clients consuming JSON and other media types should
 see a sensible response with the right error code). To switch it off you can set
-`error.whitelabel.enabled=false`, but normally in addition or alternatively to that you
+`server.error.whitelabel.enabled=false`, but normally in addition or alternatively to that you
 will want to add your own error page replacing the whitelabel one. Exactly how you do this
 depends on the templating technology that you are using. For example, if you are using
 Thymeleaf you would add an `error.html` template and if you are using FreeMarker you would
@@ -1818,8 +1831,8 @@ authentication manager is needed elsewhere), e.g.
 ----
 	@Configuration
 	public class AuthenticationManagerConfiguration extends
+			GlobalAuthenticationConfigurerAdapter {
 
-		GlobalAuthenticationConfigurerAdapter {
 		@Override
 		public void init(AuthenticationManagerBuilder auth) {
 			auth.inMemoryAuthentication() // ... etc.
@@ -1866,14 +1879,15 @@ requests). To switch that on in a Spring Boot application you just need to set
 === Reload static content
 There are several options for hot reloading. Running in an IDE (especially with debugging
 on) is a good way to do development (all modern IDEs allow reloading of static resources
-and usually also hot-swapping of Java class changes). The
-<<build-tool-plugins.adoc#build-tool-plugins, Maven and Gradle plugins>> also
-support running from the command line with reloading of static files. You can use that
-with an external css/js compiler process if you are writing that code with higher level
-tools.
+and usually also hot-swapping of Java class changes).
 
 The <<using-spring-boot.adoc#using-boot-devtools,`spring-boot-devtools`>> module is also
 available with support for fast application restarts and LiveReload.
+
+Finally, the <<build-tool-plugins.adoc#build-tool-plugins, Maven and Gradle plugins>> can
+be configured to support running from the command line with reloading of static files. You
+can use that with an external css/js compiler process if you are writing that code with
+higher level tools.
 
 
 

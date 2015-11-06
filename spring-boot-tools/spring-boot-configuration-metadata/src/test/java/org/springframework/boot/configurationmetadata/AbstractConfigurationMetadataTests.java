@@ -21,6 +21,7 @@ import java.io.InputStream;
 
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -61,8 +62,8 @@ public abstract class AbstractConfigurationMetadataTests {
 	}
 
 	protected InputStream getInputStreamFor(String name) throws IOException {
-		Resource r = new ClassPathResource("metadata/configuration-metadata-" + name
-				+ ".json");
+		Resource r = new ClassPathResource(
+				"metadata/configuration-metadata-" + name + ".json");
 		return r.getInputStream();
 	}
 

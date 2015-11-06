@@ -24,6 +24,7 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 
 /**
@@ -42,7 +43,7 @@ class TomcatStarter implements ServletContainerInitializer {
 
 	private volatile Exception startUpException;
 
-	public TomcatStarter(ServletContextInitializer[] initializers) {
+	TomcatStarter(ServletContextInitializer[] initializers) {
 		this.initializers = initializers;
 	}
 

@@ -51,11 +51,13 @@ public class RichGaugeReaderPublicMetrics implements PublicMetrics {
 
 	private List<Metric<?>> convert(RichGauge gauge) {
 		List<Metric<?>> result = new ArrayList<Metric<?>>(6);
-		result.add(new Metric<Double>(gauge.getName() + RichGauge.AVG, gauge.getAverage()));
+		result.add(
+				new Metric<Double>(gauge.getName() + RichGauge.AVG, gauge.getAverage()));
 		result.add(new Metric<Double>(gauge.getName() + RichGauge.VAL, gauge.getValue()));
 		result.add(new Metric<Double>(gauge.getName() + RichGauge.MIN, gauge.getMin()));
 		result.add(new Metric<Double>(gauge.getName() + RichGauge.MAX, gauge.getMax()));
-		result.add(new Metric<Double>(gauge.getName() + RichGauge.ALPHA, gauge.getAlpha()));
+		result.add(
+				new Metric<Double>(gauge.getName() + RichGauge.ALPHA, gauge.getAlpha()));
 		result.add(new Metric<Long>(gauge.getName() + RichGauge.COUNT, gauge.getCount()));
 		return result;
 	}

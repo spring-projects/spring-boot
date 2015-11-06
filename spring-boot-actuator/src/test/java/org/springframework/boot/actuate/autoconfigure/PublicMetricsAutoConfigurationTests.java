@@ -16,14 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import static org.hamcrest.Matchers.hasKey;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -33,9 +25,11 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.endpoint.CachePublicMetrics;
 import org.springframework.boot.actuate.endpoint.DataSourcePublicMetrics;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
@@ -65,7 +59,13 @@ import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.SocketUtils;
 
-import com.zaxxer.hikari.HikariDataSource;
+import static org.hamcrest.Matchers.hasKey;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link PublicMetricsAutoConfiguration}.
@@ -94,8 +94,8 @@ public class PublicMetricsAutoConfigurationTests {
 	@Test
 	public void metricReaderPublicMetrics() throws Exception {
 		load();
-		assertEquals(1, this.context.getBeansOfType(MetricReaderPublicMetrics.class)
-				.size());
+		assertEquals(1,
+				this.context.getBeansOfType(MetricReaderPublicMetrics.class).size());
 	}
 
 	@Test
@@ -105,8 +105,8 @@ public class PublicMetricsAutoConfigurationTests {
 				PublicMetricsAutoConfiguration.class);
 		RichGaugeReader richGaugeReader = context.getBean(RichGaugeReader.class);
 		assertNotNull(richGaugeReader);
-		given(richGaugeReader.findAll()).willReturn(
-				Collections.singletonList(new RichGauge("bar", 3.7d)));
+		given(richGaugeReader.findAll())
+				.willReturn(Collections.singletonList(new RichGauge("bar", 3.7d)));
 		RichGaugeReaderPublicMetrics publicMetrics = context
 				.getBean(RichGaugeReaderPublicMetrics.class);
 		assertNotNull(publicMetrics);
@@ -125,7 +125,8 @@ public class PublicMetricsAutoConfigurationTests {
 	@Test
 	public void noDataSource() {
 		load();
-		assertEquals(0, this.context.getBeansOfType(DataSourcePublicMetrics.class).size());
+		assertEquals(0,
+				this.context.getBeansOfType(DataSourcePublicMetrics.class).size());
 	}
 
 	@Test
@@ -145,12 +146,12 @@ public class PublicMetricsAutoConfigurationTests {
 				"datasource.commonsDbcp.active", "datasource.commonsDbcp.usage");
 
 		// Hikari won't work unless a first connection has been retrieved
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(this.context.getBean("hikariDS",
-				DataSource.class));
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(
+				this.context.getBean("hikariDS", DataSource.class));
 		jdbcTemplate.execute(new ConnectionCallback<Void>() {
 			@Override
-			public Void doInConnection(Connection connection) throws SQLException,
-			DataAccessException {
+			public Void doInConnection(Connection connection)
+					throws SQLException, DataAccessException {
 				return null;
 			}
 		});
@@ -246,7 +247,8 @@ public class PublicMetricsAutoConfigurationTests {
 		}
 		context.register(DataSourcePoolMetadataProvidersConfiguration.class,
 				CacheStatisticsAutoConfiguration.class,
-				PublicMetricsAutoConfiguration.class, MockEmbeddedServletContainerFactory.class);
+				PublicMetricsAutoConfiguration.class,
+				MockEmbeddedServletContainerFactory.class);
 		context.refresh();
 		this.context = context;
 	}
@@ -268,18 +270,18 @@ public class PublicMetricsAutoConfigurationTests {
 
 		@Bean
 		public DataSource tomcatDataSource() {
-			return initializeBuilder().type(org.apache.tomcat.jdbc.pool.DataSource.class)
-					.build();
+			return InitalizedBuilder.create()
+					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 		@Bean
 		public DataSource hikariDS() {
-			return initializeBuilder().type(HikariDataSource.class).build();
+			return InitalizedBuilder.create().type(HikariDataSource.class).build();
 		}
 
 		@Bean
 		public DataSource commonsDbcpDataSource() {
-			return initializeBuilder().type(BasicDataSource.class).build();
+			return InitalizedBuilder.create().type(BasicDataSource.class).build();
 		}
 	}
 
@@ -289,13 +291,13 @@ public class PublicMetricsAutoConfigurationTests {
 		@Bean
 		@Primary
 		public DataSource myDataSource() {
-			return initializeBuilder().type(org.apache.tomcat.jdbc.pool.DataSource.class)
-					.build();
+			return InitalizedBuilder.create()
+					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 		@Bean
 		public DataSource commonsDbcpDataSource() {
-			return initializeBuilder().type(BasicDataSource.class).build();
+			return InitalizedBuilder.create().type(BasicDataSource.class).build();
 		}
 	}
 
@@ -305,13 +307,13 @@ public class PublicMetricsAutoConfigurationTests {
 		@Bean
 		@Primary
 		public DataSource myDataSource() {
-			return initializeBuilder().type(org.apache.tomcat.jdbc.pool.DataSource.class)
-					.build();
+			return InitalizedBuilder.create()
+					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 		@Bean
 		public DataSource dataSource() {
-			return initializeBuilder().type(BasicDataSource.class).build();
+			return InitalizedBuilder.create().type(BasicDataSource.class).build();
 		}
 	}
 
@@ -328,11 +330,6 @@ public class PublicMetricsAutoConfigurationTests {
 				}
 			};
 		}
-	}
-
-	private static DataSourceBuilder initializeBuilder() {
-		return DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver")
-				.url("jdbc:hsqldb:mem:test").username("sa");
 	}
 
 	@Configuration
@@ -384,4 +381,13 @@ public class PublicMetricsAutoConfigurationTests {
 
 	}
 
+	private static class InitalizedBuilder {
+
+		public static DataSourceBuilder create() {
+			return DataSourceBuilder.create()
+					.driverClassName("org.hsqldb.jdbc.JDBCDriver")
+					.url("jdbc:hsqldb:mem:test").username("sa");
+		}
+
+	}
 }

@@ -16,6 +16,14 @@
 
 package samples.websocket.jetty;
 
+import samples.websocket.jetty.client.GreetingService;
+import samples.websocket.jetty.client.SimpleGreetingService;
+import samples.websocket.jetty.echo.DefaultEchoService;
+import samples.websocket.jetty.echo.EchoService;
+import samples.websocket.jetty.echo.EchoWebSocketHandler;
+import samples.websocket.jetty.reverse.ReverseWebSocketEndpoint;
+import samples.websocket.jetty.snake.SnakeWebSocketHandler;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -28,14 +36,6 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.handler.PerConnectionWebSocketHandler;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
-
-import samples.websocket.jetty.client.GreetingService;
-import samples.websocket.jetty.client.SimpleGreetingService;
-import samples.websocket.jetty.echo.DefaultEchoService;
-import samples.websocket.jetty.echo.EchoService;
-import samples.websocket.jetty.echo.EchoWebSocketHandler;
-import samples.websocket.jetty.reverse.ReverseWebSocketEndpoint;
-import samples.websocket.jetty.snake.SnakeWebSocketHandler;
 
 @Configuration
 @EnableAutoConfiguration

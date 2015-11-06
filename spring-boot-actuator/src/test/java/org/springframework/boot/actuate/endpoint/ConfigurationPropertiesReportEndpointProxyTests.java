@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -66,8 +67,8 @@ public class ConfigurationPropertiesReportEndpointProxyTests {
 	public void testWithProxyClass() throws Exception {
 		this.context.register(Config.class, SqlExecutor.class);
 		this.context.refresh();
-		Map<String, Object> report = this.context.getBean(
-				ConfigurationPropertiesReportEndpoint.class).invoke();
+		Map<String, Object> report = this.context
+				.getBean(ConfigurationPropertiesReportEndpoint.class).invoke();
 		assertThat(report.toString(), containsString("prefix=executor.sql"));
 	}
 

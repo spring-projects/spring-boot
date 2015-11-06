@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.data.solr;
 
 import org.apache.solr.client.solrj.SolrServer;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

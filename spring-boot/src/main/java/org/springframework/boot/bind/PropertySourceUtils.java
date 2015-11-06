@@ -51,7 +51,7 @@ public abstract class PropertySourceUtils {
 	 * Return a Map of all values from the specified {@link PropertySources} that start
 	 * with a particular key.
 	 * @param propertySources the property sources to scan
-	 * @param rootPrefix a root prefix to be prepended to the keyPrefex (can be
+	 * @param rootPrefix a root prefix to be prepended to the keyPrefix (can be
 	 * {@code null})
 	 * @param keyPrefix the key prefixes to test
 	 * @return a map of all sub properties starting with the specified key prefixes.

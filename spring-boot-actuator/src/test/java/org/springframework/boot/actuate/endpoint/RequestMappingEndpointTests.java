@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -52,8 +53,8 @@ public class RequestMappingEndpointTests {
 		mapping.setUrlMap(Collections.singletonMap("/foo", new Object()));
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.initApplicationContext();
-		this.endpoint.setHandlerMappings(Collections
-				.<AbstractUrlHandlerMapping> singletonList(mapping));
+		this.endpoint.setHandlerMappings(
+				Collections.<AbstractUrlHandlerMapping>singletonList(mapping));
 		Map<String, Object> result = this.endpoint.invoke();
 		assertEquals(1, result.size());
 		@SuppressWarnings("unchecked")
@@ -113,8 +114,8 @@ public class RequestMappingEndpointTests {
 				Arrays.asList(new EndpointMvcAdapter(new DumpEndpoint())));
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.afterPropertiesSet();
-		this.endpoint.setMethodMappings(Collections
-				.<AbstractHandlerMethodMapping<?>> singletonList(mapping));
+		this.endpoint.setMethodMappings(
+				Collections.<AbstractHandlerMethodMapping<?>>singletonList(mapping));
 		Map<String, Object> result = this.endpoint.invoke();
 		assertEquals(1, result.size());
 		assertTrue(result.keySet().iterator().next().contains("/dump"));

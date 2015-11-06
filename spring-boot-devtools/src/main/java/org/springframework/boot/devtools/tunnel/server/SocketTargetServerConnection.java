@@ -27,6 +27,7 @@ import java.nio.channels.SocketChannel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.util.Assert;
 
 /**
@@ -70,10 +71,10 @@ public class SocketTargetServerConnection implements TargetServerConnection {
 
 		private final ReadableByteChannel readChannel;
 
-		public TimeoutAwareChannel(SocketChannel socketChannel) throws IOException {
+		TimeoutAwareChannel(SocketChannel socketChannel) throws IOException {
 			this.socketChannel = socketChannel;
-			this.readChannel = Channels.newChannel(socketChannel.socket()
-					.getInputStream());
+			this.readChannel = Channels
+					.newChannel(socketChannel.socket().getInputStream());
 		}
 
 		@Override

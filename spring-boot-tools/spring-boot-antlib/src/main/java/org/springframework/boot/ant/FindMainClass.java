@@ -23,6 +23,7 @@ import java.util.jar.JarFile;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+
 import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.util.StringUtils;
 
@@ -64,15 +65,15 @@ public class FindMainClass extends Task {
 					"one of @mainClass or @classesRoot must be specified");
 		}
 		if (!this.classesRoot.exists()) {
-			throw new BuildException("@classesRoot " + this.classesRoot
-					+ " does not exist");
+			throw new BuildException(
+					"@classesRoot " + this.classesRoot + " does not exist");
 		}
 		try {
 			if (this.classesRoot.isDirectory()) {
 				return MainClassFinder.findSingleMainClass(this.classesRoot);
 			}
-			return MainClassFinder
-					.findSingleMainClass(new JarFile(this.classesRoot), "/");
+			return MainClassFinder.findSingleMainClass(new JarFile(this.classesRoot),
+					"/");
 		}
 		catch (IOException ex) {
 			throw new BuildException(ex);
@@ -90,7 +91,7 @@ public class FindMainClass extends Task {
 
 	/**
 	 * Set the main class, which will cause the search to be bypassed.
-	 * @param mainClass
+	 * @param mainClass the main class name
 	 */
 	public void setMainClass(String mainClass) {
 		this.mainClass = mainClass;
@@ -98,15 +99,15 @@ public class FindMainClass extends Task {
 
 	/**
 	 * Set the root location of classes to be searched.
-	 * @param classesRoot
+	 * @param classesRoot the root location
 	 */
 	public void setClassesRoot(File classesRoot) {
 		this.classesRoot = classesRoot;
 	}
 
 	/**
-	 * Set the property to set (if unset, result will be printed to the log).
-	 * @param property
+	 * Set the ANT property to set (if left unset, result will be printed to the log).
+	 * @param property the ANT property to set
 	 */
 	public void setProperty(String property) {
 		this.property = property;

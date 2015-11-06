@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * {@link DependencyManagement} that delegates to one or more {@link DependencyManagement}
- * instances
+ * instances.
  *
  * @author Andy Wilkinson
  * @since 1.3.0

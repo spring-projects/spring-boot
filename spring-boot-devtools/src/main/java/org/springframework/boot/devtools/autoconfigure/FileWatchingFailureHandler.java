@@ -36,7 +36,7 @@ class FileWatchingFailureHandler implements FailureHandler {
 
 	private final FileSystemWatcherFactory fileSystemWatcherFactory;
 
-	public FileWatchingFailureHandler(FileSystemWatcherFactory fileSystemWatcherFactory) {
+	FileWatchingFailureHandler(FileSystemWatcherFactory fileSystemWatcherFactory) {
 		this.fileSystemWatcherFactory = fileSystemWatcherFactory;
 	}
 
@@ -45,14 +45,15 @@ class FileWatchingFailureHandler implements FailureHandler {
 		failure.printStackTrace();
 		CountDownLatch latch = new CountDownLatch(1);
 		FileSystemWatcher watcher = this.fileSystemWatcherFactory.getFileSystemWatcher();
-		watcher.addSourceFolders(new ClassPathFolders(Restarter.getInstance()
-				.getInitialUrls()));
+		watcher.addSourceFolders(
+				new ClassPathFolders(Restarter.getInstance().getInitialUrls()));
 		watcher.addListener(new Listener(latch));
 		watcher.start();
 		try {
 			latch.await();
 		}
 		catch (InterruptedException ex) {
+			// Ignore
 		}
 		return Outcome.RETRY;
 	}
@@ -61,7 +62,7 @@ class FileWatchingFailureHandler implements FailureHandler {
 
 		private final CountDownLatch latch;
 
-		public Listener(CountDownLatch latch) {
+		Listener(CountDownLatch latch) {
 			this.latch = latch;
 		}
 

@@ -50,13 +50,13 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 1.3.0
  */
-public class ServerPortInfoApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class ServerPortInfoApplicationContextInitializer
+		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext
-				.addApplicationListener(new ApplicationListener<EmbeddedServletContainerInitializedEvent>() {
+		applicationContext.addApplicationListener(
+				new ApplicationListener<EmbeddedServletContainerInitializedEvent>() {
 					@Override
 					public void onApplicationEvent(
 							EmbeddedServletContainerInitializedEvent event) {
@@ -68,8 +68,8 @@ public class ServerPortInfoApplicationContextInitializer implements
 
 	protected void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
 		String propertyName = getPropertyName(event.getApplicationContext());
-		setPortProperty(event.getApplicationContext(), propertyName, event
-				.getEmbeddedServletContainer().getPort());
+		setPortProperty(event.getApplicationContext(), propertyName,
+				event.getEmbeddedServletContainer().getPort());
 	}
 
 	protected String getPropertyName(EmbeddedWebApplicationContext context) {
@@ -80,7 +80,8 @@ public class ServerPortInfoApplicationContextInitializer implements
 		return "local." + name + ".port";
 	}
 
-	private void setPortProperty(ApplicationContext context, String propertyName, int port) {
+	private void setPortProperty(ApplicationContext context, String propertyName,
+			int port) {
 		if (context instanceof ConfigurableApplicationContext) {
 			ConfigurableEnvironment environment = ((ConfigurableApplicationContext) context)
 					.getEnvironment();
@@ -93,8 +94,8 @@ public class ServerPortInfoApplicationContextInitializer implements
 			}
 			else {
 				@SuppressWarnings("unchecked")
-				Map<String, Object> value = (Map<String, Object>) sources.get(
-						"server.ports").getSource();
+				Map<String, Object> value = (Map<String, Object>) sources
+						.get("server.ports").getSource();
 				map = value;
 			}
 			map.put(propertyName, port);

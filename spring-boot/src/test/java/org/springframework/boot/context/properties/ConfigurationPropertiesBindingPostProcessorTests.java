@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 
@@ -23,6 +25,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.FactoryBean;
@@ -42,6 +45,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
@@ -77,18 +81,11 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, "test.foo:spam");
 		this.context.register(TestConfigurationWithValidatingSetter.class);
-		try {
-			this.context.refresh();
-			fail("Expected exception");
-		}
-		catch (BeanCreationException ex) {
-			BindException bex = (BindException) ex.getRootCause();
-			assertEquals(1, bex.getErrorCount());
-		}
+		assertBindingFailure(1);
 	}
 
 	@Test
-	public void unknonwFieldFailureMessageContainsDetailsOfPropertyOrigin() {
+	public void unknownFieldFailureMessageContainsDetailsOfPropertyOrigin() {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, "com.example.baz:spam");
 		this.context.register(TestConfiguration.class);
@@ -97,7 +94,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 			fail("Expected exception");
 		}
 		catch (BeanCreationException ex) {
-			RelaxedBindingNotWritablePropertyException bex = (RelaxedBindingNotWritablePropertyException) ex.getRootCause();
+			RelaxedBindingNotWritablePropertyException bex = (RelaxedBindingNotWritablePropertyException) ex
+					.getRootCause();
 			assertThat(bex.getMessage(),
 					startsWith("Failed to bind 'com.example.baz' from 'test' to 'baz' "
 							+ "property on '" + TestConfiguration.class.getName()));
@@ -108,28 +106,14 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	public void testValidationWithoutJSR303() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfigurationWithoutJSR303.class);
-		try {
-			this.context.refresh();
-			fail("Expected exception");
-		}
-		catch (BeanCreationException ex) {
-			BindException bex = (BindException) ex.getRootCause();
-			assertEquals(1, bex.getErrorCount());
-		}
+		assertBindingFailure(1);
 	}
 
 	@Test
 	public void testValidationWithJSR303() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfigurationWithJSR303.class);
-		try {
-			this.context.refresh();
-			fail("Expected exception");
-		}
-		catch (BeanCreationException ex) {
-			BindException bex = (BindException) ex.getRootCause();
-			assertEquals(2, bex.getErrorCount());
-		}
+		assertBindingFailure(2);
 	}
 
 	@Test
@@ -157,14 +141,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	public void testValidationWithCustomValidator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfigurationWithCustomValidator.class);
-		try {
-			this.context.refresh();
-			fail("Expected exception");
-		}
-		catch (BeanCreationException ex) {
-			BindException bex = (BindException) ex.getRootCause();
-			assertEquals(1, bex.getErrorCount());
-		}
+		assertBindingFailure(1);
 	}
 
 	@Test
@@ -175,15 +152,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.setEnvironment(env);
 		this.context.register(TestConfigurationWithCustomValidator.class,
 				PropertyWithValidatingSetter.class);
-		try {
-			// PropertyWithValidatingSetter should not use validator
-			this.context.refresh();
-			fail("Expected exception");
-		}
-		catch (BeanCreationException ex) {
-			BindException bex = (BindException) ex.getRootCause();
-			assertEquals(1, bex.getErrorCount());
-		}
+		assertBindingFailure(1);
 	}
 
 	@Test
@@ -206,6 +175,24 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValue(),
 				equalTo(FooEnum.FOO));
+		this.context.close();
+	}
+
+	@Test
+	public void testRelaxedPropertyWithSetOfEnum() {
+		doEnumSetTest("test.the-values:foo,bar", FooEnum.FOO, FooEnum.BAR);
+		doEnumSetTest("test.the-values:foo", FooEnum.FOO);
+		doEnumSetTest("TEST_THE_VALUES:FoO", FooEnum.FOO);
+		doEnumSetTest("test_the_values:BaR,FoO", FooEnum.BAR, FooEnum.FOO);
+	}
+
+	private void doEnumSetTest(String property, FooEnum... expected) {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, property);
+		this.context.register(PropertyWithEnum.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValues(),
+				contains(expected));
 		this.context.close();
 	}
 
@@ -235,8 +222,9 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "fooValue:bar");
 		this.context.register(UnmergedCustomConfigurationLocation.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(UnmergedCustomConfigurationLocation.class)
-				.getFoo(), equalTo("${fooValue}"));
+		assertThat(
+				this.context.getBean(UnmergedCustomConfigurationLocation.class).getFoo(),
+				equalTo("${fooValue}"));
 	}
 
 	@Test
@@ -291,21 +279,17 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Test
 	public void relaxedPropertyNamesSame() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "test.FOO_BAR:test1");
-		EnvironmentTestUtils.addEnvironment(this.context, "test.FOO_BAR:test2");
-		this.context.register(RelaxedPropertyNames.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(RelaxedPropertyNames.class).getFooBar(),
-				equalTo("test2"));
+		testRelaxedPropertyNames("test.FOO_BAR:test1", "test.FOO_BAR:test2");
 	}
 
 	@Test
 	public void relaxedPropertyNamesMixed() throws Exception {
-		// gh-3385
+		testRelaxedPropertyNames("test.foo-bar:test1", "test.FOO_BAR:test2");
+	}
+
+	private void testRelaxedPropertyNames(String... environment) {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "test.foo-bar:test1");
-		EnvironmentTestUtils.addEnvironment(this.context, "test.FOO_BAR:test2");
+		EnvironmentTestUtils.addEnvironment(this.context, environment);
 		this.context.register(RelaxedPropertyNames.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(RelaxedPropertyNames.class).getFooBar(),
@@ -321,6 +305,28 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(PropertyWithNestedValue.class).getNested()
 				.getValue(), equalTo("test1"));
+	}
+
+	@Test
+	public void bindWithoutConfigurationPropertiesAnnotation() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
+		this.context.register(ConfigurationPropertiesWithoutAnnotation.class);
+
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("No ConfigurationProperties annotation found");
+		this.context.refresh();
+	}
+
+	private void assertBindingFailure(int errorCount) {
+		try {
+			this.context.refresh();
+			fail("Expected exception");
+		}
+		catch (BeanCreationException ex) {
+			BindException bex = (BindException) ex.getRootCause();
+			assertEquals(errorCount, bex.getErrorCount());
+		}
 	}
 
 	@Configuration
@@ -539,12 +545,22 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 		private FooEnum theValue;
 
+		private List<FooEnum> theValues;
+
 		public void setTheValue(FooEnum value) {
 			this.theValue = value;
 		}
 
 		public FooEnum getTheValue() {
 			return this.theValue;
+		}
+
+		public List<FooEnum> getTheValues() {
+			return this.theValues;
+		}
+
+		public void setTheValues(List<FooEnum> theValues) {
+			this.theValues = theValues;
 		}
 
 	}
@@ -690,6 +706,26 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 		}
 
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(PropertyWithoutConfigurationPropertiesAnnotation.class)
+	public static class ConfigurationPropertiesWithoutAnnotation {
+
+
+	}
+
+	public static class PropertyWithoutConfigurationPropertiesAnnotation {
+
+		private String name;
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
 	}
 
 }

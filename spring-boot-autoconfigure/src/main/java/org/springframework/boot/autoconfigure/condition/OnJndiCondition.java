@@ -41,8 +41,8 @@ class OnJndiCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(metadata
-				.getAnnotationAttributes(ConditionalOnJndi.class.getName()));
+		AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(
+				metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName()));
 		String[] locations = annotationAttributes.getStringArray("value");
 		try {
 			return getMatchOutcome(locations);
@@ -62,9 +62,9 @@ class OnJndiCondition extends SpringBootCondition {
 		JndiLocator locator = getJndiLocator(locations);
 		String location = locator.lookupFirstLocation();
 		if (location != null) {
-			return ConditionOutcome.match("JNDI location '" + location
-					+ "' found from candidates "
-					+ StringUtils.arrayToCommaDelimitedString(locations));
+			return ConditionOutcome
+					.match("JNDI location '" + location + "' found from candidates "
+							+ StringUtils.arrayToCommaDelimitedString(locations));
 		}
 		return ConditionOutcome.noMatch("No JNDI location found from candidates "
 				+ StringUtils.arrayToCommaDelimitedString(locations));

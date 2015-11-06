@@ -27,6 +27,7 @@ import org.hamcrest.Matcher;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 
@@ -120,7 +121,7 @@ public class OutputCapture implements TestRule {
 
 		private final OutputStream copy;
 
-		public CaptureOutputStream(PrintStream original, OutputStream copy) {
+		CaptureOutputStream(PrintStream original, OutputStream copy) {
 			this.original = original;
 			this.copy = copy;
 		}

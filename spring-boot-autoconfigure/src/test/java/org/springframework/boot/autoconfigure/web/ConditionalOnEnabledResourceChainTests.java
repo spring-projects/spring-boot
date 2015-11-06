@@ -71,7 +71,6 @@ public class ConditionalOnEnabledResourceChainTests {
 		assertTrue(this.context.containsBean("foo"));
 	}
 
-
 	private void load(String... environment) {
 		this.context.register(Config.class);
 		EnvironmentTestUtils.addEnvironment(this.context, environment);

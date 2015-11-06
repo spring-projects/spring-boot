@@ -25,7 +25,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import joptsimple.OptionSet;
-
 import org.apache.http.Header;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.junit.Before;
@@ -35,6 +34,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.boot.cli.command.status.ExitStatus;
 
 import static org.hamcrest.Matchers.startsWith;
@@ -242,7 +242,8 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
 				"application/zip", file.getAbsolutePath());
 		mockSuccessfulProjectGeneration(request);
-		assertEquals("Should not have failed", ExitStatus.OK, this.command.run("--force"));
+		assertEquals("Should not have failed", ExitStatus.OK,
+				this.command.run("--force"));
 		assertTrue("File should have changed", fileLength != file.length());
 	}
 
@@ -266,9 +267,9 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	public void parseProjectOptions() throws Exception {
 		this.handler.disableProjectGeneration();
 		this.command.run("-g=org.demo", "-a=acme", "-v=1.2.3-SNAPSHOT", "-n=acme-sample",
-				"--description=Acme sample project", "--package-name=demo.foo", "-t=ant-project",
-				"--build=grunt", "--format=web", "-p=war", "-j=1.9", "-l=groovy",
-				"-b=1.2.0.RELEASE", "-d=web,data-jpa");
+				"--description=Acme sample project", "--package-name=demo.foo",
+				"-t=ant-project", "--build=grunt", "--format=web", "-p=war", "-j=1.9",
+				"-l=groovy", "-b=1.2.0.RELEASE", "-d=web,data-jpa");
 		assertEquals("org.demo", this.handler.lastRequest.getGroupId());
 		assertEquals("acme", this.handler.lastRequest.getArtifactId());
 		assertEquals("1.2.3-SNAPSHOT", this.handler.lastRequest.getVersion());
@@ -379,14 +380,14 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		return bos.toByteArray();
 	}
 
-	private static class TestableInitCommandOptionHandler extends
-			InitCommand.InitOptionHandler {
+	private static class TestableInitCommandOptionHandler
+			extends InitCommand.InitOptionHandler {
 
 		private boolean disableProjectGeneration;
 
 		private ProjectGenerationRequest lastRequest;
 
-		public TestableInitCommandOptionHandler(InitializrService initializrService) {
+		TestableInitCommandOptionHandler(InitializrService initializrService) {
 			super(initializrService);
 		}
 

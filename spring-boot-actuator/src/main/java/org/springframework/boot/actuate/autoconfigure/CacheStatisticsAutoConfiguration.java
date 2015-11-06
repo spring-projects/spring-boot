@@ -18,9 +18,11 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import javax.cache.Caching;
 
+import com.hazelcast.core.IMap;
+import com.hazelcast.spring.cache.HazelcastCache;
 import net.sf.ehcache.Ehcache;
-
 import org.infinispan.spring.provider.SpringCache;
+
 import org.springframework.boot.actuate.cache.CacheStatistics;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.boot.actuate.cache.ConcurrentMapCacheStatisticsProvider;
@@ -38,13 +40,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.ehcache.EhCacheCache;
+import org.springframework.cache.guava.GuavaCache;
 import org.springframework.cache.jcache.JCacheCache;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.hazelcast.core.IMap;
-import com.hazelcast.spring.cache.HazelcastCache;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link CacheStatisticsProvider}
@@ -71,7 +72,7 @@ public class CacheStatisticsAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(Ehcache.class)
+	@ConditionalOnClass({ EhCacheCache.class, Ehcache.class })
 	static class EhCacheCacheStatisticsProviderConfiguration {
 
 		@Bean
@@ -103,7 +104,7 @@ public class CacheStatisticsAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(com.google.common.cache.Cache.class)
+	@ConditionalOnClass({ com.google.common.cache.Cache.class, GuavaCache.class })
 	static class GuavaCacheStatisticsConfiguration {
 
 		@Bean

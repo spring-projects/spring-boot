@@ -18,6 +18,7 @@ package org.springframework.boot.ansi;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -58,7 +59,8 @@ public class AnsiPropertySourceTests {
 
 	@Test
 	public void getAnsi() throws Exception {
-		assertThat(this.source.getProperty("Ansi.BOLD"), equalTo((Object) AnsiStyle.BOLD));
+		assertThat(this.source.getProperty("Ansi.BOLD"),
+				equalTo((Object) AnsiStyle.BOLD));
 		assertThat(this.source.getProperty("Ansi.RED"), equalTo((Object) AnsiColor.RED));
 		assertThat(this.source.getProperty("Ansi.BG_RED"),
 				equalTo((Object) AnsiBackground.RED));

@@ -22,6 +22,7 @@ import java.util.Properties;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.containsString;

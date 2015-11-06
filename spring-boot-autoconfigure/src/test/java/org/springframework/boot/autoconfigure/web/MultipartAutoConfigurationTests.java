@@ -26,7 +26,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -96,10 +96,6 @@ public class MultipartAutoConfigurationTests {
 				equalTo(1));
 	}
 
-	@Configuration
-	public static class ContainerWithNothing {
-	}
-
 	@Test
 	public void containerWithNoMultipartJettyConfiguration() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
@@ -113,19 +109,6 @@ public class MultipartAutoConfigurationTests {
 		verifyServletWorks();
 	}
 
-	@Configuration
-	public static class ContainerWithNoMultipartJetty {
-		@Bean
-		JettyEmbeddedServletContainerFactory containerFactory() {
-			return new JettyEmbeddedServletContainerFactory();
-		}
-
-		@Bean
-		WebController controller() {
-			return new WebController();
-		}
-	}
-
 	@Test
 	public void containerWithNoMultipartUndertowConfiguration() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
@@ -137,19 +120,6 @@ public class MultipartAutoConfigurationTests {
 				.size(), equalTo(1));
 		assertThat(this.context.getBeansOfType(MultipartResolver.class).size(),
 				equalTo(1));
-	}
-
-	@Configuration
-	public static class ContainerWithNoMultipartUndertow {
-		@Bean
-		UndertowEmbeddedServletContainerFactory containerFactory() {
-			return new UndertowEmbeddedServletContainerFactory();
-		}
-
-		@Bean
-		WebController controller() {
-			return new WebController();
-		}
 	}
 
 	@Test
@@ -219,8 +189,8 @@ public class MultipartAutoConfigurationTests {
 				BaseConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(MultipartProperties.class);
-		assertEquals(expectedNumberOfMultipartConfigElementBeans, this.context
-				.getBeansOfType(MultipartConfigElement.class).size());
+		assertEquals(expectedNumberOfMultipartConfigElementBeans,
+				this.context.getBeansOfType(MultipartConfigElement.class).size());
 	}
 
 	@Test
@@ -235,8 +205,8 @@ public class MultipartAutoConfigurationTests {
 
 	private void verify404() throws Exception {
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		ClientHttpRequest request = requestFactory.createRequest(new URI(
-				"http://localhost:"
+		ClientHttpRequest request = requestFactory.createRequest(
+				new URI("http://localhost:"
 						+ this.context.getEmbeddedServletContainer().getPort() + "/"),
 				HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
@@ -245,9 +215,42 @@ public class MultipartAutoConfigurationTests {
 
 	private void verifyServletWorks() {
 		RestTemplate restTemplate = new RestTemplate();
-		assertEquals("Hello", restTemplate.getForObject("http://localhost:"
-				+ this.context.getEmbeddedServletContainer().getPort() + "/",
-				String.class));
+		assertEquals("Hello",
+				restTemplate
+						.getForObject(
+								"http://localhost:" + this.context
+										.getEmbeddedServletContainer().getPort() + "/",
+						String.class));
+	}
+
+	@Configuration
+	public static class ContainerWithNothing {
+	}
+
+	@Configuration
+	public static class ContainerWithNoMultipartJetty {
+		@Bean
+		JettyEmbeddedServletContainerFactory containerFactory() {
+			return new JettyEmbeddedServletContainerFactory();
+		}
+
+		@Bean
+		WebController controller() {
+			return new WebController();
+		}
+	}
+
+	@Configuration
+	public static class ContainerWithNoMultipartUndertow {
+		@Bean
+		UndertowEmbeddedServletContainerFactory containerFactory() {
+			return new UndertowEmbeddedServletContainerFactory();
+		}
+
+		@Bean
+		WebController controller() {
+			return new WebController();
+		}
 	}
 
 	@Configuration
@@ -256,9 +259,6 @@ public class MultipartAutoConfigurationTests {
 			ServerPropertiesAutoConfiguration.class })
 	@EnableConfigurationProperties(MultipartProperties.class)
 	protected static class BaseConfiguration {
-
-		@Autowired
-		private MultipartProperties properties;
 
 		@Bean
 		public ServerProperties serverProperties() {

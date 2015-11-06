@@ -20,12 +20,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import de.flapdoodle.embed.mongo.distribution.Feature;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 /**
- * Configuration properties for Embedded Mongo
+ * Configuration properties for Embedded Mongo.
  *
  * @author Andy Wilkinson
  * @since 1.3.0

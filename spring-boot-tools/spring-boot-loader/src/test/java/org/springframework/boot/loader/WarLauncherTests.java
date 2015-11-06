@@ -32,6 +32,7 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
 import org.junit.Test;
+
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
@@ -65,10 +66,8 @@ public class WarLauncherTests {
 		List<Archive> archives = launcher.getClassPathArchives();
 		assertEquals(2, archives.size());
 
-		assertThat(
-				getUrls(archives),
-				hasItems(webInfClasses.toURI().toURL(), new URL("jar:"
-						+ webInfLibFoo.toURI().toURL() + "!/")));
+		assertThat(getUrls(archives), hasItems(webInfClasses.toURI().toURL(),
+				new URL("jar:" + webInfLibFoo.toURI().toURL() + "!/")));
 	}
 
 	@Test
@@ -80,12 +79,10 @@ public class WarLauncherTests {
 		List<Archive> archives = launcher.getClassPathArchives();
 		assertEquals(2, archives.size());
 
-		assertThat(
-				getUrls(archives),
-				hasItems(
-						new URL("jar:" + warRoot.toURI().toURL() + "!/WEB-INF/classes!/"),
-						new URL("jar:" + warRoot.toURI().toURL()
-								+ "!/WEB-INF/lib/foo.jar!/")));
+		assertThat(getUrls(archives),
+				hasItems(new URL("jar:" + warRoot.toURI().toURL()
+						+ "!/WEB-INF/classes!/"),
+				new URL("jar:" + warRoot.toURI().toURL() + "!/WEB-INF/lib/foo.jar!/")));
 	}
 
 	private Set<URL> getUrls(List<Archive> archives) throws MalformedURLException {
@@ -100,8 +97,8 @@ public class WarLauncherTests {
 		File warRoot = new File("target/archive.war");
 		warRoot.delete();
 
-		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(
-				warRoot));
+		JarOutputStream jarOutputStream = new JarOutputStream(
+				new FileOutputStream(warRoot));
 
 		jarOutputStream.putNextEntry(new JarEntry("WEB-INF/"));
 		jarOutputStream.putNextEntry(new JarEntry("WEB-INF/classes/"));

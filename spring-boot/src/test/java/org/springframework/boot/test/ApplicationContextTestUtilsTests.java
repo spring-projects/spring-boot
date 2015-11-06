@@ -17,6 +17,7 @@
 package org.springframework.boot.test;
 
 import org.junit.Test;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -45,7 +46,8 @@ public class ApplicationContextTestUtilsTests {
 	@Test
 	public void closeContextAndParent() {
 		ConfigurableApplicationContext mock = mock(ConfigurableApplicationContext.class);
-		ConfigurableApplicationContext parent = mock(ConfigurableApplicationContext.class);
+		ConfigurableApplicationContext parent = mock(
+				ConfigurableApplicationContext.class);
 		given(mock.getParent()).willReturn(parent);
 		given(parent.getParent()).willReturn(null);
 		ApplicationContextTestUtils.closeAll(mock);

@@ -97,9 +97,10 @@ public final class JarEntryData {
 	}
 
 	/**
-	 * @return the underlying {@link RandomAccessData} for this entry. Generally this
+	 * Return the underlying {@link RandomAccessData} for this entry. Generally this
 	 * method should not be called directly and instead data should be accessed via
 	 * {@link JarFile#getInputStream(ZipEntry)}.
+	 * @return the data
 	 * @throws IOException if the data cannot be read
 	 */
 	public RandomAccessData getData() throws IOException {
@@ -107,13 +108,13 @@ public final class JarEntryData {
 			// aspectjrt-1.7.4.jar has a different ext bytes length in the
 			// local directory to the central directory. We need to re-read
 			// here to skip them
-			byte[] localHeader = Bytes.get(this.source.getData().getSubsection(
-					this.localHeaderOffset, LOCAL_FILE_HEADER_SIZE));
+			byte[] localHeader = Bytes.get(this.source.getData()
+					.getSubsection(this.localHeaderOffset, LOCAL_FILE_HEADER_SIZE));
 			long nameLength = Bytes.littleEndianValue(localHeader, 26, 2);
 			long extraLength = Bytes.littleEndianValue(localHeader, 28, 2);
-			this.data = this.source.getData().getSubsection(
-					this.localHeaderOffset + LOCAL_FILE_HEADER_SIZE + nameLength
-							+ extraLength, getCompressedSize());
+			this.data = this.source.getData().getSubsection(this.localHeaderOffset
+					+ LOCAL_FILE_HEADER_SIZE + nameLength + extraLength,
+					getCompressedSize());
 		}
 		return this.data;
 	}
@@ -154,8 +155,8 @@ public final class JarEntryData {
 	}
 
 	/**
-	 * Decode MSDOS Date Time details. See <a
-	 * href="http://mindprod.com/jgloss/zip.html">mindprod.com/jgloss/zip.html</a> for
+	 * Decode MSDOS Date Time details. See
+	 * <a href="http://mindprod.com/jgloss/zip.html">mindprod.com/jgloss/zip.html</a> for
 	 * more details of the format.
 	 * @param date the date part
 	 * @param time the time part
@@ -200,7 +201,7 @@ public final class JarEntryData {
 	 * @param source the source {@link JarFile}
 	 * @param inputStream the input stream to load data from
 	 * @return a {@link JarEntryData} or {@code null}
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	static JarEntryData fromInputStream(JarFile source, InputStream inputStream)
 			throws IOException {

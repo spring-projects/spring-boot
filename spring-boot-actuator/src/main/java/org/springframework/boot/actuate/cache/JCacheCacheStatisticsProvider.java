@@ -30,14 +30,14 @@ import org.springframework.cache.jcache.JCacheCache;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class JCacheCacheStatisticsProvider extends
-		AbstractJmxCacheStatisticsProvider<JCacheCache> {
+public class JCacheCacheStatisticsProvider
+		extends AbstractJmxCacheStatisticsProvider<JCacheCache> {
 
 	@Override
 	protected ObjectName getObjectName(JCacheCache cache)
 			throws MalformedObjectNameException {
-		ObjectName name = new ObjectName("javax.cache:type=CacheStatistics,Cache="
-				+ cache.getName() + ",*");
+		ObjectName name = new ObjectName(
+				"javax.cache:type=CacheStatistics,Cache=" + cache.getName() + ",*");
 		Set<ObjectInstance> instances = getMBeanServer().queryMBeans(name, null);
 		if (instances.size() == 1) {
 			return instances.iterator().next().getObjectName();

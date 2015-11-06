@@ -33,7 +33,7 @@
     "name": "logging.exception-conversion-word",
     "type": "java.lang.String",
     "description": "Conversion word used when logging exceptions.",
-    "defaultValue": "%rEx",
+    "defaultValue": "%wEx",
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
@@ -61,9 +61,21 @@
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
+    "name": "logging.pattern.level",
+    "type": "java.lang.String",
+    "description": "Appender pattern for log level (default %5p). Only supported with the default logback setup.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+  },
+  {
     "name": "logging.path",
     "type": "java.lang.String",
     "description": "Location of the log file.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+  },
+  {
+    "name": "logging.register-shutdown-hook",
+    "type": "java.lang.Boolean",
+    "description": "Register a shutdown hook for the logging system when it is initialized.",
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
@@ -98,11 +110,19 @@
     "description": "Config file locations."
   },
   {
+    "name": "spring.main.banner-mode",
+    "type": "org.springframework.boot.Banner$Mode",
+    "sourceType": "org.springframework.boot.SpringApplication",
+    "description": "Mode used to display the banner when the application runs.",
+    "defaultValue": "console",
+  },
+  {
     "name": "spring.main.show-banner",
     "type": "java.lang.Boolean",
     "sourceType": "org.springframework.boot.SpringApplication",
     "description": "Display the banner when the application runs.",
-    "defaultValue": true
+    "defaultValue": true,
+    "deprecation": {"replacement": "spring.main.banner-mode"}
   },
   {
     "name": "spring.main.sources",
@@ -125,11 +145,13 @@
   {
     "name": "spring.profiles.active",
     "type": "java.lang.String",
+    "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
     "description": "Comma-separated list of active profiles. Can be overridden by a command line switch."
   },
   {
     "name": "spring.profiles.include",
     "type": "java.lang.String",
+    "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
     "description": "Unconditionally activate the specified comma separated profiles."
   }
 ],"hints": [
