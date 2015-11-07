@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.embedded.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
@@ -51,7 +50,6 @@ public class SecurityFilterAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(name = DEFAULT_FILTER_NAME)
 	public DelegatingFilterProxyRegistrationBean securityFilterChainRegistration(
-			ApplicationContext applicationContext,
 			SecurityProperties securityProperties) {
 		DelegatingFilterProxyRegistrationBean registration = new DelegatingFilterProxyRegistrationBean(
 				DEFAULT_FILTER_NAME);
