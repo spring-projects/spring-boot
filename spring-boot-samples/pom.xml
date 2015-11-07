@@ -74,7 +74,6 @@
 		<module>spring-boot-sample-secure</module>
 		<module>spring-boot-sample-secure-oauth2</module>
 		<module>spring-boot-sample-secure-oauth2-resource</module>
-		<module>spring-boot-sample-secure-sso</module>
 		<module>spring-boot-sample-servlet</module>
 		<module>spring-boot-sample-session-redis</module>
 		<module>spring-boot-sample-simple</module>
