@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
+import org.springframework.boot.actuate.health.CassandraHealthIndicator;
 import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicator;
 import org.springframework.boot.actuate.health.ElasticsearchHealthIndicator;
@@ -54,9 +55,11 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.cassandra.core.CassandraOperations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link HealthIndicatorAutoConfiguration}.
@@ -420,6 +423,20 @@ public class HealthIndicatorAutoConfigurationTests {
 				beans.values().iterator().next().getClass());
 	}
 
+	@Test
+	public void cassandraHealthIndicator() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.health.diskspace.enabled:false");
+		this.context.register(CassandraConfiguration.class,
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertEquals(1, beans.size());
+		assertEquals(CassandraHealthIndicator.class,
+				beans.values().iterator().next().getClass());
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	protected static class DataSourceConfig {
@@ -445,6 +462,17 @@ public class HealthIndicatorAutoConfigurationTests {
 					return Health.down().build();
 				}
 			};
+		}
+
+	}
+
+	@Configuration
+	protected static class CassandraConfiguration {
+
+		@Bean
+		public CassandraOperations cassandraOperations() {
+			CassandraOperations operations = mock(CassandraOperations.class);
+			return operations;
 		}
 
 	}
