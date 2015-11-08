@@ -135,6 +135,9 @@ proxy parameters together with the Maven `proxy` profile:
 	                    -Pproxy
 ----
 
+NOTE: You can set the MAVEN_OPTS environment variable to apply the proxy automatically:
+MAVEN_OPTS="-Dhttp.proxyHost=<HOST> ... -Dhttp.nonProxyHosts=127.0.0.1,localhost"
+
 The `proxy` profile adds the properties as part of the `<argLine>` settings of the
 Maven Surefire plugin.
 Several Spring Boot tests download external packages and without passing the proxy
