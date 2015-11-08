@@ -48,6 +48,8 @@
 	</prerequisites>
 	<properties>
 		<main.basedir>${basedir}</main.basedir>
+                <!-- Can be set by using the profile 'proxy'. Must be left blank if not used! -->
+		<testproxy/>
 	</properties>
 	<build>
 		<pluginManagement>
