@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,11 +36,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link AuthenticationAuditListener}.
+ * Tests for {@link DefaultAuthenticationAuditListener}.
  */
-public class AuthenticationAuditListenerTests {
+public class DefaultAuthenticationAuditListenerTests {
 
-	private final AuthenticationAuditListener listener = new AuthenticationAuditListener();
+	private final AuthenticationAuditListener listener = new DefaultAuthenticationAuditListener();
 
 	private final ApplicationEventPublisher publisher = mock(
 			ApplicationEventPublisher.class);
