@@ -227,6 +227,7 @@ public class ConfigurationPropertiesReportEndpoint
 	/**
 	 * Sanitize all unwanted configuration properties to avoid leaking of sensitive
 	 * information.
+	 * @param prefix the property prefix
 	 * @param map the source map
 	 * @return the sanitized map
 	 */
