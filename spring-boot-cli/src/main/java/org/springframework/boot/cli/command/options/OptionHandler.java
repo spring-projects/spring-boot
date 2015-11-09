@@ -87,7 +87,7 @@ public class OptionHandler {
 				argsToUse[i] = "--cp";
 			}
 		}
-		OptionSet options = getParser().parse(args);
+		OptionSet options = getParser().parse(argsToUse);
 		return run(options);
 	}
 
