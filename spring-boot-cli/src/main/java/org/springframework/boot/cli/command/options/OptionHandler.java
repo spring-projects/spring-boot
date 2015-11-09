@@ -81,12 +81,6 @@ public class OptionHandler {
 	}
 
 	public final ExitStatus run(String... args) throws Exception {
-		String[] argsToUse = args.clone();
-		for (int i = 0; i < argsToUse.length; i++) {
-			if ("-cp".equals(argsToUse[i])) {
-				argsToUse[i] = "--cp";
-			}
-		}
 		OptionSet options = getParser().parse(args);
 		return run(options);
 	}
