@@ -25,7 +25,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.thymeleaf.templateresolver.TemplateResolver;
+import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
@@ -86,16 +86,14 @@ public class LocalDevToolsAutoConfigurationTests {
 	@Test
 	public void thymeleafCacheIsFalse() throws Exception {
 		this.context = initializeAndRun(Config.class);
-		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
-		resolver.initialize();
+		SpringResourceTemplateResolver resolver = this.context.getBean(SpringResourceTemplateResolver.class);
 		assertThat(resolver.isCacheable()).isFalse();
 	}
 
 	@Test
 	public void defaultPropertyCanBeOverriddenFromCommandLine() throws Exception {
 		this.context = initializeAndRun(Config.class, "--spring.thymeleaf.cache=true");
-		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
-		resolver.initialize();
+		SpringResourceTemplateResolver resolver = this.context.getBean(SpringResourceTemplateResolver.class);
 		assertThat(resolver.isCacheable()).isTrue();
 	}
 
@@ -106,8 +104,7 @@ public class LocalDevToolsAutoConfigurationTests {
 				new File("src/test/resources/user-home").getAbsolutePath());
 		try {
 			this.context = initializeAndRun(Config.class);
-			TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
-			resolver.initialize();
+			SpringResourceTemplateResolver resolver = this.context.getBean(SpringResourceTemplateResolver.class);
 			assertThat(resolver.isCacheable()).isTrue();
 		}
 		finally {

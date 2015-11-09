@@ -153,10 +153,9 @@
 		<sqlite-jdbc.version>3.8.11.2</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
-		<thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
+		<thymeleaf.version>3.0.0.BETA01</thymeleaf.version>
 		<thymeleaf-extras-springsecurity4.version>2.1.2.RELEASE</thymeleaf-extras-springsecurity4.version>
-		<thymeleaf-extras-conditionalcomments.version>2.1.1.RELEASE</thymeleaf-extras-conditionalcomments.version>
-		<thymeleaf-layout-dialect.version>1.3.3</thymeleaf-layout-dialect.version>
+		<thymeleaf-layout-dialect.version>1.3.1</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>1.3</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>2.1.0.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>8.0.32</tomcat.version>
@@ -2062,11 +2061,6 @@
 				<groupId>org.thymeleaf</groupId>
 				<artifactId>thymeleaf-spring4</artifactId>
 				<version>${thymeleaf.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.thymeleaf.extras</groupId>
-				<artifactId>thymeleaf-extras-conditionalcomments</artifactId>
-				<version>${thymeleaf-extras-conditionalcomments.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.thymeleaf.extras</groupId>

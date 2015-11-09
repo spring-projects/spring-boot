@@ -23,19 +23,16 @@ import java.util.LinkedHashMap;
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
-import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.extras.conditionalcomments.dialect.ConditionalCommentsDialect;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring4.SpringTemplateEngine;
-import org.thymeleaf.spring4.resourceresolver.SpringResourceResourceResolver;
+import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-import org.thymeleaf.templateresolver.TemplateResolver;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -98,9 +95,9 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		@Bean
-		public TemplateResolver defaultTemplateResolver() {
-			TemplateResolver resolver = new TemplateResolver();
-			resolver.setResourceResolver(thymeleafResourceResolver());
+		public ITemplateResolver defaultTemplateResolver() {
+			SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+			resolver.setApplicationContext(this.applicationContext);
 			resolver.setPrefix(this.properties.getPrefix());
 			resolver.setSuffix(this.properties.getSuffix());
 			resolver.setTemplateMode(this.properties.getMode());
@@ -115,10 +112,6 @@ public class ThymeleafAutoConfiguration {
 			return resolver;
 		}
 
-		@Bean
-		public SpringResourceResourceResolver thymeleafResourceResolver() {
-			return new SpringResourceResourceResolver();
-		}
 	}
 
 	@Configuration
@@ -159,18 +152,6 @@ public class ThymeleafAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(DataAttributeDialect.class)
-	protected static class DataAttributeDialectConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		public DataAttributeDialect dialect() {
-			return new DataAttributeDialect();
-		}
-
-	}
-
-	@Configuration
 	@ConditionalOnClass({ SpringSecurityDialect.class })
 	protected static class ThymeleafSecurityDialectConfiguration {
 
@@ -178,18 +159,6 @@ public class ThymeleafAutoConfiguration {
 		@ConditionalOnMissingBean
 		public SpringSecurityDialect securityDialect() {
 			return new SpringSecurityDialect();
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnClass(ConditionalCommentsDialect.class)
-	protected static class ThymeleafConditionalCommentsDialectConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		public ConditionalCommentsDialect conditionalCommentsDialect() {
-			return new ConditionalCommentsDialect();
 		}
 
 	}

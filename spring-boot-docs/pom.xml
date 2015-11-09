@@ -534,11 +534,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.thymeleaf.extras</groupId>
-			<artifactId>thymeleaf-extras-conditionalcomments</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>com.github.mxab.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-data-attribute</artifactId>
 			<optional>true</optional>
