@@ -111,7 +111,7 @@ public class ConfigurationPropertiesReportEndpoint
 			Map<String, Object> root = new HashMap<String, Object>();
 			String prefix = extractPrefix(context, beanFactoryMetaData, beanName, bean);
 			root.put("prefix", prefix);
-			root.put("properties", sanitize(safeSerialize(mapper, bean, prefix)));
+			root.put("properties", sanitize(prefix, safeSerialize(mapper, bean, prefix)));
 			result.put(beanName, root);
 		}
 		if (context.getParent() != null) {
@@ -231,15 +231,18 @@ public class ConfigurationPropertiesReportEndpoint
 	 * @return the sanitized map
 	 */
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> sanitize(Map<String, Object> map) {
+	private Map<String, Object> sanitize(String prefix, Map<String, Object> map) {
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
 			String key = entry.getKey();
+			String qualifiedKey = (prefix.length() == 0 ? prefix : prefix + ".") + key;
 			Object value = entry.getValue();
 			if (value instanceof Map) {
-				map.put(key, sanitize((Map<String, Object>) value));
+				map.put(key, sanitize(qualifiedKey, (Map<String, Object>) value));
 			}
 			else {
-				map.put(key, this.sanitizer.sanitize(key, value));
+				value = this.sanitizer.sanitize(key, value);
+				value = this.sanitizer.sanitize(qualifiedKey, value);
+				map.put(key, value);
 			}
 		}
 		return map;
