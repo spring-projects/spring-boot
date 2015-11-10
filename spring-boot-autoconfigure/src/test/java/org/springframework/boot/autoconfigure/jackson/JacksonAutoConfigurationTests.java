@@ -76,7 +76,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Marcel Overdijk
  * @author Sebastien Deleuze
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  */
 public class JacksonAutoConfigurationTests {
 

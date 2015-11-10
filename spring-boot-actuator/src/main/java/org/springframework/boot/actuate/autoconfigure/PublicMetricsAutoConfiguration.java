@@ -61,7 +61,7 @@ import org.springframework.lang.UsesJava7;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  * @since 1.2.0
  */
 @Configuration

@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests for {@link RichGaugeReaderPublicMetrics}.
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  */
 public class RichGaugeReaderPublicMetricsTests {
 

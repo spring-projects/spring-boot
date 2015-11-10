@@ -35,7 +35,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Andy Wilkinson
  * @author Marcel Overdijk
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.jackson")

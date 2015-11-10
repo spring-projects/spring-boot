@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Tests for {@link TomcatPublicMetrics}
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  * @author Phillip Webb
  */
 public class TomcatPublicMetricsTests {

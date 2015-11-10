@@ -22,7 +22,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 /**
  * {@link HealthIndicator} for configured smtp server(s).
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  * @since 1.3.0
  */
 public class MailHealthIndicator extends AbstractHealthIndicator {

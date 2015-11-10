@@ -35,7 +35,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Christian Dupuis
  * @author Stephane Nicoll
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  * @since 1.2.0
  */
 public class SystemPublicMetrics implements PublicMetrics, Ordered {

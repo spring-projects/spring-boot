@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Tests for {@link MailHealthIndicator}.
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  * @author Stephane Nicoll
  */
 public class MailHealthIndicatorTests {

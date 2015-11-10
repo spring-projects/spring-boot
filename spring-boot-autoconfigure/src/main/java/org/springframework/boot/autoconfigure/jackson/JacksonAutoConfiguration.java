@@ -68,7 +68,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Andy Wilkinson
  * @author Marcel Overdijk
  * @author Sebastien Deleuze
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  * @since 1.1.0
  */
 @Configuration

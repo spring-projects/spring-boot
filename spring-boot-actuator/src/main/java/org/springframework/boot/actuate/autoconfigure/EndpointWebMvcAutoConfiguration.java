@@ -85,7 +85,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Phillip Webb
  * @author Christian Dupuis
  * @author Andy Wilkinson
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
