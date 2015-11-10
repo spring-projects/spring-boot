@@ -61,7 +61,7 @@ public class ContextIdApplicationContextInitializer implements
 
 	private final String name;
 
-	private int order = Integer.MAX_VALUE - 10;
+	private int order = Ordered.LOWEST_PRECEDENCE - 10;
 
 	public ContextIdApplicationContextInitializer() {
 		this(NAME_PATTERN);

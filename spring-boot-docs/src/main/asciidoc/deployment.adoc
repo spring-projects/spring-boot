@@ -22,7 +22,7 @@ _cloud's_ notion of a running process.
 
 Two popular cloud providers, Heroku and Cloud Foundry, employ a "`buildpack`" approach.
 The buildpack wraps your deployed code in whatever is needed to _start_ your
-application: it might be a JDK and a call to `java`, it might be an embedded webserver,
+application: it might be a JDK and a call to `java`, it might be an embedded web server,
 or it might be a full-fledged application server. A buildpack is pluggable, but ideally
 you should be able to get by with as few customizations to it as possible.
 This reduces the footprint of functionality that is not under your control. It minimizes
@@ -232,11 +232,11 @@ Your application should now be up and running on Heroku.
 
 
 [[cloud-deployment-openshift]]
-=== Openshift
-https://www.openshift.com/[Openshift] is the RedHat public (and enterprise) PaaS solution.
+=== OpenShift
+https://www.openshift.com/[OpenShift] is the RedHat public (and enterprise) PaaS solution.
 Like Heroku, it works by running scripts triggered by git commits, so you can script
 the launching of a Spring Boot application in pretty much any way you like as long as the
-Java runtime is available (which is a standard feature you can ask for at Openshift).
+Java runtime is available (which is a standard feature you can ask for at OpenShift).
 To do this you can use the
 https://www.openshift.com/developers/do-it-yourself[DIY Cartridge] and hooks in your
 repository under `.openshift/action_scripts`:
@@ -289,7 +289,7 @@ in your `application.properties`, e.g.
 ----
 
 There's a blog on https://www.openshift.com/blogs/run-gradle-builds-on-openshift[running
-Gradle in Openshift] on their website that will get you started with a gradle build to
+Gradle in OpenShift] on their website that will get you started with a gradle build to
 run the app.
 
 
@@ -299,7 +299,7 @@ run the app.
 https://boxfuse.com/[Boxfuse] works by turning your Spring Boot executable jar or war
 into a minimal VM image that can be deployed unchanged either on VirtualBox or on AWS.
 Boxfuse comes with deep integration for Spring Boot and will use the information from your
-Spring Boot configuration file to automatically configure ports and healthcheck URLs.
+Spring Boot configuration file to automatically configure ports and health check URLs.
 Boxfuse leverages this information both for the images it produces as well as for all the
 resources it provisions (instances, security groups, elastic load balancers, etc).
 
@@ -581,7 +581,7 @@ your Spring Boot application.
 [[deployment-whats-next]]
 == What to read next
 Check out the http://www.cloudfoundry.com/[Cloud Foundry],
-https://www.heroku.com/[Heroku], https://www.openshift.com[Openshift] and
+https://www.heroku.com/[Heroku], https://www.openshift.com[OpenShift] and
 https://boxfuse.com[Boxfuse] web sites for more information about the kinds of features
 that a PaaS can offer. These are just four of the most popular Java PaaS providers, since
 Spring Boot is so amenable to cloud-based deployment you're free to consider other
