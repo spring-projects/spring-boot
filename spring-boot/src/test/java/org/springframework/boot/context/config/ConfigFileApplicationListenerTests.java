@@ -765,6 +765,18 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(property, equalTo("false"));
 	}
 
+	@Test
+	public void addBeforeDefaultProperties() throws Exception {
+		MapPropertySource defaultSource = new MapPropertySource("defaultProperties",
+				Collections.<String, Object>singletonMap("the.property",
+						"fromdefaultproperties"));
+		this.environment.getPropertySources().addFirst(defaultSource);
+		this.initializer.setSearchNames("testproperties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		String property = this.environment.getProperty("the.property");
+		assertThat(property, equalTo("frompropertiesfile"));
+	}
+
 	private static Matcher<? super ConfigurableEnvironment> containsPropertySource(
 			final String sourceName) {
 		return new TypeSafeDiagnosingMatcher<ConfigurableEnvironment>() {
