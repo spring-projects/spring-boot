@@ -58,14 +58,14 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 	private String path = "/jolokia";;
 
 	/**
-	 * Enable security on the endpoint.
-	 */
-	private boolean sensitive = true;
-
-	/**
 	 * Enable the endpoint.
 	 */
 	private boolean enabled = true;
+
+	/**
+	 * Mark if the endpoint exposes sensitive information.
+	 */
+	private boolean sensitive = true;
 
 	private final ServletWrappingController controller = new ServletWrappingController();
 
@@ -103,21 +103,21 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 	}
 
 	@Override
-	public String getPath() {
-		return this.path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	@Override
 	public boolean isSensitive() {
 		return this.sensitive;
 	}
 
 	public void setSensitive(boolean sensitive) {
 		this.sensitive = sensitive;
+	}
+
+	@Override
+	public String getPath() {
+		return this.path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 	@Override

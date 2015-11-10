@@ -67,4 +67,5 @@ public class ManagementErrorEndpoint implements MvcEndpoint {
 	public Class<? extends Endpoint> getEndpointType() {
 		return null;
 	}
+
 }

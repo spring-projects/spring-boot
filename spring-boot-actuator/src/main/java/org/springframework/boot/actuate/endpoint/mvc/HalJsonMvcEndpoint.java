@@ -37,8 +37,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @since 1.3.0
  */
 @ConfigurationProperties("endpoints.actuator")
-public class HalJsonMvcEndpoint extends WebMvcConfigurerAdapter
-		implements MvcEndpoint {
+public class HalJsonMvcEndpoint extends WebMvcConfigurerAdapter implements MvcEndpoint {
 
 	/**
 	 * Endpoint URL path.
@@ -48,14 +47,14 @@ public class HalJsonMvcEndpoint extends WebMvcConfigurerAdapter
 	private String path;
 
 	/**
-	 * Enable security on the endpoint.
-	 */
-	private boolean sensitive = false;
-
-	/**
 	 * Enable the endpoint.
 	 */
 	private boolean enabled = true;
+
+	/**
+	 * Mark if the endpoint exposes sensitive information.
+	 */
+	private boolean sensitive = false;
 
 	private final ManagementServletContext managementServletContext;
 
@@ -86,6 +85,14 @@ public class HalJsonMvcEndpoint extends WebMvcConfigurerAdapter
 		return this.path;
 	}
 
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	@Override
 	public boolean isSensitive() {
 		return this.sensitive;
@@ -93,14 +100,6 @@ public class HalJsonMvcEndpoint extends WebMvcConfigurerAdapter
 
 	public void setSensitive(boolean sensitive) {
 		this.sensitive = sensitive;
-	}
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 	}
 
 	@Override

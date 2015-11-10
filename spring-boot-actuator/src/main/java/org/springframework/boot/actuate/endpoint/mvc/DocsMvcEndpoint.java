@@ -36,6 +36,14 @@ public class DocsMvcEndpoint extends WebMvcConfigurerAdapter implements MvcEndpo
 
 	private String path = "/docs";
 
+	/**
+	 * Enable the endpoint.
+	 */
+	private boolean enabled = true;
+
+	/**
+	 * Mark if the endpoint exposes sensitive information.
+	 */
 	private boolean sensitive;
 
 	private final ManagementServletContext managementServletContext;
@@ -78,13 +86,21 @@ public class DocsMvcEndpoint extends WebMvcConfigurerAdapter implements MvcEndpo
 		return this.path;
 	}
 
-	public void setSensitive(boolean sensitive) {
-		this.sensitive = sensitive;
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	@Override
 	public boolean isSensitive() {
 		return this.sensitive;
+	}
+
+	public void setSensitive(boolean sensitive) {
+		this.sensitive = sensitive;
 	}
 
 	@Override

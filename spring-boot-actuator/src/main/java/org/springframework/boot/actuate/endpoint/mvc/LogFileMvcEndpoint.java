@@ -60,14 +60,14 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	private String path = "/logfile";
 
 	/**
-	 * Enable security on the endpoint.
-	 */
-	private boolean sensitive = true;
-
-	/**
 	 * Enable the endpoint.
 	 */
 	private boolean enabled = true;
+
+	/**
+	 * Mark if the endpoint exposes sensitive information.
+	 */
+	private boolean sensitive = true;
 
 	private Environment environment;
 
@@ -85,6 +85,14 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		this.path = path;
 	}
 
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	@Override
 	public boolean isSensitive() {
 		return this.sensitive;
@@ -92,14 +100,6 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 
 	public void setSensitive(boolean sensitive) {
 		this.sensitive = sensitive;
-	}
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 	}
 
 	@Override
