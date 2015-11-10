@@ -275,6 +275,9 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |===
 |Name |Description
 
+|{sc-spring-boot-actuator}/health/CassandraHealthIndicator.{sc-ext}[`CassandraHealthIndicator`]
+|Checks that a Cassandra database is up.
+
 |{sc-spring-boot-actuator}/health/DiskSpaceHealthIndicator.{sc-ext}[`DiskSpaceHealthIndicator`]
 |Checks for low disk space.
 
