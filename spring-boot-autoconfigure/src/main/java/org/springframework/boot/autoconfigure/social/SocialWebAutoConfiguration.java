@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.social;
 
 import java.util.List;
 
-import org.springframework.core.Ordered;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +34,7 @@ import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfigurati
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
