@@ -30,9 +30,12 @@ import org.jolokia.http.AgentServlet;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.EndpointProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
@@ -48,7 +51,9 @@ import org.springframework.web.util.UrlPathHelper;
 @ConfigurationProperties(prefix = "endpoints.jolokia", ignoreUnknownFields = false)
 @HypermediaDisabled
 public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
-		ApplicationContextAware, ServletContextAware {
+		ApplicationContextAware, ServletContextAware, EnvironmentAware {
+
+	private Environment environment;
 
 	/**
 	 * Endpoint URL path.
@@ -65,7 +70,7 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 	/**
 	 * Mark if the endpoint exposes sensitive information.
 	 */
-	private boolean sensitive = true;
+	private Boolean sensitive;
 
 	private final ServletWrappingController controller = new ServletWrappingController();
 
@@ -94,6 +99,11 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 		this.controller.setApplicationContext(context);
 	}
 
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
+
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -104,10 +114,10 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 
 	@Override
 	public boolean isSensitive() {
-		return this.sensitive;
+		return EndpointProperties.isSensitive(this.environment, this.sensitive, true);
 	}
 
-	public void setSensitive(boolean sensitive) {
+	public void setSensitive(Boolean sensitive) {
 		this.sensitive = sensitive;
 	}
 

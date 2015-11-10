@@ -65,7 +65,7 @@ The following endpoints are available:
 
 [cols="2,5,1"]
 |===
-| ID | Description | Sensitive
+| ID | Description | Sensitive Default
 
 |`actuator`
 |Provides a hypermedia-based "`discovery page`" for the other endpoints. Requires Spring
@@ -165,6 +165,18 @@ For example, the following will disable _all_ endpoints except for `info`:
 	endpoints.enabled=false
 	endpoints.info.enabled=true
 ----
+
+Likewise, you can also choose to globally set the "`sensitive`" flag of all endpoints. By
+default, the sensitive flag depends on the type of endpoint (see the table above).
+For example, to mark _all_ endpoints as sensitive except `info`:
+
+[source,properties,indent=0]
+----
+	endpoints.sensitive=true
+	endpoints.info.sensitive=false
+----
+
+
 
 [[production-ready-endpoint-hypermedia]]
 === Hypermedia for actuator MVC endpoints

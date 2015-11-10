@@ -20,7 +20,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.EndpointProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
@@ -37,7 +40,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @since 1.3.0
  */
 @ConfigurationProperties("endpoints.actuator")
-public class HalJsonMvcEndpoint extends WebMvcConfigurerAdapter implements MvcEndpoint {
+public class HalJsonMvcEndpoint extends WebMvcConfigurerAdapter
+		implements MvcEndpoint, EnvironmentAware {
+
+	private Environment environment;
 
 	/**
 	 * Endpoint URL path.
@@ -54,13 +60,18 @@ public class HalJsonMvcEndpoint extends WebMvcConfigurerAdapter implements MvcEn
 	/**
 	 * Mark if the endpoint exposes sensitive information.
 	 */
-	private boolean sensitive = false;
+	private Boolean sensitive;
 
 	private final ManagementServletContext managementServletContext;
 
 	public HalJsonMvcEndpoint(ManagementServletContext managementServletContext) {
 		this.managementServletContext = managementServletContext;
 		this.path = getDefaultPath(managementServletContext);
+	}
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 	private String getDefaultPath(ManagementServletContext managementServletContext) {
@@ -95,10 +106,10 @@ public class HalJsonMvcEndpoint extends WebMvcConfigurerAdapter implements MvcEn
 
 	@Override
 	public boolean isSensitive() {
-		return this.sensitive;
+		return EndpointProperties.isSensitive(this.environment, this.sensitive, false);
 	}
 
-	public void setSensitive(boolean sensitive) {
+	public void setSensitive(Boolean sensitive) {
 		this.sensitive = sensitive;
 	}
 

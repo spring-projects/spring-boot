@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.EndpointProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.context.EnvironmentAware;
@@ -67,7 +68,7 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	/**
 	 * Mark if the endpoint exposes sensitive information.
 	 */
-	private boolean sensitive = true;
+	private Boolean sensitive;
 
 	private Environment environment;
 
@@ -95,10 +96,10 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 
 	@Override
 	public boolean isSensitive() {
-		return this.sensitive;
+		return EndpointProperties.isSensitive(this.environment, this.sensitive, true);
 	}
 
-	public void setSensitive(boolean sensitive) {
+	public void setSensitive(Boolean sensitive) {
 		this.sensitive = sensitive;
 	}
 

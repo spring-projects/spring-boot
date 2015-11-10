@@ -17,7 +17,10 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.EndpointProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -30,9 +33,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @since 1.3.0
  */
 @ConfigurationProperties("endpoints.docs")
-public class DocsMvcEndpoint extends WebMvcConfigurerAdapter implements MvcEndpoint {
+public class DocsMvcEndpoint extends WebMvcConfigurerAdapter
+		implements MvcEndpoint, EnvironmentAware {
 
 	private static final String DOCS_LOCATION = "classpath:/META-INF/resources/spring-boot-actuator/docs/";
+
+	private Environment environment;
 
 	private String path = "/docs";
 
@@ -44,11 +50,16 @@ public class DocsMvcEndpoint extends WebMvcConfigurerAdapter implements MvcEndpo
 	/**
 	 * Mark if the endpoint exposes sensitive information.
 	 */
-	private boolean sensitive;
+	private Boolean sensitive;
 
 	private final ManagementServletContext managementServletContext;
 
 	private Curies curies = new Curies();
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
 
 	public Curies getCuries() {
 		return this.curies;
@@ -96,10 +107,10 @@ public class DocsMvcEndpoint extends WebMvcConfigurerAdapter implements MvcEndpo
 
 	@Override
 	public boolean isSensitive() {
-		return this.sensitive;
+		return EndpointProperties.isSensitive(this.environment, this.sensitive, false);
 	}
 
-	public void setSensitive(boolean sensitive) {
+	public void setSensitive(Boolean sensitive) {
 		this.sensitive = sensitive;
 	}
 

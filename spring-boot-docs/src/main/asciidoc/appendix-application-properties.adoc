@@ -724,6 +724,8 @@ content into your application; rather pick only the properties that you need.
 	# ----------------------------------------
 
 	# ENDPOINTS ({sc-spring-boot-actuator}/endpoint/AbstractEndpoint.{sc-ext}[AbstractEndpoint] subclasses)
+	endpoints.enabled=true # Enable endpoints.
+	endpoints.sensitive= # Default endpoint sensitive setting.
 	endpoints.actuator.enabled=true # Enable the endpoint.
 	endpoints.actuator.path= # Endpoint URL path.
 	endpoints.actuator.sensitive=false # Enable security on the endpoint.
@@ -744,7 +746,6 @@ content into your application; rather pick only the properties that you need.
 	endpoints.dump.enabled= # Enable the endpoint.
 	endpoints.dump.id= # Endpoint identifier.
 	endpoints.dump.sensitive= # Mark if the endpoint exposes sensitive information.
-	endpoints.enabled=true # Enable endpoints.
 	endpoints.env.enabled= # Enable the endpoint.
 	endpoints.env.id= # Endpoint identifier.
 	endpoints.env.keys-to-sanitize=password,secret,key,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.
