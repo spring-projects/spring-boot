@@ -41,7 +41,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	@Pattern(regexp = "\\w+", message = "ID must only contains letters, numbers and '_'")
 	private String id;
 
-	private final boolean sensitiveDefaut;
+	private final boolean sensitiveDefault;
 
 	/**
 	 * Mark if the endpoint exposes sensitive information.
@@ -70,7 +70,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	 */
 	public AbstractEndpoint(String id, boolean sensitive) {
 		this.id = id;
-		this.sensitiveDefaut = sensitive;
+		this.sensitiveDefault = sensitive;
 	}
 
 	/**
@@ -81,7 +81,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	 */
 	public AbstractEndpoint(String id, boolean sensitive, boolean enabled) {
 		this.id = id;
-		this.sensitiveDefaut = sensitive;
+		this.sensitiveDefault = sensitive;
 		this.enabled = enabled;
 	}
 
@@ -115,7 +115,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	@Override
 	public boolean isSensitive() {
 		return EndpointProperties.isSensitive(this.environment, this.sensitive,
-				this.sensitiveDefaut);
+				this.sensitiveDefault);
 	}
 
 	public void setSensitive(Boolean sensitive) {
