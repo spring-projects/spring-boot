@@ -697,6 +697,25 @@ public class SpringApplicationTests {
 				.next().getName());
 	}
 
+	@Test
+	public void failureResultsInSingleStackTrace() throws Exception {
+		ThreadGroup group = new ThreadGroup("main");
+		Thread thread = new Thread(group, "main") {
+			@Override
+			public void run() {
+				SpringApplication application = new SpringApplication(
+						FailingConfig.class);
+				application.setWebEnvironment(false);
+				application.run();
+			};
+		};
+		thread.start();
+		thread.join(6000);
+		int occurrences = StringUtils.countOccurrencesOf(this.output.toString(),
+				"Caused by: java.lang.RuntimeException: ExpectedError");
+		assertThat("Expected single stacktrace", occurrences, equalTo(1));
+	}
+
 	private boolean hasPropertySource(ConfigurableEnvironment environment,
 			Class<?> propertySourceClass, String name) {
 		for (PropertySource<?> source : environment.getPropertySources()) {
@@ -806,6 +825,16 @@ public class SpringApplicationTests {
 		@Bean
 		public JettyEmbeddedServletContainerFactory container() {
 			return new JettyEmbeddedServletContainerFactory(0);
+		}
+
+	}
+
+	@Configuration
+	static class FailingConfig {
+
+		@Bean
+		public Object fail() {
+			throw new RuntimeException("ExpectedError");
 		}
 
 	}

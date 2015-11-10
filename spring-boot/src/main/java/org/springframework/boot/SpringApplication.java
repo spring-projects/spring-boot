@@ -301,17 +301,8 @@ public class SpringApplication {
 			return context;
 		}
 		catch (Throwable ex) {
-			try {
-				listeners.finished(context, ex);
-				this.log.error("Application startup failed", ex);
-			}
-			finally {
-				if (context != null) {
-					context.close();
-				}
-			}
-			ReflectionUtils.rethrowRuntimeException(ex);
-			return context;
+			handleRunFailure(context, listeners, ex);
+			throw new IllegalStateException(ex);
 		}
 	}
 
@@ -814,6 +805,42 @@ public class SpringApplication {
 	 */
 	@Deprecated
 	protected void afterRefresh(ConfigurableApplicationContext context, String[] args) {
+	}
+
+	private void handleRunFailure(ConfigurableApplicationContext context,
+			SpringApplicationRunListeners listeners, Throwable exception) {
+		try {
+			try {
+				listeners.finished(context, exception);
+			}
+			finally {
+				if (context != null) {
+					context.close();
+				}
+			}
+		}
+		catch (Exception ex) {
+			this.log.warn("Unable to close ApplicationContext", ex);
+		}
+		if (this.log.isErrorEnabled()) {
+			this.log.error("Application startup failed", exception);
+			registerLoggedException(exception);
+		}
+		ReflectionUtils.rethrowRuntimeException(exception);
+	}
+
+	/**
+	 * Register that the given exception has been logged. By default, if the running in
+	 * the main thread, this method will suppress additional printing of the stacktrace.
+	 * @param exception the exception that was logged
+	 */
+	protected void registerLoggedException(Throwable exception) {
+		Thread currentThread = Thread.currentThread();
+		if (("main".equals(currentThread.getName())
+				|| "restartedMain".equals(currentThread.getName()))
+				&& "main".equals(currentThread.getThreadGroup().getName())) {
+			LoggedExceptionHandler.forCurrentThread().register(exception);
+		}
 	}
 
 	/**

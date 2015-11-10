@@ -42,7 +42,6 @@ class FileWatchingFailureHandler implements FailureHandler {
 
 	@Override
 	public Outcome handle(Throwable failure) {
-		failure.printStackTrace();
 		CountDownLatch latch = new CountDownLatch(1);
 		FileSystemWatcher watcher = this.fileSystemWatcherFactory.getFileSystemWatcher();
 		watcher.addSourceFolders(

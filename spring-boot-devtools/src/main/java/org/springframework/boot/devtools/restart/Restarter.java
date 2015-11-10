@@ -271,10 +271,7 @@ public class Restarter {
 				return;
 			}
 			if (failureHandler.handle(error) == Outcome.ABORT) {
-				if (error instanceof Exception) {
-					throw (Exception) error;
-				}
-				throw new Exception(error);
+				return;
 			}
 		}
 		while (true);
