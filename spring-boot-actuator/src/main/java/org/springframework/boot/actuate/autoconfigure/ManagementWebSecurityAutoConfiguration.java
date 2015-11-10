@@ -67,6 +67,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.ObjectUtils;
@@ -94,6 +95,9 @@ import org.springframework.util.StringUtils;
 public class ManagementWebSecurityAutoConfiguration {
 
 	private static final String[] NO_PATHS = new String[0];
+
+	private static final RequestMatcher MATCH_NONE = new NegatedRequestMatcher(
+			AnyRequestMatcher.INSTANCE);
 
 	@Bean
 	@ConditionalOnMissingBean({ IgnoredPathsWebSecurityConfigurerAdapter.class })
@@ -332,8 +336,7 @@ public class ManagementWebSecurityAutoConfiguration {
 				for (String path : this.endpointPaths.getPaths(endpointHandlerMapping)) {
 					matchers.add(new AntPathRequestMatcher(server.getPath(path)));
 				}
-				return (matchers.isEmpty() ? AnyRequestMatcher.INSTANCE
-						: new OrRequestMatcher(matchers));
+				return (matchers.isEmpty() ? MATCH_NONE : new OrRequestMatcher(matchers));
 			}
 
 		}
@@ -345,10 +348,12 @@ public class ManagementWebSecurityAutoConfiguration {
 		ALL,
 
 		NON_SENSITIVE {
+
 			@Override
 			protected boolean isIncluded(MvcEndpoint endpoint) {
 				return !endpoint.isSensitive();
 			}
+
 		};
 
 		public String[] getPaths(EndpointHandlerMapping endpointHandlerMapping) {
