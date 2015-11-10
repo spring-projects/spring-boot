@@ -91,6 +91,10 @@ public class DispatcherServletAutoConfiguration {
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 		public DispatcherServlet dispatcherServlet() {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet();
+			dispatcherServlet.setDispatchOptionsRequest(
+					this.webMvcProperties.isDispatchOptionsRequest());
+			dispatcherServlet.setDispatchTraceRequest(
+					this.webMvcProperties.isDispatchTraceRequest());
 			dispatcherServlet.setThrowExceptionIfNoHandlerFound(
 					this.webMvcProperties.isThrowExceptionIfNoHandlerFound());
 			return dispatcherServlet;

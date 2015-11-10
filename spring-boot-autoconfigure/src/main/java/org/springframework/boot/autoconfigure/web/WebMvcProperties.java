@@ -52,6 +52,16 @@ public class WebMvcProperties {
 	private String dateFormat;
 
 	/**
+	 * Dispatch TRACE requests to the FrameworkServlet doService method.
+	 */
+	private boolean dispatchTraceRequest = false;
+
+	/**
+	 * Dispatch OPTIONS requests to the FrameworkServlet doService method.
+	 */
+	private boolean dispatchOptionsRequest = false;
+
+	/**
 	 * If the content of the "default" model should be ignored during redirect scenarios.
 	 */
 	private boolean ignoreDefaultModelOnRedirect = true;
@@ -119,6 +129,22 @@ public class WebMvcProperties {
 
 	public void setMediaTypes(Map<String, MediaType> mediaTypes) {
 		this.mediaTypes = mediaTypes;
+	}
+
+	public boolean isDispatchOptionsRequest() {
+		return this.dispatchOptionsRequest;
+	}
+
+	public void setDispatchOptionsRequest(boolean dispatchOptionsRequest) {
+		this.dispatchOptionsRequest = dispatchOptionsRequest;
+	}
+
+	public boolean isDispatchTraceRequest() {
+		return this.dispatchTraceRequest;
+	}
+
+	public void setDispatchTraceRequest(boolean dispatchTraceRequest) {
+		this.dispatchTraceRequest = dispatchTraceRequest;
 	}
 
 	public Async getAsync() {
