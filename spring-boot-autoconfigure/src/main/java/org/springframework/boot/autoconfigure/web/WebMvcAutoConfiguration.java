@@ -317,7 +317,7 @@ public class WebMvcAutoConfiguration {
 			@Bean
 			public SimpleUrlHandlerMapping faviconHandlerMapping() {
 				SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-				mapping.setOrder(Integer.MIN_VALUE + 1);
+				mapping.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
 				mapping.setUrlMap(Collections.singletonMap("**/favicon.ico",
 						faviconRequestHandler()));
 				return mapping;

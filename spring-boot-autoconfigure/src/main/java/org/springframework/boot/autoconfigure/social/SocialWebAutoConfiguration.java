@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.social;
 
 import java.util.List;
 
+import org.springframework.core.Ordered;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,7 +105,7 @@ public class SocialWebAutoConfiguration {
 		@ConditionalOnProperty(prefix = "spring.social", name = "auto-connection-views")
 		public BeanNameViewResolver beanNameViewResolver() {
 			BeanNameViewResolver viewResolver = new BeanNameViewResolver();
-			viewResolver.setOrder(Integer.MIN_VALUE);
+			viewResolver.setOrder(Ordered.HIGHEST_PRECEDENCE);
 			return viewResolver;
 		}
 
