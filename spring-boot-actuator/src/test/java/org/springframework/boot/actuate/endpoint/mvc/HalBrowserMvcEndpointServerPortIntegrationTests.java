@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure;
+package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Arrays;
 
@@ -22,8 +22,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.autoconfigure.ServerPortHypermediaIntegrationTests.SpringBootHypermediaApplication;
-import org.springframework.boot.actuate.endpoint.mvc.ActuatorHalBrowserEndpoint;
+import org.springframework.boot.actuate.autoconfigure.MinimalActuatorHypermediaApplication;
+import org.springframework.boot.actuate.endpoint.mvc.HalBrowserMvcEndpointServerPortIntegrationTests.SpringBootHypermediaApplication;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
- * Integration tests for {@link ActuatorHalBrowserEndpoint} when a custom server port has
+ * Integration tests for {@link HalBrowserMvcEndpoint} when a custom server port has
  * been configured.
  *
  * @author Dave Syer
@@ -56,7 +56,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0", "management.port=0" })
 @DirtiesContext
-public class ServerPortHypermediaIntegrationTests {
+public class HalBrowserMvcEndpointServerPortIntegrationTests {
 
 	@Value("${local.management.port}")
 	private int port;

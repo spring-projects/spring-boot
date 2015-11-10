@@ -31,9 +31,9 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.endpoint.mvc.ActuatorDocsEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.ActuatorHalBrowserEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.ActuatorHalJsonEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.DocsMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.HalBrowserMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HypermediaDisabled;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
@@ -103,29 +103,29 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 
 	@ConditionalOnProperty(prefix = "endpoints.actuator", name = "enabled", matchIfMissing = true)
 	@Bean
-	public ActuatorHalJsonEndpoint actuatorMvcEndpoint(
+	public HalJsonMvcEndpoint halJsonMvcEndpoint(
 			ManagementServletContext managementServletContext,
 			ResourceProperties resources, ResourceLoader resourceLoader) {
-		if (ActuatorHalBrowserEndpoint.getHalBrowserLocation(resourceLoader) != null) {
-			return new ActuatorHalBrowserEndpoint(managementServletContext);
+		if (HalBrowserMvcEndpoint.getHalBrowserLocation(resourceLoader) != null) {
+			return new HalBrowserMvcEndpoint(managementServletContext);
 		}
-		return new ActuatorHalJsonEndpoint(managementServletContext);
+		return new HalJsonMvcEndpoint(managementServletContext);
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = "endpoints.docs", name = "enabled", matchIfMissing = true)
 	@ConditionalOnResource(resources = "classpath:/META-INF/resources/spring-boot-actuator/docs/index.html")
-	public ActuatorDocsEndpoint actuatorDocsEndpoint(
+	public DocsMvcEndpoint docsMvcEndpoint(
 			ManagementServletContext managementServletContext) {
-		return new ActuatorDocsEndpoint(managementServletContext);
+		return new DocsMvcEndpoint(managementServletContext);
 	}
 
 	@Bean
-	@ConditionalOnBean(ActuatorDocsEndpoint.class)
+	@ConditionalOnBean(DocsMvcEndpoint.class)
 	@ConditionalOnMissingBean(CurieProvider.class)
 	@ConditionalOnProperty(prefix = "endpoints.docs.curies", name = "enabled", matchIfMissing = false)
 	public DefaultCurieProvider curieProvider(ServerProperties server,
-			ManagementServerProperties management, ActuatorDocsEndpoint endpoint) {
+			ManagementServerProperties management, DocsMvcEndpoint endpoint) {
 		String path = management.getContextPath() + endpoint.getPath()
 				+ "/#spring_boot_actuator__{rel}";
 		if (server.getPort() == management.getPort() && management.getPort() != null
@@ -146,7 +146,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		private MvcEndpoints endpoints;
 
 		@Autowired(required = false)
-		private ActuatorHalJsonEndpoint actuatorEndpoint;
+		private HalJsonMvcEndpoint halJsonMvcEndpoint;
 
 		@Autowired
 		private ManagementServerProperties management;
@@ -191,13 +191,13 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		private void beforeBodyWrite(String path, ResourceSupport body) {
 			if (isActuatorEndpointPath(path)) {
 				this.linksEnhancer.addEndpointLinks(body,
-						this.actuatorEndpoint.getPath());
+						this.halJsonMvcEndpoint.getPath());
 			}
 		}
 
 		private boolean isActuatorEndpointPath(String path) {
-			return this.actuatorEndpoint != null && (this.management.getContextPath()
-					+ this.actuatorEndpoint.getPath()).equals(path);
+			return this.halJsonMvcEndpoint != null && (this.management.getContextPath()
+					+ this.halJsonMvcEndpoint.getPath()).equals(path);
 		}
 
 	}
@@ -222,7 +222,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		public boolean supports(MethodParameter returnType,
 				Class<? extends HttpMessageConverter<?>> converterType) {
 			Class<?> controllerType = returnType.getDeclaringClass();
-			return !ActuatorHalJsonEndpoint.class.isAssignableFrom(controllerType);
+			return !HalJsonMvcEndpoint.class.isAssignableFrom(controllerType);
 		}
 
 		@Override

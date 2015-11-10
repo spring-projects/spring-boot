@@ -30,7 +30,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @since 1.3.0
  */
 @ConfigurationProperties("endpoints.docs")
-public class ActuatorDocsEndpoint extends WebMvcConfigurerAdapter implements MvcEndpoint {
+public class DocsMvcEndpoint extends WebMvcConfigurerAdapter implements MvcEndpoint {
 
 	private static final String DOCS_LOCATION = "classpath:/META-INF/resources/spring-boot-actuator/docs/";
 
@@ -46,7 +46,7 @@ public class ActuatorDocsEndpoint extends WebMvcConfigurerAdapter implements Mvc
 		return this.curies;
 	}
 
-	public ActuatorDocsEndpoint(ManagementServletContext managementServletContext) {
+	public DocsMvcEndpoint(ManagementServletContext managementServletContext) {
 		this.managementServletContext = managementServletContext;
 	}
 

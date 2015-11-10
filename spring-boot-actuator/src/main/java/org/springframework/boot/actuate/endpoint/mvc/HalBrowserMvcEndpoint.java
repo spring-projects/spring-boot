@@ -40,7 +40,7 @@ import org.springframework.web.servlet.resource.TransformedResource;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint
+public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
 		implements ResourceLoaderAware {
 
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
@@ -54,7 +54,7 @@ public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint
 
 	private HalBrowserLocation location;
 
-	public ActuatorHalBrowserEndpoint(ManagementServletContext managementServletContext) {
+	public HalBrowserMvcEndpoint(ManagementServletContext managementServletContext) {
 		super(managementServletContext);
 	}
 
@@ -141,7 +141,7 @@ public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint
 				ResourceTransformerChain transformerChain) throws IOException {
 			resource = transformerChain.transform(request, resource);
 			if (resource.getFilename().equalsIgnoreCase(
-					ActuatorHalBrowserEndpoint.this.location.getHtmlFile())) {
+					HalBrowserMvcEndpoint.this.location.getHtmlFile())) {
 				return replaceInitialLink(resource);
 			}
 			return resource;

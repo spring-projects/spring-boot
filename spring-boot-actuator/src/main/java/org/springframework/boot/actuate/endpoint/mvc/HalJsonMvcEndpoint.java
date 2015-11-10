@@ -37,7 +37,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @since 1.3.0
  */
 @ConfigurationProperties("endpoints.actuator")
-public class ActuatorHalJsonEndpoint extends WebMvcConfigurerAdapter
+public class HalJsonMvcEndpoint extends WebMvcConfigurerAdapter
 		implements MvcEndpoint {
 
 	/**
@@ -59,7 +59,7 @@ public class ActuatorHalJsonEndpoint extends WebMvcConfigurerAdapter
 
 	private final ManagementServletContext managementServletContext;
 
-	public ActuatorHalJsonEndpoint(ManagementServletContext managementServletContext) {
+	public HalJsonMvcEndpoint(ManagementServletContext managementServletContext) {
 		this.managementServletContext = managementServletContext;
 		this.path = getDefaultPath(managementServletContext);
 	}
