@@ -81,12 +81,12 @@ public class EndpointProperties {
 	 * into account the global default.
 	 * @param environment the Spring environment or {@code null}.
 	 * @param sensitive the endpoint property or {@code null}
-	 * @param sensitiveDefaut the default setting to use if no environment property is
+	 * @param sensitiveDefault the default setting to use if no environment property is
 	 * defined
 	 * @return if the endpoint is sensitive
 	 */
 	public static boolean isSensitive(Environment environment, Boolean sensitive,
-			boolean sensitiveDefaut) {
+			boolean sensitiveDefault) {
 		if (sensitive != null) {
 			return sensitive;
 		}
@@ -94,7 +94,7 @@ public class EndpointProperties {
 				&& environment.containsProperty(ENDPOINTS_SENSITIVE_PROPERTY)) {
 			return environment.getProperty(ENDPOINTS_SENSITIVE_PROPERTY, Boolean.class);
 		}
-		return sensitiveDefaut;
+		return sensitiveDefault;
 	}
 
 }
