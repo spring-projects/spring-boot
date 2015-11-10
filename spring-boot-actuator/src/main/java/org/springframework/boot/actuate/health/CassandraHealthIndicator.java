@@ -20,7 +20,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
 
-import org.springframework.data.cassandra.core.CassandraAdminOperations;
+import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.util.Assert;
 
 /**
@@ -32,16 +32,15 @@ import org.springframework.util.Assert;
  */
 public class CassandraHealthIndicator extends AbstractHealthIndicator {
 
-	private CassandraAdminOperations cassandraAdminOperations;
+	private CassandraOperations cassandraOperations;
 
 	/**
 	 * Create a new {@link CassandraHealthIndicator} instance.
-	 * @param cassandraAdminOperations the Cassandra admin operations
+	 * @param cassandraOperations the Cassandra operations
 	 */
-	public CassandraHealthIndicator(CassandraAdminOperations cassandraAdminOperations) {
-		Assert.notNull(cassandraAdminOperations,
-				"CassandraAdminOperations must not be null");
-		this.cassandraAdminOperations = cassandraAdminOperations;
+	public CassandraHealthIndicator(CassandraOperations cassandraOperations) {
+		Assert.notNull(cassandraOperations, "CassandraOperations must not be null");
+		this.cassandraOperations = cassandraOperations;
 	}
 
 	@Override
@@ -49,7 +48,7 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator {
 		try {
 			Select select = QueryBuilder.select("release_version").from("system",
 					"local");
-			ResultSet results = this.cassandraAdminOperations.query(select);
+			ResultSet results = this.cassandraOperations.query(select);
 			if (results.isExhausted()) {
 				builder.up();
 				return;
