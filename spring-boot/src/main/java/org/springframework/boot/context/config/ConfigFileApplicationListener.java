@@ -569,9 +569,16 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			for (PropertySource<?> item : sources) {
 				reorderedSources.add(item);
 			}
-			// Maybe we should add before the DEFAULT_PROPERTIES if it exists?
-			this.environment.getPropertySources()
-					.addLast(new ConfigurationPropertySources(reorderedSources));
+			addConfigurationProperties(new ConfigurationPropertySources(reorderedSources));
+		}
+
+		private void addConfigurationProperties(ConfigurationPropertySources configurationPropertySources) {
+			if (this.environment.getPropertySources().contains(DEFAULT_PROPERTIES)) {
+				this.environment.getPropertySources().addBefore(DEFAULT_PROPERTIES, configurationPropertySources);
+			}
+			else {
+				this.environment.getPropertySources().addLast(configurationPropertySources);
+			}
 		}
 
 	}
