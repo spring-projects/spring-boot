@@ -217,8 +217,8 @@ public class MongoProperties {
 				if (hasCustomCredentials()) {
 					String database = this.authenticationDatabase == null
 							? getMongoClientDatabase() : this.authenticationDatabase;
-					credentials = Arrays.asList(MongoCredential.createMongoCRCredential(
-							this.username, database, this.password));
+					credentials = Arrays.asList(MongoCredential
+							.createCredential(this.username, database, this.password));
 				}
 				String host = this.host == null ? "localhost" : this.host;
 				int port = determinePort(environment);
