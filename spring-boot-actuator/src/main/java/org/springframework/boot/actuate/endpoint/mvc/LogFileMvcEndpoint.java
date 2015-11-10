@@ -145,7 +145,7 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 
 		private final Resource resource;
 
-		public Handler(Resource resource) {
+		Handler(Resource resource) {
 			this.resource = resource;
 		}
 
