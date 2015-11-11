@@ -662,7 +662,7 @@ attributes are supported by the task:
 |Yes
 
 |`classes`
-|The root directory of Java classfiles
+|The root directory of Java class files
 |Yes
 
 |`start-class`
@@ -726,7 +726,7 @@ attributes are supported
 |Attribute |Description |Required
 
 |`classesroot`
-|The root directory of Java classfiles
+|The root directory of Java class files
 |Yes _(unless `mainclass` is specified)_
 
 |`mainclass`

@@ -1865,7 +1865,7 @@ authentication manager configuration). To customize
 it you normally use external properties and beans of type `WebSecurityConfigurerAdapter`
 (e.g. to add form-based login). To also switch off the authentication manager configuration
 you can add a bean of type `AuthenticationManager`, or else configure the
-global `AuthenticationManager` by `@Autowiring` an `AuthenticationManagerBuilder` into
+global `AuthenticationManager` by autowiring an `AuthenticationManagerBuilder` into
 a method in one of your `@Configuration` classes. There are several secure applications in the
 {github-code}/spring-boot-samples/[Spring Boot samples] to get you started with common
 use cases.
