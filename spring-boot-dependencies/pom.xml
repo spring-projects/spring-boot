@@ -898,6 +898,12 @@
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-console</artifactId>
 				<version>${activemq.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
@@ -933,6 +939,12 @@
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-leveldb-store</artifactId>
 				<version>${activemq.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
@@ -993,6 +1005,12 @@
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-spring</artifactId>
 				<version>${activemq.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
