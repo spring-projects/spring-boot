@@ -225,7 +225,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 						"LoggerFactory is not a Logback LoggerContext but Logback is on "
 								+ "the classpath. Either remove Logback or the competing "
 								+ "implementation (%s loaded from %s). If you are using "
-								+ "Weblogic you will need to add 'org.slf4j' to "
+								+ "WebLogic you will need to add 'org.slf4j' to "
 								+ "prefer-application-packages in WEB-INF/weblogic.xml",
 						factory.getClass(), getLocation(factory)));
 		return (LoggerContext) factory;
