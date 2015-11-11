@@ -55,6 +55,9 @@ public class CassandraAutoConfiguration {
 		Cluster.Builder builder = Cluster.builder()
 				.withClusterName(properties.getClusterName())
 				.withPort(properties.getPort());
+		if (properties.getUsername() != null) {
+			builder.withCredentials(properties.getUsername(), properties.getPassword());
+		}
 		if (properties.getCompression() != null) {
 			builder.withCompression(properties.getCompression());
 		}
