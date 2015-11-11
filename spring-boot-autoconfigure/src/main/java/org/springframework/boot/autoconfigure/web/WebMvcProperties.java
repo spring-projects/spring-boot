@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.Ordered;
 import org.springframework.http.MediaType;
 import org.springframework.validation.DefaultMessageCodesResolver;
 
@@ -60,6 +61,11 @@ public class WebMvcProperties {
 	 * Dispatch OPTIONS requests to the FrameworkServlet doService method.
 	 */
 	private boolean dispatchOptionsRequest = false;
+
+	/**
+	 * Dispatch servlet registration order.
+	 */
+	private int dispatchServletOrder = Ordered.LOWEST_PRECEDENCE;
 
 	/**
 	 * If the content of the "default" model should be ignored during redirect scenarios.
@@ -153,6 +159,14 @@ public class WebMvcProperties {
 
 	public View getView() {
 		return this.view;
+	}
+
+	public void setDispatchServletOrder(int dispatchServletOrder) {
+		this.dispatchServletOrder = dispatchServletOrder;
+	}
+
+	public int getDispatchServletOrder() {
+		return this.dispatchServletOrder;
 	}
 
 	public static class Async {

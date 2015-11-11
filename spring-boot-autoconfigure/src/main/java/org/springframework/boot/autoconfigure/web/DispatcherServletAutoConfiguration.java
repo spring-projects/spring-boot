@@ -108,6 +108,7 @@ public class DispatcherServletAutoConfiguration {
 			if (this.multipartConfig != null) {
 				registration.setMultipartConfig(this.multipartConfig);
 			}
+			registration.setOrder(this.webMvcProperties.getDispatchServletOrder());
 			return registration;
 		}
 
