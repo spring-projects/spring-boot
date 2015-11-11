@@ -98,7 +98,6 @@ public class HttpMessageConvertersTests {
 		HttpMessageConverter<?> converter2 = mock(HttpMessageConverter.class);
 		HttpMessageConverters converters = new HttpMessageConverters(converter1,
 				converter2);
-		assertTrue(converters.getConverters().contains(converter1));
 		assertEquals(converter1, converters.getConverters().get(0));
 		assertEquals(converter2, converters.getConverters().get(1));
 	}
@@ -111,7 +110,6 @@ public class HttpMessageConvertersTests {
 				converter2).getConverters();
 		List<HttpMessageConverter<?>> partConverters = extractFormPartConverters(
 				converters);
-		assertTrue(partConverters.contains(converter1));
 		assertEquals(converter1, partConverters.get(0));
 		assertEquals(converter2, partConverters.get(1));
 	}
