@@ -90,6 +90,21 @@ public class RepositoryConfigurationFactoryTests {
 				"foo:bar");
 	}
 
+	@Test
+	public void interpolationProfileRepositories() {
+		SystemProperties.doWithSystemProperties(new Runnable() {
+			@Override
+			public void run() {
+				List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
+						.createDefaultRepositoryConfiguration();
+				assertRepositoryConfiguration(repositoryConfiguration, "central", "local",
+						"spring-snapshot", "spring-milestone", "interpolate-releases",
+						"interpolate-snapshots");
+			}
+		}, "user.home:src/test/resources/maven-settings/active-profile-repositories",
+				"interpolate:true");
+	}
+
 	private void assertRepositoryConfiguration(
 			List<RepositoryConfiguration> configurations, String... expectedNames) {
 		assertThat(configurations, hasSize(expectedNames.length));
