@@ -55,7 +55,7 @@ public class ApplicationTempTests {
 	}
 
 	@Test
-	public void getSubFolder() throws Exception {
+	public void getSubDir() throws Exception {
 		ApplicationTemp temp = new ApplicationTemp();
 		assertThat(temp.getDir("abc"), equalTo(new File(temp.getDir(), "abc")));
 	}
