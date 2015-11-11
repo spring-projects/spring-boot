@@ -44,8 +44,13 @@ class LoggedExceptionHandler implements UncaughtExceptionHandler {
 
 	@Override
 	public void uncaughtException(Thread thread, Throwable ex) {
-		if (!isRegistered(ex) && this.parent != null) {
-			this.parent.uncaughtException(thread, ex);
+		try {
+			if (!isRegistered(ex) && this.parent != null) {
+				this.parent.uncaughtException(thread, ex);
+			}
+		}
+		finally {
+			this.exceptions.clear();
 		}
 	}
 
