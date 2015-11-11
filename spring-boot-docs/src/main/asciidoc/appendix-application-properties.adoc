@@ -476,11 +476,13 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.keyspace-name= # Keyspace name to use.
 	spring.data.cassandra.load-balancing-policy= # Class name of the load balancing policy.
 	spring.data.cassandra.port= # Port of the Cassandra server.
+	spring.data.cassandra.password= # Login password of the server.
 	spring.data.cassandra.read-timeout-millis= # Socket option: read time out.
 	spring.data.cassandra.reconnection-policy= # Reconnection policy class.
 	spring.data.cassandra.retry-policy= # Class name of the retry policy.
 	spring.data.cassandra.serial-consistency-level= # Queries serial consistency level.
 	spring.data.cassandra.ssl=false # Enable SSL support.
+	spring.data.cassandra.username= # Login user of the server.
 
 	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties])
 	spring.data.elasticsearch.cluster-name=elasticsearch # Elasticsearch cluster name.

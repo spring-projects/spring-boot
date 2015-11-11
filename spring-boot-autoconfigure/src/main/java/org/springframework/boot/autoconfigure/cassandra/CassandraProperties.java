@@ -58,6 +58,16 @@ public class CassandraProperties {
 	private int port = ProtocolOptions.DEFAULT_PORT;
 
 	/**
+	 * Login user of the server.
+	 */
+	private String username;
+
+	/**
+	 * Login password of the server.
+	 */
+	private String password;
+
+	/**
 	 * Compression supported by the Cassandra binary protocol.
 	 */
 	private Compression compression = Compression.NONE;
@@ -137,6 +147,22 @@ public class CassandraProperties {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public String getUsername() {
+		return this.username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public Compression getCompression() {
