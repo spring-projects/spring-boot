@@ -119,7 +119,7 @@
 		<mysql.version>5.1.37</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<postgresql.version>9.4-1205-jdbc41</postgresql.version>
-		<reactor.version>2.0.6.RELEASE</reactor.version>
+		<reactor.version>2.0.7.BUILD-SNAPSHOT</reactor.version>
 		<reactor-spring.version>2.0.6.RELEASE</reactor-spring.version>
 		<sendgrid.version>2.2.2</sendgrid.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
