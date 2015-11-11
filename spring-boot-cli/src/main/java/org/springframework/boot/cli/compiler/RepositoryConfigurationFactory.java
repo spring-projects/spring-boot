@@ -23,6 +23,10 @@ import java.util.List;
 
 import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Repository;
+import org.codehaus.plexus.interpolation.InterpolationException;
+import org.codehaus.plexus.interpolation.Interpolator;
+import org.codehaus.plexus.interpolation.PropertiesBasedValueSource;
+import org.codehaus.plexus.interpolation.RegexBasedInterpolator;
 
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.boot.cli.compiler.maven.MavenSettings;
@@ -80,12 +84,27 @@ public final class RepositoryConfigurationFactory {
 	private static void addActiveProfileRepositories(List<Profile> activeProfiles,
 			List<RepositoryConfiguration> repositoryConfiguration) {
 		for (Profile activeProfile : activeProfiles) {
+			RegexBasedInterpolator interpolator = new RegexBasedInterpolator();
+			interpolator.addValueSource(new PropertiesBasedValueSource(activeProfile
+					.getProperties()));
+
 			for (Repository repository : activeProfile.getRepositories()) {
 				repositoryConfiguration.add(new RepositoryConfiguration(
-						repository.getId(), URI.create(repository.getUrl()),
-						repository.getSnapshots() != null
-								? repository.getSnapshots().isEnabled() : false));
+						interpolateIfAble(interpolator, repository.getId()), URI
+								.create(interpolateIfAble(interpolator,
+										repository.getUrl())),
+						repository.getSnapshots() != null ? repository.getSnapshots()
+								.isEnabled() : false));
 			}
+		}
+	}
+
+	private static String interpolateIfAble(Interpolator interpolator, String value) {
+		try {
+			return interpolator.interpolate(value);
+		}
+		catch (InterpolationException e) {
+			return value;
 		}
 	}
 
