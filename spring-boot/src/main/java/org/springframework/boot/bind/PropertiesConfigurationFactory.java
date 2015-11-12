@@ -353,7 +353,7 @@ public class PropertiesConfigurationFactory<T>
 	}
 
 	/**
-	 * Customize the databinder.
+	 * Customize the data binder.
 	 * @param dataBinder the data binder that will be used to bind and validate
 	 */
 	protected void customizeBinder(DataBinder dataBinder) {

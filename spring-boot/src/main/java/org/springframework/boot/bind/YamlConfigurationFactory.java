@@ -72,7 +72,7 @@ public class YamlConfigurationFactory<T>
 
 	/**
 	 * Sets a validation constructor which will be applied to the YAML doc to see whether
-	 * it matches the expected Javabean.
+	 * it matches the expected JavaBean.
 	 * @param type the root type
 	 */
 	public YamlConfigurationFactory(Class<?> type) {

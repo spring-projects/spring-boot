@@ -72,7 +72,7 @@ content into your application; rather pick only the properties that you need.
 	spring.cache.type= # Cache type, auto-detected according to the environment by default.
 
 	# SPRING CONFIG ({sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[ConfigFileApplicationListener])
-	spring.config.location= # Config file locations. TODO
+	spring.config.location= # Config file locations.
 	spring.config.name=application # Config file name.
 
 	# HAZELCAST ({sc-spring-boot-autoconfigure}/hazelcast/HazelcastProperties.{sc-ext}[HazelcastProperties])
@@ -606,7 +606,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.bitronix.connectionfactory.password= # The password to use to connect to the JMS provider.
 	spring.jta.bitronix.connectionfactory.share-transaction-connections=false #  Whether or not connections in the ACCESSIBLE state can be shared within the context of a transaction.
 	spring.jta.bitronix.connectionfactory.test-connections=true # Whether or not connections should be tested when acquired from the pool.
-	spring.jta.bitronix.connectionfactory.two-pc-ordering-position=1 # The postion that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE).
+	spring.jta.bitronix.connectionfactory.two-pc-ordering-position=1 # The position that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE).
 	spring.jta.bitronix.connectionfactory.unique-name=jmsConnectionFactory # The unique name used to identify the resource during recovery.
 	spring.jta.bitronix.connectionfactory.use-tm-join=true Whether or not TMJOIN should be used when starting XAResources.
 	spring.jta.bitronix.connectionfactory.user= # The user to use to connect to the JMS provider.

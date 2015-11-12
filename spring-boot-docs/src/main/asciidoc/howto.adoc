@@ -1621,7 +1621,7 @@ not something you want to be on the classpath in production. It is a Hibernate f
 (nothing to do with Spring).
 
 
-[[howto-intialize-a-database-using-spring-jdbc]]
+[[howto-initialize-a-database-using-spring-jdbc]]
 === Initialize a database using Spring JDBC
 Spring JDBC has a `DataSource` initializer feature. Spring Boot enables it by default and
 loads SQL from the standard locations `schema.sql` and `data.sql` (in the root of the
