@@ -149,7 +149,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	/**
 	 * Reinitialize the logging system if required. Called when
 	 * {@link #getSelfInitializationConfig()} is used and the log file hasn't changed. May
-	 * be used to reload configuration (for example to pickup additional System
+	 * be used to reload configuration (for example to pick up additional System
 	 * properties).
 	 * @param initializationContext the logging initialization context
 	 */
