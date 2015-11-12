@@ -42,6 +42,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
@@ -87,6 +88,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  * @author Johannes Edmeier
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
@@ -198,6 +200,7 @@ public class EndpointWebMvcAutoConfiguration
 	// Put Servlets and Filters in their own nested class so they don't force early
 	// instantiation of ManagementServerProperties.
 	@Configuration
+	@ConditionalOnProperty(prefix = "management", name = "addApplicationContextHeader", matchIfMissing = true, havingValue = "true")
 	protected static class ApplicationContextFilterConfiguration {
 
 		@Bean
