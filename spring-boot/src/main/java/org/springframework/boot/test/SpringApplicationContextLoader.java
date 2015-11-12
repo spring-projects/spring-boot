@@ -16,8 +16,6 @@
 
 package org.springframework.boot.test;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
@@ -74,8 +71,6 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @see TestRestTemplate
  */
 public class SpringApplicationContextLoader extends AbstractContextLoader {
-
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	@Override
 	public ApplicationContext loadContext(final MergedContextConfiguration config)
@@ -146,8 +141,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		Map<String, Object> properties = new LinkedHashMap<String, Object>();
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		disableJmx(properties);
-		properties.putAll(
-				extractEnvironmentProperties(config.getPropertySourceProperties()));
+		properties.putAll(TestPropertySourceUtils
+				.convertInlinedPropertiesToMap(config.getPropertySourceProperties()));
 		if (!TestAnnotations.isIntegrationTest(config)) {
 			properties.putAll(getDefaultEnvironmentProperties());
 		}
@@ -156,31 +151,6 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 
 	private void disableJmx(Map<String, Object> properties) {
 		properties.put("spring.jmx.enabled", "false");
-	}
-
-	final Map<String, Object> extractEnvironmentProperties(String[] values) {
-		// Instead of parsing the keys ourselves, we rely on standard handling
-		if (values == null) {
-			return Collections.emptyMap();
-		}
-		String content = StringUtils.arrayToDelimitedString(values, LINE_SEPARATOR);
-		Properties properties = new Properties();
-		try {
-			properties.load(new StringReader(content));
-			return asMap(properties);
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException(
-					"Unexpected could not load properties from '" + content + "'", ex);
-		}
-	}
-
-	private Map<String, Object> asMap(Properties properties) {
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
-		for (String name : properties.stringPropertyNames()) {
-			map.put(name, properties.getProperty(name));
-		}
-		return map;
 	}
 
 	private Map<String, String> getDefaultEnvironmentProperties() {

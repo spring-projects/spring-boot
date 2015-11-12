@@ -18,11 +18,13 @@ package org.springframework.boot.test;
 
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestContextManager;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
@@ -34,8 +36,6 @@ import static org.junit.Assert.assertTrue;
  * @author Stephane Nicoll
  */
 public class SpringApplicationContextLoaderTests {
-
-	private final SpringApplicationContextLoader loader = new SpringApplicationContextLoader();
 
 	@Test
 	public void environmentPropertiesSimple() throws Exception {
@@ -72,6 +72,15 @@ public class SpringApplicationContextLoaderTests {
 		assertKey(config, "anotherKey", "another=Value");
 	}
 
+	@Test
+	@Ignore
+	public void environmentPropertiesNewLineInValue() throws Exception {
+		// gh-4384
+		Map<String, Object> config = getEnvironmentProperties(NewLineInValue.class);
+		assertKey(config, "key", "myValue");
+		assertKey(config, "variables", "foo=FOO\n bar=BAR");
+	}
+
 	private Map<String, Object> getEnvironmentProperties(Class<?> testClass)
 			throws Exception {
 		TestContext context = new ExposedTestContextManager(testClass)
@@ -79,8 +88,8 @@ public class SpringApplicationContextLoaderTests {
 		new IntegrationTestPropertiesListener().prepareTestInstance(context);
 		MergedContextConfiguration config = (MergedContextConfiguration) ReflectionTestUtils
 				.getField(context, "mergedContextConfiguration");
-		return this.loader
-				.extractEnvironmentProperties(config.getPropertySourceProperties());
+		return TestPropertySourceUtils
+				.convertInlinedPropertiesToMap(config.getPropertySourceProperties());
 	}
 
 	private void assertKey(Map<String, Object> actual, String key, Object value) {
@@ -106,6 +115,10 @@ public class SpringApplicationContextLoaderTests {
 
 	@IntegrationTest({ "key=my:Value", "anotherKey:another=Value" })
 	static class AnotherSeparatorInValue {
+	}
+
+	@IntegrationTest({ "key=myValue", "variables=foo=FOO\n bar=BAR" })
+	static class NewLineInValue {
 	}
 
 	/**
