@@ -91,6 +91,22 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@Test
+	public void fileExtensionNotFound() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(DefaultConfiguration.class);
+		MockMvc mockMvc = createMockMvc();
+		mockMvc.perform(get("/beans.cmd")).andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void jsonExtensionProvided() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(DefaultConfiguration.class);
+		MockMvc mockMvc = createMockMvc();
+		mockMvc.perform(get("/beans.json")).andExpect(status().isOk());
+	}
+
+	@Test
 	public void nonSensitiveEndpointsAreNotSecureByDefault() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);

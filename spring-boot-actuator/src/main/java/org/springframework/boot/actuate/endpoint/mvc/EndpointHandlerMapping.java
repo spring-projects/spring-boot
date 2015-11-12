@@ -84,6 +84,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 		// By default the static resource handler mapping is LOWEST_PRECEDENCE - 1
 		// and the RequestMappingHandlerMapping is 0 (we ideally want to be before both)
 		setOrder(-100);
+		setUseSuffixPatternMatch(false);
 	}
 
 	@Override
@@ -121,7 +122,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 		String prefix = StringUtils.hasText(this.prefix) ? this.prefix + path : path;
 		Set<String> defaultPatterns = mapping.getPatternsCondition().getPatterns();
 		if (defaultPatterns.isEmpty()) {
-			return new String[] { prefix };
+			return new String[] { prefix, prefix + ".json" };
 		}
 		List<String> patterns = new ArrayList<String>(defaultPatterns);
 		for (int i = 0; i < patterns.size(); i++) {
@@ -142,7 +143,8 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 
 	private RequestMappingInfo withNewPatterns(RequestMappingInfo mapping,
 			String[] patternStrings) {
-		PatternsRequestCondition patterns = new PatternsRequestCondition(patternStrings);
+		PatternsRequestCondition patterns = new PatternsRequestCondition(patternStrings,
+				null, null, useSuffixPatternMatch(), useTrailingSlashMatch(), null);
 		return new RequestMappingInfo(patterns, mapping.getMethodsCondition(),
 				mapping.getParamsCondition(), mapping.getHeadersCondition(),
 				mapping.getConsumesCondition(), mapping.getProducesCondition(),
