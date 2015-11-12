@@ -101,6 +101,7 @@ import static org.junit.Assert.assertTrue;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Brian Clozel
+ * @author Eddú Meléndez
  */
 public class WebMvcAutoConfigurationTests {
 
@@ -147,6 +148,14 @@ public class WebMvcAutoConfigurationTests {
 		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(0));
 		assertThat(getResourceResolvers("/**").size(), equalTo(1));
 		assertThat(getResourceTransformers("/**").size(), equalTo(0));
+	}
+
+	@Test
+	public void customResourceHandlerMapping() throws Exception {
+		load("spring.mvc.static-path-pattern:/static/**");
+		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
+		assertThat(mappingLocations.get("/static/**").size(), equalTo(5));
+		assertThat(getResourceResolvers("/static/**").size(), equalTo(1));
 	}
 
 	@Test
