@@ -98,6 +98,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Sébastien Deleuze
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnWebApplication
@@ -256,12 +257,19 @@ public class WebMvcAutoConfiguration {
 						.addResourceLocations("classpath:/META-INF/resources/webjars/")
 						.setCachePeriod(cachePeriod));
 			}
-			if (!registry.hasMappingForPattern("/**")) {
-				registerResourceChain(registry.addResourceHandler("/**")
+			if (!registry.hasMappingForPattern(this.mvcProperties.getStaticPath())) {
+				registerResourceChain(registry.addResourceHandler(parseStaticPath(this.mvcProperties.getStaticPath()))
 						.addResourceLocations(
 								this.resourceProperties.getStaticLocations())
 						.setCachePeriod(cachePeriod));
 			}
+		}
+
+		private static String parseStaticPath(String staticPath) {
+			if (!staticPath.startsWith("/")) {
+				staticPath = "/" + staticPath;
+			}
+			return staticPath.equals("/**") ? "/**" : staticPath + "/**";
 		}
 
 		private void registerResourceChain(ResourceHandlerRegistration registration) {
