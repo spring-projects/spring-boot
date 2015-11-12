@@ -31,6 +31,7 @@ import org.springframework.validation.DefaultMessageCodesResolver;
  * @author Phillip Webb
  * @author Sébastien Deleuze
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.1
  */
 @ConfigurationProperties("spring.mvc")
@@ -76,6 +77,11 @@ public class WebMvcProperties {
 	 * Maps file extensions to media types for content negotiation, e.g. yml->text/yaml.
 	 */
 	private Map<String, MediaType> mediaTypes = new LinkedHashMap<String, MediaType>();
+
+	/**
+	 * Path that pattern used for static resources.
+	 */
+	private String staticPathPattern = "/**";
 
 	private final Async async = new Async();
 
@@ -145,6 +151,14 @@ public class WebMvcProperties {
 
 	public void setDispatchTraceRequest(boolean dispatchTraceRequest) {
 		this.dispatchTraceRequest = dispatchTraceRequest;
+	}
+
+	public String getStaticPathPattern() {
+		return this.staticPathPattern;
+	}
+
+	public void setStaticPathPattern(String staticPathPattern) {
+		this.staticPathPattern = staticPathPattern;
 	}
 
 	public Async getAsync() {
