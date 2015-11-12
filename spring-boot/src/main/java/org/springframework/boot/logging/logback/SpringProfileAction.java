@@ -67,8 +67,8 @@ class SpringProfileAction extends Action implements InPlayListener {
 	}
 
 	private boolean acceptsProfiles(InterpretationContext ic, Attributes attributes) {
-		String[] profileNames = StringUtils
-				.commaDelimitedListToStringArray(attributes.getValue(NAME_ATTRIBUTE));
+		String[] profileNames = StringUtils.trimArrayElements(StringUtils
+				.commaDelimitedListToStringArray(attributes.getValue(NAME_ATTRIBUTE)));
 		if (profileNames.length != 0) {
 			for (String profileName : profileNames) {
 				OptionHelper.substVars(profileName, ic, this.context);
