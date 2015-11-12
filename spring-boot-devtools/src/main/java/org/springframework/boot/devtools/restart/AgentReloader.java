@@ -16,6 +16,10 @@
 
 package org.springframework.boot.devtools.restart;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.springframework.util.ClassUtils;
 
 /**
@@ -26,6 +30,15 @@ import org.springframework.util.ClassUtils;
  */
 public abstract class AgentReloader {
 
+	private static final Set<String> AGENT_CLASSES;
+
+	static {
+		Set<String> agentClasses = new LinkedHashSet<String>();
+		agentClasses.add("org.zeroturnaround.javarebel.Integration");
+		agentClasses.add("org.zeroturnaround.javarebel.ReloaderFactory");
+		AGENT_CLASSES = Collections.unmodifiableSet(agentClasses);
+	}
+
 	private AgentReloader() {
 	}
 
@@ -34,15 +47,17 @@ public abstract class AgentReloader {
 	 * @return true if agent reloading is active
 	 */
 	public static boolean isActive() {
-		return isJRebelActive();
+		return isActive(null) || isActive(AgentReloader.class.getClassLoader())
+				|| isActive(ClassLoader.getSystemClassLoader());
 	}
 
-	/**
-	 * Determine if JRebel is active.
-	 * @return true if JRebel is active
-	 */
-	public static boolean isJRebelActive() {
-		return ClassUtils.isPresent("org.zeroturnaround.javarebel.ReloaderFactory", null);
+	private static boolean isActive(ClassLoader classLoader) {
+		for (String agentClass : AGENT_CLASSES) {
+			if (ClassUtils.isPresent(agentClass, classLoader)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
