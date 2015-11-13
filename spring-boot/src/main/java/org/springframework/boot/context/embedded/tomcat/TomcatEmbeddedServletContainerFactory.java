@@ -411,8 +411,8 @@ public class TomcatEmbeddedServletContainerFactory
 		Assert.state(manager instanceof StandardManager,
 				"Unable to persist HTTP session state using manager type "
 						+ manager.getClass().getName());
-		File folder = getValidSessionStoreDir();
-		File file = new File(folder, "SESSIONS.ser");
+		File dir = getValidSessionStoreDir();
+		File file = new File(dir, "SESSIONS.ser");
 		((StandardManager) manager).setPathname(file.getAbsolutePath());
 	}
 
