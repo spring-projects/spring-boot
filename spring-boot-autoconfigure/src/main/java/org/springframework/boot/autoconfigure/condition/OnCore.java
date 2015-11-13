@@ -31,11 +31,11 @@ public class OnCore extends SpringBootCondition {
 		} else if(Operators.LT.equals(operator)){
 			match = cores>AVALIABLE_PROCESSORS;
 		}
-		return new ConditionOutcome(match, getMessage(cores, cores));
+		return new ConditionOutcome(match, getMessage(cores,operator, cores));
 	}
 	
-	private String getMessage(int cores, int coresAvaliable) {
-		return "Required " + cores + " found " + coresAvaliable;
+	private String getMessage(int cores,Operators operator,  int coresAvaliable) {
+		return "Required " + cores + "  "+ operator + "  "+  coresAvaliable;
 	}
 
 }
