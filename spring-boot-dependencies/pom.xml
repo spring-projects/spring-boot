@@ -98,7 +98,7 @@
 		<jdom2.version>2.0.6</jdom2.version>
 		<jedis.version>2.7.3</jedis.version>
 		<jersey.version>2.22.1</jersey.version>
-		<jetty.version>9.2.13.v20150730</jetty.version>
+		<jetty.version>9.2.14.v20151106</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jmustache.version>1.11</jmustache.version>
 		<joda-time.version>2.8.2</joda-time.version>
