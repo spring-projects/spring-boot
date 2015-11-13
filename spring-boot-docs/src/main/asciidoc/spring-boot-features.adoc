@@ -3719,8 +3719,8 @@ For example:
 ----
 
 TIP: The context loader guesses whether you want to test a web application or not (e.g.
-with `MockMVC`) by looking for the `@WebIntegrationTest` or `@WebAppConfiguration`
-annotations.  (`MockMVC` and `@WebAppConfiguration` are part of `spring-test`).
+with `MockMvc`) by looking for the `@WebIntegrationTest` or `@WebAppConfiguration`
+annotations.  (`MockMvc` and `@WebAppConfiguration` are part of `spring-test`).
 
 If you want a web application to start up and listen on its normal port, so you can test
 it with HTTP (e.g. using `RestTemplate`), annotate your test class (or one of its
