@@ -456,7 +456,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	}
 
 	/**
-	 * Reset any cached handers just in case a jar protocol has already been used. We
+	 * Reset any cached handlers just in case a jar protocol has already been used. We
 	 * reset the handler by trying to set a null {@link URLStreamHandlerFactory} which
 	 * should have no effect other than clearing the handlers cache.
 	 */
