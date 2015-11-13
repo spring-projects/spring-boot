@@ -846,7 +846,9 @@ content into your application; rather pick only the properties that you need.
 	shell.config-path-patterns=classpath*:/crash/* # Patterns to use to look for configurations.
 	shell.disabled-commands=jpa*,jdbc*,jndi* # Comma-separated list of commands to disable.
 	shell.disabled-plugins= # Comma-separated list of plugins to disable. Certain plugins are disabled by default based on the environment.
+	shell.ssh.auth-timeout = # Number of milliseconds after user will be prompted to login again.
 	shell.ssh.enabled=true # Enable CRaSH SSH support.
+	shell.ssh.idle-timeout = # Number of milliseconds after which unused connections are closed.
 	shell.ssh.key-path= # Path to the SSH server key.
 	shell.ssh.port=2000 # SSH port.
 	shell.telnet.enabled=false # Enable CRaSH telnet support. Enabled by default if the TelnetPlugin is  available.
