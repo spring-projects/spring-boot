@@ -115,8 +115,10 @@ public class CrshAutoConfigurationTests {
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 
 		assertEquals("3333", lifeCycle.getConfig().getProperty("crash.ssh.port"));
-		assertEquals("600000", lifeCycle.getConfig().getProperty("crash.ssh.auth_timeout"));
-		assertEquals("600000", lifeCycle.getConfig().getProperty("crash.ssh.idle_timeout"));
+		assertEquals("600000",
+				lifeCycle.getConfig().getProperty("crash.ssh.auth_timeout"));
+		assertEquals("600000",
+				lifeCycle.getConfig().getProperty("crash.ssh.idle_timeout"));
 	}
 
 	@Test
@@ -142,8 +144,10 @@ public class CrshAutoConfigurationTests {
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 
-		assertEquals("300000", lifeCycle.getConfig().getProperty("crash.ssh.auth_timeout"));
-		assertEquals("400000", lifeCycle.getConfig().getProperty("crash.ssh.idle_timeout"));
+		assertEquals("300000",
+				lifeCycle.getConfig().getProperty("crash.ssh.auth_timeout"));
+		assertEquals("400000",
+				lifeCycle.getConfig().getProperty("crash.ssh.idle_timeout"));
 	}
 
 	private void load(MockEnvironment env) {
