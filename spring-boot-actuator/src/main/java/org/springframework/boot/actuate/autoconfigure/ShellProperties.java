@@ -36,6 +36,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Christian Dupuis
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 @ConfigurationProperties(prefix = "shell", ignoreUnknownFields = true)
 public class ShellProperties {
@@ -242,10 +243,22 @@ public class ShellProperties {
 		 */
 		private Integer port = 2000;
 
+		/**
+		 * Number of milliseconds after which unused connections are closed.
+		 */
+		private Integer idleTimeout = 600000;
+
+		/**
+		 * Number of milliseconds after user will be prompted to login again.
+		 */
+		private Integer authTimeout = 600000;
+
 		@Override
 		protected void applyToCrshShellConfig(Properties config) {
 			if (this.enabled) {
 				config.put("crash.ssh.port", String.valueOf(this.port));
+				config.put("crash.ssh.auth_timeout", String.valueOf(this.authTimeout));
+				config.put("crash.ssh.idle_timeout", String.valueOf(this.idleTimeout));
 				if (this.keyPath != null) {
 					config.put("crash.ssh.keypath", this.keyPath);
 				}
@@ -278,6 +291,21 @@ public class ShellProperties {
 			return this.port;
 		}
 
+		public Integer getIdleTimeout() {
+			return this.idleTimeout;
+		}
+
+		public void setIdleTimeout(Integer idleTimeout) {
+			this.idleTimeout = idleTimeout;
+		}
+
+		public Integer getAuthTimeout() {
+			return this.authTimeout;
+		}
+
+		public void setAuthTimeout(Integer authTimeout) {
+			this.authTimeout = authTimeout;
+		}
 	}
 
 	/**
