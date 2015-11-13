@@ -79,7 +79,7 @@ public class WebMvcProperties {
 	private Map<String, MediaType> mediaTypes = new LinkedHashMap<String, MediaType>();
 
 	/**
-	 * Path that pattern used for static resources.
+	 * Path pattern used for static resources.
 	 */
 	private String staticPathPattern = "/**";
 
