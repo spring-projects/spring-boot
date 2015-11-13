@@ -943,16 +943,23 @@ on the classpath change. This can be a useful feature when working in an IDE as 
 a very fast feedback loop for code changes. By default, any entry on the classpath that
 points to a folder will be monitored for changes.
 
+.Triggering a change
+****
+DevTools _only_ monitors classpath resources so the only way to trigger a change is to
+update the classpath. On Eclipse, saving is actually updating the project, compiling or
+copying resources for you as part of the save action. If you are using Intellij IDEA,
+there is no such thing as a save action since the resources are saved automatically for
+you; please use the `Build` -> `Make Project` action to achieve the same result.
+****
+
 NOTE: You can also start your application via the supported build plugins (i.e. Maven and
 Gradle) as long as forking is enabled since DevTools need an isolated application
 classloader to operate properly.
 
 TIP: Automatic restart works very well when used with LiveReload.
-<<using-boot-devtools-livereload,See below>> for details.
-
-NOTE: If you use JRebel automatic restarts will be disabled in favor of dynamic class
-reloading. Other devtools features (such as LiveReload and property overrides) can still
-be used.
+<<using-boot-devtools-livereload,See below>> for details. If you use JRebel automatic
+restarts will be disabled in favor of dynamic class reloading. Other devtools features
+(such as LiveReload and property overrides) can still be used.
 
 NOTE: DevTools relies on the application context's shutdown hook to close it during a
 restart. It will not work correctly if you have disabled the shutdown hook (
