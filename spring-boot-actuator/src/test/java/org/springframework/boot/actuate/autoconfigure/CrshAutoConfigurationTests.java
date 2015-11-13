@@ -137,13 +137,13 @@ public class CrshAutoConfigurationTests {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("shell.ssh.enabled", "true");
 		env.setProperty("shell.ssh.auth-timeout", "300000");
-		env.setProperty("shell.ssh.idle-timeout", "300000");
+		env.setProperty("shell.ssh.idle-timeout", "400000");
 		load(env);
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 
 		assertEquals("300000", lifeCycle.getConfig().getProperty("crash.ssh.auth_timeout"));
-		assertEquals("300000", lifeCycle.getConfig().getProperty("crash.ssh.idle_timeout"));
+		assertEquals("400000", lifeCycle.getConfig().getProperty("crash.ssh.idle_timeout"));
 	}
 
 	private void load(MockEnvironment env) {

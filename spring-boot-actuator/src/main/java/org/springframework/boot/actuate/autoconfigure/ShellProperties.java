@@ -244,14 +244,14 @@ public class ShellProperties {
 		private Integer port = 2000;
 
 		/**
-		 * Number of milliseconds after which unused connections are closed.
-		 */
-		private Integer idleTimeout = 600000;
-
-		/**
 		 * Number of milliseconds after user will be prompted to login again.
 		 */
 		private Integer authTimeout = 600000;
+
+		/**
+		 * Number of milliseconds after which unused connections are closed.
+		 */
+		private Integer idleTimeout = 600000;
 
 		@Override
 		protected void applyToCrshShellConfig(Properties config) {
