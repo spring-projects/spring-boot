@@ -226,6 +226,7 @@ Boot step-by-step:
   can be configured.
 * http://spring.io/guides/gs/convert-jar-to-war/[Converting a Spring Boot JAR Application
   to a WAR] shows you how to run applications in a web server as a WAR file.
+* https://www.manning.com/books/spring-boot-in-action[Spring Boot in Action] by Craig Walls (Manning Publications). https://manning-content.s3.amazonaws.com/download/b/b3383c7-ffb6-40db-b24a-4a3d440878d7/Walls6_SpringBoot_MEAP_V06_ch1.pdf[Chapter 1].
 
 
 
