@@ -342,7 +342,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	public void disableDoesNotSaveSessionFiles() throws Exception {
 		File baseDir = this.temporaryFolder.newFolder();
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		// If baseDir is not set SESSIONS.ser is written to a different temp folder
+		// If baseDir is not set SESSIONS.ser is written to a different temp directory
 		// each time. By setting it we can really ensure that data isn't saved
 		factory.setBaseDirectory(baseDir);
 		this.container = factory

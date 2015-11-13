@@ -358,8 +358,8 @@ public class UndertowEmbeddedServletContainerFactory
 			configureAccessLog(deployment);
 		}
 		if (isPersistSession()) {
-			File folder = getValidSessionStoreDir();
-			deployment.setSessionPersistenceManager(new FileSessionPersistence(folder));
+			File dir = getValidSessionStoreDir();
+			deployment.setSessionPersistenceManager(new FileSessionPersistence(dir));
 		}
 		DeploymentManager manager = Servlets.defaultContainer().addDeployment(deployment);
 		manager.deploy();
@@ -433,7 +433,7 @@ public class UndertowEmbeddedServletContainerFactory
 			return new FileResourceManager(root, 0);
 		}
 		if (root.isFile()) {
-			return new JarResourcemanager(root);
+			return new JarResourceManager(root);
 		}
 		return ResourceManager.EMPTY_RESOURCE_MANAGER;
 	}
@@ -532,15 +532,15 @@ public class UndertowEmbeddedServletContainerFactory
 	/**
 	 * Undertow {@link ResourceManager} for JAR resources.
 	 */
-	private static class JarResourcemanager implements ResourceManager {
+	private static class JarResourceManager implements ResourceManager {
 
 		private final String jarPath;
 
-		JarResourcemanager(File jarFile) {
+		JarResourceManager(File jarFile) {
 			this(jarFile.getAbsolutePath());
 		}
 
-		JarResourcemanager(String jarPath) {
+		JarResourceManager(String jarPath) {
 			this.jarPath = jarPath;
 		}
 

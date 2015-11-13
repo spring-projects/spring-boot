@@ -59,7 +59,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	}
 
 	/**
-	 * Returns the absolute document root when it points to a valid folder, logging a
+	 * Returns the absolute document root when it points to a valid directory, logging a
 	 * warning and returning {@code null} otherwise.
 	 * @return the valid document root
 	 */
@@ -171,15 +171,15 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	 */
 	protected File createTempDir(String prefix) {
 		try {
-			File tempFolder = File.createTempFile(prefix + ".", "." + getPort());
-			tempFolder.delete();
-			tempFolder.mkdir();
-			tempFolder.deleteOnExit();
-			return tempFolder;
+			File tempDir = File.createTempFile(prefix + ".", "." + getPort());
+			tempDir.delete();
+			tempDir.mkdir();
+			tempDir.deleteOnExit();
+			return tempDir;
 		}
 		catch (IOException ex) {
 			throw new EmbeddedServletContainerException(
-					"Unable to create tempdir. java.io.tmpdir is set to "
+					"Unable to create tempDir. java.io.tmpdir is set to "
 							+ System.getProperty("java.io.tmpdir"),
 					ex);
 		}
