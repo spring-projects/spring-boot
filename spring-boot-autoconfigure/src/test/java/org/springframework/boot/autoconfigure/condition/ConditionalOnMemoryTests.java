@@ -36,7 +36,7 @@ public class ConditionalOnMemoryTests {
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void testResourceExists() {
+	public void testMemoryExists() {
 		this.context.register(BasicConfiguration.class);
 		this.context.refresh();
 		assertTrue(this.context.containsBean("foo"));
@@ -44,10 +44,10 @@ public class ConditionalOnMemoryTests {
 	}
 
 	@Test
-	public void testResourceNotExists() {
+	public void testMemoryNotExists() {
 		this.context.register(MissingConfiguration.class);
 		this.context.refresh();
-		assertFalse(this.context.containsBean("foo"));
+		assertFalse(this.context.containsBean("bar"));
 	}
 
 	@Configuration
