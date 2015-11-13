@@ -189,7 +189,7 @@ public class BindingPreparationTests {
 		wrapper.setPropertyValue("nested[foo]", new LinkedHashMap<String, Object>());
 		// But it might equally well be a collection, if nested[foo][0]
 		wrapper.setPropertyValue("nested[foo]", new ArrayList<Object>());
-		// Then it would have to be actually bound to get the list to autogrow
+		// Then it would have to be actually bound to get the list to auto-grow
 		wrapper.setPropertyValue("nested[foo][0]", "bar");
 		assertNotNull(wrapper.getPropertyValue("nested[foo][0]"));
 	}

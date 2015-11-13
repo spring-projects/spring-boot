@@ -755,7 +755,7 @@ public class SpringApplication {
 	/**
 	 * Called after the context has been refreshed.
 	 * @param context the application context
-	 * @param args the application argumments
+	 * @param args the application arguments
 	 */
 	protected void afterRefresh(ConfigurableApplicationContext context,
 			ApplicationArguments args) {
@@ -799,7 +799,7 @@ public class SpringApplication {
 	/**
 	 * Called after the context has been refreshed.
 	 * @param context the application context
-	 * @param args the application argumments
+	 * @param args the application arguments
 	 * @deprecated in 1.3 in favor of
 	 * {@link #afterRefresh(ConfigurableApplicationContext, ApplicationArguments)}
 	 */
