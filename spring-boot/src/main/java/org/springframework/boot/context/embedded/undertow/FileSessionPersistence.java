@@ -38,10 +38,10 @@ import io.undertow.servlet.api.SessionPersistenceManager;
  */
 public class FileSessionPersistence implements SessionPersistenceManager {
 
-	private final File folder;
+	private final File dir;
 
-	public FileSessionPersistence(File folder) {
-		this.folder = folder;
+	public FileSessionPersistence(File dir) {
+		this.dir = dir;
 	}
 
 	@Override
@@ -124,10 +124,10 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 	}
 
 	private File getSessionFile(String deploymentName) {
-		if (!this.folder.exists()) {
-			this.folder.mkdirs();
+		if (!this.dir.exists()) {
+			this.dir.mkdirs();
 		}
-		return new File(this.folder, deploymentName + ".session");
+		return new File(this.dir, deploymentName + ".session");
 	}
 
 	@Override

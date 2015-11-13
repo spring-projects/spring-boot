@@ -28,7 +28,7 @@ import org.springframework.mock.web.MockServletContext;
 
 /**
  * {@link MockServletContext} implementation for Spring Boot. Respects well know Spring
- * Boot resource locations and uses an empty folder for "/" if no locations can be found.
+ * Boot resource locations and uses an empty directory for "/" if no locations can be found.
  *
  * @author Phillip Webb
  */
@@ -88,7 +88,7 @@ public class SpringBootMockServletContext extends MockServletContext {
 	public URL getResource(String path) throws MalformedURLException {
 		URL resource = super.getResource(path);
 		if (resource == null && "/".equals(path)) {
-			// Liquibase assumes that "/" always exists, if we don't have a folder
+			// Liquibase assumes that "/" always exists, if we don't have a directory
 			// use a temporary location.
 			try {
 				if (this.emptyRootFolder == null) {

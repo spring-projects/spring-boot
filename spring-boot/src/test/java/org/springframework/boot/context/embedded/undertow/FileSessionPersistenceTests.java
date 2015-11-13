@@ -43,7 +43,7 @@ public class FileSessionPersistenceTests {
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
 
-	private File folder;
+	private File dir;
 
 	private FileSessionPersistence persistence;
 
@@ -53,8 +53,8 @@ public class FileSessionPersistenceTests {
 
 	@Before
 	public void setup() throws IOException {
-		this.folder = this.temp.newFolder();
-		this.persistence = new FileSessionPersistence(this.folder);
+		this.dir = this.temp.newFolder();
+		this.persistence = new FileSessionPersistence(this.dir);
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class FileSessionPersistenceTests {
 
 	@Test
 	public void deleteFileOnClear() throws Exception {
-		File sessionFile = new File(this.folder, "test.session");
+		File sessionFile = new File(this.dir, "test.session");
 		Map<String, PersistentSession> sessionData = new LinkedHashMap<String, PersistentSession>();
 		this.persistence.persistSessions("test", sessionData);
 		assertThat(sessionFile.exists(), equalTo(true));

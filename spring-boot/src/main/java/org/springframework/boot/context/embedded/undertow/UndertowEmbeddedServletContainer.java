@@ -113,7 +113,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		}
 		catch (ServletException ex) {
 			throw new EmbeddedServletContainerException(
-					"Unable to start embdedded Undertow", ex);
+					"Unable to start embedded Undertow", ex);
 		}
 	}
 
