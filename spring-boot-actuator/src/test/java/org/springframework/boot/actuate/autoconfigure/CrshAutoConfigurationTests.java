@@ -62,6 +62,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Christian Dupuis
  * @author Andreas Ahlenstorf
+ * @author Eddú Meléndez
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CrshAutoConfigurationTests {
@@ -80,10 +81,7 @@ public class CrshAutoConfigurationTests {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("shell.disabled_plugins",
 				"GroovyREPL, termIOHandler, org.crsh.auth.AuthenticationPlugin");
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setEnvironment(env);
-		this.context.register(CrshAutoConfiguration.class);
-		this.context.refresh();
+		load(env);
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 		assertNotNull(lifeCycle);
@@ -112,14 +110,13 @@ public class CrshAutoConfigurationTests {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("shell.ssh.enabled", "true");
 		env.setProperty("shell.ssh.port", "3333");
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setEnvironment(env);
-		this.context.register(CrshAutoConfiguration.class);
-		this.context.refresh();
+		load(env);
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 
 		assertEquals("3333", lifeCycle.getConfig().getProperty("crash.ssh.port"));
+		assertEquals("600000", lifeCycle.getConfig().getProperty("crash.ssh.auth_timeout"));
+		assertEquals("600000", lifeCycle.getConfig().getProperty("crash.ssh.idle_timeout"));
 	}
 
 	@Test
@@ -127,15 +124,33 @@ public class CrshAutoConfigurationTests {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("shell.ssh.enabled", "true");
 		env.setProperty("shell.ssh.key_path", "~/.ssh/id.pem");
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setEnvironment(env);
-		this.context.register(CrshAutoConfiguration.class);
-		this.context.refresh();
+		load(env);
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 
 		assertEquals("~/.ssh/id.pem",
 				lifeCycle.getConfig().getProperty("crash.ssh.keypath"));
+	}
+
+	@Test
+	public void testSshConfigurationCustomTimeouts() {
+		MockEnvironment env = new MockEnvironment();
+		env.setProperty("shell.ssh.enabled", "true");
+		env.setProperty("shell.ssh.auth-timeout", "300000");
+		env.setProperty("shell.ssh.idle-timeout", "400000");
+		load(env);
+
+		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
+
+		assertEquals("300000", lifeCycle.getConfig().getProperty("crash.ssh.auth_timeout"));
+		assertEquals("400000", lifeCycle.getConfig().getProperty("crash.ssh.idle_timeout"));
+	}
+
+	private void load(MockEnvironment env) {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setEnvironment(env);
+		this.context.register(CrshAutoConfiguration.class);
+		this.context.refresh();
 	}
 
 	@Test
