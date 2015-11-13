@@ -106,7 +106,7 @@ public class AtomikosProperties {
 	/**
 	 * Specifies if subtransactions should be joined when possible. Defaults to true. When
 	 * false, no attempt to call {@code XAResource.start(TM_JOIN)} will be made for
-	 * different but related subtransctions. This setting has no effect on resource access
+	 * different but related subtransactions. This setting has no effect on resource access
 	 * within one and the same transaction. If you don't use subtransactions then this
 	 * setting can be ignored.
 	 * @param serialJtaTransactions if serial JTA transaction are supported
