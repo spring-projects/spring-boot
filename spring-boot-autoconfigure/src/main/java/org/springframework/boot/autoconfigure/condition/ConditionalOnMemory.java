@@ -21,6 +21,14 @@ import org.springframework.context.annotation.Conditional;
 @Documented
 @Conditional(OnMemory.class)
 public @interface ConditionalOnMemory {
+	/**
+	 * The memory in bytes in your system
+	 * @return memory in bytes
+	 */
 	long value();
+	/**
+	 * Operators 
+	 * @return Operators
+	 */
 	Operators operator() default Operators.EQ;
 }

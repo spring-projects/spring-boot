@@ -21,6 +21,14 @@ import org.springframework.context.annotation.Conditional;
 @Documented
 @Conditional(OnCore.class)
 public @interface ConditionalOnCores {
+	/**
+	 * The number of cores in your system
+	 * @return Number of cores
+	 */
 	int value();
+	/**
+	 * Operators 
+	 * @return Operators
+	 */
 	Operators operator() default Operators.EQ;
 }
