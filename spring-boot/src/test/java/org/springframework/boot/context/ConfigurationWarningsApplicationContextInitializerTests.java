@@ -66,7 +66,7 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	}
 
 	@Test
-	public void noLogWithoutComponetScanAnnotation() throws Exception {
+	public void noLogWithoutComponentScanAnnotation() throws Exception {
 		load(InDefaultPackageWithoutScanConfiguration.class);
 		assertThat(this.output.toString(), not(containsString(SCAN_WARNING)));
 	}
