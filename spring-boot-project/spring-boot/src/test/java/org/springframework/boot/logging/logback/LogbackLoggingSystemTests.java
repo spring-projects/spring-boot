@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,13 @@ package org.springframework.boot.logging.logback;
 
 import java.io.File;
 import java.io.FileReader;
+import java.lang.management.ManagementFactory;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
+
+import javax.management.ObjectName;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -485,6 +488,43 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		String output = this.output.toString().trim();
 		assertThat(getLineWithText(output, "Hello world"))
 				.containsPattern("\\d{4}-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
+	}
+
+	@Test
+	public void testDefaultJmxConfigurator() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		assertThat(ManagementFactory.getPlatformMBeanServer().queryMBeans(
+				new ObjectName("ch.qos.logback.classic:Name=default,*"), null))
+						.hasSize(1);
+	}
+
+	@Test
+	public void testExplicitJmxConfigurator() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext,
+				"classpath:logback-jmxconfigurator.xml", null);
+		assertThat(ManagementFactory.getPlatformMBeanServer().queryMBeans(
+				new ObjectName("ch.qos.logback.classic:Name=default,*"), null))
+						.hasSize(1);
+	}
+
+	@Test
+	public void testShutdownUnregistersJmxConfigurator() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.getShutdownHandler().run();
+		assertThat(ManagementFactory.getPlatformMBeanServer().queryMBeans(
+				new ObjectName("ch.qos.logback.classic:Name=default,*"), null)).isEmpty();
+	}
+
+	@Test
+	public void testTwoLoggingSystemsYieldSingleJmxConfigurator() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		LogbackLoggingSystem anotherLoggingSystem = new LogbackLoggingSystem(
+				getClass().getClassLoader());
+		anotherLoggingSystem.beforeInitialize();
+		assertThat(ManagementFactory.getPlatformMBeanServer().queryMBeans(
+				new ObjectName("ch.qos.logback.classic:Name=default,*"), null))
+						.hasSize(1);
 	}
 
 	private static Logger getRootLogger() {

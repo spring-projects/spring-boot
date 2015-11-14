@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
@@ -23,8 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.jmx.JMXConfigurator;
+import ch.qos.logback.classic.jmx.MBeanUtil;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.jul.LevelChangePropagator;
 import ch.qos.logback.classic.turbo.TurboFilter;
@@ -56,6 +62,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Ben Hale
+ * @author Vedran Pavic
  */
 public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
@@ -126,6 +133,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			LogFile logFile) {
 		LoggerContext context = getLoggerContext();
 		stopAndReset(context);
+		registerJmxConfigurator(context, initializationContext, null, logFile);
 		LogbackConfigurator configurator = new LogbackConfigurator(context);
 		Environment environment = initializationContext.getEnvironment();
 		context.putProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN,
@@ -145,6 +153,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		super.loadConfiguration(initializationContext, location, logFile);
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
+		registerJmxConfigurator(loggerContext, initializationContext, location, logFile);
 		try {
 			configureByResourceUrl(initializationContext, loggerContext,
 					ResourceUtils.getURL(location));
@@ -194,6 +203,28 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		levelChangePropagator.setResetJUL(true);
 		levelChangePropagator.setContext(loggerContext);
 		loggerContext.addListener(levelChangePropagator);
+	}
+
+	private void registerJmxConfigurator(LoggerContext loggerContext,
+			LoggingInitializationContext initializationContext, String configLocation,
+			LogFile logFile) {
+		String objectNameAsStr = MBeanUtil.getObjectNameFor(loggerContext.getName(),
+				JMXConfigurator.class);
+		ObjectName objectName = MBeanUtil.string2ObjectName(loggerContext, this,
+				objectNameAsStr);
+		MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+		if (!MBeanUtil.isRegistered(server, objectName)) {
+			LoggingSystemJMXConfigurator jmxConfigurator = new LoggingSystemJMXConfigurator(
+					loggerContext, server, objectName, initializationContext,
+					configLocation, logFile);
+			try {
+				server.registerMBean(jmxConfigurator, objectName);
+			}
+			catch (Exception e) {
+				getLogger(LogbackLoggingSystem.class.getName())
+						.error("Failed to create mbean", e);
+			}
+		}
 	}
 
 	@Override
@@ -313,6 +344,35 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		@Override
 		public void run() {
 			getLoggerContext().stop();
+		}
+
+	}
+
+	private class LoggingSystemJMXConfigurator extends JMXConfigurator {
+
+		private LoggingInitializationContext initializationContext;
+
+		private String configLocation;
+
+		private LogFile logFile;
+
+		LoggingSystemJMXConfigurator(LoggerContext loggerContext, MBeanServer server,
+				ObjectName objectName, LoggingInitializationContext initializationContext,
+				String configLocation, LogFile logFile) {
+			super(loggerContext, server, objectName);
+			this.initializationContext = initializationContext;
+			this.configLocation = configLocation;
+			this.logFile = logFile;
+		}
+
+		@Override
+		public void reloadDefaultConfiguration() {
+			initialize(this.initializationContext, this.configLocation, this.logFile);
+		}
+
+		@Override
+		public void reloadByFileName(String fileName) {
+			initialize(this.initializationContext, fileName, this.logFile);
 		}
 
 	}
