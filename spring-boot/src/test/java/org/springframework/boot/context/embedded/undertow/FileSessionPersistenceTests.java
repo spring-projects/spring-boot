@@ -65,7 +65,7 @@ public class FileSessionPersistenceTests {
 	}
 
 	@Test
-	public void presistAndLoad() throws Exception {
+	public void persistAndLoad() throws Exception {
 		Map<String, PersistentSession> sessionData = new LinkedHashMap<String, PersistentSession>();
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
 		data.put("spring", "boot");

@@ -118,7 +118,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	private final HttpClientContext httpClientContext = HttpClientContext.create();
 
 	@After
-	public void teardown() {
+	public void tearDown() {
 		if (this.container != null) {
 			try {
 				this.container.stop();
@@ -866,13 +866,13 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		private final AtomicBoolean requested = new AtomicBoolean(false);
 
 		@Override
-		public InputStream create(InputStream instream) throws IOException {
+		public InputStream create(InputStream in) throws IOException {
 			if (this.requested.get()) {
 				throw new IllegalStateException(
 						"On deflated InputStream already requested");
 			}
 			this.requested.set(true);
-			return new GZIPInputStream(instream);
+			return new GZIPInputStream(in);
 		}
 
 		public boolean wasCompressionUsed() {

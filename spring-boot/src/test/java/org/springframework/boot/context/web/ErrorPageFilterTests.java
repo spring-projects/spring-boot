@@ -334,7 +334,7 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
-	public void responseIsNotCommitedWhenRequestIsAsync() throws Exception {
+	public void responseIsNotCommittedWhenRequestIsAsync() throws Exception {
 		this.request.setAsyncStarted(true);
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
@@ -344,7 +344,7 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
-	public void responseIsCommitedWhenRequestIsAsyncAndExceptionIsThrown()
+	public void responseIsCommittedWhenRequestIsAsyncAndExceptionIsThrown()
 			throws Exception {
 		this.filter.addErrorPages(new ErrorPage("/error"));
 		this.request.setAsyncStarted(true);
@@ -364,7 +364,7 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
-	public void responseIsCommitedWhenRequestIsAsyncAndStatusIs400Plus()
+	public void responseIsCommittedWhenRequestIsAsyncAndStatusIs400Plus()
 			throws Exception {
 		this.filter.addErrorPages(new ErrorPage("/error"));
 		this.request.setAsyncStarted(true);
@@ -384,7 +384,7 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
-	public void responseIsNotCommitedDuringAsyncDispatch() throws Exception {
+	public void responseIsNotCommittedDuringAsyncDispatch() throws Exception {
 		setUpAsyncDispatch();
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
@@ -394,7 +394,7 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
-	public void responseIsCommitedWhenExceptionIsThrownDuringAsyncDispatch()
+	public void responseIsCommittedWhenExceptionIsThrownDuringAsyncDispatch()
 			throws Exception {
 		this.filter.addErrorPages(new ErrorPage("/error"));
 		setUpAsyncDispatch();
@@ -414,7 +414,7 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
-	public void responseIsCommitedWhenStatusIs400PlusDuringAsyncDispatch()
+	public void responseIsCommittedWhenStatusIs400PlusDuringAsyncDispatch()
 			throws Exception {
 		this.filter.addErrorPages(new ErrorPage("/error"));
 		setUpAsyncDispatch();
