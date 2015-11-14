@@ -42,12 +42,12 @@ public class TestCommandIntegrationTests {
 	public CliTester cli = new CliTester("test-samples/");
 
 	@Before
-	public void setup() throws Exception {
+	public void setUp() throws Exception {
 		System.setProperty("disableSpringSnapshotRepos", "false");
 	}
 
 	@After
-	public void teardown() {
+	public void tearDown() {
 		System.clearProperty("disableSpringSnapshotRepos");
 	}
 

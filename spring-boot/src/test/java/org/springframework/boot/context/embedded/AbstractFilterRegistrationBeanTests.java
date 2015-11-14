@@ -87,8 +87,8 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		bean.setServletNames(new LinkedHashSet<String>(Arrays.asList("s1", "s2")));
 		bean.addServletNames("s3");
 		bean.setServletRegistrationBeans(
-				Collections.singleton(mockServletRegistation("s4")));
-		bean.addServletRegistrationBeans(mockServletRegistation("s5"));
+				Collections.singleton(mockServletRegistration("s4")));
+		bean.addServletRegistrationBeans(mockServletRegistration("s5"));
 		bean.setMatchAfter(true);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addFilter(eq("test"), getExpectedFilter());
@@ -148,9 +148,9 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	@Test
 	public void setServletRegistrationBeanReplacesValue() throws Exception {
 		AbstractFilterRegistrationBean bean = createFilterRegistrationBean(
-				mockServletRegistation("a"));
+				mockServletRegistration("a"));
 		bean.setServletRegistrationBeans(new LinkedHashSet<ServletRegistrationBean>(
-				Arrays.asList(mockServletRegistation("b"))));
+				Arrays.asList(mockServletRegistration("b"))));
 		bean.onStartup(this.servletContext);
 		verify(this.registration).addMappingForServletNames(
 				AbstractFilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "b");
@@ -221,7 +221,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	protected abstract AbstractFilterRegistrationBean createFilterRegistrationBean(
 			ServletRegistrationBean... servletRegistrationBeans);
 
-	protected final ServletRegistrationBean mockServletRegistation(String name) {
+	protected final ServletRegistrationBean mockServletRegistration(String name) {
 		ServletRegistrationBean bean = new ServletRegistrationBean();
 		bean.setName(name);
 		return bean;
