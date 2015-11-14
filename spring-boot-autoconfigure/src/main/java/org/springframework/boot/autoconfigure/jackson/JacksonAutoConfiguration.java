@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.Module;
@@ -206,7 +207,16 @@ public class JacksonAutoConfiguration {
 							(DateFormat) BeanUtils.instantiateClass(dateFormatClass));
 				}
 				catch (ClassNotFoundException ex) {
-					builder.dateFormat(new SimpleDateFormat(dateFormat));
+					SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+					// Since Jackson 2.6.3 we always need to set a TimeZone (see gh-4170)
+					// If none in our properties fallback to the Jackson's default
+					TimeZone timeZone = this.jacksonProperties.getTimeZone();
+					if (timeZone == null) {
+						timeZone = new ObjectMapper().getSerializationConfig()
+								.getTimeZone();
+					}
+					simpleDateFormat.setTimeZone(timeZone);
+					builder.dateFormat(simpleDateFormat);
 				}
 			}
 		}
