@@ -375,7 +375,7 @@ public class HttpTunnelServer {
 		}
 
 		/**
-		 * Start asynchronous support or if unavailble return {@code null} to cause
+		 * Start asynchronous support or if unavailable return {@code null} to cause
 		 * {@link #waitForResponse()} to block.
 		 * @return the async request control
 		 */

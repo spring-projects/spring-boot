@@ -41,7 +41,7 @@ public abstract class AbstractLoggingSystemTests {
 	private String originalTempFolder;
 
 	@Before
-	public void configureTempdir() throws IOException {
+	public void configureTempDir() throws IOException {
 		this.originalTempFolder = System.getProperty(JAVA_IO_TMPDIR);
 		System.setProperty(JAVA_IO_TMPDIR, this.temp.newFolder().getAbsolutePath());
 	}
