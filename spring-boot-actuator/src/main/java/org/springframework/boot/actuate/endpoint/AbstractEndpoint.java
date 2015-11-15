@@ -54,7 +54,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	private Boolean enabled;
 
 	/**
-	 * Create a new sensitive endpoint instance. The enpoint will enabled flag will be
+	 * Create a new sensitive endpoint instance. The endpoint will enabled flag will be
 	 * based on the spring {@link Environment} unless explicitly set.
 	 * @param id the endpoint ID
 	 */
@@ -63,7 +63,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	}
 
 	/**
-	 * Create a new endpoint instance. The enpoint will enabled flag will be based on the
+	 * Create a new endpoint instance. The endpoint will enabled flag will be based on the
 	 * spring {@link Environment} unless explicitly set.
 	 * @param id the endpoint ID
 	 * @param sensitive if the endpoint is sensitive by default
