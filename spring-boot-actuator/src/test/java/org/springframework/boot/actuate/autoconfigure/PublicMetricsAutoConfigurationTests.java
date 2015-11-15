@@ -270,18 +270,18 @@ public class PublicMetricsAutoConfigurationTests {
 
 		@Bean
 		public DataSource tomcatDataSource() {
-			return InitalizedBuilder.create()
+			return InitializedBuilder.create()
 					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 		@Bean
 		public DataSource hikariDS() {
-			return InitalizedBuilder.create().type(HikariDataSource.class).build();
+			return InitializedBuilder.create().type(HikariDataSource.class).build();
 		}
 
 		@Bean
 		public DataSource commonsDbcpDataSource() {
-			return InitalizedBuilder.create().type(BasicDataSource.class).build();
+			return InitializedBuilder.create().type(BasicDataSource.class).build();
 		}
 	}
 
@@ -291,13 +291,13 @@ public class PublicMetricsAutoConfigurationTests {
 		@Bean
 		@Primary
 		public DataSource myDataSource() {
-			return InitalizedBuilder.create()
+			return InitializedBuilder.create()
 					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 		@Bean
 		public DataSource commonsDbcpDataSource() {
-			return InitalizedBuilder.create().type(BasicDataSource.class).build();
+			return InitializedBuilder.create().type(BasicDataSource.class).build();
 		}
 	}
 
@@ -307,13 +307,13 @@ public class PublicMetricsAutoConfigurationTests {
 		@Bean
 		@Primary
 		public DataSource myDataSource() {
-			return InitalizedBuilder.create()
+			return InitializedBuilder.create()
 					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 		@Bean
 		public DataSource dataSource() {
-			return InitalizedBuilder.create().type(BasicDataSource.class).build();
+			return InitializedBuilder.create().type(BasicDataSource.class).build();
 		}
 	}
 
@@ -381,7 +381,7 @@ public class PublicMetricsAutoConfigurationTests {
 
 	}
 
-	private static class InitalizedBuilder {
+	private static class InitializedBuilder {
 
 		public static DataSourceBuilder create() {
 			return DataSourceBuilder.create()
