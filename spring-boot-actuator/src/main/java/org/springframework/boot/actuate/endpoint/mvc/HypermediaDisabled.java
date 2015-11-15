@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Annotation to indicate that an {@link MvcEndpoint} class or {@link RequestMapping}
- * method should't generate a hypermedia response.
+ * method shouldn't generate a hypermedia response.
  *
  * @author Dave Syer
  * @since 1.3.0
