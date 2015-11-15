@@ -65,6 +65,7 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 public class ServerPropertiesTests {
 
@@ -92,6 +93,14 @@ public class ServerPropertiesTests {
 		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
 				Collections.singletonMap("server.port", "9000")));
 		assertEquals(9000, this.properties.getPort().intValue());
+	}
+
+	@Test
+	public void testServerName() throws Exception {
+		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("server.server-name", "Custom Server")));
+		assertEquals("Custom Server", this.properties.getServerName());
 	}
 
 	@Test
@@ -335,6 +344,18 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void customTomcatServerResponseHeader() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.server-name", "Custom Server Name");
+		bindProperties(map);
+
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(container);
+
+		assertEquals("Custom Server Name", container.getServer());
+	}
+
+	@Test
 	public void defaultUseForwardHeadersUndertow() throws Exception {
 		UndertowEmbeddedServletContainerFactory container = spy(
 				new UndertowEmbeddedServletContainerFactory());
@@ -361,6 +382,19 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void customUndertowServerResponseHeader() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.server-name", "Custom Server Name");
+		bindProperties(map);
+
+		UndertowEmbeddedServletContainerFactory container = spy(
+				new UndertowEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+
+		assertEquals("Custom Server Name", container.getServer());
+	}
+
+	@Test
 	public void defaultUseForwardHeadersJetty() throws Exception {
 		JettyEmbeddedServletContainerFactory container = spy(
 				new JettyEmbeddedServletContainerFactory());
@@ -384,6 +418,19 @@ public class ServerPropertiesTests {
 				new JettyEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(true);
+	}
+
+	@Test
+	public void customJettyServerResponseHeader() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.server-name", "Custom Server Name");
+		bindProperties(map);
+
+		JettyEmbeddedServletContainerFactory container = spy(
+				new JettyEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+
+		assertEquals("Custom Server Name", container.getServer());
 	}
 
 	@Test

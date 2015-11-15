@@ -89,6 +89,7 @@ import org.springframework.util.ResourceUtils;
  * @author Ivan Sopov
  * @author Andy Wilkinson
  * @author Marcos Barbero
+ * @author Eddú Meléndez
  * @since 1.2.0
  * @see UndertowEmbeddedServletContainer
  */
@@ -220,7 +221,7 @@ public class UndertowEmbeddedServletContainerFactory
 		int port = getPort();
 		Builder builder = createBuilder(port);
 		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, this.useForwardHeaders, port >= 0, getCompression());
+				port, this.useForwardHeaders, port >= 0, getCompression(), getServer());
 	}
 
 	private Builder createBuilder(int port) {
@@ -471,12 +472,13 @@ public class UndertowEmbeddedServletContainerFactory
 	 * @param builder the builder
 	 * @param manager the deployment manager
 	 * @param port the port that Undertow should listen on
+	 * @param serverName the server name
 	 * @return a new {@link UndertowEmbeddedServletContainer} instance
 	 */
 	protected UndertowEmbeddedServletContainer getUndertowEmbeddedServletContainer(
-			Builder builder, DeploymentManager manager, int port) {
+			Builder builder, DeploymentManager manager, int port, String serverName) {
 		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, port >= 0, getCompression());
+				port, port >= 0, getCompression(), serverName);
 	}
 
 	@Override

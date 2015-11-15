@@ -57,6 +57,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Ivan Sopov
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  * @since 1.2.0
  * @see UndertowEmbeddedServletContainerFactory
  */
@@ -77,24 +78,28 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	private final Compression compression;
 
+	private final String serverName;
+
 	private Undertow undertow;
 
 	private boolean started = false;
 
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
-			String contextPath, int port, boolean autoStart, Compression compression) {
-		this(builder, manager, contextPath, port, false, autoStart, compression);
+			String contextPath, int port, boolean autoStart, Compression compression,
+			String serverName) {
+		this(builder, manager, contextPath, port, false, autoStart, compression, serverName);
 	}
 
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
 			String contextPath, int port, boolean useForwardHeaders, boolean autoStart,
-			Compression compression) {
+			Compression compression, String serverName) {
 		this.builder = builder;
 		this.manager = manager;
 		this.contextPath = contextPath;
 		this.useForwardHeaders = useForwardHeaders;
 		this.autoStart = autoStart;
 		this.compression = compression;
+		this.serverName = serverName;
 	}
 
 	@Override
@@ -122,6 +127,9 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		httpHandler = getContextHandler(httpHandler);
 		if (this.useForwardHeaders) {
 			httpHandler = Handlers.proxyPeerAddress(httpHandler);
+		}
+		if (StringUtils.hasText(this.serverName)) {
+			httpHandler = Handlers.header(httpHandler, "Server", this.serverName);
 		}
 		this.builder.setHandler(httpHandler);
 		return this.builder.build();

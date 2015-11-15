@@ -84,6 +84,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andrey Hihlovskiy
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  * @see #setPort(int)
  * @see #setConfigurations(Collection)
  * @see JettyEmbeddedServletContainer
@@ -449,7 +450,7 @@ public class JettyEmbeddedServletContainerFactory
 	 */
 	protected JettyEmbeddedServletContainer getJettyEmbeddedServletContainer(
 			Server server) {
-		return new JettyEmbeddedServletContainer(server, getPort() >= 0);
+		return new JettyEmbeddedServletContainer(server, getPort() >= 0, this.getServer());
 	}
 
 	@Override
