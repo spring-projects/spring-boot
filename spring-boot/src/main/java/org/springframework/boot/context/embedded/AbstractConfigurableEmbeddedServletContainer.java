@@ -36,6 +36,7 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Ivan Sopov
+ * @author Eddú Meléndez
  * @see AbstractEmbeddedServletContainerFactory
  */
 public abstract class AbstractConfigurableEmbeddedServletContainer
@@ -73,6 +74,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	private JspServlet jspServlet = new JspServlet();
 
 	private Compression compression;
+
+	private String serverHeader;
 
 	/**
 	 * Create a new {@link AbstractConfigurableEmbeddedServletContainer} instance.
@@ -312,6 +315,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	@Override
 	public void setCompression(Compression compression) {
 		this.compression = compression;
+	}
+
+	public String getServerHeader() {
+		return this.serverHeader;
+	}
+
+	@Override
+	public void setServerHeader(String serverHeader) {
+		this.serverHeader = serverHeader;
 	}
 
 	/**

@@ -50,6 +50,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
@@ -65,6 +66,7 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 public class ServerPropertiesTests {
 
@@ -92,6 +94,19 @@ public class ServerPropertiesTests {
 		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
 				Collections.singletonMap("server.port", "9000")));
 		assertEquals(9000, this.properties.getPort().intValue());
+	}
+
+	@Test
+	public void testServerHeaderDefault() throws Exception {
+		assertNull(this.properties.getServerHeader());
+	}
+
+	@Test
+	public void testServerHeader() throws Exception {
+		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("server.server-header", "Custom Server")));
+		assertEquals("Custom Server", this.properties.getServerHeader());
 	}
 
 	@Test

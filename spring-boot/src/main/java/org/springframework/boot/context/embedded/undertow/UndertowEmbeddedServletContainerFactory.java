@@ -89,6 +89,7 @@ import org.springframework.util.ResourceUtils;
  * @author Ivan Sopov
  * @author Andy Wilkinson
  * @author Marcos Barbero
+ * @author Eddú Meléndez
  * @since 1.2.0
  * @see UndertowEmbeddedServletContainer
  */
@@ -219,8 +220,7 @@ public class UndertowEmbeddedServletContainerFactory
 		DeploymentManager manager = createDeploymentManager(initializers);
 		int port = getPort();
 		Builder builder = createBuilder(port);
-		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, this.useForwardHeaders, port >= 0, getCompression());
+		return getUndertowEmbeddedServletContainer(builder, manager, port);
 	}
 
 	private Builder createBuilder(int port) {
@@ -476,7 +476,8 @@ public class UndertowEmbeddedServletContainerFactory
 	protected UndertowEmbeddedServletContainer getUndertowEmbeddedServletContainer(
 			Builder builder, DeploymentManager manager, int port) {
 		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, port >= 0, getCompression());
+				port, isUseForwardHeaders(), port >= 0, getCompression(),
+				getServerHeader());
 	}
 
 	@Override
@@ -518,6 +519,10 @@ public class UndertowEmbeddedServletContainerFactory
 
 	public boolean isAccessLogEnabled() {
 		return this.accessLogEnabled;
+	}
+
+	protected final boolean isUseForwardHeaders() {
+		return this.useForwardHeaders;
 	}
 
 	/**

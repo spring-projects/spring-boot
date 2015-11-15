@@ -85,6 +85,7 @@ import org.springframework.util.StringUtils;
  * @author Brock Mills
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  * @see #setPort(int)
  * @see #setContextLifecycleListeners(Collection)
  * @see TomcatEmbeddedServletContainer
@@ -248,6 +249,9 @@ public class TomcatEmbeddedServletContainerFactory
 	protected void customizeConnector(Connector connector) {
 		int port = (getPort() >= 0 ? getPort() : 0);
 		connector.setPort(port);
+		if (StringUtils.hasText(this.getServerHeader())) {
+			connector.setAttribute("server", this.getServerHeader());
+		}
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			customizeProtocol((AbstractProtocol<?>) connector.getProtocolHandler());
 		}
