@@ -1023,7 +1023,7 @@ Jackson which map onto properties in the environment:
 |`spring.jackson.serialization.<feature_name>=true\|false`
 
 |`com.fasterxml.jackson.annotation.JsonInclude.Include`
-|`spring.jackson.serialization-inclusion=always\|non_null\|non_default\|non_empty`
+|`spring.jackson.serialization-inclusion=always\|non_null\|non_absent\|non_default\|non_empty`
 |===
 
 For example, to enable pretty print, set `spring.jackson.serialization.indent_output=true`.
