@@ -121,7 +121,7 @@
     "type": "org.springframework.boot.Banner$Mode",
     "sourceType": "org.springframework.boot.SpringApplication",
     "description": "Mode used to display the banner when the application runs.",
-    "defaultValue": "console",
+    "defaultValue": "console"
   },
   {
     "name": "spring.main.show-banner",
