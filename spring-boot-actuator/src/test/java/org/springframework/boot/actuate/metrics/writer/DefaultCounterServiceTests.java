@@ -49,7 +49,7 @@ public class DefaultCounterServiceTests {
 	}
 
 	@Test
-	public void incrementWithExistingNearlyCounter() {
+	public void incrementWithExistingNearCounter() {
 		this.service.increment("counter-foo");
 		verify(this.repository).increment(this.captor.capture());
 		assertEquals("counter.counter-foo", this.captor.getValue().getName());
