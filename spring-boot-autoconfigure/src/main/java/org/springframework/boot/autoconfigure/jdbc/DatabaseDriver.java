@@ -62,7 +62,7 @@ enum DatabaseDriver {
 	/**
 	 * Maria DB.
 	 */
-	MARIADB("org.mariadb.jdbc.Driver", "org.mariadb.jdbc.MySQLDataSource"),
+	MARIADB("org.mariadb.jdbc.Driver", "org.mariadb.jdbc.MariaDbDataSource"),
 
 	/**
 	 * Google App Engine.
