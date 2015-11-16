@@ -121,7 +121,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 		if (value instanceof Map) {
 			flatten(name, result, (Map<String, Object>) value);
 		}
-		if (value instanceof Collection) {
+		else if (value instanceof Collection) {
 			int index = 0;
 			for (Object object : (Collection<Object>) value) {
 				extract(name + "[" + index + "]", result, object);
