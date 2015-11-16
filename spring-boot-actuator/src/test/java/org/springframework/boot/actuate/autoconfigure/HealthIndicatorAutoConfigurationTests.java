@@ -286,7 +286,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void solrHeathIndicator() {
+	public void solrHealthIndicator() {
 		this.context.register(SolrAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -300,7 +300,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void notSolrHeathIndicator() {
+	public void notSolrHealthIndicator() {
 		this.context.register(SolrAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,

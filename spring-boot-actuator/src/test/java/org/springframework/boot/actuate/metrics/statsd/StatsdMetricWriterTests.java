@@ -90,7 +90,7 @@ public class StatsdMetricWriterTests {
 	}
 
 	@Test
-	public void perioPrefix() throws Exception {
+	public void periodPrefix() throws Exception {
 		this.writer = new StatsdMetricWriter("my.", "localhost", this.port);
 		this.writer.set(new Metric<Long>("gauge.foo", 3L));
 		this.server.waitForMessage();

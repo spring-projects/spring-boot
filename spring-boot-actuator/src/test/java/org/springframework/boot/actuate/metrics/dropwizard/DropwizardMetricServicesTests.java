@@ -72,14 +72,14 @@ public class DropwizardMetricServicesTests {
 	}
 
 	@Test
-	public void setPredfinedTimer() {
+	public void setPredefinedTimer() {
 		this.writer.submit("timer.foo", 200);
 		this.writer.submit("timer.foo", 300);
 		assertEquals(2, this.registry.timer("timer.foo").getCount());
 	}
 
 	@Test
-	public void setPredfinedHistogram() {
+	public void setPredefinedHistogram() {
 		this.writer.submit("histogram.foo", 2.1);
 		this.writer.submit("histogram.foo", 2.3);
 		assertEquals(2, this.registry.histogram("histogram.foo").getCount());
@@ -94,7 +94,7 @@ public class DropwizardMetricServicesTests {
 	 * @throws Exception if an error occurs
 	 */
 	@Test
-	public void testParallism() throws Exception {
+	public void testParallelism() throws Exception {
 		List<WriterThread> threads = new ArrayList<WriterThread>();
 		ThreadGroup group = new ThreadGroup("threads");
 		for (int i = 0; i < 10; i++) {
@@ -139,9 +139,9 @@ public class DropwizardMetricServicesTests {
 					this.writer.submit("histogram.test.service", this.index);
 					this.writer.submit("gauge.test.service", this.index);
 				}
-				catch (IllegalArgumentException iae) {
+				catch (IllegalArgumentException ex) {
 					this.failed = true;
-					throw iae;
+					throw ex;
 				}
 			}
 		}

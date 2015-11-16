@@ -60,7 +60,7 @@ public class OpenTsdbGaugeWriterTests {
 	}
 
 	@Test
-	public void flushAutomaticlly() {
+	public void flushAutomatically() {
 		given(this.restTemplate.postForEntity(anyString(), any(Object.class), anyMap()))
 				.willReturn(emptyResponse());
 		this.writer.setBufferSize(0);

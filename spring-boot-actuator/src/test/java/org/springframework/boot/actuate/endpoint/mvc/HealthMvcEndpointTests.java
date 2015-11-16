@@ -168,7 +168,7 @@ public class HealthMvcEndpointTests {
 	}
 
 	@Test
-	public void unsecureAnonymousAccessUnrestricted() {
+	public void insecureAnonymousAccessUnrestricted() {
 		this.mvc = new HealthMvcEndpoint(this.endpoint, false);
 		this.mvc.setEnvironment(this.environment);
 		given(this.endpoint.invoke())
@@ -180,7 +180,7 @@ public class HealthMvcEndpointTests {
 	}
 
 	@Test
-	public void unsensitiveAnonymousAccessRestricted() {
+	public void insensitiveAnonymousAccessRestricted() {
 		this.environment.getPropertySources().addLast(NON_SENSITIVE);
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
@@ -191,7 +191,7 @@ public class HealthMvcEndpointTests {
 	}
 
 	@Test
-	public void unsecureUnsensitiveAnonymousAccessUnrestricted() {
+	public void insecureInsensitiveAnonymousAccessUnrestricted() {
 		this.mvc = new HealthMvcEndpoint(this.endpoint, false);
 		this.mvc.setEnvironment(this.environment);
 		this.environment.getPropertySources().addLast(NON_SENSITIVE);

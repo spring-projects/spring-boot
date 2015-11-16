@@ -88,10 +88,10 @@ public class EndpointMBeanExporterTests {
 		this.context = new GenericApplicationContext();
 		this.context.registerBeanDefinition("endpointMbeanExporter",
 				new RootBeanDefinition(EndpointMBeanExporter.class));
-		MutablePropertyValues mvp = new MutablePropertyValues();
-		mvp.add("enabled", Boolean.FALSE);
+		MutablePropertyValues mpv = new MutablePropertyValues();
+		mpv.add("enabled", Boolean.FALSE);
 		this.context.registerBeanDefinition("endpoint1",
-				new RootBeanDefinition(TestEndpoint.class, null, mvp));
+				new RootBeanDefinition(TestEndpoint.class, null, mpv));
 		this.context.refresh();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 		assertFalse(mbeanExporter.getServer()
@@ -103,10 +103,10 @@ public class EndpointMBeanExporterTests {
 		this.context = new GenericApplicationContext();
 		this.context.registerBeanDefinition("endpointMbeanExporter",
 				new RootBeanDefinition(EndpointMBeanExporter.class));
-		MutablePropertyValues mvp = new MutablePropertyValues();
-		mvp.add("enabled", Boolean.TRUE);
+		MutablePropertyValues mpv = new MutablePropertyValues();
+		mpv.add("enabled", Boolean.TRUE);
 		this.context.registerBeanDefinition("endpoint1",
-				new RootBeanDefinition(TestEndpoint.class, null, mvp));
+				new RootBeanDefinition(TestEndpoint.class, null, mpv));
 		this.context.refresh();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 		assertTrue(mbeanExporter.getServer()
