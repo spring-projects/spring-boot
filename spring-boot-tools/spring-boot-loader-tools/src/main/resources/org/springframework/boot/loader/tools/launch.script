@@ -157,15 +157,15 @@ do_start() {
         -- \
         -Dsun.misc.URLClassPath.disableJarChecking=true "${JAVA_OPTS[@]}" \
         -jar "$jarfile" "${RUN_ARGS[@]}" "$@" \
-        > "$log_file" 2>&1
+        >> "$log_file" 2>&1
       await_file "$pid_file"
     else
-      su -s /bin/sh -c "$command > \"$log_file\" 2>&1 & echo \$!" "$run_user" > "$pid_file"
+      su -s /bin/sh -c "$command >> \"$log_file\" 2>&1 & echo \$!" "$run_user" > "$pid_file"
     fi
     pid=$(cat "$pid_file")
   else
     checkPermissions || return $?
-    $command &> "$log_file" &
+    $command &>> "$log_file" &
     pid=$!
     disown $pid
     echo "$pid" > "$pid_file"
