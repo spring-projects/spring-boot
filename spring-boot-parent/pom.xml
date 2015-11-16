@@ -551,7 +551,7 @@
 						<java.security.egd>file:/dev/./urandom</java.security.egd>
 						<java.awt.headless>true</java.awt.headless>
 					</systemPropertyVariables>
-					<argLine>-Xmx1024m</argLine>
+					<argLine>-Xmx1024m ${testproxy}</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -887,6 +887,21 @@
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>proxy</id>
+			<properties>
+				<testproxy>-Dhttp.proxyHost=${http.proxyHost} -Dhttp.proxyPort=${http.proxyPort} -Dhttps.proxyHost=${https.proxyHost} -Dhttps.proxyPort=${https.proxyPort} -Dhttp.nonProxyHosts=${http.nonProxyHosts}</testproxy>
+			</properties>
+		</profile>
+		<profile>
+			<id>noproxy</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<testproxy></testproxy>
+			</properties>
 		</profile>
 	</profiles>
 </project>

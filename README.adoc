@@ -111,11 +111,88 @@ tests there (e.g. in Eclipse go to `Preferences->Java->Installed JREs` and edit 
 JRE definition so that all processes are launched with those arguments). This property
 is automatically set if you use the maven wrapper.
 
+NOTE: Make sure that your Git config property "core.autocrlf" setting is set to true
+under Windows to avoid build and test failures due to missing CRLF EOL characters.
+
 _Also see link:CONTRIBUTING.adoc[CONTRIBUTING.adoc] if you wish to submit pull requests,
 and in particular please fill out the
 https://support.springsource.com/spring_committer_signup[Contributor's Agreement]
 before your first change however trivial. (Or if you filed such an agreement already for
 another project just mention that in your pull request.)_
+
+=== Proxy
+
+When you need a HTTP proxy to access the Internet, you need to specify the Java
+proxy parameters together with the Maven `proxy` profile:
+
+[indent=0]
+----
+	$ mvn clean install -Dhttp.proxyHost=<HOST> \
+	                    -Dhttp.proxyPort=<PORT> \
+	                    -Dhttps.proxyHost=<HOST> \
+	                    -Dhttps.proxyPort=<PORT> \
+	                    -Dhttp.nonProxyHosts=127.0.0.1,localhost \
+	                    -Pproxy
+----
+
+NOTE: You can set the MAVEN_OPTS environment variable to apply the proxy automatically:
+MAVEN_OPTS="-Dhttp.proxyHost=<HOST> ... -Dhttp.nonProxyHosts=127.0.0.1,localhost"
+
+The `proxy` profile adds the properties as part of the `<argLine>` settings of the
+Maven Surefire plugin.
+Several Spring Boot tests download external packages and without passing the proxy
+settings to the forked VM, those test-cases are going to fail.
+
+Additionally you need to configure the proxy in your user's `$HOME/.m2/settings.xml`
+file:
+
+[indent=0]
+----
+    <proxies>
+        <proxy>
+            <id>proxy</id>
+            <active>true</active>
+            <protocol>http</protocol>
+            <host>HOST</host>
+            <port>PORT</port>
+            <nonProxyHosts>127.0.0.1|localhost</nonProxyHosts>
+        </proxy>
+    </proxies>
+----
+
+The Spring Boot Maven plugin sub-module merges a test-case provided `settings.xml` 
+and your user's `settings.xml` for the Maven child process, forked by the Maven Invoker
+plugin. Without the proxy configuration in your user's settings.xml those test-cases
+are going to fail.
+
+=== Maven Mirror
+
+In case your are using a Maven mirror for all external repositories:
+ 
+[indent=0]
+----
+    <mirror>
+        <!-- ... -->
+        <mirrorOf>external:*</mirrorOf>
+    </mirror>
+----
+
+You need to exclude the clojars.org repository by adding a mirror to your 
+user's `$HOME/.m2/settings.xml` file:
+
+[indent=0]
+----
+    <mirror>
+        <id>clojars.org</id>
+        <name>clojars.org mirror</name>
+        <url>http://clojars.org/repo</url>
+        <mirrorOf>clojars.org</mirrorOf>
+    </mirror>
+----
+
+The clojars.org repository is used by the Spring Boot CLI test-cases to check whether the
+Groovy dependency resolution mechanism works correctly. Without the mirror the test-case
+is going to fail.
 
 === Building reference documentation
 

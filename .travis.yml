@@ -7,6 +7,7 @@ services:
 sudo: false
 install: true
 before_script:
-- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true || true
-- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true
-script: mvn install -q -nsu -Dmaven.test.redirectTestOutputToFile=true -P '!integration'
+- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -P !standard-with-extra-repos || true
+- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true -P !standard-with-extra-repos
+script: mvn install -q -nsu -Dmaven.test.redirectTestOutputToFile=true -P '!integration','!standard-with-extra-repos'
+

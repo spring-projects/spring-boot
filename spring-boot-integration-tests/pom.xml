@@ -51,6 +51,7 @@
 							<pomIncludes>
 								<pomInclude>*/pom.xml</pomInclude>
 							</pomIncludes>
+							<mergeUserSettings>true</mergeUserSettings>
 						</configuration>
 						<executions>
 							<execution>
