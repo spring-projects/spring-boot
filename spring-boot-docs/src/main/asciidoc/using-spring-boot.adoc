@@ -949,8 +949,8 @@ As DevTools _only_ monitors classpath resources, the only way to trigger a chang
 update the classpath. On Eclipse, saving is actually updating the project, compiling or
 copying resources for you as part of the save action. If you are using Intellij IDEA,
 there is no such thing as a save action since the resources are saved automatically.
-Intellij users will need to remover to use the `Build` -> `Make Project` action to achieve
-the same result.
+Intellij users should use the `Build` -> `Make Project` action to achieve the same
+result.
 ****
 
 NOTE: You can also start your application via the supported build plugins (i.e. Maven and
