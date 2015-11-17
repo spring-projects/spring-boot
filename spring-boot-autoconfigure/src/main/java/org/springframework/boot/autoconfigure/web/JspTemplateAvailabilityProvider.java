@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.web;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
 
@@ -32,24 +34,17 @@ import org.springframework.util.ClassUtils;
 public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
 	@Override
-	public boolean isTemplateAvailable(String view, Environment environment,
-			ClassLoader classLoader, ResourceLoader resourceLoader) {
+	public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.apache.jasper.compiler.JspConfig", classLoader)) {
-			String prefix = getProperty(environment, "spring.mvc.view.prefix",
-					"spring.view.prefix", WebMvcAutoConfiguration.DEFAULT_PREFIX);
-			String suffix = getProperty(environment, "spring.mvc.view.suffix",
-					"spring.view.suffix", WebMvcAutoConfiguration.DEFAULT_SUFFIX);
+			PropertyResolver resolver = new RelaxedPropertyResolver(environment,
+					"spring.mvc.view.");
+			String prefix = resolver.getProperty("prefix",
+					WebMvcAutoConfiguration.DEFAULT_PREFIX);
+			String suffix = resolver.getProperty("suffix",
+					WebMvcAutoConfiguration.DEFAULT_SUFFIX);
 			return resourceLoader.getResource(prefix + view + suffix).exists();
 		}
 		return false;
-	}
-
-	private String getProperty(Environment environment, String key, String deprecatedKey,
-			String defaultValue) {
-		if (environment.containsProperty(key)) {
-			return environment.getProperty(key);
-		}
-		return environment.getProperty(deprecatedKey, defaultValue);
 	}
 
 }
