@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.metrics.repository.MultiMetricRepository
 /**
  * A {@link RichGaugeReader} that works by reading metric values from a
  * {@link MultiMetricRepository} where the group name is the RichGauge name. The format
- * used matches that in he RichGaugeExporter, so this reader can be used on a store that
+ * used matches that in the RichGaugeExporter, so this reader can be used on a store that
  * has been populated using that exporter.
  *
  * @author Dave Syer

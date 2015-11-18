@@ -85,8 +85,8 @@ public class MailHealthIndicatorTests {
 
 	public static class SuccessTransport extends Transport {
 
-		public SuccessTransport(Session session, URLName urlname) {
-			super(session, urlname);
+		public SuccessTransport(Session session, URLName urlName) {
+			super(session, urlName);
 		}
 
 		@Override

@@ -17,4 +17,4 @@ Example HTTP response:
 include::{generated}/health/http-response.adoc[]
 
 Example HTTP response with `endpoints.health.sensitive=false`:
-include::{generated}/health/unsensitive/http-response.adoc[]
+include::{generated}/health/insensitive/http-response.adoc[]
