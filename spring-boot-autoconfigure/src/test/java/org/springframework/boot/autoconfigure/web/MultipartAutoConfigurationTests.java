@@ -181,9 +181,9 @@ public class MultipartAutoConfigurationTests {
 	private void testContainerWithCustomMultipartConfigEnabledSetting(
 			final String propertyValue, int expectedNumberOfMultipartConfigElementBeans) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		Map<String, Object> poperties = new LinkedHashMap<String, Object>();
-		poperties.put("multipart.enabled", propertyValue);
-		MapPropertySource propertySource = new MapPropertySource("test", poperties);
+		Map<String, Object> properties = new LinkedHashMap<String, Object>();
+		properties.put("multipart.enabled", propertyValue);
+		MapPropertySource propertySource = new MapPropertySource("test", properties);
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(ContainerWithNoMultipartTomcat.class,
 				BaseConfiguration.class);

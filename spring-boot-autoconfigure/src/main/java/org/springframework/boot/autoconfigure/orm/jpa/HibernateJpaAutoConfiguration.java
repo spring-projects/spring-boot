@@ -114,7 +114,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 		if (jtaTransactionManager != null) {
 			if (runningOnWebSphere()) {
 				// We can never use SpringJtaPlatform on WebSphere as
-				// WebSphereUowTransactionManger has a null TransactionManager
+				// WebSphereUowTransactionManager has a null TransactionManager
 				// which will cause Hibernate to NPE
 				configureWebSphereTransactionPlatform(vendorProperties);
 			}

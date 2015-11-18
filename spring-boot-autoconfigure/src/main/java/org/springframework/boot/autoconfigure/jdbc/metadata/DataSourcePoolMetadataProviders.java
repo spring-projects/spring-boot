@@ -37,7 +37,7 @@ public class DataSourcePoolMetadataProviders implements DataSourcePoolMetadataPr
 	/**
 	 * Create a {@link DataSourcePoolMetadataProviders} instance with an initial
 	 * collection of delegates to use.
-	 * @param providers the data source pool metdata providers
+	 * @param providers the data source pool metadata providers
 	 */
 	public DataSourcePoolMetadataProviders(
 			Collection<? extends DataSourcePoolMetadataProvider> providers) {

@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc.metadata;
 import javax.sql.DataSource;
 
 /**
- * Provides access meta-data that is commonly available from most polled
+ * Provides access meta-data that is commonly available from most pooled
  * {@link DataSource} implementations.
  *
  * @author Stephane Nicoll

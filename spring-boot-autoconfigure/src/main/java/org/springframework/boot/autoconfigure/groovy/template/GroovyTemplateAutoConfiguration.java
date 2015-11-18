@@ -46,7 +46,7 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 
 /**
- * Autoconfiguration support for Groovy templates in MVC. By default creates a
+ * Auto-configuration support for Groovy templates in MVC. By default creates a
  * {@link MarkupTemplateEngine} configured from {@link GroovyTemplateProperties}, but you
  * can override that by providing your own {@link GroovyMarkupConfig} or even a
  * {@link MarkupTemplateEngine} of a different type.

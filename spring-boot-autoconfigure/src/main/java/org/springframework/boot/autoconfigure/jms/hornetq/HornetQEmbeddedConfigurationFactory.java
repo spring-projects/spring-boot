@@ -31,7 +31,7 @@ import org.springframework.boot.autoconfigure.jms.hornetq.HornetQProperties.Embe
 /**
  * Factory class to create a HornetQ {@link Configuration} from {@link HornetQProperties}.
  *
- * @author Stephane Nicol
+ * @author Stephane Nicoll
  * @author Phillip Webb
  * @since 1.1.0
  */

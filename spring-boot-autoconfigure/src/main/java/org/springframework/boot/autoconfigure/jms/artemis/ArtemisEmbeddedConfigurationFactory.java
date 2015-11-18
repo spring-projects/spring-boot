@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
  * Configuration used to create the embedded Artemis server.
  *
  * @author Eddú Meléndez
- * @author Stephane Nicol
+ * @author Stephane Nicoll
  * @author Phillip Webb
  */
 class ArtemisEmbeddedConfigurationFactory {

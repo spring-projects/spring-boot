@@ -118,7 +118,7 @@ public enum EmbeddedDatabaseConnection {
 	 * database type.
 	 *
 	 * @param dataSource the data source to interrogate
-	 * @return true if the data sourceis one of the embedded types
+	 * @return true if the data source is one of the embedded types
 	 */
 	public static boolean isEmbedded(DataSource dataSource) {
 		try {

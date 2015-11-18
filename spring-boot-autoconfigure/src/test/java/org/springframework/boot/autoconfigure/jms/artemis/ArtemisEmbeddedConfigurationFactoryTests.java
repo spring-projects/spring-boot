@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link ArtemisEmbeddedConfigurationFactory}
  *
  * @author Eddú Meléndez
- * @author Stephane Nicol
+ * @author Stephane Nicoll
  * @author Phillip Webb
  */
 public class ArtemisEmbeddedConfigurationFactoryTests {
