@@ -74,27 +74,27 @@ class AutoConfigurationSorter {
 
 	private List<String> sortByAnnotation(AutoConfigurationClasses classes,
 			List<String> classNames) {
-		List<String> tosort = new ArrayList<String>(classNames);
+		List<String> toSort = new ArrayList<String>(classNames);
 		Set<String> sorted = new LinkedHashSet<String>();
 		Set<String> processing = new LinkedHashSet<String>();
-		while (!tosort.isEmpty()) {
-			doSortByAfterAnnotation(classes, tosort, sorted, processing, null);
+		while (!toSort.isEmpty()) {
+			doSortByAfterAnnotation(classes, toSort, sorted, processing, null);
 		}
 		return new ArrayList<String>(sorted);
 	}
 
 	private void doSortByAfterAnnotation(AutoConfigurationClasses classes,
-			List<String> tosort, Set<String> sorted, Set<String> processing,
+			List<String> toSort, Set<String> sorted, Set<String> processing,
 			String current) {
 		if (current == null) {
-			current = tosort.remove(0);
+			current = toSort.remove(0);
 		}
 		processing.add(current);
 		for (String after : classes.getClassesRequestedAfter(current)) {
 			Assert.state(!processing.contains(after),
 					"AutoConfigure cycle detected between " + current + " and " + after);
-			if (!sorted.contains(after) && tosort.contains(after)) {
-				doSortByAfterAnnotation(classes, tosort, sorted, processing, after);
+			if (!sorted.contains(after) && toSort.contains(after)) {
+				doSortByAfterAnnotation(classes, toSort, sorted, processing, after);
 			}
 		}
 		processing.remove(current);

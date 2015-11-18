@@ -28,7 +28,7 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 /**
  * Base class for {@link ArtifactsFilter} based on a {@link FilterableDependency} list.
  *
- * @author Stephane Nicol
+ * @author Stephane Nicoll
  * @author David Turanski
  * @since 1.2
  */

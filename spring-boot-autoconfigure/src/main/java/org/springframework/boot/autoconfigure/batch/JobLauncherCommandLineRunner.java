@@ -198,7 +198,7 @@ public class JobLauncherCommandLineRunner
 					}
 					execute(job, jobParameters);
 				}
-				catch (NoSuchJobException nsje) {
+				catch (NoSuchJobException ex) {
 					logger.debug("No job found in registry for job name: " + jobName);
 					continue;
 				}

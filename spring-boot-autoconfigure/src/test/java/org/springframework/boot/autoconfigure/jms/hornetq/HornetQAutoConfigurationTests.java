@@ -146,7 +146,7 @@ public class HornetQAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedConnectionFactorEvenIfEmbeddedServiceDisabled() {
+	public void embeddedConnectionFactoryEvenIfEmbeddedServiceDisabled() {
 		// No mode is specified
 		load(EmptyConfiguration.class, "spring.hornetq.mode:embedded",
 				"spring.hornetq.embedded.enabled:false");
