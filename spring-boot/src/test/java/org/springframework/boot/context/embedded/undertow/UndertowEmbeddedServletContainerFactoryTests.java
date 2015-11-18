@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.api.ServletContainer;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -39,6 +40,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyObject;
@@ -163,9 +166,22 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		assertForwardHeaderIsUsed(factory);
 	}
 
+	@Test
+	public void eachFactoryUsesADiscreteServletContainer() {
+		assertThat(getServletContainerFromNewFactory(),
+				is(not(equalTo(getServletContainerFromNewFactory()))));
+	}
+
 	@Override
 	protected Object getJspServlet() {
 		return null; // Undertow does not support JSPs
+	}
+
+	private ServletContainer getServletContainerFromNewFactory() {
+		UndertowEmbeddedServletContainer undertow1 = (UndertowEmbeddedServletContainer) getFactory()
+				.getEmbeddedServletContainer();
+		return ((DeploymentManager) ReflectionTestUtils.getField(undertow1, "manager"))
+				.getDeployment().getServletContainer();
 	}
 
 	@Override
