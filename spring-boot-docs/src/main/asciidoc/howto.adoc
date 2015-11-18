@@ -2018,7 +2018,7 @@ To configure IntelliJ IDEA correctly you can use the `idea` Gradle plugin:
 NOTE: IntelliJ IDEA must be configured to use the same Java version as the command line
 Gradle task and `springloaded` *must* be included as a `buildscript` dependency.
 
-You can also additionally enable '`Make Project Automatically`' inside  Intellij IDEA to
+You can also additionally enable '`Make Project Automatically`' inside  IntelliJ IDEA to
 automatically compile your code whenever a file is saved.
 
 

@@ -947,9 +947,9 @@ points to a folder will be monitored for changes.
 ****
 As DevTools _only_ monitors classpath resources, the only way to trigger a change is to
 update the classpath. On Eclipse, saving is actually updating the project, compiling or
-copying resources for you as part of the save action. If you are using Intellij IDEA,
+copying resources for you as part of the save action. If you are using IntelliJ IDEA,
 there is no such thing as a save action since the resources are saved automatically.
-Intellij IDEA users should use the `Build` -> `Make Project` action to achieve the same
+IntelliJ IDEA users should use the `Build` -> `Make Project` action to achieve the same
 result.
 ****
 
