@@ -30,7 +30,7 @@ public class UrlHandlerMapper implements HandlerMapper {
 
 	private final String requestUri;
 
-	private final Handler hander;
+	private final Handler handler;
 
 	/**
 	 * Create a new {@link UrlHandlerMapper}.
@@ -41,13 +41,13 @@ public class UrlHandlerMapper implements HandlerMapper {
 		Assert.hasLength(url, "URL must not be empty");
 		Assert.isTrue(url.startsWith("/"), "URL must start with '/'");
 		this.requestUri = url;
-		this.hander = handler;
+		this.handler = handler;
 	}
 
 	@Override
 	public Handler getHandler(ServerHttpRequest request) {
 		if (this.requestUri.equals(request.getURI().getPath())) {
-			return this.hander;
+			return this.handler;
 		}
 		return null;
 	}

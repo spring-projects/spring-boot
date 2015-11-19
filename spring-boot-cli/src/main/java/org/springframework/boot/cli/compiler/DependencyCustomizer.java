@@ -92,9 +92,9 @@ public class DependencyCustomizer {
 		return new DependencyCustomizer(this) {
 			@Override
 			protected boolean canAdd() {
-				for (String classname : classNames) {
+				for (String className : classNames) {
 					try {
-						DependencyCustomizer.this.loader.loadClass(classname);
+						DependencyCustomizer.this.loader.loadClass(className);
 					}
 					catch (Exception ex) {
 						return true;
@@ -115,9 +115,9 @@ public class DependencyCustomizer {
 		return new DependencyCustomizer(this) {
 			@Override
 			protected boolean canAdd() {
-				for (String classname : classNames) {
+				for (String className : classNames) {
 					try {
-						DependencyCustomizer.this.loader.loadClass(classname);
+						DependencyCustomizer.this.loader.loadClass(className);
 						return false;
 					}
 					catch (Exception ex) {
