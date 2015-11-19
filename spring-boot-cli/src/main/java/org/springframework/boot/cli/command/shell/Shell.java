@@ -175,7 +175,7 @@ public class Shell {
 	}
 
 	/**
-	 * Final handle an interrup signal (CTRL-C).
+	 * Final handle an interrupt signal (CTRL-C).
 	 */
 	protected void handleSigInt() {
 		if (this.commandRunner.handleSigInt()) {

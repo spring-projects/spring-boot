@@ -38,7 +38,7 @@ class ServiceCapabilitiesReportGenerator {
 
 	/**
 	 * Creates an instance using the specified {@link InitializrService}.
-	 * @param initializrService the initialzr service
+	 * @param initializrService the initializr service
 	 */
 	ServiceCapabilitiesReportGenerator(InitializrService initializrService) {
 		this.initializrService = initializrService;

@@ -30,7 +30,7 @@ import groovy.text.TemplateEngine;
 import org.codehaus.groovy.control.CompilationFailedException;
 
 /**
- * Helpful utilties for working with Groovy {@link Template}s.
+ * Helpful utilities for working with Groovy {@link Template}s.
  *
  * @author Dave Syer
  */

@@ -158,11 +158,11 @@ public class HttpTunnelConnection implements TunnelConnection {
 					}
 					catch (IOException ex) {
 						logger.trace("Unexpected connection error", ex);
-						closeQuitely();
+						closeQuietly();
 					}
 				}
 
-				private void closeQuitely() {
+				private void closeQuietly() {
 					try {
 						close();
 					}

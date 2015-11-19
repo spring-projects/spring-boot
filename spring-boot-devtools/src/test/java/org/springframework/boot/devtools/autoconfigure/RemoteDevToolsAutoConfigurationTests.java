@@ -153,7 +153,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 		loadContext("spring.devtools.remote.secret:supersecret",
 				"spring.devtools.remote.restart.enabled:false");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean("remoteRestartHanderMapper");
+		this.context.getBean("remoteRestartHandlerMapper");
 	}
 
 	@Test
@@ -193,7 +193,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 		loadContext("spring.devtools.remote.secret:supersecret",
 				"spring.devtools.remote.debug.enabled:false");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean("remoteDebugHanderMapper");
+		this.context.getBean("remoteDebugHandlerMapper");
 	}
 
 	@Test

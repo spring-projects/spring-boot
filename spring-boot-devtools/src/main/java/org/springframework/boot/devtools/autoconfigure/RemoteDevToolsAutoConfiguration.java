@@ -130,8 +130,8 @@ public class RemoteDevToolsAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(name = "remoteRestartHanderMapper")
-		public UrlHandlerMapper remoteRestartHanderMapper(HttpRestartServer server) {
+		@ConditionalOnMissingBean(name = "remoteRestartHandlerMapper")
+		public UrlHandlerMapper remoteRestartHandlerMapper(HttpRestartServer server) {
 			String url = (this.serverProperties.getContextPath() == null ? ""
 					: this.serverProperties.getContextPath())
 					+ this.properties.getRemote().getContextPath() + "/restart";
@@ -155,8 +155,8 @@ public class RemoteDevToolsAutoConfiguration {
 		private ServerProperties serverProperties;
 
 		@Bean
-		@ConditionalOnMissingBean(name = "remoteDebugHanderMapper")
-		public UrlHandlerMapper remoteDebugHanderMapper(
+		@ConditionalOnMissingBean(name = "remoteDebugHandlerMapper")
+		public UrlHandlerMapper remoteDebugHandlerMapper(
 				@Qualifier("remoteDebugHttpTunnelServer") HttpTunnelServer server) {
 			String url = (this.serverProperties.getContextPath() == null ? ""
 					: this.serverProperties.getContextPath())
