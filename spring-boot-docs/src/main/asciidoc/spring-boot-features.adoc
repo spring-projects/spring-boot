@@ -74,7 +74,7 @@ display (surrounded with brackets and prefixed with `v`). For example `(v1.0)`.
 brackets and prefixed with `v`). For example `(v{spring-boot-version})`.
 |===
 
-TIP: The `SpringBootApplication.setBanner(...)` method can be used if you want to generate
+TIP: The `SpringApplication.setBanner(...)` method can be used if you want to generate
 a banner programmatically. Use the `org.springframework.boot.Banner` interface and
 implement your own `printBanner()` method.
 
