@@ -114,8 +114,7 @@ public class ResourceServerTokenServicesConfiguration {
 				this.details = DEFAULT_RESOURCE_DETAILS;
 			}
 			OAuth2RestTemplate template = getTemplate();
-			template.setInterceptors(Arrays.<ClientHttpRequestInterceptor>asList(
-					new AcceptJsonRequestInterceptor()));
+			template.getInterceptors().add(new AcceptJsonRequestInterceptor());
 			AuthorizationCodeAccessTokenProvider accessTokenProvider = new AuthorizationCodeAccessTokenProvider();
 			accessTokenProvider.setTokenRequestEnhancer(new AcceptJsonRequestEnhancer());
 			template.setAccessTokenProvider(accessTokenProvider);

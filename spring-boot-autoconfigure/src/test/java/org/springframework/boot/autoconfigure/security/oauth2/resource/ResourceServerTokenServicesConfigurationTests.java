@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -41,11 +42,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.stereotype.Component;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
@@ -148,6 +155,19 @@ public class ResourceServerTokenServicesConfigurationTests {
 	}
 
 	@Test
+	public void userInfoWithCustomizer() {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"security.oauth2.resource.userInfoUri:http://example.com",
+				"security.oauth2.resource.tokenInfoUri:http://example.com",
+				"security.oauth2.resource.preferTokenInfo:false");
+		this.context = new SpringApplicationBuilder(ResourceConfiguration.class,
+				Customizer.class).environment(this.environment).web(false).run();
+		UserInfoTokenServices services = this.context
+				.getBean(UserInfoTokenServices.class);
+		assertNotNull(services);
+	}
+
+	@Test
 	public void switchToJwt() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"security.oauth2.resource.jwt.keyValue=FOOBAR");
@@ -241,6 +261,23 @@ public class ResourceServerTokenServicesConfigurationTests {
 		@Bean
 		public EmbeddedServletContainerFactory embeddedServletContainerFactory() {
 			return mock(EmbeddedServletContainerFactory.class);
+		}
+
+	}
+
+	@Component
+	protected static class Customizer implements UserInfoRestTemplateCustomizer {
+
+		@Override
+		public void customize(OAuth2RestTemplate template) {
+			template.getInterceptors().add(new ClientHttpRequestInterceptor() {
+
+				@Override
+				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
+						ClientHttpRequestExecution execution) throws IOException {
+					return execution.execute(request, body);
+				}
+			});
 		}
 
 	}
