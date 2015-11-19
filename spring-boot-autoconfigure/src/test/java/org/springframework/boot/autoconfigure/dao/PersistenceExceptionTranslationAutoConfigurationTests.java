@@ -107,14 +107,14 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 	@Repository
 	private static class TestRepository {
 
-		private final EntityManager entityManger;
+		private final EntityManager entityManager;
 
 		TestRepository(EntityManager entityManager) {
-			this.entityManger = entityManager;
+			this.entityManager = entityManager;
 		}
 
 		public void doSomething() {
-			this.entityManger.persist(null);
+			this.entityManager.persist(null);
 		}
 	}
 

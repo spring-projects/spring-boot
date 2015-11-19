@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Tests for {@link HornetQEmbeddedConfigurationFactory}.
  *
- * @author Stephane Nicol
+ * @author Stephane Nicoll
  * @author Phillip Webb
  */
 public class HornetQEmbeddedConfigurationFactoryTests {
@@ -55,7 +55,7 @@ public class HornetQEmbeddedConfigurationFactoryTests {
 	}
 
 	@Test
-	public void generatedClusterPassoword() throws Exception {
+	public void generatedClusterPassword() throws Exception {
 		HornetQProperties properties = new HornetQProperties();
 		Configuration configuration = new HornetQEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
@@ -63,7 +63,7 @@ public class HornetQEmbeddedConfigurationFactoryTests {
 	}
 
 	@Test
-	public void specificClusterPassoword() throws Exception {
+	public void specificClusterPassword() throws Exception {
 		HornetQProperties properties = new HornetQProperties();
 		properties.getEmbedded().setClusterPassword("password");
 		Configuration configuration = new HornetQEmbeddedConfigurationFactory(properties)

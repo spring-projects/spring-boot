@@ -75,12 +75,12 @@ enum DatabaseDriver {
 	ORACLE("oracle.jdbc.OracleDriver", "oracle.jdbc.xa.client.OracleXADataSource"),
 
 	/**
-	 * Postres.
+	 * Postgres.
 	 */
 	POSTGRESQL("org.postgresql.Driver", "org.postgresql.xa.PGXADataSource"),
 
 	/**
-	 * JTDS.
+	 * jTDS.
 	 */
 	JTDS("net.sourceforge.jtds.jdbc.Driver"),
 

@@ -142,7 +142,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedConnectionFactorEvenIfEmbeddedServiceDisabled() {
+	public void embeddedConnectionFactoryEvenIfEmbeddedServiceDisabled() {
 		// No mode is specified
 		load(EmptyConfiguration.class, "spring.artemis.mode:embedded",
 				"spring.artemis.embedded.enabled:false");

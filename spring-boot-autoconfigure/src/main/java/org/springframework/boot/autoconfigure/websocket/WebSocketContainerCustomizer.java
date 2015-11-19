@@ -30,7 +30,7 @@ import org.springframework.core.ResolvableType;
  * {@link EmbeddedServletContainerCustomizer} to configure websockets for a given
  * {@link EmbeddedServletContainerFactory}.
  *
- * @param <T> the embded servlet container factory
+ * @param <T> the embedded servlet container factory
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
