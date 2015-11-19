@@ -3844,6 +3844,21 @@ in order to run your integration tests using random ports. For example:
 	}
 ----
 
+Alternatively, you can use the `randomPort` convenience attribute to set `server.port=0`.
+For example:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@RunWith(SpringJUnit4ClassRunner.class)
+	@SpringApplicationConfiguration(MyApplication.class)
+	@WebIntegrationTest(randomPort = true)
+	public class SomeIntegrationTests {
+
+		// ...
+
+	}
+----
+
 See <<howto-discover-the-http-port-at-runtime>> for a description of how you can discover
 the actual port that was allocated for the duration of the tests.
 
