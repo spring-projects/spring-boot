@@ -240,7 +240,7 @@ public class FileSystemWatcher {
 
 	/**
 	 * Stop monitoring the source folders.
-	 * @param remainingScans the number of scans remaming
+	 * @param remainingScans the number of remaining scans
 	 */
 	synchronized void stopAfter(int remainingScans) {
 		Thread thread = this.watchThread;

@@ -147,7 +147,7 @@ public class ServerPropertiesAutoConfigurationTests {
 	@Test
 	public void testAccidentalMultipleServerPropertiesBeans() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, MutiServerPropertiesBeanConfig.class,
+		this.context.register(Config.class, MultiServerPropertiesBeanConfig.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.thrown.expect(ApplicationContextException.class);
@@ -222,7 +222,7 @@ public class ServerPropertiesAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class MutiServerPropertiesBeanConfig {
+	protected static class MultiServerPropertiesBeanConfig {
 
 		@Bean
 		public ServerProperties serverPropertiesOne() {

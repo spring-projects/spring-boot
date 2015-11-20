@@ -192,7 +192,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 		}
 
 		@Bean
-		public TomcatWebSocketContainerCustomizer tomcatCuztomiser() {
+		public TomcatWebSocketContainerCustomizer tomcatCustomizer() {
 			return new TomcatWebSocketContainerCustomizer();
 		}
 

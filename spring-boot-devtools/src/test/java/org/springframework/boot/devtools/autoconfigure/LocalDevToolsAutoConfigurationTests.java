@@ -92,7 +92,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultPropertyCanBeOverridenFromCommandLine() throws Exception {
+	public void defaultPropertyCanBeOverriddenFromCommandLine() throws Exception {
 		this.context = initializeAndRun(Config.class, "--spring.thymeleaf.cache=true");
 		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
 		resolver.initialize();
@@ -100,7 +100,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultPropertyCanBeOverridenFromUserHomeProperties() throws Exception {
+	public void defaultPropertyCanBeOverriddenFromUserHomeProperties() throws Exception {
 		String userHome = System.getProperty("user.home");
 		System.setProperty("user.home",
 				new File("src/test/resources/user-home").getAbsolutePath());

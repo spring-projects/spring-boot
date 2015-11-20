@@ -223,7 +223,7 @@ public class HttpTunnelServerTests {
 	}
 
 	@Test
-	public void requestRecievedOutOfOrder() throws Exception {
+	public void requestReceivedOutOfOrder() throws Exception {
 		MockHttpConnection h1 = new MockHttpConnection();
 		MockHttpConnection h2 = new MockHttpConnection("1+2", 1);
 		MockHttpConnection h3 = new MockHttpConnection("+3", 2);

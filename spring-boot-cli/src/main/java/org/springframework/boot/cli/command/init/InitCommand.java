@@ -48,7 +48,7 @@ public class InitCommand extends OptionParsingCommand {
 
 	public InitCommand(InitOptionHandler handler) {
 		super("init",
-				"Initialize a new project using Spring " + "Initialzr (start.spring.io)",
+				"Initialize a new project using Spring " + "Initializr (start.spring.io)",
 				handler);
 	}
 
