@@ -17,7 +17,7 @@
 # Default-Stop:      0 1 6
 # Short-Description: {{initInfoShortDescription:Spring Boot Application}}
 # Description:       {{initInfoDescription:Spring Boot Application}}
-# chkconfig:         2345 99 01
+# chkconfig:         {{initInfoChkconfig:2345 99 01}}
 ### END INIT INFO
 
 [[ -n "$DEBUG" ]] && set -x
