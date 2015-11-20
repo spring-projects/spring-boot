@@ -392,7 +392,7 @@ want the other Boot features but not this one)
 
 |`executable`
 |Boolean flag to indicate if jar files are fully executable on Unix like operating
- systems. Defaults to `true`.
+ systems. Defaults to `false`.
 
 |`embeddedLaunchScript`
 |The embedded launch script to prepend to the front of the jar if it is fully executable.
