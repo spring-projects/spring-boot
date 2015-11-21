@@ -58,6 +58,17 @@ public class SendGridAutoConfigurationTests {
 		assertEquals("secret", ReflectionTestUtils.getField(sendGrid, "password"));
 	}
 
+	@Test
+	public void expectedSendGridBeanCreated_UsingApiKey() {
+
+		loadContext("spring.sendgrid.apikey:SG.SECRET-API-KEY");
+
+		SendGrid sendGrid = this.context.getBean(SendGrid.class);
+
+		assertEquals("SG.SECRET-API-KEY",
+				ReflectionTestUtils.getField(sendGrid, "password"));
+	}
+
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void autoConfigurationNotFiredWhenPropertiesNotSet() {
 		loadContext();

@@ -22,11 +22,13 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -37,7 +39,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnClass(SendGrid.class)
-@ConditionalOnProperty(prefix = "spring.sendgrid", value = "username")
+@Conditional(SendGridAutoConfiguration.SendGridPropertyCondition.class)
 @EnableConfigurationProperties(SendGridProperties.class)
 public class SendGridAutoConfiguration {
 
@@ -47,15 +49,39 @@ public class SendGridAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(SendGrid.class)
 	public SendGrid sendGrid() {
-		SendGrid sendGrid = new SendGrid(this.properties.getUsername(),
-				this.properties.getPassword());
+
+		SendGrid sendGrid;
+
+		if (this.properties.getApikey() != null) {
+			sendGrid = new SendGrid(this.properties.getApikey());
+		}
+		else {
+			sendGrid = new SendGrid(this.properties.getUsername(),
+					this.properties.getPassword());
+		}
+
 		if (this.properties.isProxyConfigured()) {
 			HttpHost proxy = new HttpHost(this.properties.getProxy().getHost(),
 					this.properties.getProxy().getPort());
 			sendGrid.setClient(HttpClientBuilder.create().setProxy(proxy)
 					.setUserAgent("sendgrid/" + sendGrid.getVersion() + ";java").build());
 		}
+
 		return sendGrid;
 	}
 
+	static class SendGridPropertyCondition extends AnyNestedCondition {
+
+		SendGridPropertyCondition() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@ConditionalOnProperty(prefix = "spring.sendgrid", value = "username")
+		private class SendGridUserProperty {
+		}
+
+		@ConditionalOnProperty(prefix = "spring.sendgrid", value = "apikey")
+		private class SendGridApiKeyProperty {
+		}
+	}
 }
