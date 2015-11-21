@@ -123,7 +123,7 @@ public class ClassLoaderFilesTests {
 	}
 
 	@Test
-	public void serialzie() throws Exception {
+	public void serialize() throws Exception {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.ADDED, new byte[10]);
 		this.files.addFile("myfile", file);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();

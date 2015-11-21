@@ -94,12 +94,12 @@ public class ClassPathFileSystemWatcherTests {
 	public static class Config {
 
 		@Autowired
-		public Environment environemnt;
+		public Environment environment;
 
 		@Bean
 		public ClassPathFileSystemWatcher watcher() {
 			FileSystemWatcher watcher = new FileSystemWatcher(false, 100, 10);
-			URL[] urls = this.environemnt.getProperty("urls", URL[].class);
+			URL[] urls = this.environment.getProperty("urls", URL[].class);
 			return new ClassPathFileSystemWatcher(
 					new MockFileSystemWatcherFactory(watcher), restartStrategy(), urls);
 		}

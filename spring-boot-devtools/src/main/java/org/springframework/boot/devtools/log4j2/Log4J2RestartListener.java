@@ -55,9 +55,9 @@ public class Log4J2RestartListener implements RestartListener {
 				"hooks");
 		ReflectionUtils.makeAccessible(hooksField);
 		@SuppressWarnings("unchecked")
-		Collection<Cancellable> state = (Collection<Cancellable>) ReflectionUtils
+		Collection<Cancellable> hooks = (Collection<Cancellable>) ReflectionUtils
 				.getField(hooksField, shutdownCallbackRegistry);
-		state.clear();
+		hooks.clear();
 	}
 
 }

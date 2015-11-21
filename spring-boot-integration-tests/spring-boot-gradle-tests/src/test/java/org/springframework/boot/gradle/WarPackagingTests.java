@@ -72,13 +72,13 @@ public class WarPackagingTests {
 	}
 
 	@Test
-	public void onlyTomcatIsPackackedInWebInfLibProvided() throws IOException {
+	public void onlyTomcatIsPackagedInWebInfLibProvided() throws IOException {
 		checkWebInfEntriesForServletContainer("tomcat",
 				TOMCAT_EXPECTED_IN_WEB_INF_LIB_PROVIDED);
 	}
 
 	@Test
-	public void onlyJettyIsPackackedInWebInfLibProvided() throws IOException {
+	public void onlyJettyIsPackagedInWebInfLibProvided() throws IOException {
 		checkWebInfEntriesForServletContainer("jetty",
 				JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED);
 	}

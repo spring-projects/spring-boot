@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class InMemoryMessageRespository implements MessageRepository {
+public class InMemoryMessageRepository implements MessageRepository {
 
 	private static AtomicLong counter = new AtomicLong();
 

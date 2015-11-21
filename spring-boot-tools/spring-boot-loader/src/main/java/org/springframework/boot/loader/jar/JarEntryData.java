@@ -155,7 +155,7 @@ public final class JarEntryData {
 	}
 
 	/**
-	 * Decode MSDOS Date Time details. See
+	 * Decode MS-DOS Date Time details. See
 	 * <a href="http://mindprod.com/jgloss/zip.html">mindprod.com/jgloss/zip.html</a> for
 	 * more details of the format.
 	 * @param date the date part

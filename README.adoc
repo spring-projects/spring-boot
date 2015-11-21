@@ -72,7 +72,7 @@ Having trouble with Spring Boot? We'd like to help!
 
 == Reporting Issues
 Spring Boot uses GitHub's integrated issue tracking system to record bugs and feature
-requests. If you want to raise an issue, please follow the recommendations bellow:
+requests. If you want to raise an issue, please follow the recommendations below:
 
 * Before you log a bug, please https://github.com/spring-projects/spring-boot/search?type=Issues[search the issue tracker]
   to see if someone has already reported the problem.

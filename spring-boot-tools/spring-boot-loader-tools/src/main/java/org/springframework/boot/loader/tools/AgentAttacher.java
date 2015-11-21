@@ -28,14 +28,14 @@ import java.util.List;
  */
 public abstract class AgentAttacher {
 
-	private static final String VIRTUAL_MACHINE_CLASSNAME = "com.sun.tools.attach.VirtualMachine";
+	private static final String VIRTUAL_MACHINE_CLASS_NAME = "com.sun.tools.attach.VirtualMachine";
 
 	public static void attach(File agent) {
 		try {
 			String name = ManagementFactory.getRuntimeMXBean().getName();
 			String pid = name.substring(0, name.indexOf('@'));
 			ClassLoader classLoader = JvmUtils.getToolsClassLoader();
-			Class<?> vmClass = classLoader.loadClass(VIRTUAL_MACHINE_CLASSNAME);
+			Class<?> vmClass = classLoader.loadClass(VIRTUAL_MACHINE_CLASS_NAME);
 			Method attachMethod = vmClass.getDeclaredMethod("attach", String.class);
 			Object vm = attachMethod.invoke(null, pid);
 			Method loadAgentMethod = vmClass.getDeclaredMethod("loadAgent", String.class);

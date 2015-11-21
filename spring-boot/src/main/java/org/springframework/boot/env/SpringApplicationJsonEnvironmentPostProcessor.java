@@ -40,7 +40,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 /**
  * An {@link EnvironmentPostProcessor} that parses JSON from
  * {@code spring.application.json} or equivalently
- * {@link SpringApplicationJsonEnvironmentPostProcessor} and adds it as a map property
+ * {@code SPRING_APPLICATION_JSON} and adds it as a map property
  * source to the {@link Environment}. The new properties are added with higher priority
  * than the system properties.
  *
