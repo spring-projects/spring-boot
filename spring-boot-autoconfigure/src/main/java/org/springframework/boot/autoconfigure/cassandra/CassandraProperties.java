@@ -117,15 +117,6 @@ public class CassandraProperties {
 	 */
 	private boolean ssl = false;
 
-	/**
-	 * Cassandra username.
-	 */
-	private String username;
-	/**
-	 * Cassandra password.
-	 */
-	private String password;
-
 	public String getKeyspaceName() {
 		return this.keyspaceName;
 	}
@@ -254,22 +245,6 @@ public class CassandraProperties {
 
 	public void setSsl(boolean ssl) {
 		this.ssl = ssl;
-	}
-
-	public String getUsername() {
-		return this.username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return this.password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 }
