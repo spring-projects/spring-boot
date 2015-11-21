@@ -36,7 +36,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Integration tests for unsecured service endpoints (even with Spring Security on
+ * Integration tests for insecured service endpoints (even with Spring Security on
  * classpath).
  *
  * @author Dave Syer
@@ -46,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 @WebIntegrationTest(value = { "management.security.enabled:false" }, randomPort = true)
 @DirtiesContext
 @ActiveProfiles("unsecure-management")
-public class UnsecureManagementSampleActuatorApplicationTests {
+public class InsecureManagementSampleActuatorApplicationTests {
 
 	@Value("${local.server.port}")
 	private int port;

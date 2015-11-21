@@ -146,7 +146,7 @@ public class HttpTunnelServerTests {
 	}
 
 	@Test
-	public void intialRequestIsUsedForFirstServerResponse() throws Exception {
+	public void initialRequestIsUsedForFirstServerResponse() throws Exception {
 		this.servletRequest.addHeader(SEQ_HEADER, "1");
 		this.servletRequest.setContent("hello".getBytes());
 		this.server.handle(this.request, this.response);
@@ -167,7 +167,7 @@ public class HttpTunnelServerTests {
 	}
 
 	@Test
-	public void typicalReqestResponseTraffic() throws Exception {
+	public void typicalRequestResponseTraffic() throws Exception {
 		MockHttpConnection h1 = new MockHttpConnection();
 		this.server.handle(h1);
 		MockHttpConnection h2 = new MockHttpConnection("hello server", 1);

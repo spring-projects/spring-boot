@@ -60,7 +60,7 @@ added after the original pull request but before a merge.
 If you don't have an IDE preference we would recommend that you use
 http://www.springsource.com/developer/sts[Spring Tools Suite] or
 http://eclipse.org[Eclipse] when working with the code. We use the
-http://eclipse.org/m2e/[m2eclipe] eclipse plugin for maven support. Other IDEs and tools
+http://eclipse.org/m2e/[M2Eclipse] eclipse plugin for maven support. Other IDEs and tools
 should also work without issue.
 
 
@@ -168,7 +168,7 @@ easier to navigate.
 
 ==== Manual installation with m2eclipse
 If you prefer to install Eclipse yourself we recommend that you use the
-http://eclipse.org/m2e/[m2eclipe] eclipse plugin. If you don't already have m2eclipse
+http://eclipse.org/m2e/[M2Eclipse] eclipse plugin. If you don't already have m2eclipse
 installed it is available from the "Eclipse marketplace".
 
 Spring Boot includes project specific source formatting settings, in order to have these

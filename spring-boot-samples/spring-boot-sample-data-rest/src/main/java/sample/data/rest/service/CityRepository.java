@@ -24,7 +24,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(collectionResourceRel = "citys", path = "cities")
+@RepositoryRestResource(collectionResourceRel = "cities", path = "cities")
 interface CityRepository extends PagingAndSortingRepository<City, Long> {
 
 	Page<City> findByNameContainingAndCountryContainingAllIgnoringCase(

@@ -51,8 +51,8 @@ public final class Versions {
 
 	private static String evaluateExpression(String expression) {
 		try {
-			XPathFactory xPathfactory = XPathFactory.newInstance();
-			XPath xpath = xPathfactory.newXPath();
+			XPathFactory xPathFactory = XPathFactory.newInstance();
+			XPath xpath = xPathFactory.newXPath();
 			XPathExpression expr = xpath.compile(expression);
 			String version = expr.evaluate(
 					new InputSource(new FileReader("target/dependencies-pom.xml")));

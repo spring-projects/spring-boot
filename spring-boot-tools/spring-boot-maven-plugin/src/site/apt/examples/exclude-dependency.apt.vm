@@ -18,7 +18,7 @@
   There are tree ways one can exclude a dependency from being packaged/used at runtime
 
     * Exclude a specific artifact identified by <<<groupId>>> and <<<artifactId>>>
-      (optionnaly with a <<<classifier>>> if needed)
+      (optionally with a <<<classifier>>> if needed)
 
     * Exclude any artifact matching a given <<<artifactId>>>
 

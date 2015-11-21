@@ -43,7 +43,7 @@ import org.springframework.boot.gradle.SpringBootPluginExtension;
  */
 public class AgentTasksEnhancer implements Action<Project> {
 
-	private static final String SPRING_LOADED_AGENT_CLASSNAME = "org.springsource.loaded.agent.SpringLoadedAgent";
+	private static final String SPRING_LOADED_AGENT_CLASS_NAME = "org.springsource.loaded.agent.SpringLoadedAgent";
 
 	private File agent;
 
@@ -83,7 +83,7 @@ public class AgentTasksEnhancer implements Action<Project> {
 
 	private File getSpringLoadedAgent() {
 		try {
-			Class<?> loaded = Class.forName(SPRING_LOADED_AGENT_CLASSNAME);
+			Class<?> loaded = Class.forName(SPRING_LOADED_AGENT_CLASS_NAME);
 			if (loaded != null) {
 				CodeSource source = loaded.getProtectionDomain().getCodeSource();
 				if (source != null) {

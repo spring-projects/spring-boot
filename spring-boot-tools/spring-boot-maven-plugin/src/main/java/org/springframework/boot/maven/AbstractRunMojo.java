@@ -52,7 +52,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  */
 public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
-	private static final String SPRING_LOADED_AGENT_CLASSNAME = "org.springsource.loaded.agent.SpringLoadedAgent";
+	private static final String SPRING_LOADED_AGENT_CLASS_NAME = "org.springsource.loaded.agent.SpringLoadedAgent";
 
 	/**
 	 * The Maven project.
@@ -177,7 +177,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private void findAgent() {
 		try {
 			if (this.agent == null || this.agent.length == 0) {
-				Class<?> loaded = Class.forName(SPRING_LOADED_AGENT_CLASSNAME);
+				Class<?> loaded = Class.forName(SPRING_LOADED_AGENT_CLASS_NAME);
 				if (loaded != null) {
 					if (this.noverify == null) {
 						this.noverify = true;
@@ -434,7 +434,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		public synchronized void rethrowUncaughtException()
 				throws MojoExecutionException {
 			if (this.exception != null) {
-				throw new MojoExecutionException("An exception occured while running. "
+				throw new MojoExecutionException("An exception occurred while running. "
 						+ this.exception.getMessage(), this.exception);
 			}
 		}

@@ -71,17 +71,17 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 	 * ignored.
 	 * <p>
 	 * Leaves the stream open when done.
-	 * @param inputstream the source input stream
+	 * @param inputStream the source input stream
 	 * @param charset the charset of the input
 	 * @return this builder
 	 * @throws IOException in case of I/O errors
 	 */
 	public ConfigurationMetadataRepositoryJsonBuilder withJsonResource(
-			InputStream inputstream, Charset charset) throws IOException {
-		if (inputstream == null) {
+			InputStream inputStream, Charset charset) throws IOException {
+		if (inputStream == null) {
 			throw new IllegalArgumentException("InputStream must not be null.");
 		}
-		this.repositories.add(add(inputstream, charset));
+		this.repositories.add(add(inputStream, charset));
 		return this;
 	}
 
