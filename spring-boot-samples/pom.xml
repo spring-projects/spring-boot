@@ -67,6 +67,7 @@
 		<module>spring-boot-sample-metrics-dropwizard</module>
 		<module>spring-boot-sample-metrics-opentsdb</module>
 		<module>spring-boot-sample-metrics-redis</module>
+		<module>spring-boot-sample-msgpack</module>
 		<module>spring-boot-sample-parent-context</module>
 		<module>spring-boot-sample-profile</module>
 		<module>spring-boot-sample-property-validation</module>
