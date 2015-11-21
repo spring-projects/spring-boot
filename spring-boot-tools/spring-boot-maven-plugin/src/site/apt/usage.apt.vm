@@ -12,7 +12,7 @@ Usage
   The plugin provides several goals to work with a Spring Boot application:
 
   * <<<repackage>>>: create a jar or war file that is auto-executable. It can replace the regular artifact or can be
-    attached to the build lifecyle with a separate <<classifier>>.
+    attached to the build lifecycle with a separate <<classifier>>.
 
   * <<<run>>>: run your Spring Boot application with several options to pass parameters to it.
 
@@ -56,7 +56,7 @@ Usage
   need to be excluded, you can use one of the exclude options,
   see {{{./examples/exclude-dependency.html}Exclude a dependency}} for more details.
 
-  The original (i.e. non exectuable) artifact is renamed to <<<.original>>> by default but it is also
+  The original (i.e. non executable) artifact is renamed to <<<.original>>> by default but it is also
   possible to keep the original artifact using a custom classifier.
 
   The plugin rewrites your manifest, and in particular it manages the <<Main-Class>> and <<Start-Class>>
@@ -116,7 +116,7 @@ mvn spring-boot:run
 
   If you need to specify some JVM arguments (i.e. for debugging purposes), you can use
   the <<<jvmArguments>>> parameter, see {{{./examples/run-debug.html}Debug the application}}
-  for more details. As a convenience, the   profiles to enable are handed by a specific
+  for more details. As a convenience, the profiles to enable are handled by a specific
   property (<<<profiles>>>), see {{{./examples/run-profiles.html}Specify active profiles}}.
 
   Spring Boot 1.3 has introduced <<<devtools>>>, a module to improve the development-time
@@ -135,7 +135,7 @@ mvn spring-boot:run
 ---
 
   When <<<devtools>>> is running, it detects change when you recompile your application and
-  automatically refreshes it. This not only work for resources but code as well. It also
+  automatically refreshes it. This works for not only resources but code as well. It also
   provides a LiveReload server so that it can automatically trigger a browser refresh whenever
   things change.
 
@@ -148,7 +148,7 @@ spring.devtools.remote.restart.enabled=false
 ---
 
   Prior to <<<devtools>>>, the plugin supported hot refreshing of resources by default which has
-  now be disabled in favor of the solution desribed above. You can restore it at any time by
+  now be disabled in favor of the solution described above. You can restore it at any time by
   configuring your project:
 
 ---
@@ -173,7 +173,7 @@ spring.devtools.remote.restart.enabled=false
   When <<<addResources>>> is enabled, any <<src/main/resources>> folder will be added to
   the application classpath when you run the application and any duplicate found in
   <<target/classes>> will be removed. This allows hot refreshing of resources which can be very
-  useful when developing web applications. For example, you can work on HTML, CSS or JavaScipt
+  useful when developing web applications. For example, you can work on HTML, CSS or JavaScript
   files and see your changes immediately without recompiling your application. It is also a helpful
   way of allowing your front end developers to work without needing to download and install a Java
   IDE.
@@ -196,7 +196,7 @@ spring.devtools.remote.restart.enabled=false
   While you may start your Spring Boot application very easily from your test (or test suite) itself,
   it may be desirable to handle that in the build itself. To make sure that the lifecycle of you Spring
   Boot application is properly managed <around> your integration tests, you can use the <<<start>>> and
-  <<<stop>>> goals as desribed below:
+  <<<stop>>> goals as described below:
 
 ---
 <build>

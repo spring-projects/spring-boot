@@ -58,7 +58,7 @@ public class HttpTunnelConnectionTests {
 
 	private String url;
 
-	private ByteArrayOutputStream incommingData;
+	private ByteArrayOutputStream incomingData;
 
 	private WritableByteChannel incomingChannel;
 
@@ -71,8 +71,8 @@ public class HttpTunnelConnectionTests {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.url = "http://localhost:" + this.port;
-		this.incommingData = new ByteArrayOutputStream();
-		this.incomingChannel = Channels.newChannel(this.incommingData);
+		this.incomingData = new ByteArrayOutputStream();
+		this.incomingChannel = Channels.newChannel(this.incomingData);
 	}
 
 	@Test
@@ -129,7 +129,7 @@ public class HttpTunnelConnectionTests {
 		write(channel, "hello");
 		write(channel, "1+1");
 		write(channel, "1+2");
-		assertThat(this.incommingData.toString(), equalTo("hi=2=3"));
+		assertThat(this.incomingData.toString(), equalTo("hi=2=3"));
 	}
 
 	@Test
@@ -140,7 +140,7 @@ public class HttpTunnelConnectionTests {
 		this.requestFactory.willRespond("hi");
 		TunnelChannel channel = openTunnel(true);
 		write(channel, "hello");
-		assertThat(this.incommingData.toString(), equalTo("hi"));
+		assertThat(this.incomingData.toString(), equalTo("hi"));
 		assertThat(this.requestFactory.getExecutedRequests().size(), greaterThan(10));
 	}
 

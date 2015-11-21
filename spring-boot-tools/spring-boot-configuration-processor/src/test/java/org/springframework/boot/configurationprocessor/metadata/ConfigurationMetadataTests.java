@@ -34,12 +34,12 @@ public class ConfigurationMetadataTests {
 	}
 
 	@Test
-	public void toDashedCaseWordsUnderScore() {
+	public void toDashedCaseWordsUnderscore() {
 		assertThat(toDashedCase("Word_With_underscore"), is("word_with_underscore"));
 	}
 
 	@Test
-	public void toDashedCaseWordsSeveralUnderScores() {
+	public void toDashedCaseWordsSeveralUnderscores() {
 		assertThat(toDashedCase("Word___With__underscore"),
 				is("word___with__underscore"));
 	}

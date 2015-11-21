@@ -188,7 +188,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void singleDeprecatedProprety() throws Exception {
+	public void singleDeprecatedProperty() throws Exception {
 		Class<?> type = DeprecatedSingleProperty.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata, containsGroup("singledeprecated").fromSource(type));

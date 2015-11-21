@@ -145,7 +145,7 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void inputSteamReadOffsetBytes() throws Exception {
+	public void inputStreamReadOffsetBytes() throws Exception {
 		byte[] b = new byte[7];
 		this.inputStream.skip(1);
 		int amountRead = this.inputStream.read(b, 2, 3);

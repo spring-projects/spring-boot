@@ -48,7 +48,7 @@ public class SampleActuatorUiApplication {
 	@Bean
 	public SecurityProperties securityProperties() {
 		SecurityProperties security = new SecurityProperties();
-		security.getBasic().setPath(""); // empty so home page is unsecured
+		security.getBasic().setPath(""); // empty so home page is insecured
 		return security;
 	}
 

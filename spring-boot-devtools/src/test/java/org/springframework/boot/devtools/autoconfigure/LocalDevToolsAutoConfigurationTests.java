@@ -139,7 +139,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void liveReloadTriggerdOnClassPathChangeWithoutRestart() throws Exception {
+	public void liveReloadTriggeredOnClassPathChangeWithoutRestart() throws Exception {
 		this.context = initializeAndRun(ConfigWithMockLiveReload.class);
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
@@ -150,7 +150,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void liveReloadNotTriggerdOnClassPathChangeWithRestart() throws Exception {
+	public void liveReloadNotTriggeredOnClassPathChangeWithRestart() throws Exception {
 		this.context = initializeAndRun(ConfigWithMockLiveReload.class);
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);

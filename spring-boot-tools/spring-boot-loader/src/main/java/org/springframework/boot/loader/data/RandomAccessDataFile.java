@@ -87,7 +87,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	/**
-	 * Returns the underling File.
+	 * Returns the underlying File.
 	 * @return the underlying file
 	 */
 	public File getFile() {

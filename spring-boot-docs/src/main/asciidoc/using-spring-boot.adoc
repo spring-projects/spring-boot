@@ -913,7 +913,7 @@ dependencies out-of-the-box so you may want to have a look to the
 {propdeps-plugin}[`propdeps-plugin`] in the meantime.
 
 TIP: If you want to ensure that devtools is never included in a production build, you can
-use set the `excludeDevtools` build property to completely remove the JAR. The property is
+use the `excludeDevtools` build property to completely remove the JAR. The property is
 supported with both the Maven and Gradle plugins.
 
 
@@ -1058,7 +1058,7 @@ in the same way.
 ==== Customizing the restart classloader
 As described in the <<using-spring-boot-restart-vs-reload>> section above, restart
 functionality is implemented by using two classloaders. For most applications this
-approach works well, however, sometimes in can cause classloading issues.
+approach works well, however, sometimes it can cause classloading issues.
 
 By default, any open project in your IDE will be loaded using the "`restart`" classloader,
 and any regular `.jar` file will be loaded using the "`base`" classloader. If you work on
@@ -1067,7 +1067,7 @@ customize things. To do this you can create a `META-INF/spring-devtools.properti
 
 The `spring-devtools.properties` file can contain `restart.exclude.` and
 `restart.include.` prefixed properties. The `include` elements are items that should be
-pulled-up into the "`restart`" classloader, and the `exclude` elements are items that
+pulled up into the "`restart`" classloader, and the `exclude` elements are items that
 should be pushed down into the "`base`" classloader. The value of the property is a regex
 pattern that will be applied to the classpath.
 

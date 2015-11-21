@@ -34,16 +34,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 /**
- * Integration tests for unsecured service endpoints (even with Spring Security on
+ * Integration tests for insecured service endpoints (even with Spring Security on
  * classpath).
  *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleActuatorApplication.class)
-@WebIntegrationTest(value = { "security.basic.enabled:false" }, randomPort = true)
+@WebIntegrationTest(value = { "security.basic.enabled:false",
+		"server.servletPath:/spring" }, randomPort = true)
 @DirtiesContext
-public class UnsecureSampleActuatorApplicationTests {
+public class ServletPathInsecureSampleActuatorApplicationTests {
 
 	@Value("${local.server.port}")
 	private int port;
@@ -52,13 +53,21 @@ public class UnsecureSampleActuatorApplicationTests {
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate()
-				.getForEntity("http://localhost:" + this.port, Map.class);
+				.getForEntity("http://localhost:" + this.port + "/spring/", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertEquals("Hello Phil", body.get("message"));
 		assertFalse("Wrong headers: " + entity.getHeaders(),
 				entity.getHeaders().containsKey("Set-Cookie"));
+	}
+
+	@Test
+	public void testMetricsIsSecure() throws Exception {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/spring/metrics", Map.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
 }
