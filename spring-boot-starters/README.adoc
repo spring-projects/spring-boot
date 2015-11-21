@@ -55,4 +55,7 @@ do as they were designed before this was clarified.
 | https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
 | https://github.com/domix/spring-boot-starter-jade4j
 
+| https://www.google.com/recaptcha[Google's reCAPTCHA]
+| https://github.com/mkopylec/recaptcha-spring-boot-starter
+
 |===
