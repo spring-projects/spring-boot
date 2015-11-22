@@ -9,7 +9,8 @@ application using HTTP endpoints, with JMX or even by remote shell (SSH or Telne
 Auditing, health and metrics gathering can be automatically applied to your application.
 
 Actuator HTTP endpoints are only available with a Spring MVC-based application. In
-particular, it will not work with Jersey unless you enable Spring MVC as well.
+particular, it will not work with Jersey <<howto.adoc#howto-use-actuator-with-jersey,
+unless you enable Spring MVC as well.>>
 --
 
 
