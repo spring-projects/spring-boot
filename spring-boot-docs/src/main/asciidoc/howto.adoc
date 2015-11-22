@@ -1776,6 +1776,18 @@ See also the section on <<boot-features-error-handling, Error Handling>> for det
 how to register handlers in the servlet container.
 
 
+
+[[howto-make-actuator-and-jersey-work]]
+=== Actuator and Jersey
+For the moment actuator HTTP endpoints are only available for Spring MVC-based applications. If you want to use Jersey
+and still use the actuator you will need to change some mappings - by default both Jersey and Spring MVC dispatcher servlets are mapped
+to the same path (`/`). You will need to change the path for one of them (by modifying `server.servletPath` for Spring MVC
+ or `spring.jersey.applicationPath` for Jersey)
+
+For example if you add `server.servletPath=/system` into application.properties the actuator http endpoints will be available under
+`/system/...` path
+
+
 [[howto-security]]
 == Security
 
