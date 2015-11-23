@@ -78,7 +78,7 @@ brackets and prefixed with `v`). For example `(v{spring-boot-version})`.
 {sc-spring-boot}/ansi/AnsiPropertySource.{sc-ext}[`AnsiPropertySource`] for details.
 |===
 
-TIP: The `SpringBootApplication.setBanner(...)` method can be used if you want to generate
+TIP: The `SpringApplication.setBanner(...)` method can be used if you want to generate
 a banner programmatically. Use the `org.springframework.boot.Banner` interface and
 implement your own `printBanner()` method.
 
