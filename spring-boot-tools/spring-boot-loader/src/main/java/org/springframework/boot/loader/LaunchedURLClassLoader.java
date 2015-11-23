@@ -82,7 +82,13 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			if (name.equals("") && hasURLs()) {
 				return getURLs()[0];
 			}
-			return super.findResource(name);
+			Handler.setUseFastConnectionExceptions(true);
+			try {
+				return super.findResource(name);
+			}
+			finally {
+				Handler.setUseFastConnectionExceptions(false);
+			}
 		}
 		catch (IllegalArgumentException ex) {
 			return null;
@@ -94,7 +100,13 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		if (name.equals("") && hasURLs()) {
 			return Collections.enumeration(Arrays.asList(getURLs()));
 		}
-		return super.findResources(name);
+		Handler.setUseFastConnectionExceptions(true);
+		try {
+			return super.findResources(name);
+		}
+		finally {
+			Handler.setUseFastConnectionExceptions(false);
+		}
 	}
 
 	private boolean hasURLs() {
@@ -291,6 +303,6 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			return this.localResources.nextElement();
 		}
 
-	};
+	}
 
 }
