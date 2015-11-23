@@ -98,4 +98,25 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	}
 
+	@Configuration
+	@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
+	static class CommonsDbcp2PoolDataSourceMetadataProviderConfiguration {
+
+		@Bean
+		public DataSourcePoolMetadataProvider commonsDbcp2PoolDataSourceMetadataProvider() {
+			return new DataSourcePoolMetadataProvider() {
+				@Override
+				public DataSourcePoolMetadata getDataSourcePoolMetadata(
+						DataSource dataSource) {
+					if (dataSource instanceof org.apache.commons.dbcp2.BasicDataSource) {
+						return new CommonsDbcp2DataSourcePoolMetadata(
+								(org.apache.commons.dbcp2.BasicDataSource) dataSource);
+					}
+					return null;
+				}
+			};
+		}
+
+	}
+
 }
