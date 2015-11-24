@@ -60,7 +60,8 @@ You can use the following variables inside your `banner.txt` file:
 | Variable | Description
 
 |`${application.version}`
-|The version number of your application as declared in `MANIFEST.MF`. For example `Implementation-Version: 1.0` is printed as `1.0`.
+|The version number of your application as declared in `MANIFEST.MF`. For example
+`Implementation-Version: 1.0` is printed as `1.0`.
 
 |`${application.formatted-version}`
 |The version number of your application as declared in `MANIFEST.MF` formatted for
@@ -76,6 +77,10 @@ brackets and prefixed with `v`). For example `(v{spring-boot-version})`.
 |`${Ansi.NAME}` (or `${AnsiColor.NAME}`, `${AnsiBackground.NAME}`, `${AnsiStyle.NAME}`)
 |Where `NAME` is the name of an ANSI escape code. See
 {sc-spring-boot}/ansi/AnsiPropertySource.{sc-ext}[`AnsiPropertySource`] for details.
+
+|`${application.title}`
+|The title of your application as declared in `MANIFEST.MF`. For example
+`Implementation-Title: MyApp` is printed as `MyApp`.
 |===
 
 TIP: The `SpringApplication.setBanner(...)` method can be used if you want to generate
