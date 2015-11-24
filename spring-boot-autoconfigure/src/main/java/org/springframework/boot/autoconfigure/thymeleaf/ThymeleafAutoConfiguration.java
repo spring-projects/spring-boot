@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.conditionalcomments.dialect.ConditionalCommentsDialect;
+import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.resourceresolver.SpringResourceResourceResolver;
@@ -40,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -61,6 +63,7 @@ import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Brian Clozel
+ * @author Eddú Meléndez
  */
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)
@@ -186,6 +189,19 @@ public class ThymeleafAutoConfiguration {
 		@ConditionalOnMissingBean
 		public ConditionalCommentsDialect conditionalCommentsDialect() {
 			return new ConditionalCommentsDialect();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnJava(ConditionalOnJava.JavaVersion.EIGHT)
+	@ConditionalOnClass({ Java8TimeDialect.class })
+	protected static class ThymeleafJava8TimeDialect {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public Java8TimeDialect java8TimeDialect() {
+			return new Java8TimeDialect();
 		}
 
 	}
