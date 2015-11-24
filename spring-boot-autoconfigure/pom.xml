@@ -507,6 +507,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
+			<artifactId>thymeleaf-extras-java8time</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity4</artifactId>
 			<optional>true</optional>
 		</dependency>
