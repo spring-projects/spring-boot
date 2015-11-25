@@ -43,7 +43,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Component
-class BasicBatchConfigurer implements BatchConfigurer {
+public class BasicBatchConfigurer implements BatchConfigurer {
 
 	private static Log logger = LogFactory.getLog(BasicBatchConfigurer.class);
 
