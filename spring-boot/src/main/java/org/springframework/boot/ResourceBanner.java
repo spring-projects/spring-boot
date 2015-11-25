@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.io.PrintStream;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,7 +69,7 @@ public class ResourceBanner implements Banner {
 			}
 			out.println(banner);
 		}
-		catch (Exception ex) {
+		catch (IOException ex) {
 			log.warn("Banner not printable: " + this.resource + " (" + ex.getClass()
 					+ ": '" + ex.getMessage() + "')", ex);
 		}
