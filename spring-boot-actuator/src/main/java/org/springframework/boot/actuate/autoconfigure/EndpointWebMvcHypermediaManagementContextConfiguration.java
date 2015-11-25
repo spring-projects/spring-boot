@@ -128,7 +128,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 			ManagementServerProperties management, ActuatorDocsEndpoint endpoint) {
 		String path = management.getContextPath() + endpoint.getPath()
 				+ "/#spring_boot_actuator__{rel}";
-		if (server.getPort() == management.getPort() && management.getPort() != null
+		if (server.getPort().equals(management.getPort()) && management.getPort() != null
 				&& management.getPort() != 0) {
 			path = server.getPath(path);
 		}
