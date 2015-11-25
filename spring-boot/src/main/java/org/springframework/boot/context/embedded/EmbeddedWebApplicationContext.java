@@ -136,7 +136,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	}
 
 	@Override
-	protected void finishRefresh() {
+	protected synchronized void finishRefresh() {
 		super.finishRefresh();
 		startEmbeddedServletContainer();
 		if (this.embeddedServletContainer != null) {
@@ -285,7 +285,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		}
 	}
 
-	private void startEmbeddedServletContainer() {
+	private synchronized void startEmbeddedServletContainer() {
 		if (this.embeddedServletContainer != null) {
 			this.embeddedServletContainer.start();
 		}
