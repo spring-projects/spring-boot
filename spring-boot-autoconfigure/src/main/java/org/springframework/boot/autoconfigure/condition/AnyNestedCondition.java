@@ -39,7 +39,7 @@ import org.springframework.core.annotation.Order;
  * </pre>
  *
  * @author Phillip Webb
- * @since 1.3.0
+ * @since 1.2.0
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 20)
 public abstract class AnyNestedCondition extends AbstractNestedCondition {

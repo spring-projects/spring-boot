@@ -109,7 +109,7 @@ else
 fi
 
 # Build actual command to execute
-command="$javaexe -jar -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS $jarfile $RUN_ARGS $@"
+command="$javaexe -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS -jar $jarfile $RUN_ARGS $@"
 
 # Action functions
 start() {

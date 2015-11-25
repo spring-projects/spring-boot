@@ -72,8 +72,9 @@ public @interface ConfigurationProperties {
 	boolean ignoreUnknownFields() default true;
 
 	/**
-	 * Flag to indicate that validation errors can be swallowed. If set they will be
-	 * logged, but not propagate to the caller.
+	 * Flag to indicate that an exception should be raised if a Validator is
+	 * available and validation fails. If it is set to false, validation errors will be swallowed.
+	 * They will be logged, but not propagated to the caller.
 	 * @return the flag value (default true)
 	 */
 	boolean exceptionIfInvalid() default true;

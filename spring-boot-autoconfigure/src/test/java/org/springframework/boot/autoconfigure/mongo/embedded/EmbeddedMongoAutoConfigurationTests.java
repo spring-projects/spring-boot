@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +39,8 @@ import de.flapdoodle.embed.mongo.distribution.Feature;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -93,6 +96,27 @@ public class EmbeddedMongoAutoConfigurationTests {
 						"local.mongo.port"))));
 	}
 
+	@Test
+	public void portIsAvailableInParentContext() {
+		ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext();
+		parent.refresh();
+		try {
+			this.context = new AnnotationConfigApplicationContext();
+			this.context.setParent(parent);
+			EnvironmentTestUtils.addEnvironment(this.context,
+					"spring.data.mongodb.port=0");
+			this.context.register(EmbeddedMongoAutoConfiguration.class,
+					MongoClientConfiguration.class,
+					PropertyPlaceholderAutoConfiguration.class);
+			this.context.refresh();
+			assertThat(parent.getEnvironment().getProperty("local.mongo.port"),
+					is(notNullValue()));
+		}
+		finally {
+			parent.close();
+		}
+	}
+
 	private void assertVersionConfiguration(String configuredVersion,
 			String expectedVersion) {
 		this.context = new AnnotationConfigApplicationContext();
@@ -120,5 +144,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 				throws UnknownHostException {
 			return new MongoClient("localhost", port);
 		}
+
 	}
+
 }

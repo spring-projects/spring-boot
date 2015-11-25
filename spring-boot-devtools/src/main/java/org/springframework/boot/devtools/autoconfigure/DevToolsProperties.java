@@ -59,7 +59,8 @@ public class DevToolsProperties {
 	public static class Restart {
 
 		private static final String DEFAULT_RESTART_EXCLUDES = "META-INF/maven/**,"
-				+ "META-INF/resources/**,resources/**,static/**,public/**,templates/**";
+				+ "META-INF/resources/**,resources/**,static/**,public/**,templates/**,"
+				+ "**/*Test.class,**/*Tests.class";
 
 		private static final long DEFAULT_RESTART_POLL_INTERVAL = 1000;
 
