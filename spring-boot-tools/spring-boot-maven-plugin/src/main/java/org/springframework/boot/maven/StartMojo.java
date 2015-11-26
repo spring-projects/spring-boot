@@ -105,8 +105,14 @@ public class StartMojo extends AbstractRunMojo {
 
 	private RunProcess runProcess(List<String> args) throws MojoExecutionException {
 		try {
-			RunProcess runProcess = new RunProcess(new JavaExecutable().toString());
+			final RunProcess runProcess = new RunProcess(new JavaExecutable().toString());
 			runProcess.run(false, args.toArray(new String[args.size()]));
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				@Override
+				public void start() {
+					runProcess.kill();
+				}
+			});
 			return runProcess;
 		}
 		catch (Exception ex) {
