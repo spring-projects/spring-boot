@@ -185,8 +185,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		TypeElementMembers members = new TypeElementMembers(this.processingEnv, element);
 		Map<String, Object> fieldValues = getFieldValues(element);
 		processSimpleTypes(prefix, element, members, fieldValues);
-		processLombokTypes(prefix, element, members, fieldValues);
+		processSimpleLombokTypes(prefix, element, members, fieldValues);
 		processNestedTypes(prefix, element, members);
+		processNestedLombokTypes(prefix, element, members);
 	}
 
 	private Map<String, Object> getFieldValues(TypeElement element) {
@@ -240,7 +241,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				("".equals(replacement) ? null : replacement));
 	}
 
-	private void processLombokTypes(String prefix, TypeElement element,
+	private void processSimpleLombokTypes(String prefix, TypeElement element,
 			TypeElementMembers members, Map<String, Object> fieldValues) {
 		for (Map.Entry<String, VariableElement> entry : members.getFields().entrySet()) {
 			String name = entry.getKey();
@@ -268,19 +269,6 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
-	private boolean isLombokField(VariableElement field, TypeElement element) {
-		return hasAnnotation(field, LOMBOK_GETTER_ANNOTATION)
-				|| hasAnnotation(element, LOMBOK_GETTER_ANNOTATION)
-				|| hasAnnotation(element, LOMBOK_DATA_ANNOTATION);
-	}
-
-	private boolean hasLombokSetter(VariableElement field, TypeElement element) {
-		return !field.getModifiers().contains(Modifier.FINAL)
-				&& (hasAnnotation(field, LOMBOK_SETTER_ANNOTATION)
-						|| hasAnnotation(element, LOMBOK_SETTER_ANNOTATION)
-						|| hasAnnotation(element, LOMBOK_DATA_ANNOTATION));
-	}
-
 	private void processNestedTypes(String prefix, TypeElement element,
 			TypeElementMembers members) {
 		for (Map.Entry<String, ExecutableElement> entry : members.getPublicGetters()
@@ -302,6 +290,41 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				processTypeElement(nestedPrefix, (TypeElement) returnType);
 			}
 		}
+	}
+
+	private void processNestedLombokTypes(String prefix, TypeElement element,
+			TypeElementMembers members) {
+		for (Map.Entry<String, VariableElement> entry : members.getFields().entrySet()) {
+			String name = entry.getKey();
+			VariableElement field = entry.getValue();
+			if (!isLombokField(field, element)) {
+				continue;
+			}
+			Element returnType = this.processingEnv.getTypeUtils()
+					.asElement(field.asType());
+			boolean isNested = isNested(returnType, field, element);
+			if (returnType != null && returnType instanceof TypeElement
+					&& isNested) {
+				String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, name);
+				this.metadataCollector.add(ItemMetadata.newGroup(nestedPrefix,
+						this.typeUtils.getType(returnType),
+						this.typeUtils.getType(element), null));
+				processTypeElement(nestedPrefix, (TypeElement) returnType);
+			}
+		}
+	}
+
+	private boolean isLombokField(VariableElement field, TypeElement element) {
+		return hasAnnotation(field, LOMBOK_GETTER_ANNOTATION)
+				|| hasAnnotation(element, LOMBOK_GETTER_ANNOTATION)
+				|| hasAnnotation(element, LOMBOK_DATA_ANNOTATION);
+	}
+
+	private boolean hasLombokSetter(VariableElement field, TypeElement element) {
+		return !field.getModifiers().contains(Modifier.FINAL)
+				&& (hasAnnotation(field, LOMBOK_SETTER_ANNOTATION)
+						|| hasAnnotation(element, LOMBOK_SETTER_ANNOTATION)
+						|| hasAnnotation(element, LOMBOK_DATA_ANNOTATION));
 	}
 
 	private boolean isNested(Element returnType, VariableElement field,
