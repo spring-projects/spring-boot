@@ -21,6 +21,7 @@ import javax.cache.Caching;
 import com.hazelcast.core.IMap;
 import com.hazelcast.spring.cache.HazelcastCache;
 import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.statistics.StatisticsGateway;
 import org.infinispan.spring.provider.SpringCache;
 
 import org.springframework.boot.actuate.cache.CacheStatistics;
@@ -72,7 +73,7 @@ public class CacheStatisticsAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({ EhCacheCache.class, Ehcache.class })
+	@ConditionalOnClass({ EhCacheCache.class, Ehcache.class, StatisticsGateway.class })
 	static class EhCacheCacheStatisticsProviderConfiguration {
 
 		@Bean
