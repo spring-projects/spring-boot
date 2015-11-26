@@ -47,6 +47,13 @@ public class PropertiesPropertySourceLoaderTests {
 	}
 
 	@Test
+	public void loadPropertiesEncoded() throws Exception {
+		PropertySource<?> source = this.loader.load("encoded.properties",
+				new ClassPathResource("test-encoded.properties", getClass()), null);
+		assertThat(source.getProperty("test"), equalTo((Object) "prकperties"));
+	}
+
+	@Test
 	public void loadXml() throws Exception {
 		PropertySource<?> source = this.loader.load("test.xml",
 				new ClassPathResource("test-xml.xml", getClass()), null);
