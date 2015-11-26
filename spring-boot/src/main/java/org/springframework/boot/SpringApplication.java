@@ -650,7 +650,9 @@ public class SpringApplication {
 		if (log.isInfoEnabled()) {
 			String[] activeProfiles = context.getEnvironment().getActiveProfiles();
 			if (ObjectUtils.isEmpty(activeProfiles)) {
-				log.info("No profiles are active");
+				String[] defaultProfiles = context.getEnvironment().getDefaultProfiles();
+				log.info("No active profile set, falling back to default profiles: "
+						+ StringUtils.arrayToCommaDelimitedString(defaultProfiles));
 			}
 			else {
 				log.info("The following profiles are active: "

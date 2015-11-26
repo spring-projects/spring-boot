@@ -222,7 +222,8 @@ public class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
 		this.context = application.run();
-		assertThat(this.output.toString(), containsString("No profiles are active"));
+		assertThat(this.output.toString(), containsString(
+				"No active profile set, falling back to default profiles: default"));
 	}
 
 	@Test
