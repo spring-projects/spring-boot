@@ -20,25 +20,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.event.AbstractAuthorizationEvent;
 import org.springframework.security.access.event.AuthenticationCredentialsNotFoundEvent;
 import org.springframework.security.access.event.AuthorizationFailureEvent;
 
 /**
- * Default implementation of {@link AuthorizationAuditListener}.
+ * Default implementation of {@link AbstractAuthorizationAuditListener}.
  *
  * @author Dave Syer
  */
 public class AuthorizationAuditListener extends AbstractAuthorizationAuditListener {
-
-	private ApplicationEventPublisher publisher;
-
-	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
-		this.publisher = publisher;
-	}
 
 	@Override
 	public void onApplicationEvent(AbstractAuthorizationEvent event) {
@@ -65,12 +56,6 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 		data.put("message", event.getAccessDeniedException().getMessage());
 		publish(new AuditEvent(event.getAuthentication().getName(),
 				"AUTHORIZATION_FAILURE", data));
-	}
-
-	private void publish(AuditEvent event) {
-		if (this.publisher != null) {
-			this.publisher.publishEvent(new AuditApplicationEvent(event));
-		}
 	}
 
 }
