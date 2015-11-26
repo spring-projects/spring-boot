@@ -58,4 +58,7 @@ do as they were designed before this was clarified.
 | https://www.google.com/recaptcha[Google's reCAPTCHA]
 | https://github.com/mkopylec/recaptcha-spring-boot-starter
 
+| http://mybatis.org/mybatis-3/[Mybatis]
+| https://github.com/mybatis/mybatis-spring-boot
+
 |===
