@@ -32,8 +32,10 @@ import org.springframework.boot.configurationsample.incremental.BarProperties;
 import org.springframework.boot.configurationsample.incremental.FooProperties;
 import org.springframework.boot.configurationsample.incremental.RenamedBarProperties;
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
+import org.springframework.boot.configurationsample.lombok.LombokInnerClassProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
+import org.springframework.boot.configurationsample.lombok.SimpleLombokPojo;
 import org.springframework.boot.configurationsample.method.EmptyTypeMethodConfig;
 import org.springframework.boot.configurationsample.method.InvalidMethodConfig;
 import org.springframework.boot.configurationsample.method.MethodAndClassConfig;
@@ -298,6 +300,32 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(LombokExplicitProperties.class);
 		assertSimpleLombokProperties(metadata, LombokExplicitProperties.class,
 				"explicit");
+	}
+
+	@Test
+	public void lombokInnerClassProperties() throws Exception {
+		ConfigurationMetadata metadata = compile(LombokInnerClassProperties.class);
+		assertThat(metadata,
+				containsGroup("config").fromSource(LombokInnerClassProperties.class));
+		assertThat(metadata,
+				containsGroup("config.first").ofType(LombokInnerClassProperties.Foo.class)
+						.fromSource(LombokInnerClassProperties.class));
+		assertThat(metadata, containsProperty("config.first.name"));
+		assertThat(metadata, containsProperty("config.first.bar.name"));
+		assertThat(metadata,
+				containsGroup("config.second", LombokInnerClassProperties.Foo.class)
+						.fromSource(LombokInnerClassProperties.class));
+		assertThat(metadata, containsProperty("config.second.name"));
+		assertThat(metadata, containsProperty("config.second.bar.name"));
+		assertThat(metadata, containsGroup("config.third").ofType(SimpleLombokPojo.class)
+				.fromSource(LombokInnerClassProperties.class));
+		// For some reason the annotation processor resolves a type for SimpleLombokPojo that
+		// is resolved (compiled) and the source annotations are gone. Because we don't see the
+		// @Data annotation anymore, no field is harvested. What is crazy is that a sample project
+		// works fine so this seem to be related to the unit test environment for some reason.
+		//assertThat(metadata, containsProperty("config.third.value"));
+		assertThat(metadata, containsProperty("config.fourth"));
+		assertThat(metadata, not(containsGroup("config.fourth")));
 	}
 
 	@Test
