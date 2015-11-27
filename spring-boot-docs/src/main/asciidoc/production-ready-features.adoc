@@ -323,7 +323,7 @@ additional details to be displayed.
 	import org.springframework.stereotype.Component;
 
 	@Component
-	public class MyHealth implements HealthIndicator {
+	public class MyHealthIndicator implements HealthIndicator {
 
 		@Override
 		public Health health() {
@@ -336,6 +336,10 @@ additional details to be displayed.
 
 	}
 ----
+
+NOTE: The identifier for a given `HealthIndicator` is the name of the bean without the
+`HealthIndicator` suffix if it exists. In the example above, the health information will
+be available in an entry named `my`.
 
 In addition to Spring Boot's predefined {sc-spring-boot-actuator}/health/Status.{sc-ext}[`Status`]
 types, it is also possible for `Health` to return a custom `Status` that represents a
