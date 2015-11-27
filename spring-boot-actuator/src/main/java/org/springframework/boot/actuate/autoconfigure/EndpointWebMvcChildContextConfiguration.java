@@ -236,6 +236,8 @@ public class EndpointWebMvcChildContextConfiguration {
 			this.server.customize(container);
 			// Then reset the error pages
 			container.setErrorPages(Collections.<ErrorPage>emptySet());
+			// and the context path
+			container.setContextPath("");
 			// and add the management-specific bits
 			container.setPort(this.managementServerProperties.getPort());
 			container.setAddress(this.managementServerProperties.getAddress());

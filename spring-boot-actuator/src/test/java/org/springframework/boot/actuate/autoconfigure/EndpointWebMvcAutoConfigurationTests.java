@@ -108,9 +108,16 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	private static ThreadLocal<Ports> ports = new ThreadLocal<Ports>();
 
+	private static ServerProperties server = new ServerProperties();
+
+	private static ManagementServerProperties management = new ManagementServerProperties();
+
 	@Before
 	public void grabPorts() {
-		ports.set(new Ports());
+		Ports values = new Ports();
+		ports.set(values);
+		server.setPort(values.server);
+		management.setPort(values.management);
 	}
 
 	@After
@@ -171,8 +178,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				DifferentPortConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.context-path=/admin");
+		management.setContextPath("/admin");
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/admin/endpoint", ports.get().management, "endpointoutput");
@@ -186,8 +192,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				DifferentPortConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.context-path=/admin", "server.context-path=/spring");
+		management.setContextPath("/admin");
+		server.setContextPath("/spring");
 		this.applicationContext.refresh();
 		assertContent("/spring/controller", ports.get().server, "controlleroutput");
 		assertContent("/admin/endpoint", ports.get().management, "endpointoutput");
@@ -506,9 +512,9 @@ public class EndpointWebMvcAutoConfigurationTests {
 			EmbeddedServletContainerAutoConfiguration.class,
 			JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class, WebMvcAutoConfiguration.class })
+			ServerPropertiesAutoConfiguration.class })
 	protected static class BaseConfiguration {
 
 	}
@@ -551,7 +557,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 					super.customize(container);
 				}
 			};
-			properties.setPort(ports.get().server);
+			properties.setPort(server.getPort());
+			properties.setContextPath(server.getContextPath());
 			return properties;
 		}
 
@@ -574,9 +581,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 		@Bean
 		public ManagementServerProperties managementServerProperties() {
-			ManagementServerProperties properties = new ManagementServerProperties();
-			properties.setPort(ports.get().management);
-			return properties;
+			return management;
 		}
 
 		@Bean
