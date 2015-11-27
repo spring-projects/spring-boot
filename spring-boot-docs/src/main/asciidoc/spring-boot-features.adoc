@@ -794,6 +794,10 @@ The following properties names can all be used:
 |Upper case format. Recommended when using a system environment variables.
 |===
 
+
+
+[[boot-features-external-config-conversion]]
+==== Properties conversion
 Spring will attempt to coerce the external application properties to the right type when
 it binds to the `@ConfigurationProperties` beans. If you need custom type conversion you
 can provide a `ConversionService` bean (with bean id `conversionService`) or custom
@@ -803,7 +807,8 @@ bean definitions annotated as `@ConfigurationPropertiesBinding`).
 NOTE: As this bean is requested very early during the application lifecycle, make sure to
 limit the dependencies that your `ConversionService` is using. Typically, any dependency
 that you require may not be fully initialized at creation time. You may want to rename
-your custom `ConversionService` if it's not required for configuration keys coercion.
+your custom `ConversionService` if it's not required for configuration keys coercion and
+only rely on custom converters qualified with `@ConfigurationPropertiesBinding`.
 
 
 
