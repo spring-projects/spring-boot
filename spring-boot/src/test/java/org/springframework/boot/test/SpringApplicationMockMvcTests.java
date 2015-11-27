@@ -18,47 +18,37 @@ package org.springframework.boot.test;
 
 import javax.servlet.ServletContext;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.test.SpringApplicationIntegrationTestTests.Config;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.test.SpringApplicationMockMvcTests.Config;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link IntegrationTest}
+ * Tests for {@link WebAppConfiguration} integration.
  *
- * @author Dave Syer
+ * @author Stephane Nicoll
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(Config.class)
+@SpringApplicationConfiguration(classes = Config.class)
 @WebAppConfiguration
-@IntegrationTest({ "server.port=0", "value=123" })
-public class SpringApplicationIntegrationTestTests {
-
-	@Value("${local.server.port}")
-	private int port = 0;
-
-	@Value("${value}")
-	private int value = 0;
+public class SpringApplicationMockMvcTests {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -66,18 +56,17 @@ public class SpringApplicationIntegrationTestTests {
 	@Autowired
 	private ServletContext servletContext;
 
-	@Test
-	public void runAndTestHttpEndpoint() {
-		assertNotEquals(8080, this.port);
-		assertNotEquals(0, this.port);
-		String body = new RestTemplate()
-				.getForObject("http://localhost:" + this.port + "/", String.class);
-		assertEquals("Hello World", body);
+	private MockMvc mvc;
+
+	@Before
+	public void setUp() {
+		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 	}
 
 	@Test
-	public void annotationAttributesOverridePropertiesFile() throws Exception {
-		assertEquals(123, this.value);
+	public void testMockHttpEndpoint() throws Exception {
+		this.mvc.perform(get("/")).andExpect(status().isOk())
+				.andExpect(content().string("Hello World"));
 	}
 
 	@Test
@@ -86,30 +75,11 @@ public class SpringApplicationIntegrationTestTests {
 				.getWebApplicationContext(this.servletContext));
 	}
 
+
 	@Configuration
 	@EnableWebMvc
 	@RestController
 	protected static class Config {
-
-		@Value("${server.port:8080}")
-		private int port = 8080;
-
-		@Bean
-		public DispatcherServlet dispatcherServlet() {
-			return new DispatcherServlet();
-		}
-
-		@Bean
-		public EmbeddedServletContainerFactory embeddedServletContainer() {
-			TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
-			factory.setPort(this.port);
-			return factory;
-		}
-
-		@Bean
-		public static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
-			return new PropertySourcesPlaceholderConfigurer();
-		}
 
 		@RequestMapping("/")
 		public String home() {
