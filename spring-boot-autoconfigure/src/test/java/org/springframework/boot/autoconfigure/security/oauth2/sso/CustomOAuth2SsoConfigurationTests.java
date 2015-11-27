@@ -90,6 +90,12 @@ public class CustomOAuth2SsoConfigurationTests {
 	}
 
 	@Test
+	public void uiPageSends401ToXhr() throws Exception {
+		this.mvc.perform(get("/ui/").header("X-Requested-With", "XMLHttpRequest"))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
 	public void uiTestPageIsAccessible() throws Exception {
 		this.mvc.perform(get("/ui/test")).andExpect(status().isOk())
 				.andExpect(content().string("test"));

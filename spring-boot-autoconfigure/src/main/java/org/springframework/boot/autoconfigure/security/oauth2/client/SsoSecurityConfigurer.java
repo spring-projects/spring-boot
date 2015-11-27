@@ -16,16 +16,26 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
+import java.util.Collections;
+
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
+import org.springframework.web.accept.ContentNegotiationStrategy;
+import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 
 class SsoSecurityConfigurer {
 
@@ -40,8 +50,28 @@ class SsoSecurityConfigurer {
 		// Delay the processing of the filter until we know the
 		// SessionAuthenticationStrategy is available:
 		http.apply(new OAuth2ClientAuthenticationConfigurer(oauth2SsoFilter(sso)));
-		http.exceptionHandling().authenticationEntryPoint(
-				new LoginUrlAuthenticationEntryPoint(sso.getLoginPath()));
+		addAuthenticationEntryPoint(http, sso);
+	}
+
+	private void addAuthenticationEntryPoint(HttpSecurity http, OAuth2SsoProperties sso)
+			throws Exception {
+		ExceptionHandlingConfigurer<HttpSecurity> exceptions = http.exceptionHandling();
+		ContentNegotiationStrategy contentNegotiationStrategy = http
+				.getSharedObject(ContentNegotiationStrategy.class);
+		if (contentNegotiationStrategy == null) {
+			contentNegotiationStrategy = new HeaderContentNegotiationStrategy();
+		}
+		MediaTypeRequestMatcher preferredMatcher = new MediaTypeRequestMatcher(
+				contentNegotiationStrategy, MediaType.APPLICATION_XHTML_XML,
+				new MediaType("image", "*"), MediaType.TEXT_HTML, MediaType.TEXT_PLAIN);
+		preferredMatcher.setIgnoredMediaTypes(Collections.singleton(MediaType.ALL));
+		exceptions.defaultAuthenticationEntryPointFor(
+				new LoginUrlAuthenticationEntryPoint(sso.getLoginPath()),
+				preferredMatcher);
+		// When multiple entry points are provided the default is the first one
+		exceptions.defaultAuthenticationEntryPointFor(
+				new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
+				new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"));
 	}
 
 	private OAuth2ClientAuthenticationProcessingFilter oauth2SsoFilter(
