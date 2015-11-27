@@ -182,7 +182,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/admin/endpoint", ports.get().management, "endpointoutput");
-		assertContent("/admin/error", ports.get().management, startsWith("{"));
+		assertContent("/error", ports.get().management, startsWith("{"));
 		this.applicationContext.close();
 		assertAllClosed();
 	}
@@ -197,7 +197,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.refresh();
 		assertContent("/spring/controller", ports.get().server, "controlleroutput");
 		assertContent("/admin/endpoint", ports.get().management, "endpointoutput");
-		assertContent("/admin/error", ports.get().management, startsWith("{"));
+		assertContent("/error", ports.get().management, startsWith("{"));
 		this.applicationContext.close();
 		assertAllClosed();
 	}

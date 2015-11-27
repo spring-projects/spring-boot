@@ -24,22 +24,17 @@ import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration.ManagementWebSecurityConfigurerAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementErrorEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.hateoas.HypermediaHttpMessageConverterConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
@@ -57,7 +52,6 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.hateoas.LinkDiscoverer;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -79,9 +73,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
 @Import(ManagementContextConfigurationsImportSelector.class)
 public class EndpointWebMvcChildContextConfiguration {
-
-	private static Log logger = LogFactory
-			.getLog(EndpointWebMvcChildContextConfiguration.class);
 
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 	public DispatcherServlet dispatcherServlet() {
@@ -121,19 +112,14 @@ public class EndpointWebMvcChildContextConfiguration {
 	 */
 	@Bean
 	@ConditionalOnBean(ErrorAttributes.class)
-	public ManagementErrorEndpoint errorEndpoint(ServerProperties serverProperties,
-			ErrorAttributes errorAttributes) {
-		return new ManagementErrorEndpoint(serverProperties.getError().getPath(),
-				errorAttributes);
+	public ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes) {
+		return new ManagementErrorEndpoint(errorAttributes);
 	}
 
 	/**
-	 * Configuration to add {@link HandlerMapping} for {@link MvcEndpoint}s. See
-	 * {@link SecureEndpointHandlerMappingConfiguration} for an extended version that also
-	 * configures the security filter.
+	 * Configuration to add {@link HandlerMapping} for {@link MvcEndpoint}s.
 	 */
 	@Configuration
-	@ConditionalOnMissingClass("org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter")
 	protected static class EndpointHandlerMappingConfiguration {
 
 		@Autowired
@@ -141,45 +127,6 @@ public class EndpointWebMvcChildContextConfiguration {
 				ListableBeanFactory beanFactory, EndpointHandlerMapping mapping) {
 			// In a child context we definitely want to see the parent endpoints
 			mapping.setDetectHandlerMethodsInAncestorContexts(true);
-			postProcessMapping(beanFactory, mapping);
-		}
-
-		/**
-		 * Hook to allow additional post processing of {@link EndpointHandlerMapping}.
-		 * @param beanFactory the source bean factory
-		 * @param mapping the mapping to customize
-		 */
-		protected void postProcessMapping(ListableBeanFactory beanFactory,
-				EndpointHandlerMapping mapping) {
-		}
-
-	}
-
-	/**
-	 * Extension of {@link EndpointHandlerMappingConfiguration} that also configures the
-	 * security filter.
-	 */
-	@Configuration
-	@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
-	protected static class SecureEndpointHandlerMappingConfiguration
-			extends EndpointHandlerMappingConfiguration {
-
-		@Override
-		protected void postProcessMapping(ListableBeanFactory beanFactory,
-				EndpointHandlerMapping mapping) {
-			// The parent context has the security filter, so we need to get it injected
-			// with our EndpointHandlerMapping if we can.
-			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory,
-					ManagementWebSecurityConfigurerAdapter.class).length == 1) {
-				ManagementWebSecurityConfigurerAdapter bean = beanFactory
-						.getBean(ManagementWebSecurityConfigurerAdapter.class);
-				bean.setEndpointHandlerMapping(mapping);
-			}
-			else {
-				logger.warn("No single bean of type "
-						+ ManagementWebSecurityConfigurerAdapter.class.getSimpleName()
-						+ " found (this might make some endpoints inaccessible without authentication)");
-			}
 		}
 
 	}

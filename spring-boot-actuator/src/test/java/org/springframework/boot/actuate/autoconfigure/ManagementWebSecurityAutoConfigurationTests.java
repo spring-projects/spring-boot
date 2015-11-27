@@ -98,8 +98,8 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
 		FilterChainProxy filterChainProxy = this.context.getBean(FilterChainProxy.class);
-		// 4 for static resources, one for management endpoints and one for the rest
-		assertThat(filterChainProxy.getFilterChains(), hasSize(6));
+		// 1 for static resources, one for management endpoints and one for the rest
+		assertThat(filterChainProxy.getFilterChains(), hasSize(3));
 		assertThat(filterChainProxy.getFilters("/beans"), hasSize(greaterThan(0)));
 		assertThat(filterChainProxy.getFilters("/beans/"), hasSize(greaterThan(0)));
 		assertThat(filterChainProxy.getFilters("/beans.foo"), hasSize(greaterThan(0)));
@@ -160,7 +160,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.refresh();
 		// Just the management endpoints (one filter) and ignores now plus the backup
 		// filter on app endpoints
-		assertEquals(6,
+		assertEquals(3,
 				this.context.getBean(FilterChainProxy.class).getFilterChains().size());
 	}
 
