@@ -167,6 +167,36 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	public void onDifferentPortAndContext() throws Exception {
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
+				DifferentPortConfig.class, BaseConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext,
+				"management.context-path=/admin");
+		this.applicationContext.refresh();
+		assertContent("/controller", ports.get().server, "controlleroutput");
+		assertContent("/admin/endpoint", ports.get().management, "endpointoutput");
+		assertContent("/admin/error", ports.get().management, startsWith("{"));
+		this.applicationContext.close();
+		assertAllClosed();
+	}
+
+	@Test
+	public void onDifferentPortAndMainContext() throws Exception {
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
+				DifferentPortConfig.class, BaseConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext,
+				"management.context-path=/admin", "server.context-path=/spring");
+		this.applicationContext.refresh();
+		assertContent("/spring/controller", ports.get().server, "controlleroutput");
+		assertContent("/admin/endpoint", ports.get().management, "endpointoutput");
+		assertContent("/admin/error", ports.get().management, startsWith("{"));
+		this.applicationContext.close();
+		assertAllClosed();
+	}
+
+	@Test
 	public void onDifferentPortWithoutErrorMvcAutoConfiguration() throws Exception {
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				DifferentPortConfig.class, BaseConfiguration.class,
