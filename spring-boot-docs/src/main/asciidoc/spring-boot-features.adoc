@@ -82,7 +82,22 @@ TIP: The `SpringApplication.setBanner(...)` method can be used if you want to ge
 a banner programmatically. Use the `org.springframework.boot.Banner` interface and
 implement your own `printBanner()` method.
 
+You can also use the `spring.main.banner-mode` property to determine if the banner has
+to be printed on `System.out` (`console`), using the configured logger (`log`) or not
+at all (`off`).
 
+[NOTE]
+====
+YAML maps `off` to `false` so make sure to add quotes if you want to disable the
+banner in your application.
+
+[source,yaml,indent=0]
+----
+	spring:
+		main:
+			banner-mode: "off"
+----
+====
 
 [[boot-features-customizing-spring-application]]
 === Customizing SpringApplication
