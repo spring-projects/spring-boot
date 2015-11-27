@@ -25,7 +25,7 @@ jar {
 	version =  '0.0.0'
 }
 
-run {
+bootRun {
   systemProperties = System.properties
 }
 
