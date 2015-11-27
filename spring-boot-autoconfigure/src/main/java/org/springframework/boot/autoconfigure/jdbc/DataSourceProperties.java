@@ -205,7 +205,7 @@ public class DataSourceProperties
 		if (StringUtils.hasText(this.url)) {
 			return this.url;
 		}
-		String url = this.embeddedDatabaseConnection.getUrl();
+		String url = this.embeddedDatabaseConnection.getUrl(this.name);
 		if (!StringUtils.hasText(url)) {
 			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
 					this.environment, "url");

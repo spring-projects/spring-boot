@@ -25,6 +25,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -32,6 +33,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  * @see #get(ClassLoader)
  */
 public enum EmbeddedDatabaseConnection {
@@ -45,18 +47,20 @@ public enum EmbeddedDatabaseConnection {
 	 * H2 Database Connection.
 	 */
 	H2(EmbeddedDatabaseType.H2, "org.h2.Driver",
-			"jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"),
+			"jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"),
 
 	/**
 	 * Derby Database Connection.
 	 */
 	DERBY(EmbeddedDatabaseType.DERBY, "org.apache.derby.jdbc.EmbeddedDriver",
-			"jdbc:derby:memory:testdb;create=true"),
+			"jdbc:derby:memory:%s;create=true"),
 
 	/**
 	 * HSQL Database Connection.
 	 */
-	HSQL(EmbeddedDatabaseType.HSQL, "org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:testdb");
+	HSQL(EmbeddedDatabaseType.HSQL, "org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:%s");
+
+	private static final String DEFAULT_DATABASE_NAME = "testdb";
 
 	private final EmbeddedDatabaseType type;
 
@@ -88,11 +92,21 @@ public enum EmbeddedDatabaseConnection {
 	}
 
 	/**
-	 * Returns the URL for the connection.
+	 * Returns the URL for the connection using the default database name.
 	 * @return the connection URL
 	 */
 	public String getUrl() {
-		return this.url;
+		return getUrl(DEFAULT_DATABASE_NAME);
+	}
+
+	/**
+	 * Returns the URL for the connection using the specified {@code databaseName}.
+	 * @param databaseName the name of the database
+	 * @return the connection URL
+	 */
+	public String getUrl(String databaseName) {
+		Assert.hasText(databaseName, "DatabaseName must not be null.");
+		return String.format(this.url, databaseName);
 	}
 
 	/**
