@@ -16,13 +16,10 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.authserver.OAuth2AuthorizationServerConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2RestOperationsConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.method.OAuth2MethodSecurityConfiguration;
@@ -34,7 +31,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfiguration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
@@ -60,33 +56,6 @@ public class OAuth2AutoConfiguration {
 	public ResourceServerProperties resourceServerProperties() {
 		return new ResourceServerProperties(this.credentials.getClientId(),
 				this.credentials.getClientSecret());
-	}
-
-	@Configuration
-	@ConditionalOnWebApplication
-	protected static class ResourceServerOrderProcessor implements BeanPostProcessor {
-
-		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName)
-				throws BeansException {
-			if (bean instanceof ResourceServerConfiguration) {
-				ResourceServerConfiguration configuration = (ResourceServerConfiguration) bean;
-				configuration.setOrder(getOrder());
-			}
-			return bean;
-		}
-
-		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
-				throws BeansException {
-			return bean;
-		}
-
-		private int getOrder() {
-			// Before the authorization server (default 0)
-			return -10;
-		}
-
 	}
 
 }
