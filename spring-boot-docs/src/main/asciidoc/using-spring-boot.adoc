@@ -93,7 +93,7 @@ If you import additional starters, you can safely omit the version number.
 
 With that setup, you can also override individual dependencies by overriding a property
 in your own project. For instance, to upgrade to another Spring Data release train you'd
-add the following to your `pom.xml
+add the following to your `pom.xml`.
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -137,7 +137,7 @@ That setup does not allow you to override individual dependencies using a proper
 explained above. To achieve the same result, you'd need to add an entry in the
 `dependencyManagement` of your project **before** the `spring-boot-dependencies`
 entry. For instance, to upgrade to another Spring Data release train you'd add the
-following to your `pom.xml
+following to your `pom.xml`.
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
