@@ -3949,6 +3949,10 @@ annotations if your configuration needs to be applied in a specific order. For e
 you provide web-specific configuration, your class may need to be applied after
 `WebMvcAutoConfiguration`.
 
+If you want to order certain auto-configurations that shouldn't have any direct
+knowledge of each other, you can also use `@AutoconfigureOrder`. That annotation has the
+same semantic as the regular `@Order` annotation but provides a dedicated order for
+auto-configuration classes.
 
 
 [[boot-features-condition-annotations]]
