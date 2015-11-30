@@ -19,9 +19,12 @@ package org.springframework.boot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.After;
@@ -64,6 +67,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.StandardServletEnvironment;
@@ -98,6 +102,7 @@ import static org.mockito.Mockito.verify;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  * @author Jeremy Rickard
+ * @author Craig Burke
  */
 public class SpringApplicationTests {
 
@@ -216,6 +221,33 @@ public class SpringApplicationTests {
 		assertThat(this.output.toString(),
 				startsWith(String.format("Running a Test!%n%n123456")));
 	}
+
+	@Test
+	public void textBannerTakesPrecedence() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		BannerResourceLoaderStub resourceLoader = new BannerResourceLoaderStub();
+		resourceLoader.addResource("banner.gif", "banners/black-and-white.gif");
+		resourceLoader.addResource("banner.txt", "banners/foobar.txt");
+
+		application.setWebEnvironment(false);
+		application.setResourceLoader(resourceLoader);
+		application.run();
+
+		assertThat(this.output.toString(), startsWith("Foo Bar"));
+	}
+
+	@Test
+	public void imageBannerLoads() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		BannerResourceLoaderStub resourceLoader = new BannerResourceLoaderStub();
+		resourceLoader.addResource("banner.gif", "banners/black-and-white.gif");
+		application.setWebEnvironment(false);
+		application.setResourceLoader(resourceLoader);
+		application.run();
+
+		assertThat(this.output.toString(), startsWith("@"));
+	}
+
 
 	@Test
 	public void logsNoActiveProfiles() throws Exception {
@@ -925,6 +957,32 @@ public class SpringApplicationTests {
 		@Override
 		public void run(ApplicationArguments args) {
 			markAsRan();
+		}
+
+	}
+
+	private static class BannerResourceLoaderStub extends DefaultResourceLoader {
+
+		private Map<String, String> resources = new HashMap<String, String>();
+		Resource notFoundResource;
+
+		BannerResourceLoaderStub() {
+			this.notFoundResource = super.getResource("classpath:foo/bar/foobar");
+			assert !this.notFoundResource.exists();
+		}
+
+		public void addResource(String file, String realPath) {
+			this.resources.put(file, realPath);
+		}
+
+		@Override
+		public Resource getResource(String s) {
+			if (this.resources.containsKey(s)) {
+				return super.getResource("classpath:" + this.resources.get(s));
+			}
+			else {
+				return this.notFoundResource;
+			}
 		}
 
 	}
