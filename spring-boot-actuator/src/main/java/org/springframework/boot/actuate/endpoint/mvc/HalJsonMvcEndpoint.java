@@ -87,6 +87,11 @@ public class HalJsonMvcEndpoint extends WebMvcConfigurerAdapter
 		return new ResourceSupport();
 	}
 
+	@RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+	public String forward() {
+		return "redirect:" + this.managementServletContext.getContextPath() + this.path;
+	}
+
 	public void setPath(String path) {
 		this.path = path;
 	}

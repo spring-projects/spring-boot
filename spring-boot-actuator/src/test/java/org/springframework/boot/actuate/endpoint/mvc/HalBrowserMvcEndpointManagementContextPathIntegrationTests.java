@@ -39,6 +39,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,6 +74,13 @@ public class HalBrowserMvcEndpointManagementContextPathIntegrationTests {
 	public void actuatorHomeJson() throws Exception {
 		this.mockMvc.perform(get("/admin").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists());
+	}
+
+	@Test
+	public void redirectJson() throws Exception {
+		this.mockMvc.perform(get("/admin/").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isFound())
+				.andExpect(header().string("location", "/admin"));
 	}
 
 	@Test

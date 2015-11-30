@@ -124,7 +124,7 @@ public class MvcEndpointIntegrationTests {
 				"management.context-path:/management");
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/info")).andExpect(status().isOk());
-		mockMvc.perform(get("/management/")).andExpect(status().isOk());
+		mockMvc.perform(get("/management")).andExpect(status().isOk());
 	}
 
 	@Test
