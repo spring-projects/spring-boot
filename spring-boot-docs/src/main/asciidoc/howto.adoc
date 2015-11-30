@@ -1715,7 +1715,7 @@ you can see how to set things up.
 
 [[howto-execute-spring-batch-jobs-on-startup]]
 === Execute Spring Batch jobs on startup
-Spring Batch auto configuration is enabled by adding `@EnableBatchProcessing`
+Spring Batch auto-configuration is enabled by adding `@EnableBatchProcessing`
 (from Spring Batch) somewhere in your context.
 
 By default it executes *all* `Jobs` in the application context on startup (see
