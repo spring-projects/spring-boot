@@ -101,8 +101,8 @@ Boot. A `SpringApplication` changes its `ApplicationContext` class depending on 
 thinks it needs a web application or not. The first thing you can do to help it is to just
 leave the servlet API dependencies off the classpath. If you can't do that (e.g. you are
 running 2 applications from the same code base) then you can explicitly call
-`SpringApplication.setWebEnvironment(false)`, or set the `applicationContextClass`
-property (through the Java API or with external properties).
+`setWebEnvironment(false)` on your `SpringApplication` instance, or set the
+`applicationContextClass` property (through the Java API or with external properties).
 Application code that you want to run as your business logic can be implemented as a
 `CommandLineRunner` and dropped into the context as a `@Bean` definition.
 
