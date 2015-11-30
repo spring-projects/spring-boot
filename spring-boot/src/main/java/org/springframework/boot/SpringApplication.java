@@ -140,6 +140,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  * @author Jeremy Rickard
+ * @author Craig Burke
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -569,7 +570,25 @@ public class SpringApplication {
 		if (this.banner != null) {
 			return this.banner;
 		}
+
+		Resource image = getBannerImage(environment, resourceLoader);
+		if (image.exists()) {
+			return new ImageBanner(image);
+		}
+
 		return DEFAULT_BANNER;
+	}
+
+	private Resource getBannerImage(Environment environment, ResourceLoader resourceLoader) {
+		String imageLocation = environment.getProperty("banner.image", "banner.gif");
+		Resource image = resourceLoader.getResource(imageLocation);
+		if (!image.exists()) {
+			image = resourceLoader.getResource("banner.jpg");
+		}
+		if (!image.exists()) {
+			image = resourceLoader.getResource("banner.png");
+		}
+		return image;
 	}
 
 	private String createStringFromBanner(Banner banner, Environment environment)
