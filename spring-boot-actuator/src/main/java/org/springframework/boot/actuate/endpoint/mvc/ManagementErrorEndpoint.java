@@ -43,7 +43,7 @@ public class ManagementErrorEndpoint {
 		this.errorAttributes = errorAttributes;
 	}
 
-	@RequestMapping("${server.path:/error}")
+	@RequestMapping("${server.error.path:${error.path:/error}}")
 	@ResponseBody
 	public Map<String, Object> invoke() {
 		return this.errorAttributes.getErrorAttributes(
