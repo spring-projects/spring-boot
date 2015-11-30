@@ -51,8 +51,6 @@ public class LiquibaseServiceLocatorApplicationListener
 	private static class LiquibasePresent {
 
 		public void replaceServiceLocator() {
-			ServiceLocator.getInstance().addPackageToScan(
-					CommonsLoggingLiquibaseLogger.class.getPackage().getName());
 			ServiceLocator.setInstance(new CustomResolverServiceLocator(
 					new SpringPackageScanClassResolver(logger)));
 		}
