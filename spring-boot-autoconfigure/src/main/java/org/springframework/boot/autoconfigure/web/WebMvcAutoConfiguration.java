@@ -148,6 +148,9 @@ public class WebMvcAutoConfiguration {
 		@Autowired
 		private HttpMessageConverters messageConverters;
 
+		@Autowired(required = false)
+		ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 			converters.addAll(this.messageConverters.getConverters());
@@ -255,51 +258,24 @@ public class WebMvcAutoConfiguration {
 			}
 			Integer cachePeriod = this.resourceProperties.getCachePeriod();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
-				registerResourceChain(registry.addResourceHandler("/webjars/**")
+				customizeResourceHandlerRegistration(registry.addResourceHandler("/webjars/**")
 						.addResourceLocations("classpath:/META-INF/resources/webjars/")
 						.setCachePeriod(cachePeriod));
 			}
 			String staticPathPattern = this.mvcProperties.getStaticPathPattern();
 			if (!registry.hasMappingForPattern(staticPathPattern)) {
-				registerResourceChain(registry.addResourceHandler(staticPathPattern)
+				customizeResourceHandlerRegistration(registry.addResourceHandler(staticPathPattern)
 						.addResourceLocations(
 								this.resourceProperties.getStaticLocations())
 						.setCachePeriod(cachePeriod));
 			}
 		}
 
-		private void registerResourceChain(ResourceHandlerRegistration registration) {
-			ResourceProperties.Chain properties = this.resourceProperties.getChain();
-			if (properties.getEnabled()) {
-				configureResourceChain(properties,
-						registration.resourceChain(properties.isCache()));
+		private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
+			if (this.resourceHandlerRegistrationCustomizer != null) {
+				this.resourceHandlerRegistrationCustomizer.customize(registration);
 			}
-		}
 
-		private void configureResourceChain(ResourceProperties.Chain properties,
-				ResourceChainRegistration chain) {
-			Strategy strategy = properties.getStrategy();
-			if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
-				chain.addResolver(getVersionResourceResolver(strategy));
-			}
-			if (properties.isHtmlApplicationCache()) {
-				chain.addTransformer(new AppCacheManifestTransformer());
-			}
-		}
-
-		private ResourceResolver getVersionResourceResolver(
-				ResourceProperties.Strategy properties) {
-			VersionResourceResolver resolver = new VersionResourceResolver();
-			if (properties.getFixed().isEnabled()) {
-				String version = properties.getFixed().getVersion();
-				String[] paths = properties.getFixed().getPaths();
-				resolver.addFixedVersionStrategy(version, paths);
-			}
-			if (properties.getContent().isEnabled()) {
-				String[] paths = properties.getContent().getPaths();
-				resolver.addContentVersionStrategy(paths);
-			}
-			return resolver;
 		}
 
 		@Override
@@ -378,6 +354,63 @@ public class WebMvcAutoConfiguration {
 			}
 		}
 
+	}
+
+	@Configuration
+	@ConditionalOnEnabledResourceChain
+	static class ResourceChainCustomizerConfiguration {
+
+		@Bean
+		public ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer() {
+			return new ResourceChainResourceHandlerRegistrationCustomizer();
+		}
+
+	}
+
+	interface ResourceHandlerRegistrationCustomizer {
+
+		void customize(ResourceHandlerRegistration registration);
+
+	}
+
+	private static class ResourceChainResourceHandlerRegistrationCustomizer
+			implements ResourceHandlerRegistrationCustomizer {
+
+		@Autowired
+		private ResourceProperties resourceProperties = new ResourceProperties();
+
+		@Override
+		public void customize(ResourceHandlerRegistration registration) {
+			ResourceProperties.Chain properties = this.resourceProperties.getChain();
+			configureResourceChain(properties,
+					registration.resourceChain(properties.isCache()));
+		}
+
+		private void configureResourceChain(ResourceProperties.Chain properties,
+				ResourceChainRegistration chain) {
+			Strategy strategy = properties.getStrategy();
+			if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
+				chain.addResolver(getVersionResourceResolver(strategy));
+			}
+			if (properties.isHtmlApplicationCache()) {
+				chain.addTransformer(new AppCacheManifestTransformer());
+			}
+		}
+
+		private ResourceResolver getVersionResourceResolver(
+				ResourceProperties.Strategy properties) {
+			VersionResourceResolver resolver = new VersionResourceResolver();
+			if (properties.getFixed().isEnabled()) {
+				String version = properties.getFixed().getVersion();
+				String[] paths = properties.getFixed().getPaths();
+				resolver.addFixedVersionStrategy(version, paths);
+			}
+			if (properties.getContent().isEnabled()) {
+				String[] paths = properties.getContent().getPaths();
+				resolver.addContentVersionStrategy(paths);
+			}
+			return resolver;
+		}
 	}
 
 }

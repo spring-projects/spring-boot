@@ -172,10 +172,15 @@ public class ResourceProperties implements ResourceLoaderAware {
 		@NestedConfigurationProperty
 		private final Strategy strategy = new Strategy();
 
+		/**
+		 * Return whether the resource chain is enabled. Return {@code null} if no
+		 * specific settings are present.
+		 */
 		public Boolean getEnabled() {
-			return Boolean.TRUE.equals(this.enabled)
-					|| getStrategy().getFixed().isEnabled()
+			// Check if at least one of the available strategy has been enabled
+			Boolean strategyEnabled = getStrategy().getFixed().isEnabled()
 					|| getStrategy().getContent().isEnabled();
+			return (strategyEnabled ? Boolean.TRUE : this.enabled);
 		}
 
 		public void setEnabled(boolean enabled) {
