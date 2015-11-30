@@ -48,6 +48,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.StringUtils;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.filter.RequestContextFilter;
@@ -67,7 +68,7 @@ import org.springframework.web.filter.RequestContextFilter;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @AutoConfigureBefore(DispatcherServletAutoConfiguration.class)
 @EnableConfigurationProperties(JerseyProperties.class)
-public class JerseyAutoConfiguration implements WebApplicationInitializer {
+public class JerseyAutoConfiguration {
 
 	@Autowired
 	private JerseyProperties jersey;
@@ -138,13 +139,6 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 		}
 	}
 
-	@Override
-	public void onStartup(ServletContext servletContext) throws ServletException {
-		// We need to switch *off* the Jersey WebApplicationInitializer because it
-		// will try and register a ContextLoaderListener which we don't need
-		servletContext.setInitParameter("contextConfigLocation", "<NONE>");
-	}
-
 	private static String findApplicationPath(ApplicationPath annotation) {
 		// Jersey doesn't like to be the default servlet, so map to /* as a fallback
 		if (annotation == null) {
@@ -158,6 +152,19 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 			applicationPath = "/" + applicationPath;
 		}
 		return applicationPath.equals("/") ? "/*" : applicationPath + "/*";
+	}
+
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	public static final class JerseyWebApplicationInitializer
+			implements WebApplicationInitializer {
+
+		@Override
+		public void onStartup(ServletContext servletContext) throws ServletException {
+			// We need to switch *off* the Jersey WebApplicationInitializer because it
+			// will try and register a ContextLoaderListener which we don't need
+			servletContext.setInitParameter("contextConfigLocation", "<NONE>");
+		}
+
 	}
 
 }
