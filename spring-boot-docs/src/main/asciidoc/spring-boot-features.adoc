@@ -1028,12 +1028,62 @@ When the debug mode is enabled, a selection of core loggers (embedded container,
 and Spring) are configured to output more information. Enabling the debug mode does _not_
 configure your application log all messages with `DEBUG` level.
 
+[[boot-features-logging-color-coded-output]]
+==== Color-coded output
 If your terminal supports ANSI, color output will be used to aid readability. You can set
 `spring.output.ansi.enabled` to a
 {dc-spring-boot}/ansi/AnsiOutput.Enabled.{dc-ext}[supported value] to override the auto
 detection.
 
+Color coding is configured using the `%clr` conversion word. In its simplest form the
+converter will color the output according to the log level, for example:
 
+[source,indent=0]
+----
+%clr(-%5p})
+----
+
+The mapping of log level to a color is as follows:
+
+|===
+|Level | Color
+
+|`FATAL`
+| Red
+
+|`ERROR`
+| Red
+
+|`WARN`
+| Yellow
+
+|`INFO`
+| Green
+
+|`DEBUG`
+| Green
+
+|`TRACE`
+| Green
+|===
+
+Alternatively, you can specify the color or style that should be used by providing it
+as an option to the conversion. For example, to make the text yellow:
+
+[source,indent=0]
+----
+%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){yellow}
+----
+
+The following colors and styles are supported:
+
+ - `blue`
+ - `cyan`
+ - `faint`
+ - `green`
+ - `magenta`
+ - `red`
+ - `yellow`
 
 [[boot-features-logging-file-output]]
 === File output
@@ -1047,6 +1097,7 @@ The following table shows how the `logging.*` properties can be used together:
 [cols="1,1,1,4"]
 |===
 |`logging.file` |`logging.path` |Example |Description
+
 |_(none)_
 |_(none)_
 |
