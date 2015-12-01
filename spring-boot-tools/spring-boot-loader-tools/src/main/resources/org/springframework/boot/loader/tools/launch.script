@@ -80,6 +80,20 @@ isRunning() {
   ps -p $1 &> /dev/null
 }
 
+await_file() {
+  end=`date +%s`
+  let "end+=10"
+  while [ ! -f $1 ]
+  do
+    now=`date +%s`
+    echo $now
+    if [[ $now -ge $end ]]; then
+      break
+    fi
+    sleep 1
+  done
+}
+
 # Determine the script mode
 action="run"
 if [[ "$MODE" == "auto" && -n "$init_script" ]] || [[ "$MODE" == "service" ]]; then
@@ -142,6 +156,7 @@ do_start() {
         -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS \
         -jar $jarfile $RUN_ARGS "$@" \
         > $log_file 2>&1
+      await_file $pid_file
     else
       su -s /bin/sh -c "$command &> \"$log_file\" & echo \$!" $run_user > "$pid_file"
     fi
