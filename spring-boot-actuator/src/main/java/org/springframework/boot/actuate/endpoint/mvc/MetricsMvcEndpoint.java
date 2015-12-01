@@ -67,13 +67,23 @@ public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 		@Override
 		protected void getNames(Map<String, ?> source, NameCallback callback) {
 			for (String name : source.keySet()) {
-				callback.addName(name);
+				try {
+					callback.addName(name);
+				}
+				catch (NoSuchMetricException ex) {
+					// Metric with null value. Continue.
+				}
 			}
 		}
 
 		@Override
+		protected Object getOptionalValue(Map<String, ?> source, String name) {
+			return source.get(name);
+		}
+
+		@Override
 		protected Object getValue(Map<String, ?> source, String name) {
-			Object value = source.get(name);
+			Object value = getOptionalValue(source, name);
 			if (value == null) {
 				throw new NoSuchMetricException("No such metric: " + name);
 			}

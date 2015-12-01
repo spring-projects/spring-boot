@@ -126,7 +126,6 @@ public class MetricsMvcEndpointTests {
 	public void specificMetricWithDot() throws Exception {
 		this.mvc.perform(get("/metrics/group2.a")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("1")));
-
 	}
 
 	@Import({ JacksonAutoConfiguration.class,
@@ -148,6 +147,7 @@ public class MetricsMvcEndpointTests {
 					metrics.add(new Metric<Integer>("group1.b", 1));
 					metrics.add(new Metric<Integer>("group2.a", 1));
 					metrics.add(new Metric<Integer>("group2_a", 1));
+					metrics.add(new Metric<Integer>("baz", null));
 					return Collections.unmodifiableList(metrics);
 				}
 

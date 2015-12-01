@@ -96,6 +96,11 @@ public class NamePatternFilterTests {
 		private boolean getNamesCalled;
 
 		@Override
+		protected Object getOptionalValue(Object source, String name) {
+			return name;
+		}
+
+		@Override
 		protected Object getValue(Object source, String name) {
 			return name;
 		}
