@@ -81,12 +81,11 @@ isRunning() {
 }
 
 await_file() {
-  end=`date +%s`
+  end=$(date +%s)
   let "end+=10"
-  while [ ! -f $1 ]
+  while [[ ! -f "$1" ]]
   do
-    now=`date +%s`
-    echo $now
+    now=$(date +%s)
     if [[ $now -ge $end ]]; then
       break
     fi
