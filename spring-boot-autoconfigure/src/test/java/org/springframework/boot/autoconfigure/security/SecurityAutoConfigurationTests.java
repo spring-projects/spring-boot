@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import java.util.EnumSet;
+
+import javax.servlet.DispatcherType;
+
 import org.junit.After;
 import org.junit.Test;
 
@@ -54,11 +58,15 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -67,6 +75,7 @@ import static org.junit.Assert.fail;
  *
  * @author Dave Syer
  * @author Rob Winch
+ * @author Andy Wilkinson
  */
 public class SecurityAutoConfigurationTests {
 
@@ -358,6 +367,45 @@ public class SecurityAutoConfigurationTests {
 				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(SecurityEvaluationContextExtension.class));
+	}
+
+	@Test
+	public void defaultFilterDispatcherTypes() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(SecurityAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DelegatingFilterProxyRegistrationBean bean = this.context.getBean(
+				"securityFilterChainRegistration",
+				DelegatingFilterProxyRegistrationBean.class);
+		@SuppressWarnings("unchecked")
+		EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
+				.getField(bean, "dispatcherTypes");
+		assertThat(dispatcherTypes, is(nullValue()));
+	}
+
+	@Test
+	public void customFilterDispatcherTypes() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(SecurityAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"security.filter-dispatcher-types:INCLUDE,ERROR");
+		this.context.refresh();
+		DelegatingFilterProxyRegistrationBean bean = this.context.getBean(
+				"securityFilterChainRegistration",
+				DelegatingFilterProxyRegistrationBean.class);
+		@SuppressWarnings("unchecked")
+		EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
+				.getField(bean, "dispatcherTypes");
+		assertThat(dispatcherTypes,
+				is(EnumSet.of(DispatcherType.INCLUDE, DispatcherType.ERROR)));
 	}
 
 	private static final class AuthenticationListener

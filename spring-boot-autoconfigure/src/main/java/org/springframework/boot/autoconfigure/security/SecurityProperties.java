@@ -18,8 +18,11 @@ package org.springframework.boot.autoconfigure.security;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
+
+import javax.servlet.DispatcherType;
 
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -33,7 +36,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@ConfigurationProperties(prefix = "security")
+@ConfigurationProperties(prefix = "security", ignoreUnknownFields = false)
 public class SecurityProperties implements SecurityPrerequisite {
 
 	/**
@@ -98,6 +101,11 @@ public class SecurityProperties implements SecurityPrerequisite {
 	 */
 	private int filterOrder = DEFAULT_FILTER_ORDER;
 
+	/**
+	 * Security filter chain dispatcher types.
+	 */
+	private EnumSet<DispatcherType> filterDispatcherTypes;
+
 	public Headers getHeaders() {
 		return this.headers;
 	}
@@ -152,6 +160,14 @@ public class SecurityProperties implements SecurityPrerequisite {
 
 	public void setFilterOrder(int filterOrder) {
 		this.filterOrder = filterOrder;
+	}
+
+	public EnumSet<DispatcherType> getFilterDispatcherTypes() {
+		return this.filterDispatcherTypes;
+	}
+
+	public void setFilterDispatcherTypes(EnumSet<DispatcherType> filterDispatcherTypes) {
+		this.filterDispatcherTypes = filterDispatcherTypes;
 	}
 
 	public static class Headers {

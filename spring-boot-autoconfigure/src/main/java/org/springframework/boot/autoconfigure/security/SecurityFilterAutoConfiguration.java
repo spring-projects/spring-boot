@@ -54,6 +54,7 @@ public class SecurityFilterAutoConfiguration {
 		DelegatingFilterProxyRegistrationBean registration = new DelegatingFilterProxyRegistrationBean(
 				DEFAULT_FILTER_NAME);
 		registration.setOrder(securityProperties.getFilterOrder());
+		registration.setDispatcherTypes(securityProperties.getFilterDispatcherTypes());
 		return registration;
 	}
 
