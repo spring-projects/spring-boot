@@ -44,8 +44,10 @@ import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigFileApplicationListener.ConfigurationPropertySources;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnumerableCompositePropertySource;
+import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -53,6 +55,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -67,6 +71,7 @@ import org.springframework.util.StringUtils;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -443,6 +448,13 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(this.environment.getProperty("my.property"),
 				equalTo("fromdevpropertiesfile"));
 		validateProfilePrecedence(null, "other", "dev");
+	}
+
+	@Test
+	public void postProcessorsAreOrderedCorrectly() {
+		TestConfigFileApplicationListener testListener = new TestConfigFileApplicationListener();
+		testListener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
+				this.application, new String[0], this.environment));
 	}
 
 	private void validateProfilePrecedence(String... profiles) {
@@ -865,6 +877,29 @@ public class ConfigFileApplicationListenerTests {
 	@PropertySource(value = { "classpath:/specificlocation.properties",
 			"classpath:/moreproperties.properties" }, name = "foo")
 	protected static class WithPropertySourceMultipleLocationsAndName {
+
+	}
+
+	private static class TestConfigFileApplicationListener
+			extends ConfigFileApplicationListener {
+
+		@Override
+		List<EnvironmentPostProcessor> loadPostProcessors() {
+			return new ArrayList<EnvironmentPostProcessor>(
+					Arrays.asList(new LowestPrecedenceEnvironmentPostProcessor()));
+		}
+
+	}
+
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	private static class LowestPrecedenceEnvironmentPostProcessor
+			implements EnvironmentPostProcessor {
+
+		@Override
+		public void postProcessEnvironment(ConfigurableEnvironment environment,
+				SpringApplication application) {
+			assertThat(environment.getPropertySources().size(), is(equalTo(4)));
+		}
 
 	}
 

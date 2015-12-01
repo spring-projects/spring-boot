@@ -47,6 +47,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -153,14 +154,18 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 
 	private void onApplicationEnvironmentPreparedEvent(
 			ApplicationEnvironmentPreparedEvent event) {
-		List<EnvironmentPostProcessor> postProcessors = SpringFactoriesLoader
-				.loadFactories(EnvironmentPostProcessor.class,
-						getClass().getClassLoader());
+		List<EnvironmentPostProcessor> postProcessors = loadPostProcessors();
 		postProcessors.add(this);
+		AnnotationAwareOrderComparator.sort(postProcessors);
 		for (EnvironmentPostProcessor postProcessor : postProcessors) {
 			postProcessor.postProcessEnvironment(event.getEnvironment(),
 					event.getSpringApplication());
 		}
+	}
+
+	List<EnvironmentPostProcessor> loadPostProcessors() {
+		return SpringFactoriesLoader.loadFactories(EnvironmentPostProcessor.class,
+				getClass().getClassLoader());
 	}
 
 	@Override
