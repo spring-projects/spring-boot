@@ -80,7 +80,6 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 			CorsConfiguration corsConfiguration) {
 		this.endpoints = new HashSet<MvcEndpoint>(endpoints);
 		this.corsConfiguration = corsConfiguration;
-		setUseSuffixPatternMatch(false);
 		// By default the static resource handler mapping is LOWEST_PRECEDENCE - 1
 		// and the RequestMappingHandlerMapping is 0 (we ideally want to be before both)
 		setOrder(-100);
