@@ -16,6 +16,12 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.servlet.DispatcherType;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -54,8 +60,17 @@ public class SecurityFilterAutoConfiguration {
 		DelegatingFilterProxyRegistrationBean registration = new DelegatingFilterProxyRegistrationBean(
 				DEFAULT_FILTER_NAME);
 		registration.setOrder(securityProperties.getFilterOrder());
-		registration.setDispatcherTypes(securityProperties.getFilterDispatcherTypes());
+		registration.setDispatcherTypes(getDispatcherTypes(securityProperties));
 		return registration;
+	}
+
+	private EnumSet<DispatcherType> getDispatcherTypes(
+			SecurityProperties securityProperties) {
+		Set<DispatcherType> dispatcherTypes = new HashSet<DispatcherType>();
+		for (String dispatcherType : securityProperties.getFilterDispatcherTypes()) {
+			dispatcherTypes.add(DispatcherType.valueOf(dispatcherType));
+		}
+		return EnumSet.copyOf(dispatcherTypes);
 	}
 
 }
