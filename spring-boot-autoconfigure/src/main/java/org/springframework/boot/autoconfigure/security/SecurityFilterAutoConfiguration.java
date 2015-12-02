@@ -42,6 +42,7 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
  *
  * @author Rob Winch
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.3
  */
 @Configuration
@@ -66,6 +67,9 @@ public class SecurityFilterAutoConfiguration {
 
 	private EnumSet<DispatcherType> getDispatcherTypes(
 			SecurityProperties securityProperties) {
+		if (securityProperties.getFilterDispatcherTypes() == null) {
+			return null;
+		}
 		Set<DispatcherType> dispatcherTypes = new HashSet<DispatcherType>();
 		for (String dispatcherType : securityProperties.getFilterDispatcherTypes()) {
 			dispatcherTypes.add(DispatcherType.valueOf(dispatcherType));
