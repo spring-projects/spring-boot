@@ -19,6 +19,7 @@ package org.springframework.boot;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import org.springframework.util.StreamUtils;
  * Banner implementation that prints from a source {@link Resource}.
  *
  * @author Phillip Webb
+ * @author Vedran Pavic
  * @since 1.2.0
  */
 public class ResourceBanner implements Banner {
@@ -80,6 +82,7 @@ public class ResourceBanner implements Banner {
 		resolvers.add(environment);
 		resolvers.add(getVersionResolver(sourceClass));
 		resolvers.add(getAnsiResolver());
+		resolvers.add(getTitleResolver(sourceClass));
 		return resolvers;
 	}
 
@@ -122,6 +125,20 @@ public class ResourceBanner implements Banner {
 		MutablePropertySources sources = new MutablePropertySources();
 		sources.addFirst(new AnsiPropertySource("ansi", true));
 		return new PropertySourcesPropertyResolver(sources);
+	}
+
+	private PropertyResolver getTitleResolver(Class<?> sourceClass) {
+		MutablePropertySources sources = new MutablePropertySources();
+		String applicationTitle = getApplicationTitle(sourceClass);
+		Map<String, Object> titleMap = Collections.<String, Object>singletonMap(
+				"application.title", (applicationTitle == null ? "" : applicationTitle));
+		sources.addFirst(new MapPropertySource("title", titleMap));
+		return new PropertySourcesPropertyResolver(sources);
+	}
+
+	protected String getApplicationTitle(Class<?> sourceClass) {
+		Package sourcePackage = (sourceClass == null ? null : sourceClass.getPackage());
+		return (sourcePackage == null ? null : sourcePackage.getImplementationTitle());
 	}
 
 }
