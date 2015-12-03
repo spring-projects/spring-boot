@@ -7,7 +7,9 @@
 		<property name="headerFile" value="${checkstyle.header.file}" />
 		<property name="fileExtensions" value="java" />
 	</module>
-	<module name="NewlineAtEndOfFile" />
+	<module name="NewlineAtEndOfFile">
+		<property name="lineSeparator" value="lf"/>
+	</module>
 
 	<!-- TreeWalker Checks -->
 	<module name="TreeWalker">
