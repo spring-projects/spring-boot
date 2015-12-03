@@ -178,7 +178,8 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	}
 
 	@Test
-	public void accessLogCanBeEnabled() throws IOException, URISyntaxException {
+	public void accessLogCanBeEnabled()
+			throws IOException, URISyntaxException, InterruptedException {
 		UndertowEmbeddedServletContainerFactory factory = getFactory();
 		factory.setAccessLogEnabled(true);
 		File accessLogDirectory = this.temporaryFolder.getRoot();
@@ -188,13 +189,21 @@ public class UndertowEmbeddedServletContainerFactoryTests
 				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
-		assertThat(accessLogDirectory.listFiles(),
-				is(arrayContaining(new File(accessLogDirectory, "access_log.log"))));
+		File accessLog = new File(accessLogDirectory, "access_log.log");
+		awaitFile(accessLog);
+		assertThat(accessLogDirectory.listFiles(), is(arrayContaining(accessLog)));
 	}
 
 	@Override
 	protected Object getJspServlet() {
 		return null; // Undertow does not support JSPs
+	}
+
+	private void awaitFile(File file) throws InterruptedException {
+		long end = System.currentTimeMillis() + 10000;
+		while (!file.exists() && System.currentTimeMillis() < end) {
+			Thread.sleep(100);
+		}
 	}
 
 	private ServletContainer getServletContainerFromNewFactory() {
