@@ -384,7 +384,7 @@ public class UndertowEmbeddedServletContainerFactory
 		try {
 			createAccessLogDirectoryIfNecessary();
 			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
-					createWorker(), this.accessLogDirectory, "access_log");
+					createWorker(), this.accessLogDirectory, "access_log.");
 			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
 					: "common";
 			return new AccessLogHandler(handler, accessLogReceiver, formatString,
