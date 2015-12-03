@@ -274,8 +274,8 @@ public class HttpTunnelServer {
 		}
 
 		private void closeStaleHttpConnections() throws IOException {
-			checkNotDisconnected();
 			synchronized (this.httpConnections) {
+				checkNotDisconnected();
 				Iterator<HttpConnection> iterator = this.httpConnections.iterator();
 				while (iterator.hasNext()) {
 					HttpConnection httpConnection = iterator.next();
