@@ -42,6 +42,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -97,6 +98,7 @@ public class LoggingApplicationListenerTests {
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
 		System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");
+		System.clearProperty(LoggingSystem.SYSTEM_PROPERTY);
 		if (this.context != null) {
 			this.context.close();
 		}
@@ -386,6 +388,37 @@ public class LoggingApplicationListenerTests {
 				TimeUnit.SECONDS), is(true));
 	}
 
+	@Test
+	public void closingContextCleansUpLoggingSystem() {
+		System.setProperty(LoggingSystem.SYSTEM_PROPERTY,
+				TestCleanupLoggingSystem.class.getName());
+		this.initializer.onApplicationEvent(
+				new ApplicationStartedEvent(this.springApplication, new String[0]));
+		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils
+				.getField(this.initializer, "loggingSystem");
+		assertThat(loggingSystem.cleanedUp, is(false));
+		this.initializer.onApplicationEvent(new ContextClosedEvent(this.context));
+		assertThat(loggingSystem.cleanedUp, is(true));
+	}
+
+	@Test
+	public void closingChildContextDoesNotCleanUpLoggingSystem() {
+		System.setProperty(LoggingSystem.SYSTEM_PROPERTY,
+				TestCleanupLoggingSystem.class.getName());
+		this.initializer.onApplicationEvent(
+				new ApplicationStartedEvent(this.springApplication, new String[0]));
+		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils
+				.getField(this.initializer, "loggingSystem");
+		assertThat(loggingSystem.cleanedUp, is(false));
+		GenericApplicationContext childContext = new GenericApplicationContext();
+		childContext.setParent(this.context);
+		this.initializer.onApplicationEvent(new ContextClosedEvent(childContext));
+		assertThat(loggingSystem.cleanedUp, is(false));
+		this.initializer.onApplicationEvent(new ContextClosedEvent(this.context));
+		assertThat(loggingSystem.cleanedUp, is(true));
+		childContext.close();
+	}
+
 	private boolean bridgeHandlerInstalled() {
 		Logger rootLogger = LogManager.getLogManager().getLogger("");
 		Handler[] handlers = rootLogger.getHandlers();
@@ -449,6 +482,36 @@ public class LoggingApplicationListenerTests {
 		@Override
 		void registerShutdownHook(Thread shutdownHook) {
 			this.shutdownHook = shutdownHook;
+		}
+
+	}
+
+	public static final class TestCleanupLoggingSystem extends LoggingSystem {
+
+		private boolean cleanedUp = false;
+
+		public TestCleanupLoggingSystem(ClassLoader classLoader) {
+
+		}
+
+		@Override
+		public void beforeInitialize() {
+
+		}
+
+		@Override
+		public void initialize(String configLocation, LogFile logFile) {
+
+		}
+
+		@Override
+		public void setLogLevel(String loggerName, LogLevel level) {
+
+		}
+
+		@Override
+		public void cleanUp() {
+			this.cleanedUp = true;
 		}
 
 	}
