@@ -16,6 +16,9 @@
 
 package org.springframework.boot.context.embedded.undertow;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -39,6 +42,8 @@ import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -170,6 +175,21 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	public void eachFactoryUsesADiscreteServletContainer() {
 		assertThat(getServletContainerFromNewFactory(),
 				is(not(equalTo(getServletContainerFromNewFactory()))));
+	}
+
+	@Test
+	public void accessLogCanBeEnabled() throws IOException, URISyntaxException {
+		UndertowEmbeddedServletContainerFactory factory = getFactory();
+		factory.setAccessLogEnabled(true);
+		File accessLogDirectory = this.temporaryFolder.getRoot();
+		factory.setAccessLogDirectory(accessLogDirectory);
+		assertThat(accessLogDirectory.listFiles(), is(arrayWithSize(0)));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
+		this.container.start();
+		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
+		assertThat(accessLogDirectory.listFiles(),
+				is(arrayContaining(new File(accessLogDirectory, "access_log.log"))));
 	}
 
 	@Override
