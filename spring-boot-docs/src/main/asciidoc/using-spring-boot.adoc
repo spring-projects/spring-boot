@@ -965,6 +965,10 @@ NOTE: DevTools relies on the application context's shutdown hook to close it dur
 restart. It will not work correctly if you have disabled the shutdown hook (
 `SpringApplication.setRegisterShutdownHook(false)`).
 
+NOTE: When deciding if an entry on the classpath should trigger a restart when it changes,
+DevTools automatically ignores projects named `spring-boot`, `spring-boot-devtools`,
+`spring-boot-autoconfigure`, `spring-boot-actuator`, and `spring-boot-starter`.
+
 [[using-spring-boot-restart-vs-reload]]
 .Restart vs Reload
 ****
