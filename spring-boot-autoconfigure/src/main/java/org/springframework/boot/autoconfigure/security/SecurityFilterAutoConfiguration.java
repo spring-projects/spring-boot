@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.embedded.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -63,6 +64,12 @@ public class SecurityFilterAutoConfiguration {
 		registration.setOrder(securityProperties.getFilterOrder());
 		registration.setDispatcherTypes(getDispatcherTypes(securityProperties));
 		return registration;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public SecurityProperties securityProperties() {
+		return new SecurityProperties();
 	}
 
 	private EnumSet<DispatcherType> getDispatcherTypes(
