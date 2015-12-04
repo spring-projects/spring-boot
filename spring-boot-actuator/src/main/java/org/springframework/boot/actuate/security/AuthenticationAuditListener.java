@@ -29,7 +29,7 @@ import org.springframework.security.web.authentication.switchuser.Authentication
 import org.springframework.util.ClassUtils;
 
 /**
- * Default implementation of {@link AuthenticationAuditListener}.
+ * Default implementation of {@link AbstractAuthenticationAuditListener}.
  *
  * @author Dave Syer
  */

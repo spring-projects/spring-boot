@@ -539,7 +539,7 @@ Spring Boot provides a number of "`Starter POMs`" that make easy to add jars to 
 classpath. Our sample application has already used `spring-boot-starter-parent` in the
 `parent` section of the POM. The `spring-boot-starter-parent` is a special starter
 that provides useful Maven defaults. It also provides a
-<<using-spring-boot.adoc#using-boot-dependency-management,`dependency-management`,>>
+<<using-spring-boot.adoc#using-boot-dependency-management,`dependency-management`>>
 section so that you can omit `version` tags for "`blessed`" dependencies.
 
 Other "`Starter POMs`" simply provide dependencies that you are likely to need when
