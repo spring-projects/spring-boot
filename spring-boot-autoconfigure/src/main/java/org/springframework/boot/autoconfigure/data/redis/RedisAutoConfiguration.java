@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Sentinel;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -53,9 +54,11 @@ import org.springframework.util.StringUtils;
  * @author Christoph Strobl
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Simon Buettner
  */
 @Configuration
 @ConditionalOnClass({ JedisConnection.class, RedisOperations.class, Jedis.class })
+@ConditionalOnProperty(prefix = "spring.redis", value = "enabled", matchIfMissing = true)
 @EnableConfigurationProperties
 public class RedisAutoConfiguration {
 
