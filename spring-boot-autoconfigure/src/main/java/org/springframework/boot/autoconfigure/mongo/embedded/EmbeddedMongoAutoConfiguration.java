@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.mongo.embedded;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -136,7 +138,12 @@ public class EmbeddedMongoAutoConfiguration {
 		MongodConfigBuilder builder = new MongodConfigBuilder()
 				.version(featureAwareVersion);
 		if (getPort() > 0) {
-			builder.net(new Net(getPort(), Network.localhostIsIPv6()));
+			builder.net(new Net(getHost().getHostAddress(), getPort(),
+					Network.localhostIsIPv6()));
+		}
+		else {
+			builder.net(new Net(getHost().getHostAddress(),
+					Network.getFreeServerPort(getHost()), Network.localhostIsIPv6()));
 		}
 		return builder.build();
 	}
@@ -146,6 +153,13 @@ public class EmbeddedMongoAutoConfiguration {
 			return MongoProperties.DEFAULT_PORT;
 		}
 		return this.properties.getPort();
+	}
+
+	private InetAddress getHost() throws UnknownHostException {
+		if (this.properties.getHost() == null) {
+			return InetAddress.getLoopbackAddress();
+		}
+		return InetAddress.getByName(this.properties.getHost());
 	}
 
 	private void publishPortInfo(int port) {
