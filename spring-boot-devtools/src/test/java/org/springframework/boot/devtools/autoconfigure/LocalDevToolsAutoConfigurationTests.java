@@ -31,6 +31,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.devtools.autoconfigure.RestartCompatibleRedisSerializerConfigurer.RestartCompatibleRedisSerializer;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
@@ -44,6 +45,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.session.ExpiringSession;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 
@@ -63,6 +67,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link LocalDevToolsAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class LocalDevToolsAutoConfigurationTests {
 
@@ -235,6 +240,24 @@ public class LocalDevToolsAutoConfigurationTests {
 		assertThat(folders, hasKey(new File("src/test/java").getAbsoluteFile()));
 	}
 
+	@Test
+	public void sessionRedisTemplateIsConfiguredWithCustomDeserializers()
+			throws Exception {
+		SpringApplication application = new SpringApplication(
+				SessionRedisTemplateConfig.class, LocalDevToolsAutoConfiguration.class);
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		RedisTemplate<?, ?> redisTemplate = this.context.getBean(RedisTemplate.class);
+		assertThat(redisTemplate.getHashKeySerializer(),
+				is(instanceOf(RestartCompatibleRedisSerializer.class)));
+		assertThat(redisTemplate.getHashValueSerializer(),
+				is(instanceOf(RestartCompatibleRedisSerializer.class)));
+		assertThat(redisTemplate.getKeySerializer(),
+				is(instanceOf(RestartCompatibleRedisSerializer.class)));
+		assertThat(redisTemplate.getValueSerializer(),
+				is(instanceOf(RestartCompatibleRedisSerializer.class)));
+	}
+
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config,
 			String... args) {
 		return initializeAndRun(config, Collections.<String, Object>emptyMap(), args);
@@ -279,6 +302,18 @@ public class LocalDevToolsAutoConfigurationTests {
 	@Configuration
 	@Import({ LocalDevToolsAutoConfiguration.class, ResourceProperties.class })
 	public static class WebResourcesConfig {
+
+	}
+
+	@Configuration
+	public static class SessionRedisTemplateConfig {
+
+		@Bean
+		public RedisTemplate<String, ExpiringSession> sessionRedisTemplate() {
+			RedisTemplate<String, ExpiringSession> redisTemplate = new RedisTemplate<String, ExpiringSession>();
+			redisTemplate.setConnectionFactory(mock(RedisConnectionFactory.class));
+			return redisTemplate;
+		}
 
 	}
 
