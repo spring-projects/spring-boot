@@ -105,7 +105,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	@Bean
 	public HalJsonMvcEndpoint halJsonMvcEndpoint(
 			ManagementServletContext managementServletContext,
-			ResourceProperties resources, ResourceLoader resourceLoader) {
+			ResourceLoader resourceLoader) {
 		if (HalBrowserMvcEndpoint.getHalBrowserLocation(resourceLoader) != null) {
 			return new HalBrowserMvcEndpoint(managementServletContext);
 		}
