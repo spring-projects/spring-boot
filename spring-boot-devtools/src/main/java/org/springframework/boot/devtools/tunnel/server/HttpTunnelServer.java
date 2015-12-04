@@ -289,9 +289,12 @@ public class HttpTunnelServer {
 		}
 
 		private void checkNotDisconnected() {
-			long timeout = HttpTunnelServer.this.disconnectTimeout;
-			long duration = System.currentTimeMillis() - this.lastHttpRequestTime;
-			Assert.state(duration < timeout, "Disconnect timeout");
+			if (this.lastHttpRequestTime > 0) {
+				long timeout = HttpTunnelServer.this.disconnectTimeout;
+				long duration = System.currentTimeMillis() - this.lastHttpRequestTime;
+				Assert.state(duration < timeout,
+						"Disconnect timeout: " + timeout + " " + duration);
+			}
 		}
 
 		private void closeHttpConnections() {
