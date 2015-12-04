@@ -157,7 +157,9 @@ public class EmbeddedMongoAutoConfiguration {
 
 	private InetAddress getHost() throws UnknownHostException {
 		if (this.properties.getHost() == null) {
-			return InetAddress.getLoopbackAddress();
+			return InetAddress.getByAddress(Network.localhostIsIPv6()
+					? new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 }
+					: new byte[] { 127, 0, 0, 1 });
 		}
 		return InetAddress.getByName(this.properties.getHost());
 	}
