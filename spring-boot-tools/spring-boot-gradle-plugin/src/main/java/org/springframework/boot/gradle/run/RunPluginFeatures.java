@@ -24,7 +24,6 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
 import org.gradle.api.plugins.JavaPluginConvention;
-import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.application.CreateStartScripts;
 
@@ -57,7 +56,7 @@ public class RunPluginFeatures implements PluginFeatures {
 		project.getTasks().all(new Action<Task>() {
 			@Override
 			public void execute(Task task) {
-				if (task instanceof JavaExec || task instanceof CreateStartScripts) {
+				if (task instanceof BootRunTask || task instanceof CreateStartScripts) {
 					task.dependsOn(FIND_MAIN_CLASS_TASK_NAME);
 				}
 			}
