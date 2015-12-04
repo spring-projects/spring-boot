@@ -303,7 +303,7 @@ content into your application; rather pick only the properties that you need.
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/WebMvcProperties.{sc-ext}[WebMvcProperties])
 	spring.mvc.async.request-timeout= # Amount of time (in milliseconds) before asynchronous request handling times out.
 	spring.mvc.date-format= # Date format to use. For instance `dd/MM/yyyy`.
-	spring.mvc.dispatch-trace-request=false # Dispatch TRACE  requests to the FrameworkServlet doService method.
+	spring.mvc.dispatch-trace-request=false # Dispatch TRACE requests to the FrameworkServlet doService method.
 	spring.mvc.dispatch-options-request=false # Dispatch OPTIONS requests to the FrameworkServlet doService method.
 	spring.mvc.favicon.enabled=true # Enable resolution of favicon.ico.
 	spring.mvc.ignore-default-model-on-redirect=true # If the content of the "default" model should be ignored during redirect scenarios.
