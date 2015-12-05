@@ -51,9 +51,9 @@ class OnExpressionCondition extends SpringBootCondition {
 		// Explicitly allow environment placeholders inside the expression
 		expression = context.getEnvironment().resolvePlaceholders(expression);
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		BeanExpressionResolver resolver = beanFactory.getBeanExpressionResolver();
 		BeanExpressionContext expressionContext = (beanFactory != null)
 				? new BeanExpressionContext(beanFactory, null) : null;
+		BeanExpressionResolver resolver = beanFactory.getBeanExpressionResolver();
 		if (resolver == null) {
 			resolver = new StandardBeanExpressionResolver();
 		}
