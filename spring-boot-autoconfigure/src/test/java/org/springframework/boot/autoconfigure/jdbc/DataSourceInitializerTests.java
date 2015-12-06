@@ -100,7 +100,7 @@ public class DataSourceInitializerTests {
 		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
 		assertNotNull(dataSource);
 		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(1),
+		assertEquals(Integer.valueOf(1),
 				template.queryForObject("SELECT COUNT(*) from BAR", Integer.class));
 	}
 
@@ -119,7 +119,7 @@ public class DataSourceInitializerTests {
 		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
 		assertNotNull(dataSource);
 		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(1),
+		assertEquals(Integer.valueOf(1),
 				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
 	}
 
@@ -142,9 +142,9 @@ public class DataSourceInitializerTests {
 		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
 		assertNotNull(dataSource);
 		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(1),
+		assertEquals(Integer.valueOf(1),
 				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
-		assertEquals(new Integer(0),
+		assertEquals(Integer.valueOf(0),
 				template.queryForObject("SELECT COUNT(*) from SPAM", Integer.class));
 	}
 
@@ -165,7 +165,7 @@ public class DataSourceInitializerTests {
 		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
 		assertNotNull(dataSource);
 		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(2),
+		assertEquals(Integer.valueOf(2),
 				template.queryForObject("SELECT COUNT(*) from BAR", Integer.class));
 		assertEquals("bar",
 				template.queryForObject("SELECT name from BAR WHERE id=1", String.class));

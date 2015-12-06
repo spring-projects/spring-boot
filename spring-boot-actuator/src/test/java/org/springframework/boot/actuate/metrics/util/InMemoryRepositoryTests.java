@@ -127,7 +127,7 @@ public class InMemoryRepositoryTests {
 		for (Future<Boolean> future : all) {
 			assertTrue(future.get(1, TimeUnit.SECONDS));
 		}
-		assertEquals(new Integer(0), repository.findOne("foo"));
+		assertEquals(Integer.valueOf(0), repository.findOne("foo"));
 	}
 
 }

@@ -64,12 +64,12 @@ public class MetricRegistryMetricReaderTests {
 
 			@Override
 			public Number getValue() {
-				return new Integer(5);
+				return Integer.valueOf(5);
 			}
 
 		});
 		Metric<Integer> metric = (Metric<Integer>) this.metricReader.findOne("test");
-		assertThat(metric.getValue(), equalTo(new Integer(5)));
+		assertThat(metric.getValue(), equalTo(Integer.valueOf(5)));
 		this.metricRegistry.remove("test");
 		assertThat(this.metricReader.findOne("test"), is(nullValue()));
 	}

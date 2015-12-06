@@ -67,7 +67,7 @@ public class HibernateJpaAutoConfigurationTests
 				"spring.datasource.schema:classpath:/ddl.sql");
 		setupTestConfiguration();
 		this.context.refresh();
-		assertEquals(new Integer(1),
+		assertEquals(Integer.valueOf(1),
 				new JdbcTemplate(this.context.getBean(DataSource.class))
 						.queryForObject("SELECT COUNT(*) from CITY", Integer.class));
 	}
@@ -80,7 +80,7 @@ public class HibernateJpaAutoConfigurationTests
 				"spring.datasource.data:classpath:/city.sql");
 		setupTestConfiguration();
 		this.context.refresh();
-		assertEquals(new Integer(1),
+		assertEquals(Integer.valueOf(1),
 				new JdbcTemplate(this.context.getBean(DataSource.class))
 						.queryForObject("SELECT COUNT(*) from CITY", Integer.class));
 	}

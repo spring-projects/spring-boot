@@ -57,7 +57,7 @@ public class InMemoryMetricRepository implements MetricRepository, MultiMetricRe
 							metric.increment(amount).getValue(), timestamp);
 				}
 				else {
-					return new Metric<Long>(metricName, new Long(amount), timestamp);
+					return new Metric<Long>(metricName, Long.valueOf(amount), timestamp);
 				}
 			}
 		});
