@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -117,7 +118,8 @@ public class SpringApplicationRunner {
 	private Object[] compile() throws IOException {
 		Object[] compiledSources = this.compiler.compile(this.sources);
 		if (compiledSources.length == 0) {
-			throw new RuntimeException("No classes found in '" + this.sources + "'");
+			throw new RuntimeException(
+					"No classes found in '" + Arrays.toString(this.sources) + "'");
 		}
 		return compiledSources;
 	}

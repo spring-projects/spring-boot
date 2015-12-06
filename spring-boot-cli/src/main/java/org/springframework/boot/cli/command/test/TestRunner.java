@@ -19,6 +19,7 @@ package org.springframework.boot.cli.command.test;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.cli.compiler.GroovyCompiler;
@@ -55,7 +56,8 @@ public class TestRunner {
 	public void compileAndRunTests() throws Exception {
 		Object[] sources = this.compiler.compile(this.sources);
 		if (sources.length == 0) {
-			throw new RuntimeException("No classes found in '" + this.sources + "'");
+			throw new RuntimeException(
+					"No classes found in '" + Arrays.toString(this.sources) + "'");
 		}
 
 		// Run in new thread to ensure that the context classloader is setup
