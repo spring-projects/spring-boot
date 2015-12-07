@@ -98,7 +98,7 @@ public class OAuth2SsoCustomConfiguration
 
 		@Override
 		public Object invoke(MethodInvocation invocation) throws Throwable {
-			if (invocation.getMethod().getName().equals("init")) {
+			if ("init".equals(invocation.getMethod().getName())) {
 				Method method = ReflectionUtils
 						.findMethod(WebSecurityConfigurerAdapter.class, "getHttp");
 				ReflectionUtils.makeAccessible(method);

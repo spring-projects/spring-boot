@@ -192,7 +192,7 @@ public class ServerProperties
 	}
 
 	public String getServletMapping() {
-		if (this.servletPath.equals("") || this.servletPath.equals("/")) {
+		if ("".equals(this.servletPath) || "/".equals(this.servletPath)) {
 			return "/";
 		}
 		if (this.servletPath.contains("*")) {

@@ -151,7 +151,7 @@ public class JerseyAutoConfiguration {
 		if (!applicationPath.startsWith("/")) {
 			applicationPath = "/" + applicationPath;
 		}
-		return applicationPath.equals("/") ? "/*" : applicationPath + "/*";
+		return "/".equals(applicationPath) ? "/*" : applicationPath + "/*";
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)

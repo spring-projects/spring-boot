@@ -227,10 +227,10 @@ public class SpringBootWebSecurityConfiguration {
 			List<String> list = new ArrayList<String>();
 			for (String path : this.security.getBasic().getPath()) {
 				path = (path == null ? "" : path.trim());
-				if (path.equals("/**")) {
+				if ("/**".equals(path)) {
 					return new String[] { path };
 				}
-				if (!path.equals("")) {
+				if (!"".equals(path)) {
 					list.add(path);
 				}
 			}

@@ -138,7 +138,7 @@ public class RedisMultiMetricRepositoryTests {
 		Set<String> names = new HashSet<String>();
 		for (Metric<?> metric : this.repository.findAll("foo")) {
 			names.add(metric.getName());
-			if (metric.getName().equals("foo.bar")) {
+			if ("foo.bar".equals(metric.getName())) {
 				bar = metric;
 			}
 		}

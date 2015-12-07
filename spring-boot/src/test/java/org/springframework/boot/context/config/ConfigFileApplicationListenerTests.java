@@ -125,7 +125,7 @@ public class ConfigFileApplicationListenerTests {
 		this.application.setResourceLoader(new ResourceLoader() {
 			@Override
 			public Resource getResource(final String location) {
-				if (location.equals("classpath:/custom.properties")) {
+				if ("classpath:/custom.properties".equals(location)) {
 					return new ByteArrayResource("the.property: fromcustom".getBytes(),
 							location) {
 						@Override

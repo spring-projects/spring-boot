@@ -351,7 +351,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 		public void setFoo(String foo) {
 			this.foo = foo;
-			if (!foo.equals("bar")) {
+			if (!"bar".equals(foo)) {
 				throw new IllegalArgumentException("Wrong value for foo");
 			}
 		}
