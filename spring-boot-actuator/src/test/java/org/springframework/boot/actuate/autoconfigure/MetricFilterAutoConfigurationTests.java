@@ -78,7 +78,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @@author Stephane Nicoll
+ * @author Stephane Nicoll
  */
 public class MetricFilterAutoConfigurationTests {
 
@@ -277,6 +277,24 @@ public class MetricFilterAutoConfigurationTests {
 		}
 	}
 
+	@Test
+	public void records5xxxHttpInteractionsAsSingleMetric() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class,
+				ServiceUnavailableFilter.class);
+		MetricsFilter filter = context.getBean(MetricsFilter.class);
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
+				.addFilter(filter)
+				.addFilter(context.getBean(ServiceUnavailableFilter.class)).build();
+		mvc.perform(get("/unknownPath/1")).andExpect(status().isServiceUnavailable());
+		mvc.perform(get("/unknownPath/2")).andExpect(status().isServiceUnavailable());
+		verify(context.getBean(CounterService.class), times(2))
+				.increment("status.503.unmapped");
+		verify(context.getBean(GaugeService.class), times(2))
+				.submit(eq("response.unmapped"), anyDouble());
+		context.close();
+	}
+
 	@Configuration
 	public static class Config {
 
@@ -372,6 +390,20 @@ public class MetricFilterAutoConfigurationTests {
 			// send redirect before filter chain is executed, like Spring Security sending
 			// us back to a login page
 			response.sendRedirect("http://example.com");
+		}
+
+	}
+
+	@Component
+	@Order(0)
+	public static class ServiceUnavailableFilter extends OncePerRequestFilter {
+
+		@Override
+		protected void doFilterInternal(HttpServletRequest request,
+				HttpServletResponse response, FilterChain chain)
+						throws ServletException, IOException {
+
+			response.sendError(HttpStatus.SERVICE_UNAVAILABLE.value());
 		}
 
 	}

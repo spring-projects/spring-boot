@@ -945,11 +945,11 @@ points to a folder will be monitored for changes.
 
 .Triggering a restart
 ****
-As DevTools _only_ monitors classpath resources, the only way to trigger a restart is to
-update the classpath. In Eclipse, saving a modified file triggers an increment build which
-updates the classpath automatically. If you are using IntelliJ IDEA, you will have to
-manually run a build using `Build` -> `Make Project`. This will update the classpath and
-trigger a restart.
+As DevTools monitors classpath resources, the only way to trigger a restart is to update
+the classpath. The way in which you cause the classpath to be updated depends on the IDE
+that you are using. In Eclipse, saving a modified file will cause the classpath to be
+updated and trigger a restart. In IntelliJ IDEA, building the project (`Build -> Make
+Project`) will have the same effect.
 ****
 
 NOTE: You can also start your application via the supported build plugins (i.e. Maven and
