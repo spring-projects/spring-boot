@@ -37,7 +37,7 @@ public final class Layouts {
 	}
 
 	/**
-	 * Return the a layout for the given source file.
+	 * Return a layout for the given source file.
 	 * @param file the source file
 	 * @return a {@link Layout}
 	 */
