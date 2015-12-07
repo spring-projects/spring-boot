@@ -123,7 +123,6 @@ public class RepackagerTests {
 	public void mainClassFromManifest() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		Manifest manifest = new Manifest();
-		manifest = new Manifest();
 		manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
 		manifest.getMainAttributes().putValue("Main-Class", "a.b.C");
 		this.testJarFile.addManifest(manifest);
