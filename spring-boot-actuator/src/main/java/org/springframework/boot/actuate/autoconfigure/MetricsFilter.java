@@ -145,7 +145,8 @@ final class MetricsFilter extends OncePerRequestFilter {
 			return fixSpecialCharacters(bestMatchingPattern.toString());
 		}
 		Series series = getSeries(status);
-		if (Series.CLIENT_ERROR.equals(series) || Series.REDIRECTION.equals(series)) {
+		if (Series.CLIENT_ERROR.equals(series) || Series.SERVER_ERROR.equals(series)
+				|| Series.REDIRECTION.equals(series)) {
 			return UNKNOWN_PATH_SUFFIX;
 		}
 		return path;
