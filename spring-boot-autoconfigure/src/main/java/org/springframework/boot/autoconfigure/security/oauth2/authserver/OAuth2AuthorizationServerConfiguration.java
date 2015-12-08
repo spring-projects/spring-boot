@@ -147,7 +147,7 @@ public class OAuth2AuthorizationServerConfiguration
 			String prefix = "security.oauth2.client";
 			boolean defaultSecret = this.credentials.isDefaultSecret();
 			logger.info(String.format(
-					"Initialized OAuth2 Client\n\n%s.clientId = %s\n%s.secret = %s\n\n",
+					"Initialized OAuth2 Client%n%n%s.clientId = %s%n%s.secret = %s%n%n",
 					prefix, this.credentials.getClientId(), prefix,
 					defaultSecret ? this.credentials.getClientSecret() : "****"));
 		}
