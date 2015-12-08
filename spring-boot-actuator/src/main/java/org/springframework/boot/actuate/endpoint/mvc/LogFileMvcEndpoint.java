@@ -130,7 +130,7 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		}
 		FileSystemResource resource = new FileSystemResource(logFile.toString());
 		if (!resource.exists()) {
-			if (logger.isWarnEnabled()) {
+			if (logger.isDebugEnabled()) {
 				logger.debug("Log file '" + resource + "' does not exist");
 			}
 			return null;
