@@ -24,4 +24,7 @@ public interface MessageRepository {
 
 	Message findMessage(Long id);
 
+	void deleteMessage(Long id);
+
+
 }
