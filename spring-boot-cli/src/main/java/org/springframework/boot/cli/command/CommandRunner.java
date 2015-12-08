@@ -279,14 +279,14 @@ public class CommandRunner implements Iterable<Command> {
 			if (!isOptionCommand(command) && !isHiddenCommand(command)) {
 				String usageHelp = command.getUsageHelp();
 				String description = command.getDescription();
-				Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", command.getName(),
+				Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", command.getName(),
 						(usageHelp == null ? "" : usageHelp),
 						(description == null ? "" : description)));
 			}
 		}
 		Log.info("");
 		Log.info("Common options:");
-		Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", "-d, --debug",
+		Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", "-d, --debug",
 				"Verbose mode",
 				"Print additional status information for the command you are running"));
 		Log.info("");
