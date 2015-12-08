@@ -61,4 +61,7 @@ do as they were designed before this was clarified.
 | http://mybatis.org/mybatis-3/[Mybatis]
 | https://github.com/mybatis/mybatis-spring-boot
 
+| http://wicket.apache.org/[Apache Wicket]
+| https://github.com/MarcGiffing/wicket-spring-boot
+
 |===
