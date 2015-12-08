@@ -49,7 +49,7 @@ class ConnectionInputStream extends FilterInputStream {
 			int amountRead = checkedRead(buffer, 0, BUFFER_SIZE);
 			content.append(new String(buffer, 0, amountRead));
 		}
-		return content.substring(0, content.indexOf(HEADER_END)).toString();
+		return content.substring(0, content.indexOf(HEADER_END));
 	}
 
 	/**
