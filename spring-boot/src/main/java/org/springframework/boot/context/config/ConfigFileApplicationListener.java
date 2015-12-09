@@ -425,7 +425,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 				// Search for a file with the given name
 				for (String ext : this.propertiesLoader.getAllFileExtensions()) {
 					if (profile != null) {
-						// Try the profile specific file
+						// Try the profile-specific file
 						loadIntoGroup(group, location + name + "-" + profile + "." + ext,
 								null);
 						for (String processedProfile : this.processedProfiles) {
@@ -440,7 +440,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 						loadIntoGroup(group, location + name + "-" + profile + "." + ext,
 								profile);
 					}
-					// Also try the profile specific section (if any) of the normal file
+					// Also try the profile-specific section (if any) of the normal file
 					loadIntoGroup(group, location + name + "." + ext, profile);
 				}
 			}
