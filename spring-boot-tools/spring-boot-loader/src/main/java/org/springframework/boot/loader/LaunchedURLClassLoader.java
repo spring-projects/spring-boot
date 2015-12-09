@@ -79,7 +79,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	@Override
 	public URL findResource(String name) {
 		try {
-			if (name.equals("") && hasURLs()) {
+			if ("".equals(name) && hasURLs()) {
 				return getURLs()[0];
 			}
 			Handler.setUseFastConnectionExceptions(true);
@@ -97,7 +97,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	@Override
 	public Enumeration<URL> findResources(String name) throws IOException {
-		if (name.equals("") && hasURLs()) {
+		if ("".equals(name) && hasURLs()) {
 			return Collections.enumeration(Arrays.asList(getURLs()));
 		}
 		Handler.setUseFastConnectionExceptions(true);

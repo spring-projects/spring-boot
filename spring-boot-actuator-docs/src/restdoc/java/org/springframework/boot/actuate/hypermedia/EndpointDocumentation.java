@@ -116,7 +116,7 @@ public class EndpointDocumentation {
 			final String endpointPath = StringUtils.hasText(endpoint.getPath())
 					? endpoint.getPath() : "/";
 
-			if (!endpointPath.equals("/docs") && !endpointPath.equals("/logfile")) {
+			if (!"/docs".equals(endpointPath) && !"/logfile".equals(endpointPath)) {
 				String output = endpointPath.substring(1);
 				output = output.length() > 0 ? output : "./";
 				this.mockMvc.perform(get(endpointPath).accept(MediaType.APPLICATION_JSON))
@@ -164,7 +164,7 @@ public class EndpointDocumentation {
 
 		public EndpointDoc(File rootDir, String path) {
 			this.title = path;
-			this.path = path.equals("/") ? "" : path;
+			this.path = "/".equals(path) ? "" : path;
 			String custom = path.substring(1) + ".adoc";
 			if (new File(rootDir, custom).exists()) {
 				this.custom = custom;

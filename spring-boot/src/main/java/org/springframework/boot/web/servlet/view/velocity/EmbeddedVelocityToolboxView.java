@@ -89,7 +89,7 @@ public class EmbeddedVelocityToolboxView extends VelocityToolboxView {
 
 		@Override
 		public Object invoke(MethodInvocation invocation) throws Throwable {
-			if (invocation.getMethod().getName().equals("getResourceAsStream")
+			if ("getResourceAsStream".equals(invocation.getMethod().getName())
 					&& invocation.getArguments()[0].equals(this.toolboxFile)) {
 				InputStream inputStream = (InputStream) invocation.proceed();
 				if (inputStream == null) {

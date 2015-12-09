@@ -279,7 +279,7 @@ public class PropertiesConfigurationFactory<T>
 					.getPropertyDescriptors(this.target.getClass());
 			for (PropertyDescriptor descriptor : descriptors) {
 				String name = descriptor.getName();
-				if (!name.equals("class")) {
+				if (!"class".equals(name)) {
 					RelaxedNames relaxedNames = RelaxedNames.forCamelCase(name);
 					if (prefixes == null) {
 						for (String relaxedName : relaxedNames) {

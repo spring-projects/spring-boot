@@ -172,7 +172,7 @@ public class ConfigurationMetadata {
 	private static String getDashed(Matcher matcher) {
 		String first = matcher.group(1);
 		String second = matcher.group(2);
-		if (first.equals("_")) {
+		if ("_".equals(first)) {
 			// not a word for the binder
 			return first + second;
 		}

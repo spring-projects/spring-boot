@@ -304,7 +304,7 @@ public class ManagementWebSecurityAutoConfiguration {
 				if (isIncluded(endpoint)) {
 					String path = endpointHandlerMapping.getPath(endpoint.getPath());
 					paths.add(path);
-					if (!path.equals("")) {
+					if (!"".equals(path)) {
 						if (endpoint.isSensitive()) {
 							// Ensure that nested paths are secured
 							paths.add(path + "/**");

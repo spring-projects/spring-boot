@@ -160,7 +160,7 @@ public class ResourceMatcherTests {
 
 		@Override
 		protected boolean matchesSafely(MatchedResource item) {
-			boolean matches = item.getFile().getName().equals("foo.jar");
+			boolean matches = "foo.jar".equals(item.getFile().getName());
 			if (matches) {
 				this.matched = item;
 			}

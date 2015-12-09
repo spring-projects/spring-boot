@@ -270,7 +270,7 @@ public class FileSystemWatcherTests {
 
 			@Override
 			public boolean accept(File file) {
-				return file.getName().equals("trigger.txt");
+				return "trigger.txt".equals(file.getName());
 			}
 
 		});

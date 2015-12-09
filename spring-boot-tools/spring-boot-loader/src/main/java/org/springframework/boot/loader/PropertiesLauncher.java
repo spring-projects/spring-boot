@@ -319,7 +319,7 @@ public class PropertiesLauncher extends Launcher {
 			path = cleanupPath(path);
 			// Empty path (i.e. the archive itself if running from a JAR) is always added
 			// to the classpath so no need for it to be explicitly listed
-			if (!path.equals("")) {
+			if (!"".equals(path)) {
 				paths.add(path);
 			}
 		}
@@ -596,7 +596,7 @@ public class PropertiesLauncher extends Launcher {
 		}
 		else {
 			// It's a directory
-			if (!path.endsWith("/") && !path.equals(".")) {
+			if (!path.endsWith("/") && !".".equals(path)) {
 				path = path + "/";
 			}
 		}

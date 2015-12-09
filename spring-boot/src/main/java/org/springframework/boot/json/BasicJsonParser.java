@@ -43,7 +43,7 @@ public class BasicJsonParser implements JsonParser {
 			if (json.startsWith("{")) {
 				return parseMapInternal(json);
 			}
-			else if (json.equals("")) {
+			else if ("".equals(json)) {
 				return new HashMap<String, Object>();
 			}
 		}

@@ -132,7 +132,7 @@ public class JarFileArchiveTests {
 				.getFilteredArchive(new Archive.EntryRenameFilter() {
 					@Override
 					public AsciiBytes apply(AsciiBytes entryName, Entry entry) {
-						if (entryName.toString().equals("1.dat")) {
+						if ("1.dat".equals(entryName.toString())) {
 							return entryName;
 						}
 						return null;

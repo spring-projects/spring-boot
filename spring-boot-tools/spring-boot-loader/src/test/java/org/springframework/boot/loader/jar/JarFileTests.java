@@ -354,7 +354,7 @@ public class JarFileTests {
 		JarFile filteredJarFile = this.jarFile.getFilteredJarFile(new JarEntryFilter() {
 			@Override
 			public AsciiBytes apply(AsciiBytes entryName, JarEntryData entry) {
-				if (entryName.toString().equals("1.dat")) {
+				if ("1.dat".equals(entryName.toString())) {
 					return new AsciiBytes("x.dat");
 				}
 				return null;
