@@ -137,7 +137,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 				"Registration is null. Was something already registered for name=["
 						+ this.name + "]?");
 		registration.setAsyncSupported(this.asyncSupported);
-		if (this.initParameters.size() > 0) {
+		if (!this.initParameters.isEmpty()) {
 			registration.setInitParameters(this.initParameters);
 		}
 	}

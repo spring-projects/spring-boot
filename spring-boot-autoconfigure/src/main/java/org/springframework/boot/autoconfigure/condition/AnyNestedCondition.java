@@ -50,7 +50,7 @@ public abstract class AnyNestedCondition extends AbstractNestedCondition {
 
 	@Override
 	protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
-		return new ConditionOutcome(memberOutcomes.getMatches().size() > 0,
+		return new ConditionOutcome(!memberOutcomes.getMatches().isEmpty(),
 				"nested any match resulted in " + memberOutcomes.getMatches()
 						+ " matches and " + memberOutcomes.getNonMatches()
 						+ " non matches");

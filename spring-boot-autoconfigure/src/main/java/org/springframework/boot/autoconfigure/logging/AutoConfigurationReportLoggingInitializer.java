@@ -106,7 +106,7 @@ public class AutoConfigurationReportLoggingInitializer
 			this.report = ConditionEvaluationReport
 					.get(this.applicationContext.getBeanFactory());
 		}
-		if (this.report.getConditionAndOutcomesBySource().size() > 0) {
+		if (!this.report.getConditionAndOutcomesBySource().isEmpty()) {
 			if (isCrashReport && this.logger.isInfoEnabled()
 					&& !this.logger.isDebugEnabled()) {
 				this.logger.info("\n\nError starting ApplicationContext. "

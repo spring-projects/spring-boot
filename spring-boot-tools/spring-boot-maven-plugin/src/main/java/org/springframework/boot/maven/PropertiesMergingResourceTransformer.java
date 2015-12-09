@@ -73,7 +73,7 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 
 	@Override
 	public boolean hasTransformedResource() {
-		return this.data.size() > 0;
+		return !this.data.isEmpty();
 	}
 
 	@Override

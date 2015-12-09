@@ -123,7 +123,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		Set<Object> sources = new LinkedHashSet<Object>();
 		sources.addAll(Arrays.asList(mergedConfig.getClasses()));
 		sources.addAll(Arrays.asList(mergedConfig.getLocations()));
-		Assert.state(sources.size() > 0, "No configuration classes "
+		Assert.state(!sources.isEmpty(), "No configuration classes "
 				+ "or locations found in @SpringApplicationConfiguration. "
 				+ "For default configuration detection to work you need "
 				+ "Spring 4.0.3 or better (found " + SpringVersion.getVersion() + ").");

@@ -499,7 +499,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 				}
 				return;
 			}
-			if (profiles.size() > 0) {
+			if (!profiles.isEmpty()) {
 				addProfiles(profiles);
 				this.logger.debug("Activated profiles "
 						+ StringUtils.collectionToCommaDelimitedString(profiles));
