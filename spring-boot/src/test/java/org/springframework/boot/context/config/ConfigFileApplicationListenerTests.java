@@ -194,7 +194,7 @@ public class ConfigFileApplicationListenerTests {
 		assertEquals("myprofile", StringUtils
 				.arrayToCommaDelimitedString(this.environment.getActiveProfiles()));
 		String property = this.environment.getProperty("the.property");
-		// The value from the second file wins (no profile specific configuration is
+		// The value from the second file wins (no profile-specific configuration is
 		// actually loaded)
 		assertThat(property, equalTo("frompropertiesfile"));
 	}
@@ -209,7 +209,7 @@ public class ConfigFileApplicationListenerTests {
 		assertEquals("myprofile", StringUtils
 				.arrayToCommaDelimitedString(this.environment.getActiveProfiles()));
 		String property = this.environment.getProperty("the.property");
-		// The value from the second file wins (no profile specific configuration is
+		// The value from the second file wins (no profile-specific configuration is
 		// actually loaded)
 		assertThat(property, equalTo("frompropertiesfile"));
 	}
