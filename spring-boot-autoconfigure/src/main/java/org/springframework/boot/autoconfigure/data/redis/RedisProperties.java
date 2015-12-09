@@ -24,9 +24,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @author Christoph Strobl
  * @author Eddú Meléndez
+ * @author Simon Buettner
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
+
+	/**
+	 * Enables or disables redis autoconfiguration.
+	 */
+	private boolean enabled = true;
 
 	/**
 	 * Database index used by the connection factory.
@@ -56,6 +62,14 @@ public class RedisProperties {
 	private Pool pool;
 
 	private Sentinel sentinel;
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	public int getDatabase() {
 		return this.database;

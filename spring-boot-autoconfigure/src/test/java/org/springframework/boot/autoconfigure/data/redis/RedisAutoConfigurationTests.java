@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -43,6 +44,7 @@ import static org.junit.Assert.assertTrue;
  * @author Christian Dupuis
  * @author Christoph Strobl
  * @author Eddú Meléndez
+ * @author Simon Buettner
  */
 public class RedisAutoConfigurationTests {
 
@@ -65,6 +67,19 @@ public class RedisAutoConfigurationTests {
 		load();
 		assertNotNull(this.context.getBean("redisTemplate", RedisOperations.class));
 		assertNotNull(this.context.getBean(StringRedisTemplate.class));
+	}
+
+	@Test
+	public void testEnabledRedisConfiguration() throws Exception {
+		load("spring.redis.enabled:true");
+		assertNotNull(this.context.getBean("redisTemplate", RedisOperations.class));
+		assertNotNull(this.context.getBean(StringRedisTemplate.class));
+	}
+
+	@Test(expected = NoSuchBeanDefinitionException.class)
+	public void testDisabledRedisConfiguration() throws Exception {
+		load("spring.redis.enabled:false");
+		this.context.getBean("redisTemplate", RedisOperations.class);
 	}
 
 	@Test
