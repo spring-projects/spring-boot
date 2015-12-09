@@ -144,6 +144,9 @@ do_start() {
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
     if which start-stop-daemon >/dev/null; then
+      hasMinimalStartStopDaemonVersion=$( start-stop-daemon --version | awk '{ match($0, /[0-9]+\.[0-9]+\.[0-9]+/, a) } END { print a[0], "*"; print "1.16.5" }' | sort -V -r | awk 'NR==1 && $2=="*" { print "true" }' )
+    fi
+    if [[ -n $hasMinimalStartStopDaemonVersion ]]; then
       start-stop-daemon --start --quiet \
         --chuid $run_user \
         --name $identity \
