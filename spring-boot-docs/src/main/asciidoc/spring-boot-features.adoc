@@ -475,13 +475,13 @@ defined using the naming convention `application-{profile}.properties`. The
 used if no active profiles are set (i.e. if no profiles are explicitly activated
 then properties from `application-default.properties` are loaded).
 
-Profile specific properties are loaded from the same locations as standard
+Profile-specific properties are loaded from the same locations as standard
 `application.properties`, with profile-specific files always overriding the non-specific
 ones irrespective of whether the profile-specific files are inside or outside your
 packaged jar.
 
 If several profiles are specified, a last wins strategy applies. For example, profiles
-specified by the `spring.active.profiles` property are added after those configured via
+specified by the `spring.profiles.active` property are added after those configured via
 the `SpringApplication` API and therefore take precedence.
 
 
@@ -930,7 +930,7 @@ properties, the highest `PropertySource` will win. This means that you can speci
 active profiles in `application.properties` then *replace* them using the command line
 switch.
 
-Sometimes it is useful to have profile specific properties that *add* to the active
+Sometimes it is useful to have profile-specific properties that *add* to the active
 profiles rather than replace them. The `spring.profiles.include` property can be used
 to unconditionally add active profiles. The `SpringApplication` entry point also has
 a Java API for setting additional profiles (i.e. on top of those activated by the
@@ -963,8 +963,8 @@ possible to activate profiles using Spring's `ConfigurableEnvironment` interface
 
 
 [[boot-features-profile-specific-configuration]]
-=== Profile specific configuration files
-Profile specific variants of both `application.properties` (or `application.yml`) and
+=== Profile-specific configuration files
+Profile-specific variants of both `application.properties` (or `application.yml`) and
 files referenced via `@ConfigurationProperties` are considered as files are loaded.
 See _<<boot-features-external-config-profile-specific-properties>>_ for details.
 
@@ -1045,7 +1045,7 @@ converter will color the output according to the log level, for example:
 
 [source,indent=0]
 ----
-%clr(-%5p})
+%clr(-%5p)
 ----
 
 The mapping of log level to a color is as follows:
@@ -1259,7 +1259,7 @@ it's loaded too early. You need to either use `logback-spring.xml` or define a
 
 
 
-==== Profile specific configuration
+==== Profile-specific configuration
 The `<springProfile>` tag allows you to optionally include or exclude sections of
 configuration based on the active Spring profiles. Profile sections are supported anywhere
 within the `<configuration>` element. Use the `name` attribute to specify which profile
