@@ -42,7 +42,7 @@ public class SnakeTimer {
 	private static final ConcurrentHashMap<Integer, Snake> snakes = new ConcurrentHashMap<Integer, Snake>();
 
 	public static synchronized void addSnake(Snake snake) {
-		if (snakes.size() == 0) {
+		if (snakes.isEmpty()) {
 			startTimer();
 		}
 		snakes.put(Integer.valueOf(snake.getId()), snake);
@@ -54,7 +54,7 @@ public class SnakeTimer {
 
 	public static synchronized void removeSnake(Snake snake) {
 		snakes.remove(Integer.valueOf(snake.getId()));
-		if (snakes.size() == 0) {
+		if (snakes.isEmpty()) {
 			stopTimer();
 		}
 	}

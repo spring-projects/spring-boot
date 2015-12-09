@@ -39,7 +39,7 @@ public class HealthIndicatorAutoConfigurationProperties {
 	}
 
 	public void setOrder(List<String> statusOrder) {
-		if (statusOrder != null && statusOrder.size() > 0) {
+		if (statusOrder != null && !statusOrder.isEmpty()) {
 			this.order = statusOrder;
 		}
 	}
