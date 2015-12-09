@@ -78,7 +78,6 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	 * Add metrics from ManagementFactory if possible. Note that ManagementFactory is not
 	 * available on Google App Engine.
 	 * @param result the result
-	 * @param mem
 	 */
 	private void addManagementMetrics(Collection<Metric<?>> result) {
 		try {
