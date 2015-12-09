@@ -30,6 +30,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * @author Rob Winch
+ * @author Doo-Hwan, Kwak
  */
 @Controller
 @RequestMapping("/")
@@ -73,7 +74,7 @@ public class MessageController {
 		throw new RuntimeException("Expected exception in controller");
 	}
 
-	@RequestMapping(value = "delete/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "delete/{id}")
 	public ModelAndView delete(@PathVariable("id") Long id) {
 		this.messageRepository.deleteMessage(id);
 		Iterable<Message> messages = this.messageRepository.findAll();
@@ -81,7 +82,7 @@ public class MessageController {
 	}
 
 	@RequestMapping(value = "modify/{id}", method = RequestMethod.GET)
-	public ModelAndView modifyForm(ModelAndView mv , @PathVariable("id") Message message) {
+	public ModelAndView modifyForm(@PathVariable("id") Message message) {
 		return new ModelAndView("messages/form", "message", message);
 	}
 }
