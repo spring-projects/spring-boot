@@ -36,9 +36,11 @@ import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.boot.env.PropertySourcesLoader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
@@ -71,9 +73,10 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  */
-public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
-		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware, ApplicationContextAware,
-		InitializingBean, DisposableBean, PriorityOrdered {
+public class ConfigurationPropertiesBindingPostProcessor
+		implements BeanPostProcessor, BeanFactoryAware, ResourceLoaderAware,
+		EnvironmentAware, ApplicationContextAware, InitializingBean, DisposableBean,
+		ApplicationListener<ContextRefreshedEvent>, PriorityOrdered {
 
 	/**
 	 * The bean name of the configuration properties validator.
@@ -87,7 +90,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private PropertySources propertySources;
 
-	private Validator validator;
+	private volatile Validator validator;
 
 	private boolean ownedValidator = false;
 
@@ -192,6 +195,22 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		if (this.propertySources == null) {
 			this.propertySources = deducePropertySources();
 		}
+		initializeValidator();
+		if (this.conversionService == null) {
+			this.conversionService = getOptionalBean(
+					ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME,
+					ConversionService.class);
+		}
+	}
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		if (this.validator != null && isJsr303Present()) {
+			this.validator = null; // allow it to be garbage collected
+		}
+	}
+
+	private void initializeValidator() {
 		if (this.validator == null) {
 			this.validator = getOptionalBean(VALIDATOR_BEAN_NAME, Validator.class);
 			if (this.validator == null && isJsr303Present()) {
@@ -199,11 +218,6 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 						.run(this.applicationContext);
 				this.ownedValidator = true;
 			}
-		}
-		if (this.conversionService == null) {
-			this.conversionService = getOptionalBean(
-					ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME,
-					ConversionService.class);
 		}
 	}
 
@@ -219,7 +233,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	@Override
 	public void destroy() throws Exception {
-		if (this.ownedValidator) {
+		if (this.ownedValidator && this.validator != null) {
 			((DisposableBean) this.validator).destroy();
 		}
 	}
@@ -339,6 +353,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	private Validator determineValidator(Object bean) {
+		initializeValidator();
 		boolean globalValidatorSupportBean = (this.validator != null
 				&& this.validator.supports(bean.getClass()));
 		if (ClassUtils.isAssignable(Validator.class, bean.getClass())) {

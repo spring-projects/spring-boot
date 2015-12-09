@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -51,6 +52,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -114,6 +116,16 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfigurationWithJSR303.class);
 		assertBindingFailure(2);
+	}
+
+	@Test
+	public void testValidationAndNullOutValidator() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(TestConfiguration.class);
+		this.context.refresh();
+		ConfigurationPropertiesBindingPostProcessor bean = this.context
+				.getBean(ConfigurationPropertiesBindingPostProcessor.class);
+		assertNull(ReflectionTestUtils.getField(bean, "validator"));
 	}
 
 	@Test
