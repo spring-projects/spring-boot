@@ -1045,7 +1045,7 @@ converter will color the output according to the log level, for example:
 
 [source,indent=0]
 ----
-%clr(%5p)
+%clr(-%5p)
 ----
 
 The mapping of log level to a color is as follows:
