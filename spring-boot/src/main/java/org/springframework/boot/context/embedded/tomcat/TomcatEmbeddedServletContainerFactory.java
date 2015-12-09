@@ -167,6 +167,12 @@ public class TomcatEmbeddedServletContainerFactory
 		context.setParentClassLoader(
 				this.resourceLoader != null ? this.resourceLoader.getClassLoader()
 						: ClassUtils.getDefaultClassLoader());
+		try {
+			context.setUseRelativeRedirects(false);
+		}
+		catch (NoSuchMethodError ex) {
+			// Tomcat is < 8.0.30. Continue
+		}
 		SkipPatternJarScanner.apply(context, this.tldSkip);
 		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
