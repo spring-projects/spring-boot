@@ -78,6 +78,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	 * Add metrics from ManagementFactory if possible. Note that ManagementFactory is not
 	 * available on Google App Engine.
 	 * @param result the result
+	 * @param mem
 	 */
 	private void addManagementMetrics(Collection<Metric<?>> result) {
 		try {
@@ -107,6 +108,27 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 		result.add(new Metric<Long>("heap.init", memoryUsage.getInit() / 1024));
 		result.add(new Metric<Long>("heap.used", memoryUsage.getUsed() / 1024));
 		result.add(new Metric<Long>("heap", memoryUsage.getMax() / 1024));
+		memoryUsage = ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage();
+		result.add(
+				new Metric<Long>("nonheap.committed", memoryUsage.getCommitted() / 1024));
+		result.add(new Metric<Long>("nonheap.init", memoryUsage.getInit() / 1024));
+		result.add(new Metric<Long>("nonheap.used", memoryUsage.getUsed() / 1024));
+		result.add(new Metric<Long>("nonheap", memoryUsage.getMax() / 1024));
+		Metric<Long> mem = findMemory(result);
+		if (mem != null) {
+			mem.increment(new Long(memoryUsage.getUsed() / 1024).intValue());
+		}
+	}
+
+	private Metric<Long> findMemory(Collection<Metric<?>> result) {
+		for (Metric<?> metric : result) {
+			if ("mem".equals(metric.getName())) {
+				@SuppressWarnings("unchecked")
+				Metric<Long> value = (Metric<Long>) metric;
+				return value;
+			}
+		}
+		return null;
 	}
 
 	/**

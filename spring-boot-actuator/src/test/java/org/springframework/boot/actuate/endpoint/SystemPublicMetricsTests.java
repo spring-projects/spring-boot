@@ -50,6 +50,11 @@ public class SystemPublicMetricsTests {
 		assertTrue(results.containsKey("heap.used"));
 		assertTrue(results.containsKey("heap"));
 
+		assertTrue(results.containsKey("nonheap.committed"));
+		assertTrue(results.containsKey("nonheap.init"));
+		assertTrue(results.containsKey("nonheap.used"));
+		assertTrue(results.containsKey("nonheap"));
+
 		assertTrue(results.containsKey("threads.peak"));
 		assertTrue(results.containsKey("threads.daemon"));
 		assertTrue(results.containsKey("threads.totalStarted"));
