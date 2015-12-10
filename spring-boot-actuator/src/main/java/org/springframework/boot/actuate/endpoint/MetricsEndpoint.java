@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "endpoints.metrics", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "endpoints.metrics")
 public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private final List<PublicMetrics> publicMetrics;

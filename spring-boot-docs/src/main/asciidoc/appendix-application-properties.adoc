@@ -780,6 +780,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.mappings.id= # Endpoint identifier.
 	endpoints.mappings.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.metrics.enabled= # Enable the endpoint.
+	endpoints.metrics.filter.enabled=true # Enable the metrics servlet filter.
 	endpoints.metrics.id= # Endpoint identifier.
 	endpoints.metrics.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.shutdown.enabled= # Enable the endpoint.

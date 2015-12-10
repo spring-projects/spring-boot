@@ -18,6 +18,12 @@
     "defaultValue": true
   },
   {
+    "name": "endpoints.metrics.filter.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable the metrics servlet filter.",
+    "defaultValue": true
+  },
+  {
     "name": "info",
     "type": "java.util.Map<java.lang.String,java.lang.Object>",
     "description": "Arbitrary properties to add to the info endpoint."
