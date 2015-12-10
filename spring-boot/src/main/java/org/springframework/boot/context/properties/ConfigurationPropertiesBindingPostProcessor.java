@@ -90,9 +90,9 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	private PropertySources propertySources;
 
-	private volatile Validator validator;
+	private Validator validator;
 
-	private boolean ownedValidator = false;
+	private volatile Validator localValidator;
 
 	private ConversionService conversionService;
 
@@ -195,7 +195,9 @@ public class ConfigurationPropertiesBindingPostProcessor
 		if (this.propertySources == null) {
 			this.propertySources = deducePropertySources();
 		}
-		initializeValidator();
+		if (this.validator == null) {
+			this.validator = getOptionalBean(VALIDATOR_BEAN_NAME, Validator.class);
+		}
 		if (this.conversionService == null) {
 			this.conversionService = getOptionalBean(
 					ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME,
@@ -205,36 +207,24 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		if (this.ownedValidator && this.validator != null && isJsr303Present()) {
-			this.validator = null; // allow it to be garbage collected
-		}
-	}
-
-	private void initializeValidator() {
-		if (this.validator == null) {
-			this.validator = getOptionalBean(VALIDATOR_BEAN_NAME, Validator.class);
-			if (this.validator == null && isJsr303Present()) {
-				this.validator = new Jsr303ValidatorFactory()
-						.run(this.applicationContext);
-				this.ownedValidator = true;
-			}
-		}
-	}
-
-	private boolean isJsr303Present() {
-		for (String validatorClass : VALIDATOR_CLASSES) {
-			if (!ClassUtils.isPresent(validatorClass,
-					this.applicationContext.getClassLoader())) {
-				return false;
-			}
-		}
-		return true;
+		freeLocalValidator();
 	}
 
 	@Override
 	public void destroy() throws Exception {
-		if (this.ownedValidator && this.validator != null) {
-			((DisposableBean) this.validator).destroy();
+		freeLocalValidator();
+	}
+
+	private void freeLocalValidator() {
+		try {
+			Validator validator = this.localValidator;
+			this.localValidator = null;
+			if (validator != null) {
+				((DisposableBean) validator).destroy();
+			}
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
 		}
 	}
 
@@ -244,13 +234,11 @@ public class ConfigurationPropertiesBindingPostProcessor
 			// Flatten the sources into a single list so they can be iterated
 			return new FlatPropertySources(configurer.getAppliedPropertySources());
 		}
-
 		if (this.environment instanceof ConfigurableEnvironment) {
 			MutablePropertySources propertySources = ((ConfigurableEnvironment) this.environment)
 					.getPropertySources();
 			return new FlatPropertySources(propertySources);
 		}
-
 		// empty, so not very useful, but fulfils the contract
 		return new MutablePropertySources();
 	}
@@ -353,16 +341,36 @@ public class ConfigurationPropertiesBindingPostProcessor
 	}
 
 	private Validator determineValidator(Object bean) {
-		initializeValidator();
-		boolean globalValidatorSupportBean = (this.validator != null
-				&& this.validator.supports(bean.getClass()));
+		Validator validator = getValidator();
+		boolean supportsBean = (validator != null && validator.supports(bean.getClass()));
 		if (ClassUtils.isAssignable(Validator.class, bean.getClass())) {
-			if (!globalValidatorSupportBean) {
-				return (Validator) bean;
+			if (supportsBean) {
+				return new ChainingValidator(validator, (Validator) bean);
 			}
-			return new ChainingValidator(this.validator, (Validator) bean);
+			return (Validator) bean;
 		}
-		return (globalValidatorSupportBean ? this.validator : null);
+		return (supportsBean ? validator : null);
+	}
+
+	private Validator getValidator() {
+		if (this.validator != null) {
+			return this.validator;
+		}
+		if (this.localValidator == null && isJsr303Present()) {
+			this.localValidator = new LocalValidatorFactory()
+					.run(this.applicationContext);
+		}
+		return this.localValidator;
+	}
+
+	private boolean isJsr303Present() {
+		for (String validatorClass : VALIDATOR_CLASSES) {
+			if (!ClassUtils.isPresent(validatorClass,
+					this.applicationContext.getClassLoader())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private PropertySources loadPropertySources(String[] locations,
@@ -408,7 +416,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 	 * Factory to create JSR 303 LocalValidatorFactoryBean. Inner class to prevent class
 	 * loader issues.
 	 */
-	private static class Jsr303ValidatorFactory {
+	private static class LocalValidatorFactory {
 
 		public Validator run(ApplicationContext applicationContext) {
 			LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
