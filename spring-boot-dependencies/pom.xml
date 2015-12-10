@@ -138,7 +138,7 @@
 		<spring-loaded.version>1.2.5.RELEASE</spring-loaded.version>
 		<spring-mobile.version>1.1.5.RELEASE</spring-mobile.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
-		<spring-restdocs.version>1.0.0.RELEASE</spring-restdocs.version>
+		<spring-restdocs.version>1.0.1.RELEASE</spring-restdocs.version>
 		<spring-retry.version>1.1.2.RELEASE</spring-retry.version>
 		<spring-security.version>4.0.3.RELEASE</spring-security.version>
 		<spring-security-jwt.version>1.0.3.RELEASE</spring-security-jwt.version>
