@@ -223,8 +223,8 @@ public class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
 		Map<String, String> headerEntries = (Map<String, String>) attributes.get("header");
-		assertThat(headerEntries.get("host"), equalTo( "spring.io"));
-		assertThat(headerEntries.get("acccept-charset"), equalTo( "utf-8"));
+		assertThat(headerEntries.get("host"), equalTo("spring.io"));
+		assertThat(headerEntries.get("acccept-charset"), equalTo("utf-8"));
 	}
 
 	@Test
