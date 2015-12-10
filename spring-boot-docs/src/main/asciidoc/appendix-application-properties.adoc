@@ -547,6 +547,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.metrics.id=metrics
 	endpoints.metrics.sensitive=true
 	endpoints.metrics.enabled=true
+	endpoints.metrics.filter.enabled=true # Enable the metrics servlet filter.
 	endpoints.shutdown.id=shutdown
 	endpoints.shutdown.sensitive=true
 	endpoints.shutdown.enabled=false

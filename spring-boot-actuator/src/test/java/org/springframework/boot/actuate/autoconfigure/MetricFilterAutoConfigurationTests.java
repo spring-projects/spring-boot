@@ -180,7 +180,7 @@ public class MetricFilterAutoConfigurationTests {
 	@Test
 	public void skipsFilterIfPropertyDisabled() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "endpoints.metrics.enabled:false");
+		EnvironmentTestUtils.addEnvironment(context, "endpoints.metrics.filter.enabled:false");
 		context.register(Config.class, MetricFilterAutoConfiguration.class);
 		context.refresh();
 		assertThat(context.getBeansOfType(Filter.class).size(), equalTo(0));
