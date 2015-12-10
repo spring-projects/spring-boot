@@ -44,7 +44,8 @@ public class SpringApplicationRunnerTests {
 		given(configuration.getLogLevel()).willReturn(Level.INFO);
 		this.thrown.expect(RuntimeException.class);
 		this.thrown.expectMessage(equalTo("No classes found in '[foo, bar]'"));
-		new SpringApplicationRunner(configuration, new String[] { "foo", "bar" }).compileAndRun();
+		new SpringApplicationRunner(configuration, new String[] { "foo", "bar" })
+				.compileAndRun();
 	}
 
 }

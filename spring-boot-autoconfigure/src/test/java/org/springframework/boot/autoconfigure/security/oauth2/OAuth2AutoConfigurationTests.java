@@ -146,8 +146,7 @@ public class OAuth2AutoConfigurationTests {
 				"security.oauth2.client.clientSecret:mysecret",
 				"security.oauth2.client.autoApproveScopes:read,write",
 				"security.oauth2.client.accessTokenValiditySeconds:40",
-				"security.oauth2.client.refreshTokenValiditySeconds:80"
-		);
+				"security.oauth2.client.refreshTokenValiditySeconds:80");
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();

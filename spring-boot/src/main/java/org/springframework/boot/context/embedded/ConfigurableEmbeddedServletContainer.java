@@ -144,8 +144,8 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setMimeMappings(MimeMappings mimeMappings);
 
 	/**
-	 * Sets the document root directory which will be used by the web context to serve static
-	 * files.
+	 * Sets the document root directory which will be used by the web context to serve
+	 * static files.
 	 * @param documentRoot the document root or {@code null} if not required
 	 */
 	void setDocumentRoot(File documentRoot);

@@ -41,10 +41,9 @@ public class DefaultSourceFolderUrlFilter implements SourceFolderUrlFilter {
 	private static final Pattern VERSION_PATTERN = Pattern
 			.compile("^-\\d+(?:\\.\\d+)*(?:[.-].+)?$");
 
-	private static final Set<String> SKIPPED_PROJECTS = new HashSet<String>(
-			Arrays.asList("spring-boot", "spring-boot-devtools",
-					"spring-boot-autoconfigure", "spring-boot-actuator",
-					"spring-boot-starter"));
+	private static final Set<String> SKIPPED_PROJECTS = new HashSet<String>(Arrays.asList(
+			"spring-boot", "spring-boot-devtools", "spring-boot-autoconfigure",
+			"spring-boot-actuator", "spring-boot-starter"));
 
 	@Override
 	public boolean isMatch(String sourceFolder, URL url) {

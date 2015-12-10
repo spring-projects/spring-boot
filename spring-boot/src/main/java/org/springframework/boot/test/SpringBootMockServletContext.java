@@ -28,7 +28,8 @@ import org.springframework.mock.web.MockServletContext;
 
 /**
  * {@link MockServletContext} implementation for Spring Boot. Respects well know Spring
- * Boot resource locations and uses an empty directory for "/" if no locations can be found.
+ * Boot resource locations and uses an empty directory for "/" if no locations can be
+ * found.
  *
  * @author Phillip Webb
  */

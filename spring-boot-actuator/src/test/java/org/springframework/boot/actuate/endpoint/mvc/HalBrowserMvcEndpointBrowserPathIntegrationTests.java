@@ -41,8 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Integration tests for {@link HalBrowserMvcEndpoint}'s support for producing
- * text/html
+ * Integration tests for {@link HalBrowserMvcEndpoint}'s support for producing text/html
  *
  * @author Dave Syer
  * @author Andy Wilkinson

@@ -78,6 +78,11 @@ import org.springframework.util.Assert;
 @ConditionalOnClass({ Mongo.class, MongodStarter.class })
 public class EmbeddedMongoAutoConfiguration {
 
+	private static final byte[] IP4_LOOPBACK_ADDRESS = { 127, 0, 0, 1 };
+
+	private static final byte[] IP6_LOOPBACK_ADDRESS = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 1 };
+
 	@Autowired
 	private MongoProperties properties;
 
@@ -158,8 +163,7 @@ public class EmbeddedMongoAutoConfiguration {
 	private InetAddress getHost() throws UnknownHostException {
 		if (this.properties.getHost() == null) {
 			return InetAddress.getByAddress(Network.localhostIsIPv6()
-					? new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 }
-					: new byte[] { 127, 0, 0, 1 });
+					? IP6_LOOPBACK_ADDRESS : IP4_LOOPBACK_ADDRESS);
 		}
 		return InetAddress.getByName(this.properties.getHost());
 	}

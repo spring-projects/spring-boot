@@ -204,7 +204,8 @@ public class FlywayAutoConfigurationTests {
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertThat(flyway.getBaselineVersion(), equalTo(MigrationVersion.fromVersion("0")));
+		assertThat(flyway.getBaselineVersion(),
+				equalTo(MigrationVersion.fromVersion("0")));
 	}
 
 	private void registerAndRefresh(Class<?>... annotatedClasses) {

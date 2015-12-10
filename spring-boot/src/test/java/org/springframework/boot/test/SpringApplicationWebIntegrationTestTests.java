@@ -49,7 +49,7 @@ import static org.junit.Assert.assertSame;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(Config.class)
-@WebIntegrationTest({"server.port=0", "value=123"})
+@WebIntegrationTest({ "server.port=0", "value=123" })
 public class SpringApplicationWebIntegrationTestTests {
 
 	@Value("${local.server.port}")
@@ -80,8 +80,8 @@ public class SpringApplicationWebIntegrationTestTests {
 
 	@Test
 	public void validateWebApplicationContextIsSet() {
-		assertSame(this.context, WebApplicationContextUtils
-				.getWebApplicationContext(this.servletContext));
+		assertSame(this.context,
+				WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
 	}
 
 	@Configuration

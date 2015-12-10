@@ -520,9 +520,7 @@ public class SpringApplication {
 	 * @see #setBannerMode
 	 */
 	protected void printBanner(Environment environment) {
-
 		Banner selectedBanner = selectBanner(environment);
-
 		if (this.bannerMode == Banner.Mode.LOG) {
 			try {
 				this.log.info(createStringFromBanner(selectedBanner, environment));
@@ -542,7 +540,6 @@ public class SpringApplication {
 		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
 				: new DefaultResourceLoader(getClassLoader());
 		Resource resource = resourceLoader.getResource(location);
-
 		if (resource.exists()) {
 			return new ResourceBanner(resource);
 		}

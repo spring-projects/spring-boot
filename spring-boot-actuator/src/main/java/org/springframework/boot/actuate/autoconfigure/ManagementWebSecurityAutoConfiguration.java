@@ -150,37 +150,42 @@ public class ManagementWebSecurityAutoConfiguration {
 
 		@Override
 		public void init(WebSecurity builder) throws Exception {
-			if (this.server != null) {
-				IgnoredRequestConfigurer ignoring = builder.ignoring();
-				// The ignores are not cumulative, so to prevent overwriting the defaults
-				// we add them back.
-				Set<String> ignored = new LinkedHashSet<String>(
-						SpringBootWebSecurityConfiguration.getIgnored(this.security));
-				if (ignored.contains("none")) {
-					ignored.remove("none");
-				}
-				if (this.errorController != null) {
-					ignored.add(normalizePath(this.errorController.getErrorPath()));
-				}
-				String[] paths = this.server.getPathsArray(ignored);
-				RequestMatcher requestMatcher = this.management.getSecurity().isEnabled()
-						? null
-						: LazyEndpointPathRequestMatcher
-								.getRequestMatcher(this.contextResolver);
-				if (!ObjectUtils.isEmpty(paths)) {
-					List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
-					for (String pattern : paths) {
-						matchers.add(new AntPathRequestMatcher(pattern, null));
-					}
-					if (requestMatcher != null) {
-						matchers.add(requestMatcher);
-					}
-					requestMatcher = new OrRequestMatcher(matchers);
+			if (this.server == null) {
+				return;
+			}
+			IgnoredRequestConfigurer ignoring = builder.ignoring();
+			// The ignores are not cumulative, so to prevent overwriting the defaults
+			// we add them back.
+			Set<String> ignored = new LinkedHashSet<String>(
+					SpringBootWebSecurityConfiguration.getIgnored(this.security));
+			if (ignored.contains("none")) {
+				ignored.remove("none");
+			}
+			if (this.errorController != null) {
+				ignored.add(normalizePath(this.errorController.getErrorPath()));
+			}
+			RequestMatcher requestMatcher = getRequestMatcher();
+			String[] paths = this.server.getPathsArray(ignored);
+			if (!ObjectUtils.isEmpty(paths)) {
+				List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
+				for (String pattern : paths) {
+					matchers.add(new AntPathRequestMatcher(pattern, null));
 				}
 				if (requestMatcher != null) {
-					ignoring.requestMatchers(requestMatcher);
+					matchers.add(requestMatcher);
 				}
+				requestMatcher = new OrRequestMatcher(matchers);
 			}
+			if (requestMatcher != null) {
+				ignoring.requestMatchers(requestMatcher);
+			}
+		}
+
+		private RequestMatcher getRequestMatcher() {
+			if (this.management.getSecurity().isEnabled()) {
+				return null;
+			}
+			return LazyEndpointPathRequestMatcher.getRequestMatcher(this.contextResolver);
 		}
 
 		private String normalizePath(String errorPath) {
@@ -239,10 +244,7 @@ public class ManagementWebSecurityAutoConfiguration {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			// secure endpoints
-			RequestMatcher matcher = this.management.getSecurity().isEnabled()
-					? LazyEndpointPathRequestMatcher
-							.getRequestMatcher(this.contextResolver)
-					: null;
+			RequestMatcher matcher = getRequestMatcher();
 			if (matcher != null) {
 				// Always protect them if present
 				if (this.security.isRequireSsl()) {
@@ -262,6 +264,14 @@ public class ManagementWebSecurityAutoConfiguration {
 				SpringBootWebSecurityConfiguration.configureHeaders(http.headers(),
 						this.security.getHeaders());
 			}
+		}
+
+		private RequestMatcher getRequestMatcher() {
+			if (this.management.getSecurity().isEnabled()) {
+				return LazyEndpointPathRequestMatcher
+						.getRequestMatcher(this.contextResolver);
+			}
+			return null;
 		}
 
 		private AuthenticationEntryPoint entryPoint() {

@@ -54,4 +54,3 @@ public class CommonsDbcp2DataSourcePoolMetadata
 	}
 
 }
-

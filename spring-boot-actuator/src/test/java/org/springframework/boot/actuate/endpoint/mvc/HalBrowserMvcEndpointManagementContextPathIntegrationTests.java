@@ -44,8 +44,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Integration tests for {@link HalBrowserMvcEndpoint} when a custom management
- * context path has been configured.
+ * Integration tests for {@link HalBrowserMvcEndpoint} when a custom management context
+ * path has been configured.
  *
  * @author Dave Syer
  * @author Andy Wilkinson

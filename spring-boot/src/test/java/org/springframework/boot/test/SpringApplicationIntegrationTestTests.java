@@ -82,8 +82,8 @@ public class SpringApplicationIntegrationTestTests {
 
 	@Test
 	public void validateWebApplicationContextIsSet() {
-		assertSame(this.context, WebApplicationContextUtils
-				.getWebApplicationContext(this.servletContext));
+		assertSame(this.context,
+				WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
 	}
 
 	@Configuration

@@ -35,7 +35,6 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Andy Wilkinson
  * @author Rob Winch
- *
  * @see RedisTemplate#setHashKeySerializer(RedisSerializer)
  * @see RedisTemplate#setHashValueSerializer(RedisSerializer)
  * @see RedisTemplate#setKeySerializer(RedisSerializer)
@@ -69,6 +68,8 @@ class RestartCompatibleRedisSerializerConfigurer implements BeanClassLoaderAware
 
 	static class RestartCompatibleRedisSerializer implements RedisSerializer<Object> {
 
+		private static final byte[] NO_BYTES = new byte[0];
+
 		private final Converter<Object, byte[]> serializer = new SerializingConverter();
 
 		private final Converter<byte[], Object> deserializer;
@@ -80,12 +81,9 @@ class RestartCompatibleRedisSerializerConfigurer implements BeanClassLoaderAware
 
 		@Override
 		public Object deserialize(byte[] bytes) {
-			if (ObjectUtils.isEmpty(bytes)) {
-				return null;
-			}
-
 			try {
-				return this.deserializer.convert(bytes);
+				return (ObjectUtils.isEmpty(bytes) ? null
+						: this.deserializer.convert(bytes));
 			}
 			catch (Exception ex) {
 				throw new SerializationException("Cannot deserialize", ex);
@@ -94,11 +92,8 @@ class RestartCompatibleRedisSerializerConfigurer implements BeanClassLoaderAware
 
 		@Override
 		public byte[] serialize(Object object) {
-			if (object == null) {
-				return new byte[0];
-			}
 			try {
-				return this.serializer.convert(object);
+				return (object == null ? NO_BYTES : this.serializer.convert(object));
 			}
 			catch (Exception ex) {
 				throw new SerializationException("Cannot serialize", ex);

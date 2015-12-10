@@ -65,13 +65,22 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	 */
 	protected void addBasicMetrics(Collection<Metric<?>> result) {
 		// NOTE: ManagementFactory must not be used here since it fails on GAE
-		result.add(new Metric<Long>("mem", Runtime.getRuntime().totalMemory() / 1024));
-		result.add(
-				new Metric<Long>("mem.free", Runtime.getRuntime().freeMemory() / 1024));
-		result.add(new Metric<Integer>("processors",
-				Runtime.getRuntime().availableProcessors()));
+		Runtime runtime = Runtime.getRuntime();
+		result.add(newMemoryMetric("mem",
+				runtime.totalMemory() + getTotalNonHeapMemoryIfPossible()));
+		result.add(newMemoryMetric("mem.free", runtime.freeMemory()));
+		result.add(new Metric<Integer>("processors", runtime.availableProcessors()));
 		result.add(new Metric<Long>("instance.uptime",
 				System.currentTimeMillis() - this.timestamp));
+	}
+
+	private long getTotalNonHeapMemoryIfPossible() {
+		try {
+			return ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed();
+		}
+		catch (Throwable ex) {
+			return 0;
+		}
 	}
 
 	/**
@@ -87,6 +96,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 			result.add(new Metric<Double>("systemload.average",
 					ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage()));
 			addHeapMetrics(result);
+			addNonHeapMetrics(result);
 			addThreadMetrics(result);
 			addClassLoadingMetrics(result);
 			addGarbageCollectionMetrics(result);
@@ -103,31 +113,27 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	protected void addHeapMetrics(Collection<Metric<?>> result) {
 		MemoryUsage memoryUsage = ManagementFactory.getMemoryMXBean()
 				.getHeapMemoryUsage();
-		result.add(new Metric<Long>("heap.committed", memoryUsage.getCommitted() / 1024));
-		result.add(new Metric<Long>("heap.init", memoryUsage.getInit() / 1024));
-		result.add(new Metric<Long>("heap.used", memoryUsage.getUsed() / 1024));
-		result.add(new Metric<Long>("heap", memoryUsage.getMax() / 1024));
-		memoryUsage = ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage();
-		result.add(
-				new Metric<Long>("nonheap.committed", memoryUsage.getCommitted() / 1024));
-		result.add(new Metric<Long>("nonheap.init", memoryUsage.getInit() / 1024));
-		result.add(new Metric<Long>("nonheap.used", memoryUsage.getUsed() / 1024));
-		result.add(new Metric<Long>("nonheap", memoryUsage.getMax() / 1024));
-		Metric<Long> mem = findMemory(result);
-		if (mem != null) {
-			mem.increment(new Long(memoryUsage.getUsed() / 1024).intValue());
-		}
+		result.add(newMemoryMetric("heap.committed", memoryUsage.getCommitted()));
+		result.add(newMemoryMetric("heap.init", memoryUsage.getInit()));
+		result.add(newMemoryMetric("heap.used", memoryUsage.getUsed()));
+		result.add(newMemoryMetric("heap", memoryUsage.getMax()));
 	}
 
-	private Metric<Long> findMemory(Collection<Metric<?>> result) {
-		for (Metric<?> metric : result) {
-			if ("mem".equals(metric.getName())) {
-				@SuppressWarnings("unchecked")
-				Metric<Long> value = (Metric<Long>) metric;
-				return value;
-			}
-		}
-		return null;
+	/**
+	 * Add JVM non-heap metrics.
+	 * @param result the result
+	 */
+	private void addNonHeapMetrics(Collection<Metric<?>> result) {
+		MemoryUsage memoryUsage = ManagementFactory.getMemoryMXBean()
+				.getNonHeapMemoryUsage();
+		result.add(newMemoryMetric("nonheap.committed", memoryUsage.getCommitted()));
+		result.add(newMemoryMetric("nonheap.init", memoryUsage.getInit()));
+		result.add(newMemoryMetric("nonheap.used", memoryUsage.getUsed()));
+		result.add(newMemoryMetric("nonheap", memoryUsage.getMax()));
+	}
+
+	private Metric<Long> newMemoryMetric(String name, long bytes) {
+		return new Metric<Long>(name, bytes / 1024);
 	}
 
 	/**

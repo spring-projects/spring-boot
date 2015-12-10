@@ -277,6 +277,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 						ClientHttpRequestExecution execution) throws IOException {
 					return execution.execute(request, body);
 				}
+
 			});
 		}
 

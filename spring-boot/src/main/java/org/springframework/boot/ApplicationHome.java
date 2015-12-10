@@ -95,8 +95,9 @@ public class ApplicationHome {
 	}
 
 	/**
-	 * Returns the underlying source used to find the home directory. This is usually the jar
-	 * file or a directory. Can return {@code null} if the source cannot be determined.
+	 * Returns the underlying source used to find the home directory. This is usually the
+	 * jar file or a directory. Can return {@code null} if the source cannot be
+	 * determined.
 	 * @return the underlying source or {@code null}
 	 */
 	public File getSource() {

@@ -45,8 +45,8 @@ import static org.junit.Assert.assertTrue;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
- * Integration tests for {@link HalBrowserMvcEndpoint} when a custom server port has
- * been configured.
+ * Integration tests for {@link HalBrowserMvcEndpoint} when a custom server port has been
+ * configured.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
