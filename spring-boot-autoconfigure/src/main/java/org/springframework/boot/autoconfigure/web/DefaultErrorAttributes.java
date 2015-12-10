@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -34,6 +35,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -49,11 +51,13 @@ import org.springframework.web.servlet.ModelAndView;
  * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} exception
  * <li>trace - The exception stack trace</li>
  * <li>path - The URL path when the exception was raised</li>
+ * <li>header - The HTTP header fields when the exception was raised</li>
  * </ul>
  *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Martin Hock
  * @since 1.1.0
  * @see ErrorAttributes
  */
@@ -88,6 +92,7 @@ public class DefaultErrorAttributes
 		addStatus(errorAttributes, requestAttributes);
 		addErrorDetails(errorAttributes, requestAttributes, includeStackTrace);
 		addPath(errorAttributes, requestAttributes);
+		addHeaderFields(errorAttributes, requestAttributes);
 		return errorAttributes;
 	}
 
@@ -170,6 +175,25 @@ public class DefaultErrorAttributes
 		String path = getAttribute(requestAttributes, "javax.servlet.error.request_uri");
 		if (path != null) {
 			errorAttributes.put("path", path);
+		}
+	}
+
+	private void addHeaderFields(Map<String, Object> errorAttributes,
+			RequestAttributes requestAttributes) {
+		ServletRequestAttributes servletRequestAttributes = ((ServletRequestAttributes) requestAttributes);
+		Enumeration<String> names = servletRequestAttributes.getRequest()
+				.getHeaderNames();
+
+		if (names != null && names.hasMoreElements()) {
+			Map<String, String> headerFields = new LinkedHashMap<String, String>();
+
+			while (names.hasMoreElements()) {
+				String name = names.nextElement();
+				String field = servletRequestAttributes.getRequest().getHeader(name);
+
+				headerFields.put(name, field);
+			}
+			errorAttributes.put("header", headerFields);
 		}
 	}
 

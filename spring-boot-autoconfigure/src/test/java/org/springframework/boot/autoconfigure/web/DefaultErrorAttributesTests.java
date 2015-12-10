@@ -214,4 +214,23 @@ public class DefaultErrorAttributesTests {
 		assertThat(attributes.get("path"), equalTo((Object) "path"));
 
 	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void header() throws Exception {
+		this.request.addHeader("host", "spring.io");
+		this.request.addHeader("acccept-charset", "utf-8");
+		Map<String, Object> attributes = this.errorAttributes
+				.getErrorAttributes(this.requestAttributes, false);
+		Map<String, String> headerEntries = (Map<String, String>) attributes.get("header");
+		assertThat(headerEntries.get("host"), equalTo( "spring.io"));
+		assertThat(headerEntries.get("acccept-charset"), equalTo( "utf-8"));
+	}
+
+	@Test
+	public void noHeader() throws Exception {
+		Map<String, Object> attributes = this.errorAttributes
+				.getErrorAttributes(this.requestAttributes, false);
+		assertThat(attributes.get("header"), nullValue());
+	}
 }
