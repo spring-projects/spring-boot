@@ -69,7 +69,7 @@ public class DefaultErrorViewIntegrationTests {
 	public void testErrorForBrowserClient() throws Exception {
 		MvcResult response = this.mockMvc
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertTrue("Wrong content: " + content, content.contains("<html>"));
 		assertTrue("Wrong content: " + content, content.contains("999"));
@@ -83,7 +83,7 @@ public class DefaultErrorViewIntegrationTests {
 								new RuntimeException(
 										"<script>alert('Hello World')</script>"))
 						.accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertTrue("Wrong content: " + content, content.contains("&lt;script&gt;"));
 		assertTrue("Wrong content: " + content, content.contains("Hello World"));

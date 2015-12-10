@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
@@ -79,7 +80,9 @@ public class BasicErrorController extends AbstractErrorController {
 	}
 
 	@RequestMapping(produces = "text/html")
-	public ModelAndView errorHtml(HttpServletRequest request) {
+	public ModelAndView errorHtml(HttpServletRequest request,
+			HttpServletResponse response) {
+		response.setStatus(getStatus(request).value());
 		Map<String, Object> model = getErrorAttributes(request,
 				isIncludeStackTrace(request, MediaType.TEXT_HTML));
 		return new ModelAndView("error", model);
