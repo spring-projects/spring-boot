@@ -205,7 +205,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		if (this.validator != null && isJsr303Present()) {
+		if (this.ownedValidator && this.validator != null && isJsr303Present()) {
 			this.validator = null; // allow it to be garbage collected
 		}
 	}
