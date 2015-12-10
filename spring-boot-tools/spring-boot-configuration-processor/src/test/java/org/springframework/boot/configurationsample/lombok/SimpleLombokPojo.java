@@ -24,6 +24,7 @@ import lombok.Data;
  * @author Stephane Nicoll
  */
 @Data
+@SuppressWarnings("unused")
 public class SimpleLombokPojo {
 
 	private int value;
