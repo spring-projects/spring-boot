@@ -32,6 +32,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "simple")
+@SuppressWarnings("unused")
 public class LombokSimpleProperties {
 
 	private final String id = "super-id";

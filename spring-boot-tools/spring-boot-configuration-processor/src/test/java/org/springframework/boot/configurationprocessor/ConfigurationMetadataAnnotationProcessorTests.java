@@ -319,11 +319,12 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata, containsProperty("config.second.bar.name"));
 		assertThat(metadata, containsGroup("config.third").ofType(SimpleLombokPojo.class)
 				.fromSource(LombokInnerClassProperties.class));
-		// For some reason the annotation processor resolves a type for SimpleLombokPojo that
-		// is resolved (compiled) and the source annotations are gone. Because we don't see the
-		// @Data annotation anymore, no field is harvested. What is crazy is that a sample project
-		// works fine so this seem to be related to the unit test environment for some reason.
-		//assertThat(metadata, containsProperty("config.third.value"));
+		// For some reason the annotation processor resolves a type for SimpleLombokPojo
+		// that is resolved (compiled) and the source annotations are gone. Because we
+		// don't see the @Data annotation anymore, no field is harvested. What is crazy is
+		// that a sample project works fine so this seem to be related to the unit test
+		// environment for some reason. assertThat(metadata,
+		// containsProperty("config.third.value"));
 		assertThat(metadata, containsProperty("config.fourth"));
 		assertThat(metadata, not(containsGroup("config.fourth")));
 	}
@@ -335,7 +336,6 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		File additionalMetadataFile = new File(metaInfFolder,
 				"additional-spring-configuration-metadata.json");
 		additionalMetadataFile.createNewFile();
-
 		JSONObject property = new JSONObject();
 		property.put("name", "foo");
 		property.put("type", "java.lang.String");
@@ -347,11 +347,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		FileWriter writer = new FileWriter(additionalMetadataFile);
 		additionalMetadata.write(writer);
 		writer.flush();
-
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-
 		assertThat(metadata, containsProperty("simple.comparator"));
-
 		assertThat(metadata, containsProperty("foo", String.class)
 				.fromSource(AdditionalMetadata.class));
 	}
@@ -361,29 +358,23 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
 				BarProperties.class);
 		assertFalse(project.getOutputFile(METADATA_PATH).exists());
-
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertTrue(project.getOutputFile(METADATA_PATH).exists());
-
 		assertThat(metadata,
 				containsProperty("foo.counter").fromSource(FooProperties.class));
 		assertThat(metadata,
 				containsProperty("bar.counter").fromSource(BarProperties.class));
-
 		metadata = project.incrementalBuild(BarProperties.class);
-
 		assertThat(metadata,
 				containsProperty("foo.counter").fromSource(FooProperties.class));
 		assertThat(metadata,
 				containsProperty("bar.counter").fromSource(BarProperties.class));
-
 		project.addSourceCode(BarProperties.class,
 				BarProperties.class.getResourceAsStream("BarProperties.snippet"));
 		metadata = project.incrementalBuild(BarProperties.class);
 		assertThat(metadata, containsProperty("bar.extra"));
 		assertThat(metadata, containsProperty("foo.counter"));
 		assertThat(metadata, containsProperty("bar.counter"));
-
 		project.revert(BarProperties.class);
 		metadata = project.incrementalBuild(BarProperties.class);
 		assertThat(metadata, not(containsProperty("bar.extra")));
@@ -398,7 +389,6 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(metadata, containsProperty("foo.counter"));
 		assertThat(metadata, containsProperty("bar.counter"));
-
 		project.replaceText(BarProperties.class, "@ConfigurationProperties",
 				"//@ConfigurationProperties");
 		metadata = project.incrementalBuild(BarProperties.class);
@@ -417,7 +407,6 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				containsProperty("bar.counter").fromSource(BarProperties.class));
 		assertThat(metadata, not(
 				containsProperty("bar.counter").fromSource(RenamedBarProperties.class)));
-
 		project.delete(BarProperties.class);
 		project.add(RenamedBarProperties.class);
 		metadata = project.incrementalBuild(RenamedBarProperties.class);

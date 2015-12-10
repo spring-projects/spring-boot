@@ -110,19 +110,15 @@ public abstract class AnsiOutput {
 
 	private static boolean isEnabled() {
 		if (enabled == Enabled.DETECT) {
-			return detectIfAnsiCapable();
+			if (ansiCapable == null) {
+				ansiCapable = detectIfAnsiCapable();
+			}
+			return ansiCapable;
 		}
 		return enabled == Enabled.ALWAYS;
 	}
 
 	private static boolean detectIfAnsiCapable() {
-		if (ansiCapable == null) {
-			ansiCapable = doDetectIfAnsiCapable();
-		}
-		return ansiCapable;
-	}
-
-	private static boolean doDetectIfAnsiCapable() {
 		try {
 			if (System.console() == null) {
 				return false;

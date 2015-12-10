@@ -28,6 +28,7 @@ import org.springframework.boot.configurationsample.NestedConfigurationProperty;
  */
 @Data
 @ConfigurationProperties(prefix = "config")
+@SuppressWarnings("unused")
 public class LombokInnerClassProperties {
 
 	private final Foo first = new Foo();
@@ -58,4 +59,5 @@ public class LombokInnerClassProperties {
 	public enum Fourth {
 		YES, NO
 	}
+
 }
