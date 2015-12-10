@@ -89,7 +89,7 @@ public class SampleActuatorUiApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/error", HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(),
 				entity.getBody().contains("<html>"));
 		assertTrue("Wrong body:\n" + entity.getBody(),

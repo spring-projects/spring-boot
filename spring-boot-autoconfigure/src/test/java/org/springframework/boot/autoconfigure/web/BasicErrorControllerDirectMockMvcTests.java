@@ -85,7 +85,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 						.run("--server.port=0"));
 		MvcResult response = this.mockMvc
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertTrue("Wrong content: " + content, content.contains("status=999"));
 	}
@@ -96,7 +96,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 				WebMvcIncludedConfiguration.class).run("--server.port=0"));
 		MvcResult response = this.mockMvc
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertTrue("Wrong content: " + content, content.contains("status=999"));
 	}
@@ -116,7 +116,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 				WithAopConfiguration.class).run("--server.port=0"));
 		MvcResult response = this.mockMvc
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertTrue("Wrong content: " + content, content.contains("status=999"));
 	}

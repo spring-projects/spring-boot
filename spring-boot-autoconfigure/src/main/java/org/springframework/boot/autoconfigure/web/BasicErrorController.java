@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
@@ -61,7 +62,9 @@ public class BasicErrorController implements ErrorController {
 	}
 
 	@RequestMapping(value = "${error.path:/error}", produces = "text/html")
-	public ModelAndView errorHtml(HttpServletRequest request) {
+	public ModelAndView errorHtml(HttpServletRequest request,
+			HttpServletResponse response) {
+		response.setStatus(getStatus(request).value());
 		return new ModelAndView("error", getErrorAttributes(request, false));
 	}
 
