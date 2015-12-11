@@ -16,7 +16,10 @@
 
 package org.springframework.boot.context.config;
 
+import java.util.Random;
+
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -82,5 +85,28 @@ public class RandomValuePropertySourceTests {
 		Long value = (Long) this.source.getProperty("random.long(10)");
 		assertNotNull(value);
 		assertTrue(value < 10L);
+	}
+
+	@Test
+	public void longOverflow() {
+		RandomValuePropertySource source = Mockito.spy(this.source);
+		Mockito.when(source.getSource()).thenReturn(new Random() {
+
+			@Override
+			public long nextLong() {
+				// constant that used to become -8, now becomes 8
+				return Long.MIN_VALUE;
+			}
+
+		});
+		Long value = (Long) source.getProperty("random.long(10)");
+		assertNotNull(value);
+		assertTrue(value + " is less than 0", value >= 0L);
+		assertTrue(value + " is more than 10", value < 10L);
+
+		value = (Long) source.getProperty("random.long[4,10]");
+		assertNotNull(value);
+		assertTrue(value + " is less than 4", value >= 4L);
+		assertTrue(value + " is more than 10", value < 10L);
 	}
 }
