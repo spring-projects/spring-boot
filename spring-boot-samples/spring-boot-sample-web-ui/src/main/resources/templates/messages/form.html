@@ -26,6 +26,10 @@
             Messages
           </a>
         </div>
+        <input type="hidden"
+               th:field="*{id}"
+               th:class="${#fields.hasErrors('id')} ? 'field-error'"
+        />
         <label for="summary">Summary</label>
         <input type="text"
             th:field="*{summary}"
@@ -35,7 +39,7 @@
             th:field="*{text}"
             th:class="${#fields.hasErrors('text')} ? 'field-error'"></textarea>
         <div class="form-actions">
-          <input type="submit" value="Create"/>
+          <input type="submit" value="Save"/>
         </div>
       </form>
     </div>
