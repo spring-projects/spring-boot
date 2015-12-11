@@ -26,6 +26,7 @@ import java.util.Map;
  * aggregating the {@link Status} instances and not deal with contextual details etc.
  *
  * @author Christian Dupuis
+ * @author Vedran Pavic
  * @since 1.1.0
  */
 public abstract class AbstractHealthAggregator implements HealthAggregator {
@@ -33,12 +34,12 @@ public abstract class AbstractHealthAggregator implements HealthAggregator {
 	@Override
 	public final Health aggregate(Map<String, Health> healths) {
 		List<Status> statusCandidates = new ArrayList<Status>();
-		Map<String, Object> details = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, Health> entry : healths.entrySet()) {
-			details.put(entry.getKey(), entry.getValue());
 			statusCandidates.add(entry.getValue().getStatus());
 		}
-		return new Health.Builder(aggregateStatus(statusCandidates), details).build();
+		Status status = aggregateStatus(statusCandidates);
+		Map<String, Object> details = aggregateDetails(healths);
+		return new Health.Builder(status, details).build();
 	}
 
 	/**
@@ -48,5 +49,16 @@ public abstract class AbstractHealthAggregator implements HealthAggregator {
 	 * @return a single status
 	 */
 	protected abstract Status aggregateStatus(List<Status> candidates);
+
+	/**
+	 * Return the map of 'aggregate' details that should be used from the specified
+	 * healths.
+	 * @param healths the health instances to aggregate
+	 * @return a map of details
+	 * @since 1.3.1
+	 */
+	protected Map<String, Object> aggregateDetails(Map<String, Health> healths) {
+		return new LinkedHashMap<String, Object>(healths);
+	}
 
 }
