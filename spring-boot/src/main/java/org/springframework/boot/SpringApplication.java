@@ -1143,11 +1143,12 @@ public class SpringApplication {
 		int exitCode = 0;
 		try {
 			try {
-				List<ExitCodeGenerator> generators = new ArrayList<ExitCodeGenerator>();
-				generators.addAll(Arrays.asList(exitCodeGenerators));
-				generators
-						.addAll(context.getBeansOfType(ExitCodeGenerator.class).values());
-				exitCode = getExitCode(generators);
+				ExitCodeGenerators generators = new ExitCodeGenerators();
+				Collection<ExitCodeGenerator> beans = context
+						.getBeansOfType(ExitCodeGenerator.class).values();
+				generators.addAll(exitCodeGenerators);
+				generators.addAll(beans);
+				exitCode = generators.getExitCode();
 			}
 			finally {
 				close(context);
@@ -1157,23 +1158,6 @@ public class SpringApplication {
 		catch (Exception ex) {
 			ex.printStackTrace();
 			exitCode = (exitCode == 0 ? 1 : exitCode);
-		}
-		return exitCode;
-	}
-
-	private static int getExitCode(List<ExitCodeGenerator> exitCodeGenerators) {
-		int exitCode = 0;
-		for (ExitCodeGenerator exitCodeGenerator : exitCodeGenerators) {
-			try {
-				int value = exitCodeGenerator.getExitCode();
-				if (value > 0 && value > exitCode || value < 0 && value < exitCode) {
-					exitCode = value;
-				}
-			}
-			catch (Exception ex) {
-				exitCode = (exitCode == 0 ? 1 : exitCode);
-				ex.printStackTrace();
-			}
 		}
 		return exitCode;
 	}
