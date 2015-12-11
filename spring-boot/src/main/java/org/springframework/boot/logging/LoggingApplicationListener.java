@@ -30,10 +30,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.Ordered;
@@ -118,6 +120,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private static AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
 
+	private ConfigurableApplicationContext applicationContext;
+	
 	static {
 		LOG_LEVEL_LOGGERS = new LinkedMultiValueMap<LogLevel, String>();
 		LOG_LEVEL_LOGGERS.add(LogLevel.DEBUG, "org.springframework.boot");
@@ -183,6 +187,9 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				.getApplicationContext().getParent() == null) {
 			onContextClosedEvent();
 		}
+		else if (event instanceof ApplicationReadyEvent) {
+			onApplicationReadyEvent((ApplicationReadyEvent) event);
+		}
 	}
 
 	private void onApplicationStartedEvent(ApplicationStartedEvent event) {
@@ -208,6 +215,20 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		}
 	}
 
+	/**
+	 * Wait for the {@link ApplicationReadyEvent}. Trying to shutdown the context earlier needs
+	 * to wait until the context is fully started (or failed) - this would just impose extra delay
+	 * before Ctrl-C is taken into account.
+	 * 
+	 * Note: SpringApplication registers its own hook a few before that event is sent.
+	 */
+	private void onApplicationReadyEvent(ApplicationReadyEvent event) {
+		this.applicationContext = event.getApplicationContext();
+		
+		// FIXME: bookmark the context only if it must be closed via the shutdown. This should
+		// ideally be enabled/disable according SpringApplication#setRegisterShutdownHook().
+	}
+	
 	private void onContextClosedEvent() {
 		if (this.loggingSystem != null) {
 			this.loggingSystem.cleanUp();
@@ -339,13 +360,14 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			Runnable shutdownHandler = loggingSystem.getShutdownHandler();
 			if (shutdownHandler != null
 					&& shutdownHookRegistered.compareAndSet(false, true)) {
-				registerShutdownHook(new Thread(shutdownHandler));
+				registerShutdownHook(shutdownHandler);
 			}
 		}
 	}
 
-	void registerShutdownHook(Thread shutdownHook) {
-		Runtime.getRuntime().addShutdownHook(shutdownHook);
+	void registerShutdownHook(Runnable loggingSystemShutdownHandler) {
+		LoggingSystemShutdown hook = new LoggingSystemShutdown(loggingSystemShutdownHandler);
+		Runtime.getRuntime().addShutdownHook(new Thread(hook, "LoggingSystem-Shutdown") );
 	}
 
 	public void setOrder(int order) {
@@ -374,4 +396,42 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		this.parseArgs = parseArgs;
 	}
 
+	
+	
+	private class LoggingSystemShutdown implements Runnable {
+		
+		private Runnable loggingSystemShutdownHandler;
+		
+		public LoggingSystemShutdown(Runnable loggingSystemShutdownHandler) {
+			this.loggingSystemShutdownHandler = loggingSystemShutdownHandler;
+		}
+		
+		@Override
+		public void run() {
+			// Shutdown the application context first.
+			// 
+			// Different scenarios:
+			// - the context is already closed.
+			//   This may happen because the application failed to start or the hook registered by 
+			//   SpringApplication has already completed.
+			//
+			// - the context is closing
+			//   Happens when the VM invokes shutdown hooks in parallel on different threads. Since
+			//   ConfigurableApplicationContext.close() is synchronized, our thread is blocked until
+			//   the context is closed.
+			//
+			// - the context is not closed
+			//   Happens if our hook is invoked before SpringApplication's one. In this case, we initiate
+			//   the context close ourselves before shutdown down the logging system.
+			//
+			if( applicationContext != null ) {
+				applicationContext.close();
+			}
+			
+			
+			// Shutdown the logging system
+			//
+			loggingSystemShutdownHandler.run();
+		}
+	}
 }
