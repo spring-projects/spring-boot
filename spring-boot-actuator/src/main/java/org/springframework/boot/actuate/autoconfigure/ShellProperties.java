@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(prefix = "shell", ignoreUnknownFields = true)
 public class ShellProperties {
 
-	private static Log logger = LogFactory.getLog(ShellProperties.class);
+	private static final Log logger = LogFactory.getLog(ShellProperties.class);
 
 	/**
 	 * Authentication type. Auto-detected according to the environment (i.e. if Spring
@@ -418,7 +418,7 @@ public class ShellProperties {
 	public static class SimpleAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
-		private static Log logger = LogFactory
+		private static final Log logger = LogFactory
 				.getLog(SimpleAuthenticationProperties.class);
 
 		private User user = new User();

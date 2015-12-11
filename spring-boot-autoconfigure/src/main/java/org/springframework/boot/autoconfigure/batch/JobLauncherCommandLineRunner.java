@@ -66,7 +66,7 @@ import org.springframework.util.StringUtils;
 public class JobLauncherCommandLineRunner
 		implements CommandLineRunner, ApplicationEventPublisherAware {
 
-	private static Log logger = LogFactory.getLog(JobLauncherCommandLineRunner.class);
+	private static final Log logger = LogFactory.getLog(JobLauncherCommandLineRunner.class);
 
 	private JobParametersConverter converter = new DefaultJobParametersConverter();
 

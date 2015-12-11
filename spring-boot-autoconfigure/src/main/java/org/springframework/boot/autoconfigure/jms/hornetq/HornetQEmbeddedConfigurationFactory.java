@@ -37,7 +37,7 @@ import org.springframework.boot.autoconfigure.jms.hornetq.HornetQProperties.Embe
  */
 class HornetQEmbeddedConfigurationFactory {
 
-	private Log logger = LogFactory.getLog(HornetQEmbeddedConfigurationFactory.class);
+	private static final Log logger = LogFactory.getLog(HornetQEmbeddedConfigurationFactory.class);
 
 	private final Embedded properties;
 

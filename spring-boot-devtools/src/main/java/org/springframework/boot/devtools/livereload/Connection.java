@@ -38,7 +38,7 @@ import org.springframework.util.Base64Utils;
  */
 class Connection {
 
-	private static Log logger = LogFactory.getLog(Connection.class);
+	private static final Log logger = LogFactory.getLog(Connection.class);
 
 	private static final Pattern WEBSOCKET_KEY_PATTERN = Pattern
 			.compile("^Sec-WebSocket-Key:(.*)$", Pattern.MULTILINE);

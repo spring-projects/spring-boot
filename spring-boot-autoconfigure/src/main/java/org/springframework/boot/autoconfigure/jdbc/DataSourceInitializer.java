@@ -46,7 +46,7 @@ import org.springframework.util.StringUtils;
  */
 class DataSourceInitializer implements ApplicationListener<DataSourceInitializedEvent> {
 
-	private static Log logger = LogFactory.getLog(DataSourceInitializer.class);
+	private static final Log logger = LogFactory.getLog(DataSourceInitializer.class);
 
 	@Autowired
 	private ConfigurableApplicationContext applicationContext;

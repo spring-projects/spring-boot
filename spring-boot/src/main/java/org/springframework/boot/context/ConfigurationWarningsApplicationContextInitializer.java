@@ -52,7 +52,7 @@ import org.springframework.util.StringUtils;
 public class ConfigurationWarningsApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-	private static Log logger = LogFactory
+	private static final Log logger = LogFactory
 			.getLog(ConfigurationWarningsApplicationContextInitializer.class);
 
 	@Override

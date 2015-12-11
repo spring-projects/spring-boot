@@ -55,7 +55,7 @@ import org.springframework.util.StringUtils;
  */
 public class MetricRegistryMetricReader implements MetricReader, MetricRegistryListener {
 
-	private static Log logger = LogFactory.getLog(MetricRegistryMetricReader.class);
+	private static final Log logger = LogFactory.getLog(MetricRegistryMetricReader.class);
 
 	private static final Map<Class<?>, Set<String>> numberKeys = new ConcurrentHashMap<Class<?>, Set<String>>();
 

@@ -69,7 +69,7 @@ import org.springframework.util.ReflectionUtils;
 @Order(0)
 public class AuthenticationManagerConfiguration {
 
-	private static Log logger = LogFactory
+	private static final Log logger = LogFactory
 			.getLog(AuthenticationManagerConfiguration.class);
 
 	@Bean

@@ -63,7 +63,7 @@ import org.springframework.util.StringUtils;
  */
 abstract class BeanTypeRegistry {
 
-	static Log logger = LogFactory.getLog(BeanTypeRegistry.class);
+	private static final Log logger = LogFactory.getLog(BeanTypeRegistry.class);
 
 	static final String FACTORY_BEAN_OBJECT_TYPE = "factoryBeanObjectType";
 
