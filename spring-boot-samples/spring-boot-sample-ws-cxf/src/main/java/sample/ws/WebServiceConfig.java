@@ -24,8 +24,6 @@ import org.apache.cxf.transport.servlet.CXFServlet;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.ws.config.annotation.EnableWs;
-import org.springframework.ws.config.annotation.WsConfigurerAdapter;
 
 import sample.ws.service.Hello;
 import sample.ws.service.HelloPortImpl;
@@ -37,10 +35,9 @@ import sample.ws.service.HelloPortImpl;
  */
 
 @Configuration
-@EnableWs
-public class WebServiceConfig extends WsConfigurerAdapter {
+public class WebServiceConfig {
 
-	@Bean
+	@Bean(name="cxfDispatcherServlet")
 	public ServletRegistrationBean dispatcherServlet() {
 	    CXFServlet cxfServlet = new CXFServlet();
 	    return new ServletRegistrationBean(cxfServlet, "/Service/*");

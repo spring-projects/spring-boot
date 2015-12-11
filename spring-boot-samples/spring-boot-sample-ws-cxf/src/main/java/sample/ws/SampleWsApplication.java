@@ -18,8 +18,6 @@ package sample.ws;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
 
 /**
  * CXF JAX webservice spring boot example.
@@ -29,12 +27,7 @@ import org.springframework.boot.context.web.SpringBootServletInitializer;
  */
 
 @SpringBootApplication
-public class SampleWsApplication extends SpringBootServletInitializer {
-
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(SampleWsApplication.class);
-	}
+public class SampleWsApplication {
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleWsApplication.class, args);
