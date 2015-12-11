@@ -1,0 +1,12 @@
+== Spring Boot - Samples - Web Services
+
+This sample project demonstrates how to use http://projects.spring.io/spring-ws/[Spring Web Services]
+with Spring Boot. It is an implementation of the Service First Web Services using Apache CXF
+
+The sample uses Maven. It can be built and run from the command line:
+
+----
+$ mvn spring-boot:run
+----
+
+http://localhost:8080/Service/Hello?wsdl  will now display the generated WSDL.
