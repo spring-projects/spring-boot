@@ -34,10 +34,10 @@ import org.json.simple.parser.ParseException;
 public class JsonSimpleJsonParser implements JsonParser {
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> parseMap(String json) {
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
 		try {
-			@SuppressWarnings("unchecked")
 			Map<String, Object> value = (Map<String, Object>) new JSONParser()
 					.parse(json);
 			map.putAll(value);
@@ -49,10 +49,10 @@ public class JsonSimpleJsonParser implements JsonParser {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<Object> parseList(String json) {
 		List<Object> nested = new ArrayList<Object>();
 		try {
-			@SuppressWarnings("unchecked")
 			List<Object> value = (List<Object>) new JSONParser().parse(json);
 			nested.addAll(value);
 		}

@@ -35,25 +35,23 @@ public class GsonJsonParser implements JsonParser {
 	private Gson gson = new GsonBuilder().create();
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> parseMap(String json) {
 		if (json == null || json.equals("") || json.startsWith("[")) {
 			throw new IllegalArgumentException("Cannot parse JSON");
 		}
 
-		@SuppressWarnings("unchecked")
-		Map<String, Object> value = this.gson.fromJson(json, Map.class);
-		return value;
+		return this.gson.fromJson(json, Map.class);
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<Object> parseList(String json) {
 		if (json == null || json.equals("") || json.startsWith("{")) {
 			throw new IllegalArgumentException("Cannot parse JSON");
 		}
 
-		@SuppressWarnings("unchecked")
-		List<Object> value = this.gson.fromJson(json, List.class);
-		return value;
+		return this.gson.fromJson(json, List.class);
 	}
 
 }
