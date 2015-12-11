@@ -261,9 +261,14 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		putIfMissing(properties, "initInfoProvides", this.project.getArtifactId());
 		putIfMissing(properties, "initInfoShortDescription", this.project.getName(),
 				this.project.getArtifactId());
-		putIfMissing(properties, "initInfoDescription", this.project.getDescription(),
-				this.project.getName(), this.project.getArtifactId());
+		putIfMissing(properties, "initInfoDescription",
+				removeLineBreaks(this.project.getDescription()), this.project.getName(),
+				this.project.getArtifactId());
 		return properties;
+	}
+
+	private String removeLineBreaks(String description) {
+		return description.replaceAll("\\s+", " ");
 	}
 
 	private void putIfMissing(Properties properties, String key,
