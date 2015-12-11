@@ -145,6 +145,10 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  */
 public class SpringApplication {
 
+	private static final String BANNER_LOCATION_PROPERTY_VALUE = "banner.txt";
+
+	public static final String BANNER_LOCATION_PROPERTY = "banner.location";
+
 	/**
 	 * The class name of application context that will be used by default for non-web
 	 * environments.
@@ -536,7 +540,7 @@ public class SpringApplication {
 	}
 
 	private Banner selectBanner(Environment environment) {
-		String location = environment.getProperty("banner.location", "banner.txt");
+		String location = environment.getProperty(BANNER_LOCATION_PROPERTY, BANNER_LOCATION_PROPERTY_VALUE);
 		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
 				: new DefaultResourceLoader(getClassLoader());
 		Resource resource = resourceLoader.getResource(location);
