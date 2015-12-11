@@ -29,6 +29,7 @@ import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.support.SimpleJobOperator;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -91,7 +92,7 @@ public class BatchAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(ExitCodeGenerator.class)
 	public JobExecutionExitCodeGenerator jobExecutionExitCodeGenerator() {
 		return new JobExecutionExitCodeGenerator();
 	}
