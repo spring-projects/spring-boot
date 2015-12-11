@@ -19,7 +19,9 @@ package org.springframework.boot.json;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -27,8 +29,12 @@ import static org.junit.Assert.assertEquals;
  * Base for {@link JsonParser} tests.
  *
  * @author Dave Syer
+ * @author Jean de Klerk
  */
 public abstract class AbstractJsonParserTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private final JsonParser parser = getParser();
 
@@ -86,5 +92,41 @@ public abstract class AbstractJsonParserTests {
 		assertEquals(1, map.size());
 		assertEquals(2, ((List<Object>) map.get("foo")).size());
 	}
+
+	@Test
+    public void mapWithNullThrowsARuntimeException() {
+        this.thrown.expect(RuntimeException.class);
+        this.parser.parseMap(null);
+    }
+
+    @Test
+    public void listWithNullThrowsARuntimeException() {
+        this.thrown.expect(RuntimeException.class);
+        this.parser.parseList(null);
+    }
+
+    @Test
+    public void mapWithEmptyStringThrowsARuntimeException() {
+        this.thrown.expect(RuntimeException.class);
+        this.parser.parseMap("");
+    }
+
+    @Test
+    public void listWithEmptyStringThrowsARuntimeException() {
+        this.thrown.expect(RuntimeException.class);
+        this.parser.parseList("");
+    }
+
+    @Test
+    public void mapWithListThrowsARuntimeException() {
+        this.thrown.expect(RuntimeException.class);
+        this.parser.parseMap("[]");
+    }
+
+    @Test
+    public void listWithMapThrowsARuntimeException() {
+        this.thrown.expect(RuntimeException.class);
+        this.parser.parseList("{}");
+    }
 
 }

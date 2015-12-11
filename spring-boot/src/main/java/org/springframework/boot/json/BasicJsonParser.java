@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
  * YAML are supported).
  *
  * @author Dave Syer
+ * @author Jean de Klerk
  * @since 1.2.0
  * @see JsonParserFactory
  */
@@ -38,30 +39,24 @@ public class BasicJsonParser implements JsonParser {
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
-		if (json != null) {
-			json = json.trim();
-			if (json.startsWith("{")) {
-				return parseMapInternal(json);
-			}
-			else if (json.equals("")) {
-				return new HashMap<String, Object>();
-			}
+		json = json.trim();
+		if (json.startsWith("{")) {
+			return parseMapInternal(json);
 		}
-		return null;
+		else {
+			throw new IllegalArgumentException("Cannot parse JSON");
+		}
 	}
 
 	@Override
 	public List<Object> parseList(String json) {
-		if (json != null) {
-			json = json.trim();
-			if (json.startsWith("[")) {
-				return parseListInternal(json);
-			}
-			else if (json.trim().equals("")) {
-				return new ArrayList<Object>();
-			}
+		json = json.trim();
+		if (json.startsWith("[")) {
+			return parseListInternal(json);
 		}
-		return null;
+		else {
+			throw new IllegalArgumentException("Cannot parse JSON");
+		}
 	}
 
 	private List<Object> parseListInternal(String json) {
