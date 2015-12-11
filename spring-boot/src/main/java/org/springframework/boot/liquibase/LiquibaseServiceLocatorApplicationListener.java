@@ -35,7 +35,7 @@ import org.springframework.util.ClassUtils;
 public class LiquibaseServiceLocatorApplicationListener
 		implements ApplicationListener<ApplicationStartedEvent> {
 
-	static final Log logger = LogFactory
+	private static final Log logger = LogFactory
 			.getLog(LiquibaseServiceLocatorApplicationListener.class);
 
 	@Override

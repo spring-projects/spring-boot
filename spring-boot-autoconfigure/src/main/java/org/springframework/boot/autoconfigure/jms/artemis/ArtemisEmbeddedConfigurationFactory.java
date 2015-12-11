@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
  */
 class ArtemisEmbeddedConfigurationFactory {
 
-	private Log logger = LogFactory.getLog(ArtemisEmbeddedConfigurationFactory.class);
+	private static final Log logger = LogFactory.getLog(ArtemisEmbeddedConfigurationFactory.class);
 
 	private final ArtemisProperties.Embedded properties;
 

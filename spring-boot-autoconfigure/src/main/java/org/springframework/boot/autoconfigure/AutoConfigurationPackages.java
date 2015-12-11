@@ -48,7 +48,7 @@ import org.springframework.util.StringUtils;
  */
 public abstract class AutoConfigurationPackages {
 
-	private static Log logger = LogFactory.getLog(AutoConfigurationPackages.class);
+	private static final Log logger = LogFactory.getLog(AutoConfigurationPackages.class);
 
 	private static final String BEAN = AutoConfigurationPackages.class.getName();
 

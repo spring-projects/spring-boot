@@ -132,7 +132,7 @@ public class WebMvcAutoConfiguration {
 	@EnableConfigurationProperties({ WebMvcProperties.class, ResourceProperties.class })
 	public static class WebMvcAutoConfigurationAdapter extends WebMvcConfigurerAdapter {
 
-		private static Log logger = LogFactory.getLog(WebMvcConfigurerAdapter.class);
+		private static final Log logger = LogFactory.getLog(WebMvcConfigurerAdapter.class);
 
 		@Autowired
 		private ResourceProperties resourceProperties = new ResourceProperties();

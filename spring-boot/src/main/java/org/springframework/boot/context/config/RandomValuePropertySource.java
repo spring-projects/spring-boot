@@ -53,7 +53,7 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 
 	private static final String PREFIX = "random.";
 
-	private static Log logger = LogFactory.getLog(RandomValuePropertySource.class);
+	private static final Log logger = LogFactory.getLog(RandomValuePropertySource.class);
 
 	public RandomValuePropertySource(String name) {
 		super(name, new Random());

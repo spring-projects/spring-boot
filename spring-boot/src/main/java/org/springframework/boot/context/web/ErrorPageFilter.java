@@ -61,7 +61,7 @@ import org.springframework.web.util.NestedServletException;
 public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer
 		implements Filter, NonEmbeddedServletContainerFactory {
 
-	private static Log logger = LogFactory.getLog(ErrorPageFilter.class);
+	private static final Log logger = LogFactory.getLog(ErrorPageFilter.class);
 
 	// From RequestDispatcher but not referenced to remain compatible with Servlet 2.5
 

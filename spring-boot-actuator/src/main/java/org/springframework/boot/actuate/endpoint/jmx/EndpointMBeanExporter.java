@@ -66,7 +66,7 @@ public class EndpointMBeanExporter extends MBeanExporter
 	 */
 	public static final String DEFAULT_DOMAIN = "org.springframework.boot";
 
-	private static Log logger = LogFactory.getLog(EndpointMBeanExporter.class);
+	private static final Log logger = LogFactory.getLog(EndpointMBeanExporter.class);
 
 	private final AnnotationJmxAttributeSource attributeSource = new AnnotationJmxAttributeSource();
 

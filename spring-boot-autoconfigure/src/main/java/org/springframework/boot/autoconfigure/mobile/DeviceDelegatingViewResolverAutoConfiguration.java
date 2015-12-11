@@ -53,7 +53,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @AutoConfigureAfter({ WebMvcAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 public class DeviceDelegatingViewResolverAutoConfiguration {
 
-	private static Log logger = LogFactory
+	private static final Log logger = LogFactory
 			.getLog(DeviceDelegatingViewResolverAutoConfiguration.class);
 
 	private static abstract class AbstractDelegateConfiguration {
