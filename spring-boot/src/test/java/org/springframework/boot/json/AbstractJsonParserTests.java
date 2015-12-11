@@ -35,7 +35,7 @@ public abstract class AbstractJsonParserTests {
 	protected abstract JsonParser getParser();
 
 	@Test
-	public void testSimpleMap() {
+	public void simpleMap() {
 		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"bar\",\"spam\":1}");
 		assertEquals(2, map.size());
 		assertEquals("bar", map.get("foo"));
@@ -43,7 +43,7 @@ public abstract class AbstractJsonParserTests {
 	}
 
 	@Test
-	public void testDoubleValue() {
+	public void doubleValue() {
 		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"bar\",\"spam\":1.23}");
 		assertEquals(2, map.size());
 		assertEquals("bar", map.get("foo"));
@@ -51,27 +51,27 @@ public abstract class AbstractJsonParserTests {
 	}
 
 	@Test
-	public void testEmptyMap() {
+	public void emptyMap() {
 		Map<String, Object> map = this.parser.parseMap("{}");
 		assertEquals(0, map.size());
 	}
 
 	@Test
-	public void testSimpleList() {
+	public void simpleList() {
 		List<Object> list = this.parser.parseList("[\"foo\",\"bar\",1]");
 		assertEquals(3, list.size());
 		assertEquals("bar", list.get(1));
 	}
 
 	@Test
-	public void testEmptyList() {
+	public void emptyList() {
 		List<Object> list = this.parser.parseList("[]");
 		assertEquals(0, list.size());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testListOfMaps() {
+	public void listOfMaps() {
 		List<Object> list = this.parser
 				.parseList("[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]");
 		assertEquals(2, list.size());
@@ -80,7 +80,7 @@ public abstract class AbstractJsonParserTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testMapOfLists() {
+	public void mapOfLists() {
 		Map<String, Object> map = this.parser.parseMap(
 				"{\"foo\":[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]}");
 		assertEquals(1, map.size());
