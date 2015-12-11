@@ -268,7 +268,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private String removeLineBreaks(String description) {
-		return description.replaceAll("\\s+", " ");
+		return (description == null ? null : description.replaceAll("\\s+", " "));
 	}
 
 	private void putIfMissing(Properties properties, String key,
