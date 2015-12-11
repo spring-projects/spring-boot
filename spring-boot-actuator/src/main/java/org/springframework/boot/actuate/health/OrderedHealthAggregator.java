@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.util.Assert;
 
@@ -32,6 +34,7 @@ import org.springframework.util.Assert;
  * can be set by calling {@link #setStatusOrder(List)}.
  *
  * @author Christian Dupuis
+ * @author Vedran Pavic
  * @since 1.1.0
  */
 public class OrderedHealthAggregator extends AbstractHealthAggregator {
@@ -82,6 +85,11 @@ public class OrderedHealthAggregator extends AbstractHealthAggregator {
 		// Sort given Status instances by configured order
 		Collections.sort(filteredCandidates, new StatusComparator(this.statusOrder));
 		return filteredCandidates.get(0);
+	}
+
+	@Override
+	protected Map<String, Object> aggregateDetails(Map<String, Health> healths) {
+		return new LinkedHashMap<String, Object>(healths);
 	}
 
 	/**
