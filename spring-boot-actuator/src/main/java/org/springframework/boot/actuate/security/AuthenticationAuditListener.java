@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
@@ -37,14 +35,7 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 
 	private static final String WEB_LISTENER_CHECK_CLASS = "org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent";
 
-	private ApplicationEventPublisher publisher;
-
 	private WebAuditListener webListener = maybeCreateWebListener();
-
-	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
-		this.publisher = publisher;
-	}
 
 	private static WebAuditListener maybeCreateWebListener() {
 		if (ClassUtils.isPresent(WEB_LISTENER_CHECK_CLASS, null)) {
@@ -81,12 +72,6 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 		}
 		publish(new AuditEvent(event.getAuthentication().getName(),
 				"AUTHENTICATION_SUCCESS", data));
-	}
-
-	private void publish(AuditEvent event) {
-		if (this.publisher != null) {
-			this.publisher.publishEvent(new AuditApplicationEvent(event));
-		}
 	}
 
 	private static class WebAuditListener {
