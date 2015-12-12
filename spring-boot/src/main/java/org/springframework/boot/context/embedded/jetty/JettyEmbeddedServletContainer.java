@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.jetty.http.HttpGenerator;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -40,6 +41,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author David Liu
+ * @author Eddú Meléndez
  * @see JettyEmbeddedServletContainerFactory
  */
 public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
@@ -58,22 +60,23 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	 * @param server the underlying Jetty server
 	 */
 	public JettyEmbeddedServletContainer(Server server) {
-		this(server, true);
+		this(server, true, null);
 	}
 
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainer} instance.
 	 * @param server the underlying Jetty server
 	 * @param autoStart if auto-starting the container
+	 * @param serverName the server name
 	 */
-	public JettyEmbeddedServletContainer(Server server, boolean autoStart) {
+	public JettyEmbeddedServletContainer(Server server, boolean autoStart, String serverName) {
 		this.autoStart = autoStart;
 		Assert.notNull(server, "Jetty Server must not be null");
 		this.server = server;
-		initialize();
+		initialize(serverName);
 	}
 
-	private synchronized void initialize() {
+	private synchronized void initialize(String serverName) {
 		try {
 			// Cache and clear the connectors to prevent requests being handled before
 			// the application context is ready
@@ -83,6 +86,9 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			// Start the server so that the ServletContext is available
 			this.server.start();
 			this.server.setStopAtShutdown(false);
+			if (StringUtils.hasText(serverName)) {
+				HttpGenerator.setJettyVersion(serverName);
+			}
 		}
 		catch (Exception ex) {
 			// Ensure process isn't left running

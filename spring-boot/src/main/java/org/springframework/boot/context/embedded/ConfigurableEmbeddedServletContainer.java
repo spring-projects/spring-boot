@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @see EmbeddedServletContainerFactory
  * @see EmbeddedServletContainerCustomizer
  */
@@ -188,5 +189,11 @@ public interface ConfigurableEmbeddedServletContainer {
 	 * @param compression the compression configuration
 	 */
 	void setCompression(Compression compression);
+
+	/**
+	 * Sets the server attribute in response's header.
+	 * @param server the server name
+     */
+	void setServer(String server);
 
 }

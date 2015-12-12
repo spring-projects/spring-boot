@@ -72,6 +72,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Ivan Sopov
  * @author Marcos Barbero
+ * @author Eddú Meléndez
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties
@@ -115,6 +116,11 @@ public class ServerProperties
 	 * If X-Forwarded-* headers should be applied to the HttpRequest.
 	 */
 	private Boolean useForwardHeaders;
+
+	/**
+	 * Server name response's header.
+	 */
+	private String serverName;
 
 	private Session session = new Session();
 
@@ -172,6 +178,9 @@ public class ServerProperties
 		}
 		if (getCompression() != null) {
 			container.setCompression(getCompression());
+		}
+		if (getServerName() != null) {
+			container.setServer(getServerName());
 		}
 		if (container instanceof TomcatEmbeddedServletContainerFactory) {
 			getTomcat().customizeTomcat(this,
@@ -302,6 +311,14 @@ public class ServerProperties
 
 	public void setUseForwardHeaders(Boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
+	}
+
+	public String getServerName() {
+		return this.serverName;
+	}
+
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
 	}
 
 	protected final boolean getOrDeduceUseForwardHeaders() {
