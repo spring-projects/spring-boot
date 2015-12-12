@@ -40,6 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author David Liu
+ * @author Eddú Meléndez
  * @see JettyEmbeddedServletContainerFactory
  */
 public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {

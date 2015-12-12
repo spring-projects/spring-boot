@@ -698,6 +698,17 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		assertThat(rootResource.get(), is(not(nullValue())));
 	}
 
+	@Test
+	public void customServerHeader() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setServerHeader("MyServer");
+		this.container = factory
+				.getEmbeddedServletContainer(exampleServletRegistration());
+		this.container.start();
+		ClientHttpResponse response = getClientResponse(getLocalUrl("/hello"));
+		assertThat(response.getHeaders().getFirst("server"), equalTo("MyServer"));
+	}
+
 	private boolean doTestCompression(int contentSize, String[] mimeTypes,
 			String[] excludedUserAgents) throws Exception {
 		String testContent = setUpFactoryForCompression(contentSize, mimeTypes,

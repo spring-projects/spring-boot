@@ -67,6 +67,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  * @see EndpointWebMvcAutoConfiguration
  */
 @Configuration
@@ -187,6 +188,7 @@ public class EndpointWebMvcChildContextConfiguration {
 			container.setContextPath("");
 			// and add the management-specific bits
 			container.setPort(this.managementServerProperties.getPort());
+			container.setServerHeader(this.server.getServerHeader());
 			container.setAddress(this.managementServerProperties.getAddress());
 			container.addErrorPages(new ErrorPage(this.server.getError().getPath()));
 		}

@@ -153,6 +153,7 @@ content into your application; rather pick only the properties that you need.
 	server.jsp-servlet.init-parameters.*= # Init parameters used to configure the JSP servlet
 	server.jsp-servlet.registered=true # Whether or not the JSP servlet is registered
 	server.port=8080 # Server HTTP port.
+	server.server-header= # The value sent in the server response header
 	server.servlet-path=/ # Path of the main dispatcher servlet.
 	server.session.cookie.comment= # Comment for the session cookie.
 	server.session.cookie.domain= # Domain for the session cookie.
