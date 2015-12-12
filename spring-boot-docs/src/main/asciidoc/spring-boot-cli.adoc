@@ -225,7 +225,7 @@ For example, the following declaration:
 
 [source,groovy,indent=0]
 ----
-	`@DependencyManagementBom("com.example.custom-bom:1.0.0")`
+	@DependencyManagementBom("com.example.custom-bom:1.0.0")
 ----
 
 Will pick up  `custom-bom-1.0.0.pom` in a Maven repository under
@@ -236,8 +236,8 @@ For example:
 
 [source,java,indent=0]
 ----
-	`@DependencyManagementBom(["com.example.custom-bom:1.0.0",
-			"com.example.another-bom:1.0.0"])`
+	@DependencyManagementBom(["com.example.custom-bom:1.0.0",
+			"com.example.another-bom:1.0.0"])
 ----
 
 indicates that dependency management in `another-bom` will override the dependency

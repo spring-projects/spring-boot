@@ -170,7 +170,7 @@ methods, and those added using `setSources()` are inspected to see if they have
 `@PropertySources`, and if they do, those properties are added to the `Environment` early
 enough to be used in all phases of the `ApplicationContext` lifecycle. Properties added
 in this way have lower
-priority than any added using the default locations (e.g. `application.properties), system properties, environment variables or the command line.
+priority than any added using the default locations (e.g. `application.properties`), system properties, environment variables or the command line.
 
 You can also provide System properties (or environment variables) to change the behavior:
 
