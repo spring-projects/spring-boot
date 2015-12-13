@@ -42,11 +42,11 @@ public class SampleTomcatTwoConnectorsApplication {
 	@Bean
 	public EmbeddedServletContainerFactory servletContainer() {
 		TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
-		tomcat.addAdditionalTomcatConnectors(createSslConnector());
+		tomcat.addAdditionalTomcatConnectors(createNonSslConnector());
 		return tomcat;
 	}
 
-	private Connector createSslConnector() {
+	private Connector createNonSslConnector() {
 		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
 		connector.setPort(port());
 		return connector;
