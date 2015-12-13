@@ -38,24 +38,24 @@ public class BasicJsonParser implements JsonParser {
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
-		json = json.trim();
-		if (json.startsWith("{")) {
-			return parseMapInternal(json);
+		if (json != null) {
+			json = json.trim();
+			if (json.startsWith("{")) {
+				return parseMapInternal(json);
+			}
 		}
-		else {
-			throw new IllegalArgumentException("Cannot parse JSON");
-		}
+		throw new IllegalArgumentException("Cannot parse JSON");
 	}
 
 	@Override
 	public List<Object> parseList(String json) {
-		json = json.trim();
-		if (json.startsWith("[")) {
-			return parseListInternal(json);
+		if (json != null) {
+			json = json.trim();
+			if (json.startsWith("[")) {
+				return parseListInternal(json);
+			}
 		}
-		else {
-			throw new IllegalArgumentException("Cannot parse JSON");
-		}
+		throw new IllegalArgumentException("Cannot parse JSON");
 	}
 
 	private List<Object> parseListInternal(String json) {

@@ -33,21 +33,25 @@ public class YamlJsonParser implements JsonParser {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> parseMap(String json) {
-		if (json == null || json.equals("") || json.startsWith("[")) {
-			throw new IllegalArgumentException("Cannot parse JSON");
+		if (json != null) {
+			json = json.trim();
+			if (json.startsWith("{")) {
+				return new Yaml().loadAs(json, Map.class);
+			}
 		}
-
-		return new Yaml().loadAs(json, Map.class);
+		throw new IllegalArgumentException("Cannot parse JSON");
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Object> parseList(String json) {
-		if (json == null || json.equals("") || json.startsWith("{")) {
-			throw new IllegalArgumentException("Cannot parse JSON");
+		if (json != null) {
+			json = json.trim();
+			if (json.startsWith("[")) {
+				return new Yaml().loadAs(json, List.class);
+			}
 		}
-
-		return new Yaml().loadAs(json, List.class);
+		throw new IllegalArgumentException("Cannot parse JSON");
 	}
 
 }

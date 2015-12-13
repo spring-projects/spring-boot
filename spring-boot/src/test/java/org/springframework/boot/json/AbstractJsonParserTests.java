@@ -129,4 +129,30 @@ public abstract class AbstractJsonParserTests {
 		this.parser.parseList("{}");
 	}
 
+	@Test
+	public void listWithLeadingWhitespace() {
+		List<Object> list = this.parser.parseList("\n\t[\"foo\"]");
+		assertEquals(1, list.size());
+		assertEquals("foo", list.get(0));
+	}
+
+	@Test
+	public void mapWithLeadingWhitespace() {
+		Map<String, Object> map = this.parser.parseMap("\n\t{\"foo\":\"bar\"}");
+		assertEquals(1, map.size());
+		assertEquals("bar", map.get("foo"));
+	}
+
+	@Test
+	public void mapWithLeadingWhitespaceListThrowsARuntimeException() {
+		this.thrown.expect(RuntimeException.class);
+		this.parser.parseMap("\n\t[]");
+	}
+
+	@Test
+	public void listWithLeadingWhitespaceMapThrowsARuntimeException() {
+		this.thrown.expect(RuntimeException.class);
+		this.parser.parseList("\n\t{}");
+	}
+
 }
