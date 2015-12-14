@@ -162,6 +162,16 @@ public class SpringApplication {
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
+	/**
+	 * Default banner location.
+	 */
+	public static final String BANNER_LOCATION_PROPERTY_VALUE = "banner.txt";
+
+	/**
+	 * Banner location property key.
+	 */
+	public static final String BANNER_LOCATION_PROPERTY = "banner.location";
+
 	private static final String CONFIGURABLE_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
 
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
@@ -536,7 +546,8 @@ public class SpringApplication {
 	}
 
 	private Banner selectBanner(Environment environment) {
-		String location = environment.getProperty("banner.location", "banner.txt");
+		String location = environment
+				.getProperty(BANNER_LOCATION_PROPERTY, BANNER_LOCATION_PROPERTY_VALUE);
 		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
 				: new DefaultResourceLoader(getClassLoader());
 		Resource resource = resourceLoader.getResource(location);
