@@ -121,7 +121,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private static AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
 
 	private ConfigurableApplicationContext applicationContext;
-	
+
 	static {
 		LOG_LEVEL_LOGGERS = new LinkedMultiValueMap<LogLevel, String>();
 		LOG_LEVEL_LOGGERS.add(LogLevel.DEBUG, "org.springframework.boot");
@@ -219,16 +219,18 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 * Wait for the {@link ApplicationReadyEvent}. Trying to shutdown the context earlier needs
 	 * to wait until the context is fully started (or failed) - this would just impose extra delay
 	 * before Ctrl-C is taken into account.
-	 * 
+	 *
 	 * Note: SpringApplication registers its own hook a few before that event is sent.
+	 * 
+	 * @param event the event to react on
 	 */
 	private void onApplicationReadyEvent(ApplicationReadyEvent event) {
 		this.applicationContext = event.getApplicationContext();
-		
+
 		// FIXME: bookmark the context only if it must be closed via the shutdown. This should
 		// ideally be enabled/disable according SpringApplication#setRegisterShutdownHook().
 	}
-	
+
 	private void onContextClosedEvent() {
 		if (this.loggingSystem != null) {
 			this.loggingSystem.cleanUp();
@@ -367,7 +369,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	void registerShutdownHook(Runnable loggingSystemShutdownHandler) {
 		LoggingSystemShutdown hook = new LoggingSystemShutdown(loggingSystemShutdownHandler);
-		Runtime.getRuntime().addShutdownHook(new Thread(hook, "LoggingSystem-Shutdown") );
+		Runtime.getRuntime().addShutdownHook(new Thread(hook, "LoggingSystem-Shutdown"));
 	}
 
 	public void setOrder(int order) {
@@ -396,23 +398,23 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		this.parseArgs = parseArgs;
 	}
 
-	
-	
+
+
 	private class LoggingSystemShutdown implements Runnable {
-		
+
 		private Runnable loggingSystemShutdownHandler;
-		
-		public LoggingSystemShutdown(Runnable loggingSystemShutdownHandler) {
+
+		LoggingSystemShutdown(Runnable loggingSystemShutdownHandler) {
 			this.loggingSystemShutdownHandler = loggingSystemShutdownHandler;
 		}
-		
+
 		@Override
 		public void run() {
 			// Shutdown the application context first.
-			// 
+			//
 			// Different scenarios:
 			// - the context is already closed.
-			//   This may happen because the application failed to start or the hook registered by 
+			//   This may happen because the application failed to start or the hook registered by
 			//   SpringApplication has already completed.
 			//
 			// - the context is closing
@@ -424,14 +426,14 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			//   Happens if our hook is invoked before SpringApplication's one. In this case, we initiate
 			//   the context close ourselves before shutdown down the logging system.
 			//
-			if( applicationContext != null ) {
-				applicationContext.close();
+			if (LoggingApplicationListener.this.applicationContext != null) {
+				LoggingApplicationListener.this.applicationContext.close();
 			}
-			
-			
+
+
 			// Shutdown the logging system
 			//
-			loggingSystemShutdownHandler.run();
+			this.loggingSystemShutdownHandler.run();
 		}
 	}
 }
