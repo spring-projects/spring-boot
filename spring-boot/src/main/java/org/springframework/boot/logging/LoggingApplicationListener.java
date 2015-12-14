@@ -221,7 +221,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 * before Ctrl-C is taken into account.
 	 *
 	 * Note: SpringApplication registers its own hook a few before that event is sent.
-	 * 
+	 *
 	 * @param event the event to react on
 	 */
 	private void onApplicationReadyEvent(ApplicationReadyEvent event) {
