@@ -50,17 +50,15 @@ class ActiveMQConnectionFactoryConfiguration {
 	@ConditionalOnClass(PooledConnectionFactory.class)
 	static class PooledConnectionFactoryConfiguration {
 
-		@Bean
+		@Bean(destroyMethod = "stop")
 		@ConditionalOnProperty(prefix = "spring.activemq", name = "pooled", havingValue = "true", matchIfMissing = false)
 		public PooledConnectionFactory pooledJmsConnectionFactory(
 				ActiveMQProperties properties) {
-			PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
-			pooledConnectionFactory
-					.setConnectionFactory(new ActiveMQConnectionFactoryFactory(properties)
+			return new PooledConnectionFactory(
+					new ActiveMQConnectionFactoryFactory(properties)
 							.createConnectionFactory(ActiveMQConnectionFactory.class));
-			return pooledConnectionFactory;
-
 		}
+
 	}
 
 }
