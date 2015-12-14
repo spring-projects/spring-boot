@@ -303,7 +303,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 		private final Predicate maxContentSize;
 
-		public MaxSizePredicate(int size) {
+		MaxSizePredicate(int size) {
 			this.maxContentSize = Predicates.maxContentSize(size);
 		}
 
