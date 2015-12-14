@@ -824,7 +824,7 @@ This allows you to attach a debugger to your packaged application:
 === Using the Maven plugin
 The Spring Boot Maven plugin includes a `run` goal which can be used to quickly compile
 and run your application. Applications run in an exploded form, and you can edit
-resources for instant "`hot`" reload.
+resources for instant "`hot`" reload, when the fork mode is enabled in the plugin.
 
 [indent=0,subs="attributes"]
 ----
@@ -892,6 +892,9 @@ devtools support, simply add the module dependency to your build:
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
+			<configuration>
+                    		<fork>true</fork>
+                        </configuration>
 		</dependency>
 	</dependencies>
 ----
