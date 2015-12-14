@@ -36,6 +36,7 @@ import io.undertow.server.handlers.encoding.ContentEncodingRepository;
 import io.undertow.server.handlers.encoding.EncodingHandler;
 import io.undertow.server.handlers.encoding.GzipEncodingProvider;
 import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -161,7 +162,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	private Predicate[] getCompressionPredicates(Compression compression) {
 		List<Predicate> predicates = new ArrayList<Predicate>();
-		predicates.add(Predicates.maxContentSize(compression.getMinResponseSize()));
+		predicates.add(new MaxSizePredicate(compression.getMinResponseSize()));
 		predicates.add(new CompressibleMimeTypePredicate(compression.getMimeTypes()));
 		if (compression.getExcludedUserAgents() != null) {
 			for (String agent : compression.getExcludedUserAgents()) {
@@ -294,4 +295,25 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	}
 
+	/**
+	 * Predicate that returns true if the Content-Size of a request is above a given value
+	 * or is missing.
+	 */
+	private static class MaxSizePredicate implements Predicate {
+
+		private final Predicate maxContentSize;
+
+		public MaxSizePredicate(int size) {
+			this.maxContentSize = Predicates.maxContentSize(size);
+		}
+
+		@Override
+		public boolean resolve(HttpServerExchange value) {
+			if (value.getResponseHeaders().contains(Headers.CONTENT_LENGTH)) {
+				return this.maxContentSize.resolve(value);
+			}
+			return true;
+		}
+
+	}
 }

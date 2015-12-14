@@ -360,7 +360,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		ssl.setEnabled(false);
 		factory.setSsl(ssl);
 		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(true), "/hello"));
+				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
@@ -378,7 +378,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
 		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(true), "/hello"));
+				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
@@ -659,6 +659,24 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
+	public void compressionWithoutContentSizeHeader() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		Compression compression = new Compression();
+		compression.setEnabled(true);
+		factory.setCompression(compression);
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(false, true), "/hello"));
+		this.container.start();
+		TestGzipInputStreamFactory inputStreamFactory = new TestGzipInputStreamFactory();
+		Map<String, InputStreamFactory> contentDecoderMap = Collections
+				.singletonMap("gzip", (InputStreamFactory) inputStreamFactory);
+		getResponse(getLocalUrl("/hello"),
+				new HttpComponentsClientHttpRequestFactory(HttpClientBuilder.create()
+						.setContentDecoderRegistry(contentDecoderMap).build()));
+		assertThat(inputStreamFactory.wasCompressionUsed(), equalTo(true));
+	}
+
+	@Test
 	public void mimeMappingsAreCorrectlyConfigured() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory.getEmbeddedServletContainer();
@@ -824,7 +842,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	protected void assertForwardHeaderIsUsed(EmbeddedServletContainerFactory factory)
 			throws IOException, URISyntaxException {
 		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(true), "/hello"));
+				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello"), "X-Forwarded-For:140.211.11.130"),
 				containsString("remoteaddr=140.211.11.130"));
