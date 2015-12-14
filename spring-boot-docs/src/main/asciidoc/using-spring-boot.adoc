@@ -823,8 +823,7 @@ This allows you to attach a debugger to your packaged application:
 [[using-boot-running-with-the-maven-plugin]]
 === Using the Maven plugin
 The Spring Boot Maven plugin includes a `run` goal which can be used to quickly compile
-and run your application. Applications run in an exploded form, and you can edit
-resources for instant "`hot`" reload.
+and run your application. Applications run in an exploded form just like in your IDE.
 
 [indent=0,subs="attributes"]
 ----
@@ -952,9 +951,37 @@ updated and trigger a restart. In IntelliJ IDEA, building the project (`Build ->
 Project`) will have the same effect.
 ****
 
-NOTE: You can also start your application via the supported build plugins (i.e. Maven and
+[NOTE]
+====
+You can also start your application via the supported build plugins (i.e. Maven and
 Gradle) as long as forking is enabled since DevTools need an isolated application
-classloader to operate properly.
+classloader to operate properly. You can force the plugin to fork the process as
+follows:
+
+.Maven
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<fork>true</fork>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+.Gradle
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	bootRun {
+		addResources = true
+	}
+----
+====
 
 TIP: Automatic restart works very well when used with LiveReload.
 <<using-boot-devtools-livereload,See below>> for details. If you use JRebel automatic
