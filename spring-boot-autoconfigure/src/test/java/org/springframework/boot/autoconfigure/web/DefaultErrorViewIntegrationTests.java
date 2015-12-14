@@ -42,6 +42,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -76,7 +77,7 @@ public class DefaultErrorViewIntegrationTests {
 	}
 
 	@Test
-	public void testErrorWithEscape() throws Exception {
+	public void testErrorWithHtmlEscape() throws Exception {
 		MvcResult response = this.mockMvc
 				.perform(get("/error")
 						.requestAttr("javax.servlet.error.exception",
@@ -88,6 +89,21 @@ public class DefaultErrorViewIntegrationTests {
 		assertTrue("Wrong content: " + content, content.contains("&lt;script&gt;"));
 		assertTrue("Wrong content: " + content, content.contains("Hello World"));
 		assertTrue("Wrong content: " + content, content.contains("999"));
+	}
+
+	@Test
+	public void testErrorWithSpelEscape() throws Exception {
+		String spel = "${T(" + getClass().getName() + ").injectCall()}";
+		MvcResult response = this.mockMvc
+				.perform(
+						get("/error")
+								.requestAttr("javax.servlet.error.exception",
+										new RuntimeException(spel))
+								.accept(MediaType.TEXT_HTML))
+				.andExpect(status().is5xxServerError()).andReturn();
+		String content = response.getResponse().getContentAsString();
+		System.out.println(content);
+		assertFalse("Wrong content: " + content, content.contains("injection"));
 	}
 
 	@Target(ElementType.TYPE)
@@ -110,6 +126,10 @@ public class DefaultErrorViewIntegrationTests {
 			SpringApplication.run(TestConfiguration.class, args);
 		}
 
+	}
+
+	public static String injectCall() {
+		return "injection";
 	}
 
 }
