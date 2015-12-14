@@ -106,6 +106,10 @@ public class DefaultErrorViewIntegrationTests {
 		assertFalse("Wrong content: " + content, content.contains("injection"));
 	}
 
+	public static String injectCall() {
+		return "injection";
+	}
+
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
@@ -126,10 +130,6 @@ public class DefaultErrorViewIntegrationTests {
 			SpringApplication.run(TestConfiguration.class, args);
 		}
 
-	}
-
-	public static String injectCall() {
-		return "injection";
 	}
 
 }

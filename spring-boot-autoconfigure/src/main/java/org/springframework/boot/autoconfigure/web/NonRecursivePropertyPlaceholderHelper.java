@@ -44,7 +44,7 @@ class NonRecursivePropertyPlaceholderHelper extends PropertyPlaceholderHelper {
 
 		private final PlaceholderResolver resolver;
 
-		public NonRecursivePlaceholderResolver(PlaceholderResolver resolver) {
+		NonRecursivePlaceholderResolver(PlaceholderResolver resolver) {
 			this.resolver = resolver;
 		}
 
