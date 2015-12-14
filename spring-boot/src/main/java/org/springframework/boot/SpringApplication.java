@@ -145,8 +145,14 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  */
 public class SpringApplication {
 
-	private static final String BANNER_LOCATION_PROPERTY_VALUE = "banner.txt";
+	/**
+	 * The banner location property value used to load default banner.
+	 */
+	public static final String BANNER_LOCATION_PROPERTY_VALUE = "banner.txt";
 
+	/**
+	 * The banner location property key.
+	 */
 	public static final String BANNER_LOCATION_PROPERTY = "banner.location";
 
 	/**
