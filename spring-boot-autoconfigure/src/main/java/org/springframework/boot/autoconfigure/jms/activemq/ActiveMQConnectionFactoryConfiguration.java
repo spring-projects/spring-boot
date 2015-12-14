@@ -16,18 +16,16 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
-import java.lang.reflect.Method;
-
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * Configuration for ActiveMQ {@link ConnectionFactory}.
@@ -43,31 +41,24 @@ import org.springframework.util.ReflectionUtils;
 class ActiveMQConnectionFactoryConfiguration {
 
 	@Bean
-	public ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties) {
-		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
-				properties).createConnectionFactory(ActiveMQConnectionFactory.class);
-		if (properties.isPooled()) {
-			PooledConnectionFactory pool = new PooledConnectionFactory();
-			Method setConnectionFactory = findConnectionFactorySetter();
-			Assert.state(setConnectionFactory != null,
-					"No supported " + "setConnectionFactory method was found");
-			ReflectionUtils.invokeMethod(setConnectionFactory, pool, connectionFactory);
-			return pool;
-		}
-		return connectionFactory;
+	@ConditionalOnProperty(prefix = "spring.activemq", name = "pooled", havingValue = "false", matchIfMissing = true)
+	public ActiveMQConnectionFactory jmsConnectionFactory(ActiveMQProperties properties) {
+		return new ActiveMQConnectionFactoryFactory(properties)
+				.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 
-	private Method findConnectionFactorySetter() {
-		Method setter = findConnectionFactorySetter(ConnectionFactory.class);
-		if (setter == null) {
-			setter = findConnectionFactorySetter(Object.class);
-		}
-		return setter;
-	}
+	@ConditionalOnClass(PooledConnectionFactory.class)
+	static class PooledConnectionFactoryConfiguration {
 
-	private Method findConnectionFactorySetter(Class<?> param) {
-		return ReflectionUtils.findMethod(PooledConnectionFactory.class,
-				"setConnectionFactory", param);
+		@Bean(destroyMethod = "stop")
+		@ConditionalOnProperty(prefix = "spring.activemq", name = "pooled", havingValue = "true", matchIfMissing = false)
+		public PooledConnectionFactory pooledJmsConnectionFactory(
+				ActiveMQProperties properties) {
+			return new PooledConnectionFactory(
+					new ActiveMQConnectionFactoryFactory(properties)
+							.createConnectionFactory(ActiveMQConnectionFactory.class));
+		}
+
 	}
 
 }

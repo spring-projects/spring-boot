@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jms.activemq;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
@@ -29,6 +30,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -62,11 +65,14 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void pooledConnectionFactoryConfiguration() {
+	public void pooledConnectionFactoryConfiguration() throws JMSException {
 		load(EmptyConfiguration.class, "spring.activemq.pooled:true");
 		ConnectionFactory connectionFactory = this.context
 				.getBean(ConnectionFactory.class);
 		assertThat(connectionFactory, instanceOf(PooledConnectionFactory.class));
+		this.context.close();
+		assertThat(((PooledConnectionFactory) connectionFactory).createConnection(),
+				is(nullValue()));
 	}
 
 	private void load(Class<?> config, String... environment) {
