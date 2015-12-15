@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.configwarnings.nested;
+package org.springframework.boot.context.configwarnings.dflt;
 
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
-@Component
-public class ExampleBean {
-
+@Configuration
+public class InDefaultPackageWithoutScanConfiguration {
 }

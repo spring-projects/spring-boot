@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.configwarnings;
+package org.springframework.boot.context.configwarnings.orgspring;
 
-import org.springframework.boot.context.configwarnings.nested.ExampleBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan(basePackageClasses = ExampleBean.class)
-public class InDefaultPackageWithBasePackageClassesConfiguration {
+@ComponentScan
+public class InOrgSpringPackageConfiguration {
 }

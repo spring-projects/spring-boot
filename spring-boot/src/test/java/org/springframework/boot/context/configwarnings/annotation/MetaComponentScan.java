@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.configwarnings;
+package org.springframework.boot.context.configwarnings.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
-@ComponentScan("org.springframework.boot.context.configwarnings.nested")
-public class InDefaultPackageWithValueConfiguration {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@ComponentScan
+public @interface MetaComponentScan {
+
 }

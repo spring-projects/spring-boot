@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.configwarnings;
+package org.springframework.boot.context.configwarnings.dflt;
 
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@MetaComponentScan
-public class InDefaultPackageWithMetaAnnotationConfiguration {
+@ComponentScan("org.springframework.boot.context.configwarnings.nested")
+public class InDefaultPackageWithValueConfiguration {
 }
