@@ -131,6 +131,11 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 	 */
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
+	/**
+	 * Name of the application configuration {@link PropertySource}.
+	 */
+	public static final String APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME = "applicationConfigurationProperties";
+
 	private final DeferredLog logger = new DeferredLog();
 
 	private String searchLocations;
@@ -599,14 +604,14 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 	static class ConfigurationPropertySources
 			extends EnumerablePropertySource<Collection<PropertySource<?>>> {
 
-		private static final String NAME = "applicationConfigurationProperties";
+
 
 		private final Collection<PropertySource<?>> sources;
 
 		private final String[] names;
 
 		ConfigurationPropertySources(Collection<PropertySource<?>> sources) {
-			super(NAME, sources);
+			super(APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME, sources);
 			this.sources = sources;
 			List<String> names = new ArrayList<String>();
 			for (PropertySource<?> source : sources) {
@@ -630,9 +635,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		}
 
 		public static void finishAndRelocate(MutablePropertySources propertySources) {
+			String name = APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME;
 			ConfigurationPropertySources removed = (ConfigurationPropertySources) propertySources
-					.get(ConfigurationPropertySources.NAME);
-			String name = ConfigurationPropertySources.NAME;
+					.get(name);
 			if (removed != null) {
 				for (PropertySource<?> propertySource : removed.sources) {
 					if (propertySource instanceof EnumerableCompositePropertySource) {
@@ -646,7 +651,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 						propertySources.addAfter(name, propertySource);
 					}
 				}
-				propertySources.remove(ConfigurationPropertySources.NAME);
+				propertySources.remove(APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME);
 			}
 		}
 

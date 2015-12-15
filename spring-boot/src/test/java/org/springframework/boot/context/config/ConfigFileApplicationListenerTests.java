@@ -519,7 +519,8 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(Arrays.asList(this.environment.getActiveProfiles()), contains("dev"));
 		assertThat(property, equalTo("fromdevprofile"));
 		ConfigurationPropertySources propertySource = (ConfigurationPropertySources) this.environment
-				.getPropertySources().get("applicationConfigurationProperties");
+				.getPropertySources()
+				.get(ConfigFileApplicationListener.APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME);
 		Collection<org.springframework.core.env.PropertySource<?>> sources = propertySource
 				.getSource();
 		assertEquals(2, sources.size());

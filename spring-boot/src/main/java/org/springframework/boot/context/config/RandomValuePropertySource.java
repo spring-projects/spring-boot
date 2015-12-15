@@ -51,12 +51,21 @@ import org.springframework.util.StringUtils;
  */
 public class RandomValuePropertySource extends PropertySource<Random> {
 
+	/**
+	 * Name of the random {@link PropertySource}.
+	 */
+	public static final String RANDOM_PROPERTY_SOURCE_NAME = "random";
+
 	private static final String PREFIX = "random.";
 
 	private static Log logger = LogFactory.getLog(RandomValuePropertySource.class);
 
 	public RandomValuePropertySource(String name) {
 		super(name, new Random());
+	}
+
+	public RandomValuePropertySource() {
+		this(RANDOM_PROPERTY_SOURCE_NAME);
 	}
 
 	@Override
@@ -126,7 +135,7 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	public static void addToEnvironment(ConfigurableEnvironment environment) {
 		environment.getPropertySources().addAfter(
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-				new RandomValuePropertySource("random"));
+				new RandomValuePropertySource(RANDOM_PROPERTY_SOURCE_NAME));
 		logger.trace("RandomValuePropertySource add to Environment");
 	}
 

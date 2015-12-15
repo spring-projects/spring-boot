@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class RandomValuePropertySourceTests {
 
-	private RandomValuePropertySource source = new RandomValuePropertySource("random");
+	private RandomValuePropertySource source = new RandomValuePropertySource();
 
 	@Test
 	public void notRandom() {
