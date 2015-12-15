@@ -536,7 +536,7 @@ the `embeddedLaunchScriptProperties` option of the Spring Boot Maven or Gradle p
 
 |`initInfoProvides`
 |The `Provides` section of "`INIT INFO`". Defaults to `spring-boot-application` for Gradle
-and to `${project.artifactId}` for Maven.
+ and to `${project.artifactId}` for Maven.
 
 |`initInfoShortDescription`
 |The `Short-Description` section of "`INIT INFO`". Defaults to `Spring Boot Application`
@@ -544,11 +544,16 @@ for Gradle and to `${project.name}` for Maven.
 
 |`initInfoDescription`
 |The `Description` section of "`INIT INFO`". Defaults to `Spring Boot Application` for
-Gradle and to `${project.description}` (falling back to `${project.name}`) for Maven.
+ Gradle and to `${project.description}` (falling back to `${project.name}`) for Maven.
 
 |`initInfoChkconfig`
 |The `chkconfig` section of "`INIT INFO`". Defaults to `2345 99 01`.
+
+|`useStartStopDaemon`
+|If the start-stop command should be used to control the process when it's available.
+ Defaults to `true`.
 |===
+
 
 
 [[deployment-script-customization-conf-file]]

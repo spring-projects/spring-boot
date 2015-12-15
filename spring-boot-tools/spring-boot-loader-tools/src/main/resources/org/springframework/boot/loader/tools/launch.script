@@ -143,7 +143,7 @@ do_start() {
     chown "$run_user" "$PID_FOLDER"
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
-    if which start-stop-daemon >/dev/null; then
+    if [ {{useStartStopDaemon:true}} = true ] && which start-stop-daemon >/dev/null; then
       start-stop-daemon --start --quiet \
         --chuid $run_user \
         --name $identity \
