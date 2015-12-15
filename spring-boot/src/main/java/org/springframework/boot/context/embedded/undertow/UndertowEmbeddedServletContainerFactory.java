@@ -429,6 +429,12 @@ public class UndertowEmbeddedServletContainerFactory
 	private ResourceManager getDocumentRootResourceManager() {
 		File root = getValidDocumentRoot();
 		root = (root != null ? root : createTempDir("undertow-docbase"));
+		try {
+			root = root.getCanonicalFile();
+		}
+		catch (IOException e) {
+			throw new IllegalStateException("Cannot get canonical file for " + root, e);
+		}
 		if (root.isDirectory()) {
 			return new FileResourceManager(root, 0);
 		}
