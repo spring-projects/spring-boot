@@ -1233,6 +1233,14 @@ configuration files.  See the default configurations in `spring-boot.jar` for ex
 
 [TIP]
 ====
+If you want to use a placeholder in a logging property, you should use
+<<boot-features-external-config-placeholders-in-properties,Spring Boot's syntax>> and not
+the syntax of the underlying framework. Notably, if you're using Logback, you should use
+`:` as the delimiter between a property name and its default value and not `:-`.
+====
+
+[TIP]
+====
 
 You can add MDC and other ad-hoc content to log lines by overriding
 only the `LOG_LEVEL_PATTERN` (or `logging.pattern.level` with
