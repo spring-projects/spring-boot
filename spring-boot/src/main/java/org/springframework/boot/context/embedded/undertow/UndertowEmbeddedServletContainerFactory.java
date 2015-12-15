@@ -427,8 +427,7 @@ public class UndertowEmbeddedServletContainerFactory
 	}
 
 	private ResourceManager getDocumentRootResourceManager() {
-		File root = getValidDocumentRoot();
-		root = (root != null ? root : createTempDir("undertow-docbase"));
+		File root = getCanonicalDocumentRoot();
 		if (root.isDirectory()) {
 			return new FileResourceManager(root, 0);
 		}
@@ -436,6 +435,22 @@ public class UndertowEmbeddedServletContainerFactory
 			return new JarResourceManager(root);
 		}
 		return ResourceManager.EMPTY_RESOURCE_MANAGER;
+	}
+
+	/**
+	 * Return the document root in canonical form. Undertow uses File#getCanonicalFile()
+	 * to determine whether a resource has been requested using the proper case but on
+	 * Windows {@code java.io.tmpdir} may be set as a tilde-compressed pathname.
+	 */
+	private File getCanonicalDocumentRoot() {
+		try {
+			File root = getValidDocumentRoot();
+			root = (root != null ? root : createTempDir("undertow-docbase"));
+			return root.getCanonicalFile();
+		}
+		catch (IOException e) {
+			throw new IllegalStateException("Cannot get canonical document root", e);
+		}
 	}
 
 	private void configureErrorPages(DeploymentInfo servletBuilder) {
