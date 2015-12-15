@@ -31,6 +31,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
@@ -49,9 +50,13 @@ import org.springframework.web.client.RestTemplate;
  */
 public class OpenTsdbGaugeWriter implements GaugeWriter {
 
+	private static final int DEFAULT_CONNECT_TIMEOUT = 10000;
+
+	private static final int DEFAULT_READ_TIMEOUT = 30000;
+
 	private static final Log logger = LogFactory.getLog(OpenTsdbGaugeWriter.class);
 
-	private RestOperations restTemplate = new RestTemplate();
+	private RestOperations restTemplate;
 
 	/**
 	 * URL for POSTing data. Defaults to http://localhost:4242/api/put.
@@ -73,6 +78,28 @@ public class OpenTsdbGaugeWriter implements GaugeWriter {
 			this.bufferSize);
 
 	private OpenTsdbNamingStrategy namingStrategy = new DefaultOpenTsdbNamingStrategy();
+
+	/**
+	 * Creates a new {@code OpenTsdbGauageWriter} with the default connect (10 seconds)
+	 * and read (30 seconds) timeouts.
+	 */
+	public OpenTsdbGaugeWriter() {
+		this(DEFAULT_CONNECT_TIMEOUT, DEFAULT_READ_TIMEOUT);
+	}
+
+	/**
+	 * Creates a new {@code OpenTsdbGaugeWriter} with the given millisecond
+	 * {@code connectTimeout} and {@code readTimeout}.
+	 *
+	 * @param connectTimeout the connect timeout in milliseconds
+	 * @param readTimeout the read timeout in milliseconds
+	 */
+	public OpenTsdbGaugeWriter(int connectTimeout, int readTimeout) {
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		requestFactory.setConnectTimeout(connectTimeout);
+		requestFactory.setReadTimeout(readTimeout);
+		this.restTemplate = new RestTemplate(requestFactory);
+	}
 
 	public RestOperations getRestTemplate() {
 		return this.restTemplate;
