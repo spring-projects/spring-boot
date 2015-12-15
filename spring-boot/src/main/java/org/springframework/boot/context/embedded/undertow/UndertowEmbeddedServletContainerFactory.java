@@ -441,6 +441,7 @@ public class UndertowEmbeddedServletContainerFactory
 	 * Return the document root in canonical form. Undertow uses File#getCanonicalFile()
 	 * to determine whether a resource has been requested using the proper case but on
 	 * Windows {@code java.io.tmpdir} may be set as a tilde-compressed pathname.
+	 * @return the canonical document root
 	 */
 	private File getCanonicalDocumentRoot() {
 		try {
