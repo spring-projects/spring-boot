@@ -134,6 +134,36 @@ public class PropertiesConfigurationFactoryTests {
 		assertEquals("blah", foo.name);
 	}
 
+	@Test
+	public void testBindWithDelimitedPrefixUsingMatchingDelimiter() throws Exception {
+		this.targetName = "env_foo";
+		this.ignoreUnknownFields = false;
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(new SystemEnvironmentPropertySource("systemEnvironment",
+				Collections.<String, Object>singletonMap("ENV_FOO_NAME", "blah")));
+		propertySources.addLast(new RandomValuePropertySource("random"));
+		setupFactory();
+		this.factory.setPropertySources(propertySources);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertEquals("blah", foo.name);
+	}
+
+	@Test
+	public void testBindWithDelimitedPrefixUsingDifferentDelimiter() throws Exception {
+		this.targetName = "env.foo";
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(new SystemEnvironmentPropertySource("systemEnvironment",
+				Collections.<String, Object>singletonMap("ENV_FOO_NAME", "blah")));
+		propertySources.addLast(new RandomValuePropertySource("random"));
+		this.ignoreUnknownFields = false;
+		setupFactory();
+		this.factory.setPropertySources(propertySources);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertEquals("blah", foo.name);
+	}
+
 	private Foo createFoo(final String values) throws Exception {
 		setupFactory();
 		return bindFoo(values);

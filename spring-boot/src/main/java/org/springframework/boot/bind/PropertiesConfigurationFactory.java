@@ -17,6 +17,7 @@
 package org.springframework.boot.bind;
 
 import java.beans.PropertyDescriptor;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -262,19 +263,23 @@ public class PropertiesConfigurationFactory<T>
 		dataBinder.setIgnoreInvalidFields(this.ignoreInvalidFields);
 		dataBinder.setIgnoreUnknownFields(this.ignoreUnknownFields);
 		customizeBinder(dataBinder);
-		Set<String> names = getNames();
-		PropertyValues propertyValues = getPropertyValues(names);
+		Iterable<String> relaxedTargetNames = getRelaxedTargetNames();
+		Set<String> names = getNames(relaxedTargetNames);
+		PropertyValues propertyValues = getPropertyValues(names, relaxedTargetNames);
 		dataBinder.bind(propertyValues);
 		if (this.validator != null) {
 			validate(dataBinder);
 		}
 	}
 
-	private Set<String> getNames() {
+	private Iterable<String> getRelaxedTargetNames() {
+		return (this.target != null && StringUtils.hasLength(this.targetName)
+				? new RelaxedNames(this.targetName) : null);
+	}
+
+	private Set<String> getNames(Iterable<String> prefixes) {
 		Set<String> names = new LinkedHashSet<String>();
 		if (this.target != null) {
-			Iterable<String> prefixes = (StringUtils.hasLength(this.targetName)
-					? new RelaxedNames(this.targetName) : null);
 			PropertyDescriptor[] descriptors = BeanUtils
 					.getPropertyDescriptors(this.target.getClass());
 			for (PropertyDescriptor descriptor : descriptors) {
@@ -300,31 +305,38 @@ public class PropertiesConfigurationFactory<T>
 		return names;
 	}
 
-	private PropertyValues getPropertyValues(Set<String> names) {
+	private PropertyValues getPropertyValues(Set<String> names,
+			Iterable<String> relaxedTargetNames) {
 		if (this.properties != null) {
 			return new MutablePropertyValues(this.properties);
 		}
-		return getPropertySourcesPropertyValues(names);
+		return getPropertySourcesPropertyValues(names, relaxedTargetNames);
 	}
 
-	private PropertyValues getPropertySourcesPropertyValues(Set<String> names) {
-		PropertyNamePatternsMatcher includes = getPropertyNamePatternsMatcher(names);
+	private PropertyValues getPropertySourcesPropertyValues(Set<String> names,
+			Iterable<String> relaxedTargetNames) {
+		PropertyNamePatternsMatcher includes = getPropertyNamePatternsMatcher(names,
+				relaxedTargetNames);
 		return new PropertySourcesPropertyValues(this.propertySources, names, includes);
 	}
 
-	private PropertyNamePatternsMatcher getPropertyNamePatternsMatcher(
-			Set<String> names) {
+	private PropertyNamePatternsMatcher getPropertyNamePatternsMatcher(Set<String> names,
+			Iterable<String> relaxedTargetNames) {
 		if (this.ignoreUnknownFields && !isMapTarget()) {
 			// Since unknown fields are ignored we can filter them out early to save
 			// unnecessary calls to the PropertySource.
 			return new DefaultPropertyNamePatternsMatcher(EXACT_DELIMITERS, true, names);
 		}
-		if (this.targetName != null) {
+		if (relaxedTargetNames != null) {
 			// We can filter properties to those starting with the target name, but
 			// we can't do a complete filter since we need to trigger the
 			// unknown fields check
+			Set<String> relaxedNames = new HashSet<String>();
+			for (String relaxedTargetName : relaxedTargetNames) {
+				relaxedNames.add(relaxedTargetName);
+			}
 			return new DefaultPropertyNamePatternsMatcher(TARGET_NAME_DELIMITERS, true,
-					this.targetName);
+					relaxedNames);
 		}
 		// Not ideal, we basically can't filter anything
 		return PropertyNamePatternsMatcher.ALL;
