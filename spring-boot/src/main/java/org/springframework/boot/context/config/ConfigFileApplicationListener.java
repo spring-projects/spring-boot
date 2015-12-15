@@ -604,8 +604,6 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 	static class ConfigurationPropertySources
 			extends EnumerablePropertySource<Collection<PropertySource<?>>> {
 
-
-
 		private final Collection<PropertySource<?>> sources;
 
 		private final String[] names;

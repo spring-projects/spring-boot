@@ -546,8 +546,8 @@ public class SpringApplication {
 	}
 
 	private Banner selectBanner(Environment environment) {
-		String location = environment
-				.getProperty(BANNER_LOCATION_PROPERTY, BANNER_LOCATION_PROPERTY_VALUE);
+		String location = environment.getProperty(BANNER_LOCATION_PROPERTY,
+				BANNER_LOCATION_PROPERTY_VALUE);
 		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
 				: new DefaultResourceLoader(getClassLoader());
 		Resource resource = resourceLoader.getResource(location);
