@@ -39,11 +39,18 @@ public class BackgroundPreinitializer
 
 	@Override
 	public void onApplicationEvent(ApplicationStartedEvent event) {
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		submit(executor, new MessageConverterInitializer());
-		submit(executor, new MBeanFactoryInitializer());
-		submit(executor, new ValidationInitializer());
-		executor.shutdown();
+		try {
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+			submit(executor, new MessageConverterInitializer());
+			submit(executor, new MBeanFactoryInitializer());
+			submit(executor, new ValidationInitializer());
+			executor.shutdown();
+		}
+		catch (Exception ex) {
+			// This will fail on GAE where creating threads is prohibited. We can safely
+			// continue but startup will be slightly slower as the initialization will now
+			// happen on the main thread.
+		}
 	}
 
 	private void submit(ExecutorService executor, Runnable runnable) {
