@@ -19,7 +19,10 @@ package org.springframework.boot;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * {@link UncaughtExceptionHandler} to suppress handling already logged exceptions.
@@ -27,6 +30,14 @@ import java.util.List;
  * @author Phillip Webb
  */
 class LoggedExceptionHandler implements UncaughtExceptionHandler {
+
+	private static Set<String> LOG_CONFIGURATION_MESSAGES;
+
+	static {
+		Set<String> messages = new HashSet<String>();
+		messages.add("Logback configuration error detected");
+		LOG_CONFIGURATION_MESSAGES = Collections.unmodifiableSet(messages);
+	}
 
 	private static LoggedExceptionHandlerThreadLocal handler = new LoggedExceptionHandlerThreadLocal();
 
@@ -45,13 +56,33 @@ class LoggedExceptionHandler implements UncaughtExceptionHandler {
 	@Override
 	public void uncaughtException(Thread thread, Throwable ex) {
 		try {
-			if (!isRegistered(ex) && this.parent != null) {
+			if (isPassedToParent(ex) && this.parent != null) {
 				this.parent.uncaughtException(thread, ex);
 			}
 		}
 		finally {
 			this.exceptions.clear();
 		}
+	}
+
+	private boolean isPassedToParent(Throwable ex) {
+		return isLogConfigurationMessage(ex) || !isRegistered(ex);
+	}
+
+	/**
+	 * Check if the exception is a log configuration message, i.e. the log call might not
+	 * have actually output anything.
+	 */
+	private boolean isLogConfigurationMessage(Throwable ex) {
+		String message = ex.getMessage();
+		if (message != null) {
+			for (String candidate : LOG_CONFIGURATION_MESSAGES) {
+				if (message.contains(candidate)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private boolean isRegistered(Throwable ex) {
