@@ -86,6 +86,11 @@ HATEOAS to be on the classpath.
 |Displays a collated list of all `@ConfigurationProperties`.
 |true
 
+|`docs`
+|Displays documentation, including example requests and responses, for the Actuator's
+endpoints. Requires `spring-boot-actuator-docs` to be on the classpath.
+|false
+
 |`dump`
 |Performs a thread dump.
 |true
