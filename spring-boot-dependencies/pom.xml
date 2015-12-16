@@ -64,7 +64,7 @@
 		<derby.version>10.12.1.1</derby.version>
 		<dropwizard-metrics.version>3.1.2</dropwizard-metrics.version>
 		<ehcache.version>2.10.1</ehcache.version>
-		<embedded-mongo.version>1.50.0</embedded-mongo.version>
+		<embedded-mongo.version>1.50.1</embedded-mongo.version>
 		<flyway.version>3.2.1</flyway.version>
 		<freemarker.version>2.3.23</freemarker.version>
 		<elasticsearch.version>1.5.2</elasticsearch.version>
