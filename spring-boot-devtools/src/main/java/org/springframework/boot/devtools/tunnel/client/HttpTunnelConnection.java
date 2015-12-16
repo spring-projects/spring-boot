@@ -52,7 +52,7 @@ import org.springframework.util.Assert;
  */
 public class HttpTunnelConnection implements TunnelConnection {
 
-	private static Log logger = LogFactory.getLog(HttpTunnelConnection.class);
+	private static final Log logger = LogFactory.getLog(HttpTunnelConnection.class);
 
 	private final URI uri;
 

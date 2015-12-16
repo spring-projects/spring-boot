@@ -48,7 +48,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class WebRequestTraceFilter extends OncePerRequestFilter implements Ordered {
 
-	private final Log logger = LogFactory.getLog(WebRequestTraceFilter.class);
+	private static final Log logger = LogFactory.getLog(WebRequestTraceFilter.class);
 
 	private boolean dumpRequests = false;
 

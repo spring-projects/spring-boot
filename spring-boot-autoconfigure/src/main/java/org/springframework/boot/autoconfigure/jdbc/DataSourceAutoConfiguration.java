@@ -67,7 +67,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 @Import({ Registrar.class, DataSourcePoolMetadataProvidersConfiguration.class })
 public class DataSourceAutoConfiguration {
 
-	private static Log logger = LogFactory.getLog(DataSourceAutoConfiguration.class);
+	private static final Log logger = LogFactory.getLog(DataSourceAutoConfiguration.class);
 
 	/**
 	 * Determines if the {@code dataSource} being used by Spring was created from

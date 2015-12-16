@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
  */
 public class PropertySourcesLoader {
 
-	private static Log logger = LogFactory.getLog(PropertySourcesLoader.class);
+	private static final Log logger = LogFactory.getLog(PropertySourcesLoader.class);
 
 	private final MutablePropertySources propertySources;
 

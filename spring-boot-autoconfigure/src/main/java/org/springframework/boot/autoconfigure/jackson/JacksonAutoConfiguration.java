@@ -94,7 +94,7 @@ public class JacksonAutoConfiguration {
 			DateTimeSerializer.class, JacksonJodaDateFormat.class })
 	static class JodaDateTimeJacksonConfiguration {
 
-		private final Log log = LogFactory.getLog(JodaDateTimeJacksonConfiguration.class);
+		private static final Log log = LogFactory.getLog(JodaDateTimeJacksonConfiguration.class);
 
 		@Autowired
 		private JacksonProperties jacksonProperties;

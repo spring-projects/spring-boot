@@ -59,7 +59,7 @@ import org.springframework.util.ClassUtils;
 public class ServletListenerRegistrationBean<T extends EventListener>
 		extends RegistrationBean {
 
-	private static Log logger = LogFactory.getLog(ServletListenerRegistrationBean.class);
+	private static final Log logger = LogFactory.getLog(ServletListenerRegistrationBean.class);
 
 	private static final Set<Class<?>> SUPPORTED_TYPES;
 

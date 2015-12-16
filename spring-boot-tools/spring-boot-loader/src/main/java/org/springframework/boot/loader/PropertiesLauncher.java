@@ -74,7 +74,7 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  */
 public class PropertiesLauncher extends Launcher {
 
-	private final Logger logger = Logger.getLogger(Launcher.class.getName());
+	private static final Logger logger = Logger.getLogger(Launcher.class.getName());
 
 	/**
 	 * Properties key for main class. As a manifest entry can also be specified as

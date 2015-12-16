@@ -45,7 +45,7 @@ import org.springframework.util.StringUtils;
 @Component
 public class BasicBatchConfigurer implements BatchConfigurer {
 
-	private static Log logger = LogFactory.getLog(BasicBatchConfigurer.class);
+	private static final Log logger = LogFactory.getLog(BasicBatchConfigurer.class);
 
 	private final BatchProperties properties;
 
