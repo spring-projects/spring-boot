@@ -70,7 +70,7 @@ public class MvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(DefaultConfiguration.class);
 		MockMvc mockMvc = createMockMvc();
-		mockMvc.perform(get("/beans")).andExpect(content().string(startsWith("{\"")));
+		mockMvc.perform(get("/mappings")).andExpect(content().string(startsWith("{\"")));
 	}
 
 	@Test
@@ -199,7 +199,7 @@ public class MvcEndpointIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jackson.serialization.indent-output:true");
 		MockMvc mockMvc = createMockMvc();
-		mockMvc.perform(get("/beans"))
+		mockMvc.perform(get("/mappings"))
 				.andExpect(content().string(startsWith("{" + LINE_SEPARATOR)));
 	}
 

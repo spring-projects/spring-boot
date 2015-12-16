@@ -16,6 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +31,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -50,6 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringApplicationConfiguration(SpringBootHypermediaApplication.class)
 @WebAppConfiguration
 @DirtiesContext
+@TestPropertySource(properties = "endpoints.hypermedia.enabled=true")
 public class HalBrowserMvcEndpointVanillaIntegrationTests {
 
 	@Autowired
@@ -83,9 +89,8 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 	@Test
 	public void trace() throws Exception {
 		this.mockMvc.perform(get("/trace").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$._links.self.href").value("http://localhost/trace"))
-				.andExpect(jsonPath("$.content").isArray());
+				.andExpect(status().isOk()).andExpect(jsonPath("$._links").doesNotExist())
+				.andExpect(jsonPath("$").isArray());
 	}
 
 	@Test
@@ -111,8 +116,13 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 
 	@Test
 	public void endpointsEachHaveSelf() throws Exception {
+		Set<String> collections = new HashSet<String>(
+				Arrays.asList("/trace", "/beans", "/dump"));
 		for (MvcEndpoint endpoint : this.mvcEndpoints.getEndpoints()) {
 			String path = endpoint.getPath();
+			if (collections.contains(path)) {
+				continue;
+			}
 			path = path.length() > 0 ? path : "/";
 			this.mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk()).andExpect(jsonPath("$._links.self.href")

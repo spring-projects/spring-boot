@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleHypermediaGsonApplication.class)
 @WebAppConfiguration
-@TestPropertySource(properties = "endpoints.health.sensitive: false")
+@TestPropertySource(properties = "endpoints.hypermedia.enabled: true")
 public class SampleHypermediaGsonApplicationTests {
 
 	@Autowired
@@ -61,9 +61,8 @@ public class SampleHypermediaGsonApplicationTests {
 	@Test
 	public void trace() throws Exception {
 		this.mockMvc.perform(get("/trace").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.links[0].href").value("http://localhost/trace"))
-				.andExpect(jsonPath("$.content").isArray());
+				.andExpect(status().isOk()).andExpect(jsonPath("$.links").doesNotExist())
+				.andExpect(jsonPath("$").isArray());
 	}
 
 	@Test
