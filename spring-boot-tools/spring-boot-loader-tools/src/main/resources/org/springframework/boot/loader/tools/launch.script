@@ -24,24 +24,26 @@
 
 # Initialize variables that cannot be provided by a .conf file
 WORKING_DIR="$(pwd)"
+# shellcheck disable=SC2153
 [[ -n "$JARFILE" ]] && jarfile="$JARFILE"
 [[ -n "$APP_NAME" ]] && identity="$APP_NAME"
 
 # Follow symlinks to find the real jar and detect init.d script
-cd $(dirname "$0")
+cd "$(dirname "$0")" || exit
 [[ -z "$jarfile" ]] && jarfile=$(pwd)/$(basename "$0")
 while [[ -L "$jarfile" ]]; do
-  [[ "$jarfile" =~ "init.d" ]] && init_script=$(basename "$jarfile")
+  [[ "$jarfile" =~ init\.d ]] && init_script=$(basename "$jarfile")
   jarfile=$(readlink "$jarfile")
-  cd $(dirname "$jarfile")
+  cd "$(dirname "$jarfile")" || exit
   jarfile=$(pwd)/$(basename "$jarfile")
 done
-jarfolder=$(dirname "$jarfile")
-cd "$WORKING_DIR"
+jarfolder="$(dirname "$jarfile")"
+cd "$WORKING_DIR" || exit
 
 # Source any config file
-configfile=$(basename "${jarfile%.*}.conf")
-[[ -r ${jarfolder}/${configfile} ]] && source ${jarfolder}/${configfile}
+configfile="$(basename "${jarfile%.*}.conf")"
+# shellcheck source=/dev/null
+[[ -r "${jarfolder}/${configfile}" ]] && source "${jarfolder}/${configfile}"
 
 # Initialize PID/LOG locations if they weren't provided by the config file
 [[ -z "$PID_FOLDER" ]] && PID_FOLDER="/var/run"
@@ -66,9 +68,9 @@ fi
 
 
 # ANSI Colors
-echoRed() { echo $'\e[0;31m'$1$'\e[0m'; }
-echoGreen() { echo $'\e[0;32m'$1$'\e[0m'; }
-echoYellow() { echo $'\e[0;33m'$1$'\e[0m'; }
+echoRed() { echo $'\e[0;31m'"$1"$'\e[0m'; }
+echoGreen() { echo $'\e[0;32m'"$1"$'\e[0m'; }
+echoYellow() { echo $'\e[0;33m'"$1"$'\e[0m'; }
 
 # Utility functions
 checkPermissions() {
@@ -77,7 +79,7 @@ checkPermissions() {
 }
 
 isRunning() {
-  ps -p $1 &> /dev/null
+  ps -p "$1" &> /dev/null
 }
 
 await_file() {
@@ -108,12 +110,13 @@ pid_file="$PID_FOLDER/${identity}.pid"
 log_file="$LOG_FOLDER/$LOG_FILENAME"
 
 # Determine the user to run as if we are root
+# shellcheck disable=SC2012
 [[ $(id -u) == "0" ]] && run_user=$(ls -ld "$jarfile" | awk '{print $3}')
 
 # Find Java
 if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
     javaexe="$JAVA_HOME/bin/java"
-elif type -p java 2>&1> /dev/null; then
+elif type -p java > /dev/null 2>&1; then
     javaexe=$(type -p java)
 elif [[ -x "/usr/bin/java" ]];  then
     javaexe="/usr/bin/java"
@@ -123,15 +126,15 @@ else
 fi
 
 # Build actual command to execute
-command="$javaexe -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS -jar $jarfile $RUN_ARGS $@"
+command="$javaexe -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS -jar $jarfile $RUN_ARGS $*"
 
 # Action functions
 start() {
   if [[ -f "$pid_file" ]]; then
     pid=$(cat "$pid_file")
-    isRunning $pid && { echoYellow "Already running [$pid]"; return 0; }
+    isRunning "$pid" && { echoYellow "Already running [$pid]"; return 0; }
   fi
-  do_start
+  do_start "$@"
 }
 
 do_start() {
@@ -143,21 +146,21 @@ do_start() {
     chown "$run_user" "$PID_FOLDER"
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
-    if [ {{useStartStopDaemon:true}} = true ] && which start-stop-daemon >/dev/null; then
+    if [ "${useStartStopDaemon:-true}" = true ] && which start-stop-daemon >/dev/null; then
       start-stop-daemon --start --quiet \
-        --chuid $run_user \
-        --name $identity \
-        --make-pidfile --pidfile $pid_file \
+        --chuid "$run_user" \
+        --name "$identity" \
+        --make-pidfile --pidfile "$pid_file" \
         --background --no-close \
-        --startas $javaexe \
+        --startas "$javaexe" \
         --chdir "$working_dir" \
         -- \
-        -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS \
-        -jar $jarfile $RUN_ARGS "$@" \
-        > $log_file 2>&1
-      await_file $pid_file
+        -Dsun.misc.URLClassPath.disableJarChecking=true "${JAVA_OPTS[@]}" \
+        -jar "$jarfile" "${RUN_ARGS[@]}" "$@" \
+        > "$log_file" 2>&1
+      await_file "$pid_file"
     else
-      su -s /bin/sh -c "$command &> \"$log_file\" & echo \$!" $run_user > "$pid_file"
+      su -s /bin/sh -c "$command > \"$log_file\" 2>&1 & echo \$!" "$run_user" > "$pid_file"
     fi
     pid=$(cat "$pid_file")
   else
@@ -174,14 +177,14 @@ do_start() {
 stop() {
   [[ -f $pid_file ]] || { echoYellow "Not running (pidfile not found)"; return 0; }
   pid=$(cat "$pid_file")
-  isRunning $pid || { echoYellow "Not running (process ${pid}). Removing stale pid file."; rm -f "$pid_file"; return 0; }
-  do_stop $pid $pid_file
+  isRunning "$pid" || { echoYellow "Not running (process ${pid}). Removing stale pid file."; rm -f "$pid_file"; return 0; }
+  do_stop "$pid" "$pid_file"
 }
 
 do_stop() {
-  kill $1 &> /dev/null || { echoRed "Unable to kill process $1"; return 1; }
-  for i in $(seq 1 60); do
-    isRunning $1 || { echoGreen "Stopped [$1]"; rm -f $2; return 0; }
+  kill "$1" &> /dev/null || { echoRed "Unable to kill process $1"; return 1; }
+  for _ in $(seq 1 60); do
+    isRunning "$1" || { echoGreen "Stopped [$1]"; rm -f "$2"; return 0; }
     sleep 1
   done
   echoRed "Unable to kill process $1";
@@ -196,25 +199,25 @@ force_reload() {
   [[ -f $pid_file ]] || { echoRed "Not running (pidfile not found)"; return 7; }
   pid=$(cat "$pid_file")
   rm -f "$pid_file"
-  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; return 7; }
-  do_stop $pid $pid_file
+  isRunning "$pid" || { echoRed "Not running (process ${pid} not found)"; return 7; }
+  do_stop "$pid" "$pid_file"
   do_start
 }
 
 status() {
-  [[ -f $pid_file ]] || { echoRed "Not running"; return 3; }
+  [[ -f "$pid_file" ]] || { echoRed "Not running"; return 3; }
   pid=$(cat "$pid_file")
-  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; return 1; }
+  isRunning "$pid" || { echoRed "Not running (process ${pid} not found)"; return 1; }
   echoGreen "Running [$pid]"
   return 0
 }
 
 run() {
-  pushd $(dirname "$jarfile") > /dev/null
-  exec $command
+  pushd "$(dirname "$jarfile")" > /dev/null
+  $command
   result=$?
   popd
-  return $result
+  return "$result"
 }
 
 # Call the appropriate action function
