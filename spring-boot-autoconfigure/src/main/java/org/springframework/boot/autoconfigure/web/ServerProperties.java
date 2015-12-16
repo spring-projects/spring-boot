@@ -118,7 +118,7 @@ public class ServerProperties
 	private Boolean useForwardHeaders;
 
 	/**
-	 * Value to use for the server header.
+	 * Value to use for the server header (uses servlet container default if empty).
 	 */
 	private String serverHeader;
 
