@@ -819,6 +819,10 @@ public class SpringApplication {
 
 	private void handleRunFailure(ConfigurableApplicationContext context,
 			SpringApplicationRunListeners listeners, Throwable exception) {
+		if (this.log.isErrorEnabled()) {
+			this.log.error("Application startup failed", exception);
+			registerLoggedException(exception);
+		}
 		try {
 			try {
 				listeners.finished(context, exception);
@@ -831,10 +835,6 @@ public class SpringApplication {
 		}
 		catch (Exception ex) {
 			this.log.warn("Unable to close ApplicationContext", ex);
-		}
-		if (this.log.isErrorEnabled()) {
-			this.log.error("Application startup failed", exception);
-			registerLoggedException(exception);
 		}
 		ReflectionUtils.rethrowRuntimeException(exception);
 	}
