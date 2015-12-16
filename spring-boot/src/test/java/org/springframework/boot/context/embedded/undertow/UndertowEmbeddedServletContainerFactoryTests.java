@@ -37,6 +37,7 @@ import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletContainer;
 import org.apache.jasper.servlet.JspServlet;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -71,6 +72,11 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	@Override
 	protected UndertowEmbeddedServletContainerFactory getFactory() {
 		return new UndertowEmbeddedServletContainerFactory(0);
+	}
+
+	@AfterClass
+	public static void afterClass() {
+
 	}
 
 	@Test
