@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.mobile.device.DeviceHandlerMethodArgumentResolver;
 import org.springframework.mobile.device.DeviceResolver;
 import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
@@ -48,6 +49,7 @@ public class DeviceResolverAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnWebApplication
+	@Order(0)
 	protected static class DeviceResolverMvcConfiguration
 			extends WebMvcConfigurerAdapter {
 
