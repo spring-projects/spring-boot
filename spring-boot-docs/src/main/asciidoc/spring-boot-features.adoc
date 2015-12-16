@@ -1800,8 +1800,23 @@ map to `+/*+`.
 
 If convention-based mapping is not flexible enough you can use the
 `ServletRegistrationBean`, `FilterRegistrationBean` and `ServletListenerRegistrationBean`
-classes for complete control. You can also register items directly if your bean implements
-the `ServletContextInitializer` interface.
+classes for complete control.
+
+
+
+[[boot-features-embedded-container-context-initializer]]
+==== Servlet Context Initialization
+Embedded servlet containers will not directly execute the Servlet 3.0+
+`javax.servlet.ServletContainerInitializer` interface, or Spring's
+`org.springframework.web.WebApplicationInitializer` interface. This is an intentional
+design decision intended to reduce the risk that 3rd party libraries designed to run
+inside a war will break Spring Boot applications.
+
+If you need to perform servlet context initialization in a Spring Boot application, you
+should register a bean that implements the
+`org.springframework.boot.context.embedded.ServletContextInitializer` interface. The
+single `onStartup` method provides access to the `ServletContext`, and  can easily be used
+as an adapter to an existing `WebApplicationInitializer if necessary.
 
 
 
