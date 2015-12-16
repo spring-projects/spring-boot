@@ -1251,7 +1251,8 @@ using the "logging.config" property.
 === Configure Logback for logging
 If you put a `logback.xml` in the root of your classpath it will be picked up from
 there
-(or `logback-spring.xml` to take advantage of the templating features provided by Boot). Spring Boot provides a default base configuration that you can include if you just
+(or `logback-spring.xml` to take advantage of the templating features provided by Boot).
+Spring Boot provides a default base configuration that you can include if you just
 want to set levels, e.g.
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -1280,6 +1281,33 @@ for details.
 
 If Groovy is on the classpath you should be able to configure Logback with
 `logback.groovy` as well (it will be given preference if present).
+
+
+
+[[howto-configure-logback-for-logging-fileonly]]
+==== Configure logback for file only output
+If you want to disable console logging and write output only to a file you need a custom
+`spring-logback.xml` that imports `file-appender.xml` but not `console-appender.xml`:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<?xml version="1.0" encoding="UTF-8"?>
+	<configuration>
+		<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+		<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
+		<include resource="org/springframework/boot/logging/logback/file-appender.xml" />
+		<root level="INFO">
+			<appender-ref ref="FILE" />
+		</root>
+	</configuration>
+----
+
+You also need to add `logging.file` to your `application.properties`:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	logging.file=myapplication.log
+----
 
 
 
