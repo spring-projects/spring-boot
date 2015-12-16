@@ -119,7 +119,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 				.findAnnotation(getClass(), Configuration.class) != null) {
 			application.getSources().add(getClass());
 		}
-		Assert.state(application.getSources().size() > 0,
+		Assert.state(!application.getSources().isEmpty(),
 				"No SpringApplication sources have been defined. Either override the "
 						+ "configure method or add an @Configuration annotation");
 		// Ensure error pages are registered

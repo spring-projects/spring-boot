@@ -187,7 +187,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 			if (urls.isEmpty()) {
 				findGroovyJarsFromClassPath(parent, urls);
 			}
-			Assert.state(urls.size() > 0, "Unable to find groovy JAR");
+			Assert.state(!urls.isEmpty(), "Unable to find groovy JAR");
 			return new ArrayList<URL>(urls).toArray(new URL[urls.size()]);
 		}
 
