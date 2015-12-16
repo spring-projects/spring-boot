@@ -29,16 +29,16 @@ WORKING_DIR="$(pwd)"
 [[ -n "$APP_NAME" ]] && identity="$APP_NAME"
 
 # Follow symlinks to find the real jar and detect init.d script
-cd "$(dirname "$0")" || exit
+cd "$(dirname "$0")" || exit 1
 [[ -z "$jarfile" ]] && jarfile=$(pwd)/$(basename "$0")
 while [[ -L "$jarfile" ]]; do
   [[ "$jarfile" =~ init\.d ]] && init_script=$(basename "$jarfile")
   jarfile=$(readlink "$jarfile")
-  cd "$(dirname "$jarfile")" || exit
+  cd "$(dirname "$jarfile")" || exit 1
   jarfile=$(pwd)/$(basename "$jarfile")
 done
 jarfolder="$(dirname "$jarfile")"
-cd "$WORKING_DIR" || exit
+cd "$WORKING_DIR" || exit 1
 
 # Source any config file
 configfile="$(basename "${jarfile%.*}.conf")"
