@@ -321,6 +321,26 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	public void overrideServerProperties() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.applicationContext,
+				"server.displayName:foo");
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
+				ServerPortConfig.class, PropertyPlaceholderAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class, JacksonAutoConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class);
+		this.applicationContext.refresh();
+		assertContent("/controller", ports.get().server, "controlleroutput");
+		assertEquals("foo",
+				this.applicationContext.getBean(ServerProperties.class).getDisplayName());
+		this.applicationContext.close();
+		assertAllClosed();
+	}
+
+	@Test
 	public void portPropertiesOnSamePort() throws Exception {
 		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
 				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);

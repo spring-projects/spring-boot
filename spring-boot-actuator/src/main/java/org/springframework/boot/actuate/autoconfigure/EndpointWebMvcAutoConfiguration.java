@@ -34,6 +34,7 @@ import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -314,15 +315,15 @@ public class EndpointWebMvcAutoConfiguration
 			Integer serverPort = getPortProperty(environment, "server.");
 			if (serverPort == null && hasCustomBeanDefinition(beanFactory,
 					ServerProperties.class, ServerPropertiesAutoConfiguration.class)) {
-				ServerProperties bean = beanFactory.getBean(ServerProperties.class);
+				ServerProperties bean = getBean(beanFactory, ServerProperties.class);
 				serverPort = bean.getPort();
 			}
 			Integer managementPort = getPortProperty(environment, "management.");
 			if (managementPort == null && hasCustomBeanDefinition(beanFactory,
 					ManagementServerProperties.class,
 					ManagementServerPropertiesAutoConfiguration.class)) {
-				ManagementServerProperties bean = beanFactory
-						.getBean(ManagementServerProperties.class);
+				ManagementServerProperties bean = getBean(beanFactory,
+						ManagementServerProperties.class);
 				managementPort = bean.getPort();
 			}
 			if (managementPort != null && managementPort < 0) {
@@ -332,6 +333,23 @@ public class EndpointWebMvcAutoConfiguration
 					|| (serverPort == null && managementPort.equals(8080))
 					|| (managementPort != 0 && managementPort.equals(serverPort)) ? SAME
 							: DIFFERENT);
+		}
+
+		private static <T> T getBean(BeanFactory beanFactory, Class<T> type) {
+			if (!(beanFactory instanceof ConfigurableListableBeanFactory)) {
+				return null;
+			}
+			ConfigurableListableBeanFactory listable = (ConfigurableListableBeanFactory) beanFactory;
+			String[] names = listable.getBeanNamesForType(type, true, false);
+			if (names == null || names.length != 1) {
+				return null;
+			}
+			// Use a temporary child bean factory to avoid instantiating the bean in the
+			// parent (it won't be bound to the environment yet)
+			BeanDefinition definition = listable.getBeanDefinition(names[0]);
+			DefaultListableBeanFactory temp = new DefaultListableBeanFactory(listable);
+			temp.registerBeanDefinition(type.getName(), definition);
+			return temp.getBean(type);
 		}
 
 		private static Integer getPortProperty(Environment environment, String prefix) {
