@@ -128,9 +128,9 @@ public class DeviceResolverAutoConfigurationTests {
 		@RequestMapping("/")
 		public ResponseEntity<Void> test(Device device) {
 			if (device.getDevicePlatform() != null) {
-				return new ResponseEntity<>(HttpStatus.OK);
+				return new ResponseEntity<Void>(HttpStatus.OK);
 			}
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
