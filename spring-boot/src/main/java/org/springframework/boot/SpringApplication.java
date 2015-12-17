@@ -856,6 +856,14 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Retrieve the configured main application class.
+	 * @return the currently set main application {@link Class}, if any
+	 */
+	public Class<?> getMainApplicationClass() {
+		return this.mainApplicationClass;
+	}
+
+	/**
 	 * Set a specific main application class that will be used as a log source and to
 	 * obtain version information. By default the main application class will be deduced.
 	 * Can be set to {@code null} if there is no explicit application class.
