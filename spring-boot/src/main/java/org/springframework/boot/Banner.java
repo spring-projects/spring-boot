@@ -57,6 +57,7 @@ public interface Banner {
 		 * Print the banner to the log file.
 		 */
 		LOG
+
 	}
 
 }

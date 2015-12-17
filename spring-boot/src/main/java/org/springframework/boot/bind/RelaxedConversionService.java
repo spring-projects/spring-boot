@@ -140,7 +140,9 @@ class RelaxedConversionService implements ConversionService {
 				throw new IllegalArgumentException("No enum constant "
 						+ this.enumType.getCanonicalName() + "." + source);
 			}
+
 		}
 
 	}
+
 }

@@ -65,7 +65,6 @@ public class YamlJavaBeanPropertyConstructor extends Constructor {
 	 */
 	protected final void addPropertyAlias(String alias, Class<?> type, String name) {
 		Map<String, Property> typeMap = this.properties.get(type);
-
 		if (typeMap == null) {
 			typeMap = new HashMap<String, Property>();
 			this.properties.put(type, typeMap);

@@ -122,6 +122,7 @@ public class SpringApplicationAdminMXBeanRegistrar
 			logger.info("Application shutdown requested.");
 			SpringApplicationAdminMXBeanRegistrar.this.applicationContext.close();
 		}
+
 	}
 
 }

@@ -183,10 +183,8 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(CharSequence source) {
-
 		String resolvedSource = this.xmlReader.getEnvironment()
 				.resolvePlaceholders(source.toString());
-
 		// Attempt as a Class
 		try {
 			return load(ClassUtils.forName(resolvedSource, null));
@@ -197,7 +195,6 @@ class BeanDefinitionLoader {
 		catch (ClassNotFoundException ex) {
 			// swallow exception and continue
 		}
-
 		// Attempt as resources
 		Resource[] resources = findResources(resolvedSource);
 		int loadCount = 0;
@@ -211,13 +208,11 @@ class BeanDefinitionLoader {
 		if (atLeastOneResourceExists) {
 			return loadCount;
 		}
-
 		// Attempt as package
 		Package packageResource = findPackage(resolvedSource);
 		if (packageResource != null) {
 			return load(packageResource);
 		}
-
 		throw new IllegalArgumentException("Invalid source '" + resolvedSource + "'");
 	}
 

@@ -629,6 +629,7 @@ public class RelaxedDataBinder extends DataBinder {
 			public String toString() {
 				return "[" + this.name + "]";
 			}
+
 		}
 
 		private static class PropertyNode extends PathNode {
@@ -645,6 +646,7 @@ public class RelaxedDataBinder extends DataBinder {
 			public String toString() {
 				return "." + this.name;
 			}
+
 		}
 
 	}

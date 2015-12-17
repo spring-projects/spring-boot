@@ -383,17 +383,23 @@ public class SpringApplication {
 		return getSpringFactoriesInstances(type, new Class<?>[] {});
 	}
 
-	@SuppressWarnings("unchecked")
 	private <T> Collection<? extends T> getSpringFactoriesInstances(Class<T> type,
 			Class<?>[] parameterTypes, Object... args) {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
 		// Use names and ensure unique to protect against duplicates
 		Set<String> names = new LinkedHashSet<String>(
 				SpringFactoriesLoader.loadFactoryNames(type, classLoader));
-		List<T> instances = new ArrayList<T>(names.size());
+		List<T> instances = createSpringFactoriesInstances(type, parameterTypes,
+				classLoader, args, names);
+		AnnotationAwareOrderComparator.sort(instances);
+		return instances;
+	}
 
-		// Create instances from the names
+	@SuppressWarnings("unchecked")
+	private <T> List<T> createSpringFactoriesInstances(Class<T> type,
+			Class<?>[] parameterTypes, ClassLoader classLoader, Object[] args,
+			Set<String> names) {
+		List<T> instances = new ArrayList<T>(names.size());
 		for (String name : names) {
 			try {
 				Class<?> instanceClass = ClassUtils.forName(name, classLoader);
@@ -407,8 +413,6 @@ public class SpringApplication {
 						"Cannot instantiate " + type + " : " + name, ex);
 			}
 		}
-
-		AnnotationAwareOrderComparator.sort(instances);
 		return instances;
 	}
 
@@ -420,7 +424,6 @@ public class SpringApplication {
 			return new StandardServletEnvironment();
 		}
 		return new StandardEnvironment();
-
 	}
 
 	/**
@@ -608,7 +611,6 @@ public class SpringApplication {
 				}
 			}
 		}
-
 		if (this.resourceLoader != null) {
 			if (context instanceof GenericApplicationContext) {
 				((GenericApplicationContext) context)
