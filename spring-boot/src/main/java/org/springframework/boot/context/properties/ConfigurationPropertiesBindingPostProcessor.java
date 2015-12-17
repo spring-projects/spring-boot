@@ -232,7 +232,6 @@ public class ConfigurationPropertiesBindingPostProcessor
 		PropertySourcesPlaceholderConfigurer configurer = getSinglePropertySourcesPlaceholderConfigurer();
 		if (configurer != null) {
 			// Flatten the sources into a single list so they can be iterated
-			// TODO: maybe we don't really need this (and it has lifecycle implications)
 			return new FlatPropertySources(configurer.getAppliedPropertySources());
 		}
 		if (this.environment instanceof ConfigurableEnvironment) {
