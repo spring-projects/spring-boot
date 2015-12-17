@@ -405,8 +405,8 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private XnioWorker createWorker() throws IOException {
 		Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
-		OptionMap.Builder builder = OptionMap.builder();
-		return xnio.createWorker(builder.getMap());
+		return xnio.createWorker(
+				OptionMap.builder().set(Options.THREAD_DAEMON, true).getMap());
 	}
 
 	private void registerServletContainerInitializerToDriveServletContextInitializers(
