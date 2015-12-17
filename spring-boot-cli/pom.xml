@@ -31,6 +31,27 @@
 				<spring.profiles.active>integration</spring.profiles.active>
 			</properties>
 		</profile>
+		<profile>
+			<id>trustStore</id>
+			<activation>
+				<property>
+					<name>javax.net.ssl.trustStore</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<systemPropertyVariables>
+								<javax.net.ssl.trustStore>${javax.net.ssl.trustStore}</javax.net.ssl.trustStore>
+							</systemPropertyVariables>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 	<dependencies>
 		<!-- Compile -->
