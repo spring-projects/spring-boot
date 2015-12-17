@@ -315,16 +315,15 @@ public class EndpointWebMvcAutoConfiguration
 			Integer serverPort = getPortProperty(environment, "server.");
 			if (serverPort == null && hasCustomBeanDefinition(beanFactory,
 					ServerProperties.class, ServerPropertiesAutoConfiguration.class)) {
-				ServerProperties bean = getBean(beanFactory, ServerProperties.class);
-				serverPort = bean.getPort();
+				serverPort = getTemporaryBean(beanFactory, ServerProperties.class)
+						.getPort();
 			}
 			Integer managementPort = getPortProperty(environment, "management.");
 			if (managementPort == null && hasCustomBeanDefinition(beanFactory,
 					ManagementServerProperties.class,
 					ManagementServerPropertiesAutoConfiguration.class)) {
-				ManagementServerProperties bean = getBean(beanFactory,
-						ManagementServerProperties.class);
-				managementPort = bean.getPort();
+				managementPort = getTemporaryBean(beanFactory,
+						ManagementServerProperties.class).getPort();
 			}
 			if (managementPort != null && managementPort < 0) {
 				return DISABLE;
@@ -335,7 +334,7 @@ public class EndpointWebMvcAutoConfiguration
 							: DIFFERENT);
 		}
 
-		private static <T> T getBean(BeanFactory beanFactory, Class<T> type) {
+		private static <T> T getTemporaryBean(BeanFactory beanFactory, Class<T> type) {
 			if (!(beanFactory instanceof ConfigurableListableBeanFactory)) {
 				return null;
 			}
@@ -346,10 +345,16 @@ public class EndpointWebMvcAutoConfiguration
 			}
 			// Use a temporary child bean factory to avoid instantiating the bean in the
 			// parent (it won't be bound to the environment yet)
-			BeanDefinition definition = listable.getBeanDefinition(names[0]);
-			DefaultListableBeanFactory temp = new DefaultListableBeanFactory(listable);
-			temp.registerBeanDefinition(type.getName(), definition);
-			return temp.getBean(type);
+			return createTemporaryBean(type, listable,
+					listable.getBeanDefinition(names[0]));
+		}
+
+		private static <T> T createTemporaryBean(Class<T> type,
+				ConfigurableListableBeanFactory parent, BeanDefinition definition) {
+			DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory(
+					parent);
+			beanFactory.registerBeanDefinition(type.getName(), definition);
+			return beanFactory.getBean(type);
 		}
 
 		private static Integer getPortProperty(Environment environment, String prefix) {
