@@ -29,11 +29,10 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  * @author Phillip Webb
- * @since 1.3.1
  * @see #getExitCode()
  * @see ExitCodeGenerator
  */
-public class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
+class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 
 	private List<ExitCodeGenerator> generators = new ArrayList<ExitCodeGenerator>();
 
