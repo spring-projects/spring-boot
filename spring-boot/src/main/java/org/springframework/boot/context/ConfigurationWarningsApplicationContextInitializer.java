@@ -133,10 +133,10 @@ public class ConfigurationWarningsApplicationContextInitializer
 		private static final Set<String> PROBLEM_PACKAGES;
 
 		static {
-			Set<String> pacakges = new HashSet<String>();
-			pacakges.add("org.springframework");
-			pacakges.add("org");
-			PROBLEM_PACKAGES = Collections.unmodifiableSet(pacakges);
+			Set<String> packages = new HashSet<String>();
+			packages.add("org.springframework");
+			packages.add("org");
+			PROBLEM_PACKAGES = Collections.unmodifiableSet(packages);
 		}
 
 		@Override
