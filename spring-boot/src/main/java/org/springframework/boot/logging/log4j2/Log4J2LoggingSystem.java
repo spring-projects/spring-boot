@@ -46,6 +46,7 @@ import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link LoggingSystem} for <a href="http://logging.apache.org/log4j/2.x/">Log4j 2</a>.
@@ -208,6 +209,8 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	private LoggerConfig getLoggerConfig(String loggerName) {
+		loggerName = StringUtils.hasText(loggerName) ? loggerName
+				: LogManager.ROOT_LOGGER_NAME;
 		return getLoggerContext().getConfiguration().getLoggers().get(loggerName);
 	}
 

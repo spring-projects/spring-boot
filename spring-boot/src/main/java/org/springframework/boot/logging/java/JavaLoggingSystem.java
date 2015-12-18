@@ -111,7 +111,8 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
 		Assert.notNull(level, "Level must not be null");
-		Logger logger = Logger.getLogger(loggerName == null ? "" : loggerName);
+		Logger logger = Logger
+				.getLogger(StringUtils.hasText(loggerName) ? loggerName : "");
 		logger.setLevel(LEVELS.get(level));
 	}
 
