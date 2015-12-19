@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.Servlet;
 
@@ -132,7 +133,8 @@ public class WebMvcAutoConfiguration {
 	@EnableConfigurationProperties({ WebMvcProperties.class, ResourceProperties.class })
 	public static class WebMvcAutoConfigurationAdapter extends WebMvcConfigurerAdapter {
 
-		private static final Log logger = LogFactory.getLog(WebMvcConfigurerAdapter.class);
+		private static final Log logger = LogFactory
+				.getLog(WebMvcConfigurerAdapter.class);
 
 		@Autowired
 		private ResourceProperties resourceProperties = new ResourceProperties();
@@ -162,8 +164,8 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
 			Map<String, MediaType> mediaTypes = this.mvcProperties.getMediaTypes();
-			for (String extension : mediaTypes.keySet()) {
-				configurer.mediaType(extension, mediaTypes.get(extension));
+			for (Entry<String, MediaType> mediaType : mediaTypes.entrySet()) {
+				configurer.mediaType(mediaType.getKey(), mediaType.getValue());
 			}
 		}
 
