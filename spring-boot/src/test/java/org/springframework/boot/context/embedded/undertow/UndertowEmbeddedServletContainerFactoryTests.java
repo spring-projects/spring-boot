@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
@@ -199,6 +201,36 @@ public class UndertowEmbeddedServletContainerFactoryTests
 						builder.addHttpListener(port, "0.0.0.0");
 					}
 				});
+	}
+
+	@Test(expected = SSLHandshakeException.class)
+	public void sslRestrictedProtocolsEmptyCipherFailure() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
+				new String[] { "TLS_EMPTY_RENEGOTIATION_INFO_SCSV" });
+	}
+
+	@Test(expected = SSLHandshakeException.class)
+	public void sslRestrictedProtocolsECDHETLS1Failure() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1" },
+				new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" });
+	}
+
+	@Test
+	public void sslRestrictedProtocolsECDHESuccess() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
+				new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" });
+	}
+
+	@Test
+	public void sslRestrictedProtocolsRSATLS12Success() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
+				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
+	}
+
+	@Test(expected = SSLHandshakeException.class)
+	public void sslRestrictedProtocolsRSATLS11Failure() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
+				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
 	}
 
 	@Override

@@ -42,6 +42,11 @@ public class Ssl {
 	private String[] ciphers;
 
 	/**
+	 * Supported SSL protocols.
+	 */
+	private String[] protocols;
+
+	/**
 	 * Alias that identifies the key in the key store.
 	 */
 	private String keyAlias;
@@ -206,6 +211,14 @@ public class Ssl {
 
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
+	}
+
+	public String[] getProtocols() {
+		return this.protocols;
+	}
+
+	public void setProtocols(String[] protocols) {
+		this.protocols = protocols;
 	}
 
 	/**

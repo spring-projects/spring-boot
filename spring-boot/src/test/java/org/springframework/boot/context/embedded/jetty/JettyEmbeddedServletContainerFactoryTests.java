@@ -152,6 +152,56 @@ public class JettyEmbeddedServletContainerFactoryTests
 				});
 	}
 
+	@Test
+	public void sslEnabledMultiProtocolsConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
+		ssl.setProtocols(new String[]{ "TLSv1.1", "TLSv1.2" });
+
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+
+		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
+		ServerConnector connector = (ServerConnector) jettyContainer.getServer()
+				.getConnectors()[0];
+		SslConnectionFactory connectionFactory = connector
+				.getConnectionFactory(SslConnectionFactory.class);
+
+		assertThat(connectionFactory.getSslContextFactory().getIncludeProtocols())
+				.isEqualTo(new String[] { "TLSv1.1", "TLSv1.2" });
+	}
+
+	@Test
+	public void sslEnabledProtocolsConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
+		ssl.setProtocols(new String[]{ "TLSv1.1" });
+
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+
+		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
+		ServerConnector connector = (ServerConnector) jettyContainer.getServer()
+				.getConnectors()[0];
+		SslConnectionFactory connectionFactory = connector
+				.getConnectionFactory(SslConnectionFactory.class);
+
+		assertThat(connectionFactory.getSslContextFactory().getIncludeProtocols())
+				.isEqualTo(new String[] { "TLSv1.1" });
+	}
+
 	private void assertTimeout(JettyEmbeddedServletContainerFactory factory,
 			int expected) {
 		this.container = factory.getEmbeddedServletContainer();
