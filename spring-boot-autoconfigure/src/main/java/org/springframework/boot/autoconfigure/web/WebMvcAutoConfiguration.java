@@ -25,6 +25,7 @@ import javax.servlet.Servlet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -41,6 +42,7 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.web.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.context.web.OrderedHttpPutFormContentFilter;
+import org.springframework.boot.context.web.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -49,7 +51,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
@@ -61,6 +62,7 @@ import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.HttpPutFormContentFilter;
+import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
@@ -138,9 +140,6 @@ public class WebMvcAutoConfiguration {
 		private ListableBeanFactory beanFactory;
 
 		@Autowired
-		private ResourceLoader resourceLoader;
-
-		@Autowired
 		private HttpMessageConverters messageConverters;
 
 		@Override
@@ -166,9 +165,10 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
-		public RequestContextListener requestContextListener() {
-			return new RequestContextListener();
+		@ConditionalOnMissingBean({ RequestContextListener.class,
+				RequestContextFilter.class })
+		public RequestContextFilter requestContextFilter() {
+			return new OrderedRequestContextFilter();
 		}
 
 		@Bean
@@ -184,8 +184,8 @@ public class WebMvcAutoConfiguration {
 		@ConditionalOnMissingBean(name = "viewResolver", value = ContentNegotiatingViewResolver.class)
 		public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
 			ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
-			resolver.setContentNegotiationManager(beanFactory
-					.getBean(ContentNegotiationManager.class));
+			resolver.setContentNegotiationManager(
+					beanFactory.getBean(ContentNegotiationManager.class));
 			// ContentNegotiatingViewResolver uses all the other view resolvers to locate
 			// a view so it should have a high precedence
 			resolver.setOrder(Ordered.HIGHEST_PRECEDENCE);
@@ -209,8 +209,8 @@ public class WebMvcAutoConfiguration {
 		public MessageCodesResolver getMessageCodesResolver() {
 			if (this.mvcProperties.getMessageCodesResolverFormat() != null) {
 				DefaultMessageCodesResolver resolver = new DefaultMessageCodesResolver();
-				resolver.setMessageCodeFormatter(this.mvcProperties
-						.getMessageCodesResolverFormat());
+				resolver.setMessageCodeFormatter(
+						this.mvcProperties.getMessageCodesResolverFormat());
 				return resolver;
 			}
 			return null;
@@ -246,8 +246,7 @@ public class WebMvcAutoConfiguration {
 						.setCachePeriod(cachePeriod));
 			}
 			if (!registry.hasMappingForPattern("/**")) {
-				registerResourceChain(registry
-						.addResourceHandler("/**")
+				registerResourceChain(registry.addResourceHandler("/**")
 						.addResourceLocations(
 								this.resourceProperties.getStaticLocations())
 						.setCachePeriod(cachePeriod));

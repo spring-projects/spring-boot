@@ -25,7 +25,8 @@ package org.springframework.boot.actuate.health;
 public interface HealthIndicator {
 
 	/**
-	 * @return an indication of health
+	 * Return an indication of health.
+	 * @return the health for
 	 */
 	Health health();
 

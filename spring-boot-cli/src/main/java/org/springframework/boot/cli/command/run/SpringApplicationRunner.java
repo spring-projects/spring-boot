@@ -17,6 +17,7 @@
 package org.springframework.boot.cli.command.run;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -61,9 +62,8 @@ public class SpringApplicationRunner {
 	 * @param sources the files to compile/watch
 	 * @param args input arguments
 	 */
-	public SpringApplicationRunner(
-			final SpringApplicationRunnerConfiguration configuration, String[] sources,
-			String... args) {
+	SpringApplicationRunner(final SpringApplicationRunnerConfiguration configuration,
+			String[] sources, String... args) {
 		this.configuration = configuration;
 		this.sources = sources.clone();
 		this.args = args.clone();
@@ -89,22 +89,9 @@ public class SpringApplicationRunner {
 	 */
 	public synchronized void compileAndRun() throws Exception {
 		try {
-
 			stop();
-
-			// Compile
-			Object[] compiledSources = this.compiler.compile(this.sources);
-			if (compiledSources.length == 0) {
-				throw new RuntimeException("No classes found in '" + this.sources + "'");
-			}
-
-			// Start monitoring for changes
-			if (this.fileWatchThread == null
-					&& this.configuration.isWatchForFileChanges()) {
-				this.fileWatchThread = new FileWatchThread();
-				this.fileWatchThread.start();
-			}
-
+			Object[] compiledSources = compile();
+			monitorForChanges();
 			// Run in new thread to ensure that the context classloader is setup
 			this.runThread = new RunThread(compiledSources);
 			this.runThread.start();
@@ -117,6 +104,28 @@ public class SpringApplicationRunner {
 			else {
 				ex.printStackTrace();
 			}
+		}
+	}
+
+	public void stop() {
+		if (this.runThread != null) {
+			this.runThread.shutdown();
+			this.runThread = null;
+		}
+	}
+
+	private Object[] compile() throws IOException {
+		Object[] compiledSources = this.compiler.compile(this.sources);
+		if (compiledSources.length == 0) {
+			throw new RuntimeException("No classes found in '" + this.sources + "'");
+		}
+		return compiledSources;
+	}
+
+	private void monitorForChanges() {
+		if (this.fileWatchThread == null && this.configuration.isWatchForFileChanges()) {
+			this.fileWatchThread = new FileWatchThread();
+			this.fileWatchThread.start();
 		}
 	}
 
@@ -133,7 +142,7 @@ public class SpringApplicationRunner {
 		 * Create a new {@link RunThread} instance.
 		 * @param compiledSources the sources to launch
 		 */
-		public RunThread(Object... compiledSources) {
+		RunThread(Object... compiledSources) {
 			super("runner-" + (runnerCounter++));
 			this.compiledSources = compiledSources;
 			if (compiledSources.length != 0 && compiledSources[0] instanceof Class) {
@@ -147,7 +156,7 @@ public class SpringApplicationRunner {
 			try {
 				this.applicationContext = new SpringApplicationLauncher(
 						getContextClassLoader()).launch(this.compiledSources,
-						SpringApplicationRunner.this.args);
+								SpringApplicationRunner.this.args);
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
@@ -185,7 +194,7 @@ public class SpringApplicationRunner {
 
 		private List<File> sources;
 
-		public FileWatchThread() {
+		FileWatchThread() {
 			super("filewatcher-" + (watcherCounter++));
 			this.previous = 0;
 			this.sources = getSourceFiles();
@@ -244,13 +253,6 @@ public class SpringApplicationRunner {
 			}
 		}
 
-	}
-
-	public void stop() {
-		if (this.runThread != null) {
-			this.runThread.shutdown();
-			this.runThread = null;
-		}
 	}
 
 }

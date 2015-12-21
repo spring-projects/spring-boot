@@ -26,6 +26,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository.Callback;
 
 import static org.junit.Assert.assertEquals;
@@ -74,7 +75,8 @@ public class InMemoryRepositoryTests {
 		this.repository.set("foo.bar", "one");
 		this.repository.set("foo.min", "two");
 		this.repository.set("foo.max", "three");
-		assertEquals(3, ((Collection<?>) this.repository.findAllWithPrefix("foo")).size());
+		assertEquals(3,
+				((Collection<?>) this.repository.findAllWithPrefix("foo")).size());
 	}
 
 	@Test

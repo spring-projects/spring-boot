@@ -21,6 +21,7 @@ import java.util.Arrays;
 import javax.annotation.PostConstruct;
 
 import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint.Report;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
@@ -42,8 +43,8 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class AutoConfigurationReportEndpointTests extends
-		AbstractEndpointTests<AutoConfigurationReportEndpoint> {
+public class AutoConfigurationReportEndpointTests
+		extends AbstractEndpointTests<AutoConfigurationReportEndpoint> {
 
 	public AutoConfigurationReportEndpointTests() {
 		super(Config.class, AutoConfigurationReportEndpoint.class, "autoconfig", true,
@@ -70,8 +71,8 @@ public class AutoConfigurationReportEndpointTests extends
 
 		@PostConstruct
 		public void setupAutoConfigurationReport() {
-			ConditionEvaluationReport report = ConditionEvaluationReport.get(this.context
-					.getBeanFactory());
+			ConditionEvaluationReport report = ConditionEvaluationReport
+					.get(this.context.getBeanFactory());
 			report.recordConditionEvaluation("a", mock(Condition.class),
 					mock(ConditionOutcome.class));
 			report.recordExclusions(Arrays.asList("com.foo.Bar"));

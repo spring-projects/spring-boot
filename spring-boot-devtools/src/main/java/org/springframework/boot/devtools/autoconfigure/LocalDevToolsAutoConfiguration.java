@@ -105,7 +105,7 @@ public class LocalDevToolsAutoConfiguration {
 		public void onClassPathChanged(ClassPathChangedEvent event) {
 			if (event.isRestartRequired()) {
 				Restarter.getInstance().restart(
-						new FileWatchingFailureHandler(getFileSystemWatcherFactory()));
+						new FileWatchingFailureHandler(fileSystemWatcherFactory()));
 			}
 		}
 
@@ -114,7 +114,7 @@ public class LocalDevToolsAutoConfiguration {
 		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
 			URL[] urls = Restarter.getInstance().getInitialUrls();
 			ClassPathFileSystemWatcher watcher = new ClassPathFileSystemWatcher(
-					getFileSystemWatcherFactory(), classPathRestartStrategy(), urls);
+					fileSystemWatcherFactory(), classPathRestartStrategy(), urls);
 			watcher.setStopWatcherOnRestart(true);
 			return watcher;
 		}
@@ -122,12 +122,17 @@ public class LocalDevToolsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public ClassPathRestartStrategy classPathRestartStrategy() {
-			return new PatternClassPathRestartStrategy(this.properties.getRestart()
-					.getAllExclude());
+			return new PatternClassPathRestartStrategy(
+					this.properties.getRestart().getAllExclude());
 		}
 
 		@Bean
-		public FileSystemWatcherFactory getFileSystemWatcherFactory() {
+		public HateoasObjenesisCacheDisabler hateoasObjenesisCacheDisabler() {
+			return new HateoasObjenesisCacheDisabler();
+		}
+
+		@Bean
+		public FileSystemWatcherFactory fileSystemWatcherFactory() {
 			return new FileSystemWatcherFactory() {
 
 				@Override

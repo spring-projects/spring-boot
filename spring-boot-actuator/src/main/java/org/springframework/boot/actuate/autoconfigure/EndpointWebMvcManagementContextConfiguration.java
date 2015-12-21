@@ -41,7 +41,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -61,9 +60,6 @@ import org.springframework.web.cors.CorsConfiguration;
 @EnableConfigurationProperties({ HealthMvcEndpointProperties.class,
 		EndpointCorsProperties.class })
 public class EndpointWebMvcManagementContextConfiguration {
-
-	@Autowired
-	private ApplicationContext applicationContext;
 
 	@Autowired
 	private HealthMvcEndpointProperties healthMvcEndpointProperties;
@@ -143,8 +139,8 @@ public class EndpointWebMvcManagementContextConfiguration {
 		boolean secure = (security != null && security.isEnabled());
 		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate, secure);
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
-			healthMvcEndpoint.addStatusMapping(this.healthMvcEndpointProperties
-					.getMapping());
+			healthMvcEndpoint
+					.addStatusMapping(this.healthMvcEndpointProperties.getMapping());
 		}
 		return healthMvcEndpoint;
 	}

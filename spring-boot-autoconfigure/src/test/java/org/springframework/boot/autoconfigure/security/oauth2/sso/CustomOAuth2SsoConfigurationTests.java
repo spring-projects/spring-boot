@@ -21,6 +21,7 @@ import javax.servlet.Filter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.security.oauth2.OAuth2AutoConfiguration;
@@ -109,7 +110,7 @@ public class CustomOAuth2SsoConfigurationTests {
 		@RestController
 		public static class TestController {
 
-			@RequestMapping(value = "/ui/test")
+			@RequestMapping("/ui/test")
 			public String test() {
 				return "test";
 			}

@@ -18,6 +18,13 @@ package org.springframework.boot.autoconfigure.mustache;
 
 import javax.annotation.PostConstruct;
 
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Mustache.Collector;
+import com.samskivert.mustache.Mustache.Compiler;
+import com.samskivert.mustache.Mustache.TemplateLoader;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -31,12 +38,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
-
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Mustache.Collector;
-import com.samskivert.mustache.Mustache.Compiler;
-import com.samskivert.mustache.Mustache.TemplateLoader;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Mustache.
@@ -48,6 +49,8 @@ import com.samskivert.mustache.Mustache.TemplateLoader;
 @ConditionalOnClass(Mustache.class)
 @EnableConfigurationProperties(MustacheProperties.class)
 public class MustacheAutoConfiguration {
+
+	private static final Log logger = LogFactory.getLog(MustacheAutoConfiguration.class);
 
 	@Autowired
 	private MustacheProperties mustache;
@@ -62,11 +65,12 @@ public class MustacheAutoConfiguration {
 	public void checkTemplateLocationExists() {
 		if (this.mustache.isCheckTemplateLocation()) {
 			TemplateLocation location = new TemplateLocation(this.mustache.getPrefix());
-			Assert.state(location.exists(this.applicationContext),
-					"Cannot find template location: " + location
-							+ " (please add some templates, check your Mustache "
-							+ "configuration, or set spring.mustache."
-							+ "check-template-location=false)");
+			if (!location.exists(this.applicationContext)) {
+				logger.warn("Cannot find template location: " + location
+						+ " (please add some templates, check your Mustache "
+						+ "configuration, or set spring.mustache."
+						+ "check-template-location=false)");
+			}
 		}
 	}
 

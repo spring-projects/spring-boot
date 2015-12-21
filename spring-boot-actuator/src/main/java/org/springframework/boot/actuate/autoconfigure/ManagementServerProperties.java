@@ -53,7 +53,8 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	 * management endpoints. This is a useful place to put user-defined access rules if
 	 * you want to override the default access rules.
 	 */
-	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER - 1;
+	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER
+			- 1;
 
 	/**
 	 * Management endpoint HTTP port. Use the same port as the application by default.
@@ -77,6 +78,13 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	private boolean addApplicationContextHeader = true;
 
 	private final Security security = maybeCreateSecurity();
+
+	private Security maybeCreateSecurity() {
+		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
+			return new Security();
+		}
+		return null;
+	}
 
 	/**
 	 * Returns the management port or {@code null} if the
@@ -181,13 +189,6 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 			this.enabled = enabled;
 		}
 
-	}
-
-	private static Security maybeCreateSecurity() {
-		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
-			return new Security();
-		}
-		return null;
 	}
 
 }

@@ -26,6 +26,7 @@ import java.util.Enumeration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.core.SmartClassLoader;
 import org.springframework.util.Assert;
@@ -134,7 +135,8 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	}
 
 	@Override
-	public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+	public Class<?> loadClass(String name, boolean resolve)
+			throws ClassNotFoundException {
 		String path = name.replace('.', '/').concat(".class");
 		ClassLoaderFile file = this.updatedFiles.getFile(path);
 		if (file != null && file.getKind() == Kind.DELETED) {
@@ -206,7 +208,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 
 		private final Enumeration<E> enumeration;
 
-		public CompoundEnumeration(E firstElement, Enumeration<E> enumeration) {
+		CompoundEnumeration(E firstElement, Enumeration<E> enumeration) {
 			this.firstElement = firstElement;
 			this.enumeration = enumeration;
 		}

@@ -74,7 +74,7 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 	private class MockRequest extends MockClientHttpRequest {
 
-		public MockRequest(URI uri, HttpMethod httpMethod) {
+		MockRequest(URI uri, HttpMethod httpMethod) {
 			super(httpMethod, uri);
 		}
 
@@ -98,20 +98,20 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 		private final HttpStatus status;
 
-		public Response(int delay, byte[] payload, HttpStatus status) {
+		Response(int delay, byte[] payload, HttpStatus status) {
 			this.delay = delay;
 			this.payload = payload;
 			this.status = status;
 		}
 
 		public ClientHttpResponse asHttpResponse(AtomicLong seq) {
-			MockClientHttpResponse httpResponse = new MockClientHttpResponse(
-					this.payload, this.status);
+			MockClientHttpResponse httpResponse = new MockClientHttpResponse(this.payload,
+					this.status);
 			waitForDelay();
 			if (this.payload != null) {
 				httpResponse.getHeaders().setContentLength(this.payload.length);
-				httpResponse.getHeaders().setContentType(
-						MediaType.APPLICATION_OCTET_STREAM);
+				httpResponse.getHeaders()
+						.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 				httpResponse.getHeaders().add("x-seq",
 						Long.toString(seq.incrementAndGet()));
 			}
@@ -124,6 +124,7 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 					Thread.sleep(this.delay);
 				}
 				catch (InterruptedException ex) {
+					// Ignore
 				}
 			}
 		}

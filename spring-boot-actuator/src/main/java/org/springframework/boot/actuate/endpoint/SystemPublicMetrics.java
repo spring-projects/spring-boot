@@ -66,24 +66,26 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	protected void addBasicMetrics(Collection<Metric<?>> result) {
 		// NOTE: ManagementFactory must not be used here since it fails on GAE
 		result.add(new Metric<Long>("mem", Runtime.getRuntime().totalMemory() / 1024));
-		result.add(new Metric<Long>("mem.free", Runtime.getRuntime().freeMemory() / 1024));
-		result.add(new Metric<Integer>("processors", Runtime.getRuntime()
-				.availableProcessors()));
-		result.add(new Metric<Long>("instance.uptime", System.currentTimeMillis()
-				- this.timestamp));
+		result.add(
+				new Metric<Long>("mem.free", Runtime.getRuntime().freeMemory() / 1024));
+		result.add(new Metric<Integer>("processors",
+				Runtime.getRuntime().availableProcessors()));
+		result.add(new Metric<Long>("instance.uptime",
+				System.currentTimeMillis() - this.timestamp));
 	}
 
 	/**
 	 * Add metrics from ManagementFactory if possible. Note that ManagementFactory is not
 	 * available on Google App Engine.
+	 * @param result the result
 	 */
 	private void addManagementMetrics(Collection<Metric<?>> result) {
 		try {
 			// Add JVM up time in ms
-			result.add(new Metric<Long>("uptime", ManagementFactory.getRuntimeMXBean()
-					.getUptime()));
-			result.add(new Metric<Double>("systemload.average", ManagementFactory
-					.getOperatingSystemMXBean().getSystemLoadAverage()));
+			result.add(new Metric<Long>("uptime",
+					ManagementFactory.getRuntimeMXBean().getUptime()));
+			result.add(new Metric<Double>("systemload.average",
+					ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage()));
 			addHeapMetrics(result);
 			addThreadMetrics(result);
 			addClassLoadingMetrics(result);
@@ -113,10 +115,10 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	 */
 	protected void addThreadMetrics(Collection<Metric<?>> result) {
 		ThreadMXBean threadMxBean = ManagementFactory.getThreadMXBean();
-		result.add(new Metric<Long>("threads.peak", (long) threadMxBean
-				.getPeakThreadCount()));
-		result.add(new Metric<Long>("threads.daemon", (long) threadMxBean
-				.getDaemonThreadCount()));
+		result.add(new Metric<Long>("threads.peak",
+				(long) threadMxBean.getPeakThreadCount()));
+		result.add(new Metric<Long>("threads.daemon",
+				(long) threadMxBean.getDaemonThreadCount()));
 		result.add(new Metric<Long>("threads", (long) threadMxBean.getThreadCount()));
 	}
 
@@ -126,12 +128,12 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	 */
 	protected void addClassLoadingMetrics(Collection<Metric<?>> result) {
 		ClassLoadingMXBean classLoadingMxBean = ManagementFactory.getClassLoadingMXBean();
-		result.add(new Metric<Long>("classes", (long) classLoadingMxBean
-				.getLoadedClassCount()));
-		result.add(new Metric<Long>("classes.loaded", classLoadingMxBean
-				.getTotalLoadedClassCount()));
-		result.add(new Metric<Long>("classes.unloaded", classLoadingMxBean
-				.getUnloadedClassCount()));
+		result.add(new Metric<Long>("classes",
+				(long) classLoadingMxBean.getLoadedClassCount()));
+		result.add(new Metric<Long>("classes.loaded",
+				classLoadingMxBean.getTotalLoadedClassCount()));
+		result.add(new Metric<Long>("classes.unloaded",
+				classLoadingMxBean.getUnloadedClassCount()));
 	}
 
 	/**
@@ -143,16 +145,18 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 				.getGarbageCollectorMXBeans();
 		for (GarbageCollectorMXBean garbageCollectorMXBean : garbageCollectorMxBeans) {
 			String name = beautifyGcName(garbageCollectorMXBean.getName());
-			result.add(new Metric<Long>("gc." + name + ".count", garbageCollectorMXBean
-					.getCollectionCount()));
-			result.add(new Metric<Long>("gc." + name + ".time", garbageCollectorMXBean
-					.getCollectionTime()));
+			result.add(new Metric<Long>("gc." + name + ".count",
+					garbageCollectorMXBean.getCollectionCount()));
+			result.add(new Metric<Long>("gc." + name + ".time",
+					garbageCollectorMXBean.getCollectionTime()));
 		}
 	}
 
 	/**
 	 * Turn GC names like 'PS Scavenge' or 'PS MarkSweep' into something that is more
 	 * metrics friendly.
+	 * @param name the source name
+	 * @return a metric friendly name
 	 */
 	private String beautifyGcName(String name) {
 		return StringUtils.replace(name, " ", "_").toLowerCase();

@@ -19,8 +19,6 @@ package org.springframework.boot.logging.logback;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.util.Assert;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -32,6 +30,8 @@ import ch.qos.logback.core.spi.ContextAware;
 import ch.qos.logback.core.spi.LifeCycle;
 import ch.qos.logback.core.spi.PropertyContainer;
 
+import org.springframework.util.Assert;
+
 /**
  * Allows programmatic configuration of logback which is usually faster than parsing XML.
  *
@@ -42,7 +42,7 @@ class LogbackConfigurator {
 
 	private LoggerContext context;
 
-	public LogbackConfigurator(LoggerContext context) {
+	LogbackConfigurator(LoggerContext context) {
 		Assert.notNull(context, "Context must not be null");
 		this.context = context;
 	}
@@ -94,7 +94,8 @@ class LogbackConfigurator {
 		}
 	}
 
-	public void root(Level level, Appender<ILoggingEvent>... appenders) {
+	@SafeVarargs
+	public final void root(Level level, Appender<ILoggingEvent>... appenders) {
 		Logger logger = this.context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 		if (level != null) {
 			logger.setLevel(level);

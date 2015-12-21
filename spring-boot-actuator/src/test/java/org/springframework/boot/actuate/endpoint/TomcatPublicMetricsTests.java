@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.Iterator;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;

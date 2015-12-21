@@ -24,13 +24,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link InitializrService}
@@ -57,7 +57,8 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
 				"application/xml", "foo.zip");
 		ProjectGenerationResponse entity = generateProject(request, mockHttpRequest);
-		assertProjectEntity(entity, mockHttpRequest.contentType, mockHttpRequest.fileName);
+		assertProjectEntity(entity, mockHttpRequest.contentType,
+				mockHttpRequest.fileName);
 	}
 
 	@Test
@@ -104,7 +105,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockSuccessfulMetadataGet(false);
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockStatus(response, 500);
-		when(this.http.execute(isA(HttpGet.class))).thenReturn(response);
+		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		this.thrown.expect(ReportableException.class);
 		this.thrown.expectMessage("No content received from server");
@@ -126,7 +127,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockHttpEntity(response, "Foo-Bar-Not-JSON".getBytes(), "application/json");
 		mockStatus(response, 200);
-		when(this.http.execute(isA(HttpGet.class))).thenReturn(response);
+		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		this.thrown.expect(ReportableException.class);
 		this.thrown.expectMessage("Invalid content received from server");
@@ -137,7 +138,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	public void loadMetadataNoContent() throws IOException {
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockStatus(response, 500);
-		when(this.http.execute(isA(HttpGet.class))).thenReturn(response);
+		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		this.thrown.expect(ReportableException.class);
 		this.thrown.expectMessage("No content received from server");
@@ -158,8 +159,8 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 			assertNull("No content type expected", entity.getContentType());
 		}
 		else {
-			assertEquals("wrong mime type", mimeType, entity.getContentType()
-					.getMimeType());
+			assertEquals("wrong mime type", mimeType,
+					entity.getContentType().getMimeType());
 		}
 		assertEquals("wrong filename", fileName, entity.getFileName());
 	}

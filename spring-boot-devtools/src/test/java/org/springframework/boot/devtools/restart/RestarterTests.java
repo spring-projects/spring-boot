@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
@@ -95,6 +96,7 @@ public class RestarterTests {
 		String output = this.out.toString();
 		assertThat(StringUtils.countOccurrencesOf(output, "Tick 0"), greaterThan(1));
 		assertThat(StringUtils.countOccurrencesOf(output, "Tick 1"), greaterThan(1));
+		assertThat(TestRestartListener.restarts, greaterThan(0));
 	}
 
 	@Test
@@ -213,7 +215,8 @@ public class RestarterTests {
 		}
 
 		public static void main(String... args) {
-			Restarter.initialize(args, false, new MockRestartInitializer());
+			Restarter.initialize(args, false, new MockRestartInitializer(), true,
+					new TestRestartListener());
 			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 					SampleApplication.class);
 			context.registerShutdownHook();
@@ -228,6 +231,7 @@ public class RestarterTests {
 				Thread.sleep(1200);
 			}
 			catch (InterruptedException ex) {
+				// Ignore
 			}
 		}
 
@@ -237,7 +241,7 @@ public class RestarterTests {
 
 		private ClassLoader relaunchClassLoader;
 
-		public TestableRestarter() {
+		TestableRestarter() {
 			this(Thread.currentThread(), new String[] {}, false,
 					new MockRestartInitializer());
 		}
@@ -270,6 +274,17 @@ public class RestarterTests {
 
 		public ClassLoader getRelaunchClassLoader() {
 			return this.relaunchClassLoader;
+		}
+
+	}
+
+	private static class TestRestartListener implements RestartListener {
+
+		private static int restarts;
+
+		@Override
+		public void beforeRestart() {
+			restarts++;
 		}
 
 	}

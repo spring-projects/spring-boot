@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jooq;
 
 import org.jooq.TransactionContext;
 import org.jooq.TransactionProvider;
+
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;

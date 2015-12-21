@@ -18,6 +18,7 @@ package sample.cache;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.cache.CacheManager;
@@ -38,8 +39,7 @@ public class CacheManagerCheck implements CommandLineRunner {
 
 	@Override
 	public void run(String... strings) throws Exception {
-		logger.info("\n\n"
-				+ "=========================================================\n"
+		logger.info("\n\n" + "=========================================================\n"
 				+ "Using cache manager: " + this.cacheManager.getClass().getName() + "\n"
 				+ "=========================================================\n\n");
 	}

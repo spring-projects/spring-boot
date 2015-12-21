@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.health;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
@@ -47,9 +48,8 @@ public class RabbitHealthIndicatorTests {
 	@Test
 	public void indicatorExists() {
 		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class,
-				RabbitAutoConfiguration.class, EndpointAutoConfiguration.class,
-				HealthIndicatorAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class, RabbitAutoConfiguration.class,
+				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
 		assertEquals(1, this.context.getBeanNamesForType(RabbitAdmin.class).length);
 		RabbitHealthIndicator healthIndicator = this.context
 				.getBean(RabbitHealthIndicator.class);

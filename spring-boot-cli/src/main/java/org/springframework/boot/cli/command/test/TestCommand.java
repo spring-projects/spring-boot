@@ -64,7 +64,7 @@ public class TestCommand extends OptionParsingCommand {
 		private class TestRunnerConfigurationAdapter extends
 				OptionSetGroovyCompilerConfiguration implements TestRunnerConfiguration {
 
-			public TestRunnerConfigurationAdapter(OptionSet options,
+			TestRunnerConfigurationAdapter(OptionSet options,
 					CompilerOptionHandler optionHandler) {
 				super(options, optionHandler);
 			}

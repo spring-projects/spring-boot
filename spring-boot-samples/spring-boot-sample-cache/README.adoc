@@ -54,7 +54,6 @@ of the library that you want to use.
 
 
 
-
 === EhCache 2.x
 Simply add the `net.sf.ehcache:ehcache` dependency to the project. Since there is a
 default `ehcache.xml` configuration file at the root of the classpath, it is automatically

@@ -16,20 +16,20 @@
 
 package org.springframework.boot.logging.logback;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.impl.StaticLoggerBinder;
+
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.mock.env.MockEnvironment;
-
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;

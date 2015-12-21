@@ -33,7 +33,7 @@ class MetricMessage {
 
 	private final Message<?> message;
 
-	public MetricMessage(Message<?> message) {
+	MetricMessage(Message<?> message) {
 		this.message = message;
 	}
 

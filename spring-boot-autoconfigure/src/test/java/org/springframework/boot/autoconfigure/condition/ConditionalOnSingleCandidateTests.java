@@ -20,6 +20,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -88,8 +89,8 @@ public class ConditionalOnSingleCandidateTests {
 	public void invalidAnnotationTwoTypes() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectCause(isA(IllegalArgumentException.class));
-		this.thrown.expectMessage(OnBeanSingleCandidateTwoTypesConfiguration.class
-				.getName());
+		this.thrown.expectMessage(
+				OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
 		load(OnBeanSingleCandidateTwoTypesConfiguration.class);
 	}
 
@@ -97,8 +98,8 @@ public class ConditionalOnSingleCandidateTests {
 	public void invalidAnnotationNoType() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectCause(isA(IllegalArgumentException.class));
-		this.thrown.expectMessage(OnBeanSingleCandidateNoTypeConfiguration.class
-				.getName());
+		this.thrown
+				.expectMessage(OnBeanSingleCandidateNoTypeConfiguration.class.getName());
 		load(OnBeanSingleCandidateNoTypeConfiguration.class);
 	}
 
@@ -108,7 +109,7 @@ public class ConditionalOnSingleCandidateTests {
 	}
 
 	@Configuration
-	@ConditionalOnSingleCandidate(value = String.class)
+	@ConditionalOnSingleCandidate(String.class)
 	protected static class OnBeanSingleCandidateConfiguration {
 
 		@Bean

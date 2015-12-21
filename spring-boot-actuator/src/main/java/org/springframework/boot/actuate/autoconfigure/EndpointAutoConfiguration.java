@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import liquibase.integration.spring.SpringLiquibase;
-
 import org.flywaydb.core.Flyway;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
@@ -266,8 +266,8 @@ public class EndpointAutoConfiguration {
 			private String time;
 
 			public String getId() {
-				return this.id == null ? "" : (this.id.length() > 7 ? this.id.substring(
-						0, 7) : this.id);
+				return this.id == null ? ""
+						: (this.id.length() > 7 ? this.id.substring(0, 7) : this.id);
 			}
 
 			public void setId(String id) {

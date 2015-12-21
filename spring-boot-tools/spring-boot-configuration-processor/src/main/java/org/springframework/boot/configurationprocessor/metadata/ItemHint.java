@@ -79,7 +79,7 @@ public class ItemHint implements Comparable<ItemHint> {
 
 	public static ItemHint newHint(String name, ValueHint... values) {
 		return new ItemHint(name, Arrays.asList(values),
-				Collections.<ValueProvider> emptyList());
+				Collections.<ValueProvider>emptyList());
 	}
 
 	@Override
@@ -88,6 +88,9 @@ public class ItemHint implements Comparable<ItemHint> {
 				+ ", providers=" + this.providers + '}';
 	}
 
+	/**
+	 * A hint for a value.
+	 */
 	public static class ValueHint {
 
 		private final Object value;
@@ -115,6 +118,9 @@ public class ItemHint implements Comparable<ItemHint> {
 
 	}
 
+	/**
+	 * A value provider.
+	 */
 	public static class ValueProvider {
 
 		private final String name;

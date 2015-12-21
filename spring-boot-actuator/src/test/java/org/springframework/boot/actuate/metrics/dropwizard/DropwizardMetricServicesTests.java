@@ -19,10 +19,9 @@ package org.springframework.boot.actuate.metrics.dropwizard;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -65,9 +64,10 @@ public class DropwizardMetricServicesTests {
 	@Test
 	public void setGauge() {
 		this.writer.submit("foo", 2.1);
-		this.writer.submit("foo", 2.3);
 		@SuppressWarnings("unchecked")
 		Gauge<Double> gauge = (Gauge<Double>) this.registry.getMetrics().get("gauge.foo");
+		assertEquals(new Double(2.1), gauge.getValue());
+		this.writer.submit("foo", 2.3);
 		assertEquals(new Double(2.3), gauge.getValue());
 	}
 
@@ -120,7 +120,8 @@ public class DropwizardMetricServicesTests {
 
 		private DropwizardMetricServices writer;
 
-		public WriterThread(ThreadGroup group, int index, DropwizardMetricServices writer) {
+		public WriterThread(ThreadGroup group, int index,
+				DropwizardMetricServices writer) {
 			super(group, "Writer-" + index);
 			this.index = index;
 			this.writer = writer;

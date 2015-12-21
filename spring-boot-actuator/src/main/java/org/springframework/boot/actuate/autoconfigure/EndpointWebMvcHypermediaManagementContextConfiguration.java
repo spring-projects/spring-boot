@@ -18,16 +18,24 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.mvc.ActuatorDocsEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ActuatorHalBrowserEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ActuatorHalJsonEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HypermediaDisabled;
+import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -41,7 +49,6 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.ResourceLoader;
@@ -60,14 +67,8 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.TypeUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
@@ -87,22 +88,36 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @EnableConfigurationProperties(ResourceProperties.class)
 public class EndpointWebMvcHypermediaManagementContextConfiguration {
 
+	@Bean
+	public ManagementServletContext managementServletContext(
+			final ManagementServerProperties properties) {
+		return new ManagementServletContext() {
+
+			@Override
+			public String getContextPath() {
+				return properties.getContextPath();
+			}
+
+		};
+	}
+
 	@ConditionalOnProperty(prefix = "endpoints.actuator", name = "enabled", matchIfMissing = true)
 	@Bean
 	public ActuatorHalJsonEndpoint actuatorMvcEndpoint(
-			ManagementServerProperties management, ResourceProperties resources,
-			ResourceLoader resourceLoader) {
+			ManagementServletContext managementServletContext,
+			ResourceProperties resources, ResourceLoader resourceLoader) {
 		if (ActuatorHalBrowserEndpoint.getHalBrowserLocation(resourceLoader) != null) {
-			return new ActuatorHalBrowserEndpoint(management);
+			return new ActuatorHalBrowserEndpoint(managementServletContext);
 		}
-		return new ActuatorHalJsonEndpoint(management);
+		return new ActuatorHalJsonEndpoint(managementServletContext);
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = "endpoints.docs", name = "enabled", matchIfMissing = true)
 	@ConditionalOnResource(resources = "classpath:/META-INF/resources/spring-boot-actuator/docs/index.html")
-	public ActuatorDocsEndpoint actuatorDocsEndpoint(ManagementServerProperties management) {
-		return new ActuatorDocsEndpoint(management);
+	public ActuatorDocsEndpoint actuatorDocsEndpoint(
+			ManagementServletContext managementServletContext) {
+		return new ActuatorDocsEndpoint(managementServletContext);
 	}
 
 	@Bean
@@ -120,17 +135,12 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		return new DefaultCurieProvider("boot", new UriTemplate(path));
 	}
 
-	@ConditionalOnProperty(prefix = "endpoints.actuator", name = "enabled", matchIfMissing = true)
-	@Configuration
-	static class ActuatorMvcEndpointConfiguration {
-
-	}
-
 	/**
 	 * Controller advice that adds links to the actuator endpoint's path.
 	 */
 	@ControllerAdvice
-	public static class ActuatorEndpointLinksAdvice implements ResponseBodyAdvice<Object> {
+	public static class ActuatorEndpointLinksAdvice
+			implements ResponseBodyAdvice<Object> {
 
 		@Autowired
 		private MvcEndpoints endpoints;
@@ -171,8 +181,8 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		}
 
 		private void beforeBodyWrite(Object body, ServletServerHttpRequest request) {
-			Object pattern = request.getServletRequest().getAttribute(
-					HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+			Object pattern = request.getServletRequest()
+					.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 			if (pattern != null && body instanceof ResourceSupport) {
 				beforeBodyWrite(pattern.toString(), (ResourceSupport) body);
 			}
@@ -180,15 +190,14 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 
 		private void beforeBodyWrite(String path, ResourceSupport body) {
 			if (isActuatorEndpointPath(path)) {
-				this.linksEnhancer
-						.addEndpointLinks(body, this.actuatorEndpoint.getPath());
+				this.linksEnhancer.addEndpointLinks(body,
+						this.actuatorEndpoint.getPath());
 			}
 		}
 
 		private boolean isActuatorEndpointPath(String path) {
-			return this.actuatorEndpoint != null
-					&& (this.management.getContextPath() + this.actuatorEndpoint
-							.getPath()).equals(path);
+			return this.actuatorEndpoint != null && (this.management.getContextPath()
+					+ this.actuatorEndpoint.getPath()).equals(path);
 		}
 
 	}
@@ -205,15 +214,9 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	public static class MvcEndpointAdvice implements ResponseBodyAdvice<Object> {
 
 		@Autowired
-		private ManagementServerProperties management;
-
-		@Autowired
-		private HttpMessageConverters converters;
+		private List<RequestMappingHandlerAdapter> handlerAdapters;
 
 		private Map<MediaType, HttpMessageConverter<?>> converterCache = new ConcurrentHashMap<MediaType, HttpMessageConverter<?>>();
-
-		@Autowired
-		private ObjectMapper mapper;
 
 		@Override
 		public boolean supports(MethodParameter returnType,
@@ -267,11 +270,14 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 			if (this.converterCache.containsKey(mediaType)) {
 				return (HttpMessageConverter<Object>) this.converterCache.get(mediaType);
 			}
-			for (HttpMessageConverter<?> converter : this.converters) {
-				if (selectedConverterType.isAssignableFrom(converter.getClass())
-						&& converter.canWrite(EndpointResource.class, mediaType)) {
-					this.converterCache.put(mediaType, converter);
-					return (HttpMessageConverter<Object>) converter;
+			for (RequestMappingHandlerAdapter handlerAdapter : this.handlerAdapters) {
+				for (HttpMessageConverter<?> converter : handlerAdapter
+						.getMessageConverters()) {
+					if (selectedConverterType.isAssignableFrom(converter.getClass())
+							&& converter.canWrite(EndpointResource.class, mediaType)) {
+						this.converterCache.put(mediaType, converter);
+						return (HttpMessageConverter<Object>) converter;
+					}
 				}
 			}
 			return null;
@@ -280,13 +286,14 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		private boolean isHypermediaDisabled(MethodParameter returnType) {
 			return AnnotationUtils.findAnnotation(returnType.getMethod(),
 					HypermediaDisabled.class) != null
-					|| AnnotationUtils.findAnnotation(returnType.getMethod()
-							.getDeclaringClass(), HypermediaDisabled.class) != null;
+					|| AnnotationUtils.findAnnotation(
+							returnType.getMethod().getDeclaringClass(),
+							HypermediaDisabled.class) != null;
 		}
 
 		private String getPath(ServletServerHttpRequest request) {
-			String path = (String) request.getServletRequest().getAttribute(
-					HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+			String path = (String) request.getServletRequest()
+					.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 			return (path == null ? "" : path);
 		}
 
@@ -301,7 +308,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		private Map<String, Object> embedded;
 
 		@SuppressWarnings("unchecked")
-		public EndpointResource(Object content, String path) {
+		EndpointResource(Object content, String path) {
 			this.content = content instanceof Map ? null : content;
 			this.embedded = (Map<String, Object>) (this.content == null ? content : null);
 			add(linkTo(Object.class).slash(path).withSelfRel());

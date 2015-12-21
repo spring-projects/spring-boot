@@ -39,7 +39,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -49,6 +48,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 import org.springframework.security.web.header.writers.HstsHeaderWriter;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -75,6 +75,7 @@ import org.springframework.util.StringUtils;
  * </ul>
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Configuration
 @EnableConfigurationProperties
@@ -101,17 +102,17 @@ public class SpringBootWebSecurityConfiguration {
 			writer.setRequestMatcher(AnyRequestMatcher.INSTANCE);
 			configurer.addHeaderWriter(writer);
 		}
-		if (headers.isContentType()) {
-			configurer.contentTypeOptions();
+		if (!headers.isContentType()) {
+			configurer.contentTypeOptions().disable();
 		}
-		if (headers.isXss()) {
-			configurer.xssProtection();
+		if (!headers.isXss()) {
+			configurer.xssProtection().disable();
 		}
-		if (headers.isCache()) {
-			configurer.cacheControl();
+		if (!headers.isCache()) {
+			configurer.cacheControl().disable();
 		}
-		if (headers.isFrame()) {
-			configurer.frameOptions();
+		if (!headers.isFrame()) {
+			configurer.frameOptions().disable();
 		}
 	}
 
@@ -128,8 +129,8 @@ public class SpringBootWebSecurityConfiguration {
 
 	// Get the ignored paths in early
 	@Order(SecurityProperties.IGNORED_ORDER)
-	private static class IgnoredPathsWebSecurityConfigurerAdapter implements
-			WebSecurityConfigurer<WebSecurity> {
+	private static class IgnoredPathsWebSecurityConfigurerAdapter
+			implements WebSecurityConfigurer<WebSecurity> {
 
 		@Autowired(required = false)
 		private ErrorController errorController;
@@ -146,13 +147,14 @@ public class SpringBootWebSecurityConfiguration {
 
 		@Override
 		public void init(WebSecurity builder) throws Exception {
-			IgnoredRequestConfigurer ignoring = builder.ignoring();
 			List<String> ignored = getIgnored(this.security);
 			if (this.errorController != null) {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
 			String[] paths = this.server.getPathsArray(ignored);
-			ignoring.antMatchers(paths);
+			if (!ObjectUtils.isEmpty(paths)) {
+				builder.ignoring().antMatchers(paths);
+			}
 		}
 
 		private String normalizePath(String errorPath) {
@@ -168,8 +170,8 @@ public class SpringBootWebSecurityConfiguration {
 	@Configuration
 	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", havingValue = "false")
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	protected static class ApplicationNoWebSecurityConfigurerAdapter extends
-			WebSecurityConfigurerAdapter {
+	protected static class ApplicationNoWebSecurityConfigurerAdapter
+			extends WebSecurityConfigurerAdapter {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.requestMatcher(new RequestMatcher() {
@@ -184,8 +186,8 @@ public class SpringBootWebSecurityConfiguration {
 	@Configuration
 	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", matchIfMissing = true)
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	protected static class ApplicationWebSecurityConfigurerAdapter extends
-			WebSecurityConfigurerAdapter {
+	protected static class ApplicationWebSecurityConfigurerAdapter
+			extends WebSecurityConfigurerAdapter {
 
 		@Autowired
 		private SecurityProperties security;

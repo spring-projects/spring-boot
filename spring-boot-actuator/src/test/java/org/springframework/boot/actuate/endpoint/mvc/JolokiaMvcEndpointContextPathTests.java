@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration;
@@ -51,12 +52,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { Config.class }, initializers = ContextPathListener.class)
+@SpringApplicationConfiguration(classes = {
+		Config.class }, initializers = ContextPathListener.class)
 @WebAppConfiguration
 public class JolokiaMvcEndpointContextPathTests {
-
-	@Autowired
-	private MvcEndpoints endpoints;
 
 	@Autowired
 	private WebApplicationContext context;
@@ -66,8 +65,8 @@ public class JolokiaMvcEndpointContextPathTests {
 	@Before
 	public void setUp() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		EnvironmentTestUtils.addEnvironment(
-				(ConfigurableApplicationContext) this.context, "foo:bar");
+		EnvironmentTestUtils.addEnvironment((ConfigurableApplicationContext) this.context,
+				"foo:bar");
 	}
 
 	@Test
@@ -87,8 +86,8 @@ public class JolokiaMvcEndpointContextPathTests {
 	public static class Config {
 	}
 
-	public static class ContextPathListener implements
-			ApplicationContextInitializer<ConfigurableApplicationContext> {
+	public static class ContextPathListener
+			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 		@Override
 		public void initialize(ConfigurableApplicationContext context) {
 			EnvironmentTestUtils.addEnvironment(context, "management.contextPath:/admin");

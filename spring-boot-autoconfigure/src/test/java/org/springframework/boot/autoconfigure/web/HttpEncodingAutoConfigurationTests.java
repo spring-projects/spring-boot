@@ -25,8 +25,11 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.context.web.OrderedHiddenHttpMethodFilter;
+import org.springframework.boot.context.web.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -94,8 +97,8 @@ public class HttpEncodingAutoConfigurationTests {
 	@Test
 	public void filterIsOrderedHighest() throws Exception {
 		load(OrderedConfiguration.class);
-		List<Filter> beans = new ArrayList<Filter>(this.context.getBeansOfType(
-				Filter.class).values());
+		List<Filter> beans = new ArrayList<Filter>(
+				this.context.getBeansOfType(Filter.class).values());
 		AnnotationAwareOrderComparator.sort(beans);
 		assertThat(beans.get(0), instanceOf(CharacterEncodingFilter.class));
 		assertThat(beans.get(1), instanceOf(HiddenHttpMethodFilter.class));
@@ -145,8 +148,13 @@ public class HttpEncodingAutoConfigurationTests {
 	static class OrderedConfiguration {
 
 		@Bean
-		public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
-			return new HiddenHttpMethodFilter();
+		public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
+			return new OrderedHiddenHttpMethodFilter();
+		}
+
+		@Bean
+		public OrderedHttpPutFormContentFilter httpPutFormContentFilter() {
+			return new OrderedHttpPutFormContentFilter();
 		}
 
 	}

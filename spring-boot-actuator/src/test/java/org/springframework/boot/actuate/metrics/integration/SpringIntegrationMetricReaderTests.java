@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.metrics.integration;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetricReaderTests.TestConfiguration;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;

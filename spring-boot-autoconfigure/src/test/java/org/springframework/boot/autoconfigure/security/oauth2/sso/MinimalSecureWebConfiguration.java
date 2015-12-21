@@ -38,10 +38,10 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({ EmbeddedServletContainerAutoConfiguration.class,
-		ServerPropertiesAutoConfiguration.class,
-		DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-		HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
-		PropertyPlaceholderAutoConfiguration.class, SecurityAutoConfiguration.class })
+		ServerPropertiesAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+		WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+		ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+		SecurityAutoConfiguration.class })
 public @interface MinimalSecureWebConfiguration {
 
 }

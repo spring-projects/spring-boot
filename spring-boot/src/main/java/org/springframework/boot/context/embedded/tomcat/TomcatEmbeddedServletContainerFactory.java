@@ -51,8 +51,8 @@ import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -89,13 +89,16 @@ import org.springframework.util.StringUtils;
  * @see #setContextLifecycleListeners(Collection)
  * @see TomcatEmbeddedServletContainer
  */
-public class TomcatEmbeddedServletContainerFactory extends
-		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+public class TomcatEmbeddedServletContainerFactory
+		extends AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
+	/**
+	 * The class name of default protocol used.
+	 */
 	public static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
 
 	private File baseDirectory;
@@ -173,8 +176,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 		context.setPath(getContextPath());
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
-		context.setParentClassLoader(this.resourceLoader != null ? this.resourceLoader
-				.getClassLoader() : ClassUtils.getDefaultClassLoader());
+		context.setParentClassLoader(
+				this.resourceLoader != null ? this.resourceLoader.getClassLoader()
+						: ClassUtils.getDefaultClassLoader());
 		SkipPatternJarScanner.apply(context, this.tldSkip);
 		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
@@ -283,12 +287,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 			Compression compression = getCompression();
 			protocol.setCompression("on");
 			protocol.setCompressionMinSize(compression.getMinResponseSize());
-			protocol.setCompressableMimeTypes(StringUtils
-					.arrayToCommaDelimitedString(compression.getMimeTypes()));
+			protocol.setCompressableMimeTypes(
+					StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
 			if (getCompression().getExcludedUserAgents() != null) {
-				protocol.setNoCompressionUserAgents(StringUtils
-						.arrayToCommaDelimitedString(getCompression()
-								.getExcludedUserAgents()));
+				protocol.setNoCompressionUserAgents(
+						StringUtils.arrayToCommaDelimitedString(
+								getCompression().getExcludedUserAgents()));
 			}
 		}
 	}
@@ -322,12 +326,11 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private void configureSslKeyStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		try {
-			File file = ResourceUtils.getFile(ssl.getKeyStore());
-			protocol.setKeystoreFile(file.getAbsolutePath());
+			protocol.setKeystoreFile(ResourceUtils.getURL(ssl.getKeyStore()).toString());
 		}
 		catch (FileNotFoundException ex) {
-			throw new EmbeddedServletContainerException("Could not find key store "
-					+ ssl.getKeyStore(), ex);
+			throw new EmbeddedServletContainerException(
+					"Could not load key store: " + ex.getMessage(), ex);
 		}
 		if (ssl.getKeyStoreType() != null) {
 			protocol.setKeystoreType(ssl.getKeyStoreType());
@@ -340,12 +343,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 	private void configureSslTrustStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		if (ssl.getTrustStore() != null) {
 			try {
-				File file = ResourceUtils.getFile(ssl.getTrustStore());
-				protocol.setTruststoreFile(file.getAbsolutePath());
+				protocol.setTruststoreFile(
+						ResourceUtils.getURL(ssl.getTrustStore()).toString());
 			}
 			catch (FileNotFoundException ex) {
-				throw new EmbeddedServletContainerException("Could not find trust store "
-						+ ssl.getTrustStore(), ex);
+				throw new EmbeddedServletContainerException(
+						"Could not load trust store: " + ex.getMessage(), ex);
 			}
 		}
 		protocol.setTruststorePass(ssl.getTrustStorePassword());
@@ -391,18 +394,31 @@ public class TomcatEmbeddedServletContainerFactory extends
 	private void configureSession(Context context) {
 		long sessionTimeout = getSessionTimeoutInMinutes();
 		context.setSessionTimeout((int) sessionTimeout);
+		Manager manager = context.getManager();
+		if (manager == null) {
+			manager = new StandardManager();
+			context.setManager(manager);
+		}
 		if (isPersistSession()) {
-			Manager manager = context.getManager();
-			if (manager == null) {
-				manager = new StandardManager();
-				context.setManager(manager);
-			}
-			Assert.state(manager instanceof StandardManager,
-					"Unable to persist HTTP session state using manager type "
-							+ manager.getClass().getName());
-			File folder = new ApplicationTemp().getFolder("tomcat-sessions");
-			File file = new File(folder, "SESSIONS.ser");
-			((StandardManager) manager).setPathname(file.getAbsolutePath());
+			configurePersistSession(manager);
+		}
+		else {
+			disablePersistSession(manager);
+		}
+	}
+
+	private void configurePersistSession(Manager manager) {
+		Assert.state(manager instanceof StandardManager,
+				"Unable to persist HTTP session state using manager type "
+						+ manager.getClass().getName());
+		File folder = getValidSessionStoreDir();
+		File file = new File(folder, "SESSIONS.ser");
+		((StandardManager) manager).setPathname(file.getAbsolutePath());
+	}
+
+	private void disablePersistSession(Manager manager) {
+		if (manager instanceof StandardManager) {
+			((StandardManager) manager).setPathname(null);
 		}
 	}
 
@@ -439,26 +455,6 @@ public class TomcatEmbeddedServletContainerFactory extends
 	@Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
-	}
-
-	/**
-	 * Returns the absolute temp dir for given web server.
-	 * @param prefix webserver name
-	 * @return The temp dir for given web server.
-	 */
-	protected File createTempDir(String prefix) {
-		try {
-			File tempFolder = File.createTempFile(prefix + ".", "." + getPort());
-			tempFolder.delete();
-			tempFolder.mkdir();
-			tempFolder.deleteOnExit();
-			return tempFolder;
-		}
-		catch (IOException ex) {
-			throw new EmbeddedServletContainerException(
-					"Unable to create Tomcat tempdir. java.io.tmpdir is set to "
-							+ System.getProperty("java.io.tmpdir"), ex);
-		}
 	}
 
 	/**
@@ -577,7 +573,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 * {@link Context}.
 	 * @param tomcatContextCustomizers the customizers to add
 	 */
-	public void addContextCustomizers(TomcatContextCustomizer... tomcatContextCustomizers) {
+	public void addContextCustomizers(
+			TomcatContextCustomizer... tomcatContextCustomizers) {
 		Assert.notNull(tomcatContextCustomizers,
 				"TomcatContextCustomizers must not be null");
 		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
@@ -628,7 +625,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	/**
 	 * Returns a mutable collection of the {@link Connector}s that will be added to the
-	 * Tomcat
+	 * Tomcat.
 	 * @return the additionalTomcatConnectors
 	 */
 	public List<Connector> getAdditionalTomcatConnectors() {
@@ -662,7 +659,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 		private final Object nativePage;
 
-		public TomcatErrorPage(ErrorPage errorPage) {
+		TomcatErrorPage(ErrorPage errorPage) {
 			this.location = errorPage.getPath();
 			this.exceptionType = errorPage.getExceptionName();
 			this.errorCode = errorPage.getStatusCode();
@@ -678,8 +675,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 				}
 				else if (ClassUtils.isPresent("org.apache.catalina.deploy.ErrorPage",
 						null)) {
-					nativePage = BeanUtils.instantiate(ClassUtils.forName(
-							"org.apache.catalina.deploy.ErrorPage", null));
+					nativePage = BeanUtils.instantiate(ClassUtils
+							.forName("org.apache.catalina.deploy.ErrorPage", null));
 				}
 			}
 			catch (ClassNotFoundException ex) {

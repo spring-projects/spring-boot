@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
@@ -99,8 +100,8 @@ public class ClassPathFileSystemWatcherTests {
 		public ClassPathFileSystemWatcher watcher() {
 			FileSystemWatcher watcher = new FileSystemWatcher(false, 100, 10);
 			URL[] urls = this.environemnt.getProperty("urls", URL[].class);
-			return new ClassPathFileSystemWatcher(new MockFileSystemWatcherFactory(
-					watcher), restartStrategy(), urls);
+			return new ClassPathFileSystemWatcher(
+					new MockFileSystemWatcherFactory(watcher), restartStrategy(), urls);
 		}
 
 		@Bean
@@ -137,11 +138,12 @@ public class ClassPathFileSystemWatcherTests {
 
 	}
 
-	private static class MockFileSystemWatcherFactory implements FileSystemWatcherFactory {
+	private static class MockFileSystemWatcherFactory
+			implements FileSystemWatcherFactory {
 
 		private final FileSystemWatcher watcher;
 
-		public MockFileSystemWatcherFactory(FileSystemWatcher watcher) {
+		MockFileSystemWatcherFactory(FileSystemWatcher watcher) {
 			this.watcher = watcher;
 		}
 

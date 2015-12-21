@@ -25,16 +25,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Template;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheResourceTemplateLoader;
-import org.springframework.boot.autoconfigure.mustache.web.MustacheView;
-import org.springframework.boot.autoconfigure.mustache.web.MustacheViewResolver;
 import org.springframework.boot.autoconfigure.mustache.web.MustacheWebIntegrationTests.Application;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
@@ -50,9 +51,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Template;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -89,15 +87,15 @@ public class MustacheWebIntegrationTests {
 
 	@Test
 	public void testHomePage() throws Exception {
-		String body = new TestRestTemplate().getForObject(
-				"http://localhost:" + this.port, String.class);
+		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port,
+				String.class);
 		assertTrue(body.contains("Hello World"));
 	}
 
 	@Test
 	public void testPartialPage() throws Exception {
-		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port
-				+ "/partial", String.class);
+		String body = new TestRestTemplate()
+				.getForObject("http://localhost:" + this.port + "/partial", String.class);
 		assertTrue(body.contains("Hello World"));
 	}
 
@@ -137,9 +135,9 @@ public class MustacheWebIntegrationTests {
 			MustacheViewResolver resolver = new MustacheViewResolver();
 			resolver.setPrefix("classpath:/mustache-templates/");
 			resolver.setSuffix(".html");
-			resolver.setCompiler(Mustache.compiler().withLoader(
-					new MustacheResourceTemplateLoader("classpath:/mustache-templates/",
-							".html")));
+			resolver.setCompiler(
+					Mustache.compiler().withLoader(new MustacheResourceTemplateLoader(
+							"classpath:/mustache-templates/", ".html")));
 			return resolver;
 		}
 

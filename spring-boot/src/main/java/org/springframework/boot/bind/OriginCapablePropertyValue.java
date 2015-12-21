@@ -30,17 +30,17 @@ class OriginCapablePropertyValue extends PropertyValue {
 
 	private final PropertyOrigin origin;
 
-	public OriginCapablePropertyValue(PropertyValue propertyValue) {
+	OriginCapablePropertyValue(PropertyValue propertyValue) {
 		this(propertyValue.getName(), propertyValue.getValue(),
 				(PropertyOrigin) propertyValue.getAttribute(ATTRIBUTE_PROPERTY_ORIGIN));
 	}
 
-	public OriginCapablePropertyValue(String name, Object value, String originName,
+	OriginCapablePropertyValue(String name, Object value, String originName,
 			PropertySource<?> originSource) {
 		this(name, value, new PropertyOrigin(originSource, originName));
 	}
 
-	public OriginCapablePropertyValue(String name, Object value, PropertyOrigin origin) {
+	OriginCapablePropertyValue(String name, Object value, PropertyOrigin origin) {
 		super(name, value);
 		this.origin = origin;
 		setAttribute(ATTRIBUTE_PROPERTY_ORIGIN, origin);
@@ -53,8 +53,16 @@ class OriginCapablePropertyValue extends PropertyValue {
 	@Override
 	public String toString() {
 		String name = this.origin != null ? this.origin.getName() : this.getName();
-		String source = this.origin.getSource() != null ? this.origin.getSource()
-				.getName() : "unknown";
+		String source = this.origin.getSource() != null
+				? this.origin.getSource().getName() : "unknown";
 		return "'" + name + "' from '" + source + "'";
 	}
+
+	public static PropertyOrigin getOrigin(PropertyValue propertyValue) {
+		if (propertyValue instanceof OriginCapablePropertyValue) {
+			return ((OriginCapablePropertyValue) propertyValue).getOrigin();
+		}
+		return new OriginCapablePropertyValue(propertyValue).getOrigin();
+	}
+
 }

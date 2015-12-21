@@ -20,16 +20,16 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -43,8 +43,7 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleActuatorApplication.class)
-@WebAppConfiguration
-@IntegrationTest({ "server.port:0", "management.security.enabled:false" })
+@WebIntegrationTest(value = { "management.security.enabled:false" }, randomPort = true)
 @DirtiesContext
 @ActiveProfiles("unsecure-management")
 public class UnsecureManagementSampleActuatorApplicationTests {
@@ -55,14 +54,14 @@ public class UnsecureManagementSampleActuatorApplicationTests {
 	@Test
 	public void testHomeIsSecure() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertEquals("Wrong body: " + body, "Unauthorized", body.get("error"));
-		assertFalse("Wrong headers: " + entity.getHeaders(), entity.getHeaders()
-				.containsKey("Set-Cookie"));
+		assertFalse("Wrong headers: " + entity.getHeaders(),
+				entity.getHeaders().containsKey("Set-Cookie"));
 	}
 
 	@Test
@@ -74,12 +73,13 @@ public class UnsecureManagementSampleActuatorApplicationTests {
 			// ignore;
 		}
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/metrics", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + "/metrics", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body, body.containsKey("counter.status.401.unmapped"));
+		assertTrue("Wrong body: " + body,
+				body.containsKey("counter.status.401.unmapped"));
 	}
 
 }

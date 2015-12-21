@@ -16,9 +16,8 @@
 
 package org.springframework.boot.jta.atomikos;
 
-import org.junit.Test;
-
 import com.atomikos.jdbc.AtomikosSQLException;
+import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

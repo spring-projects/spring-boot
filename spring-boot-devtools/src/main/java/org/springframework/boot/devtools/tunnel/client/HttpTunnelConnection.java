@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayload;
 import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayloadForwarder;
 import org.springframework.http.HttpMethod;
@@ -88,8 +89,8 @@ public class HttpTunnelConnection implements TunnelConnection {
 			throw new IllegalArgumentException("Malformed URL '" + url + "'");
 		}
 		this.requestFactory = requestFactory;
-		this.executor = (executor == null ? Executors
-				.newCachedThreadPool(new TunnelThreadFactory()) : executor);
+		this.executor = (executor == null
+				? Executors.newCachedThreadPool(new TunnelThreadFactory()) : executor);
 	}
 
 	@Override
@@ -141,8 +142,8 @@ public class HttpTunnelConnection implements TunnelConnection {
 		public int write(ByteBuffer src) throws IOException {
 			int size = src.remaining();
 			if (size > 0) {
-				openNewConnection(new HttpTunnelPayload(
-						this.requestSeq.incrementAndGet(), src));
+				openNewConnection(
+						new HttpTunnelPayload(this.requestSeq.incrementAndGet(), src));
 			}
 			return size;
 		}
@@ -166,6 +167,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 						close();
 					}
 					catch (IOException ex) {
+						// Ignore
 					}
 				}
 

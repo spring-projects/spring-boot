@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,12 +22,12 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import sample.data.gemfire.domain.Gemstone;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
-import sample.data.gemfire.domain.Gemstone;
 
 /**
  * The GemstoneServiceImpl class is a Service object implementing the GemstoneService
@@ -40,8 +40,8 @@ import sample.data.gemfire.domain.Gemstone;
 public class GemstoneServiceImpl implements GemstoneService {
 
 	protected static final List<String> APPROVED_GEMS = new ArrayList<String>(
-			Arrays.asList("ALEXANDRITE", "AQUAMARINE", "DIAMOND", "OPAL", "PEARL",
-					"RUBY", "SAPPHIRE", "SPINEL", "TOPAZ"));
+			Arrays.asList("ALEXANDRITE", "AQUAMARINE", "DIAMOND", "OPAL", "PEARL", "RUBY",
+					"SAPPHIRE", "SPINEL", "TOPAZ"));
 
 	@Autowired
 	private GemstoneRepository gemstoneRepo;
@@ -97,8 +97,8 @@ public class GemstoneServiceImpl implements GemstoneService {
 	 * Return a listing of Gemstones currently stored in the GemFire Cache.
 	 * <p/>
 	 *
-	 * @return an Iterable object to iterate over the list of Gemstones currently stored in
-	 * the GemFire Cache.
+	 * @return an Iterable object to iterate over the list of Gemstones currently stored
+	 * in the GemFire Cache.
 	 * @see java.lang.Iterable
 	 * @see sample.data.gemfire.domain.Gemstone
 	 */
@@ -127,9 +127,10 @@ public class GemstoneServiceImpl implements GemstoneService {
 		// to demonstrate transactions in GemFire.
 		Gemstone savedGemstone = validate(this.gemstoneRepo.save(gemstone));
 
-		Assert.state(savedGemstone.equals(get(gemstone.getId())), String.format(
-				"Failed to find Gemstone (%1$s) in GemFire's Cache Region 'Gemstones'!",
-				gemstone));
+		Assert.state(savedGemstone.equals(get(gemstone.getId())),
+				String.format(
+						"Failed to find Gemstone (%1$s) in GemFire's Cache Region 'Gemstones'!",
+						gemstone));
 
 		System.out.printf("Saved Gemstone (%1$s)%n", savedGemstone.getName());
 
@@ -141,8 +142,8 @@ public class GemstoneServiceImpl implements GemstoneService {
 			// NOTE if the Gemstone is not valid, blow chunks (should cause transaction to
 			// rollback in GemFire)!
 			System.err.printf("Illegal Gemstone (%1$s)!%n", gemstone.getName());
-			throw new IllegalGemstoneException(String.format(
-					"'%1$s' is not a valid Gemstone!", gemstone.getName()));
+			throw new IllegalGemstoneException(
+					String.format("'%1$s' is not a valid Gemstone!", gemstone.getName()));
 		}
 
 		return gemstone;

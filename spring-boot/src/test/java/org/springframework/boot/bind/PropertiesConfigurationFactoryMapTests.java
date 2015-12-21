@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.MapPropertySource;
@@ -66,8 +67,8 @@ public class PropertiesConfigurationFactoryMapTests {
 		this.targetName = "foo";
 		setupFactory();
 		MutablePropertySources sources = new MutablePropertySources();
-		sources.addFirst(new MapPropertySource("map", Collections.singletonMap(
-				"foo.map.name", (Object) "blah")));
+		sources.addFirst(new MapPropertySource("map",
+				Collections.singletonMap("foo.map.name", (Object) "blah")));
 		this.factory.setPropertySources(sources);
 		this.factory.afterPropertiesSet();
 		Foo foo = this.factory.getObject();
@@ -80,8 +81,8 @@ public class PropertiesConfigurationFactoryMapTests {
 		setupFactory();
 		MutablePropertySources sources = new MutablePropertySources();
 		CompositePropertySource composite = new CompositePropertySource("composite");
-		composite.addPropertySource(new MapPropertySource("map", Collections
-				.singletonMap("foo.map.name", (Object) "blah")));
+		composite.addPropertySource(new MapPropertySource("map",
+				Collections.singletonMap("foo.map.name", (Object) "blah")));
 		sources.addFirst(composite);
 		this.factory.setPropertySources(sources);
 		this.factory.afterPropertiesSet();

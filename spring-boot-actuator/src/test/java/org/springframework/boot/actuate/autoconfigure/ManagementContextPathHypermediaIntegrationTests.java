@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.ManagementContextPathHypermediaIntegrationTests.SpringBootHypermediaApplication;
 import org.springframework.boot.actuate.endpoint.mvc.ActuatorHalBrowserEndpoint;
@@ -85,12 +86,10 @@ public class ManagementContextPathHypermediaIntegrationTests {
 
 	@Test
 	public void trace() throws Exception {
-		this.mockMvc
-				.perform(get("/admin/trace").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/admin/trace").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(
-						jsonPath("$._links.self.href").value(
-								"http://localhost/admin/trace"))
+				.andExpect(jsonPath("$._links.self.href")
+						.value("http://localhost/admin/trace"))
 				.andExpect(jsonPath("$.content").isArray());
 	}
 
@@ -103,12 +102,10 @@ public class ManagementContextPathHypermediaIntegrationTests {
 			}
 			path = path.startsWith("/") ? path.substring(1) : path;
 			path = path.length() > 0 ? path : "self";
-			this.mockMvc
-					.perform(get("/admin").accept(MediaType.APPLICATION_JSON))
+			this.mockMvc.perform(get("/admin").accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk())
-					.andExpect(
-							jsonPath("$._links.%s.href", path).value(
-									"http://localhost/admin" + endpoint.getPath()));
+					.andExpect(jsonPath("$._links.%s.href", path)
+							.value("http://localhost/admin" + endpoint.getPath()));
 		}
 	}
 

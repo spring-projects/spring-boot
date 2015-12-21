@@ -36,8 +36,8 @@ import org.springframework.util.ReflectionUtils;
  */
 public class RunProcess {
 
-	private static final Method INHERIT_IO_METHOD = ReflectionUtils.findMethod(
-			ProcessBuilder.class, "inheritIO");
+	private static final Method INHERIT_IO_METHOD = ReflectionUtils
+			.findMethod(ProcessBuilder.class, "inheritIO");
 
 	private static final long JUST_ENDED_LIMIT = 500;
 
@@ -55,7 +55,8 @@ public class RunProcess {
 		return run(waitForProcess, Arrays.asList(args));
 	}
 
-	protected int run(boolean waitForProcess, Collection<String> args) throws IOException {
+	protected int run(boolean waitForProcess, Collection<String> args)
+			throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(this.command);
 		builder.command().addAll(args);
 		builder.redirectErrorStream(true);
@@ -131,8 +132,8 @@ public class RunProcess {
 	}
 
 	private void redirectOutput(Process process) {
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(
-				process.getInputStream()));
+		final BufferedReader reader = new BufferedReader(
+				new InputStreamReader(process.getInputStream()));
 		new Thread() {
 
 			@Override
@@ -147,6 +148,7 @@ public class RunProcess {
 					reader.close();
 				}
 				catch (Exception ex) {
+					// Ignore
 				}
 			}
 
@@ -154,23 +156,23 @@ public class RunProcess {
 	}
 
 	/**
-	 * @return the running process or {@code null}
+	 * Return the running process.
+	 * @return the process or {@code null}
 	 */
 	public Process getRunningProcess() {
 		return this.process;
 	}
 
 	/**
-	 * @return {@code true} if the process was stopped.
+	 * Return if the process was stopped.
+	 * @return {@code true} if stopped
 	 */
 	public boolean handleSigInt() {
-
 		// if the process has just ended, probably due to this SIGINT, consider handled.
 		if (hasJustEnded()) {
 			return true;
 		}
 		return doKill();
-
 	}
 
 	/**

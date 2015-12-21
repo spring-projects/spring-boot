@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 /**
- * {@link ConfigurationProperties} for configuring Velocity
+ * {@link ConfigurationProperties} for configuring Velocity.
  *
  * @author Andy Wilkinson
  * @since 1.1.0

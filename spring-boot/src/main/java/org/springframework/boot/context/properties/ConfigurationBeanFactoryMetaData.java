@@ -68,7 +68,8 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 		return result;
 	}
 
-	public <A extends Annotation> A findFactoryAnnotation(String beanName, Class<A> type) {
+	public <A extends Annotation> A findFactoryAnnotation(String beanName,
+			Class<A> type) {
 		Method method = findFactoryMethod(beanName);
 		return (method == null ? null : AnnotationUtils.findAnnotation(method, type));
 	}
@@ -83,8 +84,8 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 		Class<?> type = this.beanFactory.getType(meta.getBean());
 		ReflectionUtils.doWithMethods(type, new MethodCallback() {
 			@Override
-			public void doWith(Method method) throws IllegalArgumentException,
-					IllegalAccessException {
+			public void doWith(Method method)
+					throws IllegalArgumentException, IllegalAccessException {
 				if (method.getName().equals(factory)) {
 					found.compareAndSet(null, method);
 				}
@@ -99,7 +100,7 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 
 		private String method;
 
-		public MetaData(String bean, String method) {
+		MetaData(String bean, String method) {
 			this.bean = bean;
 			this.method = method;
 		}

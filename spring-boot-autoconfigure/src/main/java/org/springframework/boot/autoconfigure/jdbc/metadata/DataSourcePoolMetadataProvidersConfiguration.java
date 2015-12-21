@@ -18,12 +18,12 @@ package org.springframework.boot.autoconfigure.jdbc.metadata;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Register the {@link DataSourcePoolMetadataProvider} instances for the supported data

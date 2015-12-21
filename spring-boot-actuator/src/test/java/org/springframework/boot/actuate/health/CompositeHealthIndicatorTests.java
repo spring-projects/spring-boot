@@ -19,12 +19,11 @@ package org.springframework.boot.actuate.health;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
@@ -55,12 +54,12 @@ public class CompositeHealthIndicatorTests {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		given(this.one.health()).willReturn(
-				new Health.Builder().unknown().withDetail("1", "1").build());
-		given(this.two.health()).willReturn(
-				new Health.Builder().unknown().withDetail("2", "2").build());
-		given(this.three.health()).willReturn(
-				new Health.Builder().unknown().withDetail("3", "3").build());
+		given(this.one.health())
+				.willReturn(new Health.Builder().unknown().withDetail("1", "1").build());
+		given(this.two.health())
+				.willReturn(new Health.Builder().unknown().withDetail("2", "2").build());
+		given(this.three.health())
+				.willReturn(new Health.Builder().unknown().withDetail("3", "3").build());
 
 		this.healthAggregator = new OrderedHealthAggregator();
 	}
@@ -74,16 +73,10 @@ public class CompositeHealthIndicatorTests {
 				this.healthAggregator, indicators);
 		Health result = composite.health();
 		assertThat(result.getDetails().size(), equalTo(2));
-		assertThat(
-				result.getDetails(),
-				hasEntry("one",
-						(Object) new Health.Builder().unknown().withDetail("1", "1")
-								.build()));
-		assertThat(
-				result.getDetails(),
-				hasEntry("two",
-						(Object) new Health.Builder().unknown().withDetail("2", "2")
-								.build()));
+		assertThat(result.getDetails(), hasEntry("one",
+				(Object) new Health.Builder().unknown().withDetail("1", "1").build()));
+		assertThat(result.getDetails(), hasEntry("two",
+				(Object) new Health.Builder().unknown().withDetail("2", "2").build()));
 	}
 
 	@Test
@@ -96,21 +89,12 @@ public class CompositeHealthIndicatorTests {
 		composite.addHealthIndicator("three", this.three);
 		Health result = composite.health();
 		assertThat(result.getDetails().size(), equalTo(3));
-		assertThat(
-				result.getDetails(),
-				hasEntry("one",
-						(Object) new Health.Builder().unknown().withDetail("1", "1")
-								.build()));
-		assertThat(
-				result.getDetails(),
-				hasEntry("two",
-						(Object) new Health.Builder().unknown().withDetail("2", "2")
-								.build()));
-		assertThat(
-				result.getDetails(),
-				hasEntry("three",
-						(Object) new Health.Builder().unknown().withDetail("3", "3")
-								.build()));
+		assertThat(result.getDetails(), hasEntry("one",
+				(Object) new Health.Builder().unknown().withDetail("1", "1").build()));
+		assertThat(result.getDetails(), hasEntry("two",
+				(Object) new Health.Builder().unknown().withDetail("2", "2").build()));
+		assertThat(result.getDetails(), hasEntry("three",
+				(Object) new Health.Builder().unknown().withDetail("3", "3").build()));
 	}
 
 	@Test
@@ -121,16 +105,10 @@ public class CompositeHealthIndicatorTests {
 		composite.addHealthIndicator("two", this.two);
 		Health result = composite.health();
 		assertThat(result.getDetails().size(), equalTo(2));
-		assertThat(
-				result.getDetails(),
-				hasEntry("one",
-						(Object) new Health.Builder().unknown().withDetail("1", "1")
-								.build()));
-		assertThat(
-				result.getDetails(),
-				hasEntry("two",
-						(Object) new Health.Builder().unknown().withDetail("2", "2")
-								.build()));
+		assertThat(result.getDetails(), hasEntry("one",
+				(Object) new Health.Builder().unknown().withDetail("1", "1").build()));
+		assertThat(result.getDetails(), hasEntry("two",
+				(Object) new Health.Builder().unknown().withDetail("2", "2").build()));
 	}
 
 	@Test
@@ -147,9 +125,10 @@ public class CompositeHealthIndicatorTests {
 		Health result = composite.health();
 
 		ObjectMapper mapper = new ObjectMapper();
-		assertEquals("{\"status\":\"UNKNOWN\",\"db\":{\"status\":\"UNKNOWN\""
-				+ ",\"db1\":{\"status\":\"UNKNOWN\",\"1\":\"1\"},"
-				+ "\"db2\":{\"status\":\"UNKNOWN\",\"2\":\"2\"}}}",
+		assertEquals(
+				"{\"status\":\"UNKNOWN\",\"db\":{\"status\":\"UNKNOWN\""
+						+ ",\"db1\":{\"status\":\"UNKNOWN\",\"1\":\"1\"},"
+						+ "\"db2\":{\"status\":\"UNKNOWN\",\"2\":\"2\"}}}",
 				mapper.writeValueAsString(result));
 	}
 

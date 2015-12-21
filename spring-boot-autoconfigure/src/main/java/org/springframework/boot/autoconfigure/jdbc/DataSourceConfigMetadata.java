@@ -16,11 +16,11 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.tomcat.jdbc.pool.DataSource;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Expose the metadata of the supported data sources. Only used to harvest the relevant

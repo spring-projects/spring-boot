@@ -16,9 +16,9 @@
 		<url>http://www.spring.io</url>
 	</organization>
 	<properties>
-		<main.basedir>${basedir}/..</main.basedir>
+		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<modules>
-		<module>spring-boot-security-tests-web-helloworld</module>
+		<module>spring-boot-security-test-web-helloworld</module>
 	</modules>
 </project>

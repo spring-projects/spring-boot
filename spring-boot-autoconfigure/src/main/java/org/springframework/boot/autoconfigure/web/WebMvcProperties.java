@@ -49,10 +49,15 @@ public class WebMvcProperties {
 	private String dateFormat;
 
 	/**
-	 * If the content of the "default" model should be ignored during redirect
-	 * scenarios.
+	 * If the content of the "default" model should be ignored during redirect scenarios.
 	 */
 	private boolean ignoreDefaultModelOnRedirect = true;
+
+	/**
+	 * If a "NoHandlerFoundException" should be thrown if no Handler was found to process
+	 * a request.
+	 */
+	private boolean throwExceptionIfNoHandlerFound = false;
 
 	private final Async async = new Async();
 
@@ -89,6 +94,15 @@ public class WebMvcProperties {
 
 	public void setIgnoreDefaultModelOnRedirect(boolean ignoreDefaultModelOnRedirect) {
 		this.ignoreDefaultModelOnRedirect = ignoreDefaultModelOnRedirect;
+	}
+
+	public boolean isThrowExceptionIfNoHandlerFound() {
+		return this.throwExceptionIfNoHandlerFound;
+	}
+
+	public void setThrowExceptionIfNoHandlerFound(
+			boolean throwExceptionIfNoHandlerFound) {
+		this.throwExceptionIfNoHandlerFound = throwExceptionIfNoHandlerFound;
 	}
 
 	public Async getAsync() {

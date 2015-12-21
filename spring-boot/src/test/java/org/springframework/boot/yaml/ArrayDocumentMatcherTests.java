@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.junit.Test;
+
 import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -53,8 +54,8 @@ public class ArrayDocumentMatcherTests {
 	}
 
 	private Properties getProperties(String values) throws IOException {
-		return PropertiesLoaderUtils.loadProperties(new ByteArrayResource(values
-				.getBytes()));
+		return PropertiesLoaderUtils
+				.loadProperties(new ByteArrayResource(values.getBytes()));
 	}
 
 }

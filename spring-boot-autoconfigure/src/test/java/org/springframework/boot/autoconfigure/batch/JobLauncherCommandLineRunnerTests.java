@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.batch;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -49,6 +50,7 @@ import static org.junit.Assert.assertEquals;
  * Tests for {@link JobLauncherCommandLineRunner}.
  *
  * @author Dave Syer
+ * @author Jean-Pierre Bergamin
  */
 public class JobLauncherCommandLineRunnerTests {
 
@@ -87,7 +89,8 @@ public class JobLauncherCommandLineRunnerTests {
 		}).build();
 		this.job = this.jobs.get("job").start(this.step).build();
 		this.jobExplorer = this.context.getBean(JobExplorer.class);
-		this.runner = new JobLauncherCommandLineRunner(this.jobLauncher, this.jobExplorer);
+		this.runner = new JobLauncherCommandLineRunner(this.jobLauncher,
+				this.jobExplorer);
 		this.context.getBean(BatchConfiguration.class).clear();
 	}
 
@@ -95,8 +98,8 @@ public class JobLauncherCommandLineRunnerTests {
 	public void basicExecution() throws Exception {
 		this.runner.execute(this.job, new JobParameters());
 		assertEquals(1, this.jobExplorer.getJobInstances("job", 0, 100).size());
-		this.runner.execute(this.job, new JobParametersBuilder().addLong("id", 1L)
-				.toJobParameters());
+		this.runner.execute(this.job,
+				new JobParametersBuilder().addLong("id", 1L).toJobParameters());
 		assertEquals(2, this.jobExplorer.getJobInstances("job", 0, 100).size());
 	}
 
@@ -125,6 +128,23 @@ public class JobLauncherCommandLineRunnerTests {
 	}
 
 	@Test
+	public void retryFailedExecutionOnNonRestartableJob() throws Exception {
+		this.job = this.jobs.get("job").preventRestart()
+				.start(this.steps.get("step").tasklet(new Tasklet() {
+					@Override
+					public RepeatStatus execute(StepContribution contribution,
+							ChunkContext chunkContext) throws Exception {
+						throw new RuntimeException("Planned");
+					}
+				}).build()).incrementer(new RunIdIncrementer()).build();
+		this.runner.execute(this.job, new JobParameters());
+		this.runner.execute(this.job, new JobParameters());
+		// A failed job that is not restartable does not re-use the job params of
+		// the last execution, but creates a new job instance when running it again.
+		assertEquals(2, this.jobExplorer.getJobInstances("job", 0, 100).size());
+	}
+
+	@Test
 	public void retryFailedExecutionWithNonIdentifyingParameters() throws Exception {
 		this.job = this.jobs.get("job")
 				.start(this.steps.get("step").tasklet(new Tasklet() {
@@ -146,7 +166,9 @@ public class JobLauncherCommandLineRunnerTests {
 	protected static class BatchConfiguration implements BatchConfigurer {
 
 		private ResourcelessTransactionManager transactionManager = new ResourcelessTransactionManager();
+
 		private JobRepository jobRepository;
+
 		private MapJobRepositoryFactoryBean jobRepositoryFactory = new MapJobRepositoryFactoryBean(
 				this.transactionManager);
 
@@ -180,6 +202,7 @@ public class JobLauncherCommandLineRunnerTests {
 		public JobExplorer getJobExplorer() throws Exception {
 			return new MapJobExplorerFactoryBean(this.jobRepositoryFactory).getObject();
 		}
+
 	}
 
 }

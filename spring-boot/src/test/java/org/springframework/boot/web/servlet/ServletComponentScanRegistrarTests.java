@@ -20,6 +20,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
@@ -68,8 +69,8 @@ public class ServletComponentScanRegistrarTests {
 		this.context = new AnnotationConfigApplicationContext(BasePackageClasses.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan(), containsInAnyOrder(getClass()
-				.getPackage().getName()));
+		assertThat(postProcessor.getPackagesToScan(),
+				containsInAnyOrder(getClass().getPackage().getName()));
 	}
 
 	@Test
@@ -80,8 +81,18 @@ public class ServletComponentScanRegistrarTests {
 		this.context = new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan(), containsInAnyOrder(getClass()
-				.getPackage().getName()));
+		assertThat(postProcessor.getPackagesToScan(),
+				containsInAnyOrder(getClass().getPackage().getName()));
+	}
+
+	@Test
+	public void packagesFromMultipleAnnotationsAreMerged() {
+		this.context = new AnnotationConfigApplicationContext(BasePackages.class,
+				AdditionalPackages.class);
+		ServletComponentRegisteringPostProcessor postProcessor = this.context
+				.getBean(ServletComponentRegisteringPostProcessor.class);
+		assertThat(postProcessor.getPackagesToScan(), containsInAnyOrder(
+				"com.example.foo", "com.example.bar", "com.example.baz"));
 	}
 
 	@Configuration
@@ -93,6 +104,12 @@ public class ServletComponentScanRegistrarTests {
 	@Configuration
 	@ServletComponentScan(basePackages = { "com.example.foo", "com.example.bar" })
 	static class BasePackages {
+
+	}
+
+	@Configuration
+	@ServletComponentScan(basePackages = "com.example.baz")
+	static class AdditionalPackages {
 
 	}
 

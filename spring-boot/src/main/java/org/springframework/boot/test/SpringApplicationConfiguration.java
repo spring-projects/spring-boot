@@ -48,6 +48,7 @@ import org.springframework.test.context.ContextConfiguration;
 public @interface SpringApplicationConfiguration {
 
 	/**
+	 * The context configuration classes.
 	 * @see ContextConfiguration#classes()
 	 * @return the context configuration classes
 	 */
@@ -55,6 +56,7 @@ public @interface SpringApplicationConfiguration {
 	Class<?>[] value() default {};
 
 	/**
+	 * The context configuration locations.
 	 * @see ContextConfiguration#locations()
 	 * @return the context configuration locations
 	 */
@@ -62,6 +64,7 @@ public @interface SpringApplicationConfiguration {
 	String[] locations() default {};
 
 	/**
+	 * The context configuration classes.
 	 * @see ContextConfiguration#classes()
 	 * @return the context configuration classes
 	 */
@@ -69,6 +72,7 @@ public @interface SpringApplicationConfiguration {
 	Class<?>[] classes() default {};
 
 	/**
+	 * The context configuration initializers.
 	 * @see ContextConfiguration#initializers()
 	 * @return the context configuration initializers
 	 */
@@ -76,6 +80,7 @@ public @interface SpringApplicationConfiguration {
 	Class<? extends ApplicationContextInitializer<? extends ConfigurableApplicationContext>>[] initializers() default {};
 
 	/**
+	 * Should context locations be inherited.
 	 * @see ContextConfiguration#inheritLocations()
 	 * @return {@code true} if context locations should be inherited
 	 */
@@ -83,6 +88,7 @@ public @interface SpringApplicationConfiguration {
 	boolean inheritLocations() default true;
 
 	/**
+	 * Should initializers be inherited.
 	 * @see ContextConfiguration#inheritInitializers()
 	 * @return {@code true} if context initializers should be inherited
 	 */
@@ -90,6 +96,7 @@ public @interface SpringApplicationConfiguration {
 	boolean inheritInitializers() default true;
 
 	/**
+	 * The name of the context hierarchy level.
 	 * @see ContextConfiguration#name()
 	 * @return the name of the context hierarchy level
 	 */

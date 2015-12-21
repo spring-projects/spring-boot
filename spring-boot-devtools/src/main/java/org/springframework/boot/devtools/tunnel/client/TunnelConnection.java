@@ -34,7 +34,7 @@ public interface TunnelConnection {
 	 * @param closeable a closeable to call when the channel is closed
 	 * @return A {@link WritableByteChannel} that should be used to send any outgoing data
 	 * destined for the remote server
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	WritableByteChannel open(WritableByteChannel incomingChannel, Closeable closeable)
 			throws Exception;

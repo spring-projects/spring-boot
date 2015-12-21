@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValues;
@@ -50,8 +51,8 @@ import org.springframework.validation.Validator;
  * @param <T> The target type
  * @author Dave Syer
  */
-public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
-		MessageSourceAware, InitializingBean {
+public class PropertiesConfigurationFactory<T>
+		implements FactoryBean<T>, MessageSourceAware, InitializingBean {
 
 	private static final char[] EXACT_DELIMITERS = { '_', '.', '[' };
 
@@ -84,6 +85,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	private ConversionService conversionService;
 
 	/**
+	 * Create a new {@link PropertiesConfigurationFactory} instance.
 	 * @param target the target object to bind too
 	 * @see #PropertiesConfigurationFactory(Class)
 	 */
@@ -93,7 +95,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	/**
-	 * Create a new factory for an object of the given type.
+	 * Create a new {@link PropertiesConfigurationFactory} instance.
 	 * @param type the target type
 	 * @see #PropertiesConfigurationFactory(Class)
 	 */
@@ -139,14 +141,16 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	/**
-	 * @param targetName the target name to set
+	 * Set the target name.
+	 * @param targetName the target name
 	 */
 	public void setTargetName(String targetName) {
 		this.targetName = targetName;
 	}
 
 	/**
-	 * @param messageSource the messageSource to set
+	 * Set the message source.
+	 * @param messageSource the message source
 	 */
 	@Override
 	public void setMessageSource(MessageSource messageSource) {
@@ -154,37 +158,40 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	/**
-	 * @param properties the properties to set
+	 * Set the properties.
+	 * @param properties the properties
 	 */
 	public void setProperties(Properties properties) {
 		this.properties = properties;
 	}
 
 	/**
-	 * @param propertySources the propertySources to set
+	 * Set the property sources.
+	 * @param propertySources the property sources
 	 */
 	public void setPropertySources(PropertySources propertySources) {
 		this.propertySources = propertySources;
 	}
 
 	/**
-	 * @param conversionService the conversionService to set
+	 * Set the conversion service.
+	 * @param conversionService the conversion service
 	 */
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
 	/**
-	 * @param validator the validator to set
+	 * Set the validator.
+	 * @param validator the validator
 	 */
 	public void setValidator(Validator validator) {
 		this.validator = validator;
 	}
 
 	/**
-	 * Flag to indicate that an exception should be raised if a Validator is available and
-	 * validation fails.
-	 *
+	 * Set a flag to indicate that an exception should be raised if a Validator is
+	 * available and validation fails.
 	 * @param exceptionIfInvalid the flag to set
 	 */
 	public void setExceptionIfInvalid(boolean exceptionIfInvalid) {
@@ -242,8 +249,9 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	private void doBindPropertiesToTarget() throws BindException {
-		RelaxedDataBinder dataBinder = (this.targetName != null ? new RelaxedDataBinder(
-				this.target, this.targetName) : new RelaxedDataBinder(this.target));
+		RelaxedDataBinder dataBinder = (this.targetName != null
+				? new RelaxedDataBinder(this.target, this.targetName)
+				: new RelaxedDataBinder(this.target));
 		if (this.validator != null) {
 			dataBinder.setValidator(this.validator);
 		}
@@ -265,8 +273,8 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	private Set<String> getNames() {
 		Set<String> names = new LinkedHashSet<String>();
 		if (this.target != null) {
-			Iterable<String> prefixes = (StringUtils.hasLength(this.targetName) ? new RelaxedNames(
-					this.targetName) : null);
+			Iterable<String> prefixes = (StringUtils.hasLength(this.targetName)
+					? new RelaxedNames(this.targetName) : null);
 			PropertyDescriptor[] descriptors = BeanUtils
 					.getPropertyDescriptors(this.target.getClass());
 			for (PropertyDescriptor descriptor : descriptors) {
@@ -304,7 +312,8 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		return new PropertySourcesPropertyValues(this.propertySources, names, includes);
 	}
 
-	private PropertyNamePatternsMatcher getPropertyNamePatternsMatcher(Set<String> names) {
+	private PropertyNamePatternsMatcher getPropertyNamePatternsMatcher(
+			Set<String> names) {
 		if (this.ignoreUnknownFields && !isMapTarget()) {
 			// Since unknown fields are ignored we can filter them out early to save
 			// unnecessary calls to the PropertySource.
@@ -331,9 +340,11 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		if (errors.hasErrors()) {
 			this.logger.error("Properties configuration failed validation");
 			for (ObjectError error : errors.getAllErrors()) {
-				this.logger.error(this.messageSource != null ? this.messageSource
-						.getMessage(error, Locale.getDefault()) + " (" + error + ")"
-						: error);
+				this.logger
+						.error(this.messageSource != null
+								? this.messageSource.getMessage(error,
+										Locale.getDefault()) + " (" + error + ")"
+								: error);
 			}
 			if (this.exceptionIfInvalid) {
 				throw new BindException(errors);
@@ -342,6 +353,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	/**
+	 * Customize the databinder.
 	 * @param dataBinder the data binder that will be used to bind and validate
 	 */
 	protected void customizeBinder(DataBinder dataBinder) {

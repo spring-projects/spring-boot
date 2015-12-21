@@ -54,17 +54,17 @@ public class DevToolsProperties {
 	}
 
 	/**
-	 * Restart properties
+	 * Restart properties.
 	 */
 	public static class Restart {
 
 		private static final String DEFAULT_RESTART_EXCLUDES = "META-INF/maven/**,"
-				+ "META-INF/resources/**,resources/**,static/**,public/**,templates/**";
+				+ "META-INF/resources/**,resources/**,static/**,public/**,templates/**,"
+				+ "**/*Test.class,**/*Tests.class,git.properties";
 
 		private static final long DEFAULT_RESTART_POLL_INTERVAL = 1000;
 
 		private static final long DEFAULT_RESTART_QUIET_PERIOD = 400;
-
 
 		/**
 		 * Enable automatic restart.
@@ -117,7 +117,8 @@ public class DevToolsProperties {
 				allExclude.addAll(StringUtils.commaDelimitedListToSet(this.exclude));
 			}
 			if (StringUtils.hasText(this.additionalExclude)) {
-				allExclude.addAll(StringUtils.commaDelimitedListToSet(this.additionalExclude));
+				allExclude.addAll(
+						StringUtils.commaDelimitedListToSet(this.additionalExclude));
 			}
 			return allExclude.toArray(new String[allExclude.size()]);
 		}
@@ -173,7 +174,7 @@ public class DevToolsProperties {
 	}
 
 	/**
-	 * LiveReload properties
+	 * LiveReload properties.
 	 */
 	public static class Livereload {
 

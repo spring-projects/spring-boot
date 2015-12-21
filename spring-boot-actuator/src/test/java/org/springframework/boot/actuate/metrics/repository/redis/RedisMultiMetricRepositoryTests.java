@@ -30,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+
 import org.springframework.boot.actuate.metrics.Iterables;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
@@ -58,7 +59,7 @@ public class RedisMultiMetricRepositoryTests {
 
 	@Parameters
 	public static List<Object[]> parameters() {
-		return Arrays.<Object[]> asList(new Object[] { null }, new Object[] { "test" });
+		return Arrays.<Object[]>asList(new Object[] { null }, new Object[] { "test" });
 	}
 
 	@Before
@@ -76,8 +77,8 @@ public class RedisMultiMetricRepositoryTests {
 
 	@After
 	public void clear() {
-		assertTrue(new StringRedisTemplate(this.redis.getConnectionFactory())
-				.opsForZSet().size("keys." + this.prefix) > 0);
+		assertTrue(new StringRedisTemplate(this.redis.getConnectionFactory()).opsForZSet()
+				.size("keys." + this.prefix) > 0);
 		this.repository.reset("foo");
 		this.repository.reset("bar");
 		assertNull(new StringRedisTemplate(this.redis.getConnectionFactory())
@@ -89,26 +90,29 @@ public class RedisMultiMetricRepositoryTests {
 	@Test
 	public void setAndGet() {
 		this.repository.set("foo",
-				Arrays.<Metric<?>> asList(new Metric<Number>("foo.bar", 12.3)));
+				Arrays.<Metric<?>>asList(new Metric<Number>("foo.bar", 12.3)));
 		this.repository.set("foo",
-				Arrays.<Metric<?>> asList(new Metric<Number>("foo.bar", 15.3)));
-		assertEquals(15.3, Iterables.collection(this.repository.findAll("foo"))
-				.iterator().next().getValue());
+				Arrays.<Metric<?>>asList(new Metric<Number>("foo.bar", 15.3)));
+		assertEquals(15.3, Iterables.collection(this.repository.findAll("foo")).iterator()
+				.next().getValue());
 	}
 
 	@Test
 	public void setAndGetMultiple() {
-		this.repository.set("foo", Arrays.<Metric<?>> asList(new Metric<Number>(
-				"foo.val", 12.3), new Metric<Number>("foo.bar", 11.3)));
+		this.repository.set("foo",
+				Arrays.<Metric<?>>asList(new Metric<Number>("foo.val", 12.3),
+						new Metric<Number>("foo.bar", 11.3)));
 		assertEquals(2, Iterables.collection(this.repository.findAll("foo")).size());
 	}
 
 	@Test
 	public void groups() {
-		this.repository.set("foo", Arrays.<Metric<?>> asList(new Metric<Number>(
-				"foo.val", 12.3), new Metric<Number>("foo.bar", 11.3)));
-		this.repository.set("bar", Arrays.<Metric<?>> asList(new Metric<Number>(
-				"bar.val", 12.3), new Metric<Number>("bar.foo", 11.3)));
+		this.repository.set("foo",
+				Arrays.<Metric<?>>asList(new Metric<Number>("foo.val", 12.3),
+						new Metric<Number>("foo.bar", 11.3)));
+		this.repository.set("bar",
+				Arrays.<Metric<?>>asList(new Metric<Number>("bar.val", 12.3),
+						new Metric<Number>("bar.foo", 11.3)));
 		Collection<String> groups = Iterables.collection(this.repository.groups());
 		assertEquals(2, groups.size());
 		assertTrue("Wrong groups: " + groups, groups.contains("foo"));
@@ -116,10 +120,12 @@ public class RedisMultiMetricRepositoryTests {
 
 	@Test
 	public void count() {
-		this.repository.set("foo", Arrays.<Metric<?>> asList(new Metric<Number>(
-				"foo.val", 12.3), new Metric<Number>("foo.bar", 11.3)));
-		this.repository.set("bar", Arrays.<Metric<?>> asList(new Metric<Number>(
-				"bar.val", 12.3), new Metric<Number>("bar.foo", 11.3)));
+		this.repository.set("foo",
+				Arrays.<Metric<?>>asList(new Metric<Number>("foo.val", 12.3),
+						new Metric<Number>("foo.bar", 11.3)));
+		this.repository.set("bar",
+				Arrays.<Metric<?>>asList(new Metric<Number>("bar.val", 12.3),
+						new Metric<Number>("bar.foo", 11.3)));
 		assertEquals(2, this.repository.countGroups());
 	}
 

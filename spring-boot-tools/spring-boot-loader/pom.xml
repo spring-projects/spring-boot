@@ -67,6 +67,7 @@
 							<addTestClassPath>true</addTestClassPath>
 							<skipInvocation>${skipTests}</skipInvocation>
 							<streamLogs>true</streamLogs>
+							<mergeUserSettings>true</mergeUserSettings>
 						</configuration>
 						<executions>
 							<execution>
@@ -82,20 +83,4 @@
 			</build>
 		</profile>
 	</profiles>
-
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<!-- specify the JRE level that is used on the classpath for compilation, to allow smooth import into Eclipse/STS IDE -->
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<configuration>
-						<java.classpath.jre>1.7</java.classpath.jre>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
-
 </project>

@@ -91,7 +91,7 @@ public class OrderedHealthAggregator extends AbstractHealthAggregator {
 
 		private final List<String> statusOrder;
 
-		public StatusComparator(List<String> statusOrder) {
+		StatusComparator(List<String> statusOrder) {
 			this.statusOrder = statusOrder;
 		}
 

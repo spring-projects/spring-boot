@@ -24,8 +24,6 @@ import java.nio.channels.WritableByteChannel;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayload;
-import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayloadForwarder;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

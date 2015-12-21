@@ -28,7 +28,7 @@ import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
 
 /**
- * {@link Command} to uninstall dependencies from the CLI's lib directory
+ * {@link Command} to uninstall dependencies from the CLI's lib directory.
  *
  * @author Dave Syer
  * @author Andy Wilkinson

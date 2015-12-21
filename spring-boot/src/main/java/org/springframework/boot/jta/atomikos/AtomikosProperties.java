@@ -21,14 +21,14 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 /**
- * Bean friendly variant of <a
- * href="http://www.atomikos.com/Documentation/JtaProperties">Atomikos configuration
+ * Bean friendly variant of
+ * <a href="http://www.atomikos.com/Documentation/JtaProperties">Atomikos configuration
  * properties</a>. Allows for setter based configuration and is amiable to relaxed data
  * binding.
  *
  * @author Phillip Webb
- * @see #asProperties()
  * @since 1.2.0
+ * @see #asProperties()
  */
 public class AtomikosProperties {
 

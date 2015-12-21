@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,10 +24,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.AbstractXmlHttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
@@ -45,6 +49,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see #HttpMessageConverters(HttpMessageConverter...)
  * @see #HttpMessageConverters(Collection)
  * @see #getConverters()
@@ -52,6 +57,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> {
 
 	private static final List<Class<?>> NON_REPLACING_CONVERTERS;
+
 	static {
 		List<Class<?>> nonReplacingConverters = new ArrayList<Class<?>>();
 		addClassIfExists(nonReplacingConverters, "org.springframework.hateoas.mvc."
@@ -81,7 +87,8 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	 * default converter is found) The {@link #postProcessConverters(List)} method can be
 	 * used for further converter manipulation.
 	 */
-	public HttpMessageConverters(Collection<HttpMessageConverter<?>> additionalConverters) {
+	public HttpMessageConverters(
+			Collection<HttpMessageConverter<?>> additionalConverters) {
 		this(true, additionalConverters);
 	}
 
@@ -95,25 +102,37 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	 */
 	public HttpMessageConverters(boolean addDefaultConverters,
 			Collection<HttpMessageConverter<?>> converters) {
+		List<HttpMessageConverter<?>> combined = getCombinedConverters(converters,
+				addDefaultConverters ? getDefaultConverters()
+						: Collections.<HttpMessageConverter<?>>emptyList());
+		combined = postProcessConverters(combined);
+		this.converters = Collections.unmodifiableList(combined);
+	}
+
+	private List<HttpMessageConverter<?>> getCombinedConverters(
+			Collection<HttpMessageConverter<?>> converters,
+			List<HttpMessageConverter<?>> defaultConverters) {
 		List<HttpMessageConverter<?>> combined = new ArrayList<HttpMessageConverter<?>>();
 		List<HttpMessageConverter<?>> processing = new ArrayList<HttpMessageConverter<?>>(
 				converters);
-		if (addDefaultConverters) {
-			for (HttpMessageConverter<?> defaultConverter : getDefaultConverters()) {
-				Iterator<HttpMessageConverter<?>> iterator = processing.iterator();
-				while (iterator.hasNext()) {
-					HttpMessageConverter<?> candidate = iterator.next();
-					if (isReplacement(defaultConverter, candidate)) {
-						combined.add(candidate);
-						iterator.remove();
-					}
+		for (HttpMessageConverter<?> defaultConverter : defaultConverters) {
+			Iterator<HttpMessageConverter<?>> iterator = processing.iterator();
+			while (iterator.hasNext()) {
+				HttpMessageConverter<?> candidate = iterator.next();
+				if (isReplacement(defaultConverter, candidate)) {
+					combined.add(candidate);
+					iterator.remove();
 				}
-				combined.add(defaultConverter);
+			}
+			combined.add(defaultConverter);
+			if (defaultConverter instanceof AllEncompassingFormHttpMessageConverter) {
+				configurePartConverters(
+						(AllEncompassingFormHttpMessageConverter) defaultConverter,
+						converters);
 			}
 		}
 		combined.addAll(0, processing);
-		combined = postProcessConverters(combined);
-		this.converters = Collections.unmodifiableList(combined);
+		return combined;
 	}
 
 	private boolean isReplacement(HttpMessageConverter<?> defaultConverter,
@@ -126,6 +145,27 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		return ClassUtils.isAssignableValue(defaultConverter.getClass(), candidate);
 	}
 
+	private void configurePartConverters(
+			AllEncompassingFormHttpMessageConverter formConverter,
+			Collection<HttpMessageConverter<?>> converters) {
+		List<HttpMessageConverter<?>> partConverters = extractPartConverters(
+				formConverter);
+		List<HttpMessageConverter<?>> combinedConverters = getCombinedConverters(
+				converters, partConverters);
+		combinedConverters = postProcessPartConverters(combinedConverters);
+		formConverter.setPartConverters(combinedConverters);
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<HttpMessageConverter<?>> extractPartConverters(
+			FormHttpMessageConverter formConverter) {
+		Field field = ReflectionUtils.findField(FormHttpMessageConverter.class,
+				"partConverters");
+		ReflectionUtils.makeAccessible(field);
+		return (List<HttpMessageConverter<?>>) ReflectionUtils.getField(field,
+				formConverter);
+	}
+
 	/**
 	 * Method that can be used to post-process the {@link HttpMessageConverter} list
 	 * before it is used.
@@ -133,6 +173,19 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	 * @return the final converts list to use
 	 */
 	protected List<HttpMessageConverter<?>> postProcessConverters(
+			List<HttpMessageConverter<?>> converters) {
+		return converters;
+	}
+
+	/**
+	 * Method that can be used to post-process the {@link HttpMessageConverter} list
+	 * before it is used to configure the part converters of
+	 * {@link AllEncompassingFormHttpMessageConverter}.
+	 * @param converters a mutable list of the converters that will be used.
+	 * @return the final converts list to use
+	 * @since 1.3.0
+	 */
+	protected List<HttpMessageConverter<?>> postProcessPartConverters(
 			List<HttpMessageConverter<?>> converters) {
 		return converters;
 	}

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.maven;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
@@ -28,6 +29,10 @@ import org.apache.maven.artifact.Artifact;
  * @since 1.1
  */
 public class ExcludeFilter extends DependencyFilter {
+
+	public ExcludeFilter(Exclude... excludes) {
+		this(Arrays.asList(excludes));
+	}
 
 	public ExcludeFilter(List<Exclude> excludes) {
 		super(excludes);

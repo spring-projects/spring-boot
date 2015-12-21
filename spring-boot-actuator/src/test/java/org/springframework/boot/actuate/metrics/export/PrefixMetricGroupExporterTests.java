@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.metrics.Iterables;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
@@ -60,7 +61,7 @@ public class PrefixMetricGroupExporterTests {
 
 	@Test
 	public void multiMetricGroupsCopiedAsDefault() {
-		this.reader.set("foo", Arrays.<Metric<?>> asList(new Metric<Number>("bar", 2.3),
+		this.reader.set("foo", Arrays.<Metric<?>>asList(new Metric<Number>("bar", 2.3),
 				new Metric<Number>("spam", 1.3)));
 		this.exporter.export();
 		assertEquals(1, this.writer.countGroups());

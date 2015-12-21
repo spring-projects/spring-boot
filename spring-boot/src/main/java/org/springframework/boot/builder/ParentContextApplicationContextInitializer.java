@@ -59,8 +59,8 @@ public class ParentContextApplicationContextInitializer implements
 		}
 	}
 
-	private static class EventPublisher implements
-			ApplicationListener<ContextRefreshedEvent>, Ordered {
+	private static class EventPublisher
+			implements ApplicationListener<ContextRefreshedEvent>, Ordered {
 
 		private static EventPublisher INSTANCE = new EventPublisher();
 
@@ -81,6 +81,9 @@ public class ParentContextApplicationContextInitializer implements
 
 	}
 
+	/**
+	 * {@link ApplicationEvent} fired when a parent context is available.
+	 */
 	@SuppressWarnings("serial")
 	public static class ParentContextAvailableEvent extends ApplicationEvent {
 

@@ -20,16 +20,15 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.env.Environment;
-import org.springframework.data.mapping.model.FieldNamingStrategy;
-
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientOptions.Builder;
 import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.env.Environment;
 
 /**
  * Configuration properties for Mongo.
@@ -91,7 +90,7 @@ public class MongoProperties {
 	/**
 	 * Fully qualified name of the FieldNamingStrategy to use.
 	 */
-	private Class<? extends FieldNamingStrategy> fieldNamingStrategy;
+	private Class<?> fieldNamingStrategy;
 
 	public String getHost() {
 		return this.host;
@@ -133,12 +132,11 @@ public class MongoProperties {
 		this.password = password;
 	}
 
-	public Class<? extends FieldNamingStrategy> getFieldNamingStrategy() {
+	public Class<?> getFieldNamingStrategy() {
 		return this.fieldNamingStrategy;
 	}
 
-	public void setFieldNamingStrategy(
-			Class<? extends FieldNamingStrategy> fieldNamingStrategy) {
+	public void setFieldNamingStrategy(Class<?> fieldNamingStrategy) {
 		this.fieldNamingStrategy = fieldNamingStrategy;
 	}
 
@@ -183,7 +181,7 @@ public class MongoProperties {
 	}
 
 	/**
-	 * Creates a {@link MongoClient} using the given {@code options}
+	 * Creates a {@link MongoClient} using the given {@code options}.
 	 *
 	 * @param options the options
 	 * @return the Mongo client
@@ -200,8 +198,8 @@ public class MongoProperties {
 	/**
 	 * Creates a {@link MongoClient} using the given {@code options} and
 	 * {@code environment}. If the configured port is zero, the value of the
-	 * {@code local.mongo.port} property retrieved from the {@code environment} is used
-	 * to configure the client.
+	 * {@code local.mongo.port} property retrieved from the {@code environment} is used to
+	 * configure the client.
 	 *
 	 * @param options the options
 	 * @param environment the environment
@@ -217,8 +215,8 @@ public class MongoProperties {
 				}
 				List<MongoCredential> credentials = null;
 				if (hasCustomCredentials()) {
-					String database = this.authenticationDatabase == null ? getMongoClientDatabase()
-							: this.authenticationDatabase;
+					String database = this.authenticationDatabase == null
+							? getMongoClientDatabase() : this.authenticationDatabase;
 					credentials = Arrays.asList(MongoCredential.createMongoCRCredential(
 							this.username, database, this.password));
 				}
@@ -276,8 +274,8 @@ public class MongoProperties {
 			builder.socketFactory(options.getSocketFactory());
 			builder.socketKeepAlive(options.isSocketKeepAlive());
 			builder.socketTimeout(options.getSocketTimeout());
-			builder.threadsAllowedToBlockForConnectionMultiplier(options
-					.getThreadsAllowedToBlockForConnectionMultiplier());
+			builder.threadsAllowedToBlockForConnectionMultiplier(
+					options.getThreadsAllowedToBlockForConnectionMultiplier());
 			builder.writeConcern(options.getWriteConcern());
 		}
 		return builder;

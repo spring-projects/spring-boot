@@ -17,7 +17,6 @@
 package org.springframework.boot.devtools.restart;
 
 import org.junit.Test;
-import org.springframework.boot.devtools.restart.SilentExitExceptionHandler;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
@@ -62,7 +61,7 @@ public class SilentExitExceptionHandlerTests {
 
 		private Throwable thrown;
 
-		public TestThread() {
+		TestThread() {
 			setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 				@Override
 				public void uncaughtException(Thread t, Throwable e) {

@@ -27,6 +27,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.Context;
+
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.servlet.view.velocity.VelocityToolboxView;
@@ -79,7 +80,7 @@ public class EmbeddedVelocityToolboxView extends VelocityToolboxView {
 
 		private final String toolboxFile;
 
-		public GetResourceMethodInterceptor(String toolboxFile) {
+		GetResourceMethodInterceptor(String toolboxFile) {
 			if (toolboxFile != null && !toolboxFile.startsWith("/")) {
 				toolboxFile = "/" + toolboxFile;
 			}
@@ -93,9 +94,9 @@ public class EmbeddedVelocityToolboxView extends VelocityToolboxView {
 				InputStream inputStream = (InputStream) invocation.proceed();
 				if (inputStream == null) {
 					try {
-						inputStream = new ClassPathResource(this.toolboxFile, Thread
-								.currentThread().getContextClassLoader())
-								.getInputStream();
+						inputStream = new ClassPathResource(this.toolboxFile,
+								Thread.currentThread().getContextClassLoader())
+										.getInputStream();
 					}
 					catch (Exception ex) {
 						// Ignore

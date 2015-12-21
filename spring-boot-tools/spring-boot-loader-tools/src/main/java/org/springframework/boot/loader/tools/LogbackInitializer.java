@@ -16,12 +16,12 @@
 
 package org.springframework.boot.loader.tools;
 
+import ch.qos.logback.classic.Level;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.impl.StaticLoggerBinder;
-import org.springframework.util.ClassUtils;
 
-import ch.qos.logback.classic.Level;
+import org.springframework.util.ClassUtils;
 
 /**
  * Utility to initialize logback (when present) to use INFO level logging.

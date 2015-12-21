@@ -114,6 +114,7 @@
 						<delimiters>
 							<delimiter>${resource.delimiter}</delimiter>
 						</delimiters>
+						<useDefaultDelimiters>false</useDefaultDelimiters>
 					</configuration>
 				</plugin>
 				<plugin>

@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -26,8 +29,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Configuration properties for OAuth2 Resources.
@@ -202,8 +203,8 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 	}
 
 	private int countBeans(Class<?> type) {
-		return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory,
-				type, true, false).length;
+		return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, type,
+				true, false).length;
 	}
 
 	public class Jwt {

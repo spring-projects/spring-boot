@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.hateoas.ResourceSupport;
@@ -30,16 +29,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
- * {@link MvcEndpoint} for the actuator. Uses content negotiation to provide access to the
- * HAL browser (when on the classpath), and to HAL-formatted JSON.
+ * {@link MvcEndpoint} to expose HAL-formatted JSON.
  *
  * @author Dave Syer
- * @author Phil Webb
+ * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.3.0
  */
 @ConfigurationProperties("endpoints.actuator")
-public class ActuatorHalJsonEndpoint extends WebMvcConfigurerAdapter implements
-		MvcEndpoint {
+public class ActuatorHalJsonEndpoint extends WebMvcConfigurerAdapter
+		implements MvcEndpoint {
 
 	/**
 	 * Endpoint URL path.
@@ -58,16 +57,18 @@ public class ActuatorHalJsonEndpoint extends WebMvcConfigurerAdapter implements
 	 */
 	private boolean enabled = true;
 
-	private final ManagementServerProperties management;
+	private final ManagementServletContext managementServletContext;
 
-	public ActuatorHalJsonEndpoint(ManagementServerProperties management) {
-		this.management = management;
-		if (StringUtils.hasText(management.getContextPath())) {
-			this.path = "";
+	public ActuatorHalJsonEndpoint(ManagementServletContext managementServletContext) {
+		this.managementServletContext = managementServletContext;
+		this.path = getDefaultPath(managementServletContext);
+	}
+
+	private String getDefaultPath(ManagementServletContext managementServletContext) {
+		if (StringUtils.hasText(managementServletContext.getContextPath())) {
+			return "";
 		}
-		else {
-			this.path = "/actuator";
-		}
+		return "/actuator";
 	}
 
 	@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -107,8 +108,8 @@ public class ActuatorHalJsonEndpoint extends WebMvcConfigurerAdapter implements
 		return null;
 	}
 
-	protected final ManagementServerProperties getManagement() {
-		return this.management;
+	protected final ManagementServletContext getManagementServletContext() {
+		return this.managementServletContext;
 	}
 
 }

@@ -17,14 +17,14 @@
 package org.springframework.boot.autoconfigure.reactor;
 
 import org.junit.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import reactor.bus.EventBus;
 import reactor.core.Dispatcher;
 import reactor.core.dispatch.MpscDispatcher;
 import reactor.core.dispatch.RingBufferDispatcher;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;

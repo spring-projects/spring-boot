@@ -30,7 +30,7 @@ package org.springframework.boot.actuate.metrics;
 public interface GaugeService {
 
 	/**
-	 * Set the specified gauge value
+	 * Set the specified gauge value.
 	 * @param metricName the name of the gauge to set
 	 * @param value the value of the gauge
 	 */

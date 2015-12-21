@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.boot.devtools.env.DevToolsHomePropertiesPostProcessor;
+
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -56,8 +56,8 @@ public class DevToolsHomePropertiesPostProcessorTests {
 	public void loadsHomeProperties() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
-		OutputStream out = new FileOutputStream(new File(this.home,
-				".spring-boot-devtools.properties"));
+		OutputStream out = new FileOutputStream(
+				new File(this.home, ".spring-boot-devtools.properties"));
 		properties.store(out, null);
 		out.close();
 		ConfigurableEnvironment environment = new MockEnvironment();
@@ -74,8 +74,8 @@ public class DevToolsHomePropertiesPostProcessorTests {
 		assertThat(environment.getProperty("abc"), nullValue());
 	}
 
-	private class MockDevToolHomePropertiesPostProcessor extends
-			DevToolsHomePropertiesPostProcessor {
+	private class MockDevToolHomePropertiesPostProcessor
+			extends DevToolsHomePropertiesPostProcessor {
 
 		@Override
 		protected File getHomeFolder() {

@@ -120,7 +120,7 @@ public interface AnsiElement {
 
 		private final String code;
 
-		public DefaultAnsiElement(String code) {
+		DefaultAnsiElement(String code) {
 			this.code = code;
 		}
 

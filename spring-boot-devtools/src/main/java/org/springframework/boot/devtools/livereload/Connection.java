@@ -29,15 +29,19 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.util.Base64Utils;
+
 /**
  * A {@link LiveReloadServer} connection.
+ *
+ * @author Phillip Webb
  */
 class Connection {
 
 	private static Log logger = LogFactory.getLog(Connection.class);
 
-	private static final Pattern WEBSOCKET_KEY_PATTERN = Pattern.compile(
-			"^Sec-WebSocket-Key:(.*)$", Pattern.MULTILINE);
+	private static final Pattern WEBSOCKET_KEY_PATTERN = Pattern
+			.compile("^Sec-WebSocket-Key:(.*)$", Pattern.MULTILINE);
 
 	public final static String WEBSOCKET_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
@@ -58,9 +62,9 @@ class Connection {
 	 * @param socket the source socket
 	 * @param inputStream the socket input stream
 	 * @param outputStream the socket output stream
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
-	public Connection(Socket socket, InputStream inputStream, OutputStream outputStream)
+	Connection(Socket socket, InputStream inputStream, OutputStream outputStream)
 			throws IOException {
 		this.socket = socket;
 		this.inputStream = new ConnectionInputStream(inputStream);
@@ -71,7 +75,7 @@ class Connection {
 
 	/**
 	 * Run the connection.
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	public void run() throws Exception {
 		if (this.header.contains("Upgrade: websocket")
@@ -87,8 +91,8 @@ class Connection {
 	private void runWebSocket(String header) throws Exception {
 		String accept = getWebsocketAcceptResponse();
 		this.outputStream.writeHeaders("HTTP/1.1 101 Switching Protocols",
-				"Upgrade: websocket", "Connection: Upgrade", "Sec-WebSocket-Accept: "
-						+ accept);
+				"Upgrade: websocket", "Connection: Upgrade",
+				"Sec-WebSocket-Accept: " + accept);
 		new Frame("{\"command\":\"hello\",\"protocols\":"
 				+ "[\"http://livereload.com/protocols/official-7\"],"
 				+ "\"serverName\":\"spring-boot\"}").write(this.outputStream);
@@ -126,7 +130,7 @@ class Connection {
 
 	/**
 	 * Trigger livereload for the client using this connection.
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public void triggerReload() throws IOException {
 		if (this.webSocket) {
@@ -147,12 +151,12 @@ class Connection {
 		String response = matcher.group(1).trim() + WEBSOCKET_GUID;
 		MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
 		messageDigest.update(response.getBytes(), 0, response.length());
-		return Base64Encoder.encode(messageDigest.digest());
+		return Base64Utils.encodeToString(messageDigest.digest());
 	}
 
 	/**
 	 * Close the connection.
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public void close() throws IOException {
 		this.running = false;

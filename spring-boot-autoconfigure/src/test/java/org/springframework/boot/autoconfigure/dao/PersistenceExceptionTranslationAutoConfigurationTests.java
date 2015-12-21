@@ -23,6 +23,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -108,7 +109,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 
 		private final EntityManager entityManger;
 
-		public TestRepository(EntityManager entityManager) {
+		TestRepository(EntityManager entityManager) {
 			this.entityManger = entityManager;
 		}
 

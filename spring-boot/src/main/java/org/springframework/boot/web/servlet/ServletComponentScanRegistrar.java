@@ -53,31 +53,30 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 		}
 	}
 
-	private void addPostProcessor(BeanDefinitionRegistry registry,
-			Set<String> packagesToScan) {
-		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-		beanDefinition.setBeanClass(ServletComponentRegisteringPostProcessor.class);
-		beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(
-				packagesToScan);
-		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
-	}
-
 	private void updatePostProcessor(BeanDefinitionRegistry registry,
 			Set<String> packagesToScan) {
 		BeanDefinition definition = registry.getBeanDefinition(BEAN_NAME);
 		ValueHolder constructorArguments = definition.getConstructorArgumentValues()
-				.getGenericArgumentValue(String[].class);
+				.getGenericArgumentValue(Set.class);
 		@SuppressWarnings("unchecked")
-		Set<String> mergedPackages = new LinkedHashSet<String>(
-				(Set<String>) constructorArguments.getValue());
+		Set<String> mergedPackages = (Set<String>) constructorArguments.getValue();
 		mergedPackages.addAll(packagesToScan);
-		constructorArguments.setValue(packagesToScan);
+		constructorArguments.setValue(mergedPackages);
+	}
+
+	private void addPostProcessor(BeanDefinitionRegistry registry,
+			Set<String> packagesToScan) {
+		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
+		beanDefinition.setBeanClass(ServletComponentRegisteringPostProcessor.class);
+		beanDefinition.getConstructorArgumentValues()
+				.addGenericArgumentValue(packagesToScan);
+		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
 	}
 
 	private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
-		AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
-				.getAnnotationAttributes(ServletComponentScan.class.getName()));
+		AnnotationAttributes attributes = AnnotationAttributes.fromMap(
+				metadata.getAnnotationAttributes(ServletComponentScan.class.getName()));
 		String[] value = attributes.getStringArray("value");
 		String[] basePackages = attributes.getStringArray("basePackages");
 		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
@@ -93,8 +92,8 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 			packagesToScan.add(ClassUtils.getPackageName(basePackageClass));
 		}
 		if (packagesToScan.isEmpty()) {
-			return Collections.singleton(ClassUtils.getPackageName(metadata
-					.getClassName()));
+			return Collections
+					.singleton(ClassUtils.getPackageName(metadata.getClassName()));
 		}
 		return packagesToScan;
 	}

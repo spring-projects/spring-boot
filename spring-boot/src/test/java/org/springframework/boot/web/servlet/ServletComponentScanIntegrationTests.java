@@ -18,6 +18,7 @@ package org.springframework.boot.web.servlet;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer;
@@ -52,8 +53,8 @@ public class ServletComponentScanIntegrationTests {
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
 		String port = this.context.getEnvironment().getProperty("local.server.port");
-		String response = new RestTemplate().getForObject("http://localhost:" + port
-				+ "/test", String.class);
+		String response = new RestTemplate()
+				.getForObject("http://localhost:" + port + "/test", String.class);
 		assertThat(response, is(equalTo("alpha bravo")));
 	}
 
@@ -65,6 +66,7 @@ public class ServletComponentScanIntegrationTests {
 		public TomcatEmbeddedServletContainerFactory servletContainerFactory() {
 			return new TomcatEmbeddedServletContainerFactory(0);
 		}
+
 	}
 
 }

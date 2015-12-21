@@ -21,10 +21,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.samskivert.mustache.Template;
+
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractTemplateView;
-
-import com.samskivert.mustache.Template;
 
 /**
  * Spring MVC {@link View} using the Mustache template engine.
@@ -39,8 +39,8 @@ public class MustacheView extends AbstractTemplateView {
 
 	/**
 	 * Create a new {@link MustacheView} instance.
-	 * @see #setTemplate(Template)
 	 * @since 1.2.5
+	 * @see #setTemplate(Template)
 	 */
 	public MustacheView() {
 	}

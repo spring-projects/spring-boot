@@ -26,6 +26,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.jndi.JndiPropertiesHidingClassLoader;
 import org.springframework.boot.autoconfigure.jndi.TestableInitialContextFactory;
@@ -83,8 +84,8 @@ public class JndiDataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void dataSourceIsAvailableFromJndi() throws IllegalStateException,
-			NamingException {
+	public void dataSourceIsAvailableFromJndi()
+			throws IllegalStateException, NamingException {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 
@@ -99,8 +100,8 @@ public class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void mbeanDataSourceIsExcludedFromExport() throws IllegalStateException,
-			NamingException {
+	public void mbeanDataSourceIsExcludedFromExport()
+			throws IllegalStateException, NamingException {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 
@@ -120,8 +121,8 @@ public class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void standardDataSourceIsNotExcludedFromExport() throws IllegalStateException,
-			NamingException {
+	public void standardDataSourceIsNotExcludedFromExport()
+			throws IllegalStateException, NamingException {
 		DataSource dataSource = new org.apache.commons.dbcp.BasicDataSource();
 		configureJndi("foo", dataSource);
 

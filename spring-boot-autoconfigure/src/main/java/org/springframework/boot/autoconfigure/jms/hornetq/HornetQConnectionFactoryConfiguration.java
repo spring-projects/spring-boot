@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jms.hornetq;
 import javax.jms.ConnectionFactory;
 
 import org.hornetq.jms.client.HornetQConnectionFactory;
+
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

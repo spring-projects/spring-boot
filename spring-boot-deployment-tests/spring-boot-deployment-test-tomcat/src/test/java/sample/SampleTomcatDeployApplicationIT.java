@@ -17,6 +17,7 @@
 package sample;
 
 import org.junit.Test;
+
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Integration Tests for {@link SampleTomcatDeployApplication}. 
+ * Integration Tests for {@link SampleTomcatDeployApplication}.
  */
 public class SampleTomcatDeployApplicationIT {
 

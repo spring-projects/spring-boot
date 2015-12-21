@@ -16,15 +16,15 @@
 
 package sample.bitronix;
 
+import bitronix.tm.resource.jms.PoolingConnectionFactory;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.SubstringMatcher;
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.ApplicationContext;
-
-import bitronix.tm.resource.jms.PoolingConnectionFactory;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;

@@ -32,8 +32,11 @@ import org.json.JSONException;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class ConfigurationMetadataRepositoryJsonBuilder {
+public final class ConfigurationMetadataRepositoryJsonBuilder {
 
+	/**
+	 * UTF-8 Charset.
+	 */
 	public static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	private Charset defaultCharset = UTF_8;
@@ -54,7 +57,7 @@ public class ConfigurationMetadataRepositoryJsonBuilder {
 	 * Leaves the stream open when done.
 	 * @param inputStream the source input stream
 	 * @return this builder
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public ConfigurationMetadataRepositoryJsonBuilder withJsonResource(
 			InputStream inputStream) throws IOException {
@@ -71,7 +74,7 @@ public class ConfigurationMetadataRepositoryJsonBuilder {
 	 * @param inputstream the source input stream
 	 * @param charset the charset of the input
 	 * @return this builder
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public ConfigurationMetadataRepositoryJsonBuilder withJsonResource(
 			InputStream inputstream, Charset charset) throws IOException {
@@ -102,16 +105,17 @@ public class ConfigurationMetadataRepositoryJsonBuilder {
 			return create(metadata);
 		}
 		catch (IOException ex) {
-			throw new IllegalArgumentException("Failed to read configuration "
-					+ "metadata", ex);
+			throw new IllegalArgumentException(
+					"Failed to read configuration " + "metadata", ex);
 		}
 		catch (JSONException ex) {
-			throw new IllegalArgumentException("Invalid configuration "
-					+ "metadata document", ex);
+			throw new IllegalArgumentException(
+					"Invalid configuration " + "metadata document", ex);
 		}
 	}
 
-	private SimpleConfigurationMetadataRepository create(RawConfigurationMetadata metadata) {
+	private SimpleConfigurationMetadataRepository create(
+			RawConfigurationMetadata metadata) {
 		SimpleConfigurationMetadataRepository repository = new SimpleConfigurationMetadataRepository();
 		repository.add(metadata.getSources());
 		for (ConfigurationMetadataItem item : metadata.getItems()) {
@@ -167,7 +171,8 @@ public class ConfigurationMetadataRepositoryJsonBuilder {
 	 * @param defaultCharset the default charset to use
 	 * @return a new {@link ConfigurationMetadataRepositoryJsonBuilder} instance.
 	 */
-	public static ConfigurationMetadataRepositoryJsonBuilder create(Charset defaultCharset) {
+	public static ConfigurationMetadataRepositoryJsonBuilder create(
+			Charset defaultCharset) {
 		return new ConfigurationMetadataRepositoryJsonBuilder(defaultCharset);
 	}
 

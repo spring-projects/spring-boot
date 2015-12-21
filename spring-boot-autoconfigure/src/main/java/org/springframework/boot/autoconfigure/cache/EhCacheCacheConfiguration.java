@@ -20,9 +20,9 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ResourceCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ResourceCondition;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerUtils;
 import org.springframework.context.annotation.Bean;
@@ -71,7 +71,7 @@ class EhCacheCacheConfiguration {
 	 */
 	static class ConfigAvailableCondition extends ResourceCondition {
 
-		public ConfigAvailableCondition() {
+		ConfigAvailableCondition() {
 			super("EhCache", "spring.cache.ehcache", "config", "classpath:/ehcache.xml");
 		}
 

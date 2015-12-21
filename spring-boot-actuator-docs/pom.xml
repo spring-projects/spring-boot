@@ -31,6 +31,10 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>provided</scope>
@@ -38,6 +42,22 @@
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-templates</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -50,8 +70,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
-			<artifactId>spring-restdocs</artifactId>
-			<version>1.0.0.M1</version>
+			<artifactId>spring-restdocs-mockmvc</artifactId>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -97,9 +116,6 @@
 					<includes>
 						<include>**/*Documentation.java</include>
 					</includes>
-					<systemPropertyVariables>
-						<org.springframework.restdocs.outputDir>${project.build.directory}/generated-snippets</org.springframework.restdocs.outputDir>
-					</systemPropertyVariables>
 					<skipTests>false</skipTests>
 				</configuration>
 				<executions>
@@ -155,6 +171,16 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+        		<configuration>
+					<includes>
+						<include>**/*.html</include>
+						<include>**/*.png</include>
+					</includes>
+				</configuration>
+      		</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>

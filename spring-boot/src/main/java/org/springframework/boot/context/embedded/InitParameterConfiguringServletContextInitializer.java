@@ -30,8 +30,8 @@ import javax.servlet.ServletException;
  * @since 1.2.0
  * @see ServletContext#setInitParameter(String, String)
  */
-public class InitParameterConfiguringServletContextInitializer implements
-		ServletContextInitializer {
+public class InitParameterConfiguringServletContextInitializer
+		implements ServletContextInitializer {
 
 	private final Map<String, String> parameters;
 

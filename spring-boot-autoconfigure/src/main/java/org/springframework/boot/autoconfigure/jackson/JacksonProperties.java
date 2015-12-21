@@ -21,8 +21,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -30,8 +28,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 /**
- * Configuration properties to configure Jackson
+ * Configuration properties to configure Jackson.
  *
  * @author Andy Wilkinson
  * @author Marcel Overdijk

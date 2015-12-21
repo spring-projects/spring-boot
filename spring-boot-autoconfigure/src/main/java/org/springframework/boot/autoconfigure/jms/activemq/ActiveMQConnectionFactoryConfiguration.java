@@ -20,6 +20,7 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -39,6 +40,13 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnMissingBean(ConnectionFactory.class)
 class ActiveMQConnectionFactoryConfiguration {
 
+	@Bean
+	@ConditionalOnProperty(prefix = "spring.activemq", name = "pooled", havingValue = "false", matchIfMissing = true)
+	public ActiveMQConnectionFactory jmsConnectionFactory(ActiveMQProperties properties) {
+		return new ActiveMQConnectionFactoryFactory(properties)
+				.createConnectionFactory(ActiveMQConnectionFactory.class);
+	}
+
 	@ConditionalOnClass(PooledConnectionFactory.class)
 	static class PooledConnectionFactoryConfiguration {
 
@@ -53,13 +61,6 @@ class ActiveMQConnectionFactoryConfiguration {
 			return pooledConnectionFactory;
 
 		}
-	}
-
-	@Bean
-	@ConditionalOnProperty(prefix = "spring.activemq", name = "pooled", havingValue = "false", matchIfMissing = true)
-	public ActiveMQConnectionFactory jmsConnectionFactory(ActiveMQProperties properties) {
-		return new ActiveMQConnectionFactoryFactory(properties)
-				.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 
 }

@@ -81,7 +81,7 @@ public abstract class Launcher {
 	}
 
 	/**
-	 * Create a classloader for the specified URLs
+	 * Create a classloader for the specified URLs.
 	 * @param urls the URLs
 	 * @return the classloader
 	 * @throws Exception if the classloader cannot be created
@@ -149,7 +149,8 @@ public abstract class Launcher {
 			throw new IllegalStateException(
 					"Unable to determine code source archive from " + root);
 		}
-		return (root.isDirectory() ? new ExplodedArchive(root) : new JarFileArchive(root));
+		return (root.isDirectory() ? new ExplodedArchive(root)
+				: new JarFileArchive(root));
 	}
 
 }

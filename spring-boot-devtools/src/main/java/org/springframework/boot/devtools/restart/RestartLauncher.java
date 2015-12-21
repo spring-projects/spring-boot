@@ -31,7 +31,7 @@ class RestartLauncher extends Thread {
 
 	private Throwable error;
 
-	public RestartLauncher(ClassLoader classLoader, String mainClassName, String[] args,
+	RestartLauncher(ClassLoader classLoader, String mainClassName, String[] args,
 			UncaughtExceptionHandler exceptionHandler) {
 		this.mainClassName = mainClassName;
 		this.args = args;

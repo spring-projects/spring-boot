@@ -21,8 +21,14 @@ import java.util.Locale;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
@@ -43,8 +49,8 @@ public class MessageSourceAutoConfigurationTests {
 
 	@After
 	public void closeContext() {
-		if (context != null) {
-			context.close();
+		if (this.context != null) {
+			this.context.close();
 		}
 	}
 
@@ -72,7 +78,8 @@ public class MessageSourceAutoConfigurationTests {
 	@Test
 	public void testMultipleMessageSourceCreated() throws Exception {
 		load("spring.messages.basename:test/messages,test/messages2");
-		assertEquals("bar", this.context.getMessage("foo", null, "Foo message", Locale.UK));
+		assertEquals("bar",
+				this.context.getMessage("foo", null, "Foo message", Locale.UK));
 		assertEquals("bar-bar",
 				this.context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK));
 	}
@@ -111,6 +118,36 @@ public class MessageSourceAutoConfigurationTests {
 				.isFallbackToSystemLocale());
 	}
 
+	@Test
+	public void existingMessageSourceIsPreferred() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CustomMessageSource.class,
+				MessageSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals("foo", this.context.getMessage("foo", null, null, null));
+	}
+
+	@Test
+	public void existingMessageSourceInParentIsIgnored() {
+		ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext();
+		parent.refresh();
+		try {
+			this.context = new AnnotationConfigApplicationContext();
+			this.context.setParent(parent);
+			EnvironmentTestUtils.addEnvironment(this.context,
+					"spring.messages.basename:test/messages");
+			this.context.register(MessageSourceAutoConfiguration.class,
+					PropertyPlaceholderAutoConfiguration.class);
+			this.context.refresh();
+			assertEquals("bar",
+					this.context.getMessage("foo", null, "Foo message", Locale.UK));
+		}
+		finally {
+			parent.close();
+		}
+	}
+
 	private void load(String... environment) {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
@@ -122,6 +159,36 @@ public class MessageSourceAutoConfigurationTests {
 	@Configuration
 	@PropertySource("classpath:/switch-messages.properties")
 	protected static class Config {
+
+	}
+
+	@Configuration
+	protected static class CustomMessageSource {
+
+		@Bean
+		public MessageSource messageSource() {
+			return new MessageSource() {
+
+				@Override
+				public String getMessage(String code, Object[] args,
+						String defaultMessage, Locale locale) {
+					return code;
+				}
+
+				@Override
+				public String getMessage(String code, Object[] args, Locale locale)
+						throws NoSuchMessageException {
+					return code;
+				}
+
+				@Override
+				public String getMessage(MessageSourceResolvable resolvable,
+						Locale locale) throws NoSuchMessageException {
+					return resolvable.getCodes()[0];
+				}
+
+			};
+		}
 
 	}
 }

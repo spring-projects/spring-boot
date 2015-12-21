@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 import org.junit.Test;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,8 +49,8 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
 		assertNotNull(this.context.getBean(DataSourceTransactionManager.class));
-		assertNotNull(this.context
-				.getBean(AbstractTransactionManagementConfiguration.class));
+		assertNotNull(
+				this.context.getBean(AbstractTransactionManagementConfiguration.class));
 	}
 
 	@Test
@@ -57,9 +58,8 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 		this.context.register(DataSourceTransactionManagerAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(0, this.context.getBeanNamesForType(DataSource.class).length);
-		assertEquals(
-				0,
-				this.context.getBeanNamesForType(DataSourceTransactionManager.class).length);
+		assertEquals(0, this.context
+				.getBeanNamesForType(DataSourceTransactionManager.class).length);
 	}
 
 	@Test
@@ -79,8 +79,8 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 				EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals("No transaction manager should be been created", 1, this.context
-				.getBeansOfType(PlatformTransactionManager.class).size());
+		assertEquals("No transaction manager should be been created", 1,
+				this.context.getBeansOfType(PlatformTransactionManager.class).size());
 		assertEquals("Wrong transaction manager",
 				this.context.getBean("myTransactionManager"),
 				this.context.getBean(PlatformTransactionManager.class));

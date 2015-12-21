@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +45,7 @@ public class ResourceProperties implements ResourceLoaderAware {
 			"classpath:/static/", "classpath:/public/" };
 
 	private static final String[] RESOURCE_LOCATIONS;
+
 	static {
 		RESOURCE_LOCATIONS = new String[CLASSPATH_RESOURCE_LOCATIONS.length
 				+ SERVLET_RESOURCE_LOCATIONS.length];
@@ -91,14 +91,14 @@ public class ResourceProperties implements ResourceLoaderAware {
 	public Resource getWelcomePage() {
 		for (String location : getStaticWelcomePageLocations()) {
 			Resource resource = this.resourceLoader.getResource(location);
-			if (resource.exists()) {
-				try {
+			try {
+				if (resource.exists()) {
 					resource.getURL();
 					return resource;
 				}
-				catch (IOException ex) {
-					// Ignore
-				}
+			}
+			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return null;

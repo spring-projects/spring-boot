@@ -22,6 +22,7 @@ import javax.persistence.PersistenceException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -117,8 +118,9 @@ public class EntityScanTests {
 	}
 
 	private void assertSetPackagesToScan(String... expected) {
-		String[] actual = this.context.getBean(
-				TestLocalContainerEntityManagerFactoryBean.class).getPackagesToScan();
+		String[] actual = this.context
+				.getBean(TestLocalContainerEntityManagerFactoryBean.class)
+				.getPackagesToScan();
 		assertThat(actual, equalTo(expected));
 	}
 
@@ -170,15 +172,15 @@ public class EntityScanTests {
 	static class BeanPostProcessorConfiguration {
 
 		@Autowired
-		private EntityManagerFactory entityManagerFactory;
+		protected EntityManagerFactory entityManagerFactory;
 
 		@Bean
 		public BeanPostProcessor beanPostProcessor() {
 			return new BeanPostProcessor() {
 
 				@Override
-				public Object postProcessBeforeInitialization(Object bean, String beanName)
-						throws BeansException {
+				public Object postProcessBeforeInitialization(Object bean,
+						String beanName) throws BeansException {
 					return bean;
 				}
 
@@ -202,8 +204,8 @@ public class EntityScanTests {
 
 	}
 
-	private static class TestLocalContainerEntityManagerFactoryBean extends
-			LocalContainerEntityManagerFactoryBean {
+	private static class TestLocalContainerEntityManagerFactoryBean
+			extends LocalContainerEntityManagerFactoryBean {
 
 		private String[] packagesToScan;
 

@@ -28,12 +28,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
-import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
-import org.springframework.boot.devtools.restart.server.DefaultSourceFolderUrlFilter;
-import org.springframework.boot.devtools.restart.server.RestartServer;
-import org.springframework.boot.devtools.restart.server.SourceFolderUrlFilter;
+import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -121,7 +119,7 @@ public class RestartServerTests {
 
 	private static class MockRestartServer extends RestartServer {
 
-		public MockRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter,
+		MockRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter,
 				ClassLoader classLoader) {
 			super(sourceFolderUrlFilter, classLoader);
 		}

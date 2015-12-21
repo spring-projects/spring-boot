@@ -22,6 +22,9 @@ do as they were designed before this was clarified.
 |===
 | Name | Location
 
+| Central Authentication Service (CAS) client
+| https://github.com/Unicon/cas-client-autoconfig-support
+
 | http://modelmapper.org/[ModelMapper]
 | https://github.com/jmnarloch/modelmapper-spring-boot-starter
 

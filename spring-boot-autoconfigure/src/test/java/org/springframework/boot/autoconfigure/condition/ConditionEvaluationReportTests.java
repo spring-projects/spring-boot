@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
@@ -180,9 +181,8 @@ public class ConditionEvaluationReportTests {
 	@Test
 	@SuppressWarnings("resource")
 	public void springBootConditionPopulatesReport() throws Exception {
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(new AnnotationConfigApplicationContext(Config.class)
-						.getBeanFactory());
+		ConditionEvaluationReport report = ConditionEvaluationReport.get(
+				new AnnotationConfigApplicationContext(Config.class).getBeanFactory());
 		assertThat(report.getConditionAndOutcomesBySource().size(), not(equalTo(0)));
 	}
 
@@ -211,12 +211,12 @@ public class ConditionEvaluationReportTests {
 	public void duplicateOutcomes() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				DuplicateConfig.class);
-		ConditionEvaluationReport report = ConditionEvaluationReport.get(context
-				.getBeanFactory());
+		ConditionEvaluationReport report = ConditionEvaluationReport
+				.get(context.getBeanFactory());
 		String autoconfigKey = MultipartAutoConfiguration.class.getName();
 
-		ConditionAndOutcomes outcomes = report.getConditionAndOutcomesBySource().get(
-				autoconfigKey);
+		ConditionAndOutcomes outcomes = report.getConditionAndOutcomesBySource()
+				.get(autoconfigKey);
 		assertThat(outcomes, not(nullValue()));
 		assertThat(getNumberOfOutcomes(outcomes), equalTo(2));
 
@@ -237,11 +237,12 @@ public class ConditionEvaluationReportTests {
 		EnvironmentTestUtils.addEnvironment(context, "test.present=true");
 		context.register(NegativeOuterConfig.class);
 		context.refresh();
-		ConditionEvaluationReport report = ConditionEvaluationReport.get(context
-				.getBeanFactory());
+		ConditionEvaluationReport report = ConditionEvaluationReport
+				.get(context.getBeanFactory());
 		Map<String, ConditionAndOutcomes> sourceOutcomes = report
 				.getConditionAndOutcomesBySource();
-		assertThat(context.containsBean("negativeOuterPositiveInnerBean"), equalTo(false));
+		assertThat(context.containsBean("negativeOuterPositiveInnerBean"),
+				equalTo(false));
 		String negativeConfig = NegativeOuterConfig.class.getName();
 		assertThat(sourceOutcomes.get(negativeConfig).isFullMatch(), equalTo(false));
 		String positiveConfig = NegativeOuterConfig.PositiveInnerConfig.class.getName();
@@ -287,13 +288,14 @@ public class ConditionEvaluationReportTests {
 		}
 	}
 
-	static class TestMatchCondition extends SpringBootCondition implements
-			ConfigurationCondition {
+	static class TestMatchCondition extends SpringBootCondition
+			implements ConfigurationCondition {
 
 		private final ConfigurationPhase phase;
+
 		private final boolean match;
 
-		public TestMatchCondition(ConfigurationPhase phase, boolean match) {
+		TestMatchCondition(ConfigurationPhase phase, boolean match) {
 			this.phase = phase;
 			this.match = match;
 		}
@@ -313,7 +315,7 @@ public class ConditionEvaluationReportTests {
 
 	static class MatchParseCondition extends TestMatchCondition {
 
-		public MatchParseCondition() {
+		MatchParseCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION, true);
 		}
 
@@ -321,7 +323,7 @@ public class ConditionEvaluationReportTests {
 
 	static class MatchBeanCondition extends TestMatchCondition {
 
-		public MatchBeanCondition() {
+		MatchBeanCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN, true);
 		}
 
@@ -329,7 +331,7 @@ public class ConditionEvaluationReportTests {
 
 	static class NoMatchParseCondition extends TestMatchCondition {
 
-		public NoMatchParseCondition() {
+		NoMatchParseCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION, false);
 		}
 
@@ -337,7 +339,7 @@ public class ConditionEvaluationReportTests {
 
 	static class NoMatchBeanCondition extends TestMatchCondition {
 
-		public NoMatchBeanCondition() {
+		NoMatchBeanCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN, false);
 		}
 

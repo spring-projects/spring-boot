@@ -92,7 +92,8 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		ValueProvider valueProvider = hint.getValueProviders().get(0);
 		assertEquals("handle-as", valueProvider.getName());
 		assertEquals(1, valueProvider.getParameters().size());
-		assertEquals(Integer.class.getName(), valueProvider.getParameters().get("target"));
+		assertEquals(Integer.class.getName(),
+				valueProvider.getParameters().get("target"));
 	}
 
 	@Test
@@ -141,8 +142,8 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		ConfigurationMetadataItem item = items.get(0);
 		assertProperty(item, "server.port", "server.port", Integer.class, null);
 		assertTrue(item.isDeprecated());
-		assertEquals("Server namespace has moved to spring.server", item.getDeprecation()
-				.getReason());
+		assertEquals("Server namespace has moved to spring.server",
+				item.getDeprecation().getReason());
 		assertEquals("server.spring.port", item.getDeprecation().getReplacement());
 
 		ConfigurationMetadataItem item2 = items.get(1);

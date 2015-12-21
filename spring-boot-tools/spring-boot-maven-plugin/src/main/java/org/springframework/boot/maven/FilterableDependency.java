@@ -40,7 +40,7 @@ abstract class FilterableDependency {
 	private String artifactId;
 
 	/**
-	 * The classifier of the artifact to exclude
+	 * The classifier of the artifact to exclude.
 	 */
 	@Parameter
 	private String classifier;

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Test;
+
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertyResolver;
@@ -82,7 +83,8 @@ public class LogFileTests {
 		Map<String, Object> properties = new LinkedHashMap<String, Object>();
 		properties.put("logging.file", file);
 		properties.put("logging.path", path);
-		PropertySource<?> propertySource = new MapPropertySource("properties", properties);
+		PropertySource<?> propertySource = new MapPropertySource("properties",
+				properties);
 		MutablePropertySources propertySources = new MutablePropertySources();
 		propertySources.addFirst(propertySource);
 		return new PropertySourcesPropertyResolver(propertySources);

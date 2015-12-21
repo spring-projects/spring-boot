@@ -21,6 +21,7 @@ import javax.websocket.server.ServerContainer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -70,8 +71,8 @@ public class WebSocketAutoConfigurationTests {
 			Class<?>... configuration) {
 		this.context.register(configuration);
 		this.context.refresh();
-		Object serverContainer = this.context.getServletContext().getAttribute(
-				"javax.websocket.server.ServerContainer");
+		Object serverContainer = this.context.getServletContext()
+				.getAttribute("javax.websocket.server.ServerContainer");
 		assertThat(serverContainer, is(instanceOf(ServerContainer.class)));
 
 	}

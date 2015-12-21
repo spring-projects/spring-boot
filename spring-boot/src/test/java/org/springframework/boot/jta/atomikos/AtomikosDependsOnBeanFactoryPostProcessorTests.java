@@ -22,14 +22,14 @@ import java.util.HashSet;
 import javax.jms.ConnectionFactory;
 import javax.sql.DataSource;
 
+import com.atomikos.icatch.jta.UserTransactionManager;
+import com.atomikos.jms.extra.MessageDrivenContainer;
 import org.junit.Test;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.atomikos.icatch.jta.UserTransactionManager;
-import com.atomikos.jms.extra.MessageDrivenContainer;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -61,8 +61,8 @@ public class AtomikosDependsOnBeanFactoryPostProcessorTests {
 			assertTrue("No dependsOn expected for " + bean, expected.length == 0);
 			return;
 		}
-		HashSet<String> dependsOn = new HashSet<String>(Arrays.asList(definition
-				.getDependsOn()));
+		HashSet<String> dependsOn = new HashSet<String>(
+				Arrays.asList(definition.getDependsOn()));
 		assertThat(dependsOn, equalTo(new HashSet<String>(Arrays.asList(expected))));
 	}
 

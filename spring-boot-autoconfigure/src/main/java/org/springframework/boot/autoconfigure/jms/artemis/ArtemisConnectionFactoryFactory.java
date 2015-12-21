@@ -27,6 +27,7 @@ import org.apache.activemq.artemis.core.remoting.impl.invm.InVMConnectorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
+
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -47,7 +48,7 @@ class ArtemisConnectionFactoryFactory {
 
 	private final ListableBeanFactory beanFactory;
 
-	public ArtemisConnectionFactoryFactory(ListableBeanFactory beanFactory,
+	ArtemisConnectionFactoryFactory(ListableBeanFactory beanFactory,
 			ArtemisProperties properties) {
 		Assert.notNull(beanFactory, "BeanFactory must not be null");
 		Assert.notNull(properties, "Properties must not be null");
@@ -62,8 +63,8 @@ class ArtemisConnectionFactoryFactory {
 			return doCreateConnectionFactory(factoryClass);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create "
-					+ "ActiveMQConnectionFactory", ex);
+			throw new IllegalStateException(
+					"Unable to create " + "ActiveMQConnectionFactory", ex);
 		}
 	}
 
@@ -92,6 +93,7 @@ class ArtemisConnectionFactoryFactory {
 
 	/**
 	 * Deduce the {@link ArtemisMode} to use if none has been set.
+	 * @return the mode
 	 */
 	private ArtemisMode deduceMode() {
 		if (this.properties.getEmbedded().isEnabled()
@@ -105,12 +107,12 @@ class ArtemisConnectionFactoryFactory {
 			Class<T> factoryClass) throws Exception {
 		try {
 			TransportConfiguration transportConfiguration = new TransportConfiguration(
-					InVMConnectorFactory.class.getName(), this.properties.getEmbedded()
-							.generateTransportParameters());
+					InVMConnectorFactory.class.getName(),
+					this.properties.getEmbedded().generateTransportParameters());
 			ServerLocator serviceLocator = ActiveMQClient
 					.createServerLocatorWithoutHA(transportConfiguration);
-			return factoryClass.getConstructor(ServerLocator.class).newInstance(
-					serviceLocator);
+			return factoryClass.getConstructor(ServerLocator.class)
+					.newInstance(serviceLocator);
 		}
 		catch (NoClassDefFoundError ex) {
 			throw new IllegalStateException("Unable to create InVM "

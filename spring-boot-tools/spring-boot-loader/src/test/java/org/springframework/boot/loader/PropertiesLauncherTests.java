@@ -27,6 +27,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -80,7 +81,8 @@ public class PropertiesLauncherTests {
 		System.setProperty("loader.config.name", "foo");
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertEquals("my.Application", launcher.getMainClass());
-		assertEquals("[etc/]", ReflectionTestUtils.getField(launcher, "paths").toString());
+		assertEquals("[etc/]",
+				ReflectionTestUtils.getField(launcher, "paths").toString());
 	}
 
 	@Test
@@ -95,8 +97,8 @@ public class PropertiesLauncherTests {
 		System.setProperty("loader.path", "jars/*");
 		System.setProperty("loader.main", "demo.Application");
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		assertEquals("[jars/]", ReflectionTestUtils.getField(launcher, "paths")
-				.toString());
+		assertEquals("[jars/]",
+				ReflectionTestUtils.getField(launcher, "paths").toString());
 		launcher.launch(new String[0]);
 		waitFor("Hello World");
 	}
@@ -106,8 +108,8 @@ public class PropertiesLauncherTests {
 		System.setProperty("loader.path", "jars/app.jar");
 		System.setProperty("loader.main", "demo.Application");
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		assertEquals("[jars/app.jar]", ReflectionTestUtils.getField(launcher, "paths")
-				.toString());
+		assertEquals("[jars/app.jar]",
+				ReflectionTestUtils.getField(launcher, "paths").toString());
 		launcher.launch(new String[0]);
 		waitFor("Hello World");
 	}
@@ -117,8 +119,8 @@ public class PropertiesLauncherTests {
 		System.setProperty("loader.path", "./jars/app.jar");
 		System.setProperty("loader.main", "demo.Application");
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		assertEquals("[jars/app.jar]", ReflectionTestUtils.getField(launcher, "paths")
-				.toString());
+		assertEquals("[jars/app.jar]",
+				ReflectionTestUtils.getField(launcher, "paths").toString());
 		launcher.launch(new String[0]);
 		waitFor("Hello World");
 	}
@@ -128,8 +130,8 @@ public class PropertiesLauncherTests {
 		System.setProperty("loader.path", "jars/app.jar");
 		System.setProperty("loader.classLoader", URLClassLoader.class.getName());
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		assertEquals("[jars/app.jar]", ReflectionTestUtils.getField(launcher, "paths")
-				.toString());
+		assertEquals("[jars/app.jar]",
+				ReflectionTestUtils.getField(launcher, "paths").toString());
 		launcher.launch(new String[0]);
 		waitFor("Hello World");
 	}
@@ -149,8 +151,7 @@ public class PropertiesLauncherTests {
 	public void testCustomClassLoaderCreation() throws Exception {
 		System.setProperty("loader.classLoader", TestLoader.class.getName());
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		ClassLoader loader = launcher
-				.createClassLoader(Collections.<Archive> emptyList());
+		ClassLoader loader = launcher.createClassLoader(Collections.<Archive>emptyList());
 		assertNotNull(loader);
 		assertEquals(TestLoader.class.getName(), loader.getClass().getName());
 	}

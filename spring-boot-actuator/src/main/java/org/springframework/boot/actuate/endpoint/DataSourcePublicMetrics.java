@@ -84,7 +84,8 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 		return metrics;
 	}
 
-	private <T extends Number> void addMetric(Set<Metric<?>> metrics, String name, T value) {
+	private <T extends Number> void addMetric(Set<Metric<?>> metrics, String name,
+			T value) {
 		if (value != null) {
 			metrics.add(new Metric<T>(name, value));
 		}
@@ -113,6 +114,7 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 	 * Attempt to locate the primary {@link DataSource} (i.e. either the only data source
 	 * available or the one amongst the candidates marked as {@link Primary}. Return
 	 * {@code null} if there no primary data source could be found.
+	 * @return the primary datasource
 	 */
 	private DataSource getPrimaryDataSource() {
 		try {

@@ -1,8 +1,22 @@
 {"properties": [
   {
+    "name": "error.path",
+    "type": "java.lang.String",
+    "description": "Path of the error controller.",
+    "deprecation": {
+      "replacement": "server.error.path"
+    }
+  },
+  {
     "name": "multipart.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable support of multi-part uploads.",
+    "defaultValue": true
+  },
+  {
+    "name": "server.error.whitelabel.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable the default error page displayed in browsers in case of a server error.",
     "defaultValue": true
   },
   {
@@ -31,7 +45,7 @@
   },
   {
     "name": "spring.autoconfigure.exclude",
-    "type": "java.lang.Class[]",
+    "type": "java.util.List<java.lang.Class>",
     "description": "Auto-configuration classes to exclude."
   },
   {
@@ -85,7 +99,7 @@
   {
   	"name": "spring.http.converters.preferred-json-mapper",
   	"type": "java.lang.String",
-  	"description": "Preferred JSON mapper to use for HTTP message conversion."
+  	"description": "Preferred JSON mapper to use for HTTP message conversion. Set to \"gson\" to force the use of Gson when both it and Jackson are on the classpath."
   },
   {
     "name": "spring.jmx.default-domain",
@@ -192,6 +206,17 @@
         "name": "class-reference",
         "parameters": {
           "target": "javax.cache.spi.CachingProvider"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.data.mongodb.field-naming-strategy",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "org.springframework.data.mapping.model.FieldNamingStrategy"
         }
       }
     ]

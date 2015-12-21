@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -103,7 +104,7 @@ public class ResourceBannerTests {
 		ResourceBanner banner = new MockResourceBanner(resource, bootVersion,
 				applicationVersion);
 		ConfigurableEnvironment environment = new MockEnvironment();
-		Map<String, Object> source = Collections.<String, Object> singletonMap("a", "1");
+		Map<String, Object> source = Collections.<String, Object>singletonMap("a", "1");
 		environment.getPropertySources().addLast(new MapPropertySource("map", source));
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		banner.printBanner(environment, getClass(), new PrintStream(out));
@@ -116,7 +117,7 @@ public class ResourceBannerTests {
 
 		private final String applicationVersion;
 
-		public MockResourceBanner(Resource resource, String bootVersion,
+		MockResourceBanner(Resource resource, String bootVersion,
 				String applicationVersion) {
 			super(resource);
 			this.bootVersion = bootVersion;

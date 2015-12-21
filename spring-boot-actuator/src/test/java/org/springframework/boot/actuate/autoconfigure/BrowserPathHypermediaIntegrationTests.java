@@ -19,10 +19,10 @@ package org.springframework.boot.actuate.autoconfigure;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.BrowserPathHypermediaIntegrationTests.SpringBootHypermediaApplication;
 import org.springframework.boot.actuate.endpoint.mvc.ActuatorHalBrowserEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -56,9 +56,6 @@ public class BrowserPathHypermediaIntegrationTests {
 
 	@Autowired
 	private WebApplicationContext context;
-
-	@Autowired
-	private MvcEndpoints mvcEndpoints;
 
 	private MockMvc mockMvc;
 

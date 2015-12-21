@@ -23,6 +23,7 @@ import javax.servlet.Servlet;
 import javax.sql.DataSource;
 
 import org.apache.catalina.startup.Tomcat;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.boot.actuate.endpoint.CachePublicMetrics;
@@ -66,8 +67,8 @@ import org.springframework.lang.UsesJava7;
 @Configuration
 @AutoConfigureBefore(EndpointAutoConfiguration.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, CacheAutoConfiguration.class,
-	MetricRepositoryAutoConfiguration.class, CacheStatisticsAutoConfiguration.class,
-	IntegrationAutoConfiguration.class })
+		MetricRepositoryAutoConfiguration.class, CacheStatisticsAutoConfiguration.class,
+		IntegrationAutoConfiguration.class })
 public class PublicMetricsAutoConfiguration {
 
 	@Autowired(required = false)
@@ -144,8 +145,8 @@ public class PublicMetricsAutoConfiguration {
 		@ConditionalOnMissingBean
 		public MetricReaderPublicMetrics springIntegrationPublicMetrics(
 				IntegrationMBeanExporter exporter) {
-			return new MetricReaderPublicMetrics(new SpringIntegrationMetricReader(
-					exporter));
+			return new MetricReaderPublicMetrics(
+					new SpringIntegrationMetricReader(exporter));
 		}
 
 	}

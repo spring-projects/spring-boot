@@ -41,14 +41,13 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.core.SessionCallback;
@@ -176,7 +175,8 @@ public class ArtemisAutoConfigurationTests {
 	@Test
 	public void embeddedServiceWithCustomJmsConfiguration() {
 		// Ignored with custom config
-		load(CustomJmsConfiguration.class, "spring.artemis.embedded.queues=Queue1,Queue2");
+		load(CustomJmsConfiguration.class,
+				"spring.artemis.embedded.queues=Queue1,Queue2");
 		DestinationChecker checker = new DestinationChecker(this.context);
 		checker.checkQueue("custom", true); // See CustomJmsConfiguration
 		checker.checkQueue("Queue1", true);
@@ -270,7 +270,8 @@ public class ArtemisAutoConfigurationTests {
 
 	private TransportConfiguration assertInVmConnectionFactory(
 			ActiveMQConnectionFactory connectionFactory) {
-		TransportConfiguration transportConfig = getSingleTransportConfiguration(connectionFactory);
+		TransportConfiguration transportConfig = getSingleTransportConfiguration(
+				connectionFactory);
 		assertEquals(InVMConnectorFactory.class.getName(),
 				transportConfig.getFactoryClassName());
 		return transportConfig;
@@ -278,7 +279,8 @@ public class ArtemisAutoConfigurationTests {
 
 	private TransportConfiguration assertNettyConnectionFactory(
 			ActiveMQConnectionFactory connectionFactory, String host, int port) {
-		TransportConfiguration transportConfig = getSingleTransportConfiguration(connectionFactory);
+		TransportConfiguration transportConfig = getSingleTransportConfiguration(
+				connectionFactory);
 		assertEquals(NettyConnectorFactory.class.getName(),
 				transportConfig.getFactoryClassName());
 		assertEquals(host, transportConfig.getParams().get("host"));
@@ -302,14 +304,14 @@ public class ArtemisAutoConfigurationTests {
 			String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(config);
-		applicationContext.register(ArtemisAutoConfigurationWithoutXA.class,
+		applicationContext.register(ArtemisAutoConfiguration.class,
 				JmsAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.refresh();
 		return applicationContext;
 	}
 
-	private static class DestinationChecker {
+	private final static class DestinationChecker {
 
 		private final JmsTemplate jmsTemplate;
 
@@ -407,14 +409,6 @@ public class ArtemisAutoConfigurationTests {
 				}
 			};
 		}
-
-	}
-
-	@Configuration
-	@EnableConfigurationProperties(ArtemisProperties.class)
-	@Import({ ArtemisEmbeddedServerConfiguration.class,
-			ArtemisConnectionFactoryConfiguration.class })
-	protected static class ArtemisAutoConfigurationWithoutXA {
 
 	}
 

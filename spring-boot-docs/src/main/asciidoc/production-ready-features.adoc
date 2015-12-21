@@ -166,8 +166,6 @@ For example, the following will disable _all_ endpoints except for `info`:
 	endpoints.info.enabled=true
 ----
 
-
-
 [[production-ready-endpoint-hypermedia]]
 === Hypermedia for actuator MVC endpoints
 If http://projects.spring.io/spring-hateoas[Spring HATEOAS] is on the classpath (e.g.
@@ -188,6 +186,26 @@ If the https://github.com/mikekelly/hal-browser[HAL Browser] is on the classpath
 via its webjar (`org.webjars:hal-browser`), or via the `spring-data-rest-hal-browser` then
 an HTML "`discovery page`", in the form of the HAL Browser, is also provided.
 
+[[production-ready-endpoint-cors]]
+=== CORS support
+
+http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
+(CORS) is a http://www.w3.org/TR/cors/[W3C specification] that allows you to specify in a
+flexible way what kind of cross domain requests are authorized. Actuator's MVC endpoints
+can be configured to support such scenario.
+
+CORS support is disabled by default and is only enabled once the
+`endpoints.cors.allowed-origins` property has been set. The configuration below permits
+`GET` and `POST` calls from the `example.com` domain:
+
+[source,properties,indent=0]
+----
+	endpoints.cors.allowed-origins=http://example.com
+	endpoints.cors.allowed-methods=GET,POST
+----
+
+TIP: Check {sc-spring-boot-actuator}/autoconfigure/EndpointCorsProperties.{sc-ext}[EndpointCorsProperties]
+for a complete list of options.
 
 
 [[production-ready-customizing-endpoints-programmatically]]
@@ -365,12 +383,10 @@ Maven '`project properties`' via `@..@` placeholders, e.g.
 	info.build.version=@project.version@
 ----
 
-NOTE: In the above example we used `+project.*+` to set some values to be used as
-fallbacks if the Maven resource filtering has not been switched on for some reason.
-
-TIP: The `spring-boot:run` maven goal adds `src/main/resources` directly to the classpath
-(for hot reloading purposes). This circumvents the resource filtering and this feature.
-You can use the `exec:java` goal instead or customize the plugin's configuration, see the
+TIP: The `spring-boot:run` can add `src/main/resources` directly to the classpath
+(for hot reloading purposes) if you enable the `addResources` flag. This circumvents
+the resource filtering and this feature. You can use the `exec:java` goal instead
+or customize the plugin's configuration, see the
 {spring-boot-maven-plugin-site}/usage.html[plugin usage page] for more details.
 
 If you don't use the starter parent, in your `pom.xml` you need (inside the `<build/>`
@@ -398,9 +414,14 @@ and (inside `<plugins/>`):
 			<delimiters>
 				<delimiter>@</delimiter>
 			</delimiters>
+			<useDefaultDelimiters>false</useDefaultDelimiters>
 		</configuration>
 	</plugin>
 ----
+
+NOTE: The `useDefaultDelimiters` property is important if you are using standard Spring
+placeholders in your configuration (e.g. `${foo}`). These may be expanded by the build if
+that property is not set to `false`.
 
 
 
@@ -454,8 +475,15 @@ generate a `git.properties` file. Simply add the following declaration to your P
 	</build>
 ----
 
-A similar https://github.com/ajoberstar/gradle-git[`gradle-git`] plugin is also available
-for Gradle users, although a little more work is required to generate the properties file.
+Gradle users can achieve the same result using the
+https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties[`gradle-git-properties`] plugin
+
+[source,groovy,indent=0]
+----
+	plugins {
+		id "com.gorylenko.gradle-git-properties" version "1.4.6"
+	}
+----
 
 
 
@@ -495,7 +523,7 @@ you should carefully consider which endpoints you enable. See
 
 
 [[production-ready-customizing-management-server-context-path]]
-=== Customizing the management server context path
+=== Customizing the management endpoint paths
 Sometimes it is useful to group all management endpoints under a single path. For example,
 your application might already use `/info` for another purpose. You can use the
 `management.context-path` property to set a prefix for your management endpoint:
@@ -507,6 +535,21 @@ your application might already use `/info` for another purpose. You can use the
 
 The `application.properties` example above will change the endpoint from `/{id}` to
 `/manage/{id}` (e.g. `/manage/info`).
+
+You can also change the "`id`" of an endpoint (using `endpoints.{name}.id`) which then
+changes the default resource path for the MVC endpoint. Legal endpoint ids are composed
+only of alphanumeric characters (because they can be exposed in a number of places,
+including JMX object names, where special characters are forbidden). The MVC path can be
+changed separately by configuring `endpoints.{name}.path`, and there is no validation on
+those values (so you can use anything that is legal in a URL path). For example, to change
+the location of the `/health` endpoint to `/ping/me` you can set
+`endpoints.health.path=/ping/me`.
+
+TIP: If you provide a custom `MvcEndpoint` remember to include a settable `path` property,
+and default it to `/{id}` if you want your code to behave like the standard MVC endpoints.
+(Take a look at the `HealthMvcEndpoint` to see how you might do that.) If your custom
+endpoint is an `Endpoint` (not an `MvcEndpoint`) then Spring Boot will take care of the
+path for you.
 
 
 
@@ -587,7 +630,7 @@ users full access to the health endpoint in a secure application. To do so, set
 `sensitive` flag value "`false`" indicated in bold):
 
 |====
-|Secure |Sensitive |Unauthenticated |Authenticated
+| `management.security.enabled` | `endpoints.health.sensitive` | Unauthenticated | Authenticated
 
 |false
 |**false**
@@ -712,6 +755,8 @@ the following dependency to your project:
 TIP: If you want to also enable telnet access you will additionally need a dependency
 on `org.crsh:crsh.shell.telnet`.
 
+NOTE: CRaSH requires to run with a JDK as it compiles commands on the fly. If a basic
+`help` command fails, you are probably running with a JRE.
 
 
 [[production-ready-connecting-to-the-remote-shell]]
@@ -877,7 +922,7 @@ endpoint you should see a response similar to this:
 Here we can see basic `memory`, `heap`, `class loading`, `processor` and `thread pool`
 information along with some HTTP metrics. In this instance the `root` ('`/`') and `/metrics`
 URLs have returned `HTTP 200` responses `20` and `3` times respectively. It also appears
-that the `root` URL returned `HTTP 401` (unauthorized) `4` times. The double asterix (`star-star`)
+that the `root` URL returned `HTTP 401` (unauthorized) `4` times. The double asterisks (`star-star`)
 comes from a request matched by Spring MVC as `+/**+` (normally a static resource).
 
 The `gauge` shows the last response time for a request. So the last request to `root` took
@@ -1031,14 +1076,17 @@ used by default if you are on Java 8 or if you are using Dropwizard metrics.
 
 [[production-ready-metric-writers]]
 === Metric writers, exporters and aggregation
-Spring Boot provides a couple of implementations of a marker interface called `Exporter`
-which can be used to copy metric readings from the in-memory buffers to a place where they
-can be analyzed and displayed. Indeed, if you provide a `@Bean` that implements the
-`MetricWriter` interface and mark it `@ExportMetricWriter`, then it will automatically be
-hooked up to an `Exporter` and fed metric updates every 5 seconds (configured via
-`spring.metrics.export.delay-millis`). In addition, any `MetricReader` that you define and
-mark as `@ExportMetricReader` will have its values exported by the default exporter.
 
+Spring Boot provides a couple of implementations of a marker interface
+called `Exporter` which can be used to copy metric readings from the
+in-memory buffers to a place where they can be analyzed and
+displayed. Indeed, if you provide a `@Bean` that implements the
+`MetricWriter` interface (or `GaugeWriter` for simple use cases) and
+mark it `@ExportMetricWriter`, then it will automatically be hooked up
+to an `Exporter` and fed metric updates every 5 seconds (configured
+via `spring.metrics.export.delay-millis`). In addition, any
+`MetricReader` that you define and mark as `@ExportMetricReader` will
+have its values exported by the default exporter.
 
 The default exporter is a `MetricCopyExporter` which tries to optimize itself by not
 copying values that haven't changed since it was last called (the optimization can be
@@ -1051,6 +1099,11 @@ and `send-latest`) can be set as `spring.metrics.export.\*`. Individual
 values for specific `MetricWriters` can be set as
 `spring.metrics.export.triggers.<name>.*` where `<name>` is a bean name (or pattern for
 matching bean names).
+
+WARNING: The automatic export of metrics is disabled if you switch off the default
+`MetricRepository` (e.g. by using Dropwizard metrics). You can get back the same
+functionality be declaring a bean of your own of type `MetricReader` and  declaring it to
+be `@ExportMetricReader`.
 
 
 
@@ -1104,18 +1157,18 @@ recommendations.
 
 
 
-[[production-ready-metric-writers-export-to-open-tdsb]]
+[[production-ready-metric-writers-export-to-open-tsdb]]
 ==== Example: Export to Open TSDB
-If you provide a `@Bean` of type `OpenTsdbHttpMetricWriter` and mark it
+If you provide a `@Bean` of type `OpenTsdbGaugeWriter` and mark it
 `@ExportMetricWriter` metrics are exported to http://opentsdb.net/[Open TSDB] for
-aggregation. The `OpenTsdbHttpMetricWriter` has a `url` property that you need to set
+aggregation. The `OpenTsdbGaugeWriter` has a `url` property that you need to set
 to the Open TSDB "`/put`" endpoint, e.g. `http://localhost:4242/api/put`). It also has a
 `namingStrategy` that you can customize or configure to make the metrics match the data
 structure you need on the server. By default it just passes through the metric name as an
 Open TSDB metric name, and adds the tags "`domain`" (with value
 "`org.springframework.metrics`") and "`process`" (with the value equal to the object hash
 of the naming strategy). Thus, after running the application and generating some metrics
-you can inspect the metrics in the TDB UI (http://localhost:4242 by default).
+you can inspect the metrics in the TSD UI (http://localhost:4242 by default).
 
 Example:
 
@@ -1142,32 +1195,34 @@ curl localhost:4242/api/query?start=1h-ago&m=max:counter.status.200.root
 
 [[production-ready-metric-writers-export-to-statsd]]
 ==== Example: Export to Statsd
-If you provide a `@Bean` of type `StatsdMetricWriter` and mark it `@ExportMetricWriter` the metrics are exported to a
-statsd server:
+To export metrics to Statsd, make sure first that you have added
+`com.timgroup:java-statsd-client` as a dependency of your project (Spring Boot
+provides a dependency management for it). Then add a `spring.metrics.export.statsd.host`
+value to your `application.properties` file. Connections will be opened to port `8125`
+unless a `spring.metrics.export.statsd.port` override is provided. You can use
+`spring.metrics.export.statsd.prefix` if you want a custom prefix.
+
+Alternatively, you can provide a `@Bean` of type `StatsdMetricWriter` and mark it
+`@ExportMetricWriter`:
 
 [source,java,indent=0]
 ----
 @Value("${spring.application.name:application}.${random.value:0000}")
 private String prefix = "metrics";
 
-@Value("${statsd.host:localhost}")
-private String host = "localhost";
-
-@Value("${statsd.port:8125}")
-private int port;
-
 @Bean
 @ExportMetricWriter
 MetricWriter metricWriter() {
-	return new StatsdMetricWriter(prefix, host, port);
+	return new StatsdMetricWriter(prefix, "localhost", "8125");
 }
 ----
+
 
 
 [[production-ready-metric-writers-export-to-jmx]]
 ==== Example: Export to JMX
 If you provide a `@Bean` of type `JmxMetricWriter` marked `@ExportMetricWriter` the metrics are exported as MBeans to
-the local server (the `MBeanExporter` is provided by Spring Boot JMX autoconfiguration as
+the local server (the `MBeanExporter` is provided by Spring Boot JMX auto-configuration as
 long as it is switched on). Metrics can then be inspected, graphed, alerted etc. using any
 tool that understands JMX (e.g. JConsole or JVisualVM).
 
@@ -1236,7 +1291,6 @@ repositories, and don't want to export their values.
 
 
 
-[[production-ready-code-hale-metrics]]
 [[production-ready-dropwizard-metrics]]
 === Dropwizard Metrics
 A default `MetricRegistry` Spring bean will be created when you declare a dependency to

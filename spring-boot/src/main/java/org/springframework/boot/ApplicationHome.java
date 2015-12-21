@@ -64,10 +64,11 @@ public class ApplicationHome {
 			if (source != null && source.exists()) {
 				return source.getAbsoluteFile();
 			}
+			return null;
 		}
 		catch (Exception ex) {
+			return null;
 		}
-		return null;
 	}
 
 	private File findSource(URL location) throws IOException {

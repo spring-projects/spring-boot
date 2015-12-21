@@ -31,7 +31,10 @@ import java.util.Set;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class Layouts {
+public final class Layouts {
+
+	private Layouts() {
+	}
 
 	/**
 	 * Return the a layout for the given source file.
@@ -116,6 +119,7 @@ public class Layouts {
 	public static class War implements Layout {
 
 		private static final Map<LibraryScope, String> SCOPE_DESTINATIONS;
+
 		static {
 			Map<LibraryScope, String> map = new HashMap<LibraryScope, String>();
 			map.put(LibraryScope.COMPILE, "WEB-INF/lib/");
@@ -148,7 +152,7 @@ public class Layouts {
 	}
 
 	/**
-	 * Module layout (designed to be used as a "plug-in")
+	 * Module layout (designed to be used as a "plug-in").
 	 */
 	public static class Module implements Layout {
 

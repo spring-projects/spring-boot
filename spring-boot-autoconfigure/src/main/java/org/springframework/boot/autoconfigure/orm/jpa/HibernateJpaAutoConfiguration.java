@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -69,7 +70,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	/**
 	 * {@code NoJtaPlatform} implementations for various Hibernate versions.
 	 */
-	private static final String NO_JTA_PLATFORM_CLASSES[] = {
+	private static final String[] NO_JTA_PLATFORM_CLASSES = {
 			"org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform",
 			"org.hibernate.service.jta.platform.internal.NoJtaPlatform" };
 
@@ -77,7 +78,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	 * {@code WebSphereExtendedJtaPlatform} implementations for various Hibernate
 	 * versions.
 	 */
-	private static final String WEBSHERE_JTA_PLATFORM_CLASSES[] = {
+	private static final String[] WEBSHERE_JTA_PLATFORM_CLASSES = {
 			"org.hibernate.engine.transaction.jta.platform.internal.WebSphereExtendedJtaPlatform",
 			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform", };
 
@@ -127,8 +128,9 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	}
 
 	private boolean runningOnWebSphere() {
-		return ClassUtils.isPresent("com.ibm.websphere.jtaextensions."
-				+ "ExtendedJTATransaction", getClass().getClassLoader());
+		return ClassUtils.isPresent(
+				"com.ibm.websphere.jtaextensions." + "ExtendedJTATransaction",
+				getClass().getClassLoader());
 	}
 
 	private void configureWebSphereTransactionPlatform(
@@ -143,11 +145,12 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	private void configureSpringJtaPlatform(Map<String, Object> vendorProperties,
 			JtaTransactionManager jtaTransactionManager) {
 		try {
-			vendorProperties.put(JTA_PLATFORM, new SpringJtaPlatform(
-					jtaTransactionManager));
+			vendorProperties.put(JTA_PLATFORM,
+					new SpringJtaPlatform(jtaTransactionManager));
 		}
-		catch (NoClassDefFoundError ex) {
-			// Can happen if Hibernate 4.2 is used
+		catch (LinkageError ex) {
+			// NoClassDefFoundError can happen if Hibernate 4.2 is used and some
+			// containers (e.g. JBoss EAP 6) wraps it in the superclass LinkageError
 			if (!isUsingJndi()) {
 				throw new IllegalStateException("Unable to set Hibernate JTA "
 						+ "platform, are you using the correct "

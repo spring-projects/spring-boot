@@ -18,7 +18,6 @@ package org.springframework.boot.bind;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.springframework.beans.BeanWrapper;
@@ -35,6 +35,7 @@ import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.PropertyValue;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.LinkedMultiValueMap;
@@ -52,14 +53,10 @@ import org.springframework.validation.DataBinder;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  * @see RelaxedNames
  */
 public class RelaxedDataBinder extends DataBinder {
-
-	private static final Set<String> BENIGN_PROPERTY_SOURCE_NAMES = Collections
-			.unmodifiableSet(new HashSet<String>(Arrays.asList(
-					StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-					StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)));
 
 	private static final Object BLANK = new Object();
 
@@ -88,7 +85,7 @@ public class RelaxedDataBinder extends DataBinder {
 		this.namePrefix = cleanNamePrefix(namePrefix);
 	}
 
-	private static String cleanNamePrefix(String namePrefix) {
+	private String cleanNamePrefix(String namePrefix) {
 		if (!StringUtils.hasLength(namePrefix)) {
 			return null;
 		}
@@ -138,6 +135,7 @@ public class RelaxedDataBinder extends DataBinder {
 	 * is also accepted.
 	 * @param propertyValues the property values
 	 * @param target the target object
+	 * @return modified property values
 	 */
 	private MutablePropertyValues modifyProperties(MutablePropertyValues propertyValues,
 			Object target) {
@@ -210,18 +208,30 @@ public class RelaxedDataBinder extends DataBinder {
 		MutablePropertyValues rtn = new MutablePropertyValues();
 		for (PropertyValue value : propertyValues.getPropertyValues()) {
 			String name = value.getName();
-			for (String candidate : new RelaxedNames(this.namePrefix)) {
-				if (name.startsWith(candidate)) {
-					name = name.substring(candidate.length());
-					if (!(this.ignoreNestedProperties && name.contains("."))) {
-						PropertyOrigin propertyOrigin = findPropertyOrigin(value);
-						rtn.addPropertyValue(new OriginCapablePropertyValue(name,
-								value.getValue(), propertyOrigin));
+			for (String prefix : new RelaxedNames(stripLastDot(this.namePrefix))) {
+				for (String separator : new String[] { ".", "_" }) {
+					String candidate = (StringUtils.hasLength(prefix) ? prefix + separator
+							: prefix);
+					if (name.startsWith(candidate)) {
+						name = name.substring(candidate.length());
+						if (!(this.ignoreNestedProperties && name.contains("."))) {
+							PropertyOrigin propertyOrigin = OriginCapablePropertyValue
+									.getOrigin(value);
+							rtn.addPropertyValue(new OriginCapablePropertyValue(name,
+									value.getValue(), propertyOrigin));
+						}
 					}
 				}
 			}
 		}
 		return rtn;
+	}
+
+	private String stripLastDot(String string) {
+		if (StringUtils.hasLength(string) && string.endsWith(".")) {
+			string = string.substring(0, string.length() - 1);
+		}
+		return string;
 	}
 
 	private PropertyValue modifyProperty(BeanWrapper target,
@@ -251,55 +261,9 @@ public class RelaxedDataBinder extends DataBinder {
 
 	@Override
 	protected AbstractPropertyBindingResult createBeanPropertyBindingResult() {
-		return new BeanPropertyBindingResult(getTarget(), getObjectName(),
-				isAutoGrowNestedPaths(), getAutoGrowCollectionLimit()) {
-			@Override
-			protected BeanWrapper createBeanWrapper() {
-				BeanWrapper beanWrapper = new BeanWrapperImpl(getTarget()) {
-					@Override
-					public void setPropertyValue(PropertyValue pv) throws BeansException {
-						try {
-							super.setPropertyValue(pv);
-						}
-						catch (NotWritablePropertyException ex) {
-							PropertyOrigin origin = findPropertyOrigin(pv);
-							if (isFatal(origin)) {
-								if (origin != null) {
-									throw new RelaxedBindingNotWritablePropertyException(
-											ex, origin);
-								}
-								else {
-									throw ex;
-								}
-							}
-							else {
-								logger.debug("Ignoring benign property binding failure",
-										ex);
-							}
-						}
-					}
-				};
-				beanWrapper.setConversionService(
-						new RelaxedConversionService(getConversionService()));
-				beanWrapper.registerCustomEditor(InetAddress.class,
-						new InetAddressEditor());
-				return beanWrapper;
-			}
-		};
-	}
-
-	private boolean isFatal(PropertyOrigin origin) {
-		if (origin == null) {
-			return true;
-		}
-		return !BENIGN_PROPERTY_SOURCE_NAMES.contains(origin.getSource().getName());
-	}
-
-	private PropertyOrigin findPropertyOrigin(PropertyValue propertyValue) {
-		if (propertyValue instanceof OriginCapablePropertyValue) {
-			return ((OriginCapablePropertyValue) propertyValue).getOrigin();
-		}
-		return new OriginCapablePropertyValue(propertyValue).getOrigin();
+		return new RelaxedBeanPropertyBindingResult(getTarget(), getObjectName(),
+				isAutoGrowNestedPaths(), getAutoGrowCollectionLimit(),
+				getConversionService());
 	}
 
 	private String initializePath(BeanWrapper wrapper, BeanPath path, int index) {
@@ -347,6 +311,11 @@ public class RelaxedDataBinder extends DataBinder {
 	private boolean isMapValueStringType(TypeDescriptor descriptor) {
 		if (descriptor == null || descriptor.getMapValueTypeDescriptor() == null) {
 			return false;
+		}
+		if (Properties.class.isAssignableFrom(descriptor.getObjectType())) {
+			// Properties is declared as Map<Object,Object> but we know it's really
+			// Map<String,String>
+			return true;
 		}
 		Class<?> valueType = descriptor.getMapValueTypeDescriptor().getObjectType();
 		return (valueType != null && CharSequence.class.isAssignableFrom(valueType));
@@ -429,9 +398,8 @@ public class RelaxedDataBinder extends DataBinder {
 			String nested = resolvePropertyName(target, prefix, candidate.toString());
 			if (nested != null) {
 				Class<?> type = target.getPropertyType(nested);
-				if (type != null && Map.class.isAssignableFrom(type)) {
-					// Special case for map property (gh-3836). Maybe could be fixed
-					// in spring-beans)?
+				if ((type != null) && Map.class.isAssignableFrom(type)) {
+					// Special case for map property (gh-3836).
 					return nested + "[" + name.substring(candidate.length() + 1) + "]";
 				}
 				String propertyName = resolvePropertyName(target,
@@ -493,7 +461,7 @@ public class RelaxedDataBinder extends DataBinder {
 
 		private Map<String, Object> map;
 
-		public MapHolder(Map<String, Object> map) {
+		MapHolder(Map<String, Object> map) {
 			this.map = map;
 		}
 
@@ -507,11 +475,14 @@ public class RelaxedDataBinder extends DataBinder {
 
 	}
 
+	/**
+	 * A path though properties of a bean.
+	 */
 	private static class BeanPath {
 
 		private List<PathNode> nodes;
 
-		public BeanPath(String path) {
+		BeanPath(String path) {
 			this.nodes = splitPath(path);
 		}
 
@@ -629,7 +600,7 @@ public class RelaxedDataBinder extends DataBinder {
 
 			protected String name;
 
-			public PathNode(String name) {
+			PathNode(String name) {
 				this.name = name;
 			}
 
@@ -637,7 +608,7 @@ public class RelaxedDataBinder extends DataBinder {
 
 		private static class ArrayIndexNode extends PathNode {
 
-			public ArrayIndexNode(String name) {
+			ArrayIndexNode(String name) {
 				super(name);
 			}
 
@@ -650,7 +621,7 @@ public class RelaxedDataBinder extends DataBinder {
 
 		private static class MapIndexNode extends PathNode {
 
-			public MapIndexNode(String name) {
+			MapIndexNode(String name) {
 				super(name);
 			}
 
@@ -662,7 +633,7 @@ public class RelaxedDataBinder extends DataBinder {
 
 		private static class PropertyNode extends PathNode {
 
-			public PropertyNode(String name) {
+			PropertyNode(String name) {
 				super(name);
 			}
 
@@ -674,6 +645,74 @@ public class RelaxedDataBinder extends DataBinder {
 			public String toString() {
 				return "." + this.name;
 			}
+		}
+
+	}
+
+	/**
+	 * Extended version of {@link BeanPropertyBindingResult} to support relaxed binding.
+	 */
+	private static class RelaxedBeanPropertyBindingResult
+			extends BeanPropertyBindingResult {
+
+		private RelaxedConversionService conversionService;
+
+		RelaxedBeanPropertyBindingResult(Object target, String objectName,
+				boolean autoGrowNestedPaths, int autoGrowCollectionLimit,
+				ConversionService conversionService) {
+			super(target, objectName, autoGrowNestedPaths, autoGrowCollectionLimit);
+			this.conversionService = new RelaxedConversionService(conversionService);
+		}
+
+		@Override
+		protected BeanWrapper createBeanWrapper() {
+			BeanWrapper beanWrapper = new RelaxedBeanWrapper(getTarget());
+			beanWrapper.setConversionService(this.conversionService);
+			beanWrapper.registerCustomEditor(InetAddress.class, new InetAddressEditor());
+			return beanWrapper;
+		}
+
+	}
+
+	/**
+	 * Extended version of {@link BeanWrapperImpl} to support relaxed binding.
+	 */
+	private static class RelaxedBeanWrapper extends BeanWrapperImpl {
+
+		private static final Set<String> BENIGN_PROPERTY_SOURCE_NAMES;
+
+		static {
+			Set<String> names = new HashSet<String>();
+			names.add(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+			names.add(StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
+			BENIGN_PROPERTY_SOURCE_NAMES = Collections.unmodifiableSet(names);
+		}
+
+		RelaxedBeanWrapper(Object target) {
+			super(target);
+		}
+
+		@Override
+		public void setPropertyValue(PropertyValue pv) throws BeansException {
+			try {
+				super.setPropertyValue(pv);
+			}
+			catch (NotWritablePropertyException ex) {
+				PropertyOrigin origin = OriginCapablePropertyValue.getOrigin(pv);
+				if (isBenign(origin)) {
+					logger.debug("Ignoring benign property binding failure", ex);
+					return;
+				}
+				if (origin == null) {
+					throw ex;
+				}
+				throw new RelaxedBindingNotWritablePropertyException(ex, origin);
+			}
+		}
+
+		private boolean isBenign(PropertyOrigin origin) {
+			String name = (origin == null ? null : origin.getSource().getName());
+			return BENIGN_PROPERTY_SOURCE_NAMES.contains(name);
 		}
 
 	}

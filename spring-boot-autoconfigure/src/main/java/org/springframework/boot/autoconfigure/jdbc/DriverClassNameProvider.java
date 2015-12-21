@@ -33,6 +33,7 @@ class DriverClassNameProvider {
 	private static final String JDBC_URL_PREFIX = "jdbc";
 
 	private static final Map<String, String> DRIVERS;
+
 	static {
 		Map<String, String> drivers = new HashMap<String, String>();
 		drivers.put("derby", "org.apache.derby.jdbc.EmbeddedDriver");
@@ -53,14 +54,14 @@ class DriverClassNameProvider {
 	}
 
 	/**
-	 * Find a JDBC driver class name based on given JDBC URL
+	 * Find a JDBC driver class name based on given JDBC URL.
 	 * @param jdbcUrl JDBC URL
 	 * @return driver class name or null if not found
 	 */
 	String getDriverClassName(final String jdbcUrl) {
 		Assert.notNull(jdbcUrl, "JdbcUrl must not be null");
-		Assert.isTrue(jdbcUrl.startsWith(JDBC_URL_PREFIX), "JdbcUrl must start with '"
-				+ JDBC_URL_PREFIX + "'");
+		Assert.isTrue(jdbcUrl.startsWith(JDBC_URL_PREFIX),
+				"JdbcUrl must start with '" + JDBC_URL_PREFIX + "'");
 		String urlWithoutPrefix = jdbcUrl.substring(JDBC_URL_PREFIX.length());
 		for (Map.Entry<String, String> driver : DRIVERS.entrySet()) {
 			if (urlWithoutPrefix.startsWith(":" + driver.getKey() + ":")) {

@@ -18,6 +18,7 @@ package org.springframework.boot.test;
 
 import org.apache.http.client.config.RequestConfig;
 import org.junit.Test;
+
 import org.springframework.boot.test.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
 import org.springframework.boot.test.TestRestTemplate.HttpClientOption;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -38,12 +39,14 @@ public class TestRestTemplateTests {
 	@Test
 	public void simple() {
 		// The Apache client is on the classpath so we get the fully-leaded factory
-		assertTrue(new TestRestTemplate().getRequestFactory() instanceof HttpComponentsClientHttpRequestFactory);
+		assertTrue(new TestRestTemplate()
+				.getRequestFactory() instanceof HttpComponentsClientHttpRequestFactory);
 	}
 
 	@Test
 	public void authenticated() {
-		assertTrue(new TestRestTemplate("user", "password").getRequestFactory() instanceof InterceptingClientHttpRequestFactory);
+		assertTrue(new TestRestTemplate("user", "password")
+				.getRequestFactory() instanceof InterceptingClientHttpRequestFactory);
 	}
 
 	@Test

@@ -17,15 +17,19 @@
 package org.springframework.boot.bind;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
 
 import org.junit.Test;
+
 import org.springframework.beans.NotWritablePropertyException;
+import org.springframework.boot.context.config.RandomValuePropertySource;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.mock.env.MockPropertySource;
@@ -71,15 +75,15 @@ public class PropertiesConfigurationFactoryTests {
 
 	@Test(expected = BindException.class)
 	public void testMissingPropertyCausesValidationError() throws Exception {
-		this.validator = new SpringValidatorAdapter(Validation
-				.buildDefaultValidatorFactory().getValidator());
+		this.validator = new SpringValidatorAdapter(
+				Validation.buildDefaultValidatorFactory().getValidator());
 		createFoo("bar: blah");
 	}
 
 	@Test
 	public void testValidationErrorCanBeSuppressed() throws Exception {
-		this.validator = new SpringValidatorAdapter(Validation
-				.buildDefaultValidatorFactory().getValidator());
+		this.validator = new SpringValidatorAdapter(
+				Validation.buildDefaultValidatorFactory().getValidator());
 		setupFactory();
 		this.factory.setExceptionIfInvalid(false);
 		bindFoo("bar: blah");
@@ -97,7 +101,6 @@ public class PropertiesConfigurationFactoryTests {
 		this.factory.setPropertySources(propertySources);
 		this.factory.setIgnoreUnknownFields(false);
 		this.factory.afterPropertiesSet();
-		this.factory.getObject();
 		Foo foo = this.factory.getObject();
 		assertEquals("bar", foo.name);
 	}
@@ -114,6 +117,21 @@ public class PropertiesConfigurationFactoryTests {
 		this.factory.setPropertySources(propertySources);
 		this.factory.setIgnoreUnknownFields(false);
 		this.factory.afterPropertiesSet();
+	}
+
+	@Test
+	public void testBindWithDashPrefix() throws Exception {
+		// gh-4045
+		this.targetName = "foo-bar";
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(new SystemEnvironmentPropertySource("systemEnvironment",
+				Collections.<String, Object>singletonMap("FOO_BAR_NAME", "blah")));
+		propertySources.addLast(new RandomValuePropertySource("random"));
+		setupFactory();
+		this.factory.setPropertySources(propertySources);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertEquals("blah", foo.name);
 	}
 
 	private Foo createFoo(final String values) throws Exception {

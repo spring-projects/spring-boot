@@ -61,7 +61,7 @@ public enum AnsiColor implements AnsiElement {
 
 	private final String code;
 
-	private AnsiColor(String code) {
+	AnsiColor(String code) {
 		this.code = code;
 	}
 

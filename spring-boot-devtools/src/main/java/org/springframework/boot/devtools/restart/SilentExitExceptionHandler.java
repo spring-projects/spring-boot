@@ -27,7 +27,7 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 
 	private final UncaughtExceptionHandler delegate;
 
-	public SilentExitExceptionHandler(UncaughtExceptionHandler delegate) {
+	SilentExitExceptionHandler(UncaughtExceptionHandler delegate) {
 		this.delegate = delegate;
 	}
 

@@ -94,8 +94,8 @@ public class SourceOptions {
 				}
 			}
 		}
-		this.args = Collections.unmodifiableList(nonOptionArguments.subList(
-				sourceArgCount, nonOptionArguments.size()));
+		this.args = Collections.unmodifiableList(
+				nonOptionArguments.subList(sourceArgCount, nonOptionArguments.size()));
 		Assert.isTrue(sources.size() > 0, "Please specify at least one file");
 		this.sources = Collections.unmodifiableList(sources);
 	}

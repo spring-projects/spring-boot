@@ -46,9 +46,7 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		List<String> indices = this.properties.getIndices();
-		ClusterHealthResponse response = this.client
-				.admin()
-				.cluster()
+		ClusterHealthResponse response = this.client.admin().cluster()
 				.health(Requests.clusterHealthRequest(indices.isEmpty() ? allIndices
 						: indices.toArray(new String[indices.size()])))
 				.actionGet(this.properties.getResponseTimeout());

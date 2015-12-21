@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServlet;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.SimpleBeanDefinitionRegistry;
@@ -40,7 +41,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@WebServletHandler}
+ * Tests for {@link WebServletHandler}.
  *
  * @author Andy Wilkinson
  */
@@ -89,7 +90,8 @@ public class WebServletHandlerTests {
 
 	@Test
 	public void asyncSupported() throws IOException {
-		BeanDefinition servletRegistrationBean = getBeanDefinition(AsyncSupportedServlet.class);
+		BeanDefinition servletRegistrationBean = getBeanDefinition(
+				AsyncSupportedServlet.class);
 		MutablePropertyValues propertyValues = servletRegistrationBean
 				.getPropertyValues();
 		assertThat(propertyValues.get("asyncSupported"), is((Object) true));
@@ -98,7 +100,8 @@ public class WebServletHandlerTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void initParameters() throws IOException {
-		BeanDefinition servletRegistrationBean = getBeanDefinition(InitParametersServlet.class);
+		BeanDefinition servletRegistrationBean = getBeanDefinition(
+				InitParametersServlet.class);
 		MutablePropertyValues propertyValues = servletRegistrationBean
 				.getPropertyValues();
 		assertThat((Map<String, String>) propertyValues.get("initParameters"),
@@ -109,7 +112,8 @@ public class WebServletHandlerTests {
 
 	@Test
 	public void urlMappings() throws IOException {
-		BeanDefinition servletRegistrationBean = getBeanDefinition(UrlPatternsServlet.class);
+		BeanDefinition servletRegistrationBean = getBeanDefinition(
+				UrlPatternsServlet.class);
 		MutablePropertyValues propertyValues = servletRegistrationBean
 				.getPropertyValues();
 		assertThat((String[]) propertyValues.get("urlMappings"),
@@ -118,7 +122,8 @@ public class WebServletHandlerTests {
 
 	@Test
 	public void urlMappingsFromValue() throws IOException {
-		BeanDefinition servletRegistrationBean = getBeanDefinition(UrlPatternsFromValueServlet.class);
+		BeanDefinition servletRegistrationBean = getBeanDefinition(
+				UrlPatternsFromValueServlet.class);
 		MutablePropertyValues propertyValues = servletRegistrationBean
 				.getPropertyValues();
 		assertThat((String[]) propertyValues.get("urlMappings"),
@@ -128,14 +133,15 @@ public class WebServletHandlerTests {
 	@Test
 	public void urlPatternsDeclaredTwice() throws IOException {
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("The urlPatterns and value attributes are mututally "
-				+ "exclusive");
+		this.thrown.expectMessage(
+				"The urlPatterns and value attributes are mututally " + "exclusive");
 		getBeanDefinition(UrlPatternsDeclaredTwiceServlet.class);
 	}
 
 	BeanDefinition getBeanDefinition(Class<?> filterClass) throws IOException {
 		ScannedGenericBeanDefinition scanned = new ScannedGenericBeanDefinition(
-				new SimpleMetadataReaderFactory().getMetadataReader(filterClass.getName()));
+				new SimpleMetadataReaderFactory()
+						.getMetadataReader(filterClass.getName()));
 		this.handler.handle(scanned, this.registry);
 		return this.registry.getBeanDefinition(filterClass.getName());
 	}

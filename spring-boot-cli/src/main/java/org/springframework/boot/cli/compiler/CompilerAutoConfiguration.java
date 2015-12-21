@@ -17,7 +17,6 @@
 package org.springframework.boot.cli.compiler;
 
 import groovy.lang.GroovyClassLoader;
-
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -88,9 +87,9 @@ public abstract class CompilerAutoConfiguration {
 	 * @param classNode the class
 	 * @throws CompilationFailedException if the configuration cannot be applied
 	 */
-	public void apply(GroovyClassLoader loader,
-			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
-			SourceUnit source, ClassNode classNode) throws CompilationFailedException {
+	public void apply(GroovyClassLoader loader, GroovyCompilerConfiguration configuration,
+			GeneratorContext generatorContext, SourceUnit source, ClassNode classNode)
+					throws CompilationFailedException {
 	}
 
 }

@@ -72,16 +72,18 @@ public class DefaultApplicationArgumentsTests {
 	@Test
 	public void getOptionValues() throws Exception {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
-		assertThat(arguments.getOptionValues("foo"), equalTo(Arrays.asList("bar", "baz")));
+		assertThat(arguments.getOptionValues("foo"),
+				equalTo(Arrays.asList("bar", "baz")));
 		assertThat(arguments.getOptionValues("debug"),
-				equalTo(Collections.<String> emptyList()));
+				equalTo(Collections.<String>emptyList()));
 		assertThat(arguments.getOptionValues("spring"), equalTo(null));
 	}
 
 	@Test
 	public void getNonOptionArgs() throws Exception {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
-		assertThat(arguments.getNonOptionArgs(), equalTo(Arrays.asList("spring", "boot")));
+		assertThat(arguments.getNonOptionArgs(),
+				equalTo(Arrays.asList("spring", "boot")));
 	}
 
 	@Test
@@ -89,7 +91,7 @@ public class DefaultApplicationArgumentsTests {
 		ApplicationArguments arguments = new DefaultApplicationArguments(
 				new String[] { "--debug" });
 		assertThat(arguments.getNonOptionArgs(),
-				equalTo(Collections.<String> emptyList()));
+				equalTo(Collections.<String>emptyList()));
 	}
 
 }
