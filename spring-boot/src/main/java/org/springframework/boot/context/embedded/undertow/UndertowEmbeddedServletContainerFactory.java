@@ -64,6 +64,7 @@ import org.xnio.OptionMap;
 import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
 import org.xnio.Xnio;
+import org.xnio.Sequence;
 import org.xnio.XnioWorker;
 
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
@@ -257,8 +258,15 @@ public class UndertowEmbeddedServletContainerFactory
 			SSLContext sslContext = SSLContext.getInstance(ssl.getProtocol());
 			sslContext.init(getKeyManagers(), getTrustManagers(), null);
 			builder.addHttpsListener(port, getListenAddress(), sslContext);
-			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE,
-					getSslClientAuthMode(ssl));
+			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, getSslClientAuthMode(ssl));
+
+			//Configure the supported TLS protocols and Cipher suites
+			if (ssl.getProtocols() != null) {
+				builder.setSocketOption(Options.SSL_ENABLED_PROTOCOLS, Sequence.of(ssl.getProtocols()));
+			}
+			if (ssl.getCiphers() != null) {
+				builder.setSocketOption(Options.SSL_ENABLED_CIPHER_SUITES, Sequence.of(ssl.getCiphers()));
+			}
 		}
 		catch (NoSuchAlgorithmException ex) {
 			throw new IllegalStateException(ex);

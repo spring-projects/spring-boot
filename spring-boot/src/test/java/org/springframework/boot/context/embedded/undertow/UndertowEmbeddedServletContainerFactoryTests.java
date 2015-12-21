@@ -42,6 +42,8 @@ import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.equalTo;
@@ -192,6 +194,31 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		File accessLog = new File(accessLogDirectory, "access_log.log");
 		awaitFile(accessLog);
 		assertThat(accessLogDirectory.listFiles(), is(arrayContaining(accessLog)));
+	}
+
+	@Test(expected = SSLHandshakeException.class)
+	public void sslRestrictedProtocolsEmptyCipherFailure() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[]{"TLSv1.2"}, new String[]{"TLS_EMPTY_RENEGOTIATION_INFO_SCSV"});
+	}
+
+	@Test(expected = SSLHandshakeException.class)
+	public void sslRestrictedProtocolsECDHETLS1Failure() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[]{"TLSv1"}, new String[]{"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"});
+	}
+
+	@Test
+	public void sslRestrictedProtocolsECDHESuccess() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[]{"TLSv1.2"}, new String[]{"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"});
+	}
+
+	@Test
+	public void sslRestrictedProtocolsRSATLS12Success() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[]{"TLSv1.2"}, new String[]{"TLS_RSA_WITH_AES_128_CBC_SHA256"});
+	}
+
+	@Test(expected = SSLHandshakeException.class)
+	public void sslRestrictedProtocolsRSATLS11Failure() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[]{"TLSv1.1"}, new String[]{"TLS_RSA_WITH_AES_128_CBC_SHA256"});
 	}
 
 	@Override
