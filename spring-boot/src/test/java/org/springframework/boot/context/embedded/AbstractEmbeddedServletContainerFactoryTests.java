@@ -538,8 +538,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		return getSsl(clientAuth, keyPassword, keyStore, null, null, null);
 	}
 
-	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore,
-					   String trustStore, String[] protocols, String[] ciphers) {
+	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore, String trustStore,
+						String[] protocols, String[] ciphers) {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(clientAuth);
 		if (keyPassword != null) {
@@ -564,28 +564,28 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		return ssl;
 	}
 
-    /**
+	/**
      * @see <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/security/SunProviders.html#SunJSSEProvider">
      *     SunJSSE supported Cipher Suites</a>
      */
-    protected void testRestrictedSSLProtocolsAndCipherSuites(String[] protocols, String[] ciphers) throws Exception {
-        AbstractEmbeddedServletContainerFactory factory = getFactory();
-        factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks", null, protocols, ciphers));
+	protected void testRestrictedSSLProtocolsAndCipherSuites(String[] protocols, String[] ciphers) throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks", null, protocols, ciphers));
 
-        this.container = factory.getEmbeddedServletContainer(
-                new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
-        this.container.start();
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container.start();
 
-        SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
-                new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
 
-        HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory).build();
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory).build();
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 
-        assertThat(getResponse(getLocalUrl("https", "/hello"), requestFactory), containsString("scheme=https"));
-    }
+		assertThat(getResponse(getLocalUrl("https", "/hello"), requestFactory), containsString("scheme=https"));
+	}
 
-    private String getStoreType(String keyStore) {
+	private String getStoreType(String keyStore) {
 		return (keyStore.endsWith(".p12") ? "pkcs12" : null);
 	}
 
@@ -755,7 +755,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	private boolean doTestCompression(int contentSize, String[] mimeTypes,
-									  String[] excludedUserAgents) throws Exception {
+										String[] excludedUserAgents) throws Exception {
 		String testContent = setUpFactoryForCompression(contentSize, mimeTypes,
 				excludedUserAgents);
 		TestGzipInputStreamFactory inputStreamFactory = new TestGzipInputStreamFactory();
@@ -829,8 +829,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	protected String getResponse(String url,
-								 HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
-			throws IOException, URISyntaxException {
+								HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
+		throws IOException, URISyntaxException {
 		ClientHttpResponse response = getClientResponse(url, requestFactory, headers);
 		try {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
@@ -852,9 +852,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}, headers);
 	}
 
-	protected ClientHttpResponse getClientResponse(String url,
-												   HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
-			throws IOException, URISyntaxException {
+	protected ClientHttpResponse getClientResponse(String url, HttpComponentsClientHttpRequestFactory requestFactory,
+													String... headers)
+		throws IOException, URISyntaxException {
 		ClientHttpRequest request = requestFactory.createRequest(new URI(url),
 				HttpMethod.GET);
 		request.getHeaders().add("Cookie", "JSESSIONID=" + "123");

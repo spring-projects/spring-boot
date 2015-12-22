@@ -62,9 +62,9 @@ import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
 import org.xnio.OptionMap;
 import org.xnio.Options;
+import org.xnio.Sequence;
 import org.xnio.SslClientAuthMode;
 import org.xnio.Xnio;
-import org.xnio.Sequence;
 import org.xnio.XnioWorker;
 
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;

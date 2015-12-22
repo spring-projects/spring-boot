@@ -214,7 +214,7 @@ public class Ssl {
 	}
 
 	public String[] getProtocols() {
-		return protocols;
+		return this.protocols;
 	}
 
 	public void setProtocols(String[] protocols) {
