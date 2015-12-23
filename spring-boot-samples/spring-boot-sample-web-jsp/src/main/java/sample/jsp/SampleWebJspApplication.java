@@ -16,6 +16,8 @@
 
 package sample.jsp;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -23,6 +25,7 @@ import org.springframework.boot.context.web.SpringBootServletInitializer;
 
 @SpringBootApplication
 public class SampleWebJspApplication extends SpringBootServletInitializer {
+	private static final Log log = LogFactory.getLog(SampleWebJspApplication.class);
 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
@@ -30,7 +33,25 @@ public class SampleWebJspApplication extends SpringBootServletInitializer {
 	}
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleWebJspApplication.class, args);
+		try {
+			SpringApplication.run(SampleWebJspApplication.class, args);
+		} catch (Exception e) {
+			Throwable rootCause = getRootCause(e);
+			if (rootCause instanceof ClassNotFoundException && rootCause.getMessage().contains("javax.servlet.ServletContext")) {
+				log.error("The Servlet class could not be found. If you are running this as Spring Boot run configuration " +
+						"from within IntelliJ 15.01 or lower, you might be experiencing the following problem: " +
+						"https://youtrack.jetbrains.com/issue/IDEA-107048 . If you want this application to work in " +
+						"IntelliJ, you can consider\n" +
+						"1) Creating a Tomcat configuration in IntelliJ,\n" +
+						"2) Making a profile in the pom.xml which removes the <scope>provided</scope> from the dependencies when running from within IntelliJ, or\n" +
+						"3) Creating a mvn spring-boot:run configuration.");
+			}
+			throw e;
+		}
 	}
 
+	private static Throwable getRootCause(Throwable e) {
+		if (e.getCause() == null) return e;
+		else return getRootCause(e.getCause());
+	}
 }
