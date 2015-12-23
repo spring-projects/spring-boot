@@ -38,7 +38,7 @@ public class Log4J2RestartListener implements RestartListener {
 
 	@Override
 	public void beforeRestart() {
-		if (ClassUtils.isPresent("org.apache.logging.log4j.LogManager",
+		if (ClassUtils.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory",
 				getClass().getClassLoader())) {
 			prepareLog4J2ForRestart();
 		}
