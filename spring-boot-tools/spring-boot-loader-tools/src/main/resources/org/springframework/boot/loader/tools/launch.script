@@ -165,7 +165,7 @@ do_start() {
     pid=$(cat "$pid_file")
   else
     checkPermissions || return $?
-    $command &>> "$log_file" &
+    $command >> "$log_file" 2>&1 &
     pid=$!
     disown $pid
     echo "$pid" > "$pid_file"
