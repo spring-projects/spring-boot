@@ -180,6 +180,12 @@ public class EndpointWebMvcManagementContextConfiguration {
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome.match("Found logging.path: " + config);
 			}
+			config = environment
+					.resolvePlaceholders("${endpoints.logfile.external-file:}");
+			if (StringUtils.hasText(config)) {
+				return ConditionOutcome
+						.match("Found endpoints.logfile.external-file: " + config);
+			}
 			return ConditionOutcome.noMatch("Found no log file configuration");
 		}
 
