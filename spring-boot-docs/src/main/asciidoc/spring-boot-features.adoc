@@ -449,6 +449,10 @@ or
 	$ java -jar myproject.jar --spring.config.location=classpath:/default.properties,classpath:/override.properties
 ----
 
+WARNING: `spring.config.name` and `spring.config.location` are used very early to
+determine which files have to be loaded so they have to be defined as an environment
+property (typically OS env, system property or command line argument).
+
 If `spring.config.location` contains directories (as opposed to files) they should end
 in `/` (and will be appended with the names generated from `spring.config.name` before
 being loaded). The default search path `classpath:,classpath:/config,file:,file:config/`
