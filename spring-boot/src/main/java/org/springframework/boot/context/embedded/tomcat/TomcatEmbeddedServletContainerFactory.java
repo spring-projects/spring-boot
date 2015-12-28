@@ -661,6 +661,10 @@ public class TomcatEmbeddedServletContainerFactory
 
 	private static class TomcatErrorPage {
 
+		private static final String ERROR_PAGE_TOMCAT7 = "org.apache.catalina.deploy.ErrorPage";
+
+		private static final String ERROR_PAGE_TOMCAT = "org.apache.tomcat.util.descriptor.web.ErrorPage";
+
 		private final String location;
 
 		private final String exceptionType;
@@ -679,14 +683,13 @@ public class TomcatEmbeddedServletContainerFactory
 		private Object createNativePage(ErrorPage errorPage) {
 			Object nativePage = null;
 			try {
-				if (ClassUtils.isPresent(
-						"org.apache.tomcat.util.descriptor.web.ErrorPage", null)) {
-					nativePage = new org.apache.tomcat.util.descriptor.web.ErrorPage();
-				}
-				else if (ClassUtils.isPresent("org.apache.catalina.deploy.ErrorPage",
-						null)) {
+				if (ClassUtils.isPresent(ERROR_PAGE_TOMCAT, null)) {
 					nativePage = BeanUtils.instantiate(ClassUtils
-							.forName("org.apache.catalina.deploy.ErrorPage", null));
+							.forName(ERROR_PAGE_TOMCAT, null));
+				}
+				else if (ClassUtils.isPresent(ERROR_PAGE_TOMCAT7, null)) {
+					nativePage = BeanUtils.instantiate(ClassUtils
+							.forName(ERROR_PAGE_TOMCAT7, null));
 				}
 			}
 			catch (ClassNotFoundException ex) {
@@ -701,8 +704,7 @@ public class TomcatEmbeddedServletContainerFactory
 		public void addToContext(Context context) {
 			Assert.state(this.nativePage != null,
 					"Neither Tomcat 7 nor 8 detected so no native error page exists");
-			if (ClassUtils.isPresent("org.apache.tomcat.util.descriptor.web.ErrorPage",
-					null)) {
+			if (ClassUtils.isPresent(ERROR_PAGE_TOMCAT, null)) {
 				org.apache.tomcat.util.descriptor.web.ErrorPage errorPage = (org.apache.tomcat.util.descriptor.web.ErrorPage) this.nativePage;
 				errorPage.setLocation(this.location);
 				errorPage.setErrorCode(this.errorCode);
