@@ -65,20 +65,13 @@ import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.filter.RequestContextFilter;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
-import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
-import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceChainRegistration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
@@ -238,6 +231,20 @@ public class WebMvcAutoConfiguration {
 			}
 			for (Formatter<?> formatter : getBeansOfType(Formatter.class)) {
 				registry.addFormatter(formatter);
+			}
+		}
+
+		@Override
+		public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+			Collection<HandlerMethodArgumentResolver> handlerMethodArgumentResolvers = getBeansOfType(HandlerMethodArgumentResolver.class);
+			argumentResolvers.addAll(handlerMethodArgumentResolvers);
+		}
+
+		@Override
+		public void addInterceptors(InterceptorRegistry registry) {
+			Collection<HandlerInterceptorAdapter> handlerInterceptorAdapters = getBeansOfType(HandlerInterceptorAdapter.class);
+			for (HandlerInterceptorAdapter handlerInterceptorAdapter : handlerInterceptorAdapters) {
+				registry.addInterceptor(handlerInterceptorAdapter);
 			}
 		}
 
