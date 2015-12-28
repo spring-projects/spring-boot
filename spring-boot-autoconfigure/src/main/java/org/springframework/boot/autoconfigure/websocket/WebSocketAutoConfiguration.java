@@ -24,6 +24,7 @@ import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainer
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -61,6 +62,7 @@ public class WebSocketAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "websocketContainerCustomizer")
+		@ConditionalOnJava(ConditionalOnJava.JavaVersion.SEVEN)
 		public EmbeddedServletContainerCustomizer websocketContainerCustomizer() {
 			return new TomcatWebSocketContainerCustomizer();
 		}
