@@ -142,7 +142,7 @@ public class PublicMetricsAutoConfiguration {
 	static class IntegrationMetricsConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(name = "springIntegrationPublicMetrics")
 		public MetricReaderPublicMetrics springIntegrationPublicMetrics(
 				IntegrationMBeanExporter exporter) {
 			return new MetricReaderPublicMetrics(
