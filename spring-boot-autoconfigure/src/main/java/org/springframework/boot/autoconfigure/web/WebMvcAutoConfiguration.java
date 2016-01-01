@@ -245,16 +245,16 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Override
-		public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-			Collection<HandlerMethodArgumentResolver> handlerMethodArgumentResolvers = getBeansOfType(HandlerMethodArgumentResolver.class);
-			argumentResolvers.addAll(handlerMethodArgumentResolvers);
+		public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+			resolvers.addAll(getBeansOfType(HandlerMethodArgumentResolver.class));
 		}
 
 		@Override
 		public void addInterceptors(InterceptorRegistry registry) {
-			Collection<HandlerInterceptorAdapter> handlerInterceptorAdapters = getBeansOfType(HandlerInterceptorAdapter.class);
-			for (HandlerInterceptorAdapter handlerInterceptorAdapter : handlerInterceptorAdapters) {
-				registry.addInterceptor(handlerInterceptorAdapter);
+			Collection<HandlerInterceptorAdapter> adapters = getBeansOfType(
+					HandlerInterceptorAdapter.class);
+			for (HandlerInterceptorAdapter adapter : adapters) {
+				registry.addInterceptor(adapter);
 			}
 		}
 

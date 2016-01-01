@@ -70,7 +70,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
 import org.springframework.web.servlet.resource.CachingResourceResolver;
 import org.springframework.web.servlet.resource.CachingResourceTransformer;
@@ -487,10 +486,13 @@ public class WebMvcAutoConfigurationTests {
 	public void shouldAutoRegisterHandlerInterceptorAdapters() throws Exception {
 
 		load(InterceptorConfiguration.class);
-		HandlerInterceptorAdapter givenHandlerInterceptorAdapter = this.context.getBean("givenHandlerInterceptorAdapter", HandlerInterceptorAdapter.class);
+		HandlerInterceptorAdapter givenHandlerInterceptorAdapter = this.context.getBean(
+				"givenHandlerInterceptorAdapter", HandlerInterceptorAdapter.class);
 
-		AbstractHandlerMapping mapping = this.context.getBean(AbstractHandlerMapping.class);
-		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(mapping, "interceptors");
+		AbstractHandlerMapping mapping = this.context
+				.getBean(AbstractHandlerMapping.class);
+		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(mapping,
+				"interceptors");
 
 		assertTrue(interceptors.contains(givenHandlerInterceptorAdapter));
 	}
@@ -499,10 +501,14 @@ public class WebMvcAutoConfigurationTests {
 	public void shouldAutoRegisterHandlerMethodArgumentResolvers() throws Exception {
 
 		load(ResolverConfiguration.class);
-		HandlerMethodArgumentResolver givenHandlerMethodArgumentResolver = this.context.getBean("givenHandlerMethodArgumentResolver", HandlerMethodArgumentResolver.class);
+		HandlerMethodArgumentResolver givenHandlerMethodArgumentResolver = this.context
+				.getBean("givenHandlerMethodArgumentResolver",
+						HandlerMethodArgumentResolver.class);
 
-		RequestMappingHandlerAdapter requestMappingHandlerAdapter = this.context.getBean(RequestMappingHandlerAdapter.class);
-		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(requestMappingHandlerAdapter, "customArgumentResolvers");
+		RequestMappingHandlerAdapter requestMappingHandlerAdapter = this.context
+				.getBean(RequestMappingHandlerAdapter.class);
+		List<?> interceptors = (List<?>) ReflectionTestUtils
+				.getField(requestMappingHandlerAdapter, "customArgumentResolvers");
 
 		assertTrue(interceptors.contains(givenHandlerMethodArgumentResolver));
 	}
