@@ -628,7 +628,7 @@ context starts. So in this YAML we set a value for `security.user.password` that
 [source,yaml,indent=0]
 ----
 	server:
-	  port: 80000
+	  port: 8000
 	---
 	spring:
 	  profiles: default
@@ -643,7 +643,7 @@ profile, and it would have to be explicitly reset in all other profiles as neces
 [source,yaml,indent=0]
 ----
 	server:
-	  port: 80000
+	  port: 8000
 	security:
 	  user:
 	    password: weak
