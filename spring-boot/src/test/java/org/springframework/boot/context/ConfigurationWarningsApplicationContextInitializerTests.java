@@ -136,16 +136,16 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 
 		@Override
 		protected Check[] getChecks() {
-			return new Check[] { new TestComponentScanDefaultPackageCheck() };
+			return new Check[] { new TestComponentScanPackageCheck() };
 		}
 
 	}
 
 	/**
-	 * Testable ComponentScanDefaultPackageCheck that doesn't need to use the default
-	 * package.
+	 * Testable ComponentScanPackageCheck that doesn't need to use the default
+	 * or {@code org.springframework} package.
 	 */
-	static class TestComponentScanDefaultPackageCheck extends ComponentScanPackageCheck {
+	static class TestComponentScanPackageCheck extends ComponentScanPackageCheck {
 
 		@Override
 		protected Set<String> getComponentScanningPackages(
@@ -156,7 +156,7 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 				if (scannedPackage.endsWith("dflt")) {
 					result.add("");
 				}
-				if (scannedPackage.endsWith("orgspring")) {
+				else if (scannedPackage.endsWith("orgspring")) {
 					result.add("org.springframework");
 				}
 				else {

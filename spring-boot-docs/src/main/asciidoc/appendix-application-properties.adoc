@@ -71,7 +71,7 @@ content into your application; rather pick only the properties that you need.
 	spring.cache.jcache.provider= # Fully qualified name of the CachingProvider implementation to use to retrieve the JSR-107 compliant cache manager. Only needed if more than one JSR-107 implementation is available on the classpath.
 	spring.cache.type= # Cache type, auto-detected according to the environment by default.
 
-	# SPRING CONFIG ({sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[ConfigFileApplicationListener])
+	# SPRING CONFIG - using environment property only ({sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[ConfigFileApplicationListener])
 	spring.config.location= # Config file locations.
 	spring.config.name=application # Config file name.
 

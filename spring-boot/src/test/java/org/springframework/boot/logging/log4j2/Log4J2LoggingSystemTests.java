@@ -192,6 +192,13 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	public void springConfigLocations() throws Exception {
+		String[] locations = getSpringConfigLocations(this.loggingSystem);
+		assertThat(locations,
+				equalTo(new String[] { "log4j2-spring.xml" }));
+	}
+
+	@Test
 	public void exceptionsIncludeClassPackaging() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
