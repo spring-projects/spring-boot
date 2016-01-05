@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.mongodb.MongoClient;
@@ -213,7 +214,7 @@ public class MongoProperties {
 				if (options == null) {
 					options = MongoClientOptions.builder().build();
 				}
-				List<MongoCredential> credentials = null;
+				List<MongoCredential> credentials = Collections.emptyList();
 				if (hasCustomCredentials()) {
 					String database = this.authenticationDatabase == null
 							? getMongoClientDatabase() : this.authenticationDatabase;
