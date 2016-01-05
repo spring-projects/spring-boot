@@ -98,7 +98,7 @@ reactor unless they have previously been built. Unfortunately this restriction c
 some compilations for Spring Boot as we include a maven plugin and use it within the
 samples. The standard build works around this restriction by launching the samples via
 the `maven-invoker-plugin` so that they are not part of the reactor. This works fine
-most of the time, however, sometimes it useful to run a build that includes all modules
+most of the time, however, sometimes it's useful to run a build that includes all modules
 (for example when using `maven-versions-plugin`. We use the full build on our CI servers
 and during the release process.
 
