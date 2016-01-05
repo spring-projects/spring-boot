@@ -20,13 +20,16 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ManagementServerPropertiesAutoConfiguration}.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Henri Kerola
  */
 public class ManagementServerPropertiesAutoConfigurationTests {
 
@@ -35,6 +38,7 @@ public class ManagementServerPropertiesAutoConfigurationTests {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		assertThat(properties.getPort(), nullValue());
 		assertThat(properties.getContextPath(), equalTo(""));
+		assertTrue(properties.getSsl().isEnabled());
 	}
 
 	@Test
@@ -42,8 +46,10 @@ public class ManagementServerPropertiesAutoConfigurationTests {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.setPort(123);
 		properties.setContextPath("/foo");
+		properties.getSsl().setEnabled(false);
 		assertThat(properties.getPort(), equalTo(123));
 		assertThat(properties.getContextPath(), equalTo("/foo"));
+		assertFalse(properties.getSsl().isEnabled());
 	}
 
 	@Test
