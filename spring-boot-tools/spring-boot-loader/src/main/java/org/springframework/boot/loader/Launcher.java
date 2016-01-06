@@ -57,7 +57,16 @@ public abstract class Launcher {
 	protected void launch(String[] args) {
 		try {
 			JarFile.registerUrlProtocolHandler();
-			ClassLoader classLoader = createClassLoader(getClassPathArchives());
+			ClassLoader classLoader = null;
+            ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+
+            if (systemClassLoader != null &&
+                    SpringBootSystemClassLoader.class.isAssignableFrom(systemClassLoader.getClass())) {
+                classLoader = ((SpringBootSystemClassLoader) systemClassLoader).getSpringClassLoader();
+            }
+            if (classLoader == null) {
+                classLoader = createClassLoader(getClassPathArchives());
+            }
 			launch(args, getMainClass(), classLoader);
 		}
 		catch (Exception ex) {
