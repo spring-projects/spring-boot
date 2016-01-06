@@ -77,7 +77,7 @@ public class CassandraDataAutoConfiguration {
 		session.setCluster(this.cluster);
 		session.setConverter(converter);
 		session.setKeyspaceName(this.properties.getKeyspaceName());
-		session.setSchemaAction(SchemaAction.NONE);
+		session.setSchemaAction(SchemaAction.valueOf(this.properties.getSchemaAction()));
 		return session;
 	}
 

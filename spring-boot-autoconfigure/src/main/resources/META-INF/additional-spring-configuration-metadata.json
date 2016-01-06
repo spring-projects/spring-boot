@@ -67,6 +67,12 @@
     "defaultValue": false
   },
   {
+    "name": "spring.data.cassandra.schema-action",
+    "type": "java.lang.String",
+    "description": "Action to take at startup.",
+    "defaultValue": "NONE"
+  },
+  {
     "name": "spring.data.elasticsearch.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Elasticsearch repositories.",
