@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import com.google.common.cache.CacheBuilder;
 import com.hazelcast.cache.HazelcastCachingProvider;
 import com.hazelcast.core.HazelcastInstance;
@@ -49,6 +51,8 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
@@ -70,6 +74,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
@@ -546,6 +551,59 @@ public class CacheAutoConfigurationTests {
 		validateGuavaCacheWithStats();
 	}
 
+	@Test
+	public void caffeineCacheWithCaches() {
+		load(DefaultCacheConfiguration.class, "spring.cache.type=caffeine",
+				"spring.cache.cacheNames[0]=spring", "spring.cache.cacheNames[1]=boot");
+		CaffeineCacheManager cacheManager = validateCacheManager(
+				CaffeineCacheManager.class);
+		assertThat(cacheManager.getCacheNames(),
+				containsInAnyOrder("spring", "boot"));
+		assertThat(cacheManager.getCacheNames(), hasSize(2));
+	}
+
+	@Test
+	public void caffeineCacheNotAllowNullValues() {
+		load(DefaultCacheConfiguration.class, "spring.cache.type=caffeine",
+				"spring.cache.caffeine.allow-null-values=false");
+		CaffeineCacheManager cacheManager = validateCacheManager(
+				CaffeineCacheManager.class);
+		assertThat(cacheManager.isAllowNullValues(), is(false));
+	}
+
+	@Test
+	public void caffeineCacheWithNullCaches() {
+		load(CaffeineCacheBuilderConfiguration.class, "spring.cache.type=caffeine",
+				"spring.cache.cacheNames[0]=caffeine", "spring.cache.cacheNames[1]=cache");
+		CaffeineCacheManager cacheManager = validateCacheManager(
+				CaffeineCacheManager.class);
+		assertThat(cacheManager.isAllowNullValues(), is(true));
+	}
+
+	@Test
+	public void caffeineCacheExplicitWithSpec() {
+		load(DefaultCacheConfiguration.class, "spring.cache.type=caffeine",
+				"spring.cache.caffeine.spec=recordStats", "spring.cache.cacheNames[0]=foo",
+				"spring.cache.cacheNames[1]=bar");
+		validateCaffeineCacheWithStats();
+	}
+
+	@Test
+	public void caffeineCacheExplicitWithCacheBuilder() {
+		load(CaffeineCacheBuilderConfiguration2.class, "spring.cache.type=caffeine",
+				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
+		validateCaffeineCacheWithStats();
+	}
+
+	private void validateCaffeineCacheWithStats() {
+		CaffeineCacheManager cacheManager = validateCacheManager(CaffeineCacheManager.class);
+		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
+		assertThat(cacheManager.getCacheNames(), hasSize(2));
+		Cache foo = cacheManager.getCache("foo");
+		foo.get("1");
+		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount(), equalTo(1L));
+	}
+
 	private void validateGuavaCacheWithStats() {
 		GuavaCacheManager cacheManager = validateCacheManager(GuavaCacheManager.class);
 		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
@@ -754,6 +812,28 @@ public class CacheAutoConfigurationTests {
 
 			};
 
+		}
+
+	}
+
+	@Configuration
+	@EnableCaching
+	static class CaffeineCacheBuilderConfiguration {
+
+		@Bean
+		Caffeine<Object, Object> cacheBuilder() {
+			return Caffeine.newBuilder().maximumSize(10);
+		}
+
+	}
+
+	@Configuration
+	@EnableCaching
+	static class CaffeineCacheBuilderConfiguration2 {
+
+		@Bean
+		CaffeineSpec caffeineSpec() {
+			return CaffeineSpec.parse("recordStats");
 		}
 
 	}
