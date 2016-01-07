@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.util.Assert;
  * Mappings between {@link CacheType} and {@code @Configuration}.
  *
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 final class CacheConfigurations {
 
@@ -37,6 +38,7 @@ final class CacheConfigurations {
 	static {
 		Map<CacheType, Class<?>> mappings = new HashMap<CacheType, Class<?>>();
 		mappings.put(CacheType.GENERIC, GenericCacheConfiguration.class);
+		mappings.put(CacheType.CAFFEINE, CaffeineCacheConfiguration.class);
 		mappings.put(CacheType.EHCACHE, EhCacheCacheConfiguration.class);
 		mappings.put(CacheType.HAZELCAST, HazelcastCacheConfiguration.class);
 		mappings.put(CacheType.INFINISPAN, InfinispanCacheConfiguration.class);
