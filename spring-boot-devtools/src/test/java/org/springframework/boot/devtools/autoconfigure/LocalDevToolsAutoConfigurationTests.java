@@ -241,10 +241,23 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void sessionRedisTemplateIsConfiguredWithCustomDeserializers()
+	public void sessionRedisTemplateIsConfiguredWithCustomDeserializers10()
 			throws Exception {
-		SpringApplication application = new SpringApplication(
-				SessionRedisTemplateConfig.class, LocalDevToolsAutoConfiguration.class);
+		sessionRedisTemplateIsConfiguredWithCustomDeserializers(
+				SessionRedisTemplateConfig10.class);
+	}
+
+	@Test
+	public void sessionRedisTemplateIsConfiguredWithCustomDeserializers11()
+			throws Exception {
+		sessionRedisTemplateIsConfiguredWithCustomDeserializers(
+				SessionRedisTemplateConfig11.class);
+	}
+
+	private void sessionRedisTemplateIsConfiguredWithCustomDeserializers(
+			Object sessionConfig) throws Exception {
+		SpringApplication application = new SpringApplication(sessionConfig,
+				LocalDevToolsAutoConfiguration.class);
 		application.setWebEnvironment(false);
 		this.context = application.run();
 		RedisTemplate<?, ?> redisTemplate = this.context.getBean(RedisTemplate.class);
@@ -306,11 +319,23 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Configuration
-	public static class SessionRedisTemplateConfig {
+	public static class SessionRedisTemplateConfig10 {
 
 		@Bean
 		public RedisTemplate<String, ExpiringSession> sessionRedisTemplate() {
 			RedisTemplate<String, ExpiringSession> redisTemplate = new RedisTemplate<String, ExpiringSession>();
+			redisTemplate.setConnectionFactory(mock(RedisConnectionFactory.class));
+			return redisTemplate;
+		}
+
+	}
+
+	@Configuration
+	public static class SessionRedisTemplateConfig11 {
+
+		@Bean
+		public RedisTemplate<Object, Object> sessionRedisTemplate() {
+			RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<Object, Object>();
 			redisTemplate.setConnectionFactory(mock(RedisConnectionFactory.class));
 			return redisTemplate;
 		}

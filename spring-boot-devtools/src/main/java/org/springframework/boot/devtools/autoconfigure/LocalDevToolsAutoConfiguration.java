@@ -42,7 +42,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.session.ExpiringSession;
 import org.springframework.util.StringUtils;
 
 /**
@@ -169,7 +168,7 @@ public class LocalDevToolsAutoConfiguration {
 
 			@Bean
 			public RestartCompatibleRedisSerializerConfigurer restartCompatibleRedisSerializerConfigurer(
-					RedisTemplate<String, ExpiringSession> sessionRedisTemplate) {
+					RedisTemplate<?, ?> sessionRedisTemplate) {
 				return new RestartCompatibleRedisSerializerConfigurer(
 						sessionRedisTemplate);
 			}
