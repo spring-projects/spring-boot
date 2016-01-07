@@ -23,6 +23,7 @@ import java.util.Arrays;
 import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.cache.CacheBuilder;
 import com.hazelcast.cache.HazelcastCachingProvider;
 import com.hazelcast.config.Config;
@@ -40,6 +41,7 @@ import org.springframework.boot.actuate.cache.CacheStatistics;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerUtils;
@@ -60,6 +62,7 @@ import static org.assertj.core.api.Assertions.offset;
  * Tests for {@link CacheStatisticsAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CacheStatisticsAutoConfigurationTests {
@@ -143,6 +146,14 @@ public class CacheStatisticsAutoConfigurationTests {
 		CacheStatistics updatedCacheStatistics = provider
 				.getCacheStatistics(this.cacheManager, books);
 		assertCoreStatistics(updatedCacheStatistics, null, null, null);
+	}
+
+	@Test
+	public void caffeineCacheStatistics() {
+		load(CaffeineCacheConfig.class);
+		CacheStatisticsProvider provider = this.context
+				.getBean("caffeineCacheStatisticsProvider", CacheStatisticsProvider.class);
+		doTestCoreStatistics(provider, true);
 	}
 
 	private void doTestCoreStatistics(CacheStatisticsProvider provider,
@@ -309,6 +320,19 @@ public class CacheStatisticsAutoConfigurationTests {
 		@Bean
 		public NoOpCacheManager cacheManager() {
 			return new NoOpCacheManager();
+		}
+
+	}
+
+	@Configuration
+	static class CaffeineCacheConfig {
+
+		@Bean
+		public CaffeineCacheManager cacheManager() {
+			CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+			cacheManager.setCaffeine(Caffeine.newBuilder().recordStats());
+			cacheManager.setCacheNames(Arrays.asList("books", "speaker"));
+			return cacheManager;
 		}
 
 	}

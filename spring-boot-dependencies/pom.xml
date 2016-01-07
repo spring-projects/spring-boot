@@ -51,6 +51,7 @@
 		<assertj.version>2.3.0</assertj.version>
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
+		<caffeine.version>2.1.0</caffeine.version>
 		<cassandra-driver.version>2.1.9</cassandra-driver.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
 		<commons-collections.version>3.2.2</commons-collections.version>
@@ -623,6 +624,11 @@
 						<artifactId>spring-data-gemfire</artifactId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>com.github.ben-manes.caffeine</groupId>
+				<artifactId>caffeine</artifactId>
+				<version>${caffeine.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.github.mxab.thymeleaf.extras</groupId>
