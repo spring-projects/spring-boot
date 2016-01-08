@@ -135,6 +135,34 @@ public class PropertiesConfigurationFactoryTests {
 	}
 
 	@Test
+	public void testBindWithSnakeCaseSetter() throws Exception {
+		this.targetName = null;
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(new SystemEnvironmentPropertySource("systemEnvironment",
+				Collections.<String, Object>singletonMap("MY_LINE", "blah")));
+		propertySources.addLast(new RandomValuePropertySource());
+		setupFactory();
+		this.factory.setPropertySources(propertySources);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertEquals("blah", foo.getMY_LINE());
+	}
+
+	@Test
+	public void testBindWithPrefixAndSnakeCaseSetter() throws Exception {
+		this.targetName = "foo";
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(new SystemEnvironmentPropertySource("systemEnvironment",
+				Collections.<String, Object>singletonMap("foo.MY_LINE", "blah")));
+		propertySources.addLast(new RandomValuePropertySource());
+		setupFactory();
+		this.factory.setPropertySources(propertySources);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertEquals("blah", foo.getMY_LINE());
+	}
+
+	@Test
 	public void testBindWithDelimitedPrefixUsingMatchingDelimiter() throws Exception {
 		this.targetName = "env_foo";
 		this.ignoreUnknownFields = false;
@@ -195,6 +223,8 @@ public class PropertiesConfigurationFactoryTests {
 
 		private String fooBar;
 
+		private String line;
+
 		public String getSpringFooBaz() {
 			return this.spring_foo_baz;
 		}
@@ -225,6 +255,14 @@ public class PropertiesConfigurationFactoryTests {
 
 		public void setFooBar(String fooBar) {
 			this.fooBar = fooBar;
+		}
+
+		public void setMY_LINE(String line) {
+			this.line = line;
+		}
+
+		public String getMY_LINE() {
+			return this.line;
 		}
 
 	}
