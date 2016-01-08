@@ -287,12 +287,15 @@ public class PropertiesConfigurationFactory<T>
 				if (!name.equals("class")) {
 					RelaxedNames relaxedNames = RelaxedNames.forCamelCase(name);
 					if (prefixes == null) {
+						names.add(name);
 						for (String relaxedName : relaxedNames) {
 							names.add(relaxedName);
 						}
 					}
 					else {
 						for (String prefix : prefixes) {
+							names.add(prefix + "." + name);
+							names.add(prefix + "_" + name);
 							for (String relaxedName : relaxedNames) {
 								names.add(prefix + "." + relaxedName);
 								names.add(prefix + "_" + relaxedName);
