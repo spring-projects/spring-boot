@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -771,7 +771,6 @@ public class SpringApplication {
 	 */
 	protected void afterRefresh(ConfigurableApplicationContext context,
 			ApplicationArguments args) {
-		afterRefresh(context, args.getSourceArgs());
 		callRunners(context, args);
 	}
 
@@ -806,17 +805,6 @@ public class SpringApplication {
 		catch (Exception ex) {
 			throw new IllegalStateException("Failed to execute CommandLineRunner", ex);
 		}
-	}
-
-	/**
-	 * Called after the context has been refreshed.
-	 * @param context the application context
-	 * @param args the application arguments
-	 * @deprecated in 1.3 in favor of
-	 * {@link #afterRefresh(ConfigurableApplicationContext, ApplicationArguments)}
-	 */
-	@Deprecated
-	protected void afterRefresh(ConfigurableApplicationContext context, String[] args) {
 	}
 
 	private void handleRunFailure(ConfigurableApplicationContext context,
