@@ -773,7 +773,6 @@ public class SpringApplication {
 	 */
 	protected void afterRefresh(ConfigurableApplicationContext context,
 			ApplicationArguments args) {
-		afterRefresh(context, args.getSourceArgs());
 		callRunners(context, args);
 	}
 
@@ -808,17 +807,6 @@ public class SpringApplication {
 		catch (Exception ex) {
 			throw new IllegalStateException("Failed to execute CommandLineRunner", ex);
 		}
-	}
-
-	/**
-	 * Called after the context has been refreshed.
-	 * @param context the application context
-	 * @param args the application arguments
-	 * @deprecated in 1.3 in favor of
-	 * {@link #afterRefresh(ConfigurableApplicationContext, ApplicationArguments)}
-	 */
-	@Deprecated
-	protected void afterRefresh(ConfigurableApplicationContext context, String[] args) {
 	}
 
 	private void handleRunFailure(ConfigurableApplicationContext context,
