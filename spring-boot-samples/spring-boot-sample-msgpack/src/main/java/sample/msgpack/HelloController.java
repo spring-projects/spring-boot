@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloController {
 	@RequestMapping("/")
 	public Map<String, Object> hello() {
-		Map<String, Object> obj = new LinkedHashMap<>();
+		Map<String, Object> obj = new LinkedHashMap<String, Object>();
 		obj.put("foo", "hello");
 		obj.put("bar", "world");
 		return obj;

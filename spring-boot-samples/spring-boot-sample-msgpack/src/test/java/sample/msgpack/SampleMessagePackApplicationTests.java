@@ -93,7 +93,7 @@ public class SampleMessagePackApplicationTests {
 		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(entity.getHeaders().getContentType().getType(), is("application"));
 		assertThat(entity.getHeaders().getContentType().getSubtype(), is("x-msgpack"));
-		Map<String, Object> obj = new LinkedHashMap<>();
+		Map<String, Object> obj = new LinkedHashMap<String, Object>();
 		obj.put("foo", "hello");
 		obj.put("bar", "world");
 		assertThat(entity.getBody(), is(obj));
@@ -108,7 +108,7 @@ public class SampleMessagePackApplicationTests {
 		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(entity.getHeaders().getContentType().getType(), is("application"));
 		assertThat(entity.getHeaders().getContentType().getSubtype(), is("json"));
-		Map<String, Object> obj = new LinkedHashMap<>();
+		Map<String, Object> obj = new LinkedHashMap<String, Object>();
 		obj.put("foo", "hello");
 		obj.put("bar", "world");
 		assertThat(entity.getBody(), is(obj));
