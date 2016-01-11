@@ -17,7 +17,6 @@
 package org.springframework.boot.loader;
 
 import org.springframework.boot.loader.archive.Archive;
-import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * {@link Launcher} for WAR based archives. This launcher for standard WAR archives.
@@ -29,14 +28,13 @@ import org.springframework.boot.loader.util.AsciiBytes;
  */
 public class WarLauncher extends ExecutableArchiveLauncher {
 
-	private static final AsciiBytes WEB_INF = new AsciiBytes("WEB-INF/");
+	private static final String WEB_INF = "WEB-INF/";
 
-	private static final AsciiBytes WEB_INF_CLASSES = WEB_INF.append("classes/");
+	private static final String WEB_INF_CLASSES = WEB_INF + "classes/";
 
-	private static final AsciiBytes WEB_INF_LIB = WEB_INF.append("lib/");
+	private static final String WEB_INF_LIB = WEB_INF + "lib/";
 
-	private static final AsciiBytes WEB_INF_LIB_PROVIDED = WEB_INF
-			.append("lib-provided/");
+	private static final String WEB_INF_LIB_PROVIDED = WEB_INF + "lib-provided/";
 
 	public WarLauncher() {
 		super();

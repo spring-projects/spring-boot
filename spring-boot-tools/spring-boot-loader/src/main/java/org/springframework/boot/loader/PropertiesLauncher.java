@@ -21,14 +21,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.Manifest;
@@ -39,9 +40,7 @@ import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.Archive.Entry;
 import org.springframework.boot.loader.archive.Archive.EntryFilter;
 import org.springframework.boot.loader.archive.ExplodedArchive;
-import org.springframework.boot.loader.archive.FilteredArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
-import org.springframework.boot.loader.util.AsciiBytes;
 import org.springframework.boot.loader.util.SystemPropertyUtils;
 
 /**
@@ -122,8 +121,6 @@ public class PropertiesLauncher extends Launcher {
 	 */
 	public static final String SET_SYSTEM_PROPERTIES = "loader.system";
 
-	private static final List<String> DEFAULT_PATHS = Arrays.asList();
-
 	private static final Pattern WORD_SEPARATOR = Pattern.compile("\\W+");
 
 	private static final URL[] EMPTY_URLS = {};
@@ -132,7 +129,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private final JavaAgentDetector javaAgentDetector;
 
-	private List<String> paths = new ArrayList<String>(DEFAULT_PATHS);
+	private List<String> paths = new ArrayList<String>();
 
 	private final Properties properties = new Properties();
 
@@ -168,7 +165,6 @@ public class PropertiesLauncher extends Launcher {
 		config = SystemPropertyUtils.resolvePlaceholders(
 				SystemPropertyUtils.getProperty(CONFIG_LOCATION, config));
 		InputStream resource = getResource(config);
-
 		if (resource != null) {
 			log("Found: " + config);
 			try {
@@ -353,7 +349,6 @@ public class PropertiesLauncher extends Launcher {
 	@SuppressWarnings("unchecked")
 	private ClassLoader wrapWithCustomClassLoader(ClassLoader parent,
 			String loaderClassName) throws Exception {
-
 		Class<ClassLoader> loaderClass = (Class<ClassLoader>) Class
 				.forName(loaderClassName, true, parent);
 
@@ -363,7 +358,6 @@ public class PropertiesLauncher extends Launcher {
 		catch (NoSuchMethodException ex) {
 			// Ignore and try with URLs
 		}
-
 		try {
 			return loaderClass.getConstructor(URL[].class, ClassLoader.class)
 					.newInstance(new URL[0], parent);
@@ -371,7 +365,6 @@ public class PropertiesLauncher extends Launcher {
 		catch (NoSuchMethodException ex) {
 			// Ignore and try without any arguments
 		}
-
 		return loaderClass.newInstance();
 	}
 
@@ -384,21 +377,18 @@ public class PropertiesLauncher extends Launcher {
 			manifestKey = propertyKey.replace(".", "-");
 			manifestKey = toCamelCase(manifestKey);
 		}
-
 		String property = SystemPropertyUtils.getProperty(propertyKey);
 		if (property != null) {
 			String value = SystemPropertyUtils.resolvePlaceholders(property);
 			log("Property '" + propertyKey + "' from environment: " + value);
 			return value;
 		}
-
 		if (this.properties.containsKey(propertyKey)) {
 			String value = SystemPropertyUtils
 					.resolvePlaceholders(this.properties.getProperty(propertyKey));
 			log("Property '" + propertyKey + "' from properties: " + value);
 			return value;
 		}
-
 		try {
 			// Prefer home dir for MANIFEST if there is one
 			Manifest manifest = new ExplodedArchive(this.home, false).getManifest();
@@ -412,7 +402,6 @@ public class PropertiesLauncher extends Launcher {
 		catch (IllegalStateException ex) {
 			// Ignore
 		}
-
 		// Otherwise try the parent archive
 		Manifest manifest = createArchive().getManifest();
 		if (manifest != null) {
@@ -478,7 +467,7 @@ public class PropertiesLauncher extends Launcher {
 		return null;
 	}
 
-	private Archive getNestedArchive(final String root) throws Exception {
+	private Archive getNestedArchive(String root) throws Exception {
 		if (root.startsWith("/")
 				|| this.parent.getUrl().equals(this.home.toURI().toURL())) {
 			// If home dir is same as parent archive, no need to add it twice.
@@ -629,39 +618,83 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-	 * Convenience class for finding nested archives (archive entries that can be
-	 * classpath entries).
-	 */
-	private static final class ArchiveEntryFilter implements EntryFilter {
-
-		private static final AsciiBytes DOT_JAR = new AsciiBytes(".jar");
-
-		private static final AsciiBytes DOT_ZIP = new AsciiBytes(".zip");
-
-		@Override
-		public boolean matches(Entry entry) {
-			return entry.getName().endsWith(DOT_JAR) || entry.getName().endsWith(DOT_ZIP);
-		}
-	}
-
-	/**
 	 * Convenience class for finding nested archives that have a prefix in their file path
 	 * (e.g. "lib/").
 	 */
 	private static final class PrefixMatchingArchiveFilter implements EntryFilter {
 
-		private final AsciiBytes prefix;
+		private final String prefix;
 
 		private final ArchiveEntryFilter filter = new ArchiveEntryFilter();
 
 		private PrefixMatchingArchiveFilter(String prefix) {
-			this.prefix = new AsciiBytes(prefix);
+			this.prefix = prefix;
 		}
 
 		@Override
 		public boolean matches(Entry entry) {
 			return entry.getName().startsWith(this.prefix) && this.filter.matches(entry);
 		}
+
 	}
 
+	/**
+	 * Convenience class for finding nested archives (archive entries that can be
+	 * classpath entries).
+	 */
+	private static final class ArchiveEntryFilter implements EntryFilter {
+
+		private static final String DOT_JAR = ".jar";
+
+		private static final String DOT_ZIP = ".zip";
+
+		@Override
+		public boolean matches(Entry entry) {
+			return entry.getName().endsWith(DOT_JAR) || entry.getName().endsWith(DOT_ZIP);
+		}
+
+	}
+
+	/**
+	 * Decorator to apply an {@link Archive.EntryFilter} to an existing {@link Archive}.
+	 */
+	private static class FilteredArchive implements Archive {
+
+		private final Archive parent;
+
+		private final EntryFilter filter;
+
+		FilteredArchive(Archive parent, EntryFilter filter) {
+			this.parent = parent;
+			this.filter = filter;
+		}
+
+		@Override
+		public URL getUrl() throws MalformedURLException {
+			return this.parent.getUrl();
+		}
+
+		@Override
+		public Manifest getManifest() throws IOException {
+			return this.parent.getManifest();
+		}
+
+		@Override
+		public Iterator<Entry> iterator() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<Archive> getNestedArchives(final EntryFilter filter)
+				throws IOException {
+			return this.parent.getNestedArchives(new EntryFilter() {
+				@Override
+				public boolean matches(Entry entry) {
+					return FilteredArchive.this.filter.matches(entry)
+							&& filter.matches(entry);
+				}
+			});
+		}
+
+	}
 }

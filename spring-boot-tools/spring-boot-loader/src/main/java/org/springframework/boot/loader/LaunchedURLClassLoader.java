@@ -204,20 +204,15 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
 				@Override
 				public Object run() throws ClassNotFoundException {
-					String path = name.replace('.', '/').concat(".class");
 					for (URL url : getURLs()) {
 						try {
 							if (url.getContent() instanceof JarFile) {
 								JarFile jarFile = (JarFile) url.getContent();
-								// Check the jar entry data before needlessly creating the
-								// manifest
-								if (jarFile.getJarEntryData(path) != null
-										&& jarFile.getManifest() != null) {
+								if (jarFile.getManifest() != null) {
 									definePackage(packageName, jarFile.getManifest(),
 											url);
 									return null;
 								}
-
 							}
 						}
 						catch (IOException ex) {
