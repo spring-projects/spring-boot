@@ -85,7 +85,7 @@ isRunning() {
 await_file() {
   end=$(date +%s)
   let "end+=10"
-  while [[ ! -f "$1" ]]
+  while [[ ! -s "$1" ]]
   do
     now=$(date +%s)
     if [[ $now -ge $end ]]; then
