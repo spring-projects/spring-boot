@@ -445,8 +445,17 @@ Let's develop a simple "`Hello World!`" web application in Java that highlights 
 of Spring Boot's key features. We'll use Maven to build this project since most IDEs
 support it.
 
-TIP: The http://spring.io[spring.io] web site contains many "`Getting Started`" guides
+[TIP]
+====
+The http://spring.io[spring.io] web site contains many "`Getting Started`" guides
 that use Spring Boot. If you're looking to solve a specific problem; check there first.
+
+You can shortcut the steps below by going to https://start.spring.io and choosing the
+`web` starter from the dependencies searcher. This will automatically generate a new
+project structure so that you can <<getting-started-first-application-code,start coding
+right the way>>. Check the https://github.com/spring-io/initializr[documentation for
+more details].
+====
 
 Before we begin, open a terminal to check that you have valid versions of Java and Maven
 installed.
