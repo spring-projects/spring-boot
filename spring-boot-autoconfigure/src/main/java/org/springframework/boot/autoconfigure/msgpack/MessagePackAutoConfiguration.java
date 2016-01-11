@@ -31,46 +31,49 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 
-
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for MessagePack.
+ *
  * @author Toshiaki Maki
  * @since 1.3.2
  */
 @Configuration
-@ConditionalOnClass({ HttpMessageConverter.class, RestTemplate.class, MessagePackFactory.class, ObjectMapper.class })
+@ConditionalOnClass({HttpMessageConverter.class, RestTemplate.class, MessagePackFactory.class, ObjectMapper.class, Jackson2ObjectMapperBuilder.class})
 @AutoConfigureBefore(HttpMessageConvertersAutoConfiguration.class)
 public class MessagePackAutoConfiguration {
 
-	@Autowired(required = false)
-	RestTemplate restTemplate;
+    @Autowired(required = false)
+    RestTemplate restTemplate;
+    @Autowired
+    Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder;
 
-	@ConditionalOnMissingBean
-	@Bean
-	public MessagePackHttpMessageConverter messagePackHttpMessageConverter() {
-		return new MessagePackHttpMessageConverter();
-	}
+    @ConditionalOnMissingBean
+    @Bean
+    public MessagePackHttpMessageConverter messagePackHttpMessageConverter() {
+        return new MessagePackHttpMessageConverter(jackson2ObjectMapperBuilder);
+    }
 
-	@Bean
-	public InitializingBean messagePackRestTemplateInitializer() {
-		return new InitializingBean() {
-			@Override
-			public void afterPropertiesSet() throws Exception {
-				if (MessagePackAutoConfiguration.this.restTemplate != null) {
-					List<HttpMessageConverter<?>> converters = MessagePackAutoConfiguration.this.restTemplate
-							.getMessageConverters();
-					HttpMessageConverter<?> converter = CollectionUtils.findValueOfType(
-							converters, MessagePackHttpMessageConverter.class);
-					if (converter == null) {
-						converters.add(messagePackHttpMessageConverter());
-					}
-				}
-			}
-		};
-	}
+    @Bean
+    public InitializingBean messagePackRestTemplateInitializer() {
+        return new InitializingBean() {
+            @Override
+            public void afterPropertiesSet() throws Exception {
+                if (MessagePackAutoConfiguration.this.restTemplate != null) {
+                    List<HttpMessageConverter<?>> converters = MessagePackAutoConfiguration.this.restTemplate
+                            .getMessageConverters();
+                    HttpMessageConverter<?> converter = CollectionUtils.findValueOfType(
+                            converters, MessagePackHttpMessageConverter.class);
+                    if (converter == null) {
+                        converters.add(messagePackHttpMessageConverter());
+                    }
+                }
+            }
+        };
+    }
 
 }

@@ -21,18 +21,27 @@ import org.msgpack.jackson.dataformat.MessagePackFactory;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 
 /**
  * Implementation of {@link org.springframework.http.converter.HttpMessageConverter} that
  * can read and write <a href="http://msgpack.org/">MessagePack</a>.
+ *
  * @author Toshiaki Maki
  * @since 1.3.2
  */
 public class MessagePackHttpMessageConverter
-		extends AbstractJackson2HttpMessageConverter {
-	public MessagePackHttpMessageConverter() {
-		super(new ObjectMapper(new MessagePackFactory()),
-				new MediaType("application", "x-msgpack"));
-	}
+        extends AbstractJackson2HttpMessageConverter {
+    public MessagePackHttpMessageConverter(Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
+        super(configureObjectMapper(jackson2ObjectMapperBuilder, new ObjectMapper(new MessagePackFactory())),
+                new MediaType("application", "x-msgpack"));
+    }
+
+    private static ObjectMapper configureObjectMapper(Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder,
+                                                      ObjectMapper objectMapper) {
+        // Apply default values provided by Jackson2ObjectMapperBuilder
+        jackson2ObjectMapperBuilder.configure(objectMapper);
+        return objectMapper;
+    }
 }

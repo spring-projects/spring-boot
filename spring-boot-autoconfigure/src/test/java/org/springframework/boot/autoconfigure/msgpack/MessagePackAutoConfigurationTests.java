@@ -23,11 +23,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.mock.http.MockHttpInputMessage;
 import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.web.client.RestTemplate;
@@ -59,7 +61,7 @@ public class MessagePackAutoConfigurationTests {
 
 	@Test
 	public void testMessagePackReadBytes() throws Exception {
-		this.context.register(MessagePackAutoConfiguration.class);
+		this.context.register(MessagePackAutoConfiguration.class, JacksonAutoConfiguration.class);
 		this.context.refresh();
 		HttpMessageConverter converter = this.context
 				.getBean("messagePackHttpMessageConverter", HttpMessageConverter.class);
@@ -76,7 +78,7 @@ public class MessagePackAutoConfigurationTests {
 
 	@Test
 	public void testMessagePackWriteBytes() throws Exception {
-		this.context.register(MessagePackAutoConfiguration.class);
+		this.context.register(MessagePackAutoConfiguration.class, JacksonAutoConfiguration.class);
 		this.context.refresh();
 		HttpMessageConverter converter = this.context
 				.getBean("messagePackHttpMessageConverter", HttpMessageConverter.class);
@@ -96,7 +98,7 @@ public class MessagePackAutoConfigurationTests {
 	public void testRestTempleIncludingAutoMessagePackMessageConverter()
 			throws Exception {
 		this.context.register(MessagePackAutoConfiguration.class,
-				RestTemplateConfig.class);
+				RestTemplateConfig.class, JacksonAutoConfiguration.class);
 		this.context.refresh();
 		RestTemplate restTemplate = this.context.getBean(RestTemplate.class);
 		assertThat(
@@ -109,7 +111,7 @@ public class MessagePackAutoConfigurationTests {
 	public void testRestTempleIncludingManualMessagePackMessageConverter()
 			throws Exception {
 		this.context.register(MessagePackAutoConfiguration.class,
-				MessagePackConfiguredRestTemplateConfig.class);
+				MessagePackConfiguredRestTemplateConfig.class, JacksonAutoConfiguration.class);
 		this.context.refresh();
 		RestTemplate restTemplate = this.context.getBean(RestTemplate.class);
 		assertThat(restTemplate.getMessageConverters().get(0),
@@ -127,11 +129,11 @@ public class MessagePackAutoConfigurationTests {
 	@Configuration
 	static class MessagePackConfiguredRestTemplateConfig {
 		@Bean
-		public RestTemplate restTemplate() {
+		public RestTemplate restTemplate(Jackson2ObjectMapperBuilder builder) {
 			RestTemplate restTemplate = new RestTemplate();
 			// add first
 			restTemplate.getMessageConverters().add(0,
-					new MessagePackHttpMessageConverter());
+					new MessagePackHttpMessageConverter(builder));
 			return restTemplate;
 		}
 	}
