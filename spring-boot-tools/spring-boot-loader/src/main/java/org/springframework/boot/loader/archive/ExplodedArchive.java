@@ -18,45 +18,38 @@ package org.springframework.boot.loader.archive;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.jar.Manifest;
-
-import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * {@link Archive} implementation backed by an exploded archive directory.
  *
  * @author Phillip Webb
  */
-public class ExplodedArchive extends Archive {
+public class ExplodedArchive implements Archive {
 
 	private static final Set<String> SKIPPED_NAMES = new HashSet<String>(
 			Arrays.asList(".", ".."));
 
-	private static final AsciiBytes MANIFEST_ENTRY_NAME = new AsciiBytes(
-			"META-INF/MANIFEST.MF");
-
 	private final File root;
 
-	private Map<AsciiBytes, Entry> entries = new LinkedHashMap<AsciiBytes, Entry>();
+	private final boolean recursive;
+
+	private File manifestFile;
 
 	private Manifest manifest;
-
-	private boolean filtered = false;
 
 	/**
 	 * Create a new {@link ExplodedArchive} instance.
@@ -78,52 +71,24 @@ public class ExplodedArchive extends Archive {
 			throw new IllegalArgumentException("Invalid source folder " + root);
 		}
 		this.root = root;
-		buildEntries(root, recursive);
-		this.entries = Collections.unmodifiableMap(this.entries);
+		this.recursive = recursive;
+		this.manifestFile = getManifestFile(root);
 	}
 
-	private ExplodedArchive(File root, Map<AsciiBytes, Entry> entries) {
-		this.root = root;
-		// The entries are pre-filtered
-		this.filtered = true;
-		this.entries = Collections.unmodifiableMap(entries);
-	}
-
-	private void buildEntries(File file, boolean recursive) {
-		if (!file.equals(this.root)) {
-			String name = file.toURI().getPath()
-					.substring(this.root.toURI().getPath().length());
-			FileEntry entry = new FileEntry(new AsciiBytes(name), file);
-			this.entries.put(entry.getName(), entry);
-		}
-		if (file.isDirectory()) {
-			File[] files = file.listFiles();
-			if (files == null) {
-				return;
-			}
-			for (File child : files) {
-				if (!SKIPPED_NAMES.contains(child.getName())) {
-					if (file.equals(this.root) || recursive
-							|| file.getName().equals("META-INF")) {
-						buildEntries(child, recursive);
-					}
-				}
-			}
-		}
+	private File getManifestFile(File root) {
+		File metaInf = new File(root, "META-INF");
+		return new File(metaInf, "MANIFEST.MF");
 	}
 
 	@Override
 	public URL getUrl() throws MalformedURLException {
-		FilteredURLStreamHandler handler = this.filtered ? new FilteredURLStreamHandler()
-				: null;
-		return new URL("file", "", -1, this.root.toURI().getPath(), handler);
+		return new URL("file", "", -1, this.root.toURI().getPath());
 	}
 
 	@Override
 	public Manifest getManifest() throws IOException {
-		if (this.manifest == null && this.entries.containsKey(MANIFEST_ENTRY_NAME)) {
-			FileEntry entry = (FileEntry) this.entries.get(MANIFEST_ENTRY_NAME);
-			FileInputStream inputStream = new FileInputStream(entry.getFile());
+		if (this.manifest == null && this.manifestFile.exists()) {
+			FileInputStream inputStream = new FileInputStream(this.manifestFile);
 			try {
 				this.manifest = new Manifest(inputStream);
 			}
@@ -137,7 +102,7 @@ public class ExplodedArchive extends Archive {
 	@Override
 	public List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
 		List<Archive> nestedArchives = new ArrayList<Archive>();
-		for (Entry entry : getEntries()) {
+		for (Entry entry : this) {
 			if (filter.matches(entry)) {
 				nestedArchives.add(getNestedArchive(entry));
 			}
@@ -146,8 +111,8 @@ public class ExplodedArchive extends Archive {
 	}
 
 	@Override
-	public Collection<Entry> getEntries() {
-		return Collections.unmodifiableCollection(this.entries.values());
+	public Iterator<Entry> iterator() {
+		return new FileEntryIterator(this.root, this.recursive);
 	}
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {
@@ -157,25 +122,94 @@ public class ExplodedArchive extends Archive {
 	}
 
 	@Override
-	public Archive getFilteredArchive(EntryRenameFilter filter) throws IOException {
-		Map<AsciiBytes, Entry> filteredEntries = new LinkedHashMap<AsciiBytes, Archive.Entry>();
-		for (Map.Entry<AsciiBytes, Entry> entry : this.entries.entrySet()) {
-			AsciiBytes filteredName = filter.apply(entry.getKey(), entry.getValue());
-			if (filteredName != null) {
-				filteredEntries.put(filteredName, new FileEntry(filteredName,
-						((FileEntry) entry.getValue()).getFile()));
-			}
+	public String toString() {
+		try {
+			return getUrl().toString();
 		}
-		return new ExplodedArchive(this.root, filteredEntries);
+		catch (Exception ex) {
+			return "exploded archive";
+		}
 	}
 
-	private class FileEntry implements Entry {
+	/**
+	 * File based {@link Entry} {@link Iterator}.
+	 */
+	private static class FileEntryIterator implements Iterator<Entry> {
 
-		private final AsciiBytes name;
+		private final File root;
+
+		private final boolean recursive;
+
+		private final Deque<Iterator<File>> stack = new LinkedList<Iterator<File>>();
+
+		private File current;
+
+		FileEntryIterator(File root, boolean recursive) {
+			this.root = root;
+			this.recursive = recursive;
+			this.stack.add(listFiles(root));
+			this.current = poll();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return this.current != null;
+		}
+
+		@Override
+		public Entry next() {
+			if (this.current == null) {
+				throw new NoSuchElementException();
+			}
+			File file = this.current;
+			if (file.isDirectory()
+					&& (this.recursive || file.getParentFile().equals(this.root))) {
+				this.stack.addFirst(listFiles(file));
+			}
+			this.current = poll();
+			String name = file.toURI().getPath()
+					.substring(this.root.toURI().getPath().length());
+			return new FileEntry(name, file);
+		}
+
+		private Iterator<File> listFiles(File file) {
+			File[] files = file.listFiles();
+			if (files == null) {
+				return Collections.<File>emptyList().iterator();
+			}
+			return Arrays.asList(files).iterator();
+		}
+
+		private File poll() {
+			while (!this.stack.isEmpty()) {
+				while (this.stack.peek().hasNext()) {
+					File file = this.stack.peek().next();
+					if (!SKIPPED_NAMES.contains(file.getName())) {
+						return file;
+					}
+				}
+				this.stack.poll();
+			}
+			return null;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("remove");
+		}
+
+	}
+
+	/**
+	 * {@link Entry} backed by a File.
+	 */
+	private static class FileEntry implements Entry {
+
+		private final String name;
 
 		private final File file;
 
-		FileEntry(AsciiBytes name, File file) {
+		FileEntry(String name, File file) {
 			this.name = name;
 			this.file = file;
 		}
@@ -190,42 +224,8 @@ public class ExplodedArchive extends Archive {
 		}
 
 		@Override
-		public AsciiBytes getName() {
+		public String getName() {
 			return this.name;
-		}
-	}
-
-	/**
-	 * {@link URLStreamHandler} that respects filtered entries.
-	 */
-	private class FilteredURLStreamHandler extends URLStreamHandler {
-
-		@Override
-		protected URLConnection openConnection(URL url) throws IOException {
-			String name = url.getPath()
-					.substring(ExplodedArchive.this.root.toURI().getPath().length());
-			if (ExplodedArchive.this.entries.containsKey(new AsciiBytes(name))) {
-				return new URL(url.toString()).openConnection();
-			}
-			return new FileNotFoundURLConnection(url, name);
-		}
-	}
-
-	/**
-	 * {@link URLConnection} used to represent a filtered file.
-	 */
-	private static class FileNotFoundURLConnection extends URLConnection {
-
-		private final String name;
-
-		FileNotFoundURLConnection(URL url, String name) {
-			super(url);
-			this.name = name;
-		}
-
-		@Override
-		public void connect() throws IOException {
-			throw new FileNotFoundException(this.name);
 		}
 
 	}

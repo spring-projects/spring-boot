@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.util;
+package org.springframework.boot.loader.jar;
 
 import java.nio.charset.Charset;
 
@@ -24,13 +24,9 @@ import java.nio.charset.Charset;
  *
  * @author Phillip Webb
  */
-public final class AsciiBytes {
+final class AsciiBytes {
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
-
-	private static final int INITIAL_HASH = 7;
-
-	private static final int MULTIPLIER = 31;
 
 	private final byte[] bytes;
 
@@ -40,11 +36,13 @@ public final class AsciiBytes {
 
 	private String string;
 
+	private int hash;
+
 	/**
 	 * Create a new {@link AsciiBytes} from the specified String.
 	 * @param string the source string
 	 */
-	public AsciiBytes(String string) {
+	AsciiBytes(String string) {
 		this(string.getBytes(UTF_8));
 		this.string = string;
 	}
@@ -54,7 +52,7 @@ public final class AsciiBytes {
 	 * are not expected to change.
 	 * @param bytes the source bytes
 	 */
-	public AsciiBytes(byte[] bytes) {
+	AsciiBytes(byte[] bytes) {
 		this(bytes, 0, bytes.length);
 	}
 
@@ -65,7 +63,7 @@ public final class AsciiBytes {
 	 * @param offset the offset
 	 * @param length the length
 	 */
-	public AsciiBytes(byte[] bytes, int offset, int length) {
+	AsciiBytes(byte[] bytes, int offset, int length) {
 		if (offset < 0 || length < 0 || (offset + length) > bytes.length) {
 			throw new IndexOutOfBoundsException();
 		}
@@ -155,12 +153,28 @@ public final class AsciiBytes {
 
 	@Override
 	public int hashCode() {
-		int hash = INITIAL_HASH;
-		for (int i = 0; i < this.length; i++) {
-			hash = MULTIPLIER * hash + this.bytes[this.offset + i];
+		int hash = this.hash;
+		if (hash == 0 && this.bytes.length > 0) {
+			for (int i = this.offset; i < this.offset + this.length; i++) {
+				int b = this.bytes[i] & 0xff;
+				if (b > 0x7F) {
+					// Decode multi-byte UTF
+					for (int size = 0; size < 3; size++) {
+						if ((b & (0x40 >> size)) == 0) {
+							b = b & (0x1F >> size);
+							for (int j = 0; j < size; j++) {
+								b <<= 6;
+								b |= this.bytes[++i] & 0x3F;
+							}
+							break;
+						}
+					}
+				}
+				hash = 31 * hash + b;
+			}
+			this.hash = hash;
 		}
 		return hash;
-
 	}
 
 	@Override
@@ -183,6 +197,19 @@ public final class AsciiBytes {
 			}
 		}
 		return false;
+	}
+
+	public static int hashCode(String string) {
+		// We're compatible with String's hashcode
+		return string.hashCode();
+	}
+
+	public static int hashCode(int hash, String string) {
+		char[] chars = string.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			hash = 31 * hash + chars[i];
+		}
+		return hash;
 	}
 
 }

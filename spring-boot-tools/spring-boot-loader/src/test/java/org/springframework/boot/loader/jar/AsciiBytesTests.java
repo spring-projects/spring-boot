@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader;
+package org.springframework.boot.loader.jar;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import org.springframework.boot.loader.util.AsciiBytes;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -138,8 +136,22 @@ public class AsciiBytesTests {
 		assertThat(bc, equalTo(bc));
 		assertThat(bc, equalTo(bc_substring));
 		assertThat(bc, equalTo(bc_string));
-
 		assertThat(bc.hashCode(), not(equalTo(abcd.hashCode())));
 		assertThat(bc, not(equalTo(abcd)));
 	}
+
+	@Test
+	public void hashCodeSameAsString() throws Exception {
+		String s = "abcABC123xyz!";
+		AsciiBytes a = new AsciiBytes(s);
+		assertThat(s.hashCode(), equalTo(a.hashCode()));
+	}
+
+	@Test
+	public void hashCodeSameAsStringWithSpecial() throws Exception {
+		String s = "special/\u00EB.dat";
+		AsciiBytes a = new AsciiBytes(s);
+		assertThat(s.hashCode(), equalTo(a.hashCode()));
+	}
+
 }

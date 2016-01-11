@@ -24,6 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
+import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.Archive.Entry;
@@ -66,7 +67,16 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	@Override
 	protected String getMainClass() throws Exception {
-		return this.archive.getMainClass();
+		Manifest manifest = this.archive.getManifest();
+		String mainClass = null;
+		if (manifest != null) {
+			mainClass = manifest.getMainAttributes().getValue("Start-Class");
+		}
+		if (mainClass == null) {
+			throw new IllegalStateException(
+					"No 'Start-Class' manifest entry specified in " + this);
+		}
+		return mainClass;
 	}
 
 	@Override

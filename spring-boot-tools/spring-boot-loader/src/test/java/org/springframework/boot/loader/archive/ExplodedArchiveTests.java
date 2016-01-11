@@ -37,11 +37,9 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.archive.Archive.Entry;
-import org.springframework.boot.loader.util.AsciiBytes;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -131,27 +129,6 @@ public class ExplodedArchiveTests {
 	}
 
 	@Test
-	public void getFilteredArchive() throws Exception {
-		Archive filteredArchive = this.archive
-				.getFilteredArchive(new Archive.EntryRenameFilter() {
-					@Override
-					public AsciiBytes apply(AsciiBytes entryName, Entry entry) {
-						if (entryName.toString().equals("1.dat")) {
-							return entryName;
-						}
-						return null;
-					}
-				});
-		Map<String, Entry> entries = getEntriesMap(filteredArchive);
-		assertThat(entries.size(), equalTo(1));
-		URLClassLoader classLoader = new URLClassLoader(
-				new URL[] { filteredArchive.getUrl() });
-		assertThat(classLoader.getResourceAsStream("1.dat").read(), equalTo(1));
-		assertThat(classLoader.getResourceAsStream("2.dat"), nullValue());
-		classLoader.close();
-	}
-
-	@Test
 	public void getNonRecursiveEntriesForRoot() throws Exception {
 		ExplodedArchive archive = new ExplodedArchive(new File("/"), false);
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
@@ -198,7 +175,7 @@ public class ExplodedArchiveTests {
 
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {
 		Map<String, Archive.Entry> entries = new HashMap<String, Archive.Entry>();
-		for (Archive.Entry entry : archive.getEntries()) {
+		for (Archive.Entry entry : archive) {
 			entries.put(entry.getName().toString(), entry);
 		}
 		return entries;
