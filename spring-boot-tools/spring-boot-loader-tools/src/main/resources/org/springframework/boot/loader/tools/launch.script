@@ -146,7 +146,7 @@ do_start() {
     chown "$run_user" "$PID_FOLDER"
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
-    if [ "${useStartStopDaemon:-true}" = true ] && which start-stop-daemon >/dev/null; then
+    if [ "${useStartStopDaemon:-true}" = true ] && type start-stop-daemon > /dev/null 2>&1; then
       start-stop-daemon --start --quiet \
         --chuid "$run_user" \
         --name "$identity" \
