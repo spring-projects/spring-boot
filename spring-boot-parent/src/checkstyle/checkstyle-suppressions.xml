@@ -5,6 +5,7 @@
 <suppressions>
 	<suppress files="SpringApplicationTests\.java" checks="FinalClass" />
 	<suppress files=".+Configuration\.java" checks="HideUtilityClassConstructor" />
+	<suppress files="LaunchScriptTestApplication\.java" checks="HideUtilityClassConstructor" />
 	<suppress files="SignalUtils\.java" checks="IllegalImport" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]cli[\\/]command[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]src[\\/]main[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
