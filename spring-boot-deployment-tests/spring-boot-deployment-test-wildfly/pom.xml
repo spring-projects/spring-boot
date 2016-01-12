@@ -34,7 +34,7 @@
 				<exclusion>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-validation</artifactId>
-		        </exclusion>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>

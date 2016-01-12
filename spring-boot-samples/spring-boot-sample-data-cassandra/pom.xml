@@ -33,10 +33,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.cassandraunit</groupId>
-		    <artifactId>cassandra-unit-spring</artifactId>
-		    <version>2.1.9.2</version>
-		    <scope>test</scope>
+			<groupId>org.cassandraunit</groupId>
+			<artifactId>cassandra-unit-spring</artifactId>
+			<version>2.1.9.2</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>

@@ -174,13 +174,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-        		<configuration>
+				<configuration>
 					<includes>
 						<include>**/*.html</include>
 						<include>**/*.png</include>
 					</includes>
 				</configuration>
-      		</plugin>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
