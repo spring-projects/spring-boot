@@ -43,7 +43,7 @@ public abstract class LoggingSystem {
 		Map<String, String> systems = new LinkedHashMap<String, String>();
 		systems.put("ch.qos.logback.core.Appender",
 				"org.springframework.boot.logging.logback.LogbackLoggingSystem");
-		systems.put("org.apache.logging.log4j.LogManager",
+		systems.put("org.apache.logging.log4j.core.impl.Log4jContextFactory",
 				"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem");
 		systems.put("org.apache.log4j.PropertyConfigurator",
 				"org.springframework.boot.logging.log4j.Log4JLoggingSystem");
