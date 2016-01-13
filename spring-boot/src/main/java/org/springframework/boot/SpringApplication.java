@@ -302,7 +302,11 @@ public class SpringApplication {
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.started();
 		try {
-			context = doRun(listeners, args);
+			ApplicationArguments applicationArguments = new DefaultApplicationArguments(
+					args);
+			context = createAndRefreshContext(listeners, applicationArguments);
+			afterRefresh(context, applicationArguments);
+			listeners.finished(context, null);
 			stopWatch.stop();
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass)
@@ -316,12 +320,13 @@ public class SpringApplication {
 		}
 	}
 
-	private ConfigurableApplicationContext doRun(SpringApplicationRunListeners listeners,
-			String... args) {
+	private ConfigurableApplicationContext createAndRefreshContext(
+			SpringApplicationRunListeners listeners,
+			ApplicationArguments applicationArguments) {
 		ConfigurableApplicationContext context;
 		// Create and configure the environment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
-		configureEnvironment(environment, args);
+		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		listeners.environmentPrepared(environment);
 		if (isWebEnvironment(environment) && !this.webEnvironment) {
 			environment = convertToStandardEnvironment(environment);
@@ -343,7 +348,6 @@ public class SpringApplication {
 		}
 
 		// Add boot specific singleton beans
-		ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
 		context.getBeanFactory().registerSingleton("springApplicationArguments",
 				applicationArguments);
 
@@ -363,8 +367,6 @@ public class SpringApplication {
 				// Not allowed in some environments.
 			}
 		}
-		afterRefresh(context, applicationArguments);
-		listeners.finished(context, null);
 		return context;
 	}
 
@@ -858,6 +860,9 @@ public class SpringApplication {
 			Throwable exception) {
 		int exitCode = getExitCodeFromException(exception);
 		if (exitCode != 0) {
+			if (context != null) {
+				context.publishEvent(new ExitCodeEvent(context, exitCode));
+			}
 			SpringBootExceptionHandler handler = getSpringBootExceptionHandler();
 			if (handler != null) {
 				handler.registerExitCode(exitCode);
@@ -1186,6 +1191,7 @@ public class SpringApplication {
 	 */
 	public static int exit(ApplicationContext context,
 			ExitCodeGenerator... exitCodeGenerators) {
+		Assert.notNull(context, "Context must not be null");
 		int exitCode = 0;
 		try {
 			try {
@@ -1195,6 +1201,9 @@ public class SpringApplication {
 				generators.addAll(exitCodeGenerators);
 				generators.addAll(beans);
 				exitCode = generators.getExitCode();
+				if (exitCode != 0) {
+					context.publishEvent(new ExitCodeEvent(context, exitCode));
+				}
 			}
 			finally {
 				close(context);

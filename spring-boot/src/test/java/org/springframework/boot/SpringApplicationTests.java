@@ -549,6 +549,8 @@ public class SpringApplicationTests {
 	@Test
 	public void exitWithExplicitCode() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		ExitCodeListener listener = new ExitCodeListener();
+		application.addListeners(listener);
 		application.setWebEnvironment(false);
 		this.context = application.run();
 		assertNotNull(this.context);
@@ -560,6 +562,7 @@ public class SpringApplicationTests {
 			}
 
 		}));
+		assertThat(listener.getExitCode(), equalTo(2));
 	}
 
 	@Test
@@ -574,6 +577,8 @@ public class SpringApplicationTests {
 			}
 
 		};
+		ExitCodeListener listener = new ExitCodeListener();
+		application.addListeners(listener);
 		application.setWebEnvironment(false);
 		try {
 			application.run();
@@ -582,6 +587,7 @@ public class SpringApplicationTests {
 		catch (IllegalStateException ex) {
 		}
 		verify(handler).registerExitCode(11);
+		assertThat(listener.getExitCode(), equalTo(11));
 	}
 
 	@Test
@@ -982,4 +988,18 @@ public class SpringApplicationTests {
 
 	}
 
+	private static class ExitCodeListener implements ApplicationListener<ExitCodeEvent> {
+
+		private int exitCode;
+
+		@Override
+		public void onApplicationEvent(ExitCodeEvent event) {
+			this.exitCode = event.getExitCode();
+		}
+
+		public int getExitCode() {
+			return this.exitCode;
+		}
+
+	}
 }
