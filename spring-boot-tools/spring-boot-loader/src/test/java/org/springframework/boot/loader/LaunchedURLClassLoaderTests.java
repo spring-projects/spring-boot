@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,19 +38,6 @@ public class LaunchedURLClassLoaderTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-	@Test
-	public void resolveResourceFromWindowsFilesystem() throws Exception {
-		// This path is invalid - it should return null even on Windows.
-		// A regular URLClassLoader will deal with it gracefully.
-		assertThat(getClass().getClassLoader()
-				.getResource("c:\\Users\\user\\bar.properties")).isNull();
-		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
-				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") },
-				getClass().getClassLoader());
-		// So we should too...
-		assertThat(loader.getResource("c:\\Users\\user\\bar.properties")).isNull();
-	}
 
 	@Test
 	public void resolveResourceFromArchive() throws Exception {

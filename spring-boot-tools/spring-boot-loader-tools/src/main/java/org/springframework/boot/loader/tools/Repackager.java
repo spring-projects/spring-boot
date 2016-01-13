@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+
+import org.springframework.boot.loader.tools.JarWriter.EntryTransformer;
 
 /**
  * Utility class that can be used to repackage an archive so that it can be executed using
@@ -189,7 +192,14 @@ public class Repackager {
 			writer.writeManifest(buildManifest(sourceJar));
 			Set<String> seen = new HashSet<String>();
 			writeNestedLibraries(unpackLibraries, seen, writer);
-			writer.writeEntries(sourceJar);
+			if (this.layout instanceof RepackagingLayout) {
+				writer.writeEntries(sourceJar,
+						new RenamingEntryTransformer(((RepackagingLayout) this.layout)
+								.getRepackagedClassesLocation()));
+			}
+			else {
+				writer.writeEntries(sourceJar);
+			}
 			writeNestedLibraries(standardLibraries, seen, writer);
 			if (this.layout.isExecutable()) {
 				writer.writeLoaderClasses();
@@ -291,6 +301,49 @@ public class Repackager {
 		if (!file.delete()) {
 			throw new IllegalStateException("Unable to delete '" + file + "'");
 		}
+	}
+
+	/**
+	 * An {@code EntryTransformer} that renames entries by applying a prefix.
+	 */
+	private static final class RenamingEntryTransformer implements EntryTransformer {
+
+		private final String namePrefix;
+
+		private RenamingEntryTransformer(String namePrefix) {
+			this.namePrefix = namePrefix;
+		}
+
+		@Override
+		public JarEntry transform(JarEntry entry) {
+			if (entry.getName().startsWith("META-INF/")
+					|| entry.getName().startsWith("BOOT-INF/")) {
+				return entry;
+			}
+			JarEntry renamedEntry = new JarEntry(this.namePrefix + entry.getName());
+			renamedEntry.setTime(entry.getTime());
+			renamedEntry.setSize(entry.getSize());
+			renamedEntry.setMethod(entry.getMethod());
+			if (entry.getComment() != null) {
+				renamedEntry.setComment(entry.getComment());
+			}
+			renamedEntry.setCompressedSize(entry.getCompressedSize());
+			renamedEntry.setCrc(entry.getCrc());
+			if (entry.getCreationTime() != null) {
+				renamedEntry.setCreationTime(entry.getCreationTime());
+			}
+			if (entry.getExtra() != null) {
+				renamedEntry.setExtra(entry.getExtra());
+			}
+			if (entry.getLastAccessTime() != null) {
+				renamedEntry.setLastAccessTime(entry.getLastAccessTime());
+			}
+			if (entry.getLastModifiedTime() != null) {
+				renamedEntry.setLastModifiedTime(entry.getLastModifiedTime());
+			}
+			return renamedEntry;
+		}
+
 	}
 
 }

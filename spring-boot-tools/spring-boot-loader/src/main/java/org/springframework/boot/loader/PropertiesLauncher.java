@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLConnection;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -60,7 +57,7 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * <ul>
  * <li>{@code loader.path}: a comma-separated list of directories to append to the
  * classpath (containing file resources and/or nested archives in *.jar or *.zip).
- * Defaults to {@code lib} in your application archive</li>
+ * Defaults to {@code BOOT-INF/classes,BOOT-INF/lib} in your application archive</li>
  * <li>{@code loader.main}: the main method to delegate execution to once the class loader
  * is set up. No default, but will fall back to looking for a {@code Start-Class} in a
  * {@code MANIFEST.MF}, if there is one in <code>${loader.home}/META-INF</code>.</li>
@@ -123,11 +120,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private static final Pattern WORD_SEPARATOR = Pattern.compile("\\W+");
 
-	private static final URL[] EMPTY_URLS = {};
-
 	private final File home;
-
-	private final JavaAgentDetector javaAgentDetector;
 
 	private List<String> paths = new ArrayList<String>();
 
@@ -136,13 +129,8 @@ public class PropertiesLauncher extends Launcher {
 	private Archive parent;
 
 	public PropertiesLauncher() {
-		this(new InputArgumentsJavaAgentDetector());
-	}
-
-	PropertiesLauncher(JavaAgentDetector javaAgentDetector) {
 		try {
 			this.home = getHomeDirectory();
-			this.javaAgentDetector = javaAgentDetector;
 			initializeProperties(this.home);
 			initializePaths();
 			this.parent = createArchive();
@@ -158,7 +146,7 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private void initializeProperties(File home) throws Exception, IOException {
-		String config = "classpath:"
+		String config = "classpath:BOOT-INF/classes/"
 				+ SystemPropertyUtils.resolvePlaceholders(
 						SystemPropertyUtils.getProperty(CONFIG_NAME, "application"))
 				+ ".properties";
@@ -425,7 +413,7 @@ public class PropertiesLauncher extends Launcher {
 				lib.addAll(nested);
 			}
 		}
-		addParentClassLoaderEntries(lib);
+		addNestedEntries(lib);
 		return lib;
 	}
 
@@ -482,82 +470,26 @@ public class PropertiesLauncher extends Launcher {
 		return new FilteredArchive(this.parent, filter);
 	}
 
-	private void addParentClassLoaderEntries(List<Archive> lib)
-			throws IOException, URISyntaxException {
-		ClassLoader parentClassLoader = getClass().getClassLoader();
-		List<Archive> urls = new ArrayList<Archive>();
-		for (URL url : getURLs(parentClassLoader)) {
-			if (!this.javaAgentDetector.isJavaAgentJar(url)) {
-				Archive archive = createArchiveIfPossible(url);
-				if (archive != null) {
-					urls.add(archive);
+	private void addNestedEntries(List<Archive> lib) {
+		// The parent archive might have "BOOT-INF/lib/" and "BOOT-INF/classes/"
+		// directories, meaning we are running from an executable JAR. We add nested
+		// entries from there with low priority (i.e. at end).
+		try {
+			lib.addAll(this.parent.getNestedArchives(new EntryFilter() {
+
+				@Override
+				public boolean matches(Entry entry) {
+					if (entry.isDirectory()) {
+						return entry.getName().startsWith(JarLauncher.BOOT_INF_CLASSES);
+					}
+					return entry.getName().startsWith(JarLauncher.BOOT_INF_LIB);
 				}
-			}
-		}
-		// The parent archive might have a "lib/" directory, meaning we are running from
-		// an executable JAR. We add nested entries from there with low priority (i.e. at
-		// end).
-		addNestedArchivesFromParent(urls);
-		for (Archive archive : urls) {
-			// But only add them if they are not already included
-			if (findArchive(lib, archive) < 0) {
-				lib.add(archive);
-			}
-		}
-	}
 
-	private Archive createArchiveIfPossible(URL url)
-			throws IOException, URISyntaxException {
-		if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
-			return new JarFileArchive(new File(url.toURI()));
+			}));
 		}
-		if (url.toString().endsWith("/*")) {
-			String name = url.getFile();
-			File dir = new File(name.substring(0, name.length() - 1));
-			return (dir.exists() ? new ExplodedArchive(dir, false) : null);
+		catch (IOException ex) {
+			// Ignore
 		}
-		String filename = URLDecoder.decode(url.getFile(), "UTF-8");
-		return new ExplodedArchive(new File(filename));
-	}
-
-	private void addNestedArchivesFromParent(List<Archive> urls) {
-		int index = findArchive(urls, this.parent);
-		if (index >= 0) {
-			try {
-				Archive nested = getNestedArchive("lib/");
-				if (nested != null) {
-					List<Archive> extra = new ArrayList<Archive>(
-							nested.getNestedArchives(new ArchiveEntryFilter()));
-					urls.addAll(index + 1, extra);
-				}
-			}
-			catch (Exception ex) {
-				// ignore
-			}
-		}
-	}
-
-	private int findArchive(List<Archive> urls, Archive archive) {
-		// Do not rely on Archive to have an equals() method. Look for the archive by
-		// matching strings.
-		if (archive == null) {
-			return -1;
-		}
-		int i = 0;
-		for (Archive url : urls) {
-			if (url.toString().equals(archive.toString())) {
-				return i;
-			}
-			i++;
-		}
-		return -1;
-	}
-
-	private URL[] getURLs(ClassLoader classLoader) {
-		if (classLoader instanceof URLClassLoader) {
-			return ((URLClassLoader) classLoader).getURLs();
-		}
-		return EMPTY_URLS;
 	}
 
 	private String cleanupPath(String path) {

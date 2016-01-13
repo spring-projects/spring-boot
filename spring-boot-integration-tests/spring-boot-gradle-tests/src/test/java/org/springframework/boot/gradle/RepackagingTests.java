@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,7 +144,7 @@ public class RepackagingTests {
 				.run();
 		File buildLibs = new File("target/repackage/build/libs");
 		JarFile jarFile = new JarFile(new File(buildLibs, "repackage.jar"));
-		assertThat(jarFile.getEntry("lib/foo.jar")).isNotNull();
+		assertThat(jarFile.getEntry("BOOT-INF/lib/foo.jar")).isNotNull();
 		jarFile.close();
 	}
 
@@ -166,7 +166,7 @@ public class RepackagingTests {
 	private boolean isDevToolsJarIncluded(File repackageFile) throws IOException {
 		JarFile jarFile = new JarFile(repackageFile);
 		try {
-			String name = "lib/spring-boot-devtools-" + BOOT_VERSION + ".jar";
+			String name = "BOOT-INF/lib/spring-boot-devtools-" + BOOT_VERSION + ".jar";
 			return jarFile.getEntry(name) != null;
 		}
 		finally {

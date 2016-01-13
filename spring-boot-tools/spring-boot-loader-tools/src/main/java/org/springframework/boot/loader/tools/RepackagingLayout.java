@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader;
-
-import java.net.URL;
+package org.springframework.boot.loader.tools;
 
 /**
- * A strategy for detecting Java agents.
+ * A specialization of {@link Layout} that repackages an existing archive by moving its
+ * content to a new location.
  *
  * @author Andy Wilkinson
- * @since 1.1.0
+ * @since 1.4.0
  */
-public interface JavaAgentDetector {
+public interface RepackagingLayout extends Layout {
 
 	/**
-	 * Returns {@code true} if {@code url} points to a Java agent jar file, otherwise
-	 * {@code false} is returned.
-	 * @param url The url to examine
-	 * @return if the URL points to a Java agent
+	 * Returns the location to which classes should be moved.
+	 * @return the repackaged classes location
 	 */
-	boolean isJavaAgentJar(URL url);
+	String getRepackagedClassesLocation();
 
 }
