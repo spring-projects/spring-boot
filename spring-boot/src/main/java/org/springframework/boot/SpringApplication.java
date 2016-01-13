@@ -188,7 +188,7 @@ public class SpringApplication {
 		SERVLET_ENVIRONMENT_SOURCE_NAMES = Collections.unmodifiableSet(names);
 	}
 
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Log logger = LogFactory.getLog(SpringApplication.class);
 
 	private final Set<Object> sources = new LinkedHashSet<Object>();
 
@@ -377,7 +377,7 @@ public class SpringApplication {
 
 	private SpringApplicationRunListeners getRunListeners(String[] args) {
 		Class<?>[] types = new Class<?>[] { SpringApplication.class, String[].class };
-		return new SpringApplicationRunListeners(this.log, getSpringFactoriesInstances(
+		return new SpringApplicationRunListeners(logger, getSpringFactoriesInstances(
 				SpringApplicationRunListener.class, types, this, args));
 	}
 
@@ -538,10 +538,10 @@ public class SpringApplication {
 		Banner selectedBanner = selectBanner(environment);
 		if (this.bannerMode == Banner.Mode.LOG) {
 			try {
-				this.log.info(createStringFromBanner(selectedBanner, environment));
+				logger.info(createStringFromBanner(selectedBanner, environment));
 			}
 			catch (UnsupportedEncodingException ex) {
-				this.log.warn("Failed to create String for banner", ex);
+				logger.warn("Failed to create String for banner", ex);
 			}
 		}
 		else {
@@ -679,7 +679,7 @@ public class SpringApplication {
 	 */
 	protected Log getApplicationLog() {
 		if (this.mainApplicationClass == null) {
-			return this.log;
+			return logger;
 		}
 		return LogFactory.getLog(this.mainApplicationClass);
 	}
@@ -690,8 +690,8 @@ public class SpringApplication {
 	 * @param sources the sources to load
 	 */
 	protected void load(ApplicationContext context, Object[] sources) {
-		if (this.log.isDebugEnabled()) {
-			this.log.debug(
+		if (logger.isDebugEnabled()) {
+			logger.debug(
 					"Loading source " + StringUtils.arrayToCommaDelimitedString(sources));
 		}
 		BeanDefinitionLoader loader = createBeanDefinitionLoader(
@@ -823,8 +823,8 @@ public class SpringApplication {
 
 	private void handleRunFailure(ConfigurableApplicationContext context,
 			SpringApplicationRunListeners listeners, Throwable exception) {
-		if (this.log.isErrorEnabled()) {
-			this.log.error("Application startup failed", exception);
+		if (logger.isErrorEnabled()) {
+			logger.error("Application startup failed", exception);
 			registerLoggedException(exception);
 		}
 		try {
@@ -839,7 +839,7 @@ public class SpringApplication {
 			}
 		}
 		catch (Exception ex) {
-			this.log.warn("Unable to close ApplicationContext", ex);
+			logger.warn("Unable to close ApplicationContext", ex);
 		}
 		ReflectionUtils.rethrowRuntimeException(exception);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,7 +139,7 @@ public class PropertiesLauncher extends Launcher {
 
 	public PropertiesLauncher() {
 		if (!isDebug()) {
-			this.logger.setLevel(Level.SEVERE);
+			logger.setLevel(Level.SEVERE);
 		}
 		try {
 			this.home = getHomeDirectory();
@@ -183,7 +183,7 @@ public class PropertiesLauncher extends Launcher {
 		InputStream resource = getResource(config);
 
 		if (resource != null) {
-			this.logger.info("Found: " + config);
+			logger.info("Found: " + config);
 			try {
 				this.properties.load(resource);
 			}
@@ -201,7 +201,7 @@ public class PropertiesLauncher extends Launcher {
 			if (SystemPropertyUtils
 					.resolvePlaceholders("${" + SET_SYSTEM_PROPERTIES + ":false}")
 					.equals("true")) {
-				this.logger.info("Adding resolved properties to System properties");
+				logger.info("Adding resolved properties to System properties");
 				for (Object key : Collections.list(this.properties.propertyNames())) {
 					String value = this.properties.getProperty((String) key);
 					System.setProperty((String) key, value);
@@ -209,7 +209,7 @@ public class PropertiesLauncher extends Launcher {
 			}
 		}
 		else {
-			this.logger.info("Not found: " + config);
+			logger.info("Not found: " + config);
 		}
 
 	}
@@ -244,13 +244,13 @@ public class PropertiesLauncher extends Launcher {
 			config = config.substring(1);
 		}
 		config = "/" + config;
-		this.logger.fine("Trying classpath: " + config);
+		logger.fine("Trying classpath: " + config);
 		return getClass().getResourceAsStream(config);
 	}
 
 	private InputStream getFileResource(String config) throws Exception {
 		File file = new File(config);
-		this.logger.fine("Trying file: " + config);
+		logger.fine("Trying file: " + config);
 		if (file.canRead()) {
 			return new FileInputStream(file);
 		}
@@ -310,7 +310,7 @@ public class PropertiesLauncher extends Launcher {
 			this.paths = parsePathsProperty(
 					SystemPropertyUtils.resolvePlaceholders(path));
 		}
-		this.logger.info("Nested archive paths: " + this.paths);
+		logger.info("Nested archive paths: " + this.paths);
 	}
 
 	private List<String> parsePathsProperty(String commaSeparatedPaths) {
@@ -358,7 +358,7 @@ public class PropertiesLauncher extends Launcher {
 		String customLoaderClassName = getProperty("loader.classLoader");
 		if (customLoaderClassName != null) {
 			loader = wrapWithCustomClassLoader(loader, customLoaderClassName);
-			this.logger.info("Using custom class loader: " + customLoaderClassName);
+			logger.info("Using custom class loader: " + customLoaderClassName);
 		}
 		return loader;
 	}
@@ -401,14 +401,14 @@ public class PropertiesLauncher extends Launcher {
 		String property = SystemPropertyUtils.getProperty(propertyKey);
 		if (property != null) {
 			String value = SystemPropertyUtils.resolvePlaceholders(property);
-			this.logger.fine("Property '" + propertyKey + "' from environment: " + value);
+			logger.fine("Property '" + propertyKey + "' from environment: " + value);
 			return value;
 		}
 
 		if (this.properties.containsKey(propertyKey)) {
 			String value = SystemPropertyUtils
 					.resolvePlaceholders(this.properties.getProperty(propertyKey));
-			this.logger.fine("Property '" + propertyKey + "' from properties: " + value);
+			logger.fine("Property '" + propertyKey + "' from properties: " + value);
 			return value;
 		}
 
@@ -417,7 +417,7 @@ public class PropertiesLauncher extends Launcher {
 			Manifest manifest = new ExplodedArchive(this.home, false).getManifest();
 			if (manifest != null) {
 				String value = manifest.getMainAttributes().getValue(manifestKey);
-				this.logger.fine("Property '" + manifestKey
+				logger.fine("Property '" + manifestKey
 						+ "' from home directory manifest: " + value);
 				return value;
 			}
@@ -431,7 +431,7 @@ public class PropertiesLauncher extends Launcher {
 		if (manifest != null) {
 			String value = manifest.getMainAttributes().getValue(manifestKey);
 			if (value != null) {
-				this.logger.fine(
+				logger.fine(
 						"Property '" + manifestKey + "' from archive manifest: " + value);
 				return value;
 			}
@@ -462,20 +462,19 @@ public class PropertiesLauncher extends Launcher {
 			file = new File(this.home, root);
 		}
 		if (file.isDirectory()) {
-			this.logger.info("Adding classpath entries from " + file);
+			logger.info("Adding classpath entries from " + file);
 			Archive archive = new ExplodedArchive(file, false);
 			lib.add(archive);
 		}
 		Archive archive = getArchive(file);
 		if (archive != null) {
-			this.logger.info(
+			logger.info(
 					"Adding classpath entries from archive " + archive.getUrl() + root);
 			lib.add(archive);
 		}
 		Archive nested = getNestedArchive(root);
 		if (nested != null) {
-			this.logger.info(
-					"Adding classpath entries from nested " + nested.getUrl() + root);
+			logger.info("Adding classpath entries from nested " + nested.getUrl() + root);
 			lib.add(nested);
 		}
 		return lib;

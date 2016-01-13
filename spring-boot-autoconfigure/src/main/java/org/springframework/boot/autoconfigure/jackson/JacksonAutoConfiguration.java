@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,7 +94,8 @@ public class JacksonAutoConfiguration {
 			DateTimeSerializer.class, JacksonJodaDateFormat.class })
 	static class JodaDateTimeJacksonConfiguration {
 
-		private static final Log log = LogFactory.getLog(JodaDateTimeJacksonConfiguration.class);
+		private static final Log logger = LogFactory
+				.getLog(JodaDateTimeJacksonConfiguration.class);
 
 		@Autowired
 		private JacksonProperties jacksonProperties;
@@ -123,8 +124,8 @@ public class JacksonAutoConfiguration {
 							.withZoneUTC());
 				}
 				catch (IllegalArgumentException ex) {
-					if (this.log.isWarnEnabled()) {
-						this.log.warn("spring.jackson.date-format could not be used to "
+					if (logger.isWarnEnabled()) {
+						logger.warn("spring.jackson.date-format could not be used to "
 								+ "configure formatting of Joda's DateTime. You may want "
 								+ "to configure spring.jackson.joda-date-time-format as "
 								+ "well.");

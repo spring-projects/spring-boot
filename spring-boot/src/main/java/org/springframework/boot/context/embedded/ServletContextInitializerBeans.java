@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,8 @@ class ServletContextInitializerBeans
 
 	static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
 
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Log logger = LogFactory
+			.getLog(ServletContextInitializerBeans.class);
 
 	/**
 	 * Seen bean instances or bean names.
@@ -131,12 +132,12 @@ class ServletContextInitializerBeans
 			// Mark the underlying source as seen in case it wraps an existing bean
 			this.seen.add(source);
 		}
-		if (this.log.isDebugEnabled()) {
+		if (ServletContextInitializerBeans.logger.isDebugEnabled()) {
 			String resourceDescription = getResourceDescription(beanName, beanFactory);
 			int order = getOrder(initializer);
-			this.log.debug("Added existing " + type.getSimpleName()
-					+ " initializer bean '" + beanName + "'; order=" + order
-					+ ", resource=" + resourceDescription);
+			ServletContextInitializerBeans.logger.debug("Added existing "
+					+ type.getSimpleName() + " initializer bean '" + beanName
+					+ "'; order=" + order + ", resource=" + resourceDescription);
 		}
 	}
 
@@ -189,8 +190,8 @@ class ServletContextInitializerBeans
 				registration.setName(beanName);
 				registration.setOrder(order);
 				this.initializers.add(type, registration);
-				if (this.log.isDebugEnabled()) {
-					this.log.debug(
+				if (ServletContextInitializerBeans.logger.isDebugEnabled()) {
+					ServletContextInitializerBeans.logger.debug(
 							"Created " + type.getSimpleName() + " initializer for bean '"
 									+ beanName + "'; order=" + order + ", resource="
 									+ getResourceDescription(beanName, beanFactory));
