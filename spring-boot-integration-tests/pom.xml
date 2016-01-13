@@ -19,9 +19,11 @@
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
 		<java.version>1.8</java.version>
+		<jackson.version>2.1.2</jackson.version> <!-- Align with docker-java -->
 	</properties>
 	<modules>
 		<module>spring-boot-gradle-tests</module>
+		<module>spring-boot-launch-script-tests</module>
 		<module>spring-boot-security-tests</module>
 	</modules>
 	<profiles>

@@ -85,7 +85,7 @@ isRunning() {
 await_file() {
   end=$(date +%s)
   let "end+=10"
-  while [[ ! -f "$1" ]]
+  while [[ ! -s "$1" ]]
   do
     now=$(date +%s)
     if [[ $now -ge $end ]]; then
@@ -146,7 +146,8 @@ do_start() {
     chown "$run_user" "$PID_FOLDER"
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
-    if [ "${useStartStopDaemon:-true}" = true ] && which start-stop-daemon >/dev/null; then
+    if [ "${useStartStopDaemon:-true}" = true ] && type start-stop-daemon > /dev/null 2>&1; then
+      arguments="-Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS -jar $jarfile $RUN_ARGS $*"
       start-stop-daemon --start --quiet \
         --chuid "$run_user" \
         --name "$identity" \
@@ -154,9 +155,7 @@ do_start() {
         --background --no-close \
         --startas "$javaexe" \
         --chdir "$working_dir" \
-        -- \
-        -Dsun.misc.URLClassPath.disableJarChecking=true "${JAVA_OPTS[@]}" \
-        -jar "$jarfile" "${RUN_ARGS[@]}" "$@" \
+        -- $arguments \
         >> "$log_file" 2>&1
       await_file "$pid_file"
     else
