@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -661,9 +661,9 @@ public class TomcatEmbeddedServletContainerFactory
 
 	private static class TomcatErrorPage {
 
-		private static final String ERROR_PAGE_TOMCAT7 = "org.apache.catalina.deploy.ErrorPage";
+		private static final String ERROR_PAGE_CLASS = "org.apache.tomcat.util.descriptor.web.ErrorPage";
 
-		private static final String ERROR_PAGE_TOMCAT = "org.apache.tomcat.util.descriptor.web.ErrorPage";
+		private static final String LEGACY_ERROR_PAGE_CLASS = "org.apache.catalina.deploy.ErrorPage";
 
 		private final String location;
 
@@ -683,13 +683,13 @@ public class TomcatEmbeddedServletContainerFactory
 		private Object createNativePage(ErrorPage errorPage) {
 			Object nativePage = null;
 			try {
-				if (ClassUtils.isPresent(ERROR_PAGE_TOMCAT, null)) {
-					nativePage = BeanUtils.instantiate(ClassUtils
-							.forName(ERROR_PAGE_TOMCAT, null));
+				if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
+					nativePage = BeanUtils
+							.instantiate(ClassUtils.forName(ERROR_PAGE_CLASS, null));
 				}
-				else if (ClassUtils.isPresent(ERROR_PAGE_TOMCAT7, null)) {
-					nativePage = BeanUtils.instantiate(ClassUtils
-							.forName(ERROR_PAGE_TOMCAT7, null));
+				else if (ClassUtils.isPresent(LEGACY_ERROR_PAGE_CLASS, null)) {
+					nativePage = BeanUtils.instantiate(
+							ClassUtils.forName(LEGACY_ERROR_PAGE_CLASS, null));
 				}
 			}
 			catch (ClassNotFoundException ex) {
@@ -704,7 +704,7 @@ public class TomcatEmbeddedServletContainerFactory
 		public void addToContext(Context context) {
 			Assert.state(this.nativePage != null,
 					"Neither Tomcat 7 nor 8 detected so no native error page exists");
-			if (ClassUtils.isPresent(ERROR_PAGE_TOMCAT, null)) {
+			if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
 				org.apache.tomcat.util.descriptor.web.ErrorPage errorPage = (org.apache.tomcat.util.descriptor.web.ErrorPage) this.nativePage;
 				errorPage.setLocation(this.location);
 				errorPage.setErrorCode(this.errorCode);
