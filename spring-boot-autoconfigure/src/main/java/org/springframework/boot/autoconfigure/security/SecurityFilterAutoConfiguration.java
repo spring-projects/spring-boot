@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 
 /**
@@ -49,7 +50,8 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
 @Configuration
 @ConditionalOnWebApplication
 @EnableConfigurationProperties
-@ConditionalOnClass(AbstractSecurityWebApplicationInitializer.class)
+@ConditionalOnClass({ AbstractSecurityWebApplicationInitializer.class,
+		SessionCreationPolicy.class })
 @AutoConfigureAfter(SpringBootWebSecurityConfiguration.class)
 public class SecurityFilterAutoConfiguration {
 
