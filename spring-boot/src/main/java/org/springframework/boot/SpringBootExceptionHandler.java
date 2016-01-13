@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,12 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * {@link UncaughtExceptionHandler} to suppress handling already logged exceptions.
+ * {@link UncaughtExceptionHandler} to suppress handling already logged exceptions and
+ * dealing with system exit.
  *
  * @author Phillip Webb
  */
-class LoggedExceptionHandler implements UncaughtExceptionHandler {
+class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 
 	private static Set<String> LOG_CONFIGURATION_MESSAGES;
 
@@ -43,14 +44,20 @@ class LoggedExceptionHandler implements UncaughtExceptionHandler {
 
 	private final UncaughtExceptionHandler parent;
 
-	private final List<Throwable> exceptions = new ArrayList<Throwable>();
+	private final List<Throwable> loggedExceptions = new ArrayList<Throwable>();
 
-	LoggedExceptionHandler(UncaughtExceptionHandler parent) {
+	private int exitCode = 0;
+
+	SpringBootExceptionHandler(UncaughtExceptionHandler parent) {
 		this.parent = parent;
 	}
 
-	public void register(Throwable exception) {
-		this.exceptions.add(exception);
+	public void registerLoggedException(Throwable exception) {
+		this.loggedExceptions.add(exception);
+	}
+
+	public void registerExitCode(int exitCode) {
+		this.exitCode = exitCode;
 	}
 
 	@Override
@@ -61,7 +68,10 @@ class LoggedExceptionHandler implements UncaughtExceptionHandler {
 			}
 		}
 		finally {
-			this.exceptions.clear();
+			this.loggedExceptions.clear();
+			if (this.exitCode != 0) {
+				System.exit(this.exitCode);
+			}
 		}
 	}
 
@@ -88,7 +98,7 @@ class LoggedExceptionHandler implements UncaughtExceptionHandler {
 	}
 
 	private boolean isRegistered(Throwable ex) {
-		if (this.exceptions.contains(ex)) {
+		if (this.loggedExceptions.contains(ex)) {
 			return true;
 		}
 		if (ex instanceof InvocationTargetException) {
@@ -97,7 +107,7 @@ class LoggedExceptionHandler implements UncaughtExceptionHandler {
 		return false;
 	}
 
-	static LoggedExceptionHandler forCurrentThread() {
+	static SpringBootExceptionHandler forCurrentThread() {
 		return handler.get();
 	}
 
@@ -105,11 +115,11 @@ class LoggedExceptionHandler implements UncaughtExceptionHandler {
 	 * Thread local used to attach and track handlers.
 	 */
 	private static class LoggedExceptionHandlerThreadLocal
-			extends ThreadLocal<LoggedExceptionHandler> {
+			extends ThreadLocal<SpringBootExceptionHandler> {
 
 		@Override
-		protected LoggedExceptionHandler initialValue() {
-			LoggedExceptionHandler handler = new LoggedExceptionHandler(
+		protected SpringBootExceptionHandler initialValue() {
+			SpringBootExceptionHandler handler = new SpringBootExceptionHandler(
 					Thread.currentThread().getUncaughtExceptionHandler());
 			Thread.currentThread().setUncaughtExceptionHandler(handler);
 			return handler;

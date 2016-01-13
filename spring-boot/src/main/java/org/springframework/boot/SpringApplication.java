@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -827,6 +827,7 @@ public class SpringApplication {
 		}
 		try {
 			try {
+				handeExitCode(context, exception);
 				listeners.finished(context, exception);
 			}
 			finally {
@@ -847,12 +848,44 @@ public class SpringApplication {
 	 * @param exception the exception that was logged
 	 */
 	protected void registerLoggedException(Throwable exception) {
-		Thread currentThread = Thread.currentThread();
-		if (("main".equals(currentThread.getName())
-				|| "restartedMain".equals(currentThread.getName()))
-				&& "main".equals(currentThread.getThreadGroup().getName())) {
-			LoggedExceptionHandler.forCurrentThread().register(exception);
+		SpringBootExceptionHandler handler = getSpringBootExceptionHandler();
+		if (handler != null) {
+			handler.registerLoggedException(exception);
 		}
+	}
+
+	private void handeExitCode(ConfigurableApplicationContext context,
+			Throwable exception) {
+		int exitCode = getExitCodeFromException(exception);
+		if (exitCode != 0) {
+			SpringBootExceptionHandler handler = getSpringBootExceptionHandler();
+			if (handler != null) {
+				handler.registerExitCode(exitCode);
+			}
+		}
+	}
+
+	private int getExitCodeFromException(Throwable exception) {
+		if (exception == null) {
+			return 0;
+		}
+		if (exception instanceof ExitCodeGenerator) {
+			return ((ExitCodeGenerator) exception).getExitCode();
+		}
+		return getExitCodeFromException(exception.getCause());
+	}
+
+	SpringBootExceptionHandler getSpringBootExceptionHandler() {
+		if (isMainThread(Thread.currentThread())) {
+			return SpringBootExceptionHandler.forCurrentThread();
+		}
+		return null;
+	}
+
+	private boolean isMainThread(Thread currentThread) {
+		return ("main".equals(currentThread.getName())
+				|| "restartedMain".equals(currentThread.getName()))
+				&& "main".equals(currentThread.getThreadGroup().getName());
 	}
 
 	/**

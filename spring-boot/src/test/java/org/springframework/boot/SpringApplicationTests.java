@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,6 +82,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -552,11 +553,35 @@ public class SpringApplicationTests {
 		this.context = application.run();
 		assertNotNull(this.context);
 		assertEquals(2, SpringApplication.exit(this.context, new ExitCodeGenerator() {
+
 			@Override
 			public int getExitCode() {
 				return 2;
 			}
+
 		}));
+	}
+
+	@Test
+	public void exitWithExplicitCodeFromException() throws Exception {
+		final SpringBootExceptionHandler handler = mock(SpringBootExceptionHandler.class);
+		SpringApplication application = new SpringApplication(
+				ExitCodeCommandLineRunConfig.class) {
+
+			@Override
+			SpringBootExceptionHandler getSpringBootExceptionHandler() {
+				return handler;
+			}
+
+		};
+		application.setWebEnvironment(false);
+		try {
+			application.run();
+			fail("Did not throw");
+		}
+		catch (IllegalStateException ex) {
+		}
+		verify(handler).registerExitCode(11);
 	}
 
 	@Test
@@ -858,6 +883,34 @@ public class SpringApplicationTests {
 		public TestCommandLineRunner runnerA() {
 			return new TestCommandLineRunner(Ordered.HIGHEST_PRECEDENCE);
 		}
+
+	}
+
+	@Configuration
+	static class ExitCodeCommandLineRunConfig {
+
+		@Bean
+		public CommandLineRunner runner() {
+			return new CommandLineRunner() {
+
+				@Override
+				public void run(String... args) throws Exception {
+					throw new IllegalStateException(new ExitStatusException());
+				}
+
+			};
+		}
+
+	}
+
+	static class ExitStatusException extends RuntimeException
+			implements ExitCodeGenerator {
+
+		@Override
+		public int getExitCode() {
+			return 11;
+		}
+
 	}
 
 	static class AbstractTestRunner implements ApplicationContextAware, Ordered {

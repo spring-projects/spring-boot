@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package sample.simple;
 
-/**
- * Interface used to generate an 'exit code' from a running command line
- * {@link SpringApplication}. Since 1.3.2 this interface can be used on exceptions as well
- * as directly on beans.
- *
- * @author Dave Syer
- * @see SpringApplication#exit(org.springframework.context.ApplicationContext,
- * ExitCodeGenerator...)
- */
-public interface ExitCodeGenerator {
+import org.springframework.boot.ExitCodeGenerator;
 
-	/**
-	 * Returns the exit code that should be returned from the application.
-	 * @return the exit code.
-	 */
-	int getExitCode();
+public class ExitException extends RuntimeException implements ExitCodeGenerator {
+
+	@Override
+	public int getExitCode() {
+		return 10;
+	}
 
 }
