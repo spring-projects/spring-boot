@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.Rule;
@@ -84,10 +85,36 @@ public class ExitCodeGeneratorsTests {
 		assertThat(generators.getExitCode(), equalTo(3));
 	}
 
+	@Test
+	public void getExitCodeWhenUsingExitCodeExceptionMapperShouldCallMapper()
+			throws Exception {
+		ExitCodeGenerators generators = new ExitCodeGenerators();
+		Exception e = new IOException();
+		generators.add(e, mockMapper(IllegalStateException.class, 1));
+		generators.add(e, mockMapper(IOException.class, 2));
+		generators.add(e, mockMapper(UnsupportedOperationException.class, 3));
+		assertThat(generators.getExitCode(), equalTo(2));
+	}
+
 	private ExitCodeGenerator mockGenerator(int exitCode) {
 		ExitCodeGenerator generator = mock(ExitCodeGenerator.class);
 		given(generator.getExitCode()).willReturn(exitCode);
 		return generator;
+	}
+
+	private ExitCodeExceptionMapper mockMapper(final Class<?> exceptionType,
+			final int exitCode) {
+		return new ExitCodeExceptionMapper() {
+
+			@Override
+			public int getExitCode(Throwable exception) {
+				if (exceptionType.isInstance(exception)) {
+					return exitCode;
+				}
+				return 0;
+			}
+
+		};
 	}
 
 }

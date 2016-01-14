@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,27 @@ import org.springframework.util.Assert;
 class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 
 	private List<ExitCodeGenerator> generators = new ArrayList<ExitCodeGenerator>();
+
+	public void addAll(Throwable exception, ExitCodeExceptionMapper... mappers) {
+		Assert.notNull(exception, "Exception must not be null");
+		Assert.notNull(mappers, "Mappers must not be null");
+		addAll(exception, Arrays.asList(mappers));
+	}
+
+	public void addAll(Throwable exception,
+			Iterable<? extends ExitCodeExceptionMapper> mappers) {
+		Assert.notNull(exception, "Exception must not be null");
+		Assert.notNull(mappers, "Mappers must not be null");
+		for (ExitCodeExceptionMapper mapper : mappers) {
+			add(exception, mapper);
+		}
+	}
+
+	public void add(Throwable exception, ExitCodeExceptionMapper mapper) {
+		Assert.notNull(exception, "Exception must not be null");
+		Assert.notNull(mapper, "Mapper must not be null");
+		add(new MappedExitCodeGenerator(exception, mapper));
+	}
 
 	public void addAll(ExitCodeGenerator... generators) {
 		Assert.notNull(generators, "Generators must not be null");
@@ -77,6 +98,27 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 			}
 		}
 		return exitCode;
+	}
+
+	/**
+	 * Adapts an {@link ExitCodeExceptionMapper} to an {@link ExitCodeGenerator}.
+	 */
+	private static class MappedExitCodeGenerator implements ExitCodeGenerator {
+
+		private final Throwable exception;
+
+		private final ExitCodeExceptionMapper mapper;
+
+		MappedExitCodeGenerator(Throwable exception, ExitCodeExceptionMapper mapper) {
+			this.exception = exception;
+			this.mapper = mapper;
+		}
+
+		@Override
+		public int getExitCode() {
+			return this.mapper.getExitCode(this.exception);
+		}
+
 	}
 
 }

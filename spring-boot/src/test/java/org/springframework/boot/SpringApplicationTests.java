@@ -591,6 +591,31 @@ public class SpringApplicationTests {
 	}
 
 	@Test
+	public void exitWithExplicitCodeFromMappedException() throws Exception {
+		final SpringBootExceptionHandler handler = mock(SpringBootExceptionHandler.class);
+		SpringApplication application = new SpringApplication(
+				MappedExitCodeCommandLineRunConfig.class) {
+
+			@Override
+			SpringBootExceptionHandler getSpringBootExceptionHandler() {
+				return handler;
+			}
+
+		};
+		ExitCodeListener listener = new ExitCodeListener();
+		application.addListeners(listener);
+		application.setWebEnvironment(false);
+		try {
+			application.run();
+			fail("Did not throw");
+		}
+		catch (IllegalStateException ex) {
+		}
+		verify(handler).registerExitCode(11);
+		assertThat(listener.getExitCode(), equalTo(11));
+	}
+
+	@Test
 	public void defaultCommandLineArgs() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setDefaultProperties(StringUtils.splitArrayElementsIntoProperties(
@@ -902,6 +927,38 @@ public class SpringApplicationTests {
 				@Override
 				public void run(String... args) throws Exception {
 					throw new IllegalStateException(new ExitStatusException());
+				}
+
+			};
+		}
+
+	}
+
+	@Configuration
+	static class MappedExitCodeCommandLineRunConfig {
+
+		@Bean
+		public CommandLineRunner runner() {
+			return new CommandLineRunner() {
+
+				@Override
+				public void run(String... args) throws Exception {
+					throw new IllegalStateException();
+				}
+
+			};
+		}
+
+		@Bean
+		public ExitCodeExceptionMapper exceptionMapper() {
+			return new ExitCodeExceptionMapper() {
+
+				@Override
+				public int getExitCode(Throwable exception) {
+					if (exception instanceof IllegalStateException) {
+						return 11;
+					}
+					return 0;
 				}
 
 			};

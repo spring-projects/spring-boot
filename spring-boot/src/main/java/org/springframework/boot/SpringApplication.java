@@ -858,7 +858,7 @@ public class SpringApplication {
 
 	private void handeExitCode(ConfigurableApplicationContext context,
 			Throwable exception) {
-		int exitCode = getExitCodeFromException(exception);
+		int exitCode = getExitCodeFromException(context, exception);
 		if (exitCode != 0) {
 			if (context != null) {
 				context.publishEvent(new ExitCodeEvent(context, exitCode));
@@ -870,14 +870,32 @@ public class SpringApplication {
 		}
 	}
 
-	private int getExitCodeFromException(Throwable exception) {
+	private int getExitCodeFromException(ConfigurableApplicationContext context,
+			Throwable exception) {
+		int exitCode = getExitCodeFromMappedException(context, exception);
+		if (exitCode == 0) {
+			exitCode = getExitCodeFromExitCodeGeneratorException(exception);
+		}
+		return exitCode;
+	}
+
+	private int getExitCodeFromMappedException(ConfigurableApplicationContext context,
+			Throwable exception) {
+		ExitCodeGenerators generators = new ExitCodeGenerators();
+		Collection<ExitCodeExceptionMapper> beans = context
+				.getBeansOfType(ExitCodeExceptionMapper.class).values();
+		generators.addAll(exception, beans);
+		return generators.getExitCode();
+	}
+
+	private int getExitCodeFromExitCodeGeneratorException(Throwable exception) {
 		if (exception == null) {
 			return 0;
 		}
 		if (exception instanceof ExitCodeGenerator) {
 			return ((ExitCodeGenerator) exception).getExitCode();
 		}
-		return getExitCodeFromException(exception.getCause());
+		return getExitCodeFromExitCodeGeneratorException(exception.getCause());
 	}
 
 	SpringBootExceptionHandler getSpringBootExceptionHandler() {
