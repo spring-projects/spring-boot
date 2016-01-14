@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,32 +22,45 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link PropertiesLauncher}.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class PropertiesLauncherTests {
+
+	@Mock
+	private JavaAgentDetector javaAgentDetector;
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
 	@Before
 	public void setup() throws IOException {
+		MockitoAnnotations.initMocks(this);
 		System.setProperty("loader.home",
 				new File("src/test/resources").getAbsolutePath());
 	}
@@ -173,6 +186,22 @@ public class PropertiesLauncherTests {
 		System.setProperty("loader.args", "foo");
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertEquals("[foo, bar]", Arrays.asList(launcher.getArgs("bar")).toString());
+	}
+
+	@Test
+	public void testJavaAgentJarsAreExcludedFromClasspath() throws Exception {
+		List<Archive> allArchives = new PropertiesLauncher().getClassPathArchives();
+		URL[] parentUrls = ((URLClassLoader) getClass().getClassLoader()).getURLs();
+		for (URL url : parentUrls) {
+			given(this.javaAgentDetector.isJavaAgentJar(url)).willReturn(true);
+		}
+		List<Archive> nonAgentArchives = new PropertiesLauncher(this.javaAgentDetector)
+				.getClassPathArchives();
+		assertThat(nonAgentArchives.size(),
+				is(equalTo(allArchives.size() - parentUrls.length)));
+		for (URL url : parentUrls) {
+			verify(this.javaAgentDetector).isJavaAgentJar(url);
+		}
 	}
 
 	private void waitFor(String value) throws Exception {
