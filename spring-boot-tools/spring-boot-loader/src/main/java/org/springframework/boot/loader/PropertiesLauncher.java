@@ -71,6 +71,7 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  *
  * @author Dave Syer
  * @author Janne Valkealahti
+ * @author Andy Wilkinson
  */
 public class PropertiesLauncher extends Launcher {
 
@@ -131,6 +132,8 @@ public class PropertiesLauncher extends Launcher {
 
 	private final File home;
 
+	private final JavaAgentDetector javaAgentDetector;
+
 	private List<String> paths = new ArrayList<String>(DEFAULT_PATHS);
 
 	private final Properties properties = new Properties();
@@ -138,11 +141,16 @@ public class PropertiesLauncher extends Launcher {
 	private Archive parent;
 
 	public PropertiesLauncher() {
+		this(new InputArgumentsJavaAgentDetector());
+	}
+
+	PropertiesLauncher(JavaAgentDetector javaAgentDetector) {
 		if (!isDebug()) {
 			logger.setLevel(Level.SEVERE);
 		}
 		try {
 			this.home = getHomeDirectory();
+			this.javaAgentDetector = javaAgentDetector;
 			initializeProperties(this.home);
 			initializePaths();
 			this.parent = createArchive();
@@ -513,20 +521,11 @@ public class PropertiesLauncher extends Launcher {
 		ClassLoader parentClassLoader = getClass().getClassLoader();
 		List<Archive> urls = new ArrayList<Archive>();
 		for (URL url : getURLs(parentClassLoader)) {
-			if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
-				urls.add(new JarFileArchive(new File(url.toURI())));
-			}
-			else if (url.toString().endsWith("/*")) {
-				String name = url.getFile();
-				File dir = new File(name.substring(0, name.length() - 1));
-				if (dir.exists()) {
-					urls.add(new ExplodedArchive(
-							new File(name.substring(0, name.length() - 1)), false));
+			if (!this.javaAgentDetector.isJavaAgentJar(url)) {
+				Archive archive = createArchiveIfPossible(url);
+				if (archive != null) {
+					urls.add(archive);
 				}
-			}
-			else {
-				String filename = URLDecoder.decode(url.getFile(), "UTF-8");
-				urls.add(new ExplodedArchive(new File(filename)));
 			}
 		}
 		// The parent archive might have a "lib/" directory, meaning we are running from
@@ -539,6 +538,26 @@ public class PropertiesLauncher extends Launcher {
 				lib.add(archive);
 			}
 		}
+	}
+
+	private Archive createArchiveIfPossible(URL url)
+			throws IOException, URISyntaxException {
+		if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
+			return new JarFileArchive(new File(url.toURI()));
+		}
+		else if (url.toString().endsWith("/*")) {
+			String name = url.getFile();
+			File dir = new File(name.substring(0, name.length() - 1));
+			if (dir.exists()) {
+				return new ExplodedArchive(new File(name.substring(0, name.length() - 1)),
+						false);
+			}
+		}
+		else {
+			String filename = URLDecoder.decode(url.getFile(), "UTF-8");
+			return new ExplodedArchive(new File(filename));
+		}
+		return null;
 	}
 
 	private void addNestedArchivesFromParent(List<Archive> urls) {
