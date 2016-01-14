@@ -56,7 +56,7 @@ enum DatabaseDriver {
 	/**
 	 * MySQL.
 	 */
-	MYSQL("com.mysql.jdbc.Driver", "org.mysql.jdbc.MySQLDataSource"),
+	MYSQL("com.mysql.jdbc.Driver", "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"),
 
 	/**
 	 * Maria DB.
