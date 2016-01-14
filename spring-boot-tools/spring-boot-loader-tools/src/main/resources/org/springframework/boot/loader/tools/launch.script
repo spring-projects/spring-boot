@@ -147,7 +147,7 @@ do_start() {
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
     if [ "${useStartStopDaemon:-true}" = true ] && type start-stop-daemon > /dev/null 2>&1; then
-      arguments="-Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS -jar $jarfile $RUN_ARGS $*"
+      arguments=(-Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS -jar $jarfile $RUN_ARGS "$@")
       start-stop-daemon --start --quiet \
         --chuid "$run_user" \
         --name "$identity" \
@@ -155,7 +155,7 @@ do_start() {
         --background --no-close \
         --startas "$javaexe" \
         --chdir "$working_dir" \
-        -- $arguments \
+        -- "${arguments[@]}" \
         >> "$log_file" 2>&1
       await_file "$pid_file"
     else
