@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -200,7 +200,7 @@ public class EndpointWebMvcAutoConfiguration
 	// Put Servlets and Filters in their own nested class so they don't force early
 	// instantiation of ManagementServerProperties.
 	@Configuration
-	@ConditionalOnProperty(prefix = "management", name = "addApplicationContextHeader", matchIfMissing = true, havingValue = "true")
+	@ConditionalOnProperty(prefix = "management", name = "add-application-context-header", matchIfMissing = true, havingValue = "true")
 	protected static class ApplicationContextFilterConfiguration {
 
 		@Bean
@@ -225,8 +225,6 @@ public class EndpointWebMvcAutoConfiguration
 
 		private final ApplicationContext applicationContext;
 
-		private ManagementServerProperties properties;
-
 		ApplicationContextHeaderFilter(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
@@ -235,14 +233,7 @@ public class EndpointWebMvcAutoConfiguration
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain filterChain)
 						throws ServletException, IOException {
-			if (this.properties == null) {
-				this.properties = this.applicationContext
-						.getBean(ManagementServerProperties.class);
-			}
-			if (this.properties.getAddApplicationContextHeader()) {
-				response.addHeader("X-Application-Context",
-						this.applicationContext.getId());
-			}
+			response.addHeader("X-Application-Context", this.applicationContext.getId());
 			filterChain.doFilter(request, response);
 		}
 
