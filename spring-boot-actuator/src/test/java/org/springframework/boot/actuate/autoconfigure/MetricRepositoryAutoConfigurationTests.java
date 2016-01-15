@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
+import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.buffer.BufferCounterService;
 import org.springframework.boot.actuate.metrics.buffer.BufferGaugeService;
 import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
@@ -84,6 +85,10 @@ public class MetricRepositoryAutoConfigurationTests {
 		@SuppressWarnings("unchecked")
 		Gauge<Double> gauge = (Gauge<Double>) registry.getMetrics().get("gauge.foo");
 		assertEquals(new Double(2.7), gauge.getValue());
+		MetricReader reader = this.context.getBean(MetricReader.class);
+		@SuppressWarnings("unchecked")
+		Metric<Double> metric = (Metric<Double>) reader.findOne("gauge.foo");
+		assertEquals(new Double(2.7), metric.getValue());
 	}
 
 	@Test

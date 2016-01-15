@@ -56,10 +56,13 @@ public class MetricsDropwizardAutoConfiguration {
 	}
 
 	@Bean
+	public MetricRegistryMetricReader dropwizardMetricReader(MetricRegistry metricRegistry) {
+		return new MetricRegistryMetricReader(metricRegistry);
+	}
+
+	@Bean
 	public MetricReaderPublicMetrics dropwizardPublicMetrics(
-			MetricRegistry metricRegistry) {
-		MetricRegistryMetricReader reader = new MetricRegistryMetricReader(
-				metricRegistry);
+			MetricRegistryMetricReader reader) {
 		return new MetricReaderPublicMetrics(reader);
 	}
 
