@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 
 package org.springframework.boot.autoconfigure.mustache.web;
 
+import java.io.InputStream;
 import java.util.Locale;
 
+import org.fusesource.hawtbuf.ByteArrayInputStream;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.servlet.View;
@@ -29,11 +32,16 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MustacheViewResolver}.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class MustacheViewResolverTests {
 
@@ -83,6 +91,26 @@ public class MustacheViewResolverTests {
 		View view = this.resolver.resolveViewName("foo", null);
 		assertThat(view.getContentType(), equalTo("application/octet-stream"));
 
+	}
+
+	@Test
+	public void templateResourceInputStreamIsClosed() throws Exception {
+		final Resource resource = mock(Resource.class);
+		given(resource.exists()).willReturn(true);
+		InputStream inputStream = new ByteArrayInputStream(new byte[0]);
+		InputStream spyInputStream = spy(inputStream);
+		given(resource.getInputStream()).willReturn(spyInputStream);
+		this.resolver = new MustacheViewResolver();
+		this.resolver.setApplicationContext(new StaticWebApplicationContext() {
+
+			@Override
+			public Resource getResource(String location) {
+				return resource;
+			}
+
+		});
+		this.resolver.loadView("foo", null);
+		verify(spyInputStream).close();
 	}
 
 }
