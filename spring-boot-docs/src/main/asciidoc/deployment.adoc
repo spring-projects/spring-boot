@@ -416,7 +416,7 @@ The default executable script that can be embedded into Spring Boot jars will ac
 `restart` and `status` commands can be used. The script supports the following features:
 
 * Starts the services as the user that owns the jar file
-* Tracks application PIDs using `/var/run/<appname>/<appname>.pid`
+* Tracks application's PID using `/var/run/<appname>/<appname>.pid`
 * Writes console logs to `/var/log/<appname>.log`
 
 Assuming that you have a Spring Boot application installed in `/var/myapp`, to install a
@@ -427,9 +427,6 @@ Spring Boot application as an `init.d` service simply create a symlink:
 	$ sudo ln -s /var/myapp/myapp.jar /etc/init.d/myapp
 ----
 
-TIP: It is advisable to create a specific user account to run you application. Ensure
-that you have set the owner of the jar file using `chown` before installing your service.
-
 Once installed, you can start and stop the service in the usual way. You can also flag the
 application to start automatically using your standard operating system tools. For example,
 if you use Debian:
@@ -437,6 +434,65 @@ if you use Debian:
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
 	$ update-rc.d myapp defaults <priority>
+----
+
+[[deployment-initd-service-securing]]
+===== Securing an init.d service
+
+NOTE: The following is a set of guidelines on how to secure a Spring Boot application
+that's being run as an init.d service. It is not intended to be an exhaustive list of
+everything that should be done to harden an application and the environment in which it
+runs.
+
+When executed as root, as is the case when root is being used to start an init.d service,
+the default executable script will run the application as the user which owns the jar
+file. You should never run a Spring Boot application as `root` so your application's jar
+file should never be owned by root. Instead, create a specific user to run your
+application and use `chown` to make it the owner of the jar file. For example:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ chown bootapp:bootapp your-app.jar
+----
+
+In this case, the default executable script will run the application as the `bootapp`
+user.
+
+TIP: To reduce the chances of the application's user account being compromised, you should
+consider preventing it from using a login shell. Set the account's shell to
+`/usr/sbin/nologin`, for example.
+
+You should also take steps to prevent the modification of your application's jar file.
+Firstly, configure its permissions so that it cannot be written and can only be read or
+executed by its owner:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ chmod 500 your-app.jar
+----
+
+Secondly, you should also take steps to limit the damage if your application or the
+account that's running it is compromised. If an attacker does gain access, they could make
+the jar file writable and change its contents. One way to protect against this is to make
+it immutable using `chattr`:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ sudo chattr +i your-app.jar
+----
+
+This will prevent any user, including root, from modifying the jar.
+
+If root is used to control the application's service and you
+<<deployment-script-customization-conf-file, use a `.conf` file>> to customize its
+startup, the `.conf` file will be read and evaluated by the root user. It should be
+secured accordingly. Use `chmod` so that the file can only be read by the owner and use
+`chown` to make root the owner:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ chmod 400 your-app.conf
+	$ sudo chown root:root your-app.conf
 ----
 
 
@@ -572,6 +628,9 @@ The file should be situated next to the jar file and have the same name but suff
 `.conf` rather than `.jar`. For example, a jar named `/var/myapp/myapp.jar` will use the
 configuration file named `/var/myapp/myapp.conf` if it exists.
 
+To learn about securing this file appropriately, please refer to
+<<deployment-initd-service-securing,the guidelines for securing an init.d service>>.
+
 
 
 [[deployment-windows]]
@@ -580,9 +639,8 @@ Spring Boot application can be started as Windows service using
 https://github.com/kohsuke/winsw[`winsw`].
 
 A sample https://github.com/snicoll-scratches/spring-boot-daemon[maintained separately]
-to the core of Spring Boot describes step by step how you can create a Windows service for
+to the core of Spring Boot describes step-by-step how you can create a Windows service for
 your Spring Boot application.
-
 
 
 
