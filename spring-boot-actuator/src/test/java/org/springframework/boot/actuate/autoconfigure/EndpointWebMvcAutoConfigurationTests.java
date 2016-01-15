@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,6 +98,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Greg Turnquist
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 public class EndpointWebMvcAutoConfigurationTests {
 
@@ -136,6 +137,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/controller", ports.get().management, null);
 		assertContent("/endpoint", ports.get().management, null);
 		assertTrue(hasHeader("/endpoint", ports.get().server, "X-Application-Context"));
+		assertTrue(this.applicationContext.containsBean("applicationContextIdFilter"));
 		this.applicationContext.close();
 		assertAllClosed();
 	}
@@ -149,6 +151,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertFalse(hasHeader("/endpoint", ports.get().server, "X-Application-Context"));
+		assertFalse(this.applicationContext.containsBean("applicationContextIdFilter"));
 		this.applicationContext.close();
 		assertAllClosed();
 	}

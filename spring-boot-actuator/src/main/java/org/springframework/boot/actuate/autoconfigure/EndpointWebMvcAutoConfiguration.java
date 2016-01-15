@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
@@ -87,6 +88,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  * @author Johannes Edmeier
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
@@ -198,6 +200,7 @@ public class EndpointWebMvcAutoConfiguration
 	// Put Servlets and Filters in their own nested class so they don't force early
 	// instantiation of ManagementServerProperties.
 	@Configuration
+	@ConditionalOnProperty(prefix = "management", name = "add-application-context-header", matchIfMissing = true, havingValue = "true")
 	protected static class ApplicationContextFilterConfiguration {
 
 		@Bean
@@ -222,8 +225,6 @@ public class EndpointWebMvcAutoConfiguration
 
 		private final ApplicationContext applicationContext;
 
-		private ManagementServerProperties properties;
-
 		ApplicationContextHeaderFilter(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
@@ -232,14 +233,7 @@ public class EndpointWebMvcAutoConfiguration
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain filterChain)
 						throws ServletException, IOException {
-			if (this.properties == null) {
-				this.properties = this.applicationContext
-						.getBean(ManagementServerProperties.class);
-			}
-			if (this.properties.getAddApplicationContextHeader()) {
-				response.addHeader("X-Application-Context",
-						this.applicationContext.getId());
-			}
+			response.addHeader("X-Application-Context", this.applicationContext.getId());
 			filterChain.doFilter(request, response);
 		}
 
