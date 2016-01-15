@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.Servlet;
 
@@ -162,8 +163,8 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
 			Map<String, MediaType> mediaTypes = this.mvcProperties.getMediaTypes();
-			for (String extension : mediaTypes.keySet()) {
-				configurer.mediaType(extension, mediaTypes.get(extension));
+			for (Entry<String, MediaType> mediaType : mediaTypes.entrySet()) {
+				configurer.mediaType(mediaType.getKey(), mediaType.getValue());
 			}
 		}
 
