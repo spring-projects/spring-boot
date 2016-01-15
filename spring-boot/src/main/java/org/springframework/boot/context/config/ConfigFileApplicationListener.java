@@ -71,7 +71,8 @@ import org.springframework.validation.BindException;
  * <li>classpath:</li>
  * <li>file:./</li>
  * <li>classpath:config/</li>
- * <li>file:./config/:</li>
+ * <li>file:./config/</li>
+ * <li>file:../conf/</li>
  * </ul>
  * <p>
  * Alternative search locations and names can be specified using
@@ -102,7 +103,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 	private static final String DEFAULT_PROPERTIES = "defaultProperties";
 
 	// Note the order is from least to most specific (last one wins)
-	private static final String DEFAULT_SEARCH_LOCATIONS = "classpath:/,classpath:/config/,file:./,file:./config/";
+	private static final String DEFAULT_SEARCH_LOCATIONS = "classpath:/,classpath:/config/,file:./,file:./config/,file:../conf/";
 
 	private static final String DEFAULT_NAMES = "application";
 
