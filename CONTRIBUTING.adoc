@@ -76,7 +76,7 @@ The project can be built from the root directory using the standard maven comman
 
 [indent=0]
 ----
-	$ mvn clean install
+	$ ./mvnw clean install
 ----
 
 NOTE: You may need to increase the amount of memory available to Maven by setting
@@ -87,7 +87,7 @@ to submit a pull request:
 
 [indent=0]
 ----
-	$ mvn clean install -DskipTests
+	$ ./mvnw clean install -DskipTests
 ----
 
 
@@ -113,7 +113,7 @@ build. To prepare the build, from the root directory use:
 
 [indent=0]
 ----
-	$ mvn -P snapshot,prepare install -DskipTests
+	$ ./mvnw -P snapshot,prepare install -DskipTests
 ----
 
 NOTE: You may notice that preparing the build also changes the
@@ -126,7 +126,7 @@ Once the build has been prepared, you can run a full build using the following c
 
 [indent=0]
 ----
-	$ mvn -s ./settings.xml -f spring-boot-full-build -P full clean install
+	$ ./mvnw -s ./settings.xml -f spring-boot-full-build -P full clean install
 ----
 
 NOTE: As for the standard build, you may need to increase the amount of memory available
@@ -200,7 +200,7 @@ following command:
 
 [indent=0]
 ----
-	$ mvn eclipse:eclipse
+	$ ./mvnw eclipse:eclipse
 ----
 
 The generated eclipse projects can be imported by selecting `import existing projects`
