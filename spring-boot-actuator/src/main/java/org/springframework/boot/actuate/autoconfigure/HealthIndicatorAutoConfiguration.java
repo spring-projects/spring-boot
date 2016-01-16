@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,18 +27,23 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.elasticsearch.client.Client;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.CassandraHealthIndicator;
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
+import org.springframework.boot.actuate.health.DefaultHealthIndicatorRegistry;
+import org.springframework.boot.actuate.health.DefaultHealthIndicatorRegistryProperties;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicator;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicatorProperties;
 import org.springframework.boot.actuate.health.ElasticsearchHealthIndicator;
 import org.springframework.boot.actuate.health.ElasticsearchHealthIndicatorProperties;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.JmsHealthIndicator;
 import org.springframework.boot.actuate.health.MailHealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
@@ -84,6 +89,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Tommy Ludwig
+ * @author Vedran Pavic
  * @since 1.1.0
  */
 @Configuration
@@ -100,6 +106,14 @@ public class HealthIndicatorAutoConfiguration {
 	@Autowired
 	private HealthIndicatorAutoConfigurationProperties configurationProperties = new HealthIndicatorAutoConfigurationProperties();
 
+	@Autowired
+	private HealthIndicatorRegistry healthIndicatorRegistry;
+
+	@Bean
+	public HealthIndicatorRegistryPostProcessor healthIndicatorRegistryPostProcessor() {
+		return new HealthIndicatorRegistryPostProcessor(this.healthIndicatorRegistry);
+	}
+
 	@Bean
 	@ConditionalOnMissingBean(HealthAggregator.class)
 	public OrderedHealthAggregator healthAggregator() {
@@ -114,6 +128,21 @@ public class HealthIndicatorAutoConfiguration {
 	@ConditionalOnMissingBean(HealthIndicator.class)
 	public ApplicationHealthIndicator applicationHealthIndicator() {
 		return new ApplicationHealthIndicator();
+	}
+
+	@Configuration
+	@ConditionalOnMissingBean(HealthIndicatorRegistry.class)
+	@EnableConfigurationProperties(DefaultHealthIndicatorRegistryProperties.class)
+	public static class HealthIndicatorRegistryAutoConfiguration {
+
+		@Autowired
+		private DefaultHealthIndicatorRegistryProperties properties;
+
+		@Bean
+		public HealthIndicatorRegistry healthIndicatorRegistry() {
+			return new DefaultHealthIndicatorRegistry(this.properties);
+		}
+
 	}
 
 	/**
@@ -359,6 +388,53 @@ public class HealthIndicatorAutoConfiguration {
 		@Override
 		protected ElasticsearchHealthIndicator createHealthIndicator(Client client) {
 			return new ElasticsearchHealthIndicator(client, this.properties);
+		}
+
+	}
+
+	/**
+	 * A {@link BeanPostProcessor} that registers {@link HealthIndicator} beans with a
+	 * {@link HealthIndicatorRegistry}.
+	 */
+	private static class HealthIndicatorRegistryPostProcessor implements BeanPostProcessor {
+
+		private HealthIndicatorRegistry healthIndicatorRegistry;
+
+		HealthIndicatorRegistryPostProcessor(HealthIndicatorRegistry healthIndicatorRegistry) {
+			this.healthIndicatorRegistry = healthIndicatorRegistry;
+		}
+
+		@Override
+		public Object postProcessBeforeInitialization(Object bean, String beanName)
+				throws BeansException {
+			return bean;
+		}
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName)
+				throws BeansException {
+			if (bean instanceof HealthIndicator) {
+				postProcessHealthIndicator((HealthIndicator) bean, beanName);
+			}
+			return bean;
+		}
+
+		private void postProcessHealthIndicator(
+				HealthIndicator healthIndicator, String beanName) {
+			this.healthIndicatorRegistry.register(getKey(beanName), healthIndicator);
+		}
+
+		/**
+		 * Turns the bean name into a key that can be used in the map of health information.
+		 * @param name the bean name
+		 * @return the key
+		 */
+		private String getKey(String name) {
+			int index = name.toLowerCase().indexOf("healthindicator");
+			if (index > 0) {
+				return name.substring(0, index);
+			}
+			return name;
 		}
 
 	}
