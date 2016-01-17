@@ -151,7 +151,7 @@
 						<mainClass>${start-class}</mainClass>
 					</configuration>
 				</plugin>
-				<!-- Support shade packaging (if the user does not want to use our plugin -->
+				<!-- Support shade packaging (if the user does not want to use our plugin) -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
