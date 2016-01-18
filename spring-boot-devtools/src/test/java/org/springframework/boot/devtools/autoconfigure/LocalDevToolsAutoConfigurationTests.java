@@ -260,7 +260,8 @@ public class LocalDevToolsAutoConfigurationTests {
 				LocalDevToolsAutoConfiguration.class);
 		application.setWebEnvironment(false);
 		this.context = application.run();
-		RedisTemplate<?, ?> redisTemplate = this.context.getBean(RedisTemplate.class);
+		RedisTemplate<?, ?> redisTemplate = this.context.getBean("sessionRedisTemplate",
+				RedisTemplate.class);
 		assertThat(redisTemplate.getHashKeySerializer(),
 				is(instanceOf(RestartCompatibleRedisSerializer.class)));
 		assertThat(redisTemplate.getHashValueSerializer(),
@@ -327,7 +328,6 @@ public class LocalDevToolsAutoConfigurationTests {
 			redisTemplate.setConnectionFactory(mock(RedisConnectionFactory.class));
 			return redisTemplate;
 		}
-
 	}
 
 	@Configuration
@@ -339,7 +339,5 @@ public class LocalDevToolsAutoConfigurationTests {
 			redisTemplate.setConnectionFactory(mock(RedisConnectionFactory.class));
 			return redisTemplate;
 		}
-
 	}
-
 }

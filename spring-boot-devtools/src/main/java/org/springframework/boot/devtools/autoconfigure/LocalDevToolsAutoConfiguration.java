@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -168,7 +169,7 @@ public class LocalDevToolsAutoConfiguration {
 
 			@Bean
 			public RestartCompatibleRedisSerializerConfigurer restartCompatibleRedisSerializerConfigurer(
-					RedisTemplate<?, ?> sessionRedisTemplate) {
+					@Qualifier("sessionRedisTemplate") RedisTemplate<?, ?> sessionRedisTemplate) {
 				return new RestartCompatibleRedisSerializerConfigurer(
 						sessionRedisTemplate);
 			}
