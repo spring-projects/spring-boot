@@ -152,6 +152,13 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private Boolean useTestClasspath;
 
 	/**
+	 * Skip the execution.
+	 * @since 1.3.2
+	 */
+	@Parameter(defaultValue = "false")
+	private boolean skip;
+
+	/**
 	 * Specify if the application process should be forked.
 	 * @return {@code true} if the application process should be forked
 	 */
@@ -170,6 +177,10 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (this.skip) {
+			getLog().debug("skipping run as per configuration.");
+			return;
+		}
 		final String startClassName = getStartClass();
 		run(startClassName);
 	}

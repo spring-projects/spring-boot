@@ -62,8 +62,19 @@ public class StopMojo extends AbstractMojo {
 	@Parameter
 	private int jmxPort = 9001;
 
+	/**
+	 * Skip the execution.
+	 * @since 1.3.2
+	 */
+	@Parameter(defaultValue = "false")
+	private boolean skip;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (this.skip) {
+			getLog().debug("skipping stop as per configuration.");
+			return;
+		}
 		getLog().info("Stopping application...");
 		try {
 			if (Boolean.TRUE.equals(this.fork)) {
