@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package org.springframework.boot.actuate.endpoint;
 
 import java.util.Map;
 
-import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -31,11 +31,13 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 @ConfigurationProperties(prefix = "endpoints.health", ignoreUnknownFields = true)
 public class HealthEndpoint extends AbstractEndpoint<Health> {
 
-	private final HealthIndicator healthIndicator;
+	private final HealthAggregator healthAggregator;
+	private final HealthIndicatorRegistry healthIndicatorRegistry;
 
 	/**
 	 * Time to live for cached result, in milliseconds.
@@ -45,19 +47,16 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 	/**
 	 * Create a new {@link HealthIndicator} instance.
 	 * @param healthAggregator the health aggregator
-	 * @param healthIndicators the health indicators
+	 * @param healthIndicatorRegistry the health indicator registry
 	 */
 	public HealthEndpoint(HealthAggregator healthAggregator,
-			Map<String, HealthIndicator> healthIndicators) {
+			HealthIndicatorRegistry healthIndicatorRegistry) {
 		super("health", false);
 		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
-		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
-		CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
-				healthAggregator);
-		for (Map.Entry<String, HealthIndicator> entry : healthIndicators.entrySet()) {
-			healthIndicator.addHealthIndicator(getKey(entry.getKey()), entry.getValue());
-		}
-		this.healthIndicator = healthIndicator;
+		Assert.notNull(healthIndicatorRegistry,
+				"healthIndicatorRegistry must not be null");
+		this.healthAggregator = healthAggregator;
+		this.healthIndicatorRegistry = healthIndicatorRegistry;
 	}
 
 	/**
@@ -78,19 +77,8 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 	 */
 	@Override
 	public Health invoke() {
-		return this.healthIndicator.health();
+		Map<String, Health> healths = this.healthIndicatorRegistry.runHealthIndicators();
+		return this.healthAggregator.aggregate(healths);
 	}
 
-	/**
-	 * Turns the bean name into a key that can be used in the map of health information.
-	 * @param name the bean name
-	 * @return the key
-	 */
-	private String getKey(String name) {
-		int index = name.toLowerCase().indexOf("healthindicator");
-		if (index > 0) {
-			return name.substring(0, index);
-		}
-		return name;
-	}
 }

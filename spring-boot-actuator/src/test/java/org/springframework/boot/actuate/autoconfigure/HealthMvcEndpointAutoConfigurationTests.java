@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,10 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
+import org.springframework.boot.actuate.health.DefaultHealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Health.Builder;
+import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
@@ -42,6 +44,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 public class HealthMvcEndpointAutoConfigurationTests {
 
@@ -92,6 +95,13 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		@Bean
 		public TestHealthIndicator testHealthIndicator() {
 			return new TestHealthIndicator();
+		}
+
+		@Bean
+		public HealthIndicatorRegistry healthIndicatorRegistry() {
+			DefaultHealthIndicatorRegistry registry = new DefaultHealthIndicatorRegistry();
+			registry.register("test", testHealthIndicator());
+			return registry;
 		}
 
 	}

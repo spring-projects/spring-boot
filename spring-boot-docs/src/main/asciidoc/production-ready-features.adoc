@@ -255,9 +255,10 @@ returned, and for an authenticated connection additional details are also displa
 <<production-ready-health-access-restrictions>> for HTTP details).
 
 Health information is collected from all
-{sc-spring-boot-actuator}/health/HealthIndicator.{sc-ext}[`HealthIndicator`] beans defined
-in your `ApplicationContext`. Spring Boot includes a number of auto-configured
-`HealthIndicators` and you can also write your own.
+{sc-spring-boot-actuator}/health/HealthIndicator.{sc-ext}[`HealthIndicator`] instances
+registered with {sc-spring-boot-actuator}/health/HealthIndicatorRegistry.{sc-ext}[`HealthIndicatorRegistry`].
+Spring Boot includes a number of auto-configured `HealthIndicators` and you can also write
+your own.
 
 
 
@@ -346,6 +347,9 @@ additional details to be displayed.
 NOTE: The identifier for a given `HealthIndicator` is the name of the bean without the
 `HealthIndicator` suffix if it exists. In the example above, the health information will
 be available in an entry named `my`.
+
+Additionally, you can register (and unregister) `HealthIndicator` instances in runtime
+using {sc-spring-boot-actuator}/health/HealthIndicatorRegistry.{sc-ext}[`HealthIndicatorRegistry`].
 
 In addition to Spring Boot's predefined {sc-spring-boot-actuator}/health/Status.{sc-ext}[`Status`]
 types, it is also possible for `Health` to return a custom `Status` that represents a

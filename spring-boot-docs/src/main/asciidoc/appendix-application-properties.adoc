@@ -831,6 +831,8 @@ content into your application; rather pick only the properties that you need.
 	management.health.mongo.enabled=true # Enable MongoDB health check.
 	management.health.rabbit.enabled=true # Enable RabbitMQ health check.
 	management.health.redis.enabled=true # Enable Redis health check.
+	management.health.registry.run-in-parallel=false # Flag to indicate the health indicators should run in parallel.
+	management.health.registry.thread-count=2 # Number of threads used to run health indicators in parallel.
 	management.health.solr.enabled=true # Enable Solr health check.
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP # Comma-separated list of health statuses in order of severity.
 

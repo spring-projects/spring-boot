@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Map;
-
 import org.junit.Test;
 
+import org.springframework.boot.actuate.health.DefaultHealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -37,6 +37,7 @@ import static org.junit.Assert.assertThat;
  *
  * @author Phillip Webb
  * @author Christian Dupuis
+ * @author Vedran Pavic
  */
 public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 
@@ -56,8 +57,8 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 
 		@Bean
 		public HealthEndpoint endpoint(HealthAggregator healthAggregator,
-				Map<String, HealthIndicator> healthIndicators) {
-			return new HealthEndpoint(healthAggregator, healthIndicators);
+				HealthIndicatorRegistry healthIndicatorRegistry) {
+			return new HealthEndpoint(healthAggregator, healthIndicatorRegistry);
 		}
 
 		@Bean
@@ -75,5 +76,11 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 		public HealthAggregator healthAggregator() {
 			return new OrderedHealthAggregator();
 		}
+
+		@Bean
+		public HealthIndicatorRegistry healthIndicatorRegistry() {
+			return new DefaultHealthIndicatorRegistry();
+		}
+
 	}
 }
