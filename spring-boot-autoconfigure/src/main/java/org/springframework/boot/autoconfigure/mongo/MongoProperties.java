@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.mongo;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -213,12 +214,12 @@ public class MongoProperties {
 				if (options == null) {
 					options = MongoClientOptions.builder().build();
 				}
-				List<MongoCredential> credentials = null;
+				List<MongoCredential> credentials = new ArrayList<MongoCredential>();
 				if (hasCustomCredentials()) {
 					String database = this.authenticationDatabase == null
 							? getMongoClientDatabase() : this.authenticationDatabase;
-					credentials = Arrays.asList(MongoCredential
-							.createCredential(this.username, database, this.password));
+					credentials.add(MongoCredential.createCredential(this.username,
+							database, this.password));
 				}
 				String host = this.host == null ? "localhost" : this.host;
 				int port = determinePort(environment);
