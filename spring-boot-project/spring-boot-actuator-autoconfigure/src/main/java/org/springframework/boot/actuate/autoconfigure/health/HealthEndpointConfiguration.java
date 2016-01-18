@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
+import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,15 +30,27 @@ import org.springframework.context.annotation.Configuration;
  * Configuration for {@link HealthEndpoint}.
  *
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  */
 @Configuration
 class HealthEndpointConfiguration {
 
+	private final HealthAggregator healthAggregator;
+
+	private final HealthIndicatorRegistry healthIndicatorRegistry;
+
+	HealthEndpointConfiguration(ObjectProvider<HealthAggregator> healthAggregator,
+			ObjectProvider<HealthIndicatorRegistry> healthIndicatorRegistry) {
+		this.healthAggregator = healthAggregator
+				.getIfAvailable(OrderedHealthAggregator::new);
+		this.healthIndicatorRegistry = healthIndicatorRegistry.getObject();
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint
-	public HealthEndpoint healthEndpoint(ApplicationContext applicationContext) {
-		return new HealthEndpoint(HealthIndicatorBeansComposite.get(applicationContext));
+	public HealthEndpoint healthEndpoint() {
+		return new HealthEndpoint(this.healthAggregator, this.healthIndicatorRegistry);
 	}
 
 }
