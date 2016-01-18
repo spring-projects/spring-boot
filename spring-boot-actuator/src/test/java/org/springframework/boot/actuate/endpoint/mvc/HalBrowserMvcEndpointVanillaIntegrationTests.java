@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,13 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 	@Test
 	public void links() throws Exception {
 		this.mockMvc.perform(get("/actuator").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists())
+				.andExpect(header().doesNotExist("cache-control"));
+	}
+
+	@Test
+	public void linksWithTrailingSlash() throws Exception {
+		this.mockMvc.perform(get("/actuator/").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists())
 				.andExpect(header().doesNotExist("cache-control"));
 	}

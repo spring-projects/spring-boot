@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,6 +91,18 @@ public class HalBrowserMvcEndpointServerContextPathIntegrationTests {
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/spring/actuator", HttpMethod.GET,
+				new HttpEntity<Void>(null, headers), String.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertTrue("Wrong body: " + entity.getBody(),
+				entity.getBody().contains("\"_links\":"));
+	}
+
+	@Test
+	public void actuatorLinksWithTrailingSlash() throws Exception {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(
+				"http://localhost:" + this.port + "/spring/actuator/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body: " + entity.getBody(),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -196,8 +196,12 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		}
 
 		private boolean isActuatorEndpointPath(String path) {
-			return this.halJsonMvcEndpoint != null && (this.management.getContextPath()
-					+ this.halJsonMvcEndpoint.getPath()).equals(path);
+			if (this.halJsonMvcEndpoint != null) {
+				String toMatch = this.management.getContextPath()
+						+ this.halJsonMvcEndpoint.getPath();
+				return toMatch.equals(path) || (toMatch + "/").equals(path);
+			}
+			return false;
 		}
 
 	}
