@@ -82,7 +82,7 @@ public class Restarter {
 
 	private static final String[] NO_ARGS = {};
 
-	private static volatile Restarter instance;
+	private static Restarter instance;
 
 	private Log logger = new DeferredLog();
 
@@ -522,16 +522,11 @@ public class Restarter {
 	 * the {@link RestartInitializer} returns non {@code null} results
 	 * @param listeners listeners to be notified of restarts
 	 */
-	public static void initialize(String[] args, boolean forceReferenceCleanup,
+	public synchronized static void initialize(String[] args, boolean forceReferenceCleanup,
 			RestartInitializer initializer, boolean restartOnInitialize,
 			RestartListener... listeners) {
 		if (instance == null) {
-			synchronized (Restarter.class) {
-			    if (instance == null) {
-    				instance = new Restarter(Thread.currentThread(), args,
-    						forceReferenceCleanup, initializer, listeners);
-			    }
-			}
+			instance = new Restarter(Thread.currentThread(), args, forceReferenceCleanup, initializer, listeners);
 			instance.initialize(restartOnInitialize);
 		}
 	}
