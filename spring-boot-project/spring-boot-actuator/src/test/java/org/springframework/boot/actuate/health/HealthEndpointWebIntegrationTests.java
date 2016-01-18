@@ -35,6 +35,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * exposed by Jersey, Spring MVC, and WebFlux.
  *
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 @RunWith(WebEndpointRunners.class)
 public class HealthEndpointWebIntegrationTests {
@@ -66,17 +67,15 @@ public class HealthEndpointWebIntegrationTests {
 		@Bean
 		public HealthEndpoint healthEndpoint(
 				Map<String, HealthIndicator> healthIndicators) {
-			return new HealthEndpoint(
-					new CompositeHealthIndicatorFactory().createHealthIndicator(
-							new OrderedHealthAggregator(), healthIndicators));
+			HealthIndicatorRegistry registry = new DefaultHealthIndicatorRegistry();
+			healthIndicators.forEach(registry::register);
+			return new HealthEndpoint(new OrderedHealthAggregator(), registry);
 		}
 
 		@Bean
 		public HealthEndpointWebExtension healthWebEndpointExtension(
-				Map<String, HealthIndicator> healthIndicators) {
-			return new HealthEndpointWebExtension(
-					new CompositeHealthIndicatorFactory().createHealthIndicator(
-							new OrderedHealthAggregator(), healthIndicators),
+				HealthEndpoint healthEndpoint) {
+			return new HealthEndpointWebExtension(healthEndpoint,
 					new HealthWebEndpointResponseMapper(new HealthStatusHttpMapper(),
 							ShowDetails.ALWAYS,
 							new HashSet<>(Arrays.asList("ACTUATOR"))));

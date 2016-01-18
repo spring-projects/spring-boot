@@ -34,8 +34,9 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
+import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -109,7 +110,8 @@ public class CloudFoundryWebEndpointDiscovererTests {
 
 		@Bean
 		public HealthEndpoint healthEndpoint() {
-			return new HealthEndpoint(mock(HealthIndicator.class));
+			return new HealthEndpoint(mock(HealthAggregator.class),
+					mock(HealthIndicatorRegistry.class));
 		}
 
 		@Bean

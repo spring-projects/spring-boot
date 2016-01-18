@@ -35,11 +35,11 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
 public class HealthEndpointWebExtension {
 
-	private final HealthIndicator delegate;
+	private final HealthEndpoint delegate;
 
 	private final HealthWebEndpointResponseMapper responseMapper;
 
-	public HealthEndpointWebExtension(HealthIndicator delegate,
+	public HealthEndpointWebExtension(HealthEndpoint delegate,
 			HealthWebEndpointResponseMapper responseMapper) {
 		this.delegate = delegate;
 		this.responseMapper = responseMapper;
