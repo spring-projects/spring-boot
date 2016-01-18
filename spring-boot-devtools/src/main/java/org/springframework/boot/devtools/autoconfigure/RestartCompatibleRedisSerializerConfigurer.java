@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import org.springframework.core.serializer.support.SerializingConverter;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
-import org.springframework.session.ExpiringSession;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -42,12 +41,11 @@ import org.springframework.util.ObjectUtils;
  */
 class RestartCompatibleRedisSerializerConfigurer implements BeanClassLoaderAware {
 
-	private final RedisTemplate<String, ExpiringSession> redisTemplate;
+	private final RedisTemplate<?, ?> redisTemplate;
 
 	private volatile ClassLoader classLoader;
 
-	RestartCompatibleRedisSerializerConfigurer(
-			RedisTemplate<String, ExpiringSession> redisTemplate) {
+	RestartCompatibleRedisSerializerConfigurer(RedisTemplate<?, ?> redisTemplate) {
 		this.redisTemplate = redisTemplate;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,6 +68,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Vladimir Tsanev
  */
 public class LocalDevToolsAutoConfigurationTests {
 
@@ -241,13 +242,27 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void sessionRedisTemplateIsConfiguredWithCustomDeserializers()
+	public void sessionRedisTemplateIsConfiguredWithCustomDeserializers10()
 			throws Exception {
-		SpringApplication application = new SpringApplication(
-				SessionRedisTemplateConfig.class, LocalDevToolsAutoConfiguration.class);
+		sessionRedisTemplateIsConfiguredWithCustomDeserializers(
+				Session10RedisTemplateConfig.class);
+	}
+
+	@Test
+	public void sessionRedisTemplateIsConfiguredWithCustomDeserializers11()
+			throws Exception {
+		sessionRedisTemplateIsConfiguredWithCustomDeserializers(
+				Session11RedisTemplateConfig.class);
+	}
+
+	private void sessionRedisTemplateIsConfiguredWithCustomDeserializers(
+			Object sessionConfig) throws Exception {
+		SpringApplication application = new SpringApplication(sessionConfig,
+				LocalDevToolsAutoConfiguration.class);
 		application.setWebEnvironment(false);
 		this.context = application.run();
-		RedisTemplate<?, ?> redisTemplate = this.context.getBean(RedisTemplate.class);
+		RedisTemplate<?, ?> redisTemplate = this.context.getBean("sessionRedisTemplate",
+				RedisTemplate.class);
 		assertThat(redisTemplate.getHashKeySerializer(),
 				is(instanceOf(RestartCompatibleRedisSerializer.class)));
 		assertThat(redisTemplate.getHashValueSerializer(),
@@ -306,11 +321,23 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Configuration
-	public static class SessionRedisTemplateConfig {
+	public static class Session10RedisTemplateConfig {
 
 		@Bean
 		public RedisTemplate<String, ExpiringSession> sessionRedisTemplate() {
 			RedisTemplate<String, ExpiringSession> redisTemplate = new RedisTemplate<String, ExpiringSession>();
+			redisTemplate.setConnectionFactory(mock(RedisConnectionFactory.class));
+			return redisTemplate;
+		}
+
+	}
+
+	@Configuration
+	public static class Session11RedisTemplateConfig {
+
+		@Bean
+		public RedisTemplate<Object, Object> sessionRedisTemplate() {
+			RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<Object, Object>();
 			redisTemplate.setConnectionFactory(mock(RedisConnectionFactory.class));
 			return redisTemplate;
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -42,7 +43,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.session.ExpiringSession;
 import org.springframework.util.StringUtils;
 
 /**
@@ -50,6 +50,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Vladimir Tsanev
  * @since 1.3.0
  */
 @Configuration
@@ -164,12 +165,14 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		@Configuration
-		@ConditionalOnBean(name = "sessionRedisTemplate")
+		@ConditionalOnBean(name = RedisRestartConfiguration.SESSION_REDIS_TEMPLATE_BEAN_NAME)
 		static class RedisRestartConfiguration {
+
+			static final String SESSION_REDIS_TEMPLATE_BEAN_NAME = "sessionRedisTemplate";
 
 			@Bean
 			public RestartCompatibleRedisSerializerConfigurer restartCompatibleRedisSerializerConfigurer(
-					RedisTemplate<String, ExpiringSession> sessionRedisTemplate) {
+					@Qualifier(SESSION_REDIS_TEMPLATE_BEAN_NAME) RedisTemplate<?, ?> sessionRedisTemplate) {
 				return new RestartCompatibleRedisSerializerConfigurer(
 						sessionRedisTemplate);
 			}
