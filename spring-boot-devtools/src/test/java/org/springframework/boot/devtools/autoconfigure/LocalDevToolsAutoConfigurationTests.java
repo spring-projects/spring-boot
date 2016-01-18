@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,6 +68,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Vladimir Tsanev
  */
 public class LocalDevToolsAutoConfigurationTests {
 
@@ -244,14 +245,14 @@ public class LocalDevToolsAutoConfigurationTests {
 	public void sessionRedisTemplateIsConfiguredWithCustomDeserializers10()
 			throws Exception {
 		sessionRedisTemplateIsConfiguredWithCustomDeserializers(
-				SessionRedisTemplateConfig10.class);
+				Session10RedisTemplateConfig.class);
 	}
 
 	@Test
 	public void sessionRedisTemplateIsConfiguredWithCustomDeserializers11()
 			throws Exception {
 		sessionRedisTemplateIsConfiguredWithCustomDeserializers(
-				SessionRedisTemplateConfig11.class);
+				Session11RedisTemplateConfig.class);
 	}
 
 	private void sessionRedisTemplateIsConfiguredWithCustomDeserializers(
@@ -320,7 +321,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Configuration
-	public static class SessionRedisTemplateConfig10 {
+	public static class Session10RedisTemplateConfig {
 
 		@Bean
 		public RedisTemplate<String, ExpiringSession> sessionRedisTemplate() {
@@ -328,10 +329,11 @@ public class LocalDevToolsAutoConfigurationTests {
 			redisTemplate.setConnectionFactory(mock(RedisConnectionFactory.class));
 			return redisTemplate;
 		}
+
 	}
 
 	@Configuration
-	public static class SessionRedisTemplateConfig11 {
+	public static class Session11RedisTemplateConfig {
 
 		@Bean
 		public RedisTemplate<Object, Object> sessionRedisTemplate() {
@@ -339,5 +341,7 @@ public class LocalDevToolsAutoConfigurationTests {
 			redisTemplate.setConnectionFactory(mock(RedisConnectionFactory.class));
 			return redisTemplate;
 		}
+
 	}
+
 }
