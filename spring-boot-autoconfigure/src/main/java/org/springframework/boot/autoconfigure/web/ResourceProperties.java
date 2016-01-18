@@ -175,6 +175,8 @@ public class ResourceProperties implements ResourceLoaderAware {
 		/**
 		 * Return whether the resource chain is enabled. Return {@code null} if no
 		 * specific settings are present.
+		 * @return whether the resource chain is enabled or {@code null} if no
+		 * specified settings are present.
 		 */
 		public Boolean getEnabled() {
 			// Check if at least one of the available strategy has been enabled
