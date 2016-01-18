@@ -182,6 +182,7 @@ public class TomcatEmbeddedServletContainerFactory
 						: ClassUtils.getDefaultClassLoader());
 		try {
 			context.setUseRelativeRedirects(false);
+			context.setMapperContextRootRedirectEnabled(true);
 		}
 		catch (NoSuchMethodError ex) {
 			// Tomcat is < 8.0.30. Continue
