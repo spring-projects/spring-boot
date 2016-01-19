@@ -32,7 +32,7 @@
   {
     "name": "logging.file",
     "type": "java.lang.String",
-    "description": "Log file name.",
+    "description": "Name of the log file. Names can be an exact location or relative to the current directory.",
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
@@ -44,7 +44,7 @@
   {
     "name": "logging.path",
     "type": "java.lang.String",
-    "description": "Location of the log file.",
+    "description": "Directory where log files are written.",
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
