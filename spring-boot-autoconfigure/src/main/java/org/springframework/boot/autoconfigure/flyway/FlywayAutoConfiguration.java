@@ -125,6 +125,8 @@ public class FlywayAutoConfiguration {
 			else {
 				flyway.setDataSource(this.dataSource);
 			}
+			//Explicitly set locations because the getter doesn't return a mutable value
+			flyway.setLocations(this.properties.getLocations().toArray(new String[0]));
 			return flyway;
 		}
 
