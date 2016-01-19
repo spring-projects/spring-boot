@@ -104,8 +104,8 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void overrideLocations() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.locations:classpath:db/changelog,classpath:db/migration");
+		EnvironmentTestUtils.addEnvironment(this.context, "flyway.locations[0]:classpath:db/changelog",
+				"flyway.locations[1]:classpath:db/migration");
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
