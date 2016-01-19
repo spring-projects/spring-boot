@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -149,7 +149,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			this.loggingSystem.initialize(this.initializationContext, null, null);
 			String output = this.output.toString().trim();
 			assertTrue("Wrong output:\n" + output, output.contains("Ignoring "
-					+ "'logback.configurationFile' system property. Please use 'logging.path' instead."));
+					+ "'logback.configurationFile' system property. Please use 'logging.config' instead."));
 		}
 		finally {
 			System.clearProperty("logback.configurationFile");
