@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,6 +65,12 @@ public class FlywayAutoConfiguration {
 	@ConfigurationPropertiesBinding
 	public StringToMigrationVersionConverter stringToMigrationVersionConverter() {
 		return new StringToMigrationVersionConverter();
+	}
+
+	@Bean
+	@ConfigurationPropertiesBinding
+	public IntegerToMigrationVersionConverter integerToMigrationVersionConverter() {
+		return new IntegerToMigrationVersionConverter();
 	}
 
 	@Configuration
@@ -177,6 +183,19 @@ public class FlywayAutoConfiguration {
 		@Override
 		public MigrationVersion convert(String source) {
 			return MigrationVersion.fromVersion(source);
+		}
+
+	}
+
+	/**
+	 * Convert an Integer to a {@link MigrationVersion}.
+	 */
+	private static class IntegerToMigrationVersionConverter
+			implements Converter<Integer, MigrationVersion> {
+
+		@Override
+		public MigrationVersion convert(Integer source) {
+			return MigrationVersion.fromVersion(source.toString());
 		}
 
 	}
