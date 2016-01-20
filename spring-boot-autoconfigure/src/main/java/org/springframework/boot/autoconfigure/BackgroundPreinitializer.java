@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,10 @@ import javax.validation.Validation;
 
 import org.apache.catalina.mbeans.MBeanFactory;
 
-import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 
 /**
@@ -32,13 +34,15 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
  * time consuming tasks.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.3.0
  */
+@Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
 public class BackgroundPreinitializer
-		implements ApplicationListener<ApplicationStartedEvent> {
+		implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
 	@Override
-	public void onApplicationEvent(ApplicationStartedEvent event) {
+	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		try {
 			ExecutorService executor = Executors.newSingleThreadExecutor();
 			submit(executor, new MessageConverterInitializer());
