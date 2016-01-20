@@ -53,7 +53,7 @@ public class BackgroundPreinitializer implements ApplicationListener<Application
 
 	private void performInitialization() {
 		try {
-			this.initializationThread = new Thread(new Runnable() {
+			Thread thread = new Thread(new Runnable() {
 
 				@Override
 				public void run() {
@@ -72,7 +72,8 @@ public class BackgroundPreinitializer implements ApplicationListener<Application
 				}
 
 			}, "background-preinit");
-			this.initializationThread.start();
+			thread.start();
+			this.initializationThread = thread;
 		}
 		catch (Exception ex) {
 			// This will fail on GAE where creating threads is prohibited. We can safely
@@ -82,14 +83,17 @@ public class BackgroundPreinitializer implements ApplicationListener<Application
 	}
 
 	private void awaitInitialization() {
-		try {
-			this.initializationThread.join();
-		}
-		catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
-		}
-		finally {
-			this.initializationThread = null;
+		Thread thread = this.initializationThread;
+		if (thread != null) {
+			try {
+				thread.join();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			finally {
+				this.initializationThread = null;
+			}
 		}
 	}
 
