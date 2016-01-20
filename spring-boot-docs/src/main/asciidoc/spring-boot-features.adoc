@@ -456,10 +456,13 @@ property (typically OS env, system property or command line argument).
 If `spring.config.location` contains directories (as opposed to files) they should end
 in `/` (and will be appended with the names generated from `spring.config.name` before
 being loaded). The default search path `classpath:,classpath:/config,file:,file:config/`
-is always used, irrespective of the value of `spring.config.location`. In that way you
-can set up default values for your application in `application.properties` (or whatever
-other basename you choose with `spring.config.name`) and override it at runtime with a
-different file, keeping the defaults.
+is always used, irrespective of the value of `spring.config.location`. This search path
+is ordered from lowest to highest precedence (`file:config/` wins). If you do specify
+your own locations, they take precedence over all of the default locations and use the
+same lowest to highest precedence ordering. In that way you can set up default values for
+your application in `application.properties` (or whatever other basename you choose with
+`spring.config.name`) and override it at runtime with a different file, keeping the
+defaults.
 
 NOTE: If you use environment variables rather than system properties, most operating
 systems disallow period-separated key names, but you can use underscores instead (e.g.
