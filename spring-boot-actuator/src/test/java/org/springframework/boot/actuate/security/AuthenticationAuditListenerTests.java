@@ -16,9 +16,13 @@
 
 package org.springframework.boot.actuate.security;
 
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
+import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -30,6 +34,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent;
 
+import static org.hamcrest.Matchers.hasEntry;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -82,4 +88,32 @@ public class AuthenticationAuditListenerTests {
 		verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
 	}
 
+	@Test
+	public void shouldPassDetailsToAuditEventOnAuthenticationFailureEvent()
+		throws Exception {
+		// given
+		final Object details = new Object();
+		final AuthenticationFailureExpiredEvent event =
+			createAuthenticationFailureEvent(details);
+
+		// when
+		this.listener.onApplicationEvent(event);
+
+		// then
+		final ArgumentCaptor<AuditApplicationEvent> applicationEventArgumentCaptor =
+			ArgumentCaptor.forClass(AuditApplicationEvent.class);
+		verify(this.publisher).publishEvent(applicationEventArgumentCaptor.capture());
+		final Map<String, Object> eventData =
+			applicationEventArgumentCaptor.getValue().getAuditEvent().getData();
+		assertThat(eventData, hasEntry("details", details));
+	}
+
+	private AuthenticationFailureExpiredEvent createAuthenticationFailureEvent(
+		final Object details) {
+		final UsernamePasswordAuthenticationToken authentication =
+			new UsernamePasswordAuthenticationToken("user", "password");
+		authentication.setDetails(details);
+		final BadCredentialsException exception = new BadCredentialsException("Bad user");
+		return new AuthenticationFailureExpiredEvent(authentication, exception);
+	}
 }
