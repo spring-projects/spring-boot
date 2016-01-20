@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.actuate.security;
-
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -89,31 +87,17 @@ public class AuthenticationAuditListenerTests {
 	}
 
 	@Test
-	public void shouldPassDetailsToAuditEventOnAuthenticationFailureEvent()
-		throws Exception {
-		// given
-		final Object details = new Object();
-		final AuthenticationFailureExpiredEvent event =
-			createAuthenticationFailureEvent(details);
-
-		// when
-		this.listener.onApplicationEvent(event);
-
-		// then
-		final ArgumentCaptor<AuditApplicationEvent> applicationEventArgumentCaptor =
-			ArgumentCaptor.forClass(AuditApplicationEvent.class);
-		verify(this.publisher).publishEvent(applicationEventArgumentCaptor.capture());
-		final Map<String, Object> eventData =
-			applicationEventArgumentCaptor.getValue().getAuditEvent().getData();
-		assertThat(eventData, hasEntry("details", details));
-	}
-
-	private AuthenticationFailureExpiredEvent createAuthenticationFailureEvent(
-		final Object details) {
-		final UsernamePasswordAuthenticationToken authentication =
-			new UsernamePasswordAuthenticationToken("user", "password");
+	public void testDetailsAreIncludedInAuditEvent() throws Exception {
+		Object details = new Object();
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+				"user", "password");
 		authentication.setDetails(details);
-		final BadCredentialsException exception = new BadCredentialsException("Bad user");
-		return new AuthenticationFailureExpiredEvent(authentication, exception);
+		this.listener.onApplicationEvent(new AuthenticationFailureExpiredEvent(
+				authentication, new BadCredentialsException("Bad user")));
+		ArgumentCaptor<AuditApplicationEvent> auditApplicationEvent = ArgumentCaptor
+				.forClass(AuditApplicationEvent.class);
+		verify(this.publisher).publishEvent(auditApplicationEvent.capture());
+		assertThat(auditApplicationEvent.getValue().getAuditEvent().getData(),
+				hasEntry("details", details));
 	}
 }
