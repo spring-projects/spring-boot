@@ -61,6 +61,9 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("type", event.getException().getClass().getName());
 		data.put("message", event.getException().getMessage());
+		if (event.getAuthentication().getDetails() != null) {
+			data.put("details", event.getAuthentication().getDetails());
+		}
 		publish(new AuditEvent(event.getAuthentication().getName(),
 				"AUTHENTICATION_FAILURE", data));
 	}
