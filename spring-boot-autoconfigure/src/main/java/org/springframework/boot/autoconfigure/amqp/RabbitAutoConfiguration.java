@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Template;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -83,50 +84,6 @@ import org.springframework.retry.support.RetryTemplate;
 @EnableConfigurationProperties(RabbitProperties.class)
 @Import(RabbitAnnotationDrivenConfiguration.class)
 public class RabbitAutoConfiguration {
-
-	@Bean
-	@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "dynamic", matchIfMissing = true)
-	@ConditionalOnMissingBean(AmqpAdmin.class)
-	public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
-		return new RabbitAdmin(connectionFactory);
-	}
-
-	@Autowired
-	private ConnectionFactory connectionFactory;
-
-	@Autowired
-	private ObjectProvider<MessageConverter> messageConverter;
-
-	@Bean
-	@ConditionalOnMissingBean(RabbitTemplate.class)
-	public RabbitTemplate rabbitTemplate(RabbitProperties config) {
-		RabbitTemplate rabbitTemplate = new RabbitTemplate(this.connectionFactory);
-		MessageConverter messageConverter = this.messageConverter.getIfUnique();
-		if (messageConverter != null) {
-			rabbitTemplate.setMessageConverter(messageConverter);
-		}
-		Template template = config.getTemplate();
-		Retry retry = template.getRetry();
-		if (retry.isEnabled()) {
-			RetryTemplate retryTemplate = new RetryTemplate();
-			SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
-			retryPolicy.setMaxAttempts(retry.getMaxAttempts());
-			retryTemplate.setRetryPolicy(retryPolicy);
-			ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-			backOffPolicy.setInitialInterval(retry.getInitialInterval());
-			backOffPolicy.setMultiplier(retry.getMultiplier());
-			backOffPolicy.setMaxInterval(retry.getMaxInterval());
-			retryTemplate.setBackOffPolicy(backOffPolicy);
-			rabbitTemplate.setRetryTemplate(retryTemplate);
-		}
-		if (template.getReceiveTimeout() != null) {
-			rabbitTemplate.setReceiveTimeout(template.getReceiveTimeout());
-		}
-		if (template.getReplyTimeout() != null) {
-			rabbitTemplate.setReplyTimeout(template.getReplyTimeout());
-		}
-		return rabbitTemplate;
-	}
 
 	@Configuration
 	@ConditionalOnMissingBean(ConnectionFactory.class)
@@ -185,11 +142,67 @@ public class RabbitAutoConfiguration {
 
 	}
 
+	@Configuration
+	@Import(RabbitConnectionFactoryCreator.class)
+	protected static class RabbitTemplateConfiguration {
+
+		@Autowired
+		private ObjectProvider<MessageConverter> messageConverter;
+
+		@Autowired
+		private RabbitProperties properties;
+
+		@Bean
+		@ConditionalOnSingleCandidate(ConnectionFactory.class)
+		@ConditionalOnMissingBean(RabbitTemplate.class)
+		public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+			RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+			MessageConverter messageConverter = this.messageConverter.getIfUnique();
+			if (messageConverter != null) {
+				rabbitTemplate.setMessageConverter(messageConverter);
+			}
+			Template template = this.properties.getTemplate();
+			Retry retry = template.getRetry();
+			if (retry.isEnabled()) {
+				RetryTemplate retryTemplate = new RetryTemplate();
+				SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
+				retryPolicy.setMaxAttempts(retry.getMaxAttempts());
+				retryTemplate.setRetryPolicy(retryPolicy);
+				ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+				backOffPolicy.setInitialInterval(retry.getInitialInterval());
+				backOffPolicy.setMultiplier(retry.getMultiplier());
+				backOffPolicy.setMaxInterval(retry.getMaxInterval());
+				retryTemplate.setBackOffPolicy(backOffPolicy);
+				rabbitTemplate.setRetryTemplate(retryTemplate);
+			}
+			if (template.getReceiveTimeout() != null) {
+				rabbitTemplate.setReceiveTimeout(template.getReceiveTimeout());
+			}
+			if (template.getReplyTimeout() != null) {
+				rabbitTemplate.setReplyTimeout(template.getReplyTimeout());
+			}
+			return rabbitTemplate;
+		}
+
+		@Bean
+		@ConditionalOnSingleCandidate(ConnectionFactory.class)
+		@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "dynamic", matchIfMissing = true)
+		@ConditionalOnMissingBean(AmqpAdmin.class)
+		public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
+			return new RabbitAdmin(connectionFactory);
+		}
+
+
+	}
+
+	@Configuration
 	@ConditionalOnClass(RabbitMessagingTemplate.class)
 	@ConditionalOnMissingBean(RabbitMessagingTemplate.class)
+	@Import(RabbitTemplateConfiguration.class)
 	protected static class MessagingTemplateConfiguration {
 
 		@Bean
+		@ConditionalOnSingleCandidate(RabbitTemplate.class)
 		public RabbitMessagingTemplate rabbitMessagingTemplate(
 				RabbitTemplate rabbitTemplate) {
 			return new RabbitMessagingTemplate(rabbitTemplate);
