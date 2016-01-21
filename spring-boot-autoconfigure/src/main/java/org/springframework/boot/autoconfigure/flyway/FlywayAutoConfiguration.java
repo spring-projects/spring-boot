@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,15 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 
@@ -38,7 +43,8 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesBindin
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -63,8 +69,8 @@ public class FlywayAutoConfiguration {
 
 	@Bean
 	@ConfigurationPropertiesBinding
-	public StringToMigrationVersionConverter stringToMigrationVersionConverter() {
-		return new StringToMigrationVersionConverter();
+	public StringOrNumberToMigrationVersionConverter stringOrNumberMigrationVersionConverter() {
+		return new StringOrNumberToMigrationVersionConverter();
 	}
 
 	@Configuration
@@ -169,14 +175,29 @@ public class FlywayAutoConfiguration {
 	}
 
 	/**
-	 * Convert a String to a {@link MigrationVersion}.
+	 * Convert a String or Number to a {@link MigrationVersion}.
 	 */
-	private static class StringToMigrationVersionConverter
-			implements Converter<String, MigrationVersion> {
+	private static class StringOrNumberToMigrationVersionConverter
+			implements GenericConverter {
+
+		private static final Set<ConvertiblePair> CONVERTIBLE_PAIRS = createConvertiblePairs();
 
 		@Override
-		public MigrationVersion convert(String source) {
-			return MigrationVersion.fromVersion(source);
+		public Set<ConvertiblePair> getConvertibleTypes() {
+			return CONVERTIBLE_PAIRS;
+		}
+
+		@Override
+		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+			String value = ObjectUtils.toString(source);
+			return MigrationVersion.fromVersion(value);
+		}
+
+		private static Set<ConvertiblePair> createConvertiblePairs() {
+			Set<ConvertiblePair> convertiblePairs = new HashSet<ConvertiblePair>(2);
+			convertiblePairs.add(new ConvertiblePair(String.class, MigrationVersion.class));
+			convertiblePairs.add(new ConvertiblePair(Number.class, MigrationVersion.class));
+			return Collections.unmodifiableSet(convertiblePairs);
 		}
 
 	}

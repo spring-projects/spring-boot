@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.flyway;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +43,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
@@ -198,7 +200,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideBaselineVersion() throws Exception {
+	public void overrideBaselineVersionString() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context, "flyway.baseline-version=0");
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
@@ -206,6 +208,18 @@ public class FlywayAutoConfigurationTests {
 		Flyway flyway = this.context.getBean(Flyway.class);
 		assertThat(flyway.getBaselineVersion(),
 				equalTo(MigrationVersion.fromVersion("0")));
+	}
+
+	@Test
+	public void overrideBaselineVersionNumber() throws Exception {
+		Map<String, Object> source = Collections.<String, Object>singletonMap("flyway.baseline-version", 1);
+		this.context.getEnvironment().getPropertySources().addLast(new MapPropertySource("flyway", source));
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertThat(flyway.getBaselineVersion(),
+				equalTo(MigrationVersion.fromVersion("1")));
 	}
 
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
