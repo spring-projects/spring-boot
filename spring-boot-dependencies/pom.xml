@@ -52,6 +52,7 @@
 		<aspectj.version>1.8.7</aspectj.version>
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
+		<caffeine.version>2.1.0</caffeine.version>
 		<cassandra-driver.version>2.1.9</cassandra-driver.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
 		<commons-collections.version>3.2.2</commons-collections.version>
@@ -128,7 +129,7 @@
 		<snakeyaml.version>1.16</snakeyaml.version>
 		<solr.version>4.10.4</solr.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
-		<spring.version>4.2.4.RELEASE</spring.version>
+		<spring.version>4.3.0.BUILD-SNAPSHOT</spring.version>
 		<spring-amqp.version>1.5.2.RELEASE</spring-amqp.version>
 		<spring-cloud-connectors.version>1.2.1.RELEASE</spring-cloud-connectors.version>
 		<spring-batch.version>3.0.6.RELEASE</spring-batch.version>
@@ -600,6 +601,11 @@
 						<artifactId>spring-data-gemfire</artifactId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>com.github.ben-manes.caffeine</groupId>
+				<artifactId>caffeine</artifactId>
+				<version>${caffeine.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.github.mxab.thymeleaf.extras</groupId>
