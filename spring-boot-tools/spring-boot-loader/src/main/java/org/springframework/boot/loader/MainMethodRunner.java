@@ -59,10 +59,7 @@ public class MainMethodRunner implements Runnable {
 			if (handler != null) {
 				handler.uncaughtException(Thread.currentThread(), ex);
 			}
-			else {
-				ex.printStackTrace();
-			}
-			System.exit(1);
+			throw new RuntimeException(ex);
 		}
 	}
 
