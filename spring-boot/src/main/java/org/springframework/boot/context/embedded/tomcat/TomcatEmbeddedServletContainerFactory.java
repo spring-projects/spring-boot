@@ -405,16 +405,16 @@ public class TomcatEmbeddedServletContainerFactory
 	private void configureSession(Context context) {
 		long sessionTimeout = getSessionTimeoutInMinutes();
 		context.setSessionTimeout((int) sessionTimeout);
-		Manager manager = context.getManager();
-		if (manager == null) {
-			manager = new StandardManager();
-			context.setManager(manager);
-		}
 		if (isPersistSession()) {
+			Manager manager = context.getManager();
+			if (manager == null) {
+				manager = new StandardManager();
+				context.setManager(manager);
+			}
 			configurePersistSession(manager);
 		}
 		else {
-			disablePersistSession(manager);
+			context.addLifecycleListener(new DisablePersistSessionListener());
 		}
 	}
 
@@ -425,12 +425,6 @@ public class TomcatEmbeddedServletContainerFactory
 		File dir = getValidSessionStoreDir();
 		File file = new File(dir, "SESSIONS.ser");
 		((StandardManager) manager).setPathname(file.getAbsolutePath());
-	}
-
-	private void disablePersistSession(Manager manager) {
-		if (manager instanceof StandardManager) {
-			((StandardManager) manager).setPathname(null);
-		}
 	}
 
 	private long getSessionTimeoutInMinutes() {
@@ -766,6 +760,26 @@ public class TomcatEmbeddedServletContainerFactory
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException(ex);
+			}
+		}
+
+	}
+
+	/**
+	 * {@link LifecycleListener} to disable persistence in the {@link StandardManager}. A
+	 * {@link LifecycleListener} is used so not to interfere with Tomcat's default manager
+	 * creation logic.
+	 */
+	private static class DisablePersistSessionListener implements LifecycleListener {
+
+		@Override
+		public void lifecycleEvent(LifecycleEvent event) {
+			if (event.getType().equals(Lifecycle.START_EVENT)) {
+				Context context = (Context) event.getLifecycle();
+				Manager manager = context.getManager();
+				if (manager != null && manager instanceof StandardManager) {
+					((StandardManager) manager).setPathname(null);
+				}
 			}
 		}
 
