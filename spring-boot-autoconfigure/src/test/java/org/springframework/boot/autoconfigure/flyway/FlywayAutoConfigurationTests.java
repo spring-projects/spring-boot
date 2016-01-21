@@ -131,6 +131,19 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	public void overrideLocationsList() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"flyway.locations[0]:classpath:db/changelog",
+				"flyway.locations[1]:classpath:db/migration");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertEquals("[classpath:db/changelog, classpath:db/migration]",
+				Arrays.asList(flyway.getLocations()).toString());
+	}
+
+	@Test
 	public void overrideSchemas() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context, "flyway.schemas:public");
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
