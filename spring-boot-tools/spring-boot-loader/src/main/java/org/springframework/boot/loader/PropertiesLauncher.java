@@ -549,19 +549,13 @@ public class PropertiesLauncher extends Launcher {
 		if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
 			return new JarFileArchive(new File(url.toURI()));
 		}
-		else if (url.toString().endsWith("/*")) {
+		if (url.toString().endsWith("/*")) {
 			String name = url.getFile();
 			File dir = new File(name.substring(0, name.length() - 1));
-			if (dir.exists()) {
-				return new ExplodedArchive(new File(name.substring(0, name.length() - 1)),
-						false);
-			}
+			return (dir.exists() ? new ExplodedArchive(dir, false) : null);
 		}
-		else {
-			String filename = URLDecoder.decode(url.getFile(), "UTF-8");
-			return new ExplodedArchive(new File(filename));
-		}
-		return null;
+		String filename = URLDecoder.decode(url.getFile(), "UTF-8");
+		return new ExplodedArchive(new File(filename));
 	}
 
 	private void addNestedArchivesFromParent(List<Archive> urls) {
