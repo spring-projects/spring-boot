@@ -166,11 +166,12 @@ public class FullyExecutableJarTests {
 
 	private List<String> readLines(File file) throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(file));
-		String line;
 		List<String> lines = new ArrayList<String>();
 		try {
-			while ((line = reader.readLine()) != null && lines.size() < 50) {
+			String line = reader.readLine();
+			while (line != null && lines.size() < 50) {
 				lines.add(line);
+				line = reader.readLine();
 			}
 		}
 		finally {
