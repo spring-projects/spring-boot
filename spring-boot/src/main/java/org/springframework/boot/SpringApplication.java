@@ -881,6 +881,9 @@ public class SpringApplication {
 
 	private int getExitCodeFromMappedException(ConfigurableApplicationContext context,
 			Throwable exception) {
+		if (context == null) {
+			return 0;
+		}
 		ExitCodeGenerators generators = new ExitCodeGenerators();
 		Collection<ExitCodeExceptionMapper> beans = context
 				.getBeansOfType(ExitCodeExceptionMapper.class).values();

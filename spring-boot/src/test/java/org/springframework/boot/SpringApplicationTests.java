@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.annotation.PostConstruct;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -74,6 +76,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertArrayEquals;
@@ -83,6 +86,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -616,6 +620,31 @@ public class SpringApplicationTests {
 	}
 
 	@Test
+	public void exceptionFromRefreshIsHandledGracefully() throws Exception {
+		final SpringBootExceptionHandler handler = mock(SpringBootExceptionHandler.class);
+		SpringApplication application = new SpringApplication(
+				RefreshFailureConfig.class) {
+
+			@Override
+			SpringBootExceptionHandler getSpringBootExceptionHandler() {
+				return handler;
+			}
+
+		};
+		ExitCodeListener listener = new ExitCodeListener();
+		application.addListeners(listener);
+		application.setWebEnvironment(false);
+		try {
+			application.run();
+			fail("Did not throw");
+		}
+		catch (RuntimeException ex) {
+		}
+		verify(handler).registerLoggedException(any(RefreshFailureException.class));
+		assertThat(this.output.toString(), not(containsString("NullPointerException")));
+	}
+
+	@Test
 	public void defaultCommandLineArgs() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setDefaultProperties(StringUtils.splitArrayElementsIntoProperties(
@@ -966,6 +995,15 @@ public class SpringApplicationTests {
 
 	}
 
+	@Configuration
+	static class RefreshFailureConfig {
+
+		@PostConstruct
+		public void fail() {
+			throw new RefreshFailureException();
+		}
+	}
+
 	static class ExitStatusException extends RuntimeException
 			implements ExitCodeGenerator {
 
@@ -973,6 +1011,10 @@ public class SpringApplicationTests {
 		public int getExitCode() {
 			return 11;
 		}
+
+	}
+
+	static class RefreshFailureException extends RuntimeException {
 
 	}
 
