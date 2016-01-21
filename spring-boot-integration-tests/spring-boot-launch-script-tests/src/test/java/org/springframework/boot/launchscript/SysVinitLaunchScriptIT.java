@@ -50,7 +50,10 @@ import org.junit.runners.Parameterized.Parameters;
 import org.springframework.boot.ansi.AnsiColor;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 /**
  * Integration tests for Spring Boot's launch script on OSs that use SysVinit.
@@ -186,6 +189,13 @@ public class SysVinitLaunchScriptIT {
 	@Test
 	public void launchWithMultipleJavaOpts() throws Exception {
 		doLaunch("launch-with-multiple-java-opts.sh");
+	}
+
+	@Test
+	public void launchWithUseOfStartStopDaemonDisabled() throws Exception {
+		// CentOS doesn't have start-stop-daemon
+		assumeThat(this.os, is(not("CentOS")));
+		doLaunch("launch-with-use-of-start-stop-daemon-disabled.sh");
 	}
 
 	private void doLaunch(String script) throws Exception {

@@ -541,6 +541,10 @@ the default behavior in a script or on the command line:
  that the `stop\|start\|status\|restart` commands work, or to `run` if you just want to
  run the script in the foreground.
 
+|`USE_START_STOP_DAEMON`
+|If the `start-stop-daemon` command, when it's available, should be used to control the
+ process. Defaults to `true`.
+
 |`PID_FOLDER`
 |The root name of the pid folder (`/var/run` by default).
 
@@ -606,8 +610,8 @@ for Gradle and to `${project.name}` for Maven.
 |The `chkconfig` section of "`INIT INFO`". Defaults to `2345 99 01`.
 
 |`useStartStopDaemon`
-|If the start-stop command should be used to control the process when it's available.
- Defaults to `true`.
+|If the `start-stop-daemon` command, when it's available, should be used to control the
+ process. Defaults to `true`.
 |===
 
 

@@ -51,8 +51,9 @@ configfile="$(basename "${jarfile%.*}.conf")"
 ! [[ -x "$PID_FOLDER" ]] && PID_FOLDER="/tmp"
 ! [[ -x "$LOG_FOLDER" ]] && LOG_FOLDER="/tmp"
 
-# Setup defaults
+# Set up defaults
 [[ -z "$MODE" ]] && MODE="{{mode:auto}}" # modes are "auto", "service" or "run"
+[[ -z "$USE_START_STOP_DAEMON" ]] && USE_START_STOP_DAEMON="{{useStartStopDaemon:true}}"
 
 # Create an identity for log/pid files
 if [[ -z "$identity" ]]; then
@@ -146,7 +147,7 @@ do_start() {
     chown "$run_user" "$PID_FOLDER"
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
-    if [ "${useStartStopDaemon:-true}" = true ] && type start-stop-daemon > /dev/null 2>&1; then
+    if [ $USE_START_STOP_DAEMON = true ] && type start-stop-daemon > /dev/null 2>&1; then
       arguments=(-Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS -jar $jarfile $RUN_ARGS "$@")
       start-stop-daemon --start --quiet \
         --chuid "$run_user" \
