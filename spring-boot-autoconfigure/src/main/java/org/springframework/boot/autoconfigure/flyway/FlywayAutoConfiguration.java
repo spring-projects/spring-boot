@@ -24,7 +24,6 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 
@@ -50,6 +49,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Flyway database migrations.
@@ -57,6 +57,7 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  * @since 1.1.0
  */
 @Configuration
@@ -189,7 +190,7 @@ public class FlywayAutoConfiguration {
 
 		@Override
 		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-			String value = ObjectUtils.toString(source);
+			String value = ObjectUtils.nullSafeToString(source);
 			return MigrationVersion.fromVersion(value);
 		}
 
