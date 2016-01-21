@@ -48,6 +48,7 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Jacques-Etienne Beaudet
  * @since 1.1.0
  */
 @Configuration
@@ -114,8 +115,9 @@ public class FlywayAutoConfiguration {
 			else {
 				flyway.setDataSource(this.dataSource);
 			}
-			//Explicitly set locations because the getter doesn't return a mutable value
+			// TODO: remove this line once SPR-13749 is fixed
 			flyway.setLocations(this.properties.getLocations().toArray(new String[0]));
+
 			return flyway;
 		}
 
