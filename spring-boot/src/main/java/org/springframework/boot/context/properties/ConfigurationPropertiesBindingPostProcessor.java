@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.springframework.core.PriorityOrdered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -108,6 +109,8 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	private List<Converter<?, ?>> converters = Collections.emptyList();
 
+	private List<GenericConverter> genericConverters = Collections.emptyList();
+
 	private int order = Ordered.HIGHEST_PRECEDENCE + 1;
 
 	/**
@@ -119,6 +122,17 @@ public class ConfigurationPropertiesBindingPostProcessor
 	@ConfigurationPropertiesBinding
 	public void setConverters(List<Converter<?, ?>> converters) {
 		this.converters = converters;
+	}
+
+	/**
+	 * A list of custom converters (in addition to the defaults) to use when converting
+	 * properties for binding.
+	 * @param converters the converters to set
+	 */
+	@Autowired(required = false)
+	@ConfigurationPropertiesBinding
+	public void setGenericConverters(List<GenericConverter> converters) {
+		this.genericConverters = converters;
 	}
 
 	/**
@@ -406,6 +420,9 @@ public class ConfigurationPropertiesBindingPostProcessor
 			this.applicationContext.getAutowireCapableBeanFactory().autowireBean(this);
 			for (Converter<?, ?> converter : this.converters) {
 				conversionService.addConverter(converter);
+			}
+			for (GenericConverter genericConverter : this.genericConverters) {
+				conversionService.addConverter(genericConverter);
 			}
 			this.defaultConversionService = conversionService;
 		}
