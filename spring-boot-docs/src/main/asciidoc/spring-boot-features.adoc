@@ -2315,18 +2315,36 @@ DataSource configuration is controlled by external configuration properties in
 	spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 ----
 
-See {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[`DataSourceProperties`]
-for more of the supported options. Note also that you can configure any of the
-`DataSource` implementation specific properties via `+spring.datasource.*+`: refer to the
-documentation of the connection pool implementation you are using for more details.
-
 TIP: You often won't need to specify the `driver-class-name` since Spring boot can deduce
 it for most databases from the `url`.
 
 NOTE: For a pooling `DataSource` to be created we need to be able to verify that a valid
 `Driver` class is available, so we check for that before doing anything. I.e. if you set
-`spring.datasource.driverClassName=com.mysql.jdbc.Driver` then that class has to be
+`spring.datasource.driver-class-name=com.mysql.jdbc.Driver` then that class has to be
 loadable.
+
+See {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[`DataSourceProperties`]
+for more of the supported options. These are the standard options that work regardless of
+the actual implementation. It is also possible to fine tune implementation-specific settings
+using the `+spring.datasource.*+` prefix, refer to the documentation of the connection pool
+implementation you are using for more details.
+
+For instance, if you are using the
+http://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html#Common_Attributes[Tomcat connection pool]
+you could customize many additional settings:
+
+
+[source,properties,indent=0]
+----
+	# Number of ms to wait before throwing an exception if no connection is available.
+	spring.datasource.max-wait=10000
+
+	# Maximum number of active connections that can be allocated from this pool at the same time.
+	spring.datasource.max-active=50
+
+	# Validate the connection before borrowing it from the pool.
+	spring.datasource.test-on-borrow=true
+----
 
 
 
