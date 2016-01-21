@@ -1287,7 +1287,7 @@ If Groovy is on the classpath you should be able to configure Logback with
 [[howto-configure-logback-for-logging-fileonly]]
 ==== Configure logback for file only output
 If you want to disable console logging and write output only to a file you need a custom
-`spring-logback.xml` that imports `file-appender.xml` but not `console-appender.xml`:
+`logback-spring.xml` that imports `file-appender.xml` but not `console-appender.xml`:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
