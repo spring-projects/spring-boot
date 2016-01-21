@@ -35,6 +35,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.mockito.Mockito;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
@@ -56,6 +57,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.filter.HttpPutFormContentFilter;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
@@ -63,6 +65,8 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.handler.AbstractHandlerMapping;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
@@ -478,6 +482,37 @@ public class WebMvcAutoConfigurationTests {
 				is(instanceOf(CustomWebBindingInitializer.class)));
 	}
 
+	@Test
+	public void shouldAutoRegisterHandlerInterceptorAdapters() throws Exception {
+
+		load(InterceptorConfiguration.class);
+		HandlerInterceptorAdapter givenHandlerInterceptorAdapter = this.context.getBean(
+				"givenHandlerInterceptorAdapter", HandlerInterceptorAdapter.class);
+
+		AbstractHandlerMapping mapping = this.context
+				.getBean(AbstractHandlerMapping.class);
+		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(mapping,
+				"interceptors");
+
+		assertTrue(interceptors.contains(givenHandlerInterceptorAdapter));
+	}
+
+	@Test
+	public void shouldAutoRegisterHandlerMethodArgumentResolvers() throws Exception {
+
+		load(ResolverConfiguration.class);
+		HandlerMethodArgumentResolver givenHandlerMethodArgumentResolver = this.context
+				.getBean("givenHandlerMethodArgumentResolver",
+						HandlerMethodArgumentResolver.class);
+
+		RequestMappingHandlerAdapter requestMappingHandlerAdapter = this.context
+				.getBean(RequestMappingHandlerAdapter.class);
+		List<?> interceptors = (List<?>) ReflectionTestUtils
+				.getField(requestMappingHandlerAdapter, "customArgumentResolvers");
+
+		assertTrue(interceptors.contains(givenHandlerMethodArgumentResolver));
+	}
+
 	private void load(Class<?> config, String... environment) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
@@ -532,6 +567,24 @@ public class WebMvcAutoConfigurationTests {
 					.addResourceLocations("classpath:/foo/");
 		}
 
+	}
+
+	@Configuration
+	protected static class InterceptorConfiguration {
+
+		@Bean
+		public HandlerInterceptorAdapter givenHandlerInterceptorAdapter() {
+			return Mockito.mock(HandlerInterceptorAdapter.class);
+		}
+	}
+
+	@Configuration
+	protected static class ResolverConfiguration {
+
+		@Bean
+		public HandlerMethodArgumentResolver givenHandlerMethodArgumentResolver() {
+			return Mockito.mock(HandlerMethodArgumentResolver.class);
+		}
 	}
 
 	@Configuration
