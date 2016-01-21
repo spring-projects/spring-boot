@@ -689,7 +689,7 @@ classpath of the application.
 
 
 
-===== Examples
+==== Examples
 .Specify +start-class+
 [source,xml,indent=0]
 ----
