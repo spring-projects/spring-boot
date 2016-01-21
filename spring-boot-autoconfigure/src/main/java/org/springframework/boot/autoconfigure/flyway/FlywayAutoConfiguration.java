@@ -133,9 +133,7 @@ public class FlywayAutoConfiguration {
 			else {
 				flyway.setDataSource(this.dataSource);
 			}
-			// TODO: remove this line once SPR-13749 is fixed
 			flyway.setLocations(this.properties.getLocations().toArray(new String[0]));
-
 			return flyway;
 		}
 
