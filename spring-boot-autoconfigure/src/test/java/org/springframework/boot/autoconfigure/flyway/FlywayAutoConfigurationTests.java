@@ -225,8 +225,10 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void overrideBaselineVersionNumber() throws Exception {
-		Map<String, Object> source = Collections.<String, Object>singletonMap("flyway.baseline-version", 1);
-		this.context.getEnvironment().getPropertySources().addLast(new MapPropertySource("flyway", source));
+		Map<String, Object> source = Collections
+				.<String, Object>singletonMap("flyway.baseline-version", 1);
+		this.context.getEnvironment().getPropertySources()
+				.addLast(new MapPropertySource("flyway", source));
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -175,11 +175,10 @@ public class ResourceProperties implements ResourceLoaderAware {
 		/**
 		 * Return whether the resource chain is enabled. Return {@code null} if no
 		 * specific settings are present.
-		 * @return whether the resource chain is enabled or {@code null} if no
-		 * specified settings are present.
+		 * @return whether the resource chain is enabled or {@code null} if no specified
+		 * settings are present.
 		 */
 		public Boolean getEnabled() {
-			// Check if at least one of the available strategy has been enabled
 			Boolean strategyEnabled = getStrategy().getFixed().isEnabled()
 					|| getStrategy().getContent().isEnabled();
 			return (strategyEnabled ? Boolean.TRUE : this.enabled);

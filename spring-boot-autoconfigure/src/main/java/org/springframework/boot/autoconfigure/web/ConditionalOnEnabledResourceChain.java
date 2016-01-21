@@ -26,8 +26,8 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link Conditional} that checks whether or not the Spring resource handling chain is
- * enabled. Matches if {@link ResourceProperties.Chain#getEnabled()} is {@code true} or
- * if {@code webjars-locator} is on the classpath.
+ * enabled. Matches if {@link ResourceProperties.Chain#getEnabled()} is {@code true} or if
+ * {@code webjars-locator} is on the classpath.
  *
  * @author Stephane Nicoll
  * @since 1.3.0

@@ -49,7 +49,7 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(TestConfig.class)
-@IntegrationTest({"foo=one", "bar=two"})
+@IntegrationTest({ "foo=one", "bar=two" })
 public class ConverterBindingTests {
 
 	@Value("${foo:}")
@@ -88,11 +88,13 @@ public class ConverterBindingTests {
 			return new GenericConverter() {
 				@Override
 				public Set<ConvertiblePair> getConvertibleTypes() {
-					return Collections.singleton(new ConvertiblePair(String.class, Bar.class));
+					return Collections
+							.singleton(new ConvertiblePair(String.class, Bar.class));
 				}
 
 				@Override
-				public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+				public Object convert(Object source, TypeDescriptor sourceType,
+						TypeDescriptor targetType) {
 					return new Bar((String) source);
 				}
 			};
@@ -112,6 +114,7 @@ public class ConverterBindingTests {
 		public Foo(String name) {
 			this.name = name;
 		}
+
 	}
 
 	public static class Bar {
@@ -121,6 +124,7 @@ public class ConverterBindingTests {
 		public Bar(String name) {
 			this.name = name;
 		}
+
 	}
 
 	@ConfigurationProperties
@@ -145,6 +149,7 @@ public class ConverterBindingTests {
 		public void setBar(Bar bar) {
 			this.bar = bar;
 		}
+
 	}
 
 }

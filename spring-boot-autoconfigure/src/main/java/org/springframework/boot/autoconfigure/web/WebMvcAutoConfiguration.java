@@ -258,20 +258,24 @@ public class WebMvcAutoConfiguration {
 			}
 			Integer cachePeriod = this.resourceProperties.getCachePeriod();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
-				customizeResourceHandlerRegistration(registry.addResourceHandler("/webjars/**")
-						.addResourceLocations("classpath:/META-INF/resources/webjars/")
+				customizeResourceHandlerRegistration(
+						registry.addResourceHandler("/webjars/**")
+								.addResourceLocations(
+										"classpath:/META-INF/resources/webjars/")
 						.setCachePeriod(cachePeriod));
 			}
 			String staticPathPattern = this.mvcProperties.getStaticPathPattern();
 			if (!registry.hasMappingForPattern(staticPathPattern)) {
-				customizeResourceHandlerRegistration(registry.addResourceHandler(staticPathPattern)
-						.addResourceLocations(
-								this.resourceProperties.getStaticLocations())
+				customizeResourceHandlerRegistration(
+						registry.addResourceHandler(staticPathPattern)
+								.addResourceLocations(
+										this.resourceProperties.getStaticLocations())
 						.setCachePeriod(cachePeriod));
 			}
 		}
 
-		private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
+		private void customizeResourceHandlerRegistration(
+				ResourceHandlerRegistration registration) {
 			if (this.resourceHandlerRegistrationCustomizer != null) {
 				this.resourceHandlerRegistrationCustomizer.customize(registration);
 			}
@@ -411,6 +415,7 @@ public class WebMvcAutoConfiguration {
 			}
 			return resolver;
 		}
+
 	}
 
 }

@@ -100,4 +100,5 @@ public class AuthenticationAuditListenerTests {
 		assertThat(auditApplicationEvent.getValue().getAuditEvent().getData(),
 				hasEntry("details", details));
 	}
+
 }

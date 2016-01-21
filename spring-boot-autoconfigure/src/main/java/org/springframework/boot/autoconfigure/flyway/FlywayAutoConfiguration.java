@@ -183,24 +183,25 @@ public class FlywayAutoConfiguration {
 	private static class StringOrNumberToMigrationVersionConverter
 			implements GenericConverter {
 
-		private static final Set<ConvertiblePair> CONVERTIBLE_PAIRS = createConvertiblePairs();
+		private static final Set<ConvertiblePair> CONVERTIBLE_TYPES;
+
+		static {
+			Set<ConvertiblePair> types = new HashSet<ConvertiblePair>(2);
+			types.add(new ConvertiblePair(String.class, MigrationVersion.class));
+			types.add(new ConvertiblePair(Number.class, MigrationVersion.class));
+			CONVERTIBLE_TYPES = Collections.unmodifiableSet(types);
+		}
 
 		@Override
 		public Set<ConvertiblePair> getConvertibleTypes() {
-			return CONVERTIBLE_PAIRS;
+			return CONVERTIBLE_TYPES;
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public Object convert(Object source, TypeDescriptor sourceType,
+				TypeDescriptor targetType) {
 			String value = ObjectUtils.nullSafeToString(source);
 			return MigrationVersion.fromVersion(value);
-		}
-
-		private static Set<ConvertiblePair> createConvertiblePairs() {
-			Set<ConvertiblePair> convertiblePairs = new HashSet<ConvertiblePair>(2);
-			convertiblePairs.add(new ConvertiblePair(String.class, MigrationVersion.class));
-			convertiblePairs.add(new ConvertiblePair(Number.class, MigrationVersion.class));
-			return Collections.unmodifiableSet(convertiblePairs);
 		}
 
 	}
