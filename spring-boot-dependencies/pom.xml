@@ -103,7 +103,7 @@
 		<jmustache.version>1.11</jmustache.version>
 		<joda-time.version>2.8.2</joda-time.version>
 		<jolokia.version>1.3.2</jolokia.version>
-		<jooq.version>3.7.1</jooq.version>
+		<jooq.version>3.7.2</jooq.version>
 		<json.version>20140107</json.version>
 		<jsonassert.version>1.2.3</jsonassert.version>
 		<json-path.version>2.0.0</json-path.version>
