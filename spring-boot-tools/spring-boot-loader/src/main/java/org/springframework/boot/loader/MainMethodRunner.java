@@ -62,8 +62,34 @@ public class MainMethodRunner implements Runnable {
 			else {
 				ex.printStackTrace();
 			}
-			System.exit(1);
+			if (nonDaemonThreadCount() <= 1) {
+				System.exit(1);
+			}
 		}
 	}
 
+	private static ThreadGroup getRoot() {
+		ThreadGroup group = Thread.currentThread().getThreadGroup();
+		ThreadGroup parent;
+		while ((parent = group.getParent()) != null) {
+			group = parent;
+		}
+		return group;
+	}
+
+	private static int nonDaemonThreadCount() {
+		int count = 0;
+
+		ThreadGroup root = getRoot();
+		Thread[] threads = new Thread[root.activeCount()];
+		while (root.enumerate(threads, true) == threads.length) {
+			threads = new Thread[threads.length * 2];
+		}
+		for (Thread thread : threads) {
+			if (thread != null && !thread.isDaemon()) {
+				count++;
+			}
+		}
+		return count;
+	}
 }
