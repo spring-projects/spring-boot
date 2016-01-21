@@ -50,12 +50,28 @@ public class ContextIdApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
 	/**
-	 * Placeholder pattern to resolve for application name.
+	 * Placeholder pattern to resolve for application name. The following order is used to
+	 * find the name:
+	 * <ul>
+	 * <li>{@code spring.application.name}</li>
+	 * <li>{@code vcap.application.name}</li>
+	 * <li>{@code spring.config.name}</li>
+	 * </ul>
+	 * This order allows the user defined name to take precedence over the platform
+	 * defined name. If no property is defined {@code 'application'} will be used.
 	 */
-	private static final String NAME_PATTERN = "${vcap.application.name:${spring.application.name:${spring.config.name:application}}}";
+	private static final String NAME_PATTERN = "${spring.application.name:${vcap.application.name:${spring.config.name:application}}}";
 
 	/**
-	 * Placeholder pattern to resolve for application index.
+	 * Placeholder pattern to resolve for application index. The following order is used
+	 * to find the name:
+	 * <ul>
+	 * <li>{@code vcap.application.instance_index}</li>
+	 * <li>{@code spring.application.index}</li>
+	 * <li>{@code server.port}</li>
+	 * <li>{@code PORT}</li>
+	 * </ul>
+	 * This order allows favors a platform defined index over any user defined value.
 	 */
 	private static final String INDEX_PATTERN = "${vcap.application.instance_index:${spring.application.index:${server.port:${PORT:null}}}}";
 
