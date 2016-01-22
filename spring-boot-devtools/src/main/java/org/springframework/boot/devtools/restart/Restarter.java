@@ -525,12 +525,16 @@ public class Restarter {
 	public static void initialize(String[] args, boolean forceReferenceCleanup,
 			RestartInitializer initializer, boolean restartOnInitialize,
 			RestartListener... listeners) {
-		if (instance == null) {
-			synchronized (Restarter.class) {
-				instance = new Restarter(Thread.currentThread(), args,
+		Restarter localInstance = null;
+		synchronized (Restarter.class) {
+			if (instance == null) {
+				localInstance = new Restarter(Thread.currentThread(), args,
 						forceReferenceCleanup, initializer, listeners);
+				instance = localInstance;
 			}
-			instance.initialize(restartOnInitialize);
+		}
+		if (localInstance != null) {
+			localInstance.initialize(restartOnInitialize);
 		}
 	}
 
