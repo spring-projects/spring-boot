@@ -829,7 +829,7 @@ public class SpringApplication {
 		}
 		try {
 			try {
-				handeExitCode(context, exception);
+				handleExitCode(context, exception);
 				listeners.finished(context, exception);
 			}
 			finally {
@@ -856,7 +856,7 @@ public class SpringApplication {
 		}
 	}
 
-	private void handeExitCode(ConfigurableApplicationContext context,
+	private void handleExitCode(ConfigurableApplicationContext context,
 			Throwable exception) {
 		int exitCode = getExitCodeFromException(context, exception);
 		if (exitCode != 0) {
