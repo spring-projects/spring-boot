@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class LaunchVerficationController {
+public class LaunchVerificationController {
 
 	@RequestMapping("/")
 	public String verifyLaunch() {
