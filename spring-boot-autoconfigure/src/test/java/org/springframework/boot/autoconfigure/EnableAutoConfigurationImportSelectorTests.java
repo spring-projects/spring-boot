@@ -125,7 +125,6 @@ public class EnableAutoConfigurationImportSelectorTests {
 		configureExclusions(new String[0], new String[0],
 				new String[] { FreeMarkerAutoConfiguration.class.getName(),
 						VelocityAutoConfiguration.class.getName() });
-
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports.length,
 				is(equalTo(getAutoConfigurationClassNames().size() - 2)));

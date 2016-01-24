@@ -27,8 +27,7 @@ import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfig
 import org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -42,8 +41,8 @@ public class CloudAutoConfigurationTests {
 
 	@Test
 	public void testOrder() throws Exception {
-		ResourceLoader loader = new DefaultResourceLoader();
-		TestAutoConfigurationSorter sorter = new TestAutoConfigurationSorter(loader);
+		TestAutoConfigurationSorter sorter = new TestAutoConfigurationSorter(
+				new CachingMetadataReaderFactory());
 		Collection<String> classNames = new ArrayList<String>();
 		classNames.add(MongoAutoConfiguration.class.getName());
 		classNames.add(DataSourceAutoConfiguration.class.getName());
