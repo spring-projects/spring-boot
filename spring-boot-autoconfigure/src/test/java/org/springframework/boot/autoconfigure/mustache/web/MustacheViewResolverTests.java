@@ -16,10 +16,10 @@
 
 package org.springframework.boot.autoconfigure.mustache.web;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Locale;
 
-import org.fusesource.hawtbuf.ByteArrayInputStream;
 import org.junit.Before;
 import org.junit.Test;
 
