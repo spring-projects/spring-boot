@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
 
 /**
  * Public version of {@link AutoConfigurationSorter} for use in tests.
@@ -25,8 +25,8 @@ import org.springframework.core.io.ResourceLoader;
  */
 public class TestAutoConfigurationSorter extends AutoConfigurationSorter {
 
-	public TestAutoConfigurationSorter(ResourceLoader resourceLoader) {
-		super(resourceLoader);
+	public TestAutoConfigurationSorter(MetadataReaderFactory metadataReaderFactory) {
+		super(metadataReaderFactory);
 	}
 
 }

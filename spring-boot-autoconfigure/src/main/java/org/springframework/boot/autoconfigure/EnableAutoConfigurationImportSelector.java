@@ -28,6 +28,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.bind.PropertySourcesPropertyValues;
@@ -44,6 +45,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -169,9 +172,20 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 	}
 
 	private List<String> sort(List<String> configurations) throws IOException {
-		configurations = new AutoConfigurationSorter(getResourceLoader())
+		configurations = new AutoConfigurationSorter(getMetadataReaderFactory())
 				.getInPriorityOrder(configurations);
 		return configurations;
+	}
+
+	private MetadataReaderFactory getMetadataReaderFactory() {
+		try {
+			return getBeanFactory().getBean(
+					SharedMetadataReaderFactoryContextInitializer.BEAN_NAME,
+					MetadataReaderFactory.class);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			return new CachingMetadataReaderFactory(this.resourceLoader);
+		}
 	}
 
 	private void recordWithConditionEvaluationReport(List<String> configurations,

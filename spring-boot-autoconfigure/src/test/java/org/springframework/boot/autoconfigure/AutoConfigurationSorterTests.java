@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.core.Ordered;
-import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 
 import static org.junit.Assert.assertThat;
 
@@ -61,7 +61,7 @@ public class AutoConfigurationSorterTests {
 
 	@Before
 	public void setup() {
-		this.sorter = new AutoConfigurationSorter(new DefaultResourceLoader());
+		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory());
 	}
 
 	@Test
