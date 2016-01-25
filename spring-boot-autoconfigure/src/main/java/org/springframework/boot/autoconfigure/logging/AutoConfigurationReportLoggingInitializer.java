@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,9 +109,9 @@ public class AutoConfigurationReportLoggingInitializer
 		if (!this.report.getConditionAndOutcomesBySource().isEmpty()) {
 			if (isCrashReport && this.logger.isInfoEnabled()
 					&& !this.logger.isDebugEnabled()) {
-				this.logger.info("\n\nError starting ApplicationContext. "
+				this.logger.info(String.format("%n%nError starting ApplicationContext. "
 						+ "To display the auto-configuration report enable "
-						+ "debug logging (start with --debug)\n\n");
+						+ "debug logging (start with --debug)%n%n"));
 			}
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug(getLogMessage(this.report));
@@ -121,12 +121,12 @@ public class AutoConfigurationReportLoggingInitializer
 
 	private StringBuilder getLogMessage(ConditionEvaluationReport report) {
 		StringBuilder message = new StringBuilder();
-		message.append("\n\n\n");
-		message.append("=========================\n");
-		message.append("AUTO-CONFIGURATION REPORT\n");
-		message.append("=========================\n\n\n");
-		message.append("Positive matches:\n");
-		message.append("-----------------\n");
+		message.append(String.format("%n%n%n"));
+		message.append(String.format("=========================%n"));
+		message.append(String.format("AUTO-CONFIGURATION REPORT%n"));
+		message.append(String.format("=========================%n%n%n"));
+		message.append(String.format("Positive matches:%n"));
+		message.append(String.format("-----------------%n"));
 		Map<String, ConditionAndOutcomes> shortOutcomes = orderByName(
 				report.getConditionAndOutcomesBySource());
 		for (Map.Entry<String, ConditionAndOutcomes> entry : shortOutcomes.entrySet()) {
@@ -134,37 +134,37 @@ public class AutoConfigurationReportLoggingInitializer
 				addLogMessage(message, entry.getKey(), entry.getValue());
 			}
 		}
-		message.append("\n\n");
-		message.append("Negative matches:\n");
-		message.append("-----------------\n");
+		message.append(String.format("%n%n"));
+		message.append(String.format("Negative matches:%n"));
+		message.append(String.format("-----------------%n"));
 		for (Map.Entry<String, ConditionAndOutcomes> entry : shortOutcomes.entrySet()) {
 			if (!entry.getValue().isFullMatch()) {
 				addLogMessage(message, entry.getKey(), entry.getValue());
 			}
 		}
-		message.append("\n\n");
-		message.append("Exclusions:\n");
-		message.append("-----------\n");
+		message.append(String.format("%n%n"));
+		message.append(String.format("Exclusions:%n"));
+		message.append(String.format("-----------%n"));
 		if (report.getExclusions().isEmpty()) {
-			message.append("\n    None\n");
+			message.append(String.format("%n    None%n"));
 		}
 		else {
 			for (String exclusion : report.getExclusions()) {
-				message.append("\n   " + exclusion + "\n");
+				message.append(String.format("%n    %s%n", exclusion));
 			}
 		}
-		message.append("\n\n");
-		message.append("Unconditional classes:\n");
-		message.append("----------------------\n");
+		message.append(String.format("%n%n"));
+		message.append(String.format("Unconditional classes:%n"));
+		message.append(String.format("----------------------%n"));
 		if (report.getUnconditionalClasses().isEmpty()) {
-			message.append("\n    None\n");
+			message.append(String.format("%n    None%n"));
 		}
 		else {
 			for (String unconditionalClass : report.getUnconditionalClasses()) {
-				message.append("\n   " + unconditionalClass + "\n");
+				message.append(String.format("%n    %s%n", unconditionalClass));
 			}
 		}
-		message.append("\n\n");
+		message.append(String.format("%n%n"));
 		return message;
 	}
 
@@ -187,9 +187,10 @@ public class AutoConfigurationReportLoggingInitializer
 
 	private void addLogMessage(StringBuilder message, String source,
 			ConditionAndOutcomes conditionAndOutcomes) {
-		message.append("\n   " + source);
+		message.append(String.format("%n   %s", source));
 		message.append(
-				conditionAndOutcomes.isFullMatch() ? " matched\n" : " did not match\n");
+				conditionAndOutcomes.isFullMatch() ? " matched" : " did not match")
+				.append(String.format("%n"));
 		for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
 			message.append("      - ");
 			if (StringUtils.hasLength(conditionAndOutcome.getOutcome().getMessage())) {
@@ -202,7 +203,7 @@ public class AutoConfigurationReportLoggingInitializer
 			message.append(" (");
 			message.append(ClassUtils
 					.getShortName(conditionAndOutcome.getCondition().getClass()));
-			message.append(")\n");
+			message.append(String.format(")%n"));
 		}
 
 	}
