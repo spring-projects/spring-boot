@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.web;
 
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
+
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.env.MockEnvironment;
@@ -30,8 +30,9 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Yunkun Huang
  */
-public class JspTemplateAvailabilityProviderTest {
-	private final TemplateAvailabilityProvider provider = new JspTemplateAvailabilityProvider();
+public class JspTemplateAvailabilityProviderTests {
+
+	private final JspTemplateAvailabilityProvider provider = new JspTemplateAvailabilityProvider();
 
 	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
@@ -61,12 +62,4 @@ public class JspTemplateAvailabilityProviderTest {
 				getClass().getClassLoader(), this.resourceLoader));
 	}
 
-	@Test
-	public void notAvailabilityOfTemplateWithCustomSuffixViaDeprecatedKey() {
-		this.environment.setProperty("spring.mvc.view.prefix", "classpath:/custom-templates/");
-		this.environment.setProperty("spring.view.suffix", ".jsp");
-
-		assertFalse(this.provider.isTemplateAvailable("suffixed", this.environment,
-				getClass().getClassLoader(), this.resourceLoader));
-	}
 }
