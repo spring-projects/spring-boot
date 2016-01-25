@@ -177,24 +177,6 @@ public class SpringApplicationTests {
 		verify(application, never()).printBanner((Environment) anyObject());
 	}
 
-	@SuppressWarnings("deprecation")
-	@Test
-	public void disableBannerWithBoolean() throws Exception {
-		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
-		application.setWebEnvironment(false);
-		application.setShowBanner(false);
-		this.context = application.run();
-		verify(application, never()).printBanner((Environment) anyObject());
-	}
-
-	@Test
-	public void disableBannerViaShowBannerProperty() throws Exception {
-		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
-		application.setWebEnvironment(false);
-		this.context = application.run("--spring.main.show_banner=false");
-		verify(application, never()).printBanner((Environment) anyObject());
-	}
-
 	@Test
 	public void disableBannerViaBannerModeProperty() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,6 @@ public abstract class LoggingSystem {
 				"org.springframework.boot.logging.logback.LogbackLoggingSystem");
 		systems.put("org.apache.logging.log4j.core.impl.Log4jContextFactory",
 				"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem");
-		systems.put("org.apache.log4j.PropertyConfigurator",
-				"org.springframework.boot.logging.log4j.Log4JLoggingSystem");
 		systems.put("java.util.logging.LogManager",
 				"org.springframework.boot.logging.java.JavaLoggingSystem");
 		SYSTEMS = Collections.unmodifiableMap(systems);
@@ -69,20 +67,6 @@ public abstract class LoggingSystem {
 	 */
 	public void initialize(LoggingInitializationContext initializationContext,
 			String configLocation, LogFile logFile) {
-		initialize(configLocation, logFile);
-	}
-
-	/**
-	 * Fully initialize the logging system.
-	 * @param configLocation a log configuration location or {@code null} if default
-	 * initialization is required
-	 * @param logFile the log output file that should be written or {@code null} for
-	 * console only output
-	 * @deprecated since 1.3 in favor of
-	 * {@link #initialize(LoggingInitializationContext, String, LogFile)}
-	 */
-	@Deprecated
-	public void initialize(String configLocation, LogFile logFile) {
 	}
 
 	/**
@@ -110,8 +94,7 @@ public abstract class LoggingSystem {
 	public abstract void setLogLevel(String loggerName, LogLevel level);
 
 	/**
-	 * Detect and return the logging system in use. Supports Logback, Log4J, Log4J2 and
-	 * Java Logging.
+	 * Detect and return the logging system in use. Supports Logback and Java Logging.
 	 * @param classLoader the classloader
 	 * @return The logging system
 	 */
