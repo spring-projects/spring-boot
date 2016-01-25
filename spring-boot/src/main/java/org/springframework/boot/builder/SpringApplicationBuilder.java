@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -310,18 +310,6 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder banner(Banner banner) {
 		this.application.setBanner(banner);
-		return this;
-	}
-
-	/**
-	 * Flag to indicate the startup banner should be printed.
-	 * @param showBanner the flag to set. Default true.
-	 * @return the current builder
-	 * @deprecated Since 1.3.0 in favor of {@link #bannerMode}
-	 */
-	@Deprecated
-	public SpringApplicationBuilder showBanner(boolean showBanner) {
-		this.application.setShowBanner(showBanner);
 		return this;
 	}
 
