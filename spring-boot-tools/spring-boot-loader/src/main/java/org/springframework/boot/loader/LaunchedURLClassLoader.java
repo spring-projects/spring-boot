@@ -17,8 +17,10 @@
 package org.springframework.boot.loader;
 
 import java.io.IOException;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLConnection;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
@@ -225,6 +227,30 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 		catch (java.security.PrivilegedActionException ex) {
 			// Ignore
+		}
+	}
+
+	/**
+	 * Clear URL caches.
+	 */
+	public void clearCache() {
+		for (URL url : getURLs()) {
+			try {
+				URLConnection connection = url.openConnection();
+				if (connection instanceof JarURLConnection) {
+					clearCache(connection);
+				}
+			}
+			catch (IOException ex) {
+			}
+		}
+
+	}
+
+	private void clearCache(URLConnection connection) throws IOException {
+		Object jarFile = ((JarURLConnection) connection).getJarFile();
+		if (jarFile instanceof JarFile) {
+			((JarFile) jarFile).clearCache();
 		}
 	}
 

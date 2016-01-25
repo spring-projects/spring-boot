@@ -270,6 +270,10 @@ class JarFileEntries implements CentralDirectoryVistor, Iterable<JarEntry> {
 		return index;
 	}
 
+	public void clearCache() {
+		this.entriesCache.clear();
+	}
+
 	private AsciiBytes applyFilter(AsciiBytes name) {
 		return (this.filter == null ? name : this.filter.apply(name));
 	}
