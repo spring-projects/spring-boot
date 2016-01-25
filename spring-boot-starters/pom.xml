@@ -46,7 +46,6 @@
 		<module>spring-boot-starter-jta-atomikos</module>
 		<module>spring-boot-starter-jta-bitronix</module>
 		<module>spring-boot-starter-logging</module>
-		<module>spring-boot-starter-log4j</module>
 		<module>spring-boot-starter-log4j2</module>
 		<module>spring-boot-starter-mail</module>
 		<module>spring-boot-starter-mobile</module>

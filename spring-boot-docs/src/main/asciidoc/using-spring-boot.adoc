@@ -517,8 +517,8 @@ swap specific technical facets.
 |`spring-boot-starter-jetty`
 |Imports the Jetty HTTP engine (to be used as an alternative to Tomcat).
 
-|`spring-boot-starter-log4j`
-|Support the Log4J logging framework.
+|`spring-boot-starter-log4j2`
+|Support the Log4J 2 logging framework.
 
 |`spring-boot-starter-logging`
 |Import Spring Boot's default logging framework (Logback).

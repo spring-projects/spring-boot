@@ -45,8 +45,6 @@ public abstract class LoggingSystem {
 				"org.springframework.boot.logging.logback.LogbackLoggingSystem");
 		systems.put("org.apache.logging.log4j.core.impl.Log4jContextFactory",
 				"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem");
-		systems.put("org.apache.log4j.PropertyConfigurator",
-				"org.springframework.boot.logging.log4j.Log4JLoggingSystem");
 		systems.put("java.util.logging.LogManager",
 				"org.springframework.boot.logging.java.JavaLoggingSystem");
 		SYSTEMS = Collections.unmodifiableMap(systems);
@@ -96,8 +94,7 @@ public abstract class LoggingSystem {
 	public abstract void setLogLevel(String loggerName, LogLevel level);
 
 	/**
-	 * Detect and return the logging system in use. Supports Logback, Log4J, Log4J2 and
-	 * Java Logging.
+	 * Detect and return the logging system in use. Supports Logback and Java Logging.
 	 * @param classLoader the classloader
 	 * @return The logging system
 	 */
