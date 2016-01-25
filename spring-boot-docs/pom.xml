@@ -178,11 +178,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
 			<optional>true</optional>
