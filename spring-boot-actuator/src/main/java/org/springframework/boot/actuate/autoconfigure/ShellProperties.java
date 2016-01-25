@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -429,8 +429,9 @@ public class ShellProperties {
 			config.put("crash.auth.simple.username", this.user.getName());
 			config.put("crash.auth.simple.password", this.user.getPassword());
 			if (this.user.isDefaultPassword()) {
-				logger.info("\n\nUsing default password for shell access: "
-						+ this.user.getPassword() + "\n\n");
+				logger.info(String.format(
+						"%n%nUsing default password for shell access: %s%n%n",
+						this.user.getPassword()));
 			}
 		}
 

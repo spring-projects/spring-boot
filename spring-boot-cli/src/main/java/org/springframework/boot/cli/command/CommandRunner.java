@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -279,14 +279,14 @@ public class CommandRunner implements Iterable<Command> {
 			if (!isOptionCommand(command) && !isHiddenCommand(command)) {
 				String usageHelp = command.getUsageHelp();
 				String description = command.getDescription();
-				Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", command.getName(),
+				Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", command.getName(),
 						(usageHelp == null ? "" : usageHelp),
 						(description == null ? "" : description)));
 			}
 		}
 		Log.info("");
 		Log.info("Common options:");
-		Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", "-d, --debug",
+		Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", "-d, --debug",
 				"Verbose mode",
 				"Print additional status information for the command you are running"));
 		Log.info("");

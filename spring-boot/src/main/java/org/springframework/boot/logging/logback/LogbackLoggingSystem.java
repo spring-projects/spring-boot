@@ -145,13 +145,13 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		StringBuilder errors = new StringBuilder();
 		for (Status status : statuses) {
 			if (status.getLevel() == Status.ERROR) {
-				errors.append(errors.length() > 0 ? "\n" : "");
+				errors.append(errors.length() > 0 ? String.format("%n") : "");
 				errors.append(status.toString());
 			}
 		}
 		if (errors.length() > 0) {
-			throw new IllegalStateException(
-					"Logback configuration error " + "detected: \n" + errors);
+			throw new IllegalStateException(String.format(
+					"Logback configuration error detected: %n%s", errors));
 		}
 	}
 
