@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,6 @@ import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
@@ -325,27 +324,6 @@ public class ServerProperties
 		}
 		CloudPlatform platform = CloudPlatform.getActive(this.environment);
 		return (platform == null ? false : platform.isUsingForwardHeaders());
-	}
-
-	/**
-	 * Get the session timeout.
-	 * @return the session timeout
-	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
-	 */
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "server.session.timeout")
-	public Integer getSessionTimeout() {
-		return this.session.getTimeout();
-	}
-
-	/**
-	 * Set the session timeout.
-	 * @param sessionTimeout the session timeout
-	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
-	 */
-	@Deprecated
-	public void setSessionTimeout(Integer sessionTimeout) {
-		this.session.setTimeout(sessionTimeout);
 	}
 
 	public ErrorProperties getError() {
@@ -630,48 +608,6 @@ public class ServerProperties
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;
-		}
-
-		/**
-		 * Specify if access log is enabled.
-		 * @return {@code true} if access log is enabled
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.enabled}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.tomcat.accesslog.enabled")
-		public boolean getAccessLogEnabled() {
-			return this.accesslog.isEnabled();
-		}
-
-		/**
-		 * Set if access log is enabled.
-		 * @param accessLogEnabled the access log enable flag
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.enabled}
-		 */
-		@Deprecated
-		public void setAccessLogEnabled(boolean accessLogEnabled) {
-			getAccesslog().setEnabled(accessLogEnabled);
-		}
-
-		/**
-		 * Get the format pattern for access logs.
-		 * @return the format pattern for access logs
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.pattern}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.tomcat.accesslog.pattern")
-		public String getAccessLogPattern() {
-			return this.accesslog.getPattern();
-		}
-
-		/**
-		 * Set the format pattern for access logs.
-		 * @param accessLogPattern the pattern for access logs
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.pattern}
-		 */
-		@Deprecated
-		public void setAccessLogPattern(String accessLogPattern) {
-			this.accesslog.setPattern(accessLogPattern);
 		}
 
 		public int getBackgroundProcessorDelay() {
@@ -988,69 +924,6 @@ public class ServerProperties
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;
-		}
-
-		/**
-		 * Get the format pattern for access logs.
-		 * @return the format pattern for access logs
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.pattern}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.undertow.accesslog.pattern")
-		public String getAccessLogPattern() {
-			return this.accesslog.getPattern();
-		}
-
-		/**
-		 * Set the format pattern for access logs.
-		 * @param accessLogPattern the pattern for access logs
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.pattern}
-		 */
-		@Deprecated
-		public void setAccessLogPattern(String accessLogPattern) {
-			this.accesslog.setPattern(accessLogPattern);
-		}
-
-		/**
-		 * Specify if access log is enabled.
-		 * @return {@code true} if access log is enabled
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.enabled}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.undertow.accesslog.enabled")
-		public boolean isAccessLogEnabled() {
-			return this.accesslog.isEnabled();
-		}
-
-		/**
-		 * Set if access log is enabled.
-		 * @param accessLogEnabled the access log enable flag
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.enabled}
-		 */
-		@Deprecated
-		public void setAccessLogEnabled(boolean accessLogEnabled) {
-			getAccesslog().setEnabled(accessLogEnabled);
-		}
-
-		/**
-		 * Get the access log directory.
-		 * @return the access log directory
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.dir}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.undertow.accesslog.dir")
-		public File getAccessLogDir() {
-			return this.accesslog.getDir();
-		}
-
-		/**
-		 * Set the access log directory.
-		 * @param accessLogDir the access log directory
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.dir}
-		 */
-		@Deprecated
-		public void setAccessLogDir(File accessLogDir) {
-			getAccesslog().setDir(accessLogDir);
 		}
 
 		void customizeUndertow(ServerProperties serverProperties,

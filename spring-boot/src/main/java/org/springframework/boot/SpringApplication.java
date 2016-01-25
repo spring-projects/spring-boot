@@ -958,17 +958,6 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Sets if the Spring banner should be displayed when the application runs. Defaults
-	 * to {@code true}.
-	 * @param showBanner if the banner should be shown
-	 * @deprecated since 1.3.0 in favor of {@link #setBannerMode}
-	 */
-	@Deprecated
-	public void setShowBanner(boolean showBanner) {
-		setBannerMode(showBanner ? Banner.Mode.CONSOLE : Banner.Mode.OFF);
-	}
-
-	/**
 	 * Sets the mode used to display the banner when the application runs. Defaults to
 	 * {@code Banner.Mode.CONSOLE}.
 	 * @param bannerMode the mode used to display the banner

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,17 +50,6 @@ import org.springframework.web.servlet.ModelAndView;
 public class BasicErrorController extends AbstractErrorController {
 
 	private final ErrorProperties errorProperties;
-
-	/**
-	 * Create a new {@link BasicErrorController} instance.
-	 * @param errorAttributes the error attributes
-	 * @deprecated since 1.3.0 in favor of
-	 * {@link #BasicErrorController(ErrorAttributes, ErrorProperties)}
-	 */
-	@Deprecated
-	public BasicErrorController(ErrorAttributes errorAttributes) {
-		this(errorAttributes, new ErrorProperties());
-	}
 
 	/**
 	 * Create a new {@link BasicErrorController} instance.

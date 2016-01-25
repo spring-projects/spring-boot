@@ -42,12 +42,4 @@ public @interface ConditionalOnMissingClass {
 	 */
 	String[] value() default {};
 
-	/**
-	 * An alias for {@link #value} specifying the names of the classes that must not be
-	 * present.
-	 * @return the class names that must not be present.
-	 * @deprecated since 1.3.0 in favor of {@link #value}.
-	 */
-	String[] name() default {};
-
 }
