@@ -64,17 +64,6 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 
 	/**
 	 * Create a new {@link WebRequestTraceFilter} instance.
-	 * @param traceRepository the trace repository.
-	 * @deprecated since 1.3.0 in favor of
-	 * {@link #WebRequestTraceFilter(TraceRepository, TraceProperties)}
-	 */
-	@Deprecated
-	public WebRequestTraceFilter(TraceRepository traceRepository) {
-		this(traceRepository, new TraceProperties());
-	}
-
-	/**
-	 * Create a new {@link WebRequestTraceFilter} instance.
 	 * @param repository the trace repository
 	 * @param properties the trace properties
 	 */

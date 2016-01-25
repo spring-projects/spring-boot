@@ -182,21 +182,6 @@ public class MongoProperties {
 	}
 
 	/**
-	 * Creates a {@link MongoClient} using the given {@code options}.
-	 *
-	 * @param options the options
-	 * @return the Mongo client
-	 * @throws UnknownHostException if the configured host is unknown
-	 * @deprecated Since 1.3.0 in favour of
-	 * {@link #createMongoClient(MongoClientOptions, Environment)}
-	 */
-	@Deprecated
-	public MongoClient createMongoClient(MongoClientOptions options)
-			throws UnknownHostException {
-		return this.createMongoClient(options, null);
-	}
-
-	/**
 	 * Creates a {@link MongoClient} using the given {@code options} and
 	 * {@code environment}. If the configured port is zero, the value of the
 	 * {@code local.mongo.port} property retrieved from the {@code environment} is used to
