@@ -406,7 +406,9 @@ public class SpringApplication {
 			try {
 				Class<?> instanceClass = ClassUtils.forName(name, classLoader);
 				Assert.isAssignable(type, instanceClass);
-				Constructor<?> constructor = instanceClass.getConstructor(parameterTypes);
+				Constructor<?> constructor = instanceClass
+						.getDeclaredConstructor(parameterTypes);
+				constructor.setAccessible(true);
 				T instance = (T) constructor.newInstance(args);
 				instances.add(instance);
 			}
