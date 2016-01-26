@@ -25,4 +25,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("endpoints.metrics.filter")
 public class MetricFilterAutoConfigurationProperties {
+
+	/** Include the HTTP method in the name of the gauge showing the last response time for a request. */
+	private boolean recordHttpMethodForGauges = false;
+
+	public boolean isRecordHttpMethodForGauges() {
+		return recordHttpMethodForGauges;
+	}
+
+	public void setRecordHttpMethodForGauges(boolean recordHttpMethodForGauges) {
+		this.recordHttpMethodForGauges = recordHttpMethodForGauges;
+	}
+
 }

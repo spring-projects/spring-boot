@@ -60,7 +60,7 @@ public class MetricFilterAutoConfiguration {
 
 	@Bean
 	public MetricsFilter metricFilter() {
-		return new MetricsFilter(this.counterService, this.gaugeService);
+		return new MetricsFilter(this.counterService, this.gaugeService, this.configurationProperties.isRecordHttpMethodForGauges());
 	}
 
 }
