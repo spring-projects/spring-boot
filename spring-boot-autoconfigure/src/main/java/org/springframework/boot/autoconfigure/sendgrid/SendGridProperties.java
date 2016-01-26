@@ -38,9 +38,22 @@ public class SendGridProperties {
 	private String password;
 
 	/**
+	 * SendGrid api key.
+	 */
+	private String apikey;
+
+	/**
 	 * Proxy configuration.
 	 */
 	private Proxy proxy;
+
+	public String getApikey() {
+		return this.apikey;
+	}
+
+	public void setApikey(final String apikey) {
+		this.apikey = apikey;
+	}
 
 	public String getUsername() {
 		return this.username;
