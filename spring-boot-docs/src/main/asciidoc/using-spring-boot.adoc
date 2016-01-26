@@ -64,7 +64,8 @@ defaults. The parent project provides the following features:
   http://maven.apache.org/surefire/maven-surefire-plugin/[surefire],
   https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID],
   http://maven.apache.org/plugins/maven-shade-plugin/[shade]).
-* Sensible resource filtering for `application.properties` and `application.yml`
+* Sensible resource filtering for `application.properties` and `application.yml` including
+  profile-specific files (e.g. `application-foo.properties` and `application-foo.yml`)
 
 On the last point: since the default config files accept
 Spring style placeholders (`${...}`) the Maven filtering is changed to
