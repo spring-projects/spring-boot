@@ -151,7 +151,6 @@
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>${spring-boot.version}</version>
 					<executions>
 						<execution>
 							<goals>
@@ -171,7 +170,7 @@
 						<dependency>
 							<groupId>org.springframework.boot</groupId>
 							<artifactId>spring-boot-maven-plugin</artifactId>
-							<version>${spring-boot.version}</version>
+							<version>1.4.0.BUILD-SNAPSHOT</version>
 						</dependency>
 					</dependencies>
 					<configuration>
