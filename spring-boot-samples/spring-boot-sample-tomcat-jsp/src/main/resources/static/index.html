@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple chat</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.1/css/bootstrap.min.css"/>
+    <script src="/webjars/jquery/2.1.3/dist/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-md-push-1">
+            <div id="chatlog" style="height: 90vh">
+
+            </div>
+            <form role="form" id="form" style="height: 10vh; width: 100%;">
+                <input id="message" type="text" style="width: 90%"/>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var myName = null;
+    var form = document.getElementById('form');
+    var nameForm = null;
+    var connected = false;
+
+    var setMyName = function () {
+        myName = $('#myname').val();
+        $('#myModal').modal('hide');
+        return false;
+    };
+
+    var connect = function () {
+        var source = new EventSource('/stream');
+        console.log("stream connected");
+
+        source.addEventListener('open', function (e) {
+            console.log('connected');
+        });
+        source.addEventListener('message', function (e) {
+            console.log(e.data);
+            var message = JSON.parse(e.data);
+            var outMesage = $(
+                    '<div class="row">' +
+                    '  <div class="col-md-2"><strong>' + message.from + '</strong></div>' +
+                    '  <div class="col-md-10"><p>' + message.message + '</p></div>' +
+                    '</div>'
+            );
+            $('#chatlog').append(outMesage);
+        }, false);
+
+        source.addEventListener('error', function (e) {
+            console.log('error');
+            if (e.readyState == EventSource.CLOSED) {
+                connected = false;
+                connect();
+            }
+        }, false);
+    };
+/*
+    form.addEventListener('submit', function (e) {
+        alert('submit called');
+        console.log('submit called');
+        
+        e.preventDefault();
+        
+        console.log('submig after prevent defualt');
+
+        var message = $('#message').val();
+        $.post('/chat', {from: myName, message: message}, function () {
+            console.log('Sent!');
+            $('#message').val("")
+        });
+    }, false);
+*/
+    $(function () {
+        $('#myModal').modal();
+        nameForm = document.getElementById('nameform');
+        nameForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            setMyName();
+        }, false);
+        connect();
+    });
+    
+function submitClick(e)
+{
+        console.log('submit called');
+    e.preventDefault();
+
+        
+        console.log('submig after prevent defualt');
+
+        var message = $('#message').val();
+        $.post('/chat', {from: myName, message: message}, function () {
+            console.log('Sent!');
+            $('#message').val("")
+        });
+     console.log('without reload');
+}
+
+$(document).ready(function() {
+    $('#form').click(    function(e) { submitClick(e); });
+});
+
+</script>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Set your name</h4>
+            </div>
+            <div class="modal-body">
+                Please enter your name:
+                <form id="nameform" role="form">
+                    <input type="text" id="myname" class="form-control"/>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="setMyName()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
