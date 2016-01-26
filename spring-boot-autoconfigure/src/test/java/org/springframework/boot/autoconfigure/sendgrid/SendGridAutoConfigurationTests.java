@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link SendGridAutoConfiguration}.
  *
  * @author Maciej Walkowiak
+ * @author Patrick Bray
  */
 public class SendGridAutoConfigurationTests {
 
@@ -51,7 +52,7 @@ public class SendGridAutoConfigurationTests {
 	}
 
 	@Test
-	public void expectedSendGridBeanCreated() {
+	public void expectedSendGridBeanCreatedUsername() {
 		loadContext("spring.sendgrid.username:user", "spring.sendgrid.password:secret");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
 		assertEquals("user", ReflectionTestUtils.getField(sendGrid, "username"));
@@ -59,14 +60,10 @@ public class SendGridAutoConfigurationTests {
 	}
 
 	@Test
-	public void expectedSendGridBeanCreated_UsingApiKey() {
-
-		loadContext("spring.sendgrid.apikey:SG.SECRET-API-KEY");
-
+	public void expectedSendGridBeanCreatedApiKey() {
+		loadContext("spring.sendgrid.apiKey:SG.SECRET-API-KEY");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-
-		assertEquals("SG.SECRET-API-KEY",
-				ReflectionTestUtils.getField(sendGrid, "password"));
+		assertEquals("SG.SECRET-API-KEY", ReflectionTestUtils.getField(sendGrid, "password"));
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)

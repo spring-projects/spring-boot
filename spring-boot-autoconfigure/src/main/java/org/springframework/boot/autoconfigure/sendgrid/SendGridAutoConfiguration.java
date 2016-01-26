@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for SendGrid.
  *
  * @author Maciej Walkowiak
+ * @author Patrick Bray
  * @since 1.3.0
  */
 @Configuration
@@ -49,26 +50,26 @@ public class SendGridAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(SendGrid.class)
 	public SendGrid sendGrid() {
-
-		SendGrid sendGrid;
-
-		if (this.properties.getApikey() != null) {
-			sendGrid = new SendGrid(this.properties.getApikey());
-		}
-		else {
-			sendGrid = new SendGrid(this.properties.getUsername(),
-					this.properties.getPassword());
-		}
-
+		SendGrid sendGrid = createSendGrid();
 		if (this.properties.isProxyConfigured()) {
 			HttpHost proxy = new HttpHost(this.properties.getProxy().getHost(),
 					this.properties.getProxy().getPort());
 			sendGrid.setClient(HttpClientBuilder.create().setProxy(proxy)
 					.setUserAgent("sendgrid/" + sendGrid.getVersion() + ";java").build());
 		}
-
 		return sendGrid;
 	}
+
+	private SendGrid createSendGrid() {
+		if (this.properties.getApiKey() != null) {
+			return new SendGrid(this.properties.getApiKey());
+		}
+		else {
+			return new SendGrid(this.properties.getUsername(),
+					this.properties.getPassword());
+		}
+	}
+
 
 	static class SendGridPropertyCondition extends AnyNestedCondition {
 
@@ -77,11 +78,11 @@ public class SendGridAutoConfiguration {
 		}
 
 		@ConditionalOnProperty(prefix = "spring.sendgrid", value = "username")
-		private class SendGridUserProperty {
+		static class SendGridUserProperty {
 		}
 
-		@ConditionalOnProperty(prefix = "spring.sendgrid", value = "apikey")
-		private class SendGridApiKeyProperty {
+		@ConditionalOnProperty(prefix = "spring.sendgrid", value = "api-key")
+		static class SendGridApiKeyProperty {
 		}
 	}
 }
