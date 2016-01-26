@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	private XADataSource createXaDataSource() {
 		String className = this.properties.getXa().getDataSourceClassName();
 		if (!StringUtils.hasLength(className)) {
-			className = DatabaseDriver.fromJdbcUrl(this.properties.getUrl())
+			className = DatabaseDriver.fromJdbcUrl(this.properties.determineUrl())
 					.getXaDataSourceClassName();
 		}
 		Assert.state(StringUtils.hasLength(className),
@@ -108,9 +108,9 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 
 	private void bindXaProperties(XADataSource target, DataSourceProperties properties) {
 		MutablePropertyValues values = new MutablePropertyValues();
-		values.add("user", this.properties.getUsername());
-		values.add("password", this.properties.getPassword());
-		values.add("url", this.properties.getUrl());
+		values.add("user", this.properties.determineUsername());
+		values.add("password", this.properties.determinePassword());
+		values.add("url", this.properties.determineUrl());
 		values.addPropertyValues(properties.getXa().getProperties());
 		new RelaxedDataBinder(target).withAlias("user", "username").bind(values);
 	}
