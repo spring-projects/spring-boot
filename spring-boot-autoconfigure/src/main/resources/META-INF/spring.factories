@@ -56,6 +56,7 @@ org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration,\
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
 org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration,\
 org.springframework.boot.autoconfigure.mail.MailSenderValidatorAutoConfiguration,\
+org.springframework.boot.autoconfigure.msgpack.MessagePackAutoConfiguration,\
 org.springframework.boot.autoconfigure.mobile.DeviceResolverAutoConfiguration,\
 org.springframework.boot.autoconfigure.mobile.DeviceDelegatingViewResolverAutoConfiguration,\
 org.springframework.boot.autoconfigure.mobile.SitePreferenceAutoConfiguration,\
