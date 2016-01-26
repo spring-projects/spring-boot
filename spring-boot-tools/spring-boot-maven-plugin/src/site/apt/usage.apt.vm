@@ -231,6 +231,54 @@ spring.devtools.remote.restart.enabled=false
   Such setup can now use the {{{http://maven.apache.org/surefire/maven-failsafe-plugin/}failsafe-plugin}} to
   run your integration tests as you would expect.
 
+  You could also configure a more advanced setup to skip the integration tests when a specific property has
+  been set:
+
+---
+<properties>
+  <it.skip>false</it.skip>
+</properties>
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-failsafe-plugin</artifactId>
+      <configuration>
+        <skip>${it.skip}</skip>
+      </configuration>
+    </plugin>
+    <plugin>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>${project.artifactId}</artifactId>
+      <version>${project.version}</version>
+      <executions>
+        <execution>
+          <id>pre-integration-test</id>
+          <goals>
+            <goal>start</goal>
+          </goals>
+          <configuration>
+            <skip>${it.skip}</skip>
+          </configuration>
+        </execution>
+        <execution>
+          <id>post-integration-test</id>
+          <goals>
+            <goal>stop</goal>
+          </goals>
+          <configuration>
+            <skip>${it.skip}</skip>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
+  </plugins>
+</build>
+---
+
+  If you run <<<mvn verify -Dit.skip=true>>> your integration tests will be skipped altogether.
+
+
   For more detailed examples of how to configure this goal see:
 
     * {{{./examples/it-random-port.html}Random port for integration tests}}
