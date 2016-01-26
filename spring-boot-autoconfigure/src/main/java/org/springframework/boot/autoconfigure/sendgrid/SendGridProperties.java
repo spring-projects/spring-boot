@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SendGridProperties {
 
 	/**
-	 * SendGrid username.
+	 * SendGrid username. Alternative to api key.
 	 */
 	private String username;
 
@@ -38,22 +38,14 @@ public class SendGridProperties {
 	private String password;
 
 	/**
-	 * SendGrid api key.
+	 * SendGrid api key. Alternative to username/password.
 	 */
-	private String apikey;
+	private String apiKey;
 
 	/**
 	 * Proxy configuration.
 	 */
 	private Proxy proxy;
-
-	public String getApikey() {
-		return this.apikey;
-	}
-
-	public void setApikey(final String apikey) {
-		this.apikey = apikey;
-	}
 
 	public String getUsername() {
 		return this.username;
@@ -69,6 +61,14 @@ public class SendGridProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getApiKey() {
+		return this.apiKey;
+	}
+
+	public void setApiKey(final String apiKey) {
+		this.apiKey = apiKey;
 	}
 
 	public Proxy getProxy() {
