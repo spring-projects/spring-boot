@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 public class ThymeleafAutoConfigurationTests {
 
@@ -170,6 +171,17 @@ public class ThymeleafAutoConfigurationTests {
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
 		String result = engine.process("data-dialect", attrs);
 		assertEquals("<html><body data-foo=\"bar\"></body></html>", result);
+	}
+
+	@Test
+	public void useJava8TimeDialect() throws Exception {
+		this.context.register(ThymeleafAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
+		Context attrs = new Context(Locale.UK);
+		String result = engine.process("java8time-dialect", attrs);
+		assertEquals("<html><body>2015-11-24</body></html>", result);
 	}
 
 	@Test
