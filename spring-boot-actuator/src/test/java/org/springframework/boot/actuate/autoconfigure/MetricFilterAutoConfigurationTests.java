@@ -83,6 +83,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class MetricFilterAutoConfigurationTests {
 
 	@Test
+	public void defaultMetricFilterAutoConfigurationProperties() {
+		MetricFilterAutoConfigurationProperties properties = new MetricFilterAutoConfigurationProperties();
+		assertThat(properties.isRecordHttpMethodForGauges(), is(false));
+	}
+
+	@Test
+	public void definedMetricFilterAutoConfigurationProperties() {
+		MetricFilterAutoConfigurationProperties properties = new MetricFilterAutoConfigurationProperties();
+		properties.setRecordHttpMethodForGauges(true);
+		assertThat(properties.isRecordHttpMethodForGauges(), is(true));
+	}
+
+	@Test
 	public void recordsHttpInteractions() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class, MetricFilterAutoConfiguration.class);
@@ -293,6 +306,31 @@ public class MetricFilterAutoConfigurationTests {
 				.increment("status.503.unmapped");
 		verify(context.getBean(GaugeService.class), times(2))
 				.submit(eq("response.unmapped"), anyDouble());
+		context.close();
+	}
+
+	@Test
+	public void recordsGaugesWithHttpMethodName() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(Config.class, MetricFilterAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(context,
+				"endpoints.metrics.filter.recordHttpMethodForGauges=true");
+		context.refresh();
+		Filter filter = context.getBean(Filter.class);
+		final MockHttpServletRequest request = new MockHttpServletRequest("PUT",
+				"/test/path");
+		final MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain chain = mock(FilterChain.class);
+		willAnswer(new Answer<Object>() {
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				response.setStatus(200);
+				return null;
+			}
+		}).given(chain).doFilter(request, response);
+		filter.doFilter(request, response, chain);
+		verify(context.getBean(GaugeService.class)).submit(eq("response.PUT.test.path"),
+				anyDouble());
 		context.close();
 	}
 
