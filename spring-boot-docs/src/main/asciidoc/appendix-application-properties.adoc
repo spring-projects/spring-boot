@@ -896,6 +896,8 @@ content into your application; rather pick only the properties that you need.
 	endpoints.mappings.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.metrics.enabled= # Enable the endpoint.
 	endpoints.metrics.filter.enabled=true # Enable the metrics servlet filter.
+	endpoints.metrics.filter.gauge-submissions=merged # Http filter gauge submissions (merged, per-http-method)
+	endpoints.metrics.filter.counter-submissions=merged # Http filter counter submissions (merged, per-http-method)
 	endpoints.metrics.id= # Endpoint identifier.
 	endpoints.metrics.path= # Endpoint path.
 	endpoints.metrics.sensitive= # Mark if the endpoint exposes sensitive information.
