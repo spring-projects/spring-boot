@@ -159,22 +159,6 @@
     "type": "java.lang.Boolean",
     "description": "Enable the connection status view for supported providers.",
     "defaultValue": false
-  },
-  {
-    "name": "spring.view.prefix",
-    "type": "java.lang.String",
-    "description": "Spring MVC view prefix.",
-    "deprecation": {
-      "replacement": "spring.mvc.view.prefix"
-    }
-  },
-  {
-    "name": "spring.view.suffix",
-    "type": "java.lang.String",
-    "description": "Spring MVC view suffix.",
-    "deprecation": {
-      "replacement": "spring.mvc.view.suffix"
-    }
   }
 ],"hints": [
   {
