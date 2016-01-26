@@ -79,7 +79,7 @@ can set the `spring.cache.infinispan.config` property to use the provided
 
 
 === Redis
-Add the `spring-boot-starter-redis` and make sure it is configured properly (by default,
+Add the `spring-boot-starter-data-redis` and make sure it is configured properly (by default,
 a redis instance with the default settings is expected on your local box).
 
 

@@ -32,6 +32,7 @@
 		<module>spring-boot-starter-data-gemfire</module>
 		<module>spring-boot-starter-data-jpa</module>
 		<module>spring-boot-starter-data-mongodb</module>
+		<module>spring-boot-starter-data-redis</module>
 		<module>spring-boot-starter-data-rest</module>
 		<module>spring-boot-starter-data-solr</module>
 		<module>spring-boot-starter-freemarker</module>
@@ -52,7 +53,6 @@
 		<module>spring-boot-starter-mustache</module>
 		<module>spring-boot-starter-actuator</module>
 		<module>spring-boot-starter-parent</module>
-		<module>spring-boot-starter-redis</module>
 		<module>spring-boot-starter-security</module>
 		<module>spring-boot-starter-social-facebook</module>
 		<module>spring-boot-starter-social-twitter</module>

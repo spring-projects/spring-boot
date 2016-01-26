@@ -2711,7 +2711,7 @@ http://redis.io/[Redis] is a cache, message broker and richly-featured key-value
 Spring Boot offers basic auto-configuration for the
 https://github.com/xetorthio/jedis/[Jedis] client library and abstractions on top of it
 provided by https://github.com/spring-projects/spring-data-redis[Spring Data Redis]. There
-is a `spring-boot-starter-redis` '`Starter POM`' for collecting the dependencies in a
+is a `spring-boot-starter-data-redis` '`Starter POM`' for collecting the dependencies in a
 convenient way.
 
 

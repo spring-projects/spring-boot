@@ -416,6 +416,9 @@ and Hibernate.
 |`spring-boot-starter-data-mongodb`
 |Support for the MongoDB NoSQL Database, including `spring-data-mongodb`.
 
+|`spring-boot-starter-data-redis`
+|Support for the REDIS key-value data store, including `spring-data-redis`.
+
 |`spring-boot-starter-data-rest`
 |Support for exposing Spring Data repositories over REST via `spring-data-rest-webmvc`.
 
@@ -457,9 +460,6 @@ and Hibernate.
 
 |`spring-boot-starter-mustache`
 |Support for the Mustache templating engine.
-
-|`spring-boot-starter-redis`
-|Support for the REDIS key-value data store, including `spring-redis`.
 
 |`spring-boot-starter-security`
 |Support for `spring-security`.

@@ -6,9 +6,9 @@
 		<artifactId>spring-boot-starters</artifactId>
 		<version>1.4.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-starter-redis</artifactId>
-	<name>Spring Boot Redis Starter</name>
-	<description>Spring Boot Redis Starter</description>
+	<artifactId>spring-boot-starter-data-redis</artifactId>
+	<name>Spring Boot Data Redis Starter</name>
+	<description>Spring Boot Data Redis Starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
