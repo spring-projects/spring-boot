@@ -60,6 +60,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
@@ -87,10 +88,10 @@ public class DataSourceAutoConfiguration {
 		}
 	}
 
-	@Conditional(DataSourceAutoConfiguration.EmbeddedDataSourceCondition.class)
+	@Conditional(EmbeddedDatabaseCondition.class)
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import(EmbeddedDataSourceConfiguration.class)
-	protected static class EmbeddedConfiguration {
+	protected static class EmbeddedDatabaseConfiguration {
 
 	}
 
@@ -105,9 +106,9 @@ public class DataSourceAutoConfiguration {
 
 	}
 
-	@Conditional(DataSourceAutoConfiguration.NonEmbeddedDataSourceCondition.class)
+	@Conditional(PooledDataSourceCondition.class)
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
-	protected static class NonEmbeddedConfiguration {
+	protected static class PooledDataSourceConfiguration {
 
 		@Autowired
 		private DataSourceProperties properties;
@@ -171,10 +172,9 @@ public class DataSourceAutoConfiguration {
 	}
 
 	/**
-	 * {@link Condition} to test is a supported non-embedded {@link DataSource} type is
-	 * available.
+	 * {@link Condition} to test if a supported connection pool is available.
 	 */
-	static class NonEmbeddedDataSourceCondition extends SpringBootCondition {
+	static class PooledDataSourceCondition extends SpringBootCondition {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -200,17 +200,20 @@ public class DataSourceAutoConfiguration {
 
 	/**
 	 * {@link Condition} to detect when an embedded {@link DataSource} type can be used.
+	 * <p>
+	 * If a pooled {@link DataSource} is available, it will always be preferred to
+	 * an {@code EmbeddedDatabase}.
 	 */
-	static class EmbeddedDataSourceCondition extends SpringBootCondition {
+	static class EmbeddedDatabaseCondition extends SpringBootCondition {
 
-		private final SpringBootCondition nonEmbedded = new NonEmbeddedDataSourceCondition();
+		private final SpringBootCondition pooledCondition = new PooledDataSourceCondition();
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			if (anyMatches(context, metadata, this.nonEmbedded)) {
+			if (anyMatches(context, metadata, this.pooledCondition)) {
 				return ConditionOutcome
-						.noMatch("existing non-embedded database detected");
+						.noMatch("supported DataSource class found");
 			}
 			EmbeddedDatabaseType type = EmbeddedDatabaseConnection
 					.get(context.getClassLoader()).getType();
@@ -229,9 +232,9 @@ public class DataSourceAutoConfiguration {
 	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	static class DataSourceAvailableCondition extends SpringBootCondition {
 
-		private final SpringBootCondition nonEmbedded = new NonEmbeddedDataSourceCondition();
+		private final SpringBootCondition pooledCondition = new PooledDataSourceCondition();
 
-		private final SpringBootCondition embeddedCondition = new EmbeddedDataSourceCondition();
+		private final SpringBootCondition embeddedCondition = new EmbeddedDatabaseCondition();
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -241,7 +244,7 @@ public class DataSourceAutoConfiguration {
 				return ConditionOutcome
 						.match("existing bean configured database detected");
 			}
-			if (anyMatches(context, metadata, this.nonEmbedded, this.embeddedCondition)) {
+			if (anyMatches(context, metadata, this.pooledCondition, this.embeddedCondition)) {
 				return ConditionOutcome.match("existing auto database detected");
 			}
 			return ConditionOutcome.noMatch("no existing bean configured database");
