@@ -68,8 +68,8 @@ public class SseController {
      * @return an server state event emitter
      * @throws IOException if registering the new emitter fails
      */
-    @RequestMapping( path = "/register", method = RequestMethod.GET )
-    public SseEmitter stream() throws IOException {
+    @RequestMapping (path = "/register", method = RequestMethod.GET)
+    public SseEmitter register() throws IOException {
         log.info("Registering a stream.");
 
         SseEmitter emitter = new SseEmitter();
