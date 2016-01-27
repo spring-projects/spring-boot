@@ -65,6 +65,6 @@ do as they were designed before this was clarified.
 | https://github.com/MarcGiffing/wicket-spring-boot
 
 | https://cloudant.com/[Cloudant]
-| https://github.com/icha024/spring-boot-starter-cloudant
+| https://github.com/icha024/cloudant-spring-boot-starter
 
 |===
