@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.tomcat.jsp;
+package sse;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,15 +22,15 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class SampleTomcatJspApplication extends SpringBootServletInitializer {
+public class TomcatSseApplication extends SpringBootServletInitializer {
 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(SampleTomcatJspApplication.class);
+		return application.sources(TomcatSseApplication.class);
 	}
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleTomcatJspApplication.class, args);
+		SpringApplication.run(TomcatSseApplication.class, args);
 	}
 
 }
