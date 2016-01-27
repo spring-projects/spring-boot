@@ -2268,16 +2268,16 @@ For example, typical POM dependencies would be:
 	</dependency>
 ----
 
+NOTE: You need a dependency on `spring-jdbc` for an embedded database to be
+auto-configured. In this example it's pulled in transitively via
+`spring-boot-starter-data-jpa`.
+
 TIP: If, for whatever reason, you do configure the connection URL for an embedded
 database, care should be taken to ensure that the database’s automatic shutdown is
 disabled. If you're using H2 you should use `DB_CLOSE_ON_EXIT=FALSE` to do so. If you're
 using HSQLDB, you should ensure that `shutdown=true` is not used. Disabling the database's
 automatic shutdown allows Spring Boot to control when the database is closed, thereby
 ensuring that it happens once access to the database is no longer needed.
-
-NOTE: You need a dependency on `spring-jdbc` for an embedded database to be
-auto-configured. In this example it's pulled in transitively via
-`spring-boot-starter-data-jpa`.
 
 
 
