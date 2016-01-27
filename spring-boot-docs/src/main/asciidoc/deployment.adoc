@@ -499,12 +499,13 @@ secured accordingly. Use `chmod` so that the file can only be read by the owner 
 
 [[deployment-systemd-service]]
 ==== Installation as a systemd service
-Systemd is the successor to `init.d` scripts, and now being used by many many modern Linux
-distributions. Although you can continue to use `init.d` script with `systemd`, it is also
-possible to launch Spring Boot applications using `systemd` '`service`' scripts.
+Systemd is the successor of the System V init system, and is now being used by many modern
+Linux distributions. Although you can continue to use `init.d` scripts with `systemd`, it
+is also possible to launch Spring Boot applications using `systemd` '`service`' scripts.
 
-For example, to run a Spring Boot application installed in `var/myapp` as user `myapp` you
-can add the following script in `/etc/systemd/system/myapp.service`:
+Assuming that you have a Spring Boot application installed in `/var/myapp`, to install a
+Spring Boot application as a `systemd` service create a script named `myapp.service` using
+the following example and place it in `/etc/systemd/system` directory:
 
 [indent=0]
 ----
@@ -521,7 +522,23 @@ can add the following script in `/etc/systemd/system/myapp.service`:
 	WantedBy=multi-user.target
 ----
 
-TIP: Remember to change the `Description` and `ExecStart` fields for your application.
+TIP: Remember to change the `Description`, `User` and `ExecStart` fields for your
+application.
+
+Note that unlike when running as an `init.d` service, user that runs the application, PID
+file and console log file behave differently under `systemd` and must be configured using
+appropriate fields in '`service`' script. Consult the
+http://www.freedesktop.org/software/systemd/man/systemd.service.html[service unit
+configuration man page] for more details.
+
+To flag the application to start automatically on system boot use the following command:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ systemctl enable myapp.service
+----
+
+Refer to `man systemctl` for more details.
 
 
 
