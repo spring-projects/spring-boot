@@ -60,7 +60,7 @@ class BeanDefinitionLoader {
 
 	private final XmlBeanDefinitionReader xmlReader;
 
-	private GroovyBeanDefinitionReader groovyReader;
+	private Object groovyReader;
 
 	private final ClassPathBeanDefinitionScanner scanner;
 
@@ -162,18 +162,19 @@ class BeanDefinitionLoader {
 
 	private int load(GroovyBeanDefinitionSource source) {
 		int before = this.xmlReader.getRegistry().getBeanDefinitionCount();
-		this.groovyReader.beans(source.getBeans());
+		((GroovyBeanDefinitionReader) this.groovyReader).beans(source.getBeans());
 		int after = this.xmlReader.getRegistry().getBeanDefinitionCount();
 		return after - before;
 	}
 
 	private int load(Resource source) {
 		if (source.getFilename().endsWith(".groovy")) {
-			if (this.groovyReader == null) {
+			GroovyBeanDefinitionReader groovyReader = (GroovyBeanDefinitionReader) this.groovyReader;
+			if (groovyReader == null) {
 				throw new BeanDefinitionStoreException(
 						"Cannot load Groovy beans without Groovy on classpath");
 			}
-			return this.groovyReader.loadBeanDefinitions(source);
+			return groovyReader.loadBeanDefinitions(source);
 		}
 		return this.xmlReader.loadBeanDefinitions(source);
 	}
