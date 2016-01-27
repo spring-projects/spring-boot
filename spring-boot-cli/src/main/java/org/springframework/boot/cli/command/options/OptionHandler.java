@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import groovy.lang.Closure;
 import joptsimple.BuiltinHelpFormatter;
 import joptsimple.HelpFormatter;
 import joptsimple.OptionDescriptor;
@@ -50,8 +49,6 @@ import org.springframework.boot.cli.command.status.ExitStatus;
 public class OptionHandler {
 
 	private OptionParser parser;
-
-	private Closure<?> closure;
 
 	private String help;
 
@@ -76,10 +73,6 @@ public class OptionHandler {
 	protected void options() {
 	}
 
-	public void setClosure(Closure<?> closure) {
-		this.closure = closure;
-	}
-
 	public final ExitStatus run(String... args) throws Exception {
 		String[] argsToUse = args.clone();
 		for (int i = 0; i < argsToUse.length; i++) {
@@ -98,18 +91,6 @@ public class OptionHandler {
 	 * @throws Exception in case of errors
 	 */
 	protected ExitStatus run(OptionSet options) throws Exception {
-		if (this.closure != null) {
-			Object result = this.closure.call(options);
-			if (result instanceof ExitStatus) {
-				return (ExitStatus) result;
-			}
-			if (result instanceof Boolean) {
-				return (Boolean) result ? ExitStatus.OK : ExitStatus.ERROR;
-			}
-			if (result instanceof Integer) {
-				return new ExitStatus((Integer) result, "Finished");
-			}
-		}
 		return ExitStatus.OK;
 	}
 
