@@ -66,7 +66,8 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 		DEFAULTS = Collections.unmodifiableMap(defaults);
 	}
 
-	private static final Log logger = LogFactory.getLog(ElasticsearchAutoConfiguration.class);
+	private static final Log logger = LogFactory
+			.getLog(ElasticsearchAutoConfiguration.class);
 
 	@Autowired
 	private ElasticsearchProperties properties;

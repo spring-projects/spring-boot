@@ -188,8 +188,7 @@ public class AutoConfigurationReportLoggingInitializer
 	private void addLogMessage(StringBuilder message, String source,
 			ConditionAndOutcomes conditionAndOutcomes) {
 		message.append(String.format("%n   %s", source));
-		message.append(
-				conditionAndOutcomes.isFullMatch() ? " matched" : " did not match")
+		message.append(conditionAndOutcomes.isFullMatch() ? " matched" : " did not match")
 				.append(String.format("%n"));
 		for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
 			message.append("      - ");

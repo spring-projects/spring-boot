@@ -159,8 +159,10 @@ public class DependencyManagementBomTransformation
 	}
 
 	private void handleMalformedDependency(Expression expression) {
-		Message message = createSyntaxErrorMessage(String.format(
-				"The string must be of the form \"group:module:version\"%n"), expression);
+		Message message = createSyntaxErrorMessage(
+				String.format(
+						"The string must be of the form \"group:module:version\"%n"),
+				expression);
 		getSourceUnit().getErrorCollector().addErrorAndContinue(message);
 	}
 

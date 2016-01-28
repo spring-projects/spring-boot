@@ -167,8 +167,8 @@ public class AuthenticationManagerConfiguration {
 			}
 			User user = this.securityProperties.getUser();
 			if (user.isDefaultPassword()) {
-				logger.info(String.format(
-						"%n%nUsing default security password: %s%n", user.getPassword()));
+				logger.info(String.format("%n%nUsing default security password: %s%n",
+						user.getPassword()));
 			}
 			Set<String> roles = new LinkedHashSet<String>(user.getRole());
 			withUser(user.getName()).password(user.getPassword())

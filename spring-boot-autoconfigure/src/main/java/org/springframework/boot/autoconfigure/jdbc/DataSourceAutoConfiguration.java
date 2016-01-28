@@ -68,7 +68,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 @Import({ Registrar.class, DataSourcePoolMetadataProvidersConfiguration.class })
 public class DataSourceAutoConfiguration {
 
-	private static final Log logger = LogFactory.getLog(DataSourceAutoConfiguration.class);
+	private static final Log logger = LogFactory
+			.getLog(DataSourceAutoConfiguration.class);
 
 	/**
 	 * Determines if the {@code dataSource} being used by Spring was created from
@@ -119,7 +120,8 @@ public class DataSourceAutoConfiguration {
 			DataSourceBuilder factory = DataSourceBuilder
 					.create(this.properties.getClassLoader())
 					.driverClassName(this.properties.determineDriverClassName())
-					.url(this.properties.determineUrl()).username(this.properties.determineUsername())
+					.url(this.properties.determineUrl())
+					.username(this.properties.determineUsername())
 					.password(this.properties.determinePassword());
 			if (this.properties.getType() != null) {
 				factory.type(this.properties.getType());
@@ -200,9 +202,8 @@ public class DataSourceAutoConfiguration {
 
 	/**
 	 * {@link Condition} to detect when an embedded {@link DataSource} type can be used.
-	 * <p>
-	 * If a pooled {@link DataSource} is available, it will always be preferred to
-	 * an {@code EmbeddedDatabase}.
+	 * If a pooled {@link DataSource} is available, it will always be preferred to an
+	 * {@code EmbeddedDatabase}.
 	 */
 	static class EmbeddedDatabaseCondition extends SpringBootCondition {
 
@@ -212,8 +213,7 @@ public class DataSourceAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			if (anyMatches(context, metadata, this.pooledCondition)) {
-				return ConditionOutcome
-						.noMatch("supported DataSource class found");
+				return ConditionOutcome.noMatch("supported DataSource class found");
 			}
 			EmbeddedDatabaseType type = EmbeddedDatabaseConnection
 					.get(context.getClassLoader()).getType();
@@ -244,7 +244,8 @@ public class DataSourceAutoConfiguration {
 				return ConditionOutcome
 						.match("existing bean configured database detected");
 			}
-			if (anyMatches(context, metadata, this.pooledCondition, this.embeddedCondition)) {
+			if (anyMatches(context, metadata, this.pooledCondition,
+					this.embeddedCondition)) {
 				return ConditionOutcome.match("existing auto database detected");
 			}
 			return ConditionOutcome.noMatch("no existing bean configured database");

@@ -80,8 +80,8 @@ public class OpenTsdbGaugeWriter implements GaugeWriter {
 	private OpenTsdbNamingStrategy namingStrategy = new DefaultOpenTsdbNamingStrategy();
 
 	/**
-	 * Creates a new {@code OpenTsdbGaugeWriter} with the default connect (10 seconds)
-	 * and read (30 seconds) timeouts.
+	 * Creates a new {@code OpenTsdbGaugeWriter} with the default connect (10 seconds) and
+	 * read (30 seconds) timeouts.
 	 */
 	public OpenTsdbGaugeWriter() {
 		this(DEFAULT_CONNECT_TIMEOUT, DEFAULT_READ_TIMEOUT);
