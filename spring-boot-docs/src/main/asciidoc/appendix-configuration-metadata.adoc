@@ -293,10 +293,10 @@ following attributes:
 [[configuration-metadata-repeated-items]]
 ==== Repeated meta-data items
 It is perfectly acceptable for "`property`" and "`group`" objects with the same name to
-appear multiple times within a meta-data file. For example, Spring Boot binds
-`spring.datasource` properties to Hikari, Tomcat and DBCP classes, with each potentially
-offering overlap of property names. Consumers of meta-data should take care to ensure
-that they support such scenarios.
+appear multiple times within a meta-data file. For example, you could bind two separate
+classes to the same prefix, with each potentially offering overlap of property names.
+While this is not supposed to be a frequent scenario, consumers of meta-data should take
+care to ensure that they support such scenarios.
 
 
 

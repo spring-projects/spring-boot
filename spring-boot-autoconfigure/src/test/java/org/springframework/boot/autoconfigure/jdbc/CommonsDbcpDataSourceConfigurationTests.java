@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,19 +34,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link CommonsDataSourceConfiguration}.
+ * Tests for {@link CommonsDbcpDataSourceConfiguration}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
-public class CommonsDataSourceConfigurationTests {
+public class CommonsDbcpDataSourceConfigurationTests {
 
-	private static final String PREFIX = "spring.datasource.";
+	private static final String PREFIX = "spring.datasource.dbcp.";
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
 	public void testDataSourceExists() throws Exception {
-		this.context.register(CommonsDataSourceConfiguration.class);
+		this.context.register(CommonsDbcpDataSourceConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
 		this.context.close();
@@ -54,7 +55,7 @@ public class CommonsDataSourceConfigurationTests {
 
 	@Test
 	public void testDataSourcePropertiesOverridden() throws Exception {
-		this.context.register(CommonsDataSourceConfiguration.class);
+		this.context.register(CommonsDbcpDataSourceConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				PREFIX + "url:jdbc:foo//bar/spam");
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testWhileIdle:true");
@@ -78,7 +79,7 @@ public class CommonsDataSourceConfigurationTests {
 
 	@Test
 	public void testDataSourceDefaultsPreserved() throws Exception {
-		this.context.register(CommonsDataSourceConfiguration.class);
+		this.context.register(CommonsDbcpDataSourceConfiguration.class);
 		this.context.refresh();
 		BasicDataSource ds = this.context.getBean(BasicDataSource.class);
 		assertEquals(GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
@@ -90,10 +91,10 @@ public class CommonsDataSourceConfigurationTests {
 
 	@Configuration
 	@EnableConfigurationProperties
-	protected static class CommonsDataSourceConfiguration {
+	protected static class CommonsDbcpDataSourceConfiguration {
 
 		@Bean
-		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
+		@ConfigurationProperties(prefix = "spring.datasource.dbcp")
 		public DataSource dataSource() {
 			return DataSourceBuilder.create().type(BasicDataSource.class).build();
 		}

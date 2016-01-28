@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class HikariDataSourceConfigurationTests {
 
-	private static final String PREFIX = "spring.datasource.";
+	private static final String PREFIX = "spring.datasource.hikari.";
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -103,7 +103,7 @@ public class HikariDataSourceConfigurationTests {
 	protected static class HikariDataSourceConfiguration {
 
 		@Bean
-		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
+		@ConfigurationProperties(prefix = "spring.datasource.hikari")
 		public DataSource dataSource() {
 			return DataSourceBuilder.create().type(HikariDataSource.class).build();
 		}

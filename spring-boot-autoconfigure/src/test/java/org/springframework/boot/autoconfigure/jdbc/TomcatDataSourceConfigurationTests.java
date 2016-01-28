@@ -27,14 +27,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
-import org.springframework.context.annotation.Import;
 import org.springframework.util.ReflectionUtils;
 
 import static org.junit.Assert.assertEquals;
@@ -46,10 +45,11 @@ import static org.junit.Assert.fail;
  * Tests for {@link TomcatDataSourceConfiguration}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class TomcatDataSourceConfigurationTests {
 
-	private static final String PREFIX = "spring.datasource.";
+	private static final String PREFIX = "spring.datasource.tomcat.";
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -66,6 +66,8 @@ public class TomcatDataSourceConfigurationTests {
 	@Test
 	public void testDataSourceExists() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				PREFIX + "url:jdbc:h2:mem:testdb");
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
 		assertNotNull(this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class));
@@ -75,7 +77,7 @@ public class TomcatDataSourceConfigurationTests {
 	public void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				PREFIX + "url:jdbc:foo//bar/spam");
+				PREFIX + "url:jdbc:h2:mem:testdb");
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testWhileIdle:true");
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnBorrow:true");
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnReturn:true");
@@ -91,7 +93,7 @@ public class TomcatDataSourceConfigurationTests {
 		this.context.refresh();
 		org.apache.tomcat.jdbc.pool.DataSource ds = this.context
 				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
-		assertEquals("jdbc:foo//bar/spam", ds.getUrl());
+		assertEquals("jdbc:h2:mem:testdb", ds.getUrl());
 		assertTrue(ds.isTestWhileIdle());
 		assertTrue(ds.isTestOnBorrow());
 		assertTrue(ds.isTestOnReturn());
@@ -117,6 +119,8 @@ public class TomcatDataSourceConfigurationTests {
 	@Test
 	public void testDataSourceDefaultsPreserved() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				PREFIX + "url:jdbc:h2:mem:testdb");
 		this.context.refresh();
 		org.apache.tomcat.jdbc.pool.DataSource ds = this.context
 				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
@@ -134,24 +138,15 @@ public class TomcatDataSourceConfigurationTests {
 	}
 
 	@Configuration
-	@Import(DataSourceAutoConfiguration.class)
+	@EnableConfigurationProperties
 	@EnableMBeanExport
 	protected static class TomcatDataSourceConfiguration {
 
-		@Autowired
-		private DataSourceProperties properties;
-
 		@Bean
-		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
+		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
 		public DataSource dataSource() {
-			DataSourceBuilder factory = DataSourceBuilder
-					.create(this.properties.getClassLoader())
-					.driverClassName(this.properties.determineDriverClassName())
-					.url(this.properties.determineUrl())
-					.username(this.properties.determineUsername())
-					.password(this.properties.determinePassword())
-					.type(org.apache.tomcat.jdbc.pool.DataSource.class);
-			return factory.build();
+			return DataSourceBuilder.create()
+					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 	}

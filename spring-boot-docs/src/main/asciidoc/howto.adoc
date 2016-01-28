@@ -1670,7 +1670,7 @@ to start. The script locations can be changed by setting `spring.datasource.sche
 `spring.datasource.data`, and neither location will be processed if
 `spring.datasource.initialize=false`.
 
-To disable the fail-fast you can set `spring.datasource.continueOnError=true`. This can be
+To disable the fail-fast you can set `spring.datasource.continue-on-error=true`. This can be
 useful once an application has matured and been deployed a few times, since the scripts
 can act as '`poor man's migrations`' -- inserts that fail mean that the data is already
 there, so there would be no need to prevent the application from running, for instance.

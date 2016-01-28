@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -229,7 +229,7 @@ public class HealthIndicatorAutoConfigurationTests {
 				DataSourcePoolMetadataProvidersConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.validation-query:SELECT from FOOBAR",
+				"spring.datasource.test.validation-query:SELECT from FOOBAR",
 				"management.health.diskspace.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
@@ -442,7 +442,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	protected static class DataSourceConfig {
 
 		@Bean
-		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
+		@ConfigurationProperties(prefix = "spring.datasource.test")
 		public DataSource dataSource() {
 			return DataSourceBuilder.create()
 					.driverClassName("org.hsqldb.jdbc.JDBCDriver")
