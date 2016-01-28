@@ -34,17 +34,23 @@ import org.springframework.util.ClassUtils;
 public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
 	@Override
-	public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader, ResourceLoader resourceLoader) {
+	public boolean isTemplateAvailable(String view, Environment environment,
+			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.apache.jasper.compiler.JspConfig", classLoader)) {
-			PropertyResolver resolver = new RelaxedPropertyResolver(environment,
-					"spring.mvc.view.");
-			String prefix = resolver.getProperty("prefix",
-					WebMvcAutoConfiguration.DEFAULT_PREFIX);
-			String suffix = resolver.getProperty("suffix",
-					WebMvcAutoConfiguration.DEFAULT_SUFFIX);
-			return resourceLoader.getResource(prefix + view + suffix).exists();
+			String resourceName = getResourceName(view, environment);
+			return resourceLoader.getResource(resourceName).exists();
 		}
 		return false;
+	}
+
+	private String getResourceName(String view, Environment environment) {
+		PropertyResolver resolver = new RelaxedPropertyResolver(environment,
+				"spring.mvc.view.");
+		String prefix = resolver.getProperty("prefix",
+				WebMvcAutoConfiguration.DEFAULT_PREFIX);
+		String suffix = resolver.getProperty("suffix",
+				WebMvcAutoConfiguration.DEFAULT_SUFFIX);
+		return prefix + view + suffix;
 	}
 
 }

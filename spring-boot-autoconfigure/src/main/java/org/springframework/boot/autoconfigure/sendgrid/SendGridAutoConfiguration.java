@@ -64,12 +64,8 @@ public class SendGridAutoConfiguration {
 		if (this.properties.getApiKey() != null) {
 			return new SendGrid(this.properties.getApiKey());
 		}
-		else {
-			return new SendGrid(this.properties.getUsername(),
-					this.properties.getPassword());
-		}
+		return new SendGrid(this.properties.getUsername(), this.properties.getPassword());
 	}
-
 
 	static class SendGridPropertyCondition extends AnyNestedCondition {
 
@@ -84,5 +80,6 @@ public class SendGridAutoConfiguration {
 		@ConditionalOnProperty(prefix = "spring.sendgrid", value = "api-key")
 		static class SendGridApiKeyProperty {
 		}
+
 	}
 }

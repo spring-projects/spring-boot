@@ -286,7 +286,6 @@ public class DataSourceProperties
 		this.password = password;
 	}
 
-
 	/**
 	 * Determine the password to use based on this configuration and the environment.
 	 * @return the password to use

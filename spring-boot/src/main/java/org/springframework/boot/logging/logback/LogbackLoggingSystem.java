@@ -150,8 +150,8 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			}
 		}
 		if (errors.length() > 0) {
-			throw new IllegalStateException(String.format(
-					"Logback configuration error detected: %n%s", errors));
+			throw new IllegalStateException(
+					String.format("Logback configuration error detected: %n%s", errors));
 		}
 	}
 
