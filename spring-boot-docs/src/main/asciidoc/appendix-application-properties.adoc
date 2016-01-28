@@ -525,7 +525,10 @@ content into your application; rather pick only the properties that you need.
 	# DATASOURCE ({sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[DataSourceAutoConfiguration] & {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[DataSourceProperties])
 	spring.datasource.continue-on-error=false # Do not stop if an error occurs while initializing the database.
 	spring.datasource.data= # Data (DML) script resource reference.
+	spring.datasource.dbcp.*= # Commons DBCP specific settings
+	spring.datasource.dbcp2.*= # Commons DBCP2 specific settings
 	spring.datasource.driver-class-name= # Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
+	spring.datasource.hikari.*= # Hikari specific settings
 	spring.datasource.initialize=true # Populate the database using 'data.sql'.
 	spring.datasource.jmx-enabled=false # Enable JMX support (if provided by the underlying pool).
 	spring.datasource.jndi-name= # JNDI location of the datasource. Class, url, username & password are ignored when set.
@@ -544,6 +547,7 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.test-on-return= # For instance `false`
 	spring.datasource.test-while-idle= #
 	spring.datasource.time-between-eviction-runs-millis= 1
+	spring.datasource.tomcat.*= # Tomcat datasource specific settings
 	spring.datasource.type= # Fully qualified name of the connection pool implementation to use. By default, it is auto-detected from the classpath.
 	spring.datasource.url= # JDBC url of the database.
 	spring.datasource.username=
