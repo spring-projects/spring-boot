@@ -19,23 +19,21 @@ package sample.web.secure;
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-@EnableAutoConfiguration
-@ComponentScan
 @Controller
+@SpringBootApplication
 public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
 
 	@RequestMapping("/")
@@ -60,22 +58,36 @@ public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
 		new SpringApplicationBuilder(SampleWebSecureApplication.class).run(args);
 	}
 
-	@Configuration
-	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
-	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
+	@EnableWebSecurity
+	static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().anyRequest().fullyAuthenticated().and().formLogin()
-					.loginPage("/login").failureUrl("/login?error").permitAll().and()
-					.logout().permitAll();
+			// @formatter:off
+			http
+				.authorizeRequests()
+					.antMatchers("/login").permitAll()
+					.anyRequest().fullyAuthenticated()
+					.and()
+				.formLogin()
+					.loginPage("/login")
+					.and()
+				.logout()
+					.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+					.and()
+				.exceptionHandling()
+					.accessDeniedPage("/access?error");
+			// @formatter:on
 		}
 
-		@Override
-		public void configure(AuthenticationManagerBuilder auth) throws Exception {
-			auth.inMemoryAuthentication().withUser("admin").password("admin")
-					.roles("ADMIN", "USER").and().withUser("user").password("user")
-					.roles("USER");
+		@Autowired
+		public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+			// @formatter:off
+			auth
+				.inMemoryAuthentication()
+					.withUser("admin").password("admin").roles("ADMIN", "USER").and()
+					.withUser("user").password("user").roles("USER");
+			// @formatter:on
 		}
 
 	}
