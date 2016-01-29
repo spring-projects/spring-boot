@@ -17,8 +17,7 @@
 			<div class="pull-right">
 				<a th:href="@{/}" href="messages.html"> Messages </a>
 			</div>
-			<input type="hidden" th:field="*{id}"
-				th:class="${#fields.hasErrors('id')} ? 'field-error'" /> <label
+			<input type="hidden" th:field="*{id}" /> <label
 				for="summary">Summary</label> <input type="text"
 				th:field="*{summary}"
 				th:class="${#fields.hasErrors('summary')} ? 'field-error'" /> <label
