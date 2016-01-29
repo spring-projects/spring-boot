@@ -5,6 +5,13 @@ something, or simply want to hack on the code this document should help you get 
 
 
 
+== Code of Conduct
+This project adheres to the Contributor Covenant link:CODE_OF_CONDUCT.adoc[code of
+conduct]. By participating, you  are expected to uphold this code. Please report
+unacceptable behavior to spring-code-of-conduct@pivotal.io.
+
+
+
 == Using GitHub issues
 We use GitHub issues to track bugs and enhancements. If you have a general usage question
 please ask on http://stackoverflow.com[Stack Overflow]. The Spring Boot team and the
