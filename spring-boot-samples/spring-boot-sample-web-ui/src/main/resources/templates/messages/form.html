@@ -17,11 +17,12 @@
 			<div class="pull-right">
 				<a th:href="@{/}" href="messages.html"> Messages </a>
 			</div>
-			<input type="hidden" th:field="*{id}" /> <label
+			<input type="hidden" th:field="*{id}" />
+			<label
 				for="summary">Summary</label> <input type="text"
 				th:field="*{summary}"
-				th:class="${#fields.hasErrors('summary')} ? 'field-error'" /> <label
-				for="text">Message</label>
+				th:class="${#fields.hasErrors('summary')} ? 'field-error'" />
+			<label for="text">Message</label>
 			<textarea th:field="*{text}"
 				th:class="${#fields.hasErrors('text')} ? 'field-error'"></textarea>
 			<div class="form-actions">
