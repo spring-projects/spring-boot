@@ -77,6 +77,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-client</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast-spring</artifactId>
 			<optional>true</optional>
 		</dependency>
