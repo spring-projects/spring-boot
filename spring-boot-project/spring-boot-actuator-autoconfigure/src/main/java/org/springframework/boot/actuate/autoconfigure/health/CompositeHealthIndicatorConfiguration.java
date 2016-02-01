@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.HealthIndicatorRunner;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -31,6 +32,7 @@ import org.springframework.core.ResolvableType;
  * @param <H> the health indicator type
  * @param <S> the bean source type
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @since 2.0.0
  */
 public abstract class CompositeHealthIndicatorConfiguration<H extends HealthIndicator, S> {
@@ -38,12 +40,18 @@ public abstract class CompositeHealthIndicatorConfiguration<H extends HealthIndi
 	@Autowired
 	private HealthAggregator healthAggregator;
 
+	@Autowired(required = false)
+	private HealthIndicatorRunner healthIndicatorRunner;
+
 	protected HealthIndicator createHealthIndicator(Map<String, S> beans) {
 		if (beans.size() == 1) {
 			return createHealthIndicator(beans.values().iterator().next());
 		}
 		CompositeHealthIndicator composite = new CompositeHealthIndicator(
 				this.healthAggregator);
+		if (this.healthIndicatorRunner != null) {
+			composite.setHealthIndicatorRunner(this.healthIndicatorRunner);
+		}
 		beans.forEach((name, source) -> composite.addHealthIndicator(name,
 				createHealthIndicator(source)));
 		return composite;

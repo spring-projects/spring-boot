@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
  * @author Tyler J. Frederick
  * @author Phillip Webb
  * @author Christian Dupuis
+ * @author Vedran Pavic
  * @since 1.1.0
  */
 public class CompositeHealthIndicator implements HealthIndicator {
@@ -34,6 +35,8 @@ public class CompositeHealthIndicator implements HealthIndicator {
 	private final Map<String, HealthIndicator> indicators;
 
 	private final HealthAggregator healthAggregator;
+
+	private HealthIndicatorRunner healthIndicatorRunner = new SequentialHealthIndicatorRunner();
 
 	/**
 	 * Create a new {@link CompositeHealthIndicator}.
@@ -61,13 +64,34 @@ public class CompositeHealthIndicator implements HealthIndicator {
 		this.indicators.put(name, indicator);
 	}
 
+	/**
+	 * Set the health indicator runner to invoke the health indicators.
+	 * @param healthIndicatorRunner the health indicator runner
+	 */
+	public void setHealthIndicatorRunner(HealthIndicatorRunner healthIndicatorRunner) {
+		Assert.notNull(healthIndicatorRunner, "HealthIndicatorRunner must not be null");
+		this.healthIndicatorRunner = healthIndicatorRunner;
+	}
+
 	@Override
 	public Health health() {
-		Map<String, Health> healths = new LinkedHashMap<>();
-		for (Map.Entry<String, HealthIndicator> entry : this.indicators.entrySet()) {
-			healths.put(entry.getKey(), entry.getValue().health());
-		}
+		Map<String, Health> healths = this.healthIndicatorRunner.run(this.indicators);
 		return this.healthAggregator.aggregate(healths);
+	}
+
+	/**
+	 * {@link HealthIndicatorRunner} for sequential execution of {@link HealthIndicator}s.
+	 */
+	private static class SequentialHealthIndicatorRunner
+			implements HealthIndicatorRunner {
+
+		@Override
+		public Map<String, Health> run(Map<String, HealthIndicator> healthIndicators) {
+			Map<String, Health> healths = new LinkedHashMap<>();
+			healthIndicators.forEach((key, value) -> healths.put(key, value.health()));
+			return healths;
+		}
+
 	}
 
 }
