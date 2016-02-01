@@ -264,6 +264,46 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	}
 
 	@Test
+	public void sslEnabledMultipleProtocolsConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setProtocols(new String[]{ "TLSv1.1", "TLSv1.2" });
+		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
+
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		this.container = factory.getEmbeddedServletContainer(sessionServletRegistration());
+		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+		Connector connector = tomcat.getConnector();
+
+		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector.getProtocolHandler();
+		assertThat(jsseProtocol.getSslProtocol(), equalTo("TLS"));
+		assertThat(jsseProtocol.getProperty("sslEnabledProtocols"), equalTo("TLSv1.1,TLSv1.2"));
+	}
+
+	@Test
+	public void sslEnabledProtocolsConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setProtocols(new String[]{"TLSv1.2"});
+		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
+
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		this.container = factory.getEmbeddedServletContainer(sessionServletRegistration());
+		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+		Connector connector = tomcat.getConnector();
+
+		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector.getProtocolHandler();
+		assertThat(jsseProtocol.getSslProtocol(), equalTo("TLS"));
+		assertThat(jsseProtocol.getProperty("sslEnabledProtocols"), equalTo("TLSv1.2"));
+	}
+
+	@Test
 	public void primaryConnectorPortClashThrowsIllegalStateException()
 			throws InterruptedException, IOException {
 		final int port = SocketUtils.findAvailableTcpPort(40000);
