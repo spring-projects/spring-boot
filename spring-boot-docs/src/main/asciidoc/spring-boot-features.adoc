@@ -162,11 +162,26 @@ Javadoc] for full details.
 === Application events and listeners
 In addition to the usual Spring Framework events, such as
 {spring-javadoc}/context/event/ContextRefreshedEvent.{dc-ext}[`ContextRefreshedEvent`],
-a `SpringApplication` sends some additional application events. Some events are actually
-triggered before the `ApplicationContext` is created.
+a `SpringApplication` sends some additional application events.
 
-You can register event listeners in a number of ways, the most common being
-`SpringApplication.addListeners(...)` method.
+[NOTE]
+====
+Some events are actually triggered before the `ApplicationContext` is created so you
+cannot register a listener on those as a `@Bean`. You can register them via the
+`SpringApplication.addListeners(...)` or `SpringApplicationBuilder.listeners(...)`
+methods.
+
+If you want those listeners to be registered automatically regardless of the way the
+application is created you can add a `META-INF/spring.factories` file to your project
+and reference your listener(s) using the `org.springframework.context.ApplicationListener`
+key.
+
+[indent=0]
+----
+	org.springframework.context.ApplicationListener=com.example.project.MyListener
+----
+
+====
 
 Application events are sent in the following order, as your application runs:
 
