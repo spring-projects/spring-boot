@@ -67,4 +67,7 @@ do as they were designed before this was clarified.
 | https://cloudant.com/[Cloudant]
 | https://github.com/icha024/cloudant-spring-boot-starter
 
+| http://www.grpc.io/[gRPC]
+| https://github.com/LogNet/grpc-spring-boot-starter
+
 |===
