@@ -61,24 +61,24 @@ public class CentralDirectoryParserTests {
 	}
 
 	@Test
-	public void vistsInOrder() throws Exception {
-		CentralDirectoryVistor vistor = mock(CentralDirectoryVistor.class);
+	public void visitsInOrder() throws Exception {
+		CentralDirectoryVisitor visitor = mock(CentralDirectoryVisitor.class);
 		CentralDirectoryParser parser = new CentralDirectoryParser();
-		parser.addVistor(vistor);
+		parser.addVisitor(visitor);
 		parser.parse(this.jarData, false);
-		InOrder ordered = inOrder(vistor);
-		ordered.verify(vistor).visitStart(any(CentralDirectoryEndRecord.class),
+		InOrder ordered = inOrder(visitor);
+		ordered.verify(visitor).visitStart(any(CentralDirectoryEndRecord.class),
 				any(RandomAccessData.class));
-		ordered.verify(vistor, atLeastOnce())
+		ordered.verify(visitor, atLeastOnce())
 				.visitFileHeader(any(CentralDirectoryFileHeader.class), anyInt());
-		ordered.verify(vistor).visitEnd();
+		ordered.verify(visitor).visitEnd();
 	}
 
 	@Test
-	public void vistRecords() throws Exception {
+	public void visitRecords() throws Exception {
 		Collector collector = new Collector();
 		CentralDirectoryParser parser = new CentralDirectoryParser();
-		parser.addVistor(collector);
+		parser.addVisitor(collector);
 		parser.parse(this.jarData, false);
 		Iterator<CentralDirectoryFileHeader> headers = collector.getHeaders().iterator();
 		assertThat(headers.next().getName().toString(), equalTo("META-INF/"));
@@ -94,7 +94,7 @@ public class CentralDirectoryParserTests {
 		assertThat(headers.hasNext(), equalTo(false));
 	}
 
-	private static class Collector implements CentralDirectoryVistor {
+	private static class Collector implements CentralDirectoryVisitor {
 
 		private List<CentralDirectoryFileHeader> headers = new ArrayList<CentralDirectoryFileHeader>();
 
