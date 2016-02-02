@@ -36,7 +36,7 @@ interface FileHeader {
 	boolean hasName(String name, String suffix);
 
 	/**
-	 * Return the offset of the load file header withing the archive data.
+	 * Return the offset of the load file header within the archive data.
 	 * @return the local header offset
 	 */
 	long getLocalHeaderOffset();
