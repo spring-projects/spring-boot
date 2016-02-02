@@ -42,7 +42,7 @@ import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
  *
  * @author Phillip Webb
  */
-class JarFileEntries implements CentralDirectoryVistor, Iterable<JarEntry> {
+class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private static final long LOCAL_FILE_HEADER_SIZE = 30;
 

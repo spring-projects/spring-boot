@@ -998,7 +998,7 @@ Spring Boot uses http://commons.apache.org/logging[Commons Logging] for all inte
 logging, but leaves the underlying log implementation open. Default configurations are
 provided for
 http://docs.oracle.com/javase/7/docs/api/java/util/logging/package-summary.html[Java Util Logging],
-http://logging.apache.org/log4j/2.x/[Log4J2] andhttp://logback.qos.ch/[Logback]. In each
+http://logging.apache.org/log4j/2.x/[Log4J2] and http://logback.qos.ch/[Logback]. In each
 case loggers are pre-configured to use console output with optional file output also
 available.
 

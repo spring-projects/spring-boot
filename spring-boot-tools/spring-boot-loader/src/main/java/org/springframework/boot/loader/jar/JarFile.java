@@ -109,13 +109,13 @@ public class JarFile extends java.util.jar.JarFile {
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
 		CentralDirectoryParser parser = new CentralDirectoryParser();
-		this.entries = parser.addVistor(new JarFileEntries(this, filter));
-		parser.addVistor(centralDirectoryVistor());
+		this.entries = parser.addVisitor(new JarFileEntries(this, filter));
+		parser.addVisitor(centralDirectoryVisitor());
 		this.data = parser.parse(data, filter == null);
 	}
 
-	private CentralDirectoryVistor centralDirectoryVistor() {
-		return new CentralDirectoryVistor() {
+	private CentralDirectoryVisitor centralDirectoryVisitor() {
+		return new CentralDirectoryVisitor() {
 
 			@Override
 			public void visitStart(CentralDirectoryEndRecord endRecord,

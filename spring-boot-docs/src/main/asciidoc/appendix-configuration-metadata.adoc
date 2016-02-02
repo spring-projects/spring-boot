@@ -717,7 +717,7 @@ annotations.
 If you are using AspectJ in your project, you need to make sure that the annotation
 processor only runs once. There are several ways to do this: with Maven, you can
 configure the `maven-apt-plugin` explicitly and add the dependency to the annotation
-processor only there. You could also let the AspectJ plugin runs all the processing
+processor only there. You could also let the AspectJ plugin run all the processing
 and disable annotation processing in the `maven-compiler-plugin` configuration:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
