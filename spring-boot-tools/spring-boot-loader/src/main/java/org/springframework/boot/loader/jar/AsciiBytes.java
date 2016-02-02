@@ -200,7 +200,7 @@ final class AsciiBytes {
 	}
 
 	public static int hashCode(String string) {
-		// We're compatible with String's hashcode
+		// We're compatible with String's hashCode().
 		return string.hashCode();
 	}
 

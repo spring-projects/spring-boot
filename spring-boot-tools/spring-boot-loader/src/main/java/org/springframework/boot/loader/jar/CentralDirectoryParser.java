@@ -28,21 +28,21 @@ import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
  * Parses the central directory from a JAR file.
  *
  * @author Phillip Webb
- * @see CentralDirectoryVistor
+ * @see CentralDirectoryVisitor
  */
 class CentralDirectoryParser {
 
 	private int CENTRAL_DIRECTORY_HEADER_BASE_SIZE = 46;
 
-	private final List<CentralDirectoryVistor> vistors = new ArrayList<CentralDirectoryVistor>();
+	private final List<CentralDirectoryVisitor> visitors = new ArrayList<CentralDirectoryVisitor>();
 
-	public <T extends CentralDirectoryVistor> T addVistor(T vistor) {
-		this.vistors.add(vistor);
-		return vistor;
+	public <T extends CentralDirectoryVisitor> T addVisitor(T visitor) {
+		this.visitors.add(visitor);
+		return visitor;
 	}
 
 	/**
-	 * Parse the source data, triggering {@link CentralDirectoryVistor vistors}.
+	 * Parse the source data, triggering {@link CentralDirectoryVisitor visitors}.
 	 * @param data the source data
 	 * @param skipPrefixBytes if prefix bytes should be skipped
 	 * @return The actual archive data without any prefix bytes
@@ -87,20 +87,20 @@ class CentralDirectoryParser {
 
 	private void visitStart(CentralDirectoryEndRecord endRecord,
 			RandomAccessData centralDirectoryData) {
-		for (CentralDirectoryVistor vistor : this.vistors) {
-			vistor.visitStart(endRecord, centralDirectoryData);
+		for (CentralDirectoryVisitor visitor : this.visitors) {
+			visitor.visitStart(endRecord, centralDirectoryData);
 		}
 	}
 
 	private void visitFileHeader(int dataOffset, CentralDirectoryFileHeader fileHeader) {
-		for (CentralDirectoryVistor vistor : this.vistors) {
-			vistor.visitFileHeader(fileHeader, dataOffset);
+		for (CentralDirectoryVisitor visitor : this.visitors) {
+			visitor.visitFileHeader(fileHeader, dataOffset);
 		}
 	}
 
 	private void visitEnd() {
-		for (CentralDirectoryVistor vistor : this.vistors) {
-			vistor.visitEnd();
+		for (CentralDirectoryVisitor visitor : this.visitors) {
+			visitor.visitEnd();
 		}
 	}
 
