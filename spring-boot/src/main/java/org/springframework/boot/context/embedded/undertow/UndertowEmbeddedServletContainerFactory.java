@@ -383,11 +383,13 @@ public class UndertowEmbeddedServletContainerFactory
 	private AccessLogHandler createAccessLogHandler(HttpHandler handler) {
 		try {
 			createAccessLogDirectoryIfNecessary();
-			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
-					createWorker(), this.accessLogDirectory, "access_log.");
+			DefaultAccessLogReceiver.Builder accessLogBuilder = DefaultAccessLogReceiver
+					.builder().setLogWriteExecutor(createWorker())
+					.setOutputDirectory(this.accessLogDirectory.toPath())
+					.setLogBaseName("access_log.").setRotate(true);
 			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
 					: "common";
-			return new AccessLogHandler(handler, accessLogReceiver, formatString,
+			return new AccessLogHandler(handler, accessLogBuilder.build(), formatString,
 					Undertow.class.getClassLoader());
 		}
 		catch (IOException ex) {
