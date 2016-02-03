@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -180,8 +180,8 @@ public class CrshAutoConfiguration {
 			// ConfigurationProperties.
 			SpringAuthenticationProperties authenticationProperties = new SpringAuthenticationProperties();
 			if (this.management != null) {
-				authenticationProperties.setRoles(
-						new String[] { this.management.getSecurity().getRole() });
+				List<String> roles = this.management.getSecurity().getRole();
+				authenticationProperties.setRoles(roles.toArray(new String[roles.size()]));
 			}
 			return authenticationProperties;
 		}

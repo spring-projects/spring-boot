@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -33,6 +36,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @see ServerProperties
  */
 @ConfigurationProperties(prefix = "management", ignoreUnknownFields = true)
@@ -156,9 +160,9 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		private boolean enabled = true;
 
 		/**
-		 * Role required to access the management endpoint.
+		 * Roles required to access the management endpoint.
 		 */
-		private String role = "ADMIN";
+		private List<String> role = new ArrayList<String>(Arrays.asList("ADMIN"));
 
 		/**
 		 * Session creating policy to use (always, never, if_required, stateless).
@@ -173,11 +177,11 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 			this.sessions = sessions;
 		}
 
-		public void setRole(String role) {
+		public void setRole(List<String> role) {
 			this.role = role;
 		}
 
-		public String getRole() {
+		public List<String> getRole() {
 			return this.role;
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ public class ManagementWebSecurityAutoConfiguration {
 		public void init() {
 			if (this.management != null && this.security != null) {
 				this.security.getUser().getRole()
-						.add(this.management.getSecurity().getRole());
+						.addAll(this.management.getSecurity().getRole());
 			}
 		}
 
@@ -285,8 +285,9 @@ public class ManagementWebSecurityAutoConfiguration {
 			// Permit access to the non-sensitive endpoints
 			requests.requestMatchers(new LazyEndpointPathRequestMatcher(
 					this.contextResolver, EndpointPaths.NON_SENSITIVE)).permitAll();
-			// Restrict the rest to the configured role
-			requests.anyRequest().hasRole(this.management.getSecurity().getRole());
+			// Restrict the rest to the configured roles
+			List<String> roles = this.management.getSecurity().getRole();
+			requests.anyRequest().hasAnyRole(roles.toArray(new String[roles.size()]));
 		}
 
 	}
