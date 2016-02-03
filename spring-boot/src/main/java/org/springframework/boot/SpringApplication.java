@@ -408,8 +408,7 @@ public class SpringApplication {
 				Assert.isAssignable(type, instanceClass);
 				Constructor<?> constructor = instanceClass
 						.getDeclaredConstructor(parameterTypes);
-				constructor.setAccessible(true);
-				T instance = (T) constructor.newInstance(args);
+				T instance = (T) BeanUtils.instantiateClass(constructor, args);
 				instances.add(instance);
 			}
 			catch (Throwable ex) {
