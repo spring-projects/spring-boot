@@ -114,41 +114,38 @@ public class DataSourceAutoConfiguration {
 	protected static class PooledDataSourceConfiguration {
 
 		@SuppressWarnings("unchecked")
-		private static <T> T createDataSource(DataSourceProperties properties, Class<? extends DataSource> type) {
-			return (T) DataSourceBuilder
-					.create(properties.getClassLoader())
-					.type(type)
+		private static <T> T createDataSource(DataSourceProperties properties,
+				Class<? extends DataSource> type) {
+			return (T) DataSourceBuilder.create(properties.getClassLoader()).type(type)
 					.driverClassName(properties.determineDriverClassName())
 					.url(properties.determineUrl())
 					.username(properties.determineUsername())
-					.password(properties.determinePassword())
-					.build();
+					.password(properties.determinePassword()).build();
 		}
 
-
 		@Configuration
-		@Import({TomcatDataSourceConfiguration.class, HikariDataSourceConfiguration.class,
-				DbcpDataSourceConfiguration.class, Dbcp2DataSourceConfiguration.class})
+		@Import({ TomcatDataSourceConfiguration.class,
+				HikariDataSourceConfiguration.class, DbcpDataSourceConfiguration.class,
+				Dbcp2DataSourceConfiguration.class })
 		protected static class AllDataSourceConfiguration {
 		}
 
-
 		@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
-		@ConditionalOnProperty(name = "spring.datasource.type",
-				havingValue = "org.apache.tomcat.jdbc.pool.DataSource", matchIfMissing = true)
+		@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.tomcat.jdbc.pool.DataSource", matchIfMissing = true)
 		protected static class TomcatDataSourceConfiguration {
 
 			@Bean
 			@ConfigurationProperties("spring.datasource.tomcat")
-			public org.apache.tomcat.jdbc.pool.DataSource dataSource(DataSourceProperties properties) {
-				return createDataSource(properties, org.apache.tomcat.jdbc.pool.DataSource.class);
+			public org.apache.tomcat.jdbc.pool.DataSource dataSource(
+					DataSourceProperties properties) {
+				return createDataSource(properties,
+						org.apache.tomcat.jdbc.pool.DataSource.class);
 			}
 
 		}
 
 		@ConditionalOnClass(HikariDataSource.class)
-		@ConditionalOnProperty(name = "spring.datasource.type",
-				havingValue = "com.zaxxer.hikari.HikariDataSource", matchIfMissing = true)
+		@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "com.zaxxer.hikari.HikariDataSource", matchIfMissing = true)
 		protected static class HikariDataSourceConfiguration {
 
 			@Bean
@@ -159,26 +156,28 @@ public class DataSourceAutoConfiguration {
 		}
 
 		@ConditionalOnClass(org.apache.commons.dbcp.BasicDataSource.class)
-		@ConditionalOnProperty(name = "spring.datasource.type",
-				havingValue = "org.apache.commons.dbcp.BasicDataSource", matchIfMissing = true)
+		@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp.BasicDataSource", matchIfMissing = true)
 		protected static class DbcpDataSourceConfiguration {
 
 			@Bean
 			@ConfigurationProperties("spring.datasource.dbcp")
-			public org.apache.commons.dbcp.BasicDataSource dataSource(DataSourceProperties properties) {
-				return createDataSource(properties, org.apache.commons.dbcp.BasicDataSource.class);
+			public org.apache.commons.dbcp.BasicDataSource dataSource(
+					DataSourceProperties properties) {
+				return createDataSource(properties,
+						org.apache.commons.dbcp.BasicDataSource.class);
 			}
 		}
 
 		@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
-		@ConditionalOnProperty(name = "spring.datasource.type",
-				havingValue = "org.apache.commons.dbcp2.BasicDataSource", matchIfMissing = true)
+		@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp2.BasicDataSource", matchIfMissing = true)
 		protected static class Dbcp2DataSourceConfiguration {
 
 			@Bean
 			@ConfigurationProperties("spring.datasource.dbcp2")
-			public org.apache.commons.dbcp2.BasicDataSource dataSource(DataSourceProperties properties) {
-				return createDataSource(properties, org.apache.commons.dbcp2.BasicDataSource.class);
+			public org.apache.commons.dbcp2.BasicDataSource dataSource(
+					DataSourceProperties properties) {
+				return createDataSource(properties,
+						org.apache.commons.dbcp2.BasicDataSource.class);
 			}
 		}
 
