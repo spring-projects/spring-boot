@@ -97,10 +97,8 @@ public abstract class Launcher {
 	protected void launch(String[] args, String mainClass, ClassLoader classLoader)
 			throws Exception {
 		Runnable runner = createMainMethodRunner(mainClass, args, classLoader);
-		Thread runnerThread = new Thread(runner);
-		runnerThread.setContextClassLoader(classLoader);
-		runnerThread.setName(Thread.currentThread().getName());
-		runnerThread.start();
+		Thread.currentThread().setContextClassLoader(classLoader);
+		runner.run();
 	}
 
 	/**
