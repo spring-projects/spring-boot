@@ -395,11 +395,11 @@ public class CrshAutoConfiguration {
 			pluginClasses.add(plugin.getClass());
 
 			for (Class<?> pluginClass : pluginClasses) {
-				if (isEnabled(pluginClass)) {
-					return true;
+				if (!isEnabled(pluginClass)) {
+					return false;
 				}
 			}
-			return false;
+			return true;
 		}
 
 		private boolean isEnabled(Class<?> pluginClass) {
