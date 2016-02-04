@@ -44,7 +44,6 @@ import io.undertow.UndertowMessages;
 import io.undertow.server.HandlerWrapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
-import io.undertow.server.handlers.accesslog.AccessLogReceiver;
 import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.Resource;
@@ -383,11 +382,13 @@ public class UndertowEmbeddedServletContainerFactory
 	private AccessLogHandler createAccessLogHandler(HttpHandler handler) {
 		try {
 			createAccessLogDirectoryIfNecessary();
-			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
-					createWorker(), this.accessLogDirectory, "access_log.");
+			DefaultAccessLogReceiver.Builder accessLogBuilder = DefaultAccessLogReceiver
+					.builder().setLogWriteExecutor(createWorker())
+					.setOutputDirectory(this.accessLogDirectory.toPath())
+					.setLogBaseName("access_log.").setRotate(true);
 			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
 					: "common";
-			return new AccessLogHandler(handler, accessLogReceiver, formatString,
+			return new AccessLogHandler(handler, accessLogBuilder.build(), formatString,
 					Undertow.class.getClassLoader());
 		}
 		catch (IOException ex) {
