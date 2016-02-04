@@ -33,6 +33,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Henri Kerola
  * @see ServerProperties
  */
 @ConfigurationProperties(prefix = "management", ignoreUnknownFields = true)
@@ -78,6 +79,11 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	private boolean addApplicationContextHeader = true;
 
 	private final Security security = maybeCreateSecurity();
+
+	/**
+	 * SSL configuration.
+	 */
+	private Ssl ssl = new Ssl();
 
 	private Security maybeCreateSecurity() {
 		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
@@ -145,6 +151,14 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		this.addApplicationContextHeader = addApplicationContextHeader;
 	}
 
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
+	}
+
 	/**
 	 * Security configuration.
 	 */
@@ -180,6 +194,27 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		public String getRole() {
 			return this.role;
 		}
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+	}
+
+	/**
+	 * SSL configuration.
+	 */
+	public static class Ssl {
+
+		/**
+		 * Use to disable SSL for the management server running on a different
+		 * port than the application using SSL.
+		 */
+		private boolean enabled = true;
 
 		public boolean isEnabled() {
 			return this.enabled;

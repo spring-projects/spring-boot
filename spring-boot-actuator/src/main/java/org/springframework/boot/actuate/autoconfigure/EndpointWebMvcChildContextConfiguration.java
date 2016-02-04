@@ -68,6 +68,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Henri Kerola
  * @see EndpointWebMvcAutoConfiguration
  */
 @Configuration
@@ -191,6 +192,10 @@ public class EndpointWebMvcChildContextConfiguration {
 			container.setServerHeader(this.server.getServerHeader());
 			container.setAddress(this.managementServerProperties.getAddress());
 			container.addErrorPages(new ErrorPage(this.server.getError().getPath()));
+			// disable SSL if it's explicitly disabled in properties
+			if (!this.managementServerProperties.getSsl().isEnabled()) {
+				container.setSsl(null);
+			}
 		}
 
 	}
