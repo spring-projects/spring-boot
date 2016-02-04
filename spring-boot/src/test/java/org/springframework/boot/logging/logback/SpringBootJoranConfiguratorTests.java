@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.logback;
 
+import ch.qos.logback.classic.BasicConfigurator;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
@@ -69,7 +70,8 @@ public class SpringBootJoranConfiguratorTests {
 
 	@After
 	public void reset() {
-		this.context.reset();
+		this.context.stop();
+		BasicConfigurator.configureDefaultContext();
 	}
 
 	@Test
