@@ -65,6 +65,7 @@ import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
@@ -85,14 +86,17 @@ public class MetricFilterAutoConfigurationTests {
 	@Test
 	public void defaultMetricFilterAutoConfigurationProperties() {
 		MetricFilterAutoConfigurationProperties properties = new MetricFilterAutoConfigurationProperties();
-		assertThat(properties.isRecordHttpMethodForGauges(), is(false));
+		assertThat(properties.isRecordRolledUpMetrics(), is(true));
+		assertThat(properties.isRecordMetricsPerHttpMethod(), is(false));
 	}
 
 	@Test
 	public void definedMetricFilterAutoConfigurationProperties() {
 		MetricFilterAutoConfigurationProperties properties = new MetricFilterAutoConfigurationProperties();
-		properties.setRecordHttpMethodForGauges(true);
-		assertThat(properties.isRecordHttpMethodForGauges(), is(true));
+		properties.setRecordRolledUpMetrics(false);
+		properties.setRecordMetricsPerHttpMethod(true);
+		assertThat(properties.isRecordRolledUpMetrics(), is(false));
+		assertThat(properties.isRecordMetricsPerHttpMethod(), is(true));
 	}
 
 	@Test
@@ -310,11 +314,12 @@ public class MetricFilterAutoConfigurationTests {
 	}
 
 	@Test
-	public void recordsGaugesWithHttpMethodName() throws Exception {
+	public void additionallyRecordsMetricsWithHttpMethodNameIfConfigured()
+			throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(Config.class, MetricFilterAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(context,
-				"endpoints.metrics.filter.recordHttpMethodForGauges=true");
+				"endpoints.metrics.filter.recordMetricsPerHttpMethod=true");
 		context.refresh();
 		Filter filter = context.getBean(Filter.class);
 		final MockHttpServletRequest request = new MockHttpServletRequest("PUT",
@@ -328,9 +333,45 @@ public class MetricFilterAutoConfigurationTests {
 				return null;
 			}
 		}).given(chain).doFilter(request, response);
+
 		filter.doFilter(request, response, chain);
+
+		verify(context.getBean(GaugeService.class)).submit(eq("response.test.path"),
+				anyDouble());
 		verify(context.getBean(GaugeService.class)).submit(eq("response.PUT.test.path"),
 				anyDouble());
+		verify(context.getBean(CounterService.class))
+				.increment(eq("status.200.test.path"));
+		verify(context.getBean(CounterService.class))
+				.increment(eq("status.PUT.200.test.path"));
+		context.close();
+	}
+
+	@Test
+	public void doesNotRecordRolledUpMetricsIfConfigured() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(Config.class, MetricFilterAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(context,
+				"endpoints.metrics.filter.recordRolledUpMetrics=false");
+		context.refresh();
+		Filter filter = context.getBean(Filter.class);
+		final MockHttpServletRequest request = new MockHttpServletRequest("PUT",
+				"/test/path");
+		final MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain chain = mock(FilterChain.class);
+		willAnswer(new Answer<Object>() {
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				response.setStatus(200);
+				return null;
+			}
+		}).given(chain).doFilter(request, response);
+
+		filter.doFilter(request, response, chain);
+
+		verify(context.getBean(GaugeService.class), never()).submit(anyString(),
+				anyDouble());
+		verify(context.getBean(CounterService.class), never()).increment(anyString());
 		context.close();
 	}
 

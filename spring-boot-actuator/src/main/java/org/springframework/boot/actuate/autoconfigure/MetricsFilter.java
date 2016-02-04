@@ -61,7 +61,9 @@ final class MetricsFilter extends OncePerRequestFilter {
 
 	private final GaugeService gaugeService;
 
-	private final boolean recordHttpMethodForGauges;
+	private final boolean recordRolledUpMetrics;
+
+	private final boolean recordMetricsPerHttpMethod;
 
 	private static final Set<PatternReplacer> STATUS_REPLACERS;
 
@@ -85,10 +87,11 @@ final class MetricsFilter extends OncePerRequestFilter {
 	}
 
 	MetricsFilter(CounterService counterService, GaugeService gaugeService,
-			boolean recordHttpMethodForGauges) {
+			boolean recordRolledUpMetrics, boolean recordMetricsPerHttpMethod) {
 		this.counterService = counterService;
 		this.gaugeService = gaugeService;
-		this.recordHttpMethodForGauges = recordHttpMethodForGauges;
+		this.recordRolledUpMetrics = recordRolledUpMetrics;
+		this.recordMetricsPerHttpMethod = recordMetricsPerHttpMethod;
 	}
 
 	@Override
@@ -138,12 +141,15 @@ final class MetricsFilter extends OncePerRequestFilter {
 	private void recordMetrics(HttpServletRequest request, String path, int status,
 			long time) {
 		String suffix = getFinalStatus(request, path, status);
-		String baseKey = "response";
-		if (recordHttpMethodForGauges) {
-			baseKey = baseKey + "." + request.getMethod();
+		if (recordRolledUpMetrics) {
+			submitToGauge(getKey("response" + suffix), time);
+			incrementCounter(getKey("status." + status + suffix));
 		}
-		submitToGauge(getKey(baseKey + suffix), time);
-		incrementCounter(getKey("status." + status + suffix));
+		if (recordMetricsPerHttpMethod) {
+			submitToGauge(getKey("response" + "." + request.getMethod() + suffix), time);
+			incrementCounter(
+					getKey("status." + request.getMethod() + "." + status + suffix));
+		}
 	}
 
 	private String getFinalStatus(HttpServletRequest request, String path, int status) {
