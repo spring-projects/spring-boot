@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import groovy.lang.Closure;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
+import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -60,7 +61,7 @@ class BeanDefinitionLoader {
 
 	private final XmlBeanDefinitionReader xmlReader;
 
-	private GroovyBeanDefinitionReader groovyReader;
+	private BeanDefinitionReader groovyReader;
 
 	private final ClassPathBeanDefinitionScanner scanner;
 
@@ -162,7 +163,7 @@ class BeanDefinitionLoader {
 
 	private int load(GroovyBeanDefinitionSource source) {
 		int before = this.xmlReader.getRegistry().getBeanDefinitionCount();
-		this.groovyReader.beans(source.getBeans());
+		((GroovyBeanDefinitionReader) this.groovyReader).beans(source.getBeans());
 		int after = this.xmlReader.getRegistry().getBeanDefinitionCount();
 		return after - before;
 	}
