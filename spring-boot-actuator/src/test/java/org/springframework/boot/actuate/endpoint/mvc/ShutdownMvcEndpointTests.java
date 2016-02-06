@@ -24,7 +24,7 @@ import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -43,7 +43,7 @@ public class ShutdownMvcEndpointTests {
 		@SuppressWarnings("unchecked")
 		ResponseEntity<Map<String, String>> response = (ResponseEntity<Map<String, String>>) this.mvc
 				.invoke();
-		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 }

@@ -53,11 +53,10 @@ import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.NestedServletException;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.BDDMockito.willThrow;
@@ -173,7 +172,7 @@ public class MetricFilterAutoConfigurationTests {
 	public void skipsFilterIfMissingServices() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				MetricFilterAutoConfiguration.class);
-		assertThat(context.getBeansOfType(Filter.class).size(), equalTo(0));
+		assertThat(context.getBeansOfType(Filter.class).size()).isEqualTo(0);
 		context.close();
 	}
 
@@ -184,7 +183,7 @@ public class MetricFilterAutoConfigurationTests {
 				"endpoints.metrics.filter.enabled:false");
 		context.register(Config.class, MetricFilterAutoConfiguration.class);
 		context.refresh();
-		assertThat(context.getBeansOfType(Filter.class).size(), equalTo(0));
+		assertThat(context.getBeansOfType(Filter.class).size()).isEqualTo(0);
 		context.close();
 	}
 
@@ -269,7 +268,7 @@ public class MetricFilterAutoConfigurationTests {
 			fail();
 		}
 		catch (Exception ex) {
-			assertThat(result.getRequest().getAttribute(attributeName), is(nullValue()));
+			assertThat(result.getRequest().getAttribute(attributeName)).isNull();
 			verify(context.getBean(CounterService.class))
 					.increment("status.500.createFailure");
 		}

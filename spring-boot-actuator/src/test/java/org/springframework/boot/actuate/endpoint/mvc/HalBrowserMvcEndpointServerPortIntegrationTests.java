@@ -40,8 +40,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
@@ -68,11 +67,9 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/actuator", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
-				entity.getBody().contains("\"_links\":"));
-		assertTrue("Wrong body: " + entity.getBody(),
-				entity.getBody().contains(":" + this.port));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("\"_links\":");
+		assertThat(entity.getBody()).contains(":" + this.port);
 	}
 
 	@Test
@@ -82,11 +79,9 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/actuator/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
-				entity.getBody().contains("\"_links\":"));
-		assertTrue("Wrong body: " + entity.getBody(),
-				entity.getBody().contains(":" + this.port));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("\"_links\":");
+		assertThat(entity.getBody()).contains(":" + this.port);
 	}
 
 	@Test
@@ -96,9 +91,8 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/actuator/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
-				entity.getBody().contains("<title"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("<title");
 	}
 
 	@MinimalActuatorHypermediaApplication

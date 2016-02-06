@@ -29,8 +29,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationPropertiesReportEndpoint} when used with bean methods.
@@ -65,9 +64,9 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("other");
-		assertNotNull(nestedProperties);
-		assertEquals("other", nestedProperties.get("prefix"));
-		assertNotNull(nestedProperties.get("properties"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("prefix")).isEqualTo("other");
+		assertThat(nestedProperties.get("properties")).isNotNull();
 	}
 
 	@Test
@@ -81,9 +80,9 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("bar");
-		assertNotNull(nestedProperties);
-		assertEquals("other", nestedProperties.get("prefix"));
-		assertNotNull(nestedProperties.get("properties"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("prefix")).isEqualTo("other");
+		assertThat(nestedProperties.get("properties")).isNotNull();
 	}
 
 	@Configuration

@@ -30,9 +30,7 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -57,10 +55,11 @@ public class SolrHealthIndicatorTests {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, SolrAutoConfiguration.class,
 				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
-		assertEquals(1, this.context.getBeanNamesForType(SolrServer.class).length);
+		assertThat(this.context.getBeanNamesForType(SolrServer.class).length)
+				.isEqualTo(1);
 		SolrHealthIndicator healthIndicator = this.context
 				.getBean(SolrHealthIndicator.class);
-		assertNotNull(healthIndicator);
+		assertThat(healthIndicator).isNotNull();
 	}
 
 	@Test
@@ -71,22 +70,21 @@ public class SolrHealthIndicatorTests {
 		response.add("status", "OK");
 		pingResponse.setResponse(response);
 		given(solrServer.ping()).willReturn(pingResponse);
-
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrServer);
 		Health health = healthIndicator.health();
-		assertEquals(Status.UP, health.getStatus());
-		assertEquals("OK", health.getDetails().get("solrStatus"));
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("solrStatus")).isEqualTo("OK");
 	}
 
 	@Test
 	public void solrIsDown() throws Exception {
 		SolrServer solrServer = mock(SolrServer.class);
 		given(solrServer.ping()).willThrow(new IOException("Connection failed"));
-
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrServer);
 		Health health = healthIndicator.health();
-		assertEquals(Status.DOWN, health.getStatus());
-		assertTrue(((String) health.getDetails().get("error"))
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(((String) health.getDetails().get("error"))
 				.contains("Connection failed"));
 	}
+
 }

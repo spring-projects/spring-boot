@@ -37,9 +37,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.mock.env.MockPropertySource;
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -76,8 +74,8 @@ public class ApplicationPidFileWriterTests {
 		File file = this.temporaryFolder.newFile();
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.onApplicationEvent(EVENT);
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)),
-				not(isEmptyString()));
+		FileReader reader = new FileReader(file);
+		assertThat(FileCopyUtils.copyToString(reader)).isNotEmpty();
 	}
 
 	@Test
@@ -86,9 +84,8 @@ public class ApplicationPidFileWriterTests {
 		System.setProperty("PIDFILE", this.temporaryFolder.newFile().getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.onApplicationEvent(EVENT);
-		assertThat(
-				FileCopyUtils.copyToString(new FileReader(System.getProperty("PIDFILE"))),
-				not(isEmptyString()));
+		FileReader reader = new FileReader(System.getProperty("PIDFILE"));
+		assertThat(FileCopyUtils.copyToString(reader)).isNotEmpty();
 	}
 
 	@Test
@@ -98,8 +95,7 @@ public class ApplicationPidFileWriterTests {
 				file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
 		listener.onApplicationEvent(event);
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)),
-				not(isEmptyString()));
+		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isNotEmpty();
 	}
 
 	@Test
@@ -109,11 +105,10 @@ public class ApplicationPidFileWriterTests {
 				file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
 		listener.onApplicationEvent(event);
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)), isEmptyString());
+		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEmpty();
 		listener.setTriggerEventType(ApplicationEnvironmentPreparedEvent.class);
 		listener.onApplicationEvent(event);
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)),
-				not(isEmptyString()));
+		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isNotEmpty();
 	}
 
 	@Test
@@ -123,8 +118,7 @@ public class ApplicationPidFileWriterTests {
 		listener.setTriggerEventType(ApplicationStartedEvent.class);
 		listener.onApplicationEvent(
 				new ApplicationStartedEvent(new SpringApplication(), new String[] {}));
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)),
-				not(isEmptyString()));
+		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isNotEmpty();
 	}
 
 	@Test
@@ -133,7 +127,7 @@ public class ApplicationPidFileWriterTests {
 		file.setReadOnly();
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.onApplicationEvent(EVENT);
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)), isEmptyString());
+		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEmpty();
 	}
 
 	@Test

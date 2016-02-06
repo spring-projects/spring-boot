@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link EndpointWebMvcAutoConfiguration} of the {@link HealthMvcEndpoint}.
@@ -62,8 +62,8 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context.refresh();
 		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
 				.invoke(null);
-		assertEquals(Status.UP, health.getStatus());
-		assertEquals(null, health.getDetails().get("foo"));
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("foo")).isNull();
 	}
 
 	@Test
@@ -76,9 +76,9 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context.refresh();
 		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
 				.invoke(null);
-		assertEquals(Status.UP, health.getStatus());
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		Health map = (Health) health.getDetails().get("test");
-		assertEquals("bar", map.getDetails().get("foo"));
+		assertThat(map.getDetails().get("foo")).isEqualTo("bar");
 	}
 
 	@Configuration
