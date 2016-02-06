@@ -51,12 +51,7 @@ import org.springframework.session.ExpiringSession;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -94,7 +89,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		this.context = initializeAndRun(Config.class);
 		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
 		resolver.initialize();
-		assertThat(resolver.isCacheable(), equalTo(false));
+		assertThat(resolver.isCacheable()).isFalse();
 	}
 
 	@Test
@@ -102,7 +97,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		this.context = initializeAndRun(Config.class, "--spring.thymeleaf.cache=true");
 		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
 		resolver.initialize();
-		assertThat(resolver.isCacheable(), equalTo(true));
+		assertThat(resolver.isCacheable()).isTrue();
 	}
 
 	@Test
@@ -114,7 +109,7 @@ public class LocalDevToolsAutoConfigurationTests {
 			this.context = initializeAndRun(Config.class);
 			TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
 			resolver.initialize();
-			assertThat(resolver.isCacheable(), equalTo(true));
+			assertThat(resolver.isCacheable()).isTrue();
 		}
 		finally {
 			System.setProperty("user.home", userHome);
@@ -125,14 +120,14 @@ public class LocalDevToolsAutoConfigurationTests {
 	public void resourceCachePeriodIsZero() throws Exception {
 		this.context = initializeAndRun(WebResourcesConfig.class);
 		ResourceProperties properties = this.context.getBean(ResourceProperties.class);
-		assertThat(properties.getCachePeriod(), equalTo(0));
+		assertThat(properties.getCachePeriod()).isEqualTo(0);
 	}
 
 	@Test
 	public void liveReloadServer() throws Exception {
 		this.context = initializeAndRun(Config.class);
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
-		assertThat(server.isStarted(), equalTo(true));
+		assertThat(server.isStarted()).isTrue();
 	}
 
 	@Test
@@ -198,7 +193,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		this.context = initializeAndRun(Config.class);
 		ClassPathFileSystemWatcher watcher = this.context
 				.getBean(ClassPathFileSystemWatcher.class);
-		assertThat(watcher, notNullValue());
+		assertThat(watcher).isNotNull();
 	}
 
 	@Test
@@ -220,7 +215,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		Object watcher = ReflectionTestUtils.getField(classPathWatcher,
 				"fileSystemWatcher");
 		Object filter = ReflectionTestUtils.getField(watcher, "triggerFilter");
-		assertThat(filter, instanceOf(TriggerFileFilter.class));
+		assertThat(filter).isInstanceOf(TriggerFileFilter.class);
 	}
 
 	@Test
@@ -236,9 +231,9 @@ public class LocalDevToolsAutoConfigurationTests {
 		@SuppressWarnings("unchecked")
 		Map<File, Object> folders = (Map<File, Object>) ReflectionTestUtils
 				.getField(watcher, "folders");
-		assertThat(folders.size(), is(equalTo(2)));
-		assertThat(folders, hasKey(new File("src/main/java").getAbsoluteFile()));
-		assertThat(folders, hasKey(new File("src/test/java").getAbsoluteFile()));
+		assertThat(folders).hasSize(2)
+				.containsKey(new File("src/main/java").getAbsoluteFile())
+				.containsKey(new File("src/test/java").getAbsoluteFile());
 	}
 
 	@Test
@@ -263,14 +258,14 @@ public class LocalDevToolsAutoConfigurationTests {
 		this.context = application.run();
 		RedisTemplate<?, ?> redisTemplate = this.context.getBean("sessionRedisTemplate",
 				RedisTemplate.class);
-		assertThat(redisTemplate.getHashKeySerializer(),
-				is(instanceOf(RestartCompatibleRedisSerializer.class)));
-		assertThat(redisTemplate.getHashValueSerializer(),
-				is(instanceOf(RestartCompatibleRedisSerializer.class)));
-		assertThat(redisTemplate.getKeySerializer(),
-				is(instanceOf(RestartCompatibleRedisSerializer.class)));
-		assertThat(redisTemplate.getValueSerializer(),
-				is(instanceOf(RestartCompatibleRedisSerializer.class)));
+		assertThat(redisTemplate.getHashKeySerializer())
+				.isInstanceOf(RestartCompatibleRedisSerializer.class);
+		assertThat(redisTemplate.getHashValueSerializer())
+				.isInstanceOf(RestartCompatibleRedisSerializer.class);
+		assertThat(redisTemplate.getKeySerializer())
+				.isInstanceOf(RestartCompatibleRedisSerializer.class);
+		assertThat(redisTemplate.getValueSerializer())
+				.isInstanceOf(RestartCompatibleRedisSerializer.class);
 	}
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config,

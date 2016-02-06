@@ -27,8 +27,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -53,7 +52,7 @@ public class OnInitializedRestarterConditionTests {
 		Restarter.clearInstance();
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class);
-		assertThat(context.containsBean("bean"), equalTo(false));
+		assertThat(context.containsBean("bean")).isFalse();
 		context.close();
 	}
 
@@ -62,7 +61,7 @@ public class OnInitializedRestarterConditionTests {
 		Restarter.initialize(new String[0], false, RestartInitializer.NONE);
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class);
-		assertThat(context.containsBean("bean"), equalTo(false));
+		assertThat(context.containsBean("bean")).isFalse();
 		context.close();
 	}
 
@@ -90,7 +89,7 @@ public class OnInitializedRestarterConditionTests {
 			Restarter.initialize(new String[0], false, initializer);
 			ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 					Config.class);
-			assertThat(context.containsBean("bean"), equalTo(true));
+			assertThat(context.containsBean("bean")).isTrue();
 			context.close();
 			synchronized (wait) {
 				wait.notify();

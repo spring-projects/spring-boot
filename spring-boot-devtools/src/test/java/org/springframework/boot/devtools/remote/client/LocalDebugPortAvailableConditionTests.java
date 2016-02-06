@@ -28,8 +28,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.SocketUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -47,8 +46,8 @@ public class LocalDebugPortAvailableConditionTests {
 	@Test
 	public void portAvailable() throws Exception {
 		ConditionOutcome outcome = getOutcome();
-		assertThat(outcome.isMatch(), equalTo(true));
-		assertThat(outcome.getMessage(), equalTo("Local debug port available"));
+		assertThat(outcome.isMatch()).isTrue();
+		assertThat(outcome.getMessage()).isEqualTo("Local debug port available");
 	}
 
 	@Test
@@ -57,8 +56,8 @@ public class LocalDebugPortAvailableConditionTests {
 				.createServerSocket(this.port);
 		ConditionOutcome outcome = getOutcome();
 		serverSocket.close();
-		assertThat(outcome.isMatch(), equalTo(false));
-		assertThat(outcome.getMessage(), equalTo("Local debug port unavailable"));
+		assertThat(outcome.isMatch()).isFalse();
+		assertThat(outcome.getMessage()).isEqualTo("Local debug port unavailable");
 	}
 
 	private ConditionOutcome getOutcome() {

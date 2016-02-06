@@ -20,8 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link StaticPortProvider}.
@@ -43,7 +42,7 @@ public class StaticPortProviderTests {
 	@Test
 	public void getPort() throws Exception {
 		StaticPortProvider provider = new StaticPortProvider(123);
-		assertThat(provider.getPort(), equalTo(123));
+		assertThat(provider.getPort()).isEqualTo(123);
 	}
 
 }

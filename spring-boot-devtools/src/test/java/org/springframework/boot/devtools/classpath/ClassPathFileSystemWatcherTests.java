@@ -40,8 +40,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -84,9 +83,9 @@ public class ClassPathFileSystemWatcherTests {
 		FileCopyUtils.copy("file".getBytes(), classFile);
 		Thread.sleep(1100);
 		List<ClassPathChangedEvent> events = context.getBean(Listener.class).getEvents();
-		assertThat(events.size(), equalTo(1));
+		assertThat(events.size()).isEqualTo(1);
 		assertThat(events.get(0).getChangeSet().iterator().next().getFiles().iterator()
-				.next().getFile(), equalTo(classFile));
+				.next().getFile()).isEqualTo(classFile);
 		context.close();
 	}
 

@@ -47,8 +47,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -204,7 +203,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
 		this.response.setStatus(500);
 		filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.response.getStatus(), equalTo(200));
+		assertThat(this.response.getStatus()).isEqualTo(200);
 	}
 
 	@Test
@@ -216,17 +215,17 @@ public class RemoteDevToolsAutoConfigurationTests {
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
 		this.response.setStatus(500);
 		filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.response.getStatus(), equalTo(200));
+		assertThat(this.response.getStatus()).isEqualTo(200);
 	}
 
 	private void assertTunnelInvoked(boolean value) {
-		assertThat(this.context.getBean(MockHttpTunnelServer.class).invoked,
-				equalTo(value));
+		assertThat(this.context.getBean(MockHttpTunnelServer.class).invoked)
+				.isEqualTo(value);
 	}
 
 	private void assertRestartInvoked(boolean value) {
-		assertThat(this.context.getBean(MockHttpRestartServer.class).invoked,
-				equalTo(value));
+		assertThat(this.context.getBean(MockHttpRestartServer.class).invoked)
+				.isEqualTo(value);
 	}
 
 	private void loadContext(String... properties) {

@@ -49,9 +49,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.util.SocketUtils;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -88,20 +86,20 @@ public class RemoteClientConfigurationTests {
 	public void warnIfDebugAndRestartDisabled() throws Exception {
 		configure("spring.devtools.remote.debug.enabled:false",
 				"spring.devtools.remote.restart.enabled:false");
-		assertThat(this.output.toString(),
-				containsString("Remote restart and debug are both disabled"));
+		assertThat(this.output.toString())
+				.contains("Remote restart and debug are both disabled");
 	}
 
 	@Test
 	public void warnIfNotHttps() throws Exception {
 		configure("http://localhost", true);
-		assertThat(this.output.toString(), containsString("is insecure"));
+		assertThat(this.output.toString()).contains("is insecure");
 	}
 
 	@Test
 	public void doesntWarnIfUsingHttps() throws Exception {
 		configure("https://localhost", true);
-		assertThat(this.output.toString(), not(containsString("is insecure")));
+		assertThat(this.output.toString()).doesNotContain("is insecure");
 	}
 
 	@Test

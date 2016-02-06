@@ -18,9 +18,7 @@ package org.springframework.boot.devtools.restart;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -41,7 +39,7 @@ public class SilentExitExceptionHandlerTests {
 		};
 		SilentExitExceptionHandler.setup(testThread);
 		testThread.startAndJoin();
-		assertThat(testThread.getThrown(), nullValue());
+		assertThat(testThread.getThrown()).isNull();
 	}
 
 	@Test
@@ -54,7 +52,7 @@ public class SilentExitExceptionHandlerTests {
 		};
 		SilentExitExceptionHandler.setup(testThread);
 		testThread.startAndJoin();
-		assertThat(testThread.getThrown().getMessage(), equalTo("Expected"));
+		assertThat(testThread.getThrown().getMessage()).isEqualTo("Expected");
 	}
 
 	private static abstract class TestThread extends Thread {
