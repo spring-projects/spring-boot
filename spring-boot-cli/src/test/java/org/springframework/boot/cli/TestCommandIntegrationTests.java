@@ -24,8 +24,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.cli.command.test.TestCommand;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests to exercise the CLI's test command.
@@ -54,13 +53,13 @@ public class TestCommandIntegrationTests {
 	@Test
 	public void noTests() throws Throwable {
 		String output = this.cli.test("book.groovy");
-		assertThat(output, containsString("No tests found"));
+		assertThat(output).contains("No tests found");
 	}
 
 	@Test
 	public void empty() throws Exception {
 		String output = this.cli.test("empty.groovy");
-		assertThat(output, containsString("No tests found"));
+		assertThat(output).contains("No tests found");
 	}
 
 	@Test
@@ -74,48 +73,49 @@ public class TestCommandIntegrationTests {
 	@Test
 	public void appAndTestsInOneFile() throws Exception {
 		String output = this.cli.test("book_and_tests.groovy");
-		assertThat(output, containsString("OK (1 test)"));
+		assertThat(output).contains("OK (1 test)");
 	}
 
 	@Test
 	public void appInOneFileTestsInAnotherFile() throws Exception {
 		String output = this.cli.test("book.groovy", "test.groovy");
-		assertThat(output, containsString("OK (1 test)"));
+		assertThat(output).contains("OK (1 test)");
 	}
 
 	@Test
 	public void integrationTest() throws Exception {
 		String output = this.cli.test("integration.groovy");
-		assertThat(output, containsString("OK (1 test)"));
+		assertThat(output).contains("OK (1 test)");
 	}
 
 	@Test
 	public void integrationAutoConfigEmbeddedTest() throws Exception {
 		String output = this.cli.test("integration_auto.groovy");
-		assertThat(output, containsString("OK (1 test)"));
+		assertThat(output).contains("OK (1 test)");
 	}
 
 	@Test
 	public void integrationAutoConfigTest() throws Exception {
 		String output = this.cli.test("integration_auto_test.groovy", "reactor.groovy");
-		assertThat(output, containsString("OK (1 test)"));
+		assertThat(output).contains("OK (1 test)");
 	}
 
 	@Test
 	public void spockTester() throws Exception {
 		String output = this.cli.test("spock.groovy");
-		assertThat(output, containsString("OK (1 test)"));
+		assertThat(output).contains("OK (1 test)");
 	}
 
 	@Test
 	public void spockAndJunitTester() throws Exception {
 		String output = this.cli.test("spock.groovy", "book_and_tests.groovy");
-		assertThat(output, containsString("OK (2 tests)"));
+		assertThat(output).contains("OK (2 tests)");
 	}
 
 	@Test
 	public void verifyFailures() throws Exception {
 		String output = this.cli.test("failures.groovy");
-		assertThat(output, containsString("Tests run: 5,  Failures: 3"));
+		assertThat(output).contains("Tests run: 5,  Failures: 3");
 	}
+
 }
