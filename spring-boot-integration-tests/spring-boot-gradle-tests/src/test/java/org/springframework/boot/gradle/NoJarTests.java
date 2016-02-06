@@ -21,7 +21,7 @@ import java.io.File;
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for using the Gradle plugin's support for flat directory repos
@@ -39,7 +39,7 @@ public class NoJarTests {
 		this.project = new ProjectCreator().createProject("nojar");
 		this.project.newBuild().forTasks("build")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
-		assertFalse(new File("target/nojar/build/libs").exists());
+		assertThat(new File("target/nojar/build/libs")).doesNotExist();
 	}
 
 }

@@ -41,18 +41,19 @@ import com.github.dockerjava.core.command.AttachContainerResultCallback;
 import com.github.dockerjava.core.command.BuildImageResultCallback;
 import com.github.dockerjava.jaxrs.AbstrSyncDockerCmdExec;
 import com.github.dockerjava.jaxrs.DockerCmdExecFactoryImpl;
-import org.hamcrest.Matcher;
+import org.assertj.core.api.Condition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import org.springframework.boot.ansi.AnsiColor;
+import org.springframework.boot.test.assertj.Matched;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
 
 /**
@@ -90,70 +91,70 @@ public class SysVinitLaunchScriptIT {
 	@Test
 	public void statusWhenStopped() throws Exception {
 		String output = doTest("status-when-stopped.sh");
-		assertThat(output, containsString("Status: 3"));
-		assertThat(output, containsColoredString(AnsiColor.RED, "Not running"));
+		assertThat(output).contains("Status: 3");
+		assertThat(output).has(coloredString(AnsiColor.RED, "Not running"));
 	}
 
 	@Test
 	public void statusWhenStarted() throws Exception {
 		String output = doTest("status-when-started.sh");
-		assertThat(output, containsString("Status: 0"));
-		assertThat(output, containsColoredString(AnsiColor.GREEN,
-				"Started [" + extractPid(output) + "]"));
+		assertThat(output).contains("Status: 0");
+		assertThat(output).has(
+				coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
 	}
 
 	@Test
 	public void statusWhenKilled() throws Exception {
 		String output = doTest("status-when-killed.sh");
-		assertThat(output, containsString("Status: 1"));
-		assertThat(output, containsColoredString(AnsiColor.RED,
+		assertThat(output).contains("Status: 1");
+		assertThat(output).has(coloredString(AnsiColor.RED,
 				"Not running (process " + extractPid(output) + " not found)"));
 	}
 
 	@Test
 	public void stopWhenStopped() throws Exception {
 		String output = doTest("stop-when-stopped.sh");
-		assertThat(output, containsString("Status: 0"));
-		assertThat(output, containsColoredString(AnsiColor.YELLOW,
-				"Not running (pidfile not found)"));
+		assertThat(output).contains("Status: 0");
+		assertThat(output)
+				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
 	}
 
 	@Test
 	public void startWhenStarted() throws Exception {
 		String output = doTest("start-when-started.sh");
-		assertThat(output, containsString("Status: 0"));
-		assertThat(output, containsColoredString(AnsiColor.YELLOW,
+		assertThat(output).contains("Status: 0");
+		assertThat(output).has(coloredString(AnsiColor.YELLOW,
 				"Already running [" + extractPid(output) + "]"));
 	}
 
 	@Test
 	public void restartWhenStopped() throws Exception {
 		String output = doTest("restart-when-stopped.sh");
-		assertThat(output, containsString("Status: 0"));
-		assertThat(output, containsColoredString(AnsiColor.YELLOW,
-				"Not running (pidfile not found)"));
-		assertThat(output, containsColoredString(AnsiColor.GREEN,
-				"Started [" + extractPid(output) + "]"));
+		assertThat(output).contains("Status: 0");
+		assertThat(output)
+				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
+		assertThat(output).has(
+				coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
 	}
 
 	@Test
 	public void restartWhenStarted() throws Exception {
 		String output = doTest("restart-when-started.sh");
-		assertThat(output, containsString("Status: 0"));
-		assertThat(output, containsColoredString(AnsiColor.GREEN,
+		assertThat(output).contains("Status: 0");
+		assertThat(output).has(coloredString(AnsiColor.GREEN,
 				"Started [" + extract("PID1", output) + "]"));
-		assertThat(output, containsColoredString(AnsiColor.GREEN,
+		assertThat(output).has(coloredString(AnsiColor.GREEN,
 				"Stopped [" + extract("PID1", output) + "]"));
-		assertThat(output, containsColoredString(AnsiColor.GREEN,
+		assertThat(output).has(coloredString(AnsiColor.GREEN,
 				"Started [" + extract("PID2", output) + "]"));
 	}
 
 	@Test
 	public void startWhenStopped() throws Exception {
 		String output = doTest("start-when-stopped.sh");
-		assertThat(output, containsString("Status: 0"));
-		assertThat(output, containsColoredString(AnsiColor.GREEN,
-				"Started [" + extractPid(output) + "]"));
+		assertThat(output).contains("Status: 0");
+		assertThat(output).has(
+				coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
 	}
 
 	@Test
@@ -199,7 +200,7 @@ public class SysVinitLaunchScriptIT {
 	}
 
 	private void doLaunch(String script) throws Exception {
-		assertThat(doTest(script), containsString("Launched"));
+		assertThat(doTest(script)).contains("Launched");
 	}
 
 	private String doTest(String script) throws Exception {
@@ -277,8 +278,9 @@ public class SysVinitLaunchScriptIT {
 				"Could not find test application in target directory. Have you built it (mvn package)?");
 	}
 
-	private Matcher<String> containsColoredString(AnsiColor color, String string) {
-		return containsString(ESC + "[0;" + color + "m" + string + ESC + "[0m");
+	private Condition<String> coloredString(AnsiColor color, String string) {
+		String colorString = ESC + "[0;" + color + "m" + string + ESC + "[0m";
+		return Matched.by(containsString(colorString));
 	}
 
 	private String extractPid(String output) {

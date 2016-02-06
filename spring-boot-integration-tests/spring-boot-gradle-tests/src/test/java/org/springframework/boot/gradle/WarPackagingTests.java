@@ -30,8 +30,7 @@ import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for war packaging with Gradle to ensure that only the Servlet container and its
@@ -59,8 +58,7 @@ public class WarPackagingTests {
 					"asm-", "javax.websocket-api-", "asm-tree-", "asm-commons-",
 					"websocket-common-", "jetty-annotations-",
 					"javax-websocket-client-impl-", "websocket-client-",
-					"websocket-server-", "jetty-xml-",
-					"websocket-servlet-"));
+					"websocket-server-", "jetty-xml-", "websocket-servlet-"));
 
 	private static final String BOOT_VERSION = Versions.getBootVersion();
 
@@ -107,35 +105,26 @@ public class WarPackagingTests {
 	private void checkWebInfLibProvidedEntries(JarFile war, Set<String> expectedEntries)
 			throws IOException {
 		Set<String> entries = getWebInfLibProvidedEntries(war);
-
-		assertEquals("Expected " + expectedEntries.size() + " but found " + entries.size()
-				+ ": " + entries, expectedEntries.size(), entries.size());
-
+		assertThat(entries).hasSameSizeAs(expectedEntries);
 		List<String> unexpectedLibProvidedEntries = new ArrayList<String>();
 		for (String entry : entries) {
 			if (!isExpectedInWebInfLibProvided(entry, expectedEntries)) {
 				unexpectedLibProvidedEntries.add(entry);
 			}
 		}
-		assertTrue(
-				"Found unexpected entries in WEB-INF/lib-provided: "
-						+ unexpectedLibProvidedEntries,
-				unexpectedLibProvidedEntries.isEmpty());
+		assertThat(unexpectedLibProvidedEntries.isEmpty());
 	}
 
 	private void checkWebInfLibEntries(JarFile war, Set<String> entriesOnlyInLibProvided)
 			throws IOException {
 		Set<String> entries = getWebInfLibEntries(war);
-
 		List<String> unexpectedLibEntries = new ArrayList<String>();
 		for (String entry : entries) {
 			if (!isExpectedInWebInfLib(entry, entriesOnlyInLibProvided)) {
 				unexpectedLibEntries.add(entry);
 			}
 		}
-
-		assertTrue("Found unexpected entries in WEB-INF/lib: " + unexpectedLibEntries,
-				unexpectedLibEntries.isEmpty());
+		assertThat(unexpectedLibEntries.isEmpty());
 	}
 
 	private Set<String> getWebInfLibProvidedEntries(JarFile war) throws IOException {
@@ -189,4 +178,5 @@ public class WarPackagingTests {
 		}
 		return true;
 	}
+
 }

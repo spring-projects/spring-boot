@@ -28,8 +28,7 @@ import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for creating a fully executable jar with Gradle.
@@ -53,7 +52,7 @@ public class FullyExecutableJarTests {
 				.withArguments("-PbootVersion=" + BOOT_VERSION).run();
 		File buildLibs = new File("target/executable-jar/build/libs");
 		File executableJar = new File(buildLibs, "executable-jar.jar");
-		assertThat(isFullyExecutable(executableJar), is(false));
+		assertThat(isFullyExecutable(executableJar)).isFalse();
 	}
 
 	@Test
@@ -62,7 +61,7 @@ public class FullyExecutableJarTests {
 				"-PbootVersion=" + BOOT_VERSION, "-PextensionExecutable=true").run();
 		File buildLibs = new File("target/executable-jar/build/libs");
 		File executableJar = new File(buildLibs, "executable-jar.jar");
-		assertThat(isFullyExecutable(executableJar), is(true));
+		assertThat(isFullyExecutable(executableJar)).isTrue();
 	}
 
 	@Test
@@ -72,7 +71,7 @@ public class FullyExecutableJarTests {
 				.run();
 		File buildLibs = new File("target/executable-jar/build/libs");
 		File executableJar = new File(buildLibs, "executable-jar.jar");
-		assertThat(isFullyExecutable(executableJar), is(true));
+		assertThat(isFullyExecutable(executableJar)).isTrue();
 	}
 
 	@Test
@@ -83,7 +82,7 @@ public class FullyExecutableJarTests {
 				.run();
 		File buildLibs = new File("target/executable-jar/build/libs");
 		File executableJar = new File(buildLibs, "executable-jar.jar");
-		assertThat(isFullyExecutable(executableJar), is(true));
+		assertThat(isFullyExecutable(executableJar)).isTrue();
 	}
 
 	@Test
@@ -93,8 +92,8 @@ public class FullyExecutableJarTests {
 				.run();
 		File buildLibs = new File("target/executable-jar/build/libs");
 		File executableJar = new File(buildLibs, "executable-jar.jar");
-		assertThat(isFullyExecutable(executableJar), is(true));
-		assertThat(containsLine("# Provides:.*__task__", executableJar), is(true));
+		assertThat(isFullyExecutable(executableJar)).isTrue();
+		assertThat(containsLine("# Provides:.*__task__", executableJar)).isTrue();
 	}
 
 	@Test
@@ -103,8 +102,8 @@ public class FullyExecutableJarTests {
 				"-PbootVersion=" + BOOT_VERSION, "-PextensionProperties=true").run();
 		File buildLibs = new File("target/executable-jar/build/libs");
 		File executableJar = new File(buildLibs, "executable-jar.jar");
-		assertThat(isFullyExecutable(executableJar), is(true));
-		assertThat(containsLine("# Provides:.*__extension__", executableJar), is(true));
+		assertThat(isFullyExecutable(executableJar)).isTrue();
+		assertThat(containsLine("# Provides:.*__extension__", executableJar)).isTrue();
 	}
 
 	@Test
@@ -115,8 +114,8 @@ public class FullyExecutableJarTests {
 				.run();
 		File buildLibs = new File("target/executable-jar/build/libs");
 		File executableJar = new File(buildLibs, "executable-jar.jar");
-		assertThat(isFullyExecutable(executableJar), is(true));
-		assertThat(containsLine("# Provides:.*__task__", executableJar), is(true));
+		assertThat(isFullyExecutable(executableJar)).isTrue();
+		assertThat(containsLine("# Provides:.*__task__", executableJar)).isTrue();
 	}
 
 	@Test
@@ -126,7 +125,7 @@ public class FullyExecutableJarTests {
 				.run();
 		File buildLibs = new File("target/executable-jar/build/libs");
 		File executableJar = new File(buildLibs, "executable-jar.jar");
-		assertThat(containsLine("Custom task script", executableJar), is(true));
+		assertThat(containsLine("Custom task script", executableJar)).isTrue();
 	}
 
 	@Test
@@ -136,7 +135,7 @@ public class FullyExecutableJarTests {
 				.run();
 		File buildLibs = new File("target/executable-jar/build/libs");
 		File executableJar = new File(buildLibs, "executable-jar.jar");
-		assertThat(containsLine("Custom extension script", executableJar), is(true));
+		assertThat(containsLine("Custom extension script", executableJar)).isTrue();
 	}
 
 	@Test
@@ -147,7 +146,7 @@ public class FullyExecutableJarTests {
 				.run();
 		File buildLibs = new File("target/executable-jar/build/libs");
 		File executableJar = new File(buildLibs, "executable-jar.jar");
-		assertThat(containsLine("Custom task script", executableJar), is(true));
+		assertThat(containsLine("Custom task script", executableJar)).isTrue();
 	}
 
 	private boolean isFullyExecutable(File file) throws IOException {
