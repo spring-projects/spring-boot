@@ -24,7 +24,7 @@ import org.springframework.boot.test.SpringApplicationConfigurationMixedConfigur
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringApplicationContextLoader}.
@@ -43,8 +43,8 @@ public class SpringApplicationConfigurationMixedConfigurationTests {
 
 	@Test
 	public void mixedConfigClasses() {
-		assertNotNull(this.foo);
-		assertNotNull(this.config);
+		assertThat(this.foo).isNotNull();
+		assertThat(this.config).isNotNull();
 	}
 
 	@Configuration

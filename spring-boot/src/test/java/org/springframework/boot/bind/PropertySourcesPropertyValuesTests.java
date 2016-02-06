@@ -17,7 +17,6 @@
 package org.springframework.boot.bind;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -34,9 +33,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.validation.DataBinder;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PropertySourcesPropertyValues}.
@@ -71,14 +68,14 @@ public class PropertySourcesPropertyValuesTests {
 		this.propertySources.replace("map", new MapPropertySource("map", map));
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
 				this.propertySources);
-		assertEquals(123, propertyValues.getPropertyValues()[0].getValue());
+		assertThat(propertyValues.getPropertyValues()[0].getValue()).isEqualTo(123);
 	}
 
 	@Test
 	public void testSize() {
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
 				this.propertySources);
-		assertEquals(1, propertyValues.getPropertyValues().length);
+		assertThat(propertyValues.getPropertyValues().length).isEqualTo(1);
 	}
 
 	@Test
@@ -93,19 +90,19 @@ public class PropertySourcesPropertyValuesTests {
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
 				this.propertySources);
 		PropertyValue[] values = propertyValues.getPropertyValues();
-		assertEquals(6, values.length);
+		assertThat(values).hasSize(6);
 		Collection<String> names = new ArrayList<String>();
 		for (PropertyValue value : values) {
 			names.add(value.getName());
 		}
-		assertEquals("[one, two, three, four, five, name]", names.toString());
+		assertThat(names).containsExactly("one", "two", "three", "four", "five", "name");
 	}
 
 	@Test
 	public void testNonEnumeratedValue() {
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
 				this.propertySources);
-		assertEquals("bar", propertyValues.getPropertyValue("foo").getValue());
+		assertThat(propertyValues.getPropertyValue("foo").getValue()).isEqualTo("bar");
 	}
 
 	@Test
@@ -116,14 +113,14 @@ public class PropertySourcesPropertyValuesTests {
 		this.propertySources.replace("map", composite);
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
 				this.propertySources);
-		assertEquals("bar", propertyValues.getPropertyValue("foo").getValue());
+		assertThat(propertyValues.getPropertyValue("foo").getValue()).isEqualTo("bar");
 	}
 
 	@Test
 	public void testEnumeratedValue() {
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
 				this.propertySources);
-		assertEquals("bar", propertyValues.getPropertyValue("name").getValue());
+		assertThat(propertyValues.getPropertyValue("name").getValue()).isEqualTo("bar");
 	}
 
 	@Test
@@ -142,7 +139,7 @@ public class PropertySourcesPropertyValuesTests {
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
 				this.propertySources, (Collection<String>) null,
 				Collections.singleton("baz"));
-		assertEquals("bar", propertyValues.getPropertyValue("baz").getValue());
+		assertThat(propertyValues.getPropertyValue("baz").getValue()).isEqualTo("bar");
 	}
 
 	@Test
@@ -151,7 +148,7 @@ public class PropertySourcesPropertyValuesTests {
 				Collections.<String, Object>singletonMap("name", "spam")));
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
 				this.propertySources);
-		assertEquals("spam", propertyValues.getPropertyValue("name").getValue());
+		assertThat(propertyValues.getPropertyValue("name").getValue()).isEqualTo("spam");
 	}
 
 	@Test
@@ -159,7 +156,7 @@ public class PropertySourcesPropertyValuesTests {
 		TestBean target = new TestBean();
 		DataBinder binder = new DataBinder(target);
 		binder.bind(new PropertySourcesPropertyValues(this.propertySources));
-		assertEquals("bar", target.getName());
+		assertThat(target.getName()).isEqualTo("bar");
 	}
 
 	@Test
@@ -168,7 +165,7 @@ public class PropertySourcesPropertyValuesTests {
 		DataBinder binder = new DataBinder(target);
 		binder.bind(new PropertySourcesPropertyValues(this.propertySources,
 				(Collection<String>) null, Collections.singleton("foo")));
-		assertEquals("bar", target.getFoo());
+		assertThat(target.getFoo()).isEqualTo("bar");
 	}
 
 	@Test
@@ -178,7 +175,7 @@ public class PropertySourcesPropertyValuesTests {
 		this.propertySources.addFirst(new MapPropertySource("another",
 				Collections.<String, Object>singletonMap("something", "${nonexistent}")));
 		binder.bind(new PropertySourcesPropertyValues(this.propertySources));
-		assertEquals("bar", target.getName());
+		assertThat(target.getName()).isEqualTo("bar");
 	}
 
 	@Test
@@ -195,7 +192,7 @@ public class PropertySourcesPropertyValuesTests {
 		});
 		binder.bind(new PropertySourcesPropertyValues(this.propertySources,
 				(Collection<String>) null, Collections.singleton("name")));
-		assertEquals(null, target.getName());
+		assertThat(target.getName()).isNull();
 	}
 
 	@Test
@@ -207,7 +204,7 @@ public class PropertySourcesPropertyValuesTests {
 		map.put("list[1]", "v1");
 		this.propertySources.addFirst(new MapPropertySource("values", map));
 		binder.bind(new PropertySourcesPropertyValues(this.propertySources));
-		assertThat(target.getList(), equalTo(Arrays.asList("v0", "v1")));
+		assertThat(target.getList()).containsExactly("v0", "v1");
 	}
 
 	@Test
@@ -222,7 +219,7 @@ public class PropertySourcesPropertyValuesTests {
 		this.propertySources.addFirst(new MapPropertySource("s", second));
 		this.propertySources.addFirst(new MapPropertySource("f", first));
 		binder.bind(new PropertySourcesPropertyValues(this.propertySources));
-		assertThat(target.getList(), equalTo(Collections.singletonList("f0")));
+		assertThat(target.getList()).containsExactly("f0");
 	}
 
 	public static class TestBean {

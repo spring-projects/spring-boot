@@ -38,9 +38,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link IntegrationTest}
@@ -66,21 +64,20 @@ public class SpringApplicationWebIntegrationTestTests {
 
 	@Test
 	public void runAndTestHttpEndpoint() {
-		assertNotEquals(8080, this.port);
-		assertNotEquals(0, this.port);
+		assertThat(this.port).isNotEqualTo(8080).isNotEqualTo(0);
 		String body = new RestTemplate()
 				.getForObject("http://localhost:" + this.port + "/", String.class);
-		assertEquals("Hello World", body);
+		assertThat(body).isEqualTo("Hello World");
 	}
 
 	@Test
 	public void annotationAttributesOverridePropertiesFile() throws Exception {
-		assertEquals(123, this.value);
+		assertThat(this.value).isEqualTo(123);
 	}
 
 	@Test
 	public void validateWebApplicationContextIsSet() {
-		assertSame(this.context,
+		assertThat(this.context).isSameAs(
 				WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
 	}
 

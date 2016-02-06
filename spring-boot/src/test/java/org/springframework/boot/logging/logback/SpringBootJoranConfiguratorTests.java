@@ -32,10 +32,9 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.mock.env.MockEnvironment;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link SpringBootJoranConfigurator}.
@@ -129,14 +128,14 @@ public class SpringBootJoranConfiguratorTests {
 	public void springProperty() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.environment, "my.example-property:test");
 		initialize("property.xml");
-		assertThat(this.context.getProperty("MINE"), equalTo("test"));
+		assertThat(this.context.getProperty("MINE")).isEqualTo("test");
 	}
 
 	@Test
 	public void relaxedSpringProperty() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.environment, "my.EXAMPLE_PROPERTY:test");
 		initialize("property.xml");
-		assertThat(this.context.getProperty("MINE"), equalTo("test"));
+		assertThat(this.context.getProperty("MINE")).isEqualTo("test");
 	}
 
 	private void doTestNestedProfile(boolean expected, String... profiles)

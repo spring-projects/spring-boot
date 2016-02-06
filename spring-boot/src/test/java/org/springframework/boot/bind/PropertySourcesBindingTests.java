@@ -34,8 +34,7 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PropertySourcesPropertyValues} binding.
@@ -55,27 +54,28 @@ public class PropertySourcesBindingTests {
 
 	@Test
 	public void overridingOfPropertiesOrderOfAtPropertySources() {
-		assertThat(this.properties.getBar(), is("override"));
+		assertThat(this.properties.getBar()).isEqualTo("override");
+
 	}
 
 	@Test
 	public void overridingOfPropertiesOrderOfAtPropertySourcesWherePropertyIsCapitalized() {
-		assertThat(this.properties.getSpam(), is("BUCKET"));
+		assertThat(this.properties.getSpam()).isEqualTo("BUCKET");
 	}
 
 	@Test
 	public void overridingOfPropertiesOrderOfAtPropertySourcesWherePropertyNamesDiffer() {
-		assertThat(this.properties.getTheName(), is("NAME"));
+		assertThat(this.properties.getTheName()).isEqualTo("NAME");
 	}
 
 	@Test
 	public void overridingOfPropertiesAndBindToAtValue() {
-		assertThat(this.foo, is(this.properties.getFoo()));
+		assertThat(this.foo).isEqualTo(this.properties.getFoo());
 	}
 
 	@Test
 	public void overridingOfPropertiesOrderOfApplicationProperties() {
-		assertThat(this.properties.getFoo(), is("bucket"));
+		assertThat(this.properties.getFoo()).isEqualTo("bucket");
 	}
 
 	@Import({ SomeConfig.class })

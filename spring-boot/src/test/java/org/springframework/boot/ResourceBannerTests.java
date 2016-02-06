@@ -32,8 +32,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.env.MockEnvironment;
 
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ResourceBanner}.
@@ -53,7 +52,7 @@ public class ResourceBannerTests {
 		Resource resource = new ByteArrayResource(
 				"banner ${a} ${spring-boot.version} ${application.version}".getBytes());
 		String banner = printBanner(resource, "10.2", "2.0", null);
-		assertThat(banner, startsWith("banner 1 10.2 2.0"));
+		assertThat(banner).startsWith("banner 1 10.2 2.0");
 	}
 
 	@Test
@@ -61,7 +60,7 @@ public class ResourceBannerTests {
 		Resource resource = new ByteArrayResource(
 				"banner ${a} ${spring-boot.version} ${application.version}".getBytes());
 		String banner = printBanner(resource, null, null, null);
-		assertThat(banner, startsWith("banner 1  "));
+		assertThat(banner).startsWith("banner 1  ");
 	}
 
 	@Test
@@ -70,7 +69,7 @@ public class ResourceBannerTests {
 				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}"
 						.getBytes());
 		String banner = printBanner(resource, "10.2", "2.0", null);
-		assertThat(banner, startsWith("banner 1 (v10.2) (v2.0)"));
+		assertThat(banner).startsWith("banner 1 (v10.2) (v2.0)");
 	}
 
 	@Test
@@ -79,7 +78,7 @@ public class ResourceBannerTests {
 				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}"
 						.getBytes());
 		String banner = printBanner(resource, null, null, null);
-		assertThat(banner, startsWith("banner 1"));
+		assertThat(banner).startsWith("banner 1");
 	}
 
 	@Test
@@ -88,7 +87,7 @@ public class ResourceBannerTests {
 				"${Ansi.RED}This is red.${Ansi.NORMAL}".getBytes());
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
 		String banner = printBanner(resource, null, null, null);
-		assertThat(banner, startsWith("\u001B[31mThis is red.\u001B[0m"));
+		assertThat(banner).startsWith("\u001B[31mThis is red.\u001B[0m");
 	}
 
 	@Test
@@ -97,7 +96,7 @@ public class ResourceBannerTests {
 				"${Ansi.RED}This is red.${Ansi.NORMAL}".getBytes());
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner(resource, null, null, null);
-		assertThat(banner, startsWith("This is red."));
+		assertThat(banner).startsWith("This is red.");
 	}
 
 	@Test
@@ -105,7 +104,7 @@ public class ResourceBannerTests {
 		Resource resource = new ByteArrayResource(
 				"banner ${application.title} ${a}".getBytes());
 		String banner = printBanner(resource, null, null, "title");
-		assertThat(banner, startsWith("banner title 1"));
+		assertThat(banner).startsWith("banner title 1");
 	}
 
 	@Test
@@ -113,7 +112,7 @@ public class ResourceBannerTests {
 		Resource resource = new ByteArrayResource(
 				"banner ${application.title} ${a}".getBytes());
 		String banner = printBanner(resource, null, null, null);
-		assertThat(banner, startsWith("banner  1"));
+		assertThat(banner).startsWith("banner  1");
 	}
 
 	private String printBanner(Resource resource, String bootVersion,

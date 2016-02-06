@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -40,8 +39,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link EnableConfigurationProperties}.
@@ -68,8 +66,8 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(TestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(TestProperties.class).length);
-		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+		assertThat(this.context.getBeanNamesForType(TestProperties.class)).hasSize(1);
+		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
 	}
 
 	@Test
@@ -77,8 +75,8 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(TestConfiguration.class);
 		System.setProperty("name", "foo");
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(TestProperties.class).length);
-		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+		assertThat(this.context.getBeanNamesForType(TestProperties.class)).hasSize(1);
+		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
 	}
 
 	@Test
@@ -87,9 +85,10 @@ public class EnableConfigurationPropertiesTests {
 		System.setProperty("name", "foo");
 		System.setProperty("nested.name", "bar");
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(NestedProperties.class).length);
-		assertEquals("foo", this.context.getBean(NestedProperties.class).name);
-		assertEquals("bar", this.context.getBean(NestedProperties.class).nested.name);
+		assertThat(this.context.getBeanNamesForType(NestedProperties.class)).hasSize(1);
+		assertThat(this.context.getBean(NestedProperties.class).name).isEqualTo("foo");
+		assertThat(this.context.getBean(NestedProperties.class).nested.name)
+				.isEqualTo("bar");
 	}
 
 	@Test
@@ -98,9 +97,10 @@ public class EnableConfigurationPropertiesTests {
 		System.setProperty("name", "foo");
 		System.setProperty("nested_name", "bar");
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(NestedProperties.class).length);
-		assertEquals("foo", this.context.getBean(NestedProperties.class).name);
-		assertEquals("bar", this.context.getBean(NestedProperties.class).nested.name);
+		assertThat(this.context.getBeanNamesForType(NestedProperties.class)).hasSize(1);
+		assertThat(this.context.getBean(NestedProperties.class).name).isEqualTo("foo");
+		assertThat(this.context.getBean(NestedProperties.class).nested.name)
+				.isEqualTo("bar");
 	}
 
 	@Test
@@ -108,9 +108,10 @@ public class EnableConfigurationPropertiesTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "NAME:foo", "NESTED_NAME:bar");
 		this.context.register(NestedConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(NestedProperties.class).length);
-		assertEquals("foo", this.context.getBean(NestedProperties.class).name);
-		assertEquals("bar", this.context.getBean(NestedProperties.class).nested.name);
+		assertThat(this.context.getBeanNamesForType(NestedProperties.class)).hasSize(1);
+		assertThat(this.context.getBean(NestedProperties.class).name).isEqualTo("foo");
+		assertThat(this.context.getBean(NestedProperties.class).nested.name)
+				.isEqualTo("bar");
 	}
 
 	@Test
@@ -119,9 +120,9 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(StrictTestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.context.refresh();
-		assertEquals(1,
-				this.context.getBeanNamesForType(StrictTestProperties.class).length);
-		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+		assertThat(this.context.getBeanNamesForType(StrictTestProperties.class))
+				.hasSize(1);
+		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
 	}
 
 	@Test
@@ -129,9 +130,9 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(EmbeddedTestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "spring_foo_name:foo");
 		this.context.refresh();
-		assertEquals(1,
-				this.context.getBeanNamesForType(EmbeddedTestProperties.class).length);
-		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+		assertThat(this.context.getBeanNamesForType(EmbeddedTestProperties.class))
+				.hasSize(1);
+		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
 	}
 
 	@Test
@@ -139,9 +140,9 @@ public class EnableConfigurationPropertiesTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "SPRING_FOO_NAME:foo");
 		this.context.register(EmbeddedTestConfiguration.class);
 		this.context.refresh();
-		assertEquals(1,
-				this.context.getBeanNamesForType(EmbeddedTestProperties.class).length);
-		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+		assertThat(this.context.getBeanNamesForType(EmbeddedTestProperties.class))
+				.hasSize(1);
+		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
 	}
 
 	@Test
@@ -150,9 +151,9 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(IgnoreNestedTestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo", "nested.name:bar");
 		this.context.refresh();
-		assertEquals(1, this.context
-				.getBeanNamesForType(IgnoreNestedTestProperties.class).length);
-		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+		assertThat(this.context.getBeanNamesForType(IgnoreNestedTestProperties.class))
+				.hasSize(1);
+		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
 	}
 
 	@Test
@@ -168,9 +169,10 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(NoExceptionIfInvalidTestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.context.refresh();
-		assertEquals(1, this.context
-				.getBeanNamesForType(NoExceptionIfInvalidTestProperties.class).length);
-		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+		assertThat(this.context
+				.getBeanNamesForType(NoExceptionIfInvalidTestProperties.class))
+						.hasSize(1);
+		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
 	}
 
 	@Test
@@ -178,9 +180,10 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(NestedConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo", "nested.name:bar");
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(NestedProperties.class).length);
-		assertEquals("foo", this.context.getBean(NestedProperties.class).name);
-		assertEquals("bar", this.context.getBean(NestedProperties.class).nested.name);
+		assertThat(this.context.getBeanNamesForType(NestedProperties.class)).hasSize(1);
+		assertThat(this.context.getBean(NestedProperties.class).name).isEqualTo("foo");
+		assertThat(this.context.getBean(NestedProperties.class).nested.name)
+				.isEqualTo("bar");
 	}
 
 	@Test
@@ -188,8 +191,8 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(DerivedConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(DerivedProperties.class).length);
-		assertEquals("foo", this.context.getBean(BaseProperties.class).name);
+		assertThat(this.context.getBeanNamesForType(DerivedProperties.class)).hasSize(1);
+		assertThat(this.context.getBean(BaseProperties.class).name).isEqualTo("foo");
 	}
 
 	@Test
@@ -197,8 +200,8 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(TestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo", "array:1,2,3");
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(TestProperties.class).length);
-		assertEquals(3, this.context.getBean(TestProperties.class).getArray().length);
+		assertThat(this.context.getBeanNamesForType(TestProperties.class)).hasSize(1);
+		assertThat(this.context.getBean(TestProperties.class).getArray()).hasSize(3);
 	}
 
 	@Test
@@ -207,7 +210,7 @@ public class EnableConfigurationPropertiesTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo", "list[0]:1",
 				"list[1]:2");
 		this.context.refresh();
-		assertEquals(2, this.context.getBean(TestProperties.class).getList().size());
+		assertThat(this.context.getBean(TestProperties.class).getList()).hasSize(2);
 	}
 
 	@Test
@@ -225,8 +228,8 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(MoreConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(MoreProperties.class).length);
-		assertEquals("foo", this.context.getBean(MoreProperties.class).name);
+		assertThat(this.context.getBeanNamesForType(MoreProperties.class)).hasSize(1);
+		assertThat(this.context.getBean(MoreProperties.class).name).isEqualTo("foo");
 	}
 
 	@Test
@@ -234,8 +237,8 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(TestConfiguration.class, DefaultXmlConfiguration.class);
 		this.context.refresh();
 		String[] beanNames = this.context.getBeanNamesForType(TestProperties.class);
-		assertEquals("Wrong beans: " + Arrays.asList(beanNames), 1, beanNames.length);
-		assertEquals("bar", this.context.getBean(TestProperties.class).name);
+		assertThat(beanNames).as("Wrong beans").containsExactly(beanNames);
+		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("bar");
 	}
 
 	@Test
@@ -243,17 +246,18 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(DefaultConfiguration.class);
 		this.context.refresh();
 		String[] beanNames = this.context.getBeanNamesForType(TestProperties.class);
-		assertEquals("Wrong beans: " + Arrays.asList(beanNames), 1, beanNames.length);
-		assertEquals("bar", this.context.getBean(TestProperties.class).name);
+		assertThat(beanNames).as("Wrong beans").containsExactly(beanNames);
+		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("bar");
 	}
 
 	@Test
 	public void testBindingDirectlyToFile() {
 		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
 		this.context.refresh();
-		assertEquals(1,
-				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
-		assertEquals("foo", this.context.getBean(ResourceBindingProperties.class).name);
+		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
+				.hasSize(1);
+		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
+				.isEqualTo("foo");
 	}
 
 	@Test
@@ -262,9 +266,10 @@ public class EnableConfigurationPropertiesTests {
 				"binding.location:classpath:other.yml");
 		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
 		this.context.refresh();
-		assertEquals(1,
-				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
-		assertEquals("other", this.context.getBean(ResourceBindingProperties.class).name);
+		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
+				.hasSize(1);
+		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
+				.isEqualTo("other");
 	}
 
 	@Test
@@ -272,9 +277,10 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
 		this.context.getEnvironment().addActiveProfile("nonexistent");
 		this.context.refresh();
-		assertEquals(1,
-				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
-		assertEquals("foo", this.context.getBean(ResourceBindingProperties.class).name);
+		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
+				.hasSize(1);
+		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
+				.isEqualTo("foo");
 	}
 
 	@Test
@@ -282,9 +288,10 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
 		this.context.getEnvironment().addActiveProfile("super");
 		this.context.refresh();
-		assertEquals(1,
-				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
-		assertEquals("bar", this.context.getBean(ResourceBindingProperties.class).name);
+		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
+				.hasSize(1);
+		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
+				.isEqualTo("bar");
 	}
 
 	@Test
@@ -292,17 +299,20 @@ public class EnableConfigurationPropertiesTests {
 		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
 		this.context.getEnvironment().setActiveProfiles("super", "other");
 		this.context.refresh();
-		assertEquals(1,
-				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
-		assertEquals("spam", this.context.getBean(ResourceBindingProperties.class).name);
+		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
+				.hasSize(1);
+		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
+				.isEqualTo("spam");
 	}
 
 	@Test
 	public void testBindingWithTwoBeans() {
 		this.context.register(MoreConfiguration.class, TestConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(TestProperties.class).length);
-		assertEquals(1, this.context.getBeanNamesForType(MoreProperties.class).length);
+		assertThat(this.context.getBeanNamesForType(TestProperties.class).length)
+				.isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(MoreProperties.class).length)
+				.isEqualTo(1);
 	}
 
 	@Test
@@ -314,9 +324,10 @@ public class EnableConfigurationPropertiesTests {
 		this.context.setParent(parent);
 		this.context.register(TestConfiguration.class, TestConsumer.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(TestProperties.class).length);
-		assertEquals(1, parent.getBeanNamesForType(TestProperties.class).length);
-		assertEquals("foo", this.context.getBean(TestConsumer.class).getName());
+		assertThat(this.context.getBeanNamesForType(TestProperties.class).length)
+				.isEqualTo(1);
+		assertThat(parent.getBeanNamesForType(TestProperties.class).length).isEqualTo(1);
+		assertThat(this.context.getBean(TestConsumer.class).getName()).isEqualTo("foo");
 	}
 
 	@Test
@@ -328,9 +339,10 @@ public class EnableConfigurationPropertiesTests {
 		this.context.setParent(parent);
 		this.context.register(TestConsumer.class);
 		this.context.refresh();
-		assertEquals(0, this.context.getBeanNamesForType(TestProperties.class).length);
-		assertEquals(1, parent.getBeanNamesForType(TestProperties.class).length);
-		assertEquals("foo", this.context.getBean(TestConsumer.class).getName());
+		assertThat(this.context.getBeanNamesForType(TestProperties.class).length)
+				.isEqualTo(0);
+		assertThat(parent.getBeanNamesForType(TestProperties.class).length).isEqualTo(1);
+		assertThat(this.context.getBean(TestConsumer.class).getName()).isEqualTo("foo");
 	}
 
 	@Test
@@ -338,7 +350,7 @@ public class EnableConfigurationPropertiesTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring_test_external_val:baz");
 		this.context.register(SystemExampleConfig.class);
 		this.context.refresh();
-		assertEquals("baz", this.context.getBean(SystemEnvVar.class).getVal());
+		assertThat(this.context.getBean(SystemEnvVar.class).getVal()).isEqualTo("baz");
 	}
 
 	@Test
@@ -346,7 +358,7 @@ public class EnableConfigurationPropertiesTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "external.name:foo");
 		this.context.register(ExampleConfig.class);
 		this.context.refresh();
-		assertEquals("foo", this.context.getBean(External.class).getName());
+		assertThat(this.context.getBean(External.class).getName()).isEqualTo("foo");
 	}
 
 	@Test
@@ -354,7 +366,7 @@ public class EnableConfigurationPropertiesTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "external.name:foo");
 		this.context.register(AnotherExampleConfig.class);
 		this.context.refresh();
-		assertEquals("foo", this.context.getBean(External.class).getName());
+		assertThat(this.context.getBean(External.class).getName()).isEqualTo("foo");
 	}
 
 	@Test
@@ -363,8 +375,8 @@ public class EnableConfigurationPropertiesTests {
 				"another.name:bar");
 		this.context.register(FurtherExampleConfig.class);
 		this.context.refresh();
-		assertEquals("foo", this.context.getBean(External.class).getName());
-		assertEquals("bar", this.context.getBean(Another.class).getName());
+		assertThat(this.context.getBean(External.class).getName()).isEqualTo("foo");
+		assertThat(this.context.getBean(Another.class).getName()).isEqualTo("bar");
 	}
 
 	@Test
@@ -374,10 +386,10 @@ public class EnableConfigurationPropertiesTests {
 
 		ResourceBindingPropertiesWithMap bean = this.context
 				.getBean(ResourceBindingPropertiesWithMap.class);
-		assertEquals("value3", bean.mymap.get("key3"));
+		assertThat(bean.mymap.get("key3")).isEqualTo("value3");
 		// this should not fail!!!
 		// mymap looks to contain - {key1=, key3=value3}
-		assertEquals("value12", bean.mymap.get("key1.key2"));
+		assertThat(bean.mymap.get("key1.key2")).isEqualTo("value12");
 	}
 
 	@Test
@@ -386,7 +398,7 @@ public class EnableConfigurationPropertiesTests {
 				"spam.name:foo");
 		this.context.register(TestConfigurationWithAnnotatedBean.class);
 		this.context.refresh();
-		assertEquals("foo", this.context.getBean(External.class).getName());
+		assertThat(this.context.getBean(External.class).getName()).isEqualTo("foo");
 	}
 
 	/**
@@ -560,7 +572,7 @@ public class EnableConfigurationPropertiesTests {
 
 		@PostConstruct
 		public void init() {
-			assertNotNull(this.properties);
+			assertThat(this.properties).isNotNull();
 		}
 
 		public String getName() {

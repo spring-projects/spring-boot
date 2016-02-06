@@ -31,7 +31,7 @@ import org.springframework.context.support.StaticMessageSource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.validation.Validator;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Performance tests for {@link PropertiesConfigurationFactory}.
@@ -62,8 +62,8 @@ public class PropertiesConfigurationFactoryPerformanceTests {
 	@Theory
 	public void testValidProperties(String value) throws Exception {
 		Foo foo = createFoo();
-		assertEquals("blah", foo.bar);
-		assertEquals("blah", foo.name);
+		assertThat(foo.bar).isEqualTo("blah");
+		assertThat(foo.name).isEqualTo("blah");
 	}
 
 	private Foo createFoo() throws Exception {

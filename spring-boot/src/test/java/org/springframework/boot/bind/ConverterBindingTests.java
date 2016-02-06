@@ -38,8 +38,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationProperties} binding with custom converters.
@@ -63,8 +62,8 @@ public class ConverterBindingTests {
 
 	@Test
 	public void overridingOfPropertiesOrderOfAtPropertySources() {
-		assertThat(this.properties.getFoo().name, is(this.foo));
-		assertThat(this.properties.getBar().name, is(this.bar));
+		assertThat(this.properties.getFoo().name).isEqualTo(this.foo);
+		assertThat(this.properties.getBar().name).isEqualTo(this.bar);
 	}
 
 	@Configuration

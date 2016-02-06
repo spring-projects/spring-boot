@@ -36,9 +36,7 @@ import org.springframework.boot.context.configwarnings.real.InRealPackageConfigu
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationWarningsApplicationContextInitializer}.
@@ -59,57 +57,57 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	@Test
 	public void logWarningInDefaultPackage() {
 		load(InDefaultPackageConfiguration.class);
-		assertThat(this.output.toString(), containsString(DEFAULT_SCAN_WARNING));
+		assertThat(this.output.toString()).contains(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void logWarningInDefaultPackageAndMetaAnnotation() {
 		load(InDefaultPackageWithMetaAnnotationConfiguration.class);
-		assertThat(this.output.toString(), containsString(DEFAULT_SCAN_WARNING));
+		assertThat(this.output.toString()).contains(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void noLogIfInRealPackage() throws Exception {
 		load(InRealPackageConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(DEFAULT_SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void noLogWithoutComponentScanAnnotation() throws Exception {
 		load(InDefaultPackageWithoutScanConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(DEFAULT_SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void noLogIfHasValue() throws Exception {
 		load(InDefaultPackageWithValueConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(DEFAULT_SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void noLogIfHasBasePackages() throws Exception {
 		load(InDefaultPackageWithBasePackagesConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(DEFAULT_SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void noLogIfHasBasePackageClasses() throws Exception {
 		load(InDefaultPackageWithBasePackageClassesConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(DEFAULT_SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void logWarningInOrgSpringPackage() {
 		load(InOrgSpringPackageConfiguration.class);
-		assertThat(this.output.toString(), containsString(ORGSPRING_SCAN_WARNING));
+		assertThat(this.output.toString()).contains(ORGSPRING_SCAN_WARNING);
 	}
 
 	@Test
 	public void logWarningIfScanningProblemPackages() throws Exception {
 		load(InRealButScanningProblemPackages.class);
-		assertThat(this.output.toString(),
-				containsString("Your ApplicationContext is unlikely to start due to a "
-						+ "@ComponentScan of the default package, 'org.springframework'."));
+		assertThat(this.output.toString())
+				.contains("Your ApplicationContext is unlikely to start due to a "
+						+ "@ComponentScan of the default package, 'org.springframework'.");
 
 	}
 

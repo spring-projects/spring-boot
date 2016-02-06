@@ -27,8 +27,7 @@ import org.junit.Test;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -52,8 +51,8 @@ public class EntityManagerFactoryBuilderTests {
 		LocalContainerEntityManagerFactoryBean result1 = factory
 				.dataSource(this.dataSource1)
 				.properties(Collections.singletonMap("foo", "spam")).build();
-		assertFalse(result1.getJpaPropertyMap().isEmpty());
-		assertTrue(this.properties.isEmpty());
+		assertThat(result1.getJpaPropertyMap().isEmpty()).isFalse();
+		assertThat(this.properties.isEmpty()).isTrue();
 	}
 
 	@Test
@@ -63,10 +62,10 @@ public class EntityManagerFactoryBuilderTests {
 		LocalContainerEntityManagerFactoryBean result1 = factory
 				.dataSource(this.dataSource1)
 				.properties(Collections.singletonMap("foo", "spam")).build();
-		assertFalse(result1.getJpaPropertyMap().isEmpty());
+		assertThat(result1.getJpaPropertyMap().isEmpty()).isFalse();
 		LocalContainerEntityManagerFactoryBean result2 = factory
 				.dataSource(this.dataSource2).build();
-		assertTrue(result2.getJpaPropertyMap().isEmpty());
+		assertThat(result2.getJpaPropertyMap().isEmpty()).isTrue();
 	}
 
 }

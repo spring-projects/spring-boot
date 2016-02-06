@@ -25,8 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringApplicationContextLoader} with active profiles. See gh-1469.
@@ -44,8 +43,8 @@ public class SpringApplicationConfigurationActiveProfileTests {
 
 	@Test
 	public void profiles() throws Exception {
-		assertThat(this.context.getEnvironment().getActiveProfiles(),
-				equalTo(new String[] { "override" }));
+		assertThat(this.context.getEnvironment().getActiveProfiles())
+				.containsExactly("override");
 	}
 
 	@Configuration

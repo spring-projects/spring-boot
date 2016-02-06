@@ -35,7 +35,7 @@ import org.springframework.core.type.MethodMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Abstract base class for {@code @Configuration} sanity checks.
@@ -59,8 +59,7 @@ public abstract class AbstractConfigurationClassTests {
 				}
 			}
 		}
-		assertEquals("Found non-public @Bean methods: " + nonPublicBeanMethods, 0,
-				nonPublicBeanMethods.size());
+		assertThat(nonPublicBeanMethods).as("Found non-public @Bean methods").isEmpty();
 	}
 
 	private Set<AnnotationMetadata> findConfigurationClasses() throws IOException {

@@ -52,8 +52,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link ErrorPageFilter}.
@@ -80,13 +79,13 @@ public class ErrorPageFilterIntegrationTests {
 	@Test
 	public void created() throws Exception {
 		doTest(this.context, "/create", HttpStatus.CREATED);
-		assertThat(this.controller.getStatus(), equalTo(201));
+		assertThat(this.controller.getStatus()).isEqualTo(201);
 	}
 
 	@Test
 	public void ok() throws Exception {
 		doTest(this.context, "/hello", HttpStatus.OK);
-		assertThat(this.controller.getStatus(), equalTo(200));
+		assertThat(this.controller.getStatus()).isEqualTo(200);
 	}
 
 	private void doTest(AnnotationConfigEmbeddedWebApplicationContext context,
@@ -95,8 +94,8 @@ public class ErrorPageFilterIntegrationTests {
 		TestRestTemplate template = new TestRestTemplate();
 		ResponseEntity<String> entity = template.getForEntity(
 				new URI("http://localhost:" + port + resourcePath), String.class);
-		assertThat(entity.getBody(), equalTo("Hello World"));
-		assertThat(entity.getStatusCode(), equalTo(status));
+		assertThat(entity.getBody()).isEqualTo("Hello World");
+		assertThat(entity.getStatusCode()).isEqualTo(status);
 	}
 
 	@Configuration
@@ -133,8 +132,8 @@ public class ErrorPageFilterIntegrationTests {
 		private CountDownLatch latch = new CountDownLatch(1);
 
 		public int getStatus() throws InterruptedException {
-			assertThat("Timed out waiting for latch",
-					this.latch.await(1, TimeUnit.SECONDS), equalTo(true));
+			assertThat(this.latch.await(1, TimeUnit.SECONDS))
+					.as("Timed out waiting for latch").isTrue();
 			return this.status;
 		}
 

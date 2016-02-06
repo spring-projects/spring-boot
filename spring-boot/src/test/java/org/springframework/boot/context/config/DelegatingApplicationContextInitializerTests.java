@@ -29,8 +29,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DelegatingApplicationContextInitializer}.
@@ -50,8 +49,8 @@ public class DelegatingApplicationContextInitializerTests {
 		EnvironmentTestUtils.addEnvironment(context, "context.initializer.classes:"
 				+ MockInitB.class.getName() + "," + MockInitA.class.getName());
 		this.initializer.initialize(context);
-		assertThat(context.getBeanFactory().getSingleton("a"), equalTo((Object) "a"));
-		assertThat(context.getBeanFactory().getSingleton("b"), equalTo((Object) "b"));
+		assertThat(context.getBeanFactory().getSingleton("a")).isEqualTo("a");
+		assertThat(context.getBeanFactory().getSingleton("b")).isEqualTo("b");
 	}
 
 	@Test
@@ -98,27 +97,34 @@ public class DelegatingApplicationContextInitializerTests {
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	private static class MockInitA
 			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
 			applicationContext.getBeanFactory().registerSingleton("a", "a");
 		}
+
 	}
 
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	private static class MockInitB
 			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
-			assertThat(applicationContext.getBeanFactory().getSingleton("a"),
-					equalTo((Object) "a"));
+			assertThat(applicationContext.getBeanFactory().getSingleton("a"))
+					.isEqualTo("a");
 			applicationContext.getBeanFactory().registerSingleton("b", "b");
 		}
+
 	}
 
 	private static class NotSuitableInit
 			implements ApplicationContextInitializer<ConfigurableWebApplicationContext> {
+
 		@Override
 		public void initialize(ConfigurableWebApplicationContext applicationContext) {
 		}
+
 	}
+
 }

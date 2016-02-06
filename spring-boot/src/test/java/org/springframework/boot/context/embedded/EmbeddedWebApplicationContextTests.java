@@ -63,14 +63,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.SessionScope;
 import org.springframework.web.filter.GenericFilterBean;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
@@ -115,20 +108,19 @@ public class EmbeddedWebApplicationContextTests {
 		MockEmbeddedServletContainerFactory escf = getEmbeddedServletContainerFactory();
 
 		// Ensure that the context has been setup
-		assertThat(this.context.getServletContext(), equalTo(escf.getServletContext()));
+		assertThat(this.context.getServletContext()).isEqualTo(escf.getServletContext());
 		verify(escf.getServletContext()).setAttribute(
 				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
 				this.context);
 
 		// Ensure WebApplicationContextUtils.registerWebApplicationScopes was called
-		assertThat(
-				this.context.getBeanFactory()
-						.getRegisteredScope(WebApplicationContext.SCOPE_SESSION),
-				instanceOf(SessionScope.class));
+		assertThat(this.context.getBeanFactory()
+				.getRegisteredScope(WebApplicationContext.SCOPE_SESSION))
+						.isInstanceOf(SessionScope.class);
 
 		// Ensure WebApplicationContextUtils.registerEnvironmentBeans was called
-		assertThat(this.context.containsBean(
-				WebApplicationContext.SERVLET_CONTEXT_BEAN_NAME), equalTo(true));
+		assertThat(this.context
+				.containsBean(WebApplicationContext.SERVLET_CONTEXT_BEAN_NAME)).isTrue();
 	}
 
 	@Test
@@ -142,7 +134,7 @@ public class EmbeddedWebApplicationContextTests {
 				.getDeclaredField("shutdownHook");
 		shutdownHookField.setAccessible(true);
 		Object shutdownHook = shutdownHookField.get(this.context);
-		assertThat(shutdownHook, nullValue());
+		assertThat(shutdownHook).isNull();
 	}
 
 	@Test
@@ -153,9 +145,9 @@ public class EmbeddedWebApplicationContextTests {
 		this.context.refresh();
 		EmbeddedServletContainerInitializedEvent event = this.context
 				.getBean(MockListener.class).getEvent();
-		assertNotNull(event);
-		assertTrue(event.getSource().getPort() >= 0);
-		assertEquals(this.context, event.getApplicationContext());
+		assertThat(event).isNotNull();
+		assertThat(event.getSource().getPort() >= 0).isTrue();
+		assertThat(event.getApplicationContext()).isEqualTo(this.context);
 	}
 
 	@Test
@@ -164,8 +156,8 @@ public class EmbeddedWebApplicationContextTests {
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
 		ConfigurableEnvironment environment = this.context.getEnvironment();
-		assertTrue(environment.containsProperty("local.server.port"));
-		assertEquals("8080", environment.getProperty("local.server.port"));
+		assertThat(environment.containsProperty("local.server.port")).isTrue();
+		assertThat(environment.getProperty("local.server.port")).isEqualTo("8080");
 	}
 
 	@Test
@@ -240,7 +232,7 @@ public class EmbeddedWebApplicationContextTests {
 		MockEmbeddedServletContainerFactory escf = getEmbeddedServletContainerFactory();
 		verify(escf.getServletContext()).addFilter("filterBean", filter);
 		verify(escf.getServletContext()).addFilter("object", registration.getFilter());
-		assertEquals(filter, escf.getRegisteredFilter(0).getFilter());
+		assertThat(escf.getRegisteredFilter(0).getFilter()).isEqualTo(filter);
 	}
 
 	@Test
@@ -460,8 +452,8 @@ public class EmbeddedWebApplicationContextTests {
 				beanDefinition(propertySupport));
 
 		this.context.refresh();
-		assertThat(getEmbeddedServletContainerFactory().getContainer().getPort(),
-				equalTo(8080));
+		assertThat(getEmbeddedServletContainerFactory().getContainer().getPort())
+				.isEqualTo(8080);
 	}
 
 	@Test
@@ -473,12 +465,12 @@ public class EmbeddedWebApplicationContextTests {
 		factory.registerScope(WebApplicationContext.SCOPE_GLOBAL_SESSION, scope);
 		addEmbeddedServletContainerFactoryBean();
 		this.context.refresh();
-		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_REQUEST),
-				sameInstance(scope));
-		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_SESSION),
-				sameInstance(scope));
-		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_GLOBAL_SESSION),
-				sameInstance(scope));
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_REQUEST))
+				.isSameAs(scope);
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_SESSION))
+				.isSameAs(scope);
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_GLOBAL_SESSION))
+				.isSameAs(scope);
 	}
 
 	private void addEmbeddedServletContainerFactoryBean() {

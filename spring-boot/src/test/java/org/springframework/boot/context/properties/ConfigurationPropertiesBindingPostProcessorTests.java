@@ -46,15 +46,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -98,9 +90,9 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		catch (BeanCreationException ex) {
 			RelaxedBindingNotWritablePropertyException bex = (RelaxedBindingNotWritablePropertyException) ex
 					.getRootCause();
-			assertThat(bex.getMessage(),
-					startsWith("Failed to bind 'com.example.baz' from 'test' to 'baz' "
-							+ "property on '" + TestConfiguration.class.getName()));
+			assertThat(bex.getMessage())
+					.startsWith("Failed to bind 'com.example.baz' from 'test' to 'baz' "
+							+ "property on '" + TestConfiguration.class.getName());
 		}
 	}
 
@@ -125,7 +117,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 		ConfigurationPropertiesBindingPostProcessor bean = this.context
 				.getBean(ConfigurationPropertiesBindingPostProcessor.class);
-		assertNull(ReflectionTestUtils.getField(bean, "validator"));
+		assertThat(ReflectionTestUtils.getField(bean, "validator")).isNull();
 	}
 
 	@Test
@@ -185,8 +177,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		EnvironmentTestUtils.addEnvironment(this.context, property);
 		this.context.register(PropertyWithEnum.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValue(),
-				equalTo(FooEnum.FOO));
+		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValue())
+				.isEqualTo(FooEnum.FOO);
 		this.context.close();
 	}
 
@@ -203,8 +195,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		EnvironmentTestUtils.addEnvironment(this.context, property);
 		this.context.register(PropertyWithEnum.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValues(),
-				contains(expected));
+		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValues())
+				.contains(expected);
 		this.context.close();
 	}
 
@@ -214,8 +206,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "default.value:foo");
 		this.context.register(PropertyWithValue.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithValue.class).getValue(),
-				equalTo("foo"));
+		assertThat(this.context.getBean(PropertyWithValue.class).getValue())
+				.isEqualTo("foo");
 	}
 
 	@Test
@@ -224,8 +216,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "fooValue:bar");
 		this.context.register(CustomConfigurationLocation.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(CustomConfigurationLocation.class).getFoo(),
-				equalTo("bar"));
+		assertThat(this.context.getBean(CustomConfigurationLocation.class).getFoo())
+				.isEqualTo("bar");
 	}
 
 	@Test
@@ -235,8 +227,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.register(UnmergedCustomConfigurationLocation.class);
 		this.context.refresh();
 		assertThat(
-				this.context.getBean(UnmergedCustomConfigurationLocation.class).getFoo(),
-				equalTo("${fooValue}"));
+				this.context.getBean(UnmergedCustomConfigurationLocation.class).getFoo())
+						.isEqualTo("${fooValue}");
 	}
 
 	@Test
@@ -245,8 +237,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context = new AnnotationConfigApplicationContext() {
 			@Override
 			protected void onRefresh() throws BeansException {
-				assertFalse("Init too early",
-						ConfigurationPropertiesWithFactoryBean.factoryBeanInit);
+				assertThat(ConfigurationPropertiesWithFactoryBean.factoryBeanInit)
+						.as("Init too early").isFalse();
 				super.onRefresh();
 			}
 		};
@@ -256,7 +248,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
 		this.context.registerBeanDefinition("test", beanDefinition);
 		this.context.refresh();
-		assertTrue("No init", ConfigurationPropertiesWithFactoryBean.factoryBeanInit);
+		assertThat(ConfigurationPropertiesWithFactoryBean.factoryBeanInit).as("No init")
+				.isTrue();
 	}
 
 	@Test
@@ -265,8 +258,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "test.chars:word");
 		this.context.register(PropertyWithCharArray.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithCharArray.class).getChars(),
-				equalTo("word".toCharArray()));
+		assertThat(this.context.getBean(PropertyWithCharArray.class).getChars())
+				.isEqualTo("word".toCharArray());
 	}
 
 	@Test
@@ -275,8 +268,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "test.chars[4]:s");
 		this.context.register(PropertyWithCharArrayExpansion.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithCharArrayExpansion.class).getChars(),
-				equalTo("words".toCharArray()));
+		assertThat(this.context.getBean(PropertyWithCharArrayExpansion.class).getChars())
+				.isEqualTo("words".toCharArray());
 	}
 
 	@Test
@@ -304,8 +297,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
 		this.context.register(RelaxedPropertyNames.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(RelaxedPropertyNames.class).getFooBar(),
-				equalTo("test2"));
+		assertThat(this.context.getBean(RelaxedPropertyNames.class).getFooBar())
+				.isEqualTo("test2");
 	}
 
 	@Test
@@ -316,7 +309,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.register(PropertyWithNestedValue.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(PropertyWithNestedValue.class).getNested()
-				.getValue(), equalTo("test1"));
+				.getValue()).isEqualTo("test1");
 	}
 
 	@Test
@@ -337,7 +330,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		}
 		catch (BeanCreationException ex) {
 			BindException bex = (BindException) ex.getRootCause();
-			assertEquals(errorCount, bex.getErrorCount());
+			assertThat(bex.getErrorCount()).isEqualTo(errorCount);
 		}
 	}
 
@@ -434,7 +427,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 		@PostConstruct
 		public void init() {
-			assertNotNull(this.bar);
+			assertThat(this.bar).isNotNull();
 		}
 
 	}

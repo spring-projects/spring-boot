@@ -27,7 +27,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
 import org.springframework.web.servlet.view.velocity.VelocityView;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link EmbeddedVelocityViewResolver}.
@@ -42,7 +42,7 @@ public class EmbeddedVelocityViewResolverTests {
 		EmbeddedVelocityViewResolver resolver = context
 				.getBean(EmbeddedVelocityViewResolver.class);
 		Object viewClass = ReflectionTestUtils.getField(resolver, "viewClass");
-		assertEquals(VelocityView.class, viewClass);
+		assertThat(viewClass).isEqualTo(VelocityView.class);
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class EmbeddedVelocityViewResolverTests {
 		EmbeddedVelocityViewResolver resolver = context
 				.getBean(EmbeddedVelocityViewResolver.class);
 		Object viewClass = ReflectionTestUtils.getField(resolver, "viewClass");
-		assertEquals(EmbeddedVelocityToolboxView.class, viewClass);
+		assertThat(viewClass).isEqualTo(EmbeddedVelocityToolboxView.class);
 	}
 
 	private ApplicationContext loadContext(Class<?> config) {

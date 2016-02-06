@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringApplication} main method.
@@ -46,33 +46,33 @@ public class SimpleMainTests {
 	@Test(expected = IllegalArgumentException.class)
 	public void emptyApplicationContext() throws Exception {
 		SpringApplication.main(getArgs());
-		assertTrue(getOutput().contains(SPRING_STARTUP));
+		assertThat(getOutput()).contains(SPRING_STARTUP);
 	}
 
 	@Test
 	public void basePackageScan() throws Exception {
 		SpringApplication
 				.main(getArgs(ClassUtils.getPackageName(getClass()) + ".sampleconfig"));
-		assertTrue(getOutput().contains(SPRING_STARTUP));
+		assertThat(getOutput()).contains(SPRING_STARTUP);
 	}
 
 	@Test
 	public void configClassContext() throws Exception {
 		SpringApplication.main(getArgs(getClass().getName()));
-		assertTrue(getOutput().contains(SPRING_STARTUP));
+		assertThat(getOutput()).contains(SPRING_STARTUP);
 	}
 
 	@Test
 	public void xmlContext() throws Exception {
 		SpringApplication.main(getArgs("org/springframework/boot/sample-beans.xml"));
-		assertTrue(getOutput().contains(SPRING_STARTUP));
+		assertThat(getOutput()).contains(SPRING_STARTUP);
 	}
 
 	@Test
 	public void mixedContext() throws Exception {
 		SpringApplication.main(getArgs(getClass().getName(),
 				"org/springframework/boot/sample-beans.xml"));
-		assertTrue(getOutput().contains(SPRING_STARTUP));
+		assertThat(getOutput()).contains(SPRING_STARTUP);
 	}
 
 	private String[] getArgs(String... args) {

@@ -23,7 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Base for {@link JsonParser} tests.
@@ -43,36 +43,36 @@ public abstract class AbstractJsonParserTests {
 	@Test
 	public void simpleMap() {
 		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"bar\",\"spam\":1}");
-		assertEquals(2, map.size());
-		assertEquals("bar", map.get("foo"));
-		assertEquals(1L, ((Number) map.get("spam")).longValue());
+		assertThat(map).hasSize(2);
+		assertThat(map.get("foo")).isEqualTo("bar");
+		assertThat(((Number) map.get("spam")).longValue()).isEqualTo(1L);
 	}
 
 	@Test
 	public void doubleValue() {
 		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"bar\",\"spam\":1.23}");
-		assertEquals(2, map.size());
-		assertEquals("bar", map.get("foo"));
-		assertEquals(1.23d, map.get("spam"));
+		assertThat(map).hasSize(2);
+		assertThat(map.get("foo")).isEqualTo("bar");
+		assertThat(map.get("spam")).isEqualTo(1.23d);
 	}
 
 	@Test
 	public void emptyMap() {
 		Map<String, Object> map = this.parser.parseMap("{}");
-		assertEquals(0, map.size());
+		assertThat(map).isEmpty();
 	}
 
 	@Test
 	public void simpleList() {
 		List<Object> list = this.parser.parseList("[\"foo\",\"bar\",1]");
-		assertEquals(3, list.size());
-		assertEquals("bar", list.get(1));
+		assertThat(list).hasSize(3);
+		assertThat(list.get(1)).isEqualTo("bar");
 	}
 
 	@Test
 	public void emptyList() {
 		List<Object> list = this.parser.parseList("[]");
-		assertEquals(0, list.size());
+		assertThat(list).isEmpty();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -80,8 +80,8 @@ public abstract class AbstractJsonParserTests {
 	public void listOfMaps() {
 		List<Object> list = this.parser
 				.parseList("[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]");
-		assertEquals(2, list.size());
-		assertEquals(2, ((Map<String, Object>) list.get(1)).size());
+		assertThat(list).hasSize(2);
+		assertThat(((Map<String, Object>) list.get(1))).hasSize(2);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -89,8 +89,8 @@ public abstract class AbstractJsonParserTests {
 	public void mapOfLists() {
 		Map<String, Object> map = this.parser.parseMap(
 				"{\"foo\":[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]}");
-		assertEquals(1, map.size());
-		assertEquals(2, ((List<Object>) map.get("foo")).size());
+		assertThat(map).hasSize(1);
+		assertThat(((List<Object>) map.get("foo"))).hasSize(2);
 	}
 
 	@Test
@@ -132,15 +132,15 @@ public abstract class AbstractJsonParserTests {
 	@Test
 	public void listWithLeadingWhitespace() {
 		List<Object> list = this.parser.parseList("\n\t[\"foo\"]");
-		assertEquals(1, list.size());
-		assertEquals("foo", list.get(0));
+		assertThat(list).hasSize(1);
+		assertThat(list.get(0)).isEqualTo("foo");
 	}
 
 	@Test
 	public void mapWithLeadingWhitespace() {
 		Map<String, Object> map = this.parser.parseMap("\n\t{\"foo\":\"bar\"}");
-		assertEquals(1, map.size());
-		assertEquals("bar", map.get("foo"));
+		assertThat(map).hasSize(1);
+		assertThat(map.get("foo")).isEqualTo("bar");
 	}
 
 	@Test

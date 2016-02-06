@@ -31,8 +31,7 @@ import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DelegatingApplicationListener}.
@@ -63,10 +62,8 @@ public class DelegatingApplicationListenerTests {
 				new SpringApplication(), new String[0], this.context.getEnvironment()));
 		this.context.getBeanFactory().registerSingleton("testListener", this.listener);
 		this.context.refresh();
-		assertThat(this.context.getBeanFactory().getSingleton("a"),
-				equalTo((Object) "a"));
-		assertThat(this.context.getBeanFactory().getSingleton("b"),
-				equalTo((Object) "b"));
+		assertThat(this.context.getBeanFactory().getSingleton("a")).isEqualTo("a");
+		assertThat(this.context.getBeanFactory().getSingleton("b")).isEqualTo("b");
 	}
 
 	@Test
@@ -99,8 +96,8 @@ public class DelegatingApplicationListenerTests {
 		public void onApplicationEvent(ContextRefreshedEvent event) {
 			ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) event
 					.getApplicationContext();
-			assertThat(applicationContext.getBeanFactory().getSingleton("a"),
-					equalTo((Object) "a"));
+			assertThat(applicationContext.getBeanFactory().getSingleton("a"))
+					.isEqualTo("a");
 			applicationContext.getBeanFactory().registerSingleton("b", "b");
 		}
 	}

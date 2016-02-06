@@ -19,7 +19,7 @@ package org.springframework.boot;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link StartupInfoLogger}.
@@ -41,8 +41,8 @@ public class StartUpLoggerTests {
 	@Test
 	public void sourceClassIncluded() {
 		new StartupInfoLogger(getClass()).logStarting(this.log);
-		assertTrue("Wrong output: " + this.output, this.output.toString()
-				.contains("Starting " + getClass().getSimpleName()));
+		assertThat(this.output.toString())
+				.contains("Starting " + getClass().getSimpleName());
 	}
 
 }
