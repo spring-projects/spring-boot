@@ -47,6 +47,7 @@
 		<antlr2.version>2.7.7</antlr2.version>
 		<artemis.version>1.1.0</artemis.version>
 		<aspectj.version>1.8.8</aspectj.version>
+		<assertj.version>2.3.0</assertj.version>
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
 		<cassandra-driver.version>2.1.9</cassandra-driver.version>
@@ -1172,6 +1173,11 @@
 				<groupId>org.aspectj</groupId>
 				<artifactId>aspectjweaver</artifactId>
 				<version>${aspectj.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.assertj</groupId>
+				<artifactId>assertj-core</artifactId>
+				<version>${assertj.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.btm</groupId>
