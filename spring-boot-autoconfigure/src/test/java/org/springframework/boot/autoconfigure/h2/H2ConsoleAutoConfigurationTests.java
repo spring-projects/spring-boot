@@ -28,10 +28,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link H2ConsoleAutoConfiguration}
@@ -61,8 +58,7 @@ public class H2ConsoleAutoConfigurationTests {
 	public void consoleIsDisabledByDefault() {
 		this.context.register(H2ConsoleAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class).size(),
-				is(equalTo(0)));
+		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).isEmpty();
 	}
 
 	@Test
@@ -71,10 +67,9 @@ public class H2ConsoleAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.h2.console.enabled:true");
 		this.context.refresh();
-		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class).size(),
-				is(equalTo(1)));
-		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings(),
-				hasItems("/h2-console/*"));
+		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
+				.contains("/h2-console/*");
 	}
 
 	@Test
@@ -93,10 +88,9 @@ public class H2ConsoleAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.h2.console.enabled:true", "spring.h2.console.path:/custom/");
 		this.context.refresh();
-		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class).size(),
-				is(equalTo(1)));
-		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings(),
-				hasItems("/custom/*"));
+		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
+				.contains("/custom/*");
 	}
 
 	@Test
@@ -105,10 +99,9 @@ public class H2ConsoleAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.h2.console.enabled:true", "spring.h2.console.path:/custom");
 		this.context.refresh();
-		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class).size(),
-				is(equalTo(1)));
-		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings(),
-				hasItems("/custom/*"));
+		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
+				.contains("/custom/*");
 	}
 
 }

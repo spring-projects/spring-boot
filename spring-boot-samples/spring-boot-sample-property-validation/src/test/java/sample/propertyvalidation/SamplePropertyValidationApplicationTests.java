@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SamplePropertyValidationApplication}.
@@ -53,8 +53,8 @@ public class SamplePropertyValidationApplicationTests {
 				"sample.port:9090");
 		this.context.refresh();
 		SampleProperties properties = this.context.getBean(SampleProperties.class);
-		assertEquals("192.168.0.1", properties.getHost());
-		assertEquals(Integer.valueOf(9090), properties.getPort());
+		assertThat(properties.getHost()).isEqualTo("192.168.0.1");
+		assertThat(properties.getPort()).isEqualTo(Integer.valueOf(9090));
 	}
 
 	@Test
@@ -84,8 +84,8 @@ public class SamplePropertyValidationApplicationTests {
 				"sample.port:9090");
 		this.context.refresh();
 		SampleProperties properties = this.context.getBean(SampleProperties.class);
-		assertEquals("192.168.0.1", properties.getHost());
-		assertEquals(Integer.valueOf(9090), properties.getPort());
+		assertThat(properties.getHost()).isEqualTo("192.168.0.1");
+		assertThat(properties.getPort()).isEqualTo(Integer.valueOf(9090));
 	}
 
 }

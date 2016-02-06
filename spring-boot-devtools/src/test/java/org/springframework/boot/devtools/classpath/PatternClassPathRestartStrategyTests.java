@@ -23,8 +23,7 @@ import org.junit.Test;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PatternClassPathRestartStrategy}.
@@ -90,7 +89,8 @@ public class PatternClassPathRestartStrategyTests {
 
 	private void assertRestartRequired(ClassPathRestartStrategy strategy,
 			String relativeName, boolean expected) {
-		assertThat(strategy.isRestartRequired(mockFile(relativeName)), equalTo(expected));
+		assertThat(strategy.isRestartRequired(mockFile(relativeName)))
+				.isEqualTo(expected);
 	}
 
 	private ChangedFile mockFile(String relativeName) {

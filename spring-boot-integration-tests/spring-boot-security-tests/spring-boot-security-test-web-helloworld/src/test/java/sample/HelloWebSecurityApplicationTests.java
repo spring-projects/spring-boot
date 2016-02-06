@@ -32,8 +32,7 @@ import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(HelloWebSecurityApplication.class)
@@ -59,9 +58,8 @@ public class HelloWebSecurityApplicationTests {
 	@Test
 	public void requiresAuthentication() throws Exception {
 		this.springSecurityFilterChain.doFilter(this.request, this.response, this.chain);
-
-		assertThat(this.response.getStatus(),
-				equalTo(HttpServletResponse.SC_UNAUTHORIZED));
+		assertThat(this.response.getStatus())
+				.isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
 	}
 
 	@Test
@@ -71,7 +69,7 @@ public class HelloWebSecurityApplicationTests {
 
 		this.springSecurityFilterChain.doFilter(this.request, this.response, this.chain);
 
-		assertThat(this.response.getStatus(), equalTo(HttpServletResponse.SC_OK));
+		assertThat(this.response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 	}
 
 }

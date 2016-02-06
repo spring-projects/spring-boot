@@ -26,9 +26,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.isA;
 
 /**
@@ -59,18 +57,18 @@ public class DelegatingFilterProxyRegistrationBeanTests
 	@Test
 	public void nameDefaultsToTargetBeanName() throws Exception {
 		assertThat(new DelegatingFilterProxyRegistrationBean("myFilter")
-				.getOrDeduceName(null), equalTo("myFilter"));
+				.getOrDeduceName(null)).isEqualTo("myFilter");
 	}
 
 	@Test
 	public void getFilterUsesDelegatingFilterProxy() throws Exception {
 		AbstractFilterRegistrationBean registrationBean = createFilterRegistrationBean();
 		Filter filter = registrationBean.getFilter();
-		assertThat(filter, instanceOf(DelegatingFilterProxy.class));
-		assertThat(ReflectionTestUtils.getField(filter, "webApplicationContext"),
-				equalTo((Object) this.applicationContext));
-		assertThat(ReflectionTestUtils.getField(filter, "targetBeanName"),
-				equalTo((Object) "mockFilter"));
+		assertThat(filter).isInstanceOf(DelegatingFilterProxy.class);
+		assertThat(ReflectionTestUtils.getField(filter, "webApplicationContext"))
+				.isEqualTo(this.applicationContext);
+		assertThat(ReflectionTestUtils.getField(filter, "targetBeanName"))
+				.isEqualTo("mockFilter");
 	}
 
 	@Test

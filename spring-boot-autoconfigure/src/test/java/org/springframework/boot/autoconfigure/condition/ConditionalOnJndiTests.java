@@ -21,7 +21,6 @@ import java.util.Map;
 
 import javax.naming.Context;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,10 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.iterableWithSize;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -114,7 +110,7 @@ public class ConditionalOnJndiTests {
 	public void jndiLocationNotFound() {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(null,
 				mockMetaData("java:/a"));
-		assertThat(outcome.isMatch(), equalTo(false));
+		assertThat(outcome.isMatch()).isFalse();
 	}
 
 	@Test
@@ -122,7 +118,7 @@ public class ConditionalOnJndiTests {
 		this.condition.setFoundLocation("java:/b");
 		ConditionOutcome outcome = this.condition.getMatchOutcome(null,
 				mockMetaData("java:/a", "java:/b"));
-		assertThat(outcome.isMatch(), equalTo(true));
+		assertThat(outcome.isMatch()).isTrue();
 	}
 
 	private void setupJndi() {
@@ -132,9 +128,7 @@ public class ConditionalOnJndiTests {
 	}
 
 	private void assertPresent(boolean expected) {
-		int expectedNumber = expected ? 1 : 0;
-		Matcher<Iterable<String>> matcher = iterableWithSize(expectedNumber);
-		assertThat(this.context.getBeansOfType(String.class).values(), is(matcher));
+		assertThat(this.context.getBeansOfType(String.class)).hasSize(expected ? 1 : 0);
 	}
 
 	private void load(Class<?> config, String... environment) {

@@ -22,12 +22,12 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.WebIntegrationTest;
 import sample.web.secure.custom.SampleWebSecureCustomApplication;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -39,9 +39,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for demo application.
@@ -64,9 +62,9 @@ public class SampleWebSecureCustomApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port, HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
-		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
-		assertTrue("Wrong location:\n" + entity.getHeaders(),
-				entity.getHeaders().getLocation().toString().endsWith(port + "/login"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+		assertThat(entity.getHeaders().getLocation().toString())
+				.endsWith(this.port + "/login");
 	}
 
 	@Test
@@ -76,9 +74,8 @@ public class SampleWebSecureCustomApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/login", HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong content:\n" + entity.getBody(),
-				entity.getBody().contains("_csrf"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("_csrf");
 	}
 
 	@Test
@@ -93,23 +90,22 @@ public class SampleWebSecureCustomApplicationTests {
 				"http://localhost:" + this.port + "/login", HttpMethod.POST,
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
-		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
-		assertTrue("Wrong location:\n" + entity.getHeaders(),
-				entity.getHeaders().getLocation().toString().endsWith(port + "/"));
-		assertNotNull("Missing cookie:\n" + entity.getHeaders(),
-				entity.getHeaders().get("Set-Cookie"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+		assertThat(entity.getHeaders().getLocation().toString())
+				.endsWith(this.port + "/");
+		assertThat(entity.getHeaders().get("Set-Cookie")).isNotNull();
 	}
 
 	private HttpHeaders getHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		ResponseEntity<String> page = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port + "/login", String.class);
-		assertEquals(HttpStatus.OK, page.getStatusCode());
+		assertThat(page.getStatusCode()).isEqualTo(HttpStatus.OK);
 		String cookie = page.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
-		Matcher matcher = Pattern.compile("(?s).*name=\"_csrf\".*?value=\"([^\"]+).*")
-				.matcher(page.getBody());
-		assertTrue("No csrf token: " + page.getBody(), matcher.matches());
+		Pattern pattern = Pattern.compile("(?s).*name=\"_csrf\".*?value=\"([^\"]+).*");
+		Matcher matcher = pattern.matcher(page.getBody());
+		assertThat(matcher.matches()).as(page.getBody()).isTrue();
 		headers.set("X-CSRF-TOKEN", matcher.group(1));
 		return headers;
 	}
@@ -118,8 +114,8 @@ public class SampleWebSecureCustomApplicationTests {
 	public void testCss() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("body");
 	}
 
 }

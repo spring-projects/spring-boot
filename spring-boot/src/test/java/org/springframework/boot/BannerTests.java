@@ -27,8 +27,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link Banner} and its usage by {@link SpringApplication}.
@@ -55,7 +54,7 @@ public class BannerTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		this.context = application.run();
-		assertThat(this.out.toString(), containsString(":: Spring Boot ::"));
+		assertThat(this.out.toString()).contains(":: Spring Boot ::");
 	}
 
 	@Test
@@ -63,7 +62,7 @@ public class BannerTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		this.context = application.run();
-		assertThat(this.out.toString(), containsString(":: Spring Boot ::"));
+		assertThat(this.out.toString()).contains(":: Spring Boot ::");
 	}
 
 	@Test
@@ -72,7 +71,7 @@ public class BannerTests {
 		application.setWebEnvironment(false);
 		application.setBanner(new DummyBanner());
 		this.context = application.run();
-		assertThat(this.out.toString(), containsString("My Banner"));
+		assertThat(this.out.toString()).contains("My Banner");
 	}
 
 	static class DummyBanner implements Banner {

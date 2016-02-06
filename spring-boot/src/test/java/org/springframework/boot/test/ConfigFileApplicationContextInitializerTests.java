@@ -25,8 +25,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigFileApplicationContextInitializer}.
@@ -42,7 +41,7 @@ public class ConfigFileApplicationContextInitializerTests {
 
 	@Test
 	public void initializerPopulatesEnvironment() {
-		assertThat(this.environment.getProperty("foo"), equalTo("bucket"));
+		assertThat(this.environment.getProperty("foo")).isEqualTo("bucket");
 	}
 
 	@Configuration

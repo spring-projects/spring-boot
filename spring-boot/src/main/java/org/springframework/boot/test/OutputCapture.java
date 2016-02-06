@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hamcrest.Matcher;
+import org.junit.Assert;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -32,7 +33,6 @@ import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.junit.Assert.assertThat;
 
 /**
  * JUnit {@code @Rule} to capture output from System.out and System.err.
@@ -63,7 +63,7 @@ public class OutputCapture implements TestRule {
 					try {
 						if (!OutputCapture.this.matchers.isEmpty()) {
 							String output = OutputCapture.this.toString();
-							assertThat(output, allOf(OutputCapture.this.matchers));
+							Assert.assertThat(output, allOf(OutputCapture.this.matchers));
 						}
 					}
 					finally {

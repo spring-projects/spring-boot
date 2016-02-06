@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.metrics.repository.InMemoryMetricReposit
 import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MetricCopyExporter}.
@@ -45,18 +45,18 @@ public class MetricCopyExporterTests {
 	public void export() {
 		this.reader.set(new Metric<Number>("foo", 2.3));
 		this.exporter.export();
-		assertEquals(1, this.writer.count());
+		assertThat(this.writer.count()).isEqualTo(1);
 	}
 
 	@Test
 	public void counter() {
 		this.reader.increment(new Delta<Number>("counter.foo", 2));
 		this.exporter.export();
-		assertEquals(1, this.writer.count());
+		assertThat(this.writer.count()).isEqualTo(1);
 		this.reader.increment(new Delta<Number>("counter.foo", 3));
 		this.exporter.export();
 		this.exporter.flush();
-		assertEquals(5L, this.writer.findOne("counter.foo").getValue());
+		assertThat(this.writer.findOne("counter.foo").getValue()).isEqualTo(5L);
 	}
 
 	@Test
@@ -68,7 +68,7 @@ public class MetricCopyExporterTests {
 		this.reader.increment(new Delta<Number>("counter.foo", 3));
 		exporter.export();
 		exporter.flush();
-		assertEquals(5L, writer.getValue().getValue());
+		assertThat(writer.getValue().getValue()).isEqualTo(5L);
 	}
 
 	@Test
@@ -76,7 +76,7 @@ public class MetricCopyExporterTests {
 		this.exporter.setIncludes("*");
 		this.reader.set(new Metric<Number>("foo", 2.3));
 		this.exporter.export();
-		assertEquals(1, this.writer.count());
+		assertThat(this.writer.count()).isEqualTo(1);
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class MetricCopyExporterTests {
 		this.reader.set(new Metric<Number>("foo", 2.3));
 		this.reader.set(new Metric<Number>("bar", 2.4));
 		this.exporter.export();
-		assertEquals(1, this.writer.count());
+		assertThat(this.writer.count()).isEqualTo(1);
 	}
 
 	@Test
@@ -95,7 +95,7 @@ public class MetricCopyExporterTests {
 		this.reader.set(new Metric<Number>("foo", 2.3));
 		this.reader.set(new Metric<Number>("bar", 2.4));
 		this.exporter.export();
-		assertEquals(1, this.writer.count());
+		assertThat(this.writer.count()).isEqualTo(1);
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public class MetricCopyExporterTests {
 		this.reader.set(new Metric<Number>("foo", 2.3));
 		this.exporter.setEarliestTimestamp(new Date(System.currentTimeMillis() + 10000));
 		this.exporter.export();
-		assertEquals(0, this.writer.count());
+		assertThat(this.writer.count()).isEqualTo(0);
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class MetricCopyExporterTests {
 		this.exporter.setIgnoreTimestamps(true);
 		this.exporter.setEarliestTimestamp(new Date(System.currentTimeMillis() + 10000));
 		this.exporter.export();
-		assertEquals(1, this.writer.count());
+		assertThat(this.writer.count()).isEqualTo(1);
 	}
 
 	private static class SimpleGaugeWriter implements GaugeWriter {

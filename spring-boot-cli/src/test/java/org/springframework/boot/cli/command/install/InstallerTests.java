@@ -30,9 +30,7 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.util.FileSystemUtils;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -68,7 +66,7 @@ public class InstallerTests {
 		File foo = createTemporaryFile("foo.jar");
 		given(this.resolver.resolve(Arrays.asList("foo"))).willReturn(Arrays.asList(foo));
 		this.installer.install(Arrays.asList("foo"));
-		assertThat(getNamesOfFilesInLib(), containsInAnyOrder("foo.jar", ".installed"));
+		assertThat(getNamesOfFilesInLib()).containsOnly("foo.jar", ".installed");
 	}
 
 	@Test
@@ -77,7 +75,7 @@ public class InstallerTests {
 		given(this.resolver.resolve(Arrays.asList("foo"))).willReturn(Arrays.asList(foo));
 		this.installer.install(Arrays.asList("foo"));
 		this.installer.uninstall(Arrays.asList("foo"));
-		assertThat(getNamesOfFilesInLib(), contains(".installed"));
+		assertThat(getNamesOfFilesInLib()).contains(".installed");
 	}
 
 	@Test
@@ -89,21 +87,17 @@ public class InstallerTests {
 				.willReturn(Arrays.asList(bravo, alpha));
 		given(this.resolver.resolve(Arrays.asList("charlie")))
 				.willReturn(Arrays.asList(charlie, alpha));
-
 		this.installer.install(Arrays.asList("bravo"));
-		assertThat(getNamesOfFilesInLib(),
-				containsInAnyOrder("alpha.jar", "bravo.jar", ".installed"));
-
+		assertThat(getNamesOfFilesInLib()).containsOnly("alpha.jar", "bravo.jar",
+				".installed");
 		this.installer.install(Arrays.asList("charlie"));
-		assertThat(getNamesOfFilesInLib(), containsInAnyOrder("alpha.jar", "bravo.jar",
-				"charlie.jar", ".installed"));
-
+		assertThat(getNamesOfFilesInLib()).containsOnly("alpha.jar", "bravo.jar",
+				"charlie.jar", ".installed");
 		this.installer.uninstall(Arrays.asList("bravo"));
-		assertThat(getNamesOfFilesInLib(),
-				containsInAnyOrder("alpha.jar", "charlie.jar", ".installed"));
-
+		assertThat(getNamesOfFilesInLib()).containsOnly("alpha.jar", "charlie.jar",
+				".installed");
 		this.installer.uninstall(Arrays.asList("charlie"));
-		assertThat(getNamesOfFilesInLib(), containsInAnyOrder(".installed"));
+		assertThat(getNamesOfFilesInLib()).containsOnly(".installed");
 	}
 
 	@Test
@@ -111,19 +105,16 @@ public class InstallerTests {
 		File alpha = createTemporaryFile("alpha.jar");
 		File bravo = createTemporaryFile("bravo.jar");
 		File charlie = createTemporaryFile("charlie.jar");
-
 		given(this.resolver.resolve(Arrays.asList("bravo")))
 				.willReturn(Arrays.asList(bravo, alpha));
 		given(this.resolver.resolve(Arrays.asList("charlie")))
 				.willReturn(Arrays.asList(charlie, alpha));
-
 		this.installer.install(Arrays.asList("bravo"));
 		this.installer.install(Arrays.asList("charlie"));
-		assertThat(getNamesOfFilesInLib(), containsInAnyOrder("alpha.jar", "bravo.jar",
-				"charlie.jar", ".installed"));
-
+		assertThat(getNamesOfFilesInLib()).containsOnly("alpha.jar", "bravo.jar",
+				"charlie.jar", ".installed");
 		this.installer.uninstallAll();
-		assertThat(getNamesOfFilesInLib(), containsInAnyOrder(".installed"));
+		assertThat(getNamesOfFilesInLib()).containsOnly(".installed");
 	}
 
 	private Set<String> getNamesOfFilesInLib() {

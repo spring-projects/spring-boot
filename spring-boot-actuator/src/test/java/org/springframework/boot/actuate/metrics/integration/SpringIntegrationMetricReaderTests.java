@@ -32,7 +32,7 @@ import org.springframework.integration.monitor.IntegrationMBeanExporter;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringIntegrationMetricReader}.
@@ -50,7 +50,7 @@ public class SpringIntegrationMetricReaderTests {
 
 	@Test
 	public void test() {
-		assertTrue(this.reader.count() > 0);
+		assertThat(this.reader.count() > 0).isTrue();
 	}
 
 	@Configuration

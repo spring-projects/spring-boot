@@ -35,8 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for demo application.
@@ -59,17 +58,16 @@ public class SampleActuatorUiApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port, HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(),
-				entity.getBody().contains("<title>Hello"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("<title>Hello");
 	}
 
 	@Test
 	public void testCss() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("body");
 	}
 
 	@Test
@@ -77,7 +75,7 @@ public class SampleActuatorUiApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port + "/metrics", Map.class);
-		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
@@ -87,13 +85,9 @@ public class SampleActuatorUiApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/error", HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(),
-				entity.getBody().contains("<html>"));
-		assertTrue("Wrong body:\n" + entity.getBody(),
-				entity.getBody().contains("<body>"));
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
-				.contains("Please contact the operator with the above information"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+		assertThat(entity.getBody()).contains("<html>").contains("<body>")
+				.contains("Please contact the operator with the above information");
 	}
 
 }

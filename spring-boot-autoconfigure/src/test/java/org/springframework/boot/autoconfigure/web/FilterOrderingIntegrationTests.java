@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.Filter;
@@ -40,9 +41,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -63,7 +62,6 @@ public class FilterOrderingIntegrationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testFilterOrdering() {
 		load();
 		List<RegisteredFilter> registeredFilters = this.context
@@ -73,10 +71,13 @@ public class FilterOrderingIntegrationTests {
 		for (RegisteredFilter registeredFilter : registeredFilters) {
 			filters.add(registeredFilter.getFilter());
 		}
-		assertThat(filters, contains(instanceOf(OrderedCharacterEncodingFilter.class),
-				instanceOf(SessionRepositoryFilter.class), instanceOf(Filter.class),
-				instanceOf(Filter.class), instanceOf(OrderedRequestContextFilter.class),
-				instanceOf(FilterChainProxy.class)));
+		Iterator<Filter> iterator = filters.iterator();
+		assertThat(iterator.next()).isInstanceOf(OrderedCharacterEncodingFilter.class);
+		assertThat(iterator.next()).isInstanceOf(SessionRepositoryFilter.class);
+		assertThat(iterator.next()).isInstanceOf(Filter.class);
+		assertThat(iterator.next()).isInstanceOf(Filter.class);
+		assertThat(iterator.next()).isInstanceOf(OrderedRequestContextFilter.class);
+		assertThat(iterator.next()).isInstanceOf(FilterChainProxy.class);
 	}
 
 	private void load() {

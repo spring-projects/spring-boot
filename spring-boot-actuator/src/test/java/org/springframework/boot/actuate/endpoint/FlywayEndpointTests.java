@@ -26,8 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link FlywayEndpoint}.
@@ -42,7 +41,7 @@ public class FlywayEndpointTests extends AbstractEndpointTests<FlywayEndpoint> {
 
 	@Test
 	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke().size(), is(1));
+		assertThat(getEndpointBean().invoke()).hasSize(1);
 	}
 
 	@Configuration

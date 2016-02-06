@@ -21,7 +21,7 @@ import java.util.jar.JarFile;
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for using the Gradle plugin's support for installing artifacts
@@ -52,10 +52,10 @@ public class ClassifierTests {
 
 	private void checkFilesExist(String name) throws Exception {
 		JarFile jar = new JarFile("target/" + name + "/build/libs/" + name + ".jar");
-		assertNotNull(jar.getManifest());
+		assertThat(jar.getManifest()).isNotNull();
 		jar.close();
 		jar = new JarFile("target/" + name + "/build/libs/" + name + "-exec.jar");
-		assertNotNull(jar.getManifest());
+		assertThat(jar.getManifest()).isNotNull();
 		jar.close();
 	}
 

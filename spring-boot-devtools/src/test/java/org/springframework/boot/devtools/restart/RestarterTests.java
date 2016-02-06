@@ -41,9 +41,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -94,9 +92,9 @@ public class RestarterTests {
 		thread.start();
 		Thread.sleep(2600);
 		String output = this.out.toString();
-		assertThat(StringUtils.countOccurrencesOf(output, "Tick 0"), greaterThan(1));
-		assertThat(StringUtils.countOccurrencesOf(output, "Tick 1"), greaterThan(1));
-		assertThat(TestRestartListener.restarts, greaterThan(0));
+		assertThat(StringUtils.countOccurrencesOf(output, "Tick 0")).isGreaterThan(1);
+		assertThat(StringUtils.countOccurrencesOf(output, "Tick 1")).isGreaterThan(1);
+		assertThat(TestRestartListener.restarts).isGreaterThan(0);
 	}
 
 	@Test
@@ -105,7 +103,7 @@ public class RestarterTests {
 		ObjectFactory objectFactory = mock(ObjectFactory.class);
 		given(objectFactory.getObject()).willReturn("abc");
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
-		assertThat(attribute, equalTo((Object) "abc"));
+		assertThat(attribute).isEqualTo("abc");
 	}
 
 	public void addUrlsMustNotBeNull() throws Exception {
@@ -123,7 +121,7 @@ public class RestarterTests {
 		restarter.restart();
 		ClassLoader classLoader = ((TestableRestarter) restarter)
 				.getRelaunchClassLoader();
-		assertThat(((URLClassLoader) classLoader).getURLs()[0], equalTo(url));
+		assertThat(((URLClassLoader) classLoader).getURLs()[0]).isEqualTo(url);
 	}
 
 	@Test
@@ -142,8 +140,8 @@ public class RestarterTests {
 		restarter.restart();
 		ClassLoader classLoader = ((TestableRestarter) restarter)
 				.getRelaunchClassLoader();
-		assertThat(FileCopyUtils.copyToByteArray(classLoader.getResourceAsStream("f")),
-				equalTo("abc".getBytes()));
+		assertThat(FileCopyUtils.copyToByteArray(classLoader.getResourceAsStream("f")))
+				.isEqualTo("abc".getBytes());
 	}
 
 	@Test
@@ -157,7 +155,7 @@ public class RestarterTests {
 		});
 		ObjectFactory objectFactory = mock(ObjectFactory.class);
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
-		assertThat(attribute, equalTo((Object) "abc"));
+		assertThat(attribute).isEqualTo("abc");
 		verifyZeroInteractions(objectFactory);
 	}
 
@@ -173,9 +171,9 @@ public class RestarterTests {
 				ThreadFactory factory = Restarter.getInstance().getThreadFactory();
 				Thread viaFactory = factory.newThread(runnable);
 				// Regular threads will inherit the current thread
-				assertThat(regular.getContextClassLoader(), equalTo(contextClassLoader));
+				assertThat(regular.getContextClassLoader()).isEqualTo(contextClassLoader);
 				// Factory threads should should inherit from the initial thread
-				assertThat(viaFactory.getContextClassLoader(), equalTo(parentLoader));
+				assertThat(viaFactory.getContextClassLoader()).isEqualTo(parentLoader);
 			};
 		};
 		thread.setContextClassLoader(contextClassLoader);
@@ -190,7 +188,7 @@ public class RestarterTests {
 		URL[] urls = new URL[] { new URL("file:/proj/module-a.jar!/") };
 		given(initializer.getInitialUrls(any(Thread.class))).willReturn(urls);
 		Restarter.initialize(new String[0], false, initializer, false);
-		assertThat(Restarter.getInstance().getInitialUrls(), equalTo(urls));
+		assertThat(Restarter.getInstance().getInitialUrls()).isEqualTo(urls);
 	}
 
 	@Component

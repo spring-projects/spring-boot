@@ -38,8 +38,7 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -114,8 +113,8 @@ public class DispatcherFilterTests {
 		ServletServerHttpRequest actualRequest = (ServletServerHttpRequest) dispatcherRequest;
 		ServerHttpResponse dispatcherResponse = this.serverResponseCaptor.getValue();
 		ServletServerHttpResponse actualResponse = (ServletServerHttpResponse) dispatcherResponse;
-		assertThat(actualRequest.getServletRequest(), equalTo(request));
-		assertThat(actualResponse.getServletResponse(), equalTo(response));
+		assertThat(actualRequest.getServletRequest()).isEqualTo(request);
+		assertThat(actualResponse.getServletResponse()).isEqualTo(response);
 	}
 
 }

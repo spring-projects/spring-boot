@@ -29,7 +29,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MessageSourceAutoConfiguration}.
@@ -47,8 +47,8 @@ public class MessageSourceAutoConfigurationIntegrationTests {
 
 	@Test
 	public void testMessageSourceFromPropertySourceAnnotation() throws Exception {
-		assertEquals("bar",
-				this.context.getMessage("foo", null, "Foo message", Locale.UK));
+		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
+				.isEqualTo("bar");
 	}
 
 	@Configuration

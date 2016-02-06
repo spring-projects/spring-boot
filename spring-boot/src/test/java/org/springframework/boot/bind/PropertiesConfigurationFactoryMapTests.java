@@ -31,7 +31,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.validation.Validator;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PropertiesConfigurationFactory} binding to a map.
@@ -51,15 +51,15 @@ public class PropertiesConfigurationFactoryMapTests {
 	@Test
 	public void testValidPropertiesLoadsWithNoErrors() throws Exception {
 		Foo foo = createFoo("map.name: blah\nmap.bar: blah");
-		assertEquals("blah", foo.map.get("bar"));
-		assertEquals("blah", foo.map.get("name"));
+		assertThat(foo.map.get("bar")).isEqualTo("blah");
+		assertThat(foo.map.get("name")).isEqualTo("blah");
 	}
 
 	@Test
 	public void testBindToNamedTarget() throws Exception {
 		this.targetName = "foo";
 		Foo foo = createFoo("hi: hello\nfoo.map.name: foo\nfoo.map.bar: blah");
-		assertEquals("blah", foo.map.get("bar"));
+		assertThat(foo.map.get("bar")).isEqualTo("blah");
 	}
 
 	@Test
@@ -72,7 +72,7 @@ public class PropertiesConfigurationFactoryMapTests {
 		this.factory.setPropertySources(sources);
 		this.factory.afterPropertiesSet();
 		Foo foo = this.factory.getObject();
-		assertEquals("blah", foo.map.get("name"));
+		assertThat(foo.map.get("name")).isEqualTo("blah");
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class PropertiesConfigurationFactoryMapTests {
 		this.factory.setPropertySources(sources);
 		this.factory.afterPropertiesSet();
 		Foo foo = this.factory.getObject();
-		assertEquals("blah", foo.map.get("name"));
+		assertThat(foo.map.get("name")).isEqualTo("blah");
 	}
 
 	private Foo createFoo(final String values) throws Exception {

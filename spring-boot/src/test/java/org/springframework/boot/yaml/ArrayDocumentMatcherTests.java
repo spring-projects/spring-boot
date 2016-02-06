@@ -25,7 +25,7 @@ import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ArrayDocumentMatcher}.
@@ -37,20 +37,22 @@ public class ArrayDocumentMatcherTests {
 	@Test
 	public void testMatchesSingleValue() throws IOException {
 		ArrayDocumentMatcher matcher = new ArrayDocumentMatcher("foo", "bar");
-		assertEquals(MatchStatus.FOUND, matcher.matches(getProperties("foo: bar")));
+		assertThat(matcher.matches(getProperties("foo: bar")))
+				.isEqualTo(MatchStatus.FOUND);
 	}
 
 	@Test
 	public void testDoesNotMatchesIndexedArray() throws IOException {
 		ArrayDocumentMatcher matcher = new ArrayDocumentMatcher("foo", "bar");
-		assertEquals(MatchStatus.ABSTAIN,
-				matcher.matches(getProperties("foo[0]: bar\nfoo[1]: spam")));
+		assertThat(matcher.matches(getProperties("foo[0]: bar\nfoo[1]: spam")))
+				.isEqualTo(MatchStatus.ABSTAIN);
 	}
 
 	@Test
 	public void testMatchesCommaSeparatedArray() throws IOException {
 		ArrayDocumentMatcher matcher = new ArrayDocumentMatcher("foo", "bar");
-		assertEquals(MatchStatus.FOUND, matcher.matches(getProperties("foo: bar,spam")));
+		assertThat(matcher.matches(getProperties("foo: bar,spam")))
+				.isEqualTo(MatchStatus.FOUND);
 	}
 
 	private Properties getProperties(String values) throws IOException {

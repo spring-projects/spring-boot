@@ -23,7 +23,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link IntegrationAutoConfiguration}.
@@ -38,7 +38,7 @@ public class IntegrationAutoConfigurationTests {
 	public void integrationIsAvailable() {
 		this.context.register(IntegrationAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
+		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 		this.context.close();
 	}
 
@@ -47,7 +47,7 @@ public class IntegrationAutoConfigurationTests {
 		this.context.register(JmxAutoConfiguration.class,
 				IntegrationAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
+		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 		this.context.close();
 	}
 
@@ -60,7 +60,7 @@ public class IntegrationAutoConfigurationTests {
 		this.context.setParent(parent);
 		this.context.register(IntegrationAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
+		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 		((ConfigurableApplicationContext) this.context.getParent()).close();
 		this.context.close();
 	}

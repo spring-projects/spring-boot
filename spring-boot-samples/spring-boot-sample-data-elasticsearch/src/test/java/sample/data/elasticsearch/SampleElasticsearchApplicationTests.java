@@ -25,7 +25,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SampleElasticsearchApplication}.
@@ -53,8 +53,7 @@ public class SampleElasticsearchApplicationTests {
 			}
 		}
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output,
-				output.contains("firstName='Alice', lastName='Smith'"));
+		assertThat(output).contains("firstName='Alice', lastName='Smith'");
 	}
 
 	private boolean serverNotRunning(IllegalStateException ex) {

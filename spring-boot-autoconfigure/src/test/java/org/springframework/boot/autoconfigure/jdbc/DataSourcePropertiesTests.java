@@ -18,8 +18,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DataSourceProperties}.
@@ -33,8 +32,9 @@ public class DataSourcePropertiesTests {
 	public void determineDriver() {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUrl("jdbc:mysql://mydb");
-		assertNull(properties.getDriverClassName());
-		assertEquals("com.mysql.jdbc.Driver", properties.determineDriverClassName());
+		assertThat(properties.getDriverClassName()).isNull();
+		assertThat(properties.determineDriverClassName())
+				.isEqualTo("com.mysql.jdbc.Driver");
 	}
 
 	@Test
@@ -42,16 +42,18 @@ public class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUrl("jdbc:mysql://mydb");
 		properties.setDriverClassName("org.hsqldb.jdbcDriver");
-		assertEquals("org.hsqldb.jdbcDriver", properties.getDriverClassName());
-		assertEquals("org.hsqldb.jdbcDriver", properties.determineDriverClassName());
+		assertThat(properties.getDriverClassName()).isEqualTo("org.hsqldb.jdbcDriver");
+		assertThat(properties.determineDriverClassName())
+				.isEqualTo("org.hsqldb.jdbcDriver");
 	}
 
 	@Test
 	public void determineUrl() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.afterPropertiesSet();
-		assertNull(properties.getUrl());
-		assertEquals(EmbeddedDatabaseConnection.H2.getUrl(), properties.determineUrl());
+		assertThat(properties.getUrl()).isNull();
+		assertThat(properties.determineUrl())
+				.isEqualTo(EmbeddedDatabaseConnection.H2.getUrl());
 	}
 
 	@Test
@@ -59,16 +61,16 @@ public class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUrl("jdbc:mysql://mydb");
 		properties.afterPropertiesSet();
-		assertEquals("jdbc:mysql://mydb", properties.getUrl());
-		assertEquals("jdbc:mysql://mydb", properties.determineUrl());
+		assertThat(properties.getUrl()).isEqualTo("jdbc:mysql://mydb");
+		assertThat(properties.determineUrl()).isEqualTo("jdbc:mysql://mydb");
 	}
 
 	@Test
 	public void determineUsername() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.afterPropertiesSet();
-		assertNull(properties.getUsername());
-		assertEquals("sa", properties.determineUsername());
+		assertThat(properties.getUsername()).isNull();
+		assertThat(properties.determineUsername()).isEqualTo("sa");
 	}
 
 	@Test
@@ -76,16 +78,16 @@ public class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUsername("foo");
 		properties.afterPropertiesSet();
-		assertEquals("foo", properties.getUsername());
-		assertEquals("foo", properties.determineUsername());
+		assertThat(properties.getUsername()).isEqualTo("foo");
+		assertThat(properties.determineUsername()).isEqualTo("foo");
 	}
 
 	@Test
 	public void determinePassword() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.afterPropertiesSet();
-		assertNull(properties.getPassword());
-		assertEquals("", properties.determinePassword());
+		assertThat(properties.getPassword()).isNull();
+		assertThat(properties.determinePassword()).isEqualTo("");
 	}
 
 	@Test
@@ -93,8 +95,8 @@ public class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setPassword("bar");
 		properties.afterPropertiesSet();
-		assertEquals("bar", properties.getPassword());
-		assertEquals("bar", properties.determinePassword());
+		assertThat(properties.getPassword()).isEqualTo("bar");
+		assertThat(properties.determinePassword()).isEqualTo("bar");
 	}
 
 }

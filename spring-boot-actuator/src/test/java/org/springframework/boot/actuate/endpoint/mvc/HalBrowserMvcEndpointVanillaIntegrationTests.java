@@ -39,7 +39,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -90,7 +90,8 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 		MvcResult response = this.mockMvc
 				.perform(get("/actuator/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isOk()).andReturn();
-		assertEquals("/actuator/browser.html", response.getResponse().getForwardedUrl());
+		assertThat(response.getResponse().getForwardedUrl())
+				.isEqualTo("/actuator/browser.html");
 	}
 
 	@Test

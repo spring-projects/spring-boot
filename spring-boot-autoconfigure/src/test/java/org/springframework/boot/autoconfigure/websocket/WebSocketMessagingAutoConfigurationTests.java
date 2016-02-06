@@ -61,9 +61,7 @@ import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -151,12 +149,10 @@ public class WebSocketMessagingAutoConfigurationTests {
 			if (failure.get() != null) {
 				throw failure.get();
 			}
-			else {
-				fail("Response was not received within 30 seconds");
-			}
+			fail("Response was not received within 30 seconds");
 		}
-		assertThat(new String((byte[]) result.get()),
-				is(equalTo(String.format("{%n  \"foo\" : 5,%n  \"bar\" : \"baz\"%n}"))));
+		assertThat(new String((byte[]) result.get()))
+				.isEqualTo(String.format("{%n  \"foo\" : 5,%n  \"bar\" : \"baz\"%n}"));
 	}
 
 	@Configuration

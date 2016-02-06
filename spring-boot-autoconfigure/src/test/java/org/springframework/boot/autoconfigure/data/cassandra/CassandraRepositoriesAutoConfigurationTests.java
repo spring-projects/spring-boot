@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -61,20 +61,20 @@ public class CassandraRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() {
 		addConfigurations(TestConfiguration.class);
-		assertNotNull(this.context.getBean(CityRepository.class));
-		assertNotNull(this.context.getBean(Cluster.class));
+		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
+		assertThat(this.context.getBean(Cluster.class)).isNotNull();
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() {
 		addConfigurations(TestExcludeConfiguration.class, EmptyConfiguration.class);
-		assertNotNull(this.context.getBean(Cluster.class));
+		assertThat(this.context.getBean(Cluster.class)).isNotNull();
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		addConfigurations(TestExcludeConfiguration.class, CustomizedConfiguration.class);
-		assertNotNull(this.context.getBean(CityCassandraRepository.class));
+		assertThat(this.context.getBean(CityCassandraRepository.class)).isNotNull();
 	}
 
 	private void addConfigurations(Class<?>... configurations) {

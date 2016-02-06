@@ -31,9 +31,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link LogFileMvcEndpoint}.
@@ -67,7 +65,7 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(
 				HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND.value()));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@Test
@@ -77,7 +75,7 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(
 				HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND.value()));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@Test
@@ -87,7 +85,7 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(
 				HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.OK.value()));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	@Test
@@ -98,7 +96,7 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(
 				HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND.value()));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@Test
@@ -108,8 +106,8 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.GET.name(),
 				"/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.OK.value()));
-		assertEquals("--TEST--", response.getContentAsString());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.getContentAsString()).isEqualTo("--TEST--");
 	}
 
 }

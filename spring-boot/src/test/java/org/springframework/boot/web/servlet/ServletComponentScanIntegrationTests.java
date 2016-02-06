@@ -26,9 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link ServletComponentScan}
@@ -55,7 +53,7 @@ public class ServletComponentScanIntegrationTests {
 		String port = this.context.getEnvironment().getProperty("local.server.port");
 		String response = new RestTemplate()
 				.getForObject("http://localhost:" + port + "/test", String.class);
-		assertThat(response, is(equalTo("alpha bravo")));
+		assertThat(response).isEqualTo("alpha bravo");
 	}
 
 	@Configuration

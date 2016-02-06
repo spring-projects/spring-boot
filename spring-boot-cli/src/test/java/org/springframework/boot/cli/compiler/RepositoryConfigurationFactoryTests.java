@@ -25,9 +25,7 @@ import org.junit.Test;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.boot.cli.util.SystemProperties;
 
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RepositoryConfigurationFactory}
@@ -107,11 +105,12 @@ public class RepositoryConfigurationFactoryTests {
 
 	private void assertRepositoryConfiguration(
 			List<RepositoryConfiguration> configurations, String... expectedNames) {
-		assertThat(configurations, hasSize(expectedNames.length));
+		assertThat(configurations).hasSize(expectedNames.length);
 		Set<String> actualNames = new HashSet<String>();
 		for (RepositoryConfiguration configuration : configurations) {
 			actualNames.add(configuration.getName());
 		}
-		assertThat(actualNames, hasItems(expectedNames));
+		assertThat(actualNames).containsOnly(expectedNames);
 	}
+
 }

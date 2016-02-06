@@ -34,8 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AnsiOutputApplicationListener}.
@@ -67,7 +66,7 @@ public class AnsiOutputApplicationListenerTests {
 		props.put("spring.output.ansi.enabled", "ALWAYS");
 		application.setDefaultProperties(props);
 		this.context = application.run();
-		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.ALWAYS));
+		assertThat(AnsiOutputEnabledValue.get()).isEqualTo(Enabled.ALWAYS);
 	}
 
 	@Test
@@ -78,7 +77,7 @@ public class AnsiOutputApplicationListenerTests {
 		props.put("spring.output.ansi.enabled", "never");
 		application.setDefaultProperties(props);
 		this.context = application.run();
-		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.NEVER));
+		assertThat(AnsiOutputEnabledValue.get()).isEqualTo(Enabled.NEVER);
 	}
 
 	@Test
@@ -89,7 +88,7 @@ public class AnsiOutputApplicationListenerTests {
 		application.setWebEnvironment(false);
 		application.setEnvironment(environment);
 		this.context = application.run();
-		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.NEVER));
+		assertThat(AnsiOutputEnabledValue.get()).isEqualTo(Enabled.NEVER);
 	}
 
 	@Configuration

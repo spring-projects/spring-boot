@@ -54,7 +54,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Simple integration tests for HTTP tunneling.
@@ -74,8 +74,8 @@ public class HttpTunnelIntegrationTests {
 		String url = "http://localhost:" + this.config.httpServerPort + "/hello";
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url,
 				String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("Hello World", entity.getBody());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}
 
 	@Test
@@ -83,8 +83,8 @@ public class HttpTunnelIntegrationTests {
 		String url = "http://localhost:" + this.config.clientPort + "/hello";
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url,
 				String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("Hello World", entity.getBody());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}
 
 	@Configuration

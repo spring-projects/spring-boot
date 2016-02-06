@@ -22,7 +22,7 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration Tests for {@link SampleTomEEDeployApplication}.
@@ -34,11 +34,10 @@ public class SampleTomEEDeployApplicationIT {
 	@Test
 	public void testHome() throws Exception {
 		String url = "http://localhost:" + this.port + "/bootapp/";
-		System.out.println(url);
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url,
 				String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("Hello World", entity.getBody());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}
 
 }

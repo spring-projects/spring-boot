@@ -26,9 +26,7 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DefaultLaunchScript}.
@@ -45,7 +43,7 @@ public class DefaultLaunchScriptTests {
 	public void loadsDefaultScript() throws Exception {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
-		assertThat(content, containsString("Spring Boot Startup Script"));
+		assertThat(content).contains("Spring Boot Startup Script");
 	}
 
 	@Test
@@ -82,14 +80,14 @@ public class DefaultLaunchScriptTests {
 	public void defaultForUseStartStopDaemonIsTrue() throws Exception {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
-		assertThat(content, containsString("USE_START_STOP_DAEMON=\"true\""));
+		assertThat(content).contains("USE_START_STOP_DAEMON=\"true\"");
 	}
 
 	@Test
 	public void defaultForModeIsAuto() throws Exception {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
-		assertThat(content, containsString("MODE=\"auto\""));
+		assertThat(content).contains("MODE=\"auto\"");
 	}
 
 	@Test
@@ -98,7 +96,7 @@ public class DefaultLaunchScriptTests {
 		FileCopyUtils.copy("ABC".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("ABC"));
+		assertThat(content).isEqualTo("ABC");
 	}
 
 	@Test
@@ -108,7 +106,7 @@ public class DefaultLaunchScriptTests {
 		DefaultLaunchScript script = new DefaultLaunchScript(file,
 				createProperties("a:e", "b:o"));
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("hello"));
+		assertThat(content).isEqualTo("hello");
 	}
 
 	@Test
@@ -118,7 +116,7 @@ public class DefaultLaunchScriptTests {
 		DefaultLaunchScript script = new DefaultLaunchScript(file,
 				createProperties("a:e", "b:o"));
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("hel\nlo"));
+		assertThat(content).isEqualTo("hel\nlo");
 	}
 
 	@Test
@@ -127,7 +125,7 @@ public class DefaultLaunchScriptTests {
 		FileCopyUtils.copy("h{{a:e}}ll{{b:o}}".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("hello"));
+		assertThat(content).isEqualTo("hello");
 	}
 
 	@Test
@@ -137,7 +135,7 @@ public class DefaultLaunchScriptTests {
 		DefaultLaunchScript script = new DefaultLaunchScript(file,
 				createProperties("a:a"));
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("hallo"));
+		assertThat(content).isEqualTo("hallo");
 	}
 
 	@Test
@@ -146,14 +144,14 @@ public class DefaultLaunchScriptTests {
 		FileCopyUtils.copy("h{{a}}ll{{b}}".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("h{{a}}ll{{b}}"));
+		assertThat(content).isEqualTo("h{{a}}ll{{b}}");
 	}
 
 	private void assertThatPlaceholderCanBeReplaced(String placeholder) throws Exception {
 		DefaultLaunchScript script = new DefaultLaunchScript(null,
 				createProperties(placeholder + ":__test__"));
 		String content = new String(script.toByteArray());
-		assertThat(content, containsString("__test__"));
+		assertThat(content).contains("__test__");
 	}
 
 	private Map<?, ?> createProperties(String... pairs) {

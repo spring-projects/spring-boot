@@ -27,8 +27,7 @@ import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringApplicationContextLoader}
@@ -93,8 +92,8 @@ public class SpringApplicationContextLoaderTests {
 	}
 
 	private void assertKey(Map<String, Object> actual, String key, Object value) {
-		assertTrue("Key '" + key + "' not found", actual.containsKey(key));
-		assertEquals(value, actual.get(key));
+		assertThat(actual.containsKey(key)).as("Key '" + key + "' not found").isTrue();
+		assertThat(actual.get(key)).isEqualTo(value);
 	}
 
 	@IntegrationTest({ "key=myValue", "anotherKey:anotherValue" })

@@ -36,9 +36,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.util.ReflectionUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -69,8 +67,9 @@ public class TomcatDataSourceConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				PREFIX + "url:jdbc:h2:mem:testdb");
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-		assertNotNull(this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class));
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
+		assertThat(this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class))
+				.isNotNull();
 	}
 
 	@Test
@@ -93,14 +92,14 @@ public class TomcatDataSourceConfigurationTests {
 		this.context.refresh();
 		org.apache.tomcat.jdbc.pool.DataSource ds = this.context
 				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
-		assertEquals("jdbc:h2:mem:testdb", ds.getUrl());
-		assertTrue(ds.isTestWhileIdle());
-		assertTrue(ds.isTestOnBorrow());
-		assertTrue(ds.isTestOnReturn());
-		assertEquals(10000, ds.getTimeBetweenEvictionRunsMillis());
-		assertEquals(12345, ds.getMinEvictableIdleTimeMillis());
-		assertEquals(1234, ds.getMaxWait());
-		assertEquals(9999L, ds.getValidationInterval());
+		assertThat(ds.getUrl()).isEqualTo("jdbc:h2:mem:testdb");
+		assertThat(ds.isTestWhileIdle()).isTrue();
+		assertThat(ds.isTestOnBorrow()).isTrue();
+		assertThat(ds.isTestOnReturn()).isTrue();
+		assertThat(ds.getTimeBetweenEvictionRunsMillis()).isEqualTo(10000);
+		assertThat(ds.getMinEvictableIdleTimeMillis()).isEqualTo(12345);
+		assertThat(ds.getMaxWait()).isEqualTo(1234);
+		assertThat(ds.getValidationInterval()).isEqualTo(9999L);
 		assertDataSourceHasInterceptors(ds);
 	}
 
@@ -124,10 +123,10 @@ public class TomcatDataSourceConfigurationTests {
 		this.context.refresh();
 		org.apache.tomcat.jdbc.pool.DataSource ds = this.context
 				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
-		assertEquals(5000, ds.getTimeBetweenEvictionRunsMillis());
-		assertEquals(60000, ds.getMinEvictableIdleTimeMillis());
-		assertEquals(30000, ds.getMaxWait());
-		assertEquals(30000L, ds.getValidationInterval());
+		assertThat(ds.getTimeBetweenEvictionRunsMillis()).isEqualTo(5000);
+		assertThat(ds.getMinEvictableIdleTimeMillis()).isEqualTo(60000);
+		assertThat(ds.getMaxWait()).isEqualTo(30000);
+		assertThat(ds.getValidationInterval()).isEqualTo(30000L);
 	}
 
 	@SuppressWarnings("unchecked")

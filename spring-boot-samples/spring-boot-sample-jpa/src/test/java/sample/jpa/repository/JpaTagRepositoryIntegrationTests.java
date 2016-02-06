@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link JpaTagRepository}.
@@ -43,7 +43,7 @@ public class JpaTagRepositoryIntegrationTests {
 	@Test
 	public void findsAllTags() {
 		List<Tag> tags = this.repository.findAll();
-		assertEquals(3, tags.size());
+		assertThat(tags).hasSize(3);
 	}
 
 }

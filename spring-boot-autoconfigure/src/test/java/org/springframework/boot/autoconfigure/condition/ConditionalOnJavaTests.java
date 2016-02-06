@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.function.Function;
 
-import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
@@ -35,10 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.iterableWithSize;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConditionalOnJava}.
@@ -84,37 +80,37 @@ public class ConditionalOnJavaTests {
 	public void equalOrNewerMessage() throws Exception {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.EQUAL_OR_NEWER,
 				JavaVersion.SEVEN, JavaVersion.SIX);
-		assertThat(outcome.getMessage(),
-				equalTo("Required JVM version " + "1.6 or newer found 1.7"));
+		assertThat(outcome.getMessage())
+				.isEqualTo("Required JVM version " + "1.6 or newer found 1.7");
 	}
 
 	@Test
 	public void olderThanMessage() throws Exception {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.OLDER_THAN,
 				JavaVersion.SEVEN, JavaVersion.SIX);
-		assertThat(outcome.getMessage(),
-				equalTo("Required JVM version " + "older than 1.6 found 1.7"));
+		assertThat(outcome.getMessage())
+				.isEqualTo("Required JVM version " + "older than 1.6 found 1.7");
 	}
 
 	@Test
 	public void java8IsDetected() throws Exception {
-		assertThat(getJavaVersion(), is("1.8"));
+		assertThat(getJavaVersion()).isEqualTo("1.8");
 	}
 
 	@Test
 	public void java7IsDetected() throws Exception {
-		assertThat(getJavaVersion(Function.class), is("1.7"));
+		assertThat(getJavaVersion(Function.class)).isEqualTo("1.7");
 	}
 
 	@Test
 	public void java6IsDetected() throws Exception {
-		assertThat(getJavaVersion(Function.class, Files.class), is("1.6"));
+		assertThat(getJavaVersion(Function.class, Files.class)).isEqualTo("1.6");
 	}
 
 	@Test
 	public void java6IsTheFallback() throws Exception {
-		assertThat(getJavaVersion(Function.class, Files.class, ServiceLoader.class),
-				is("1.6"));
+		assertThat(getJavaVersion(Function.class, Files.class, ServiceLoader.class))
+				.isEqualTo("1.6");
 	}
 
 	private String getJavaVersion(Class<?>... hiddenClasses) throws Exception {
@@ -135,7 +131,7 @@ public class ConditionalOnJavaTests {
 			boolean expected) {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(range, runningVersion,
 				version);
-		assertThat(outcome.getMessage(), outcome.isMatch(), equalTo(expected));
+		assertThat(outcome.isMatch()).as(outcome.getMessage()).isEqualTo(expected);
 	}
 
 	private void registerAndRefresh(Class<?> annotatedClasses) {
@@ -144,9 +140,7 @@ public class ConditionalOnJavaTests {
 	}
 
 	private void assertPresent(boolean expected) {
-		int expectedNumber = expected ? 1 : 0;
-		Matcher<Iterable<String>> matcher = iterableWithSize(expectedNumber);
-		assertThat(this.context.getBeansOfType(String.class).values(), is(matcher));
+		assertThat(this.context.getBeansOfType(String.class)).hasSize(expected ? 1 : 0);
 	}
 
 	private final class ClassHidingClassLoader extends URLClassLoader {

@@ -28,8 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for demo application.
@@ -49,20 +48,18 @@ public class SampleTraditionalApplicationTests {
 	public void testHomeJsp() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		String body = entity.getBody();
-		assertTrue("Wrong body:\n" + body, body.contains("<html>"));
-		assertTrue("Wrong body:\n" + body, body.contains("<h1>Home</h1>"));
+		assertThat(body).contains("<html>").contains("<h1>Home</h1>");
 	}
 
 	@Test
 	public void testStaticPage() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/index.html", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		String body = entity.getBody();
-		assertTrue("Wrong body:\n" + body, body.contains("<html>"));
-		assertTrue("Wrong body:\n" + body, body.contains("<h1>Hello</h1>"));
+		assertThat(body).contains("<html>").contains("<h1>Hello</h1>");
 	}
 
 }

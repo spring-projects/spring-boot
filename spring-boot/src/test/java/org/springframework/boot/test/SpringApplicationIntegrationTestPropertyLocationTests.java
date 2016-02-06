@@ -31,8 +31,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link IntegrationTest} with {@link TestPropertySource} locations.
@@ -51,10 +50,10 @@ public class SpringApplicationIntegrationTestPropertyLocationTests {
 
 	@Test
 	public void loadedProperties() throws Exception {
-		assertThat(this.environment.getProperty("value1"), equalTo("123"));
-		assertThat(this.environment.getProperty("value2"), equalTo("456"));
-		assertThat(this.environment.getProperty("annotation-referenced"),
-				equalTo("fromfile"));
+		assertThat(this.environment.getProperty("value1")).isEqualTo("123");
+		assertThat(this.environment.getProperty("value2")).isEqualTo("456");
+		assertThat(this.environment.getProperty("annotation-referenced"))
+				.isEqualTo("fromfile");
 	}
 
 	@Configuration
@@ -71,9 +70,9 @@ public class SpringApplicationIntegrationTestPropertyLocationTests {
 
 		@PostConstruct
 		void checkValues() {
-			assertThat(this.value1, equalTo("123"));
-			assertThat(this.value2, equalTo("456"));
-			assertThat(this.annotationReferenced, equalTo("fromfile"));
+			assertThat(this.value1).isEqualTo("123");
+			assertThat(this.value2).isEqualTo("456");
+			assertThat(this.annotationReferenced).isEqualTo("fromfile");
 		}
 
 	}

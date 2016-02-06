@@ -34,9 +34,7 @@ import org.junit.Test;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AetherGrapeEngine}.
@@ -63,11 +61,9 @@ public class AetherGrapeEngineTests {
 	@Test
 	public void dependencyResolution() {
 		Map<String, Object> args = new HashMap<String, Object>();
-
 		createGrapeEngine(this.springMilestones).grab(args,
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"));
-
-		assertEquals(5, this.groovyClassLoader.getURLs().length);
+		assertThat(this.groovyClassLoader.getURLs()).hasSize(5);
 	}
 
 	@Test
@@ -81,8 +77,10 @@ public class AetherGrapeEngineTests {
 				DefaultRepositorySystemSession session = (DefaultRepositorySystemSession) ReflectionTestUtils
 						.getField(grapeEngine, "session");
 
-				assertTrue(session.getProxySelector() instanceof CompositeProxySelector);
+				assertThat(session.getProxySelector() instanceof CompositeProxySelector)
+						.isTrue();
 			}
+
 		});
 	}
 
@@ -97,8 +95,8 @@ public class AetherGrapeEngineTests {
 
 				List<RemoteRepository> repositories = (List<RemoteRepository>) ReflectionTestUtils
 						.getField(grapeEngine, "repositories");
-				assertEquals(1, repositories.size());
-				assertEquals("central-mirror", repositories.get(0).getId());
+				assertThat(repositories).hasSize(1);
+				assertThat(repositories.get(0).getId()).isEqualTo("central-mirror");
 			}
 		});
 	}
@@ -114,9 +112,9 @@ public class AetherGrapeEngineTests {
 
 				List<RemoteRepository> repositories = (List<RemoteRepository>) ReflectionTestUtils
 						.getField(grapeEngine, "repositories");
-				assertEquals(1, repositories.size());
+				assertThat(repositories).hasSize(1);
 				Authentication authentication = repositories.get(0).getAuthentication();
-				assertNotNull(authentication);
+				assertThat(authentication).isNotNull();
 			}
 		});
 	}
@@ -131,7 +129,7 @@ public class AetherGrapeEngineTests {
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"),
 				createDependency("org.springframework", "spring-beans", "3.2.4.RELEASE"));
 
-		assertEquals(3, this.groovyClassLoader.getURLs().length);
+		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(3);
 	}
 
 	@Test
@@ -141,7 +139,7 @@ public class AetherGrapeEngineTests {
 		createGrapeEngine().grab(args, createDependency("org.springframework",
 				"spring-jdbc", "3.2.4.RELEASE", false));
 
-		assertEquals(1, this.groovyClassLoader.getURLs().length);
+		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(1);
 	}
 
 	@Test
@@ -153,8 +151,8 @@ public class AetherGrapeEngineTests {
 		createGrapeEngine(this.springMilestones).grab(args,
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"));
 
-		assertEquals(0, this.groovyClassLoader.getURLs().length);
-		assertEquals(5, customClassLoader.getURLs().length);
+		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(0);
+		assertThat(customClassLoader.getURLs().length).isEqualTo(5);
 	}
 
 	@Test
@@ -164,7 +162,7 @@ public class AetherGrapeEngineTests {
 		grapeEngine
 				.addResolver(createResolver("restlet.org", "http://maven.restlet.org"));
 		grapeEngine.grab(args, createDependency("org.restlet", "org.restlet", "1.1.6"));
-		assertEquals(1, this.groovyClassLoader.getURLs().length);
+		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(1);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -184,8 +182,8 @@ public class AetherGrapeEngineTests {
 		dependency.put("type", "pom");
 		createGrapeEngine().grab(args, dependency);
 		URL[] urls = this.groovyClassLoader.getURLs();
-		assertEquals(1, urls.length);
-		assertTrue(urls[0].toExternalForm().endsWith(".pom"));
+		assertThat(urls.length).isEqualTo(1);
+		assertThat(urls[0].toExternalForm().endsWith(".pom")).isTrue();
 	}
 
 	@Test
@@ -196,8 +194,8 @@ public class AetherGrapeEngineTests {
 		dependency.put("ext", "pom");
 		createGrapeEngine().grab(args, dependency);
 		URL[] urls = this.groovyClassLoader.getURLs();
-		assertEquals(1, urls.length);
-		assertTrue(urls[0].toExternalForm().endsWith(".pom"));
+		assertThat(urls.length).isEqualTo(1);
+		assertThat(urls[0].toExternalForm().endsWith(".pom")).isTrue();
 	}
 
 	@Test
@@ -210,8 +208,8 @@ public class AetherGrapeEngineTests {
 		createGrapeEngine().grab(args, dependency);
 
 		URL[] urls = this.groovyClassLoader.getURLs();
-		assertEquals(1, urls.length);
-		assertTrue(urls[0].toExternalForm().endsWith("-sources.jar"));
+		assertThat(urls.length).isEqualTo(1);
+		assertThat(urls[0].toExternalForm().endsWith("-sources.jar")).isTrue();
 	}
 
 	private Map<String, Object> createDependency(String group, String module,

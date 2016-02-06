@@ -45,7 +45,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JerseyAutoConfiguration} when using custom application path.
@@ -67,7 +67,7 @@ public class JerseyAutoConfigurationWithoutApplicationPathTests {
 	public void contextLoads() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity(
 				"http://localhost:" + this.port + "/api/hello", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@MinimalWebConfiguration

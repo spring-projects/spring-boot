@@ -25,10 +25,7 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsNull.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleCacheApplication.class)
@@ -43,11 +40,11 @@ public class SampleCacheApplicationTests {
 	@Test
 	public void validateCache() {
 		Cache countries = this.cacheManager.getCache("countries");
-		assertThat(countries, is(notNullValue()));
+		assertThat(countries).isNotNull();
 		countries.clear(); // Simple test assuming the cache is empty
-		assertThat(countries.get("BE"), is(nullValue()));
+		assertThat(countries.get("BE")).isNull();
 		Country be = this.countryRepository.findByCode("BE");
-		assertThat((Country) countries.get("BE").get(), is(be));
+		assertThat((Country) countries.get("BE").get()).isEqualTo(be);
 	}
 
 }

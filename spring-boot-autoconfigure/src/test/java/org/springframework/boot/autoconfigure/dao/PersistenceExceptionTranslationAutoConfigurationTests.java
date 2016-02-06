@@ -34,10 +34,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.stereotype.Repository;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
@@ -62,8 +59,8 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 				PersistenceExceptionTranslationAutoConfiguration.class);
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
 				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
-		assertThat(beans.size(), is(equalTo(1)));
-		assertThat(beans.values().iterator().next().isProxyTargetClass(), equalTo(true));
+		assertThat(beans).hasSize(1);
+		assertThat(beans.values().iterator().next().isProxyTargetClass()).isTrue();
 	}
 
 	@Test
@@ -75,7 +72,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 		this.context.refresh();
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
 				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
-		assertThat(beans.entrySet(), empty());
+		assertThat(beans.entrySet()).isEmpty();
 	}
 
 	@Test(expected = IllegalArgumentException.class)

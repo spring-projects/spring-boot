@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.data.redis.RedisConnectionFailureException;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SampleRedisApplication}.
@@ -45,8 +45,7 @@ public class SampleRedisApplicationTests {
 			}
 		}
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output,
-				output.contains("Found key spring.boot.redis.test"));
+		assertThat(output).contains("Found key spring.boot.redis.test");
 	}
 
 	private boolean redisServerRunning(Throwable ex) {

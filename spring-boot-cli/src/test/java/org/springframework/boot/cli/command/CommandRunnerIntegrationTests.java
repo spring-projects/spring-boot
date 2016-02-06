@@ -22,8 +22,7 @@ import org.junit.Test;
 import org.springframework.boot.cli.command.run.RunCommand;
 import org.springframework.boot.cli.util.OutputCapture;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Dave Syer
@@ -40,7 +39,7 @@ public class CommandRunnerIntegrationTests {
 		// -d counts as "debug" for the spring command, but not for the
 		// LoggingApplicationListener
 		runner.runAndHandleErrors("run", "samples/app.groovy", "-d");
-		assertTrue(this.output.toString().contains("Negative matches:"));
+		assertThat(this.output.toString()).contains("Negative matches:");
 	}
 
 	@Test
@@ -48,6 +47,6 @@ public class CommandRunnerIntegrationTests {
 		CommandRunner runner = new CommandRunner("spring");
 		runner.addCommand(new RunCommand());
 		runner.runAndHandleErrors("run", "samples/app.groovy", "--", "-d");
-		assertFalse(this.output.toString().contains("Negative matches:"));
+		assertThat(this.output.toString()).doesNotContain("Negative matches:");
 	}
 }

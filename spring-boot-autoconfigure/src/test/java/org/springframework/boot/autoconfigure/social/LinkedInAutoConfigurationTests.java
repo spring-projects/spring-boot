@@ -22,7 +22,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.social.linkedin.api.LinkedIn;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link LinkedInAutoConfiguration}.
@@ -42,7 +42,7 @@ public class LinkedInAutoConfigurationTests extends AbstractSocialAutoConfigurat
 		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertConnectionFrameworkBeans();
-		assertNotNull(this.context.getBean(LinkedIn.class));
+		assertThat(this.context.getBean(LinkedIn.class)).isNotNull();
 	}
 
 	@Test

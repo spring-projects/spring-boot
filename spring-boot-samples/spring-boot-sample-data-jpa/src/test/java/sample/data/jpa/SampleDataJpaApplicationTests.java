@@ -34,7 +34,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -74,9 +74,9 @@ public class SampleDataJpaApplicationTests {
 
 	@Test
 	public void testJmx() throws Exception {
-		assertEquals(1, ManagementFactory.getPlatformMBeanServer()
-				.queryMBeans(new ObjectName("jpa.sample:type=ConnectionPool,*"), null)
-				.size());
+		assertThat(ManagementFactory.getPlatformMBeanServer()
+				.queryMBeans(new ObjectName("jpa.sample:type=ConnectionPool,*"), null))
+						.hasSize(1);
 	}
 
 }

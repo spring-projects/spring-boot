@@ -47,10 +47,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link EndpointAutoConfiguration}.
@@ -76,15 +73,15 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void endpoints() throws Exception {
 		load(EndpointAutoConfiguration.class);
-		assertNotNull(this.context.getBean(BeansEndpoint.class));
-		assertNotNull(this.context.getBean(DumpEndpoint.class));
-		assertNotNull(this.context.getBean(EnvironmentEndpoint.class));
-		assertNotNull(this.context.getBean(HealthEndpoint.class));
-		assertNotNull(this.context.getBean(InfoEndpoint.class));
-		assertNotNull(this.context.getBean(MetricsEndpoint.class));
-		assertNotNull(this.context.getBean(ShutdownEndpoint.class));
-		assertNotNull(this.context.getBean(TraceEndpoint.class));
-		assertNotNull(this.context.getBean(RequestMappingEndpoint.class));
+		assertThat(this.context.getBean(BeansEndpoint.class)).isNotNull();
+		assertThat(this.context.getBean(DumpEndpoint.class)).isNotNull();
+		assertThat(this.context.getBean(EnvironmentEndpoint.class)).isNotNull();
+		assertThat(this.context.getBean(HealthEndpoint.class)).isNotNull();
+		assertThat(this.context.getBean(InfoEndpoint.class)).isNotNull();
+		assertThat(this.context.getBean(MetricsEndpoint.class)).isNotNull();
+		assertThat(this.context.getBean(ShutdownEndpoint.class)).isNotNull();
+		assertThat(this.context.getBean(TraceEndpoint.class)).isNotNull();
+		assertThat(this.context.getBean(RequestMappingEndpoint.class)).isNotNull();
 	}
 
 	@Test
@@ -92,19 +89,19 @@ public class EndpointAutoConfigurationTests {
 		load(EmbeddedDataSourceConfiguration.class, EndpointAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
 		HealthEndpoint bean = this.context.getBean(HealthEndpoint.class);
-		assertNotNull(bean);
+		assertThat(bean).isNotNull();
 		Health result = bean.invoke();
-		assertNotNull(result);
-		assertTrue("Wrong result: " + result, result.getDetails().containsKey("db"));
+		assertThat(result).isNotNull();
+		assertThat(result.getDetails().containsKey("db")).isTrue();
 	}
 
 	@Test
 	public void healthEndpointWithDefaultHealthIndicator() {
 		load(EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
 		HealthEndpoint bean = this.context.getBean(HealthEndpoint.class);
-		assertNotNull(bean);
+		assertThat(bean).isNotNull();
 		Health result = bean.invoke();
-		assertNotNull(result);
+		assertThat(result).isNotNull();
 	}
 
 	@Test
@@ -112,8 +109,8 @@ public class EndpointAutoConfigurationTests {
 		load(PublicMetricsAutoConfiguration.class, EndpointAutoConfiguration.class);
 		MetricsEndpoint endpoint = this.context.getBean(MetricsEndpoint.class);
 		Map<String, Object> metrics = endpoint.invoke();
-		assertTrue(metrics.containsKey("mem"));
-		assertTrue(metrics.containsKey("heap.used"));
+		assertThat(metrics.containsKey("mem")).isTrue();
+		assertThat(metrics.containsKey("heap.used")).isTrue();
 	}
 
 	@Test
@@ -124,18 +121,19 @@ public class EndpointAutoConfigurationTests {
 		Map<String, Object> metrics = endpoint.invoke();
 
 		// Custom metrics
-		assertTrue(metrics.containsKey("foo"));
+		assertThat(metrics.containsKey("foo")).isTrue();
 
 		// System metrics still available
-		assertTrue(metrics.containsKey("mem"));
-		assertTrue(metrics.containsKey("heap.used"));
+		assertThat(metrics.containsKey("mem")).isTrue();
+		assertThat(metrics.containsKey("heap.used")).isTrue();
 
 	}
 
 	@Test
 	public void autoConfigurationAuditEndpoints() {
 		load(EndpointAutoConfiguration.class, ConditionEvaluationReport.class);
-		assertNotNull(this.context.getBean(AutoConfigurationReportEndpoint.class));
+		assertThat(this.context.getBean(AutoConfigurationReportEndpoint.class))
+				.isNotNull();
 	}
 
 	@Test
@@ -145,9 +143,9 @@ public class EndpointAutoConfigurationTests {
 		this.context.register(EndpointAutoConfiguration.class);
 		this.context.refresh();
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
-		assertNotNull(endpoint);
-		assertNotNull(endpoint.invoke().get("git"));
-		assertEquals("bar", endpoint.invoke().get("foo"));
+		assertThat(endpoint).isNotNull();
+		assertThat(endpoint.invoke().get("git")).isNotNull();
+		assertThat(endpoint.invoke().get("foo")).isEqualTo("bar");
 	}
 
 	@Test
@@ -158,8 +156,8 @@ public class EndpointAutoConfigurationTests {
 		this.context.register(EndpointAutoConfiguration.class);
 		this.context.refresh();
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
-		assertNotNull(endpoint);
-		assertNull(endpoint.invoke().get("git"));
+		assertThat(endpoint).isNotNull();
+		assertThat(endpoint.invoke().get("git")).isNull();
 	}
 
 	@Test
@@ -169,8 +167,8 @@ public class EndpointAutoConfigurationTests {
 				FlywayAutoConfiguration.class, EndpointAutoConfiguration.class);
 		this.context.refresh();
 		FlywayEndpoint endpoint = this.context.getBean(FlywayEndpoint.class);
-		assertNotNull(endpoint);
-		assertEquals(1, endpoint.invoke().size());
+		assertThat(endpoint).isNotNull();
+		assertThat(endpoint.invoke()).hasSize(1);
 	}
 
 	@Test
@@ -180,8 +178,8 @@ public class EndpointAutoConfigurationTests {
 				LiquibaseAutoConfiguration.class, EndpointAutoConfiguration.class);
 		this.context.refresh();
 		LiquibaseEndpoint endpoint = this.context.getBean(LiquibaseEndpoint.class);
-		assertNotNull(endpoint);
-		assertEquals(1, endpoint.invoke().size());
+		assertThat(endpoint).isNotNull();
+		assertThat(endpoint.invoke()).hasSize(1);
 	}
 
 	private void load(Class<?>... config) {

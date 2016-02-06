@@ -33,11 +33,7 @@ import org.springframework.boot.test.OutputCapture;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JavaLoggingSystem}.
@@ -85,9 +81,8 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(null, null, null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Output not hidden:\n" + output, output.contains("Hidden"));
-		assertFalse(new File(tmpDir() + "/spring.log").exists());
+		assertThat(output).contains("Hello world").doesNotContain("Hidden");
+		assertThat(new File(tmpDir() + "/spring.log").exists()).isFalse();
 	}
 
 	@Test
@@ -102,9 +97,8 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Output not hidden:\n" + output, output.contains("Hidden"));
-		assertThat(temp.listFiles(SPRING_LOG_FILTER).length, greaterThan(0));
+		assertThat(output).contains("Hello world").doesNotContain("Hidden");
+		assertThat(temp.listFiles(SPRING_LOG_FILTER).length).isGreaterThan(0);
 	}
 
 	@Test
@@ -113,8 +107,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(null, null, null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertTrue("Wrong output:\n" + output, output.contains("???? INFO ["));
+		assertThat(output).contains("Hello world").contains("???? INFO [");
 	}
 
 	@Test
@@ -126,8 +119,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertTrue("Wrong output:\n" + output, output.contains("1234 INFO ["));
+		assertThat(output).contains("Hello world").contains("1234 INFO [");
 	}
 
 	@Test
@@ -137,7 +129,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 				null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("INFO: Hello"));
+		assertThat(output).contains("INFO: Hello");
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -154,8 +146,8 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.debug("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
 		this.logger.debug("Hello");
-		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"),
-				equalTo(1));
+		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"))
+				.isEqualTo(1);
 	}
 
 }

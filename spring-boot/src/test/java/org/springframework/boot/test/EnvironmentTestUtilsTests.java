@@ -25,9 +25,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.StandardEnvironment;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link EnvironmentTestUtils}.
@@ -71,18 +69,16 @@ public class EnvironmentTestUtilsTests {
 	@Test
 	public void addPairNoValue() {
 		String propertyName = "my.foo+bar";
-		assertFalse(this.environment.containsProperty(propertyName));
+		assertThat(this.environment.containsProperty(propertyName)).isFalse();
 		EnvironmentTestUtils.addEnvironment(this.environment, propertyName);
-		assertTrue(this.environment.containsProperty(propertyName));
-		assertEquals("", this.environment.getProperty(propertyName));
+		assertThat(this.environment.containsProperty(propertyName)).isTrue();
+		assertThat(this.environment.getProperty(propertyName)).isEqualTo("");
 	}
 
 	private void testAddSimplePair(String key, String value, String delimiter) {
-		assertFalse("Property '" + key + "' should not exist",
-				this.environment.containsProperty(key));
+		assertThat(this.environment.containsProperty(key)).isFalse();
 		EnvironmentTestUtils.addEnvironment(this.environment, key + delimiter + value);
-		assertEquals("Wrong value for property '" + key + "'", value,
-				this.environment.getProperty(key));
+		assertThat(this.environment.getProperty(key)).isEqualTo(value);
 	}
 
 	@Test
@@ -91,9 +87,9 @@ public class EnvironmentTestUtilsTests {
 		map.put("my.foo", "bar");
 		MapPropertySource source = new MapPropertySource("sample", map);
 		this.environment.getPropertySources().addFirst(source);
-		assertEquals("bar", this.environment.getProperty("my.foo"));
+		assertThat(this.environment.getProperty("my.foo")).isEqualTo("bar");
 		EnvironmentTestUtils.addEnvironment(this.environment, "my.foo=bar2");
-		assertEquals("bar2", this.environment.getProperty("my.foo"));
+		assertThat(this.environment.getProperty("my.foo")).isEqualTo("bar2");
 	}
 
 }

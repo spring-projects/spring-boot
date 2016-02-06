@@ -40,6 +40,10 @@
 			<artifactId>testng</artifactId>
 			<version>6.8.13</version>
 		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

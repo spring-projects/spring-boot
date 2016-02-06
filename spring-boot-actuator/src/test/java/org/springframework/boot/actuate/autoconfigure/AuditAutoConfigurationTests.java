@@ -31,9 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.event.AbstractAuthorizationEvent;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AuditAutoConfiguration}.
@@ -48,33 +46,33 @@ public class AuditAutoConfigurationTests {
 	@Test
 	public void testTraceConfiguration() throws Exception {
 		registerAndRefresh(AuditAutoConfiguration.class);
-		assertNotNull(this.context.getBean(AuditEventRepository.class));
-		assertNotNull(this.context.getBean(AuthenticationAuditListener.class));
-		assertNotNull(this.context.getBean(AuthorizationAuditListener.class));
+		assertThat(this.context.getBean(AuditEventRepository.class)).isNotNull();
+		assertThat(this.context.getBean(AuthenticationAuditListener.class)).isNotNull();
+		assertThat(this.context.getBean(AuthorizationAuditListener.class)).isNotNull();
 	}
 
 	@Test
 	public void ownAutoRepository() throws Exception {
 		registerAndRefresh(CustomAuditEventRepositoryConfiguration.class,
 				AuditAutoConfiguration.class);
-		assertThat(this.context.getBean(AuditEventRepository.class),
-				instanceOf(TestAuditEventRepository.class));
+		assertThat(this.context.getBean(AuditEventRepository.class))
+				.isInstanceOf(TestAuditEventRepository.class);
 	}
 
 	@Test
 	public void ownAuthenticationAuditListener() throws Exception {
 		registerAndRefresh(CustomAuthenticationAuditListenerConfiguration.class,
 				AuditAutoConfiguration.class);
-		assertThat(this.context.getBean(AbstractAuthenticationAuditListener.class),
-				instanceOf(TestAuthenticationAuditListener.class));
+		assertThat(this.context.getBean(AbstractAuthenticationAuditListener.class))
+				.isInstanceOf(TestAuthenticationAuditListener.class);
 	}
 
 	@Test
 	public void ownAuthorizationAuditListener() throws Exception {
 		registerAndRefresh(CustomAuthorizationAuditListenerConfiguration.class,
 				AuditAutoConfiguration.class);
-		assertThat(this.context.getBean(AbstractAuthorizationAuditListener.class),
-				instanceOf(TestAuthorizationAuditListener.class));
+		assertThat(this.context.getBean(AbstractAuthorizationAuditListener.class))
+				.isInstanceOf(TestAuthorizationAuditListener.class);
 	}
 
 	private void registerAndRefresh(Class<?>... annotatedClasses) {

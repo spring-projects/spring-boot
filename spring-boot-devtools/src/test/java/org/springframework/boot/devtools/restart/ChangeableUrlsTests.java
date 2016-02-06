@@ -24,8 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ChangeableUrls}.
@@ -40,19 +39,19 @@ public class ChangeableUrlsTests {
 	@Test
 	public void folderUrl() throws Exception {
 		URL url = makeUrl("myproject");
-		assertThat(ChangeableUrls.fromUrls(url).size(), equalTo(1));
+		assertThat(ChangeableUrls.fromUrls(url).size()).isEqualTo(1);
 	}
 
 	@Test
 	public void fileUrl() throws Exception {
 		URL url = this.temporaryFolder.newFile().toURI().toURL();
-		assertThat(ChangeableUrls.fromUrls(url).size(), equalTo(0));
+		assertThat(ChangeableUrls.fromUrls(url).size()).isEqualTo(0);
 	}
 
 	@Test
 	public void httpUrl() throws Exception {
 		URL url = new URL("http://spring.io");
-		assertThat(ChangeableUrls.fromUrls(url).size(), equalTo(0));
+		assertThat(ChangeableUrls.fromUrls(url).size()).isEqualTo(0);
 	}
 
 	@Test
@@ -61,7 +60,7 @@ public class ChangeableUrlsTests {
 				makeUrl("spring-boot-autoconfigure"), makeUrl("spring-boot-actuator"),
 				makeUrl("spring-boot-starter"),
 				makeUrl("spring-boot-starter-some-thing"));
-		assertThat(urls.size(), equalTo(0));
+		assertThat(urls.size()).isEqualTo(0);
 	}
 
 	private URL makeUrl(String name) throws IOException {

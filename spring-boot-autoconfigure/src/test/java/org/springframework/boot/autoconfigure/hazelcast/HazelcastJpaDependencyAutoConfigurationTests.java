@@ -33,10 +33,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasKey;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -58,27 +55,27 @@ public class HazelcastJpaDependencyAutoConfigurationTests {
 	@Test
 	public void registrationIfHazelcastInstanceHasRegularBeanName() {
 		load(HazelcastConfiguration.class);
-		assertThat(getPostProcessor(),
-				hasKey("hazelcastInstanceJpaDependencyPostProcessor"));
-		assertThat(getEntityManagerFactoryDependencies(), hasItem("hazelcastInstance"));
+		assertThat(getPostProcessor())
+				.containsKey("hazelcastInstanceJpaDependencyPostProcessor");
+		assertThat(getEntityManagerFactoryDependencies()).contains("hazelcastInstance");
 	}
 
 	@Test
 	public void noRegistrationIfHazelcastInstanceHasCustomBeanName() {
 		load(HazelcastCustomNameConfiguration.class);
-		assertThat(getEntityManagerFactoryDependencies(),
-				not(hasItem("hazelcastInstance")));
-		assertThat(getPostProcessor(),
-				not(hasKey("hazelcastInstanceJpaDependencyPostProcessor")));
+		assertThat(getEntityManagerFactoryDependencies())
+				.doesNotContain("hazelcastInstance");
+		assertThat(getPostProcessor())
+				.doesNotContainKey("hazelcastInstanceJpaDependencyPostProcessor");
 	}
 
 	@Test
 	public void noRegistrationWithNoHazelcastInstance() {
 		load(null);
-		assertThat(getEntityManagerFactoryDependencies(),
-				not(hasItem("hazelcastInstance")));
-		assertThat(getPostProcessor(),
-				not(hasKey("hazelcastInstanceJpaDependencyPostProcessor")));
+		assertThat(getEntityManagerFactoryDependencies())
+				.doesNotContain("hazelcastInstance");
+		assertThat(getPostProcessor())
+				.doesNotContainKey("hazelcastInstanceJpaDependencyPostProcessor");
 	}
 
 	@Test
@@ -87,8 +84,8 @@ public class HazelcastJpaDependencyAutoConfigurationTests {
 		this.context.register(HazelcastConfiguration.class,
 				HazelcastJpaDependencyAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(getPostProcessor(),
-				not(hasKey("hazelcastInstanceJpaDependencyPostProcessor")));
+		assertThat(getPostProcessor())
+				.doesNotContainKey("hazelcastInstanceJpaDependencyPostProcessor");
 	}
 
 	private Map<String, EntityManagerFactoryDependsOnPostProcessor> getPostProcessor() {

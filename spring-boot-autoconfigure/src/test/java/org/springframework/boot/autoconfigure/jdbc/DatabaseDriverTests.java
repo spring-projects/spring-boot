@@ -20,10 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DatabaseDriver}.
@@ -40,19 +37,19 @@ public class DatabaseDriverTests {
 	public void classNameForKnownDatabase() {
 		String driverClassName = DatabaseDriver
 				.fromJdbcUrl("jdbc:postgresql://hostname/dbname").getDriverClassName();
-		assertEquals("org.postgresql.Driver", driverClassName);
+		assertThat(driverClassName).isEqualTo("org.postgresql.Driver");
 	}
 
 	@Test
 	public void nullClassNameForUnknownDatabase() {
 		String driverClassName = DatabaseDriver
 				.fromJdbcUrl("jdbc:unknowndb://hostname/dbname").getDriverClassName();
-		assertNull(driverClassName);
+		assertThat(driverClassName).isNull();
 	}
 
 	@Test
 	public void unknownOnNullJdbcUrl() {
-		assertThat(DatabaseDriver.fromJdbcUrl(null), equalTo(DatabaseDriver.UNKNOWN));
+		assertThat(DatabaseDriver.fromJdbcUrl(null)).isEqualTo(DatabaseDriver.UNKNOWN);
 	}
 
 	@Test

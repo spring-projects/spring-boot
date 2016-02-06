@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringApplicationContextLoader} (detectDefaultConfigurationClasses).
@@ -39,7 +39,7 @@ public class SpringApplicationConfigurationDefaultConfigurationTests {
 
 	@Test
 	public void nestedConfigClasses() {
-		assertNotNull(this.config);
+		assertThat(this.config).isNotNull();
 	}
 
 	@Configuration

@@ -42,9 +42,7 @@ import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleAtmosphereApplication.class)
@@ -68,9 +66,9 @@ public class SampleAtmosphereApplicationTests {
 		AtomicReference<String> messagePayloadReference = context
 				.getBean(ClientConfiguration.class).messagePayload;
 		context.close();
-		assertThat(count, equalTo(0L));
-		assertThat(messagePayloadReference.get(),
-				containsString("{\"message\":\"test\",\"author\":\"test\",\"time\":"));
+		assertThat(count).isEqualTo(0L);
+		assertThat(messagePayloadReference.get())
+				.contains("{\"message\":\"test\",\"author\":\"test\",\"time\":");
 	}
 
 	@Configuration

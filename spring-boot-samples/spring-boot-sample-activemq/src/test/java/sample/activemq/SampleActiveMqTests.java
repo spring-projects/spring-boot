@@ -27,7 +27,7 @@ import org.springframework.boot.test.OutputCapture;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for demo application.
@@ -48,7 +48,7 @@ public class SampleActiveMqTests {
 	public void sendSimpleMessage() throws InterruptedException, JMSException {
 		this.producer.send("Test message");
 		Thread.sleep(1000L);
-		assertTrue(this.outputCapture.toString().contains("Test message"));
+		assertThat(this.outputCapture.toString().contains("Test message")).isTrue();
 	}
 
 }

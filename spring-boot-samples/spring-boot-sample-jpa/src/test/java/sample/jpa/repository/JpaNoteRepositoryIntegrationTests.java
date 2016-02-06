@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link JpaNoteRepository}.
@@ -43,7 +43,7 @@ public class JpaNoteRepositoryIntegrationTests {
 	@Test
 	public void findsAllNotes() {
 		List<Note> notes = this.repository.findAll();
-		assertEquals(4, notes.size());
+		assertThat(notes).hasSize(4);
 	}
 
 }

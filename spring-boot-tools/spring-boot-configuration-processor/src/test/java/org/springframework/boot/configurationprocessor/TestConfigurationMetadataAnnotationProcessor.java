@@ -28,6 +28,8 @@ import org.springframework.boot.configurationprocessor.metadata.ConfigurationMet
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 
 /**
+ * Test {@link ConfigurationMetadataAnnotationProcessor}.
+ *
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Andy Wilkinson

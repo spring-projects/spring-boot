@@ -16,13 +16,8 @@
 
 package org.springframework.boot.context.web;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import javax.servlet.ServletContext;
 
-import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -34,9 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringBootServletInitializer}.
@@ -65,22 +58,22 @@ public class SpringBootServletInitializerTests {
 	public void withConfigurationAnnotation() throws Exception {
 		new WithConfigurationAnnotation()
 				.createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getSources(),
-				equalToSet(WithConfigurationAnnotation.class, ErrorPageFilter.class));
+		assertThat(this.application.getSources())
+				.containsOnly(WithConfigurationAnnotation.class, ErrorPageFilter.class);
 	}
 
 	@Test
 	public void withConfiguredSource() throws Exception {
 		new WithConfiguredSource().createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getSources(),
-				equalToSet(Config.class, ErrorPageFilter.class));
+		assertThat(this.application.getSources()).containsOnly(Config.class,
+				ErrorPageFilter.class);
 	}
 
 	@Test
 	public void applicationBuilderCanBeCustomized() throws Exception {
 		CustomSpringBootServletInitializer servletInitializer = new CustomSpringBootServletInitializer();
 		servletInitializer.createRootApplicationContext(this.servletContext);
-		assertThat(servletInitializer.applicationBuilder.built, equalTo(true));
+		assertThat(servletInitializer.applicationBuilder.built).isTrue();
 	}
 
 	@Test
@@ -90,22 +83,15 @@ public class SpringBootServletInitializerTests {
 				.createRootApplicationContext(this.servletContext);
 		Class mainApplicationClass = (Class<?>) new DirectFieldAccessor(this.application)
 				.getPropertyValue("mainApplicationClass");
-		assertThat(mainApplicationClass,
-				is(equalTo((Class) WithConfigurationAnnotation.class)));
+		assertThat(mainApplicationClass).isEqualTo(WithConfigurationAnnotation.class);
 	}
 
 	@Test
 	public void withErrorPageFilterNotRegistered() throws Exception {
 		new WithErrorPageFilterNotRegistered()
 				.createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getSources(),
-				equalToSet(WithErrorPageFilterNotRegistered.class));
-	}
-
-	private Matcher<? super Set<Object>> equalToSet(Object... items) {
-		Set<Object> set = new LinkedHashSet<Object>();
-		Collections.addAll(set, items);
-		return equalTo(set);
+		assertThat(this.application.getSources())
+				.containsOnly(WithErrorPageFilterNotRegistered.class);
 	}
 
 	private class MockSpringBootServletInitializer extends SpringBootServletInitializer {

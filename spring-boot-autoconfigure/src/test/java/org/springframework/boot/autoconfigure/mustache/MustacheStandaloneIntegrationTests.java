@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration Tests for {@link MustacheAutoConfiguration} outside of a web application.
@@ -40,7 +40,7 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(Application.class)
-@IntegrationTest({ "spring.main.web_environment=false", "env.foo=Heaven", "foo=World" })
+@IntegrationTest({ "spring.main.web_environment=false", "env.foo=There", "foo=World" })
 public class MustacheStandaloneIntegrationTests {
 
 	@Autowired
@@ -48,26 +48,27 @@ public class MustacheStandaloneIntegrationTests {
 
 	@Test
 	public void directCompilation() throws Exception {
-		assertEquals("Hello: World", this.compiler.compile("Hello: {{world}}")
-				.execute(Collections.singletonMap("world", "World")));
+		assertThat(this.compiler.compile("Hello: {{world}}")
+				.execute(Collections.singletonMap("world", "World")))
+						.isEqualTo("Hello: World");
 	}
 
 	@Test
 	public void environmentCollectorCompoundKey() throws Exception {
-		assertEquals("Hello: Heaven",
-				this.compiler.compile("Hello: {{env.foo}}").execute(new Object()));
+		assertThat(this.compiler.compile("Hello: {{env.foo}}").execute(new Object()))
+				.isEqualTo("Hello: There");
 	}
 
 	@Test
 	public void environmentCollectorCompoundKeyStandard() throws Exception {
-		assertEquals("Hello: Heaven", this.compiler.standardsMode(true)
-				.compile("Hello: {{env.foo}}").execute(new Object()));
+		assertThat(this.compiler.standardsMode(true).compile("Hello: {{env.foo}}")
+				.execute(new Object())).isEqualTo("Hello: There");
 	}
 
 	@Test
 	public void environmentCollectorSimpleKey() throws Exception {
-		assertEquals("Hello: World",
-				this.compiler.compile("Hello: {{foo}}").execute(new Object()));
+		assertThat(this.compiler.compile("Hello: {{foo}}").execute(new Object()))
+				.isEqualTo("Hello: World");
 	}
 
 	@Configuration

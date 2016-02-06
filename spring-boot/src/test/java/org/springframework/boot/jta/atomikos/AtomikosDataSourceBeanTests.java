@@ -19,8 +19,7 @@ package org.springframework.boot.jta.atomikos;
 import com.atomikos.jdbc.AtomikosSQLException;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -37,7 +36,7 @@ public class AtomikosDataSourceBeanTests {
 		MockAtomikosDataSourceBean bean = spy(new MockAtomikosDataSourceBean());
 		bean.setBeanName("bean");
 		bean.afterPropertiesSet();
-		assertThat(bean.getUniqueResourceName(), equalTo("bean"));
+		assertThat(bean.getUniqueResourceName()).isEqualTo("bean");
 		verify(bean).init();
 		verify(bean, never()).close();
 		bean.destroy();

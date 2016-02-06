@@ -44,12 +44,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -81,27 +76,25 @@ public class JmsAutoConfigurationTests {
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		JmsMessagingTemplate messagingTemplate = this.context
 				.getBean(JmsMessagingTemplate.class);
-		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals(jmsTemplate, messagingTemplate.getJmsTemplate());
-		assertEquals(ACTIVEMQ_EMBEDDED_URL,
-				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
-						.getBrokerURL());
-		assertTrue("listener container factory should be created by default",
-				this.context.containsBean("jmsListenerContainerFactory"));
+		assertThat(connectionFactory).isEqualTo(jmsTemplate.getConnectionFactory());
+		assertThat(messagingTemplate.getJmsTemplate()).isEqualTo(jmsTemplate);
+		assertThat(((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
+				.getBrokerURL()).isEqualTo(ACTIVEMQ_EMBEDDED_URL);
+		assertThat(this.context.containsBean("jmsListenerContainerFactory")).isTrue();
 	}
 
 	@Test
 	public void testConnectionFactoryBackOff() {
 		load(TestConfiguration2.class);
-		assertEquals("foobar",
-				this.context.getBean(ActiveMQConnectionFactory.class).getBrokerURL());
+		assertThat(this.context.getBean(ActiveMQConnectionFactory.class).getBrokerURL())
+				.isEqualTo("foobar");
 	}
 
 	@Test
 	public void testJmsTemplateBackOff() {
 		load(TestConfiguration3.class);
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
-		assertEquals(999, jmsTemplate.getPriority());
+		assertThat(jmsTemplate.getPriority()).isEqualTo(999);
 	}
 
 	@Test
@@ -109,7 +102,7 @@ public class JmsAutoConfigurationTests {
 		load(TestConfiguration5.class);
 		JmsMessagingTemplate messagingTemplate = this.context
 				.getBean(JmsMessagingTemplate.class);
-		assertEquals("fooBar", messagingTemplate.getDefaultDestinationName());
+		assertThat(messagingTemplate.getDefaultDestinationName()).isEqualTo("fooBar");
 	}
 
 	@Test
@@ -117,13 +110,13 @@ public class JmsAutoConfigurationTests {
 		this.context = createContext(TestConfiguration2.class, TestConfiguration3.class,
 				TestConfiguration5.class);
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
-		assertEquals(999, jmsTemplate.getPriority());
-		assertEquals("foobar",
-				this.context.getBean(ActiveMQConnectionFactory.class).getBrokerURL());
+		assertThat(jmsTemplate.getPriority()).isEqualTo(999);
+		assertThat(this.context.getBean(ActiveMQConnectionFactory.class).getBrokerURL())
+				.isEqualTo("foobar");
 		JmsMessagingTemplate messagingTemplate = this.context
 				.getBean(JmsMessagingTemplate.class);
-		assertEquals("fooBar", messagingTemplate.getDefaultDestinationName());
-		assertEquals(jmsTemplate, messagingTemplate.getJmsTemplate());
+		assertThat(messagingTemplate.getDefaultDestinationName()).isEqualTo("fooBar");
+		assertThat(messagingTemplate.getJmsTemplate()).isEqualTo(jmsTemplate);
 	}
 
 	@Test
@@ -131,8 +124,8 @@ public class JmsAutoConfigurationTests {
 		load(EnableJmsConfiguration.class);
 		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context.getBean(
 				"jmsListenerContainerFactory", JmsListenerContainerFactory.class);
-		assertEquals(DefaultJmsListenerContainerFactory.class,
-				jmsListenerContainerFactory.getClass());
+		assertThat(jmsListenerContainerFactory.getClass())
+				.isEqualTo(DefaultJmsListenerContainerFactory.class);
 	}
 
 	@Test
@@ -141,8 +134,8 @@ public class JmsAutoConfigurationTests {
 				EnableJmsConfiguration.class);
 		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context.getBean(
 				"jmsListenerContainerFactory", JmsListenerContainerFactory.class);
-		assertEquals(SimpleJmsListenerContainerFactory.class,
-				jmsListenerContainerFactory.getClass());
+		assertThat(jmsListenerContainerFactory.getClass())
+				.isEqualTo(SimpleJmsListenerContainerFactory.class);
 	}
 
 	@Test
@@ -153,15 +146,15 @@ public class JmsAutoConfigurationTests {
 				"spring.jms.listener.maxConcurrency=10");
 		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context.getBean(
 				"jmsListenerContainerFactory", JmsListenerContainerFactory.class);
-		assertEquals(DefaultJmsListenerContainerFactory.class,
-				jmsListenerContainerFactory.getClass());
+		assertThat(jmsListenerContainerFactory.getClass())
+				.isEqualTo(DefaultJmsListenerContainerFactory.class);
 		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
 				.createListenerContainer(mock(JmsListenerEndpoint.class));
-		assertEquals(false, listenerContainer.isAutoStartup());
-		assertEquals(Session.CLIENT_ACKNOWLEDGE,
-				listenerContainer.getSessionAcknowledgeMode());
-		assertEquals(2, listenerContainer.getConcurrentConsumers());
-		assertEquals(10, listenerContainer.getMaxConcurrentConsumers());
+		assertThat(listenerContainer.isAutoStartup()).isFalse();
+		assertThat(listenerContainer.getSessionAcknowledgeMode())
+				.isEqualTo(Session.CLIENT_ACKNOWLEDGE);
+		assertThat(listenerContainer.getConcurrentConsumers()).isEqualTo(2);
+		assertThat(listenerContainer.getMaxConcurrentConsumers()).isEqualTo(10);
 	}
 
 	@Test
@@ -170,15 +163,14 @@ public class JmsAutoConfigurationTests {
 				EnableJmsConfiguration.class);
 		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context.getBean(
 				"jmsListenerContainerFactory", JmsListenerContainerFactory.class);
-		assertEquals(DefaultJmsListenerContainerFactory.class,
-				jmsListenerContainerFactory.getClass());
+		assertThat(jmsListenerContainerFactory.getClass())
+				.isEqualTo(DefaultJmsListenerContainerFactory.class);
 		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
 				.createListenerContainer(mock(JmsListenerEndpoint.class));
-		assertFalse("wrong session transacted flag with JTA transactions",
-				listenerContainer.isSessionTransacted());
-		assertSame(this.context.getBean(JtaTransactionManager.class),
-				new DirectFieldAccessor(listenerContainer)
-						.getPropertyValue("transactionManager"));
+		assertThat(listenerContainer.isSessionTransacted()).isFalse();
+		assertThat(new DirectFieldAccessor(listenerContainer)
+				.getPropertyValue("transactionManager"))
+						.isSameAs(this.context.getBean(JtaTransactionManager.class));
 	}
 
 	@Test
@@ -187,14 +179,13 @@ public class JmsAutoConfigurationTests {
 				EnableJmsConfiguration.class);
 		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context.getBean(
 				"jmsListenerContainerFactory", JmsListenerContainerFactory.class);
-		assertEquals(DefaultJmsListenerContainerFactory.class,
-				jmsListenerContainerFactory.getClass());
+		assertThat(jmsListenerContainerFactory.getClass())
+				.isEqualTo(DefaultJmsListenerContainerFactory.class);
 		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
 				.createListenerContainer(mock(JmsListenerEndpoint.class));
-		assertTrue("wrong session transacted flag with no tx manager",
-				listenerContainer.isSessionTransacted());
-		assertNull(new DirectFieldAccessor(listenerContainer)
-				.getPropertyValue("transactionManager"));
+		assertThat(listenerContainer.isSessionTransacted()).isTrue();
+		assertThat(new DirectFieldAccessor(listenerContainer)
+				.getPropertyValue("transactionManager")).isNull();
 	}
 
 	@Test
@@ -202,28 +193,27 @@ public class JmsAutoConfigurationTests {
 		this.context = createContext(EnableJmsConfiguration.class);
 		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context.getBean(
 				"jmsListenerContainerFactory", JmsListenerContainerFactory.class);
-		assertEquals(DefaultJmsListenerContainerFactory.class,
-				jmsListenerContainerFactory.getClass());
+		assertThat(jmsListenerContainerFactory.getClass())
+				.isEqualTo(DefaultJmsListenerContainerFactory.class);
 		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
 				.createListenerContainer(mock(JmsListenerEndpoint.class));
-		assertTrue("wrong session transacted flag with no tx manager",
-				listenerContainer.isSessionTransacted());
-		assertNull(new DirectFieldAccessor(listenerContainer)
-				.getPropertyValue("transactionManager"));
+		assertThat(listenerContainer.isSessionTransacted()).isTrue();
+		assertThat(new DirectFieldAccessor(listenerContainer)
+				.getPropertyValue("transactionManager")).isNull();
 	}
 
 	@Test
 	public void testPubSubDisabledByDefault() {
 		load(TestConfiguration.class);
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
-		assertFalse(jmsTemplate.isPubSubDomain());
+		assertThat(jmsTemplate.isPubSubDomain()).isFalse();
 	}
 
 	@Test
 	public void testJmsTemplatePostProcessedSoThatPubSubIsTrue() {
 		load(TestConfiguration4.class);
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
-		assertTrue(jmsTemplate.isPubSubDomain());
+		assertThat(jmsTemplate.isPubSubDomain()).isTrue();
 	}
 
 	@Test
@@ -233,8 +223,8 @@ public class JmsAutoConfigurationTests {
 		DefaultMessageListenerContainer defaultMessageListenerContainer = this.context
 				.getBean(DefaultJmsListenerContainerFactory.class)
 				.createListenerContainer(mock(JmsListenerEndpoint.class));
-		assertTrue(jmsTemplate.isPubSubDomain());
-		assertTrue(defaultMessageListenerContainer.isPubSubDomain());
+		assertThat(jmsTemplate.isPubSubDomain()).isTrue();
+		assertThat(defaultMessageListenerContainer.isPubSubDomain()).isTrue();
 	}
 
 	@Test
@@ -243,10 +233,10 @@ public class JmsAutoConfigurationTests {
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		ActiveMQConnectionFactory connectionFactory = this.context
 				.getBean(ActiveMQConnectionFactory.class);
-		assertNotNull(jmsTemplate);
-		assertFalse(jmsTemplate.isPubSubDomain());
-		assertNotNull(connectionFactory);
-		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
+		assertThat(jmsTemplate).isNotNull();
+		assertThat(jmsTemplate.isPubSubDomain()).isFalse();
+		assertThat(connectionFactory).isNotNull();
+		assertThat(connectionFactory).isEqualTo(jmsTemplate.getConnectionFactory());
 	}
 
 	@Test
@@ -255,12 +245,11 @@ public class JmsAutoConfigurationTests {
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		ActiveMQConnectionFactory connectionFactory = this.context
 				.getBean(ActiveMQConnectionFactory.class);
-		assertNotNull(jmsTemplate);
-		assertNotNull(connectionFactory);
-		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals(ACTIVEMQ_NETWORK_URL,
-				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
-						.getBrokerURL());
+		assertThat(jmsTemplate).isNotNull();
+		assertThat(connectionFactory).isNotNull();
+		assertThat(connectionFactory).isEqualTo(jmsTemplate.getConnectionFactory());
+		assertThat(((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
+				.getBrokerURL()).isEqualTo(ACTIVEMQ_NETWORK_URL);
 	}
 
 	@Test
@@ -270,12 +259,11 @@ public class JmsAutoConfigurationTests {
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		ActiveMQConnectionFactory connectionFactory = this.context
 				.getBean(ActiveMQConnectionFactory.class);
-		assertNotNull(jmsTemplate);
-		assertNotNull(connectionFactory);
-		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals("tcp://remote-host:10000",
-				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
-						.getBrokerURL());
+		assertThat(jmsTemplate).isNotNull();
+		assertThat(connectionFactory).isNotNull();
+		assertThat(connectionFactory).isEqualTo(jmsTemplate.getConnectionFactory());
+		assertThat(((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
+				.getBrokerURL()).isEqualTo("tcp://remote-host:10000");
 	}
 
 	@Test
@@ -284,12 +272,12 @@ public class JmsAutoConfigurationTests {
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		PooledConnectionFactory pool = this.context
 				.getBean(PooledConnectionFactory.class);
-		assertNotNull(jmsTemplate);
-		assertNotNull(pool);
-		assertEquals(jmsTemplate.getConnectionFactory(), pool);
+		assertThat(jmsTemplate).isNotNull();
+		assertThat(pool).isNotNull();
+		assertThat(pool).isEqualTo(jmsTemplate.getConnectionFactory());
 		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool
 				.getConnectionFactory();
-		assertEquals(ACTIVEMQ_EMBEDDED_URL, factory.getBrokerURL());
+		assertThat(factory.getBrokerURL()).isEqualTo(ACTIVEMQ_EMBEDDED_URL);
 	}
 
 	@Test
@@ -299,12 +287,12 @@ public class JmsAutoConfigurationTests {
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		PooledConnectionFactory pool = this.context
 				.getBean(PooledConnectionFactory.class);
-		assertNotNull(jmsTemplate);
-		assertNotNull(pool);
-		assertEquals(jmsTemplate.getConnectionFactory(), pool);
+		assertThat(jmsTemplate).isNotNull();
+		assertThat(pool).isNotNull();
+		assertThat(pool).isEqualTo(jmsTemplate.getConnectionFactory());
 		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool
 				.getConnectionFactory();
-		assertEquals(ACTIVEMQ_NETWORK_URL, factory.getBrokerURL());
+		assertThat(factory.getBrokerURL()).isEqualTo(ACTIVEMQ_NETWORK_URL);
 	}
 
 	@Test
@@ -314,12 +302,12 @@ public class JmsAutoConfigurationTests {
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		PooledConnectionFactory pool = this.context
 				.getBean(PooledConnectionFactory.class);
-		assertNotNull(jmsTemplate);
-		assertNotNull(pool);
-		assertEquals(jmsTemplate.getConnectionFactory(), pool);
+		assertThat(jmsTemplate).isNotNull();
+		assertThat(pool).isNotNull();
+		assertThat(pool).isEqualTo(jmsTemplate.getConnectionFactory());
 		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool
 				.getConnectionFactory();
-		assertEquals("tcp://remote-host:10000", factory.getBrokerURL());
+		assertThat(factory.getBrokerURL()).isEqualTo("tcp://remote-host:10000");
 	}
 
 	@Test
@@ -450,10 +438,12 @@ public class JmsAutoConfigurationTests {
 	@Configuration
 	@EnableJms
 	protected static class EnableJmsConfiguration {
+
 	}
 
 	@Configuration
 	protected static class NoEnableJmsConfiguration {
+
 	}
 
 }

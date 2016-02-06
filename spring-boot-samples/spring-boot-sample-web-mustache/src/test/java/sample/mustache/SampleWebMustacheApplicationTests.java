@@ -34,8 +34,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for Mustache application.
@@ -56,9 +55,8 @@ public class SampleWebMustacheApplicationTests {
 	public void testMustacheTemplate() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(),
-				entity.getBody().contains("Hello, Andy"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("Hello, Andy");
 	}
 
 	@Test
@@ -71,9 +69,9 @@ public class SampleWebMustacheApplicationTests {
 				"http://localhost:" + this.port + "/does-not-exist", HttpMethod.GET,
 				requestEntity, String.class);
 
-		assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-		assertTrue("Wrong body:\n" + responseEntity.getBody(),
-				responseEntity.getBody().contains("Something went wrong: 404 Not Found"));
+		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		assertThat(responseEntity.getBody())
+				.contains("Something went wrong: 404 Not Found");
 	}
 
 }

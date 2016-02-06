@@ -21,9 +21,7 @@ import java.util.Random;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RandomValuePropertySource}.
@@ -37,54 +35,50 @@ public class RandomValuePropertySourceTests {
 
 	@Test
 	public void notRandom() {
-		assertNull(this.source.getProperty("foo"));
+		assertThat(this.source.getProperty("foo")).isNull();
 	}
 
 	@Test
 	public void string() {
-		assertNotNull(this.source.getProperty("random.string"));
+		assertThat(this.source.getProperty("random.string")).isNotNull();
 	}
 
 	@Test
 	public void intValue() {
 		Integer value = (Integer) this.source.getProperty("random.int");
-		assertNotNull(value);
+		assertThat(value).isNotNull();
 	}
 
 	@Test
 	public void intRange() {
 		Integer value = (Integer) this.source.getProperty("random.int[4,10]");
-		assertNotNull(value);
-		assertTrue(value >= 4);
-		assertTrue(value < 10);
+		assertThat(value).isNotNull();
+		assertThat(value >= 4).isTrue();
+		assertThat(value < 10).isTrue();
 	}
 
 	@Test
 	public void intMax() {
 		Integer value = (Integer) this.source.getProperty("random.int(10)");
-		assertNotNull(value);
-		assertTrue(value < 10);
+		assertThat(value).isNotNull().isLessThan(10);
 	}
 
 	@Test
 	public void longValue() {
 		Long value = (Long) this.source.getProperty("random.long");
-		assertNotNull(value);
+		assertThat(value).isNotNull();
 	}
 
 	@Test
 	public void longRange() {
 		Long value = (Long) this.source.getProperty("random.long[4,10]");
-		assertNotNull(value);
-		assertTrue(Long.toString(value), value >= 4L);
-		assertTrue(Long.toString(value), value < 10L);
+		assertThat(value).isNotNull().isBetween(4L, 10L);
 	}
 
 	@Test
 	public void longMax() {
 		Long value = (Long) this.source.getProperty("random.long(10)");
-		assertNotNull(value);
-		assertTrue(value < 10L);
+		assertThat(value).isNotNull().isLessThan(10L);
 	}
 
 	@Test
@@ -100,13 +94,9 @@ public class RandomValuePropertySourceTests {
 
 		});
 		Long value = (Long) source.getProperty("random.long(10)");
-		assertNotNull(value);
-		assertTrue(value + " is less than 0", value >= 0L);
-		assertTrue(value + " is more than 10", value < 10L);
-
+		assertThat(value).isNotNull().isGreaterThanOrEqualTo(0L).isLessThan(10L);
 		value = (Long) source.getProperty("random.long[4,10]");
-		assertNotNull(value);
-		assertTrue(value + " is less than 4", value >= 4L);
-		assertTrue(value + " is more than 10", value < 10L);
+		assertThat(value).isNotNull().isGreaterThanOrEqualTo(4L).isLessThan(10L);
 	}
+
 }

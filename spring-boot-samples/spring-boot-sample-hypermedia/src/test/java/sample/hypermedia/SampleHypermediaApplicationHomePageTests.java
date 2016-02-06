@@ -33,7 +33,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleHypermediaApplication.class)
@@ -47,7 +47,7 @@ public class SampleHypermediaApplicationHomePageTests {
 	public void home() {
 		String response = new TestRestTemplate()
 				.getForObject("http://localhost:" + this.port, String.class);
-		assertTrue("Wrong body: " + response, response.contains("404"));
+		assertThat(response).contains("404");
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class SampleHypermediaApplicationHomePageTests {
 				new RequestEntity<Void>(headers, HttpMethod.GET,
 						new URI("http://localhost:" + this.port + "/actuator")),
 				String.class);
-		assertTrue("Wrong body: " + response, response.getBody().contains("\"_links\":"));
+		assertThat(response.getBody()).contains("\"_links\":");
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class SampleHypermediaApplicationHomePageTests {
 				new RequestEntity<Void>(headers, HttpMethod.GET,
 						new URI("http://localhost:" + this.port + "/actuator/")),
 				String.class);
-		assertTrue("Wrong body: " + response, response.getBody().contains("HAL Browser"));
+		assertThat(response.getBody()).contains("HAL Browser");
 	}
 
 }

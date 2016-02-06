@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.health;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ApplicationHealthIndicator}.
@@ -30,7 +30,7 @@ public class ApplicationHealthIndicatorTests {
 	@Test
 	public void indicatesUp() throws Exception {
 		ApplicationHealthIndicator healthIndicator = new ApplicationHealthIndicator();
-		assertEquals(Status.UP, healthIndicator.health().getStatus());
+		assertThat(healthIndicator.health().getStatus()).isEqualTo(Status.UP);
 	}
 
 }

@@ -46,7 +46,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link MustacheAutoConfiguration}.
@@ -73,14 +73,14 @@ public class MustacheAutoConfigurationIntegrationTests {
 	public void testHomePage() throws Exception {
 		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port,
 				String.class);
-		assertTrue(body.contains("Hello World"));
+		assertThat(body.contains("Hello World")).isTrue();
 	}
 
 	@Test
 	public void testPartialPage() throws Exception {
 		String body = new TestRestTemplate()
 				.getForObject("http://localhost:" + this.port + "/partial", String.class);
-		assertTrue(body.contains("Hello World"));
+		assertThat(body.contains("Hello World")).isTrue();
 	}
 
 	@Target(ElementType.TYPE)

@@ -46,9 +46,7 @@ import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.http.HttpHeaders;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -134,8 +132,8 @@ public class JettyEmbeddedServletContainerFactoryTests
 				.getConnectors()[0];
 		SslConnectionFactory connectionFactory = connector
 				.getConnectionFactory(SslConnectionFactory.class);
-		assertThat(connectionFactory.getSslContextFactory().getIncludeCipherSuites(),
-				equalTo(new String[] { "ALPHA", "BRAVO", "CHARLIE" }));
+		assertThat(connectionFactory.getSslContextFactory().getIncludeCipherSuites())
+				.containsExactly("ALPHA", "BRAVO", "CHARLIE");
 	}
 
 	private void assertTimeout(JettyEmbeddedServletContainerFactory factory,
@@ -147,7 +145,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		WebAppContext webAppContext = (WebAppContext) handlers[0];
 		int actual = webAppContext.getSessionHandler().getSessionManager()
 				.getMaxInactiveInterval();
-		assertThat(actual, equalTo(expected));
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
@@ -167,7 +165,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
-		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
 	}
 
 	@Test
@@ -182,7 +180,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		initParameters.put("a", "alpha");
 		factory.getJspServlet().setInitParameters(initParameters);
 		this.container = factory.getEmbeddedServletContainer();
-		assertThat(getJspServlet().getInitParameters(), is(equalTo(initParameters)));
+		assertThat(getJspServlet().getInitParameters()).isEqualTo(initParameters);
 	}
 
 	@Test

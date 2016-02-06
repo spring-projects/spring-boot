@@ -33,8 +33,7 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PropertySourcesPropertyValues} binding.
@@ -54,7 +53,7 @@ public class SimplerPropertySourcesBindingTests {
 
 	@Test
 	public void overridingOfPropertiesWorksAsExpected() {
-		assertThat(this.foo, is(this.properties.getFoo()));
+		assertThat(this.foo).isEqualTo(this.properties.getFoo());
 	}
 
 	@PropertySources({ @PropertySource("classpath:/override.properties"),

@@ -20,8 +20,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -35,7 +34,7 @@ public class SnakeTimerTests {
 		SnakeTimer.addSnake(snake);
 
 		SnakeTimer.broadcast("");
-		assertThat(SnakeTimer.getSnakes().size(), is(0));
+		assertThat(SnakeTimer.getSnakes()).hasSize(0);
 	}
 
 }

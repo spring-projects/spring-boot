@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -57,9 +57,9 @@ public class AutoConfigurationReportEndpointTests
 		this.context.register(this.configClass);
 		this.context.refresh();
 		Report report = getEndpointBean().invoke();
-		assertTrue(report.getPositiveMatches().isEmpty());
-		assertTrue(report.getNegativeMatches().containsKey("a"));
-		assertTrue(report.getExclusions().contains("com.foo.Bar"));
+		assertThat(report.getPositiveMatches()).isEmpty();
+		assertThat(report.getNegativeMatches()).containsKey("a");
+		assertThat(report.getExclusions()).contains("com.foo.Bar");
 	}
 
 	@Configuration

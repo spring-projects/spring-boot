@@ -20,7 +20,8 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.Metric;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 
 /**
  * @author Dave Syer
@@ -33,8 +34,8 @@ public class InMemoryRichGaugeRepositoryTests {
 	public void writeAndRead() {
 		this.repository.set(new Metric<Double>("foo", 1d));
 		this.repository.set(new Metric<Double>("foo", 2d));
-		assertEquals(2L, this.repository.findOne("foo").getCount());
-		assertEquals(2d, this.repository.findOne("foo").getValue(), 0.01);
+		assertThat(this.repository.findOne("foo").getCount()).isEqualTo(2L);
+		assertThat(this.repository.findOne("foo").getValue()).isEqualTo(2d, offset(0.01));
 	}
 
 }

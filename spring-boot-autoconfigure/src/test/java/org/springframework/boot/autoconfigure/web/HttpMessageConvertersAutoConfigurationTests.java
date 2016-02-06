@@ -42,11 +42,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HttpMessageConvertersAutoConfiguration}.
@@ -72,11 +68,12 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	public void noObjectMapperMeansNoConverter() throws Exception {
 		this.context.register(HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.getBeansOfType(ObjectMapper.class).isEmpty());
-		assertTrue(this.context.getBeansOfType(MappingJackson2HttpMessageConverter.class)
-				.isEmpty());
-		assertTrue(this.context
-				.getBeansOfType(MappingJackson2XmlHttpMessageConverter.class).isEmpty());
+		assertThat(this.context.getBeansOfType(ObjectMapper.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(MappingJackson2HttpMessageConverter.class))
+				.isEmpty();
+		assertThat(
+				this.context.getBeansOfType(MappingJackson2XmlHttpMessageConverter.class))
+						.isEmpty();
 	}
 
 	@Test
@@ -124,8 +121,9 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	public void noGson() throws Exception {
 		this.context.register(HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.getBeansOfType(Gson.class).isEmpty());
-		assertTrue(this.context.getBeansOfType(GsonHttpMessageConverter.class).isEmpty());
+		assertThat(this.context.getBeansOfType(Gson.class).isEmpty()).isTrue();
+		assertThat(this.context.getBeansOfType(GsonHttpMessageConverter.class).isEmpty())
+				.isTrue();
 	}
 
 	@Test
@@ -149,8 +147,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 				"mappingJackson2HttpMessageConverter");
 		assertConverterBeanRegisteredWithHttpMessageConverters(
 				MappingJackson2HttpMessageConverter.class);
-		assertEquals(0,
-				this.context.getBeansOfType(GsonHttpMessageConverter.class).size());
+		assertThat(this.context.getBeansOfType(GsonHttpMessageConverter.class)).isEmpty();
 	}
 
 	@Test
@@ -164,8 +161,8 @@ public class HttpMessageConvertersAutoConfigurationTests {
 				"gsonHttpMessageConverter");
 		assertConverterBeanRegisteredWithHttpMessageConverters(
 				GsonHttpMessageConverter.class);
-		assertEquals(0, this.context
-				.getBeansOfType(MappingJackson2HttpMessageConverter.class).size());
+		assertThat(this.context.getBeansOfType(MappingJackson2HttpMessageConverter.class))
+				.isEmpty();
 	}
 
 	@Test
@@ -212,8 +209,8 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 		BeanDefinition beanDefinition = this.context
 				.getBeanDefinition("mappingJackson2HttpMessageConverter");
-		assertThat(beanDefinition.getFactoryBeanName(), is(equalTo(
-				MappingJackson2HttpMessageConverterConfiguration.class.getName())));
+		assertThat(beanDefinition.getFactoryBeanName()).isEqualTo(
+				MappingJackson2HttpMessageConverterConfiguration.class.getName());
 	}
 
 	@Test
@@ -229,21 +226,21 @@ public class HttpMessageConvertersAutoConfigurationTests {
 		System.out.println(beansOfType);
 		BeanDefinition beanDefinition = this.context
 				.getBeanDefinition("mappingJackson2HttpMessageConverter");
-		assertThat(beanDefinition.getFactoryBeanName(), is(equalTo(
-				MappingJackson2HttpMessageConverterConfiguration.class.getName())));
+		assertThat(beanDefinition.getFactoryBeanName()).isEqualTo(
+				MappingJackson2HttpMessageConverterConfiguration.class.getName());
 	}
 
 	private void assertConverterBeanExists(Class<?> type, String beanName) {
-		assertEquals(1, this.context.getBeansOfType(type).size());
+		assertThat(this.context.getBeansOfType(type)).hasSize(1);
 		List<String> beanNames = Arrays.asList(this.context.getBeanDefinitionNames());
-		assertTrue(beanName + " not found in " + beanNames, beanNames.contains(beanName));
+		assertThat(beanNames).contains(beanName);
 	}
 
 	private void assertConverterBeanRegisteredWithHttpMessageConverters(Class<?> type) {
 		Object converter = this.context.getBean(type);
 		HttpMessageConverters converters = this.context
 				.getBean(HttpMessageConverters.class);
-		assertTrue(converters.getConverters().contains(converter));
+		assertThat(converters.getConverters().contains(converter)).isTrue();
 	}
 
 	@Configuration

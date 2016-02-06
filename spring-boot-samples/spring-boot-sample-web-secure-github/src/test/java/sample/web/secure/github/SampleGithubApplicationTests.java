@@ -30,10 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for GitHub SSO application.
@@ -55,9 +52,9 @@ public class SampleGithubApplicationTests {
 		TestRestTemplate restTemplate = new TestRestTemplate();
 		ResponseEntity<Void> entity = restTemplate
 				.getForEntity("http://localhost:" + this.port, Void.class);
-		assertThat(entity.getStatusCode(), is(HttpStatus.FOUND));
-		assertThat(entity.getHeaders().getLocation(),
-				is(equalTo(URI.create("http://localhost:" + this.port + "/login"))));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+		assertThat(entity.getHeaders().getLocation())
+				.isEqualTo(URI.create("http://localhost:" + this.port + "/login"));
 	}
 
 	@Test
@@ -65,9 +62,9 @@ public class SampleGithubApplicationTests {
 		TestRestTemplate restTemplate = new TestRestTemplate();
 		ResponseEntity<Void> entity = restTemplate
 				.getForEntity("http://localhost:" + this.port + "/login", Void.class);
-		assertThat(entity.getStatusCode(), is(HttpStatus.FOUND));
-		assertThat(entity.getHeaders().getLocation().toString(),
-				startsWith("https://github.com/login/oauth"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+		assertThat(entity.getHeaders().getLocation().toString())
+				.startsWith("https://github.com/login/oauth");
 	}
 
 }

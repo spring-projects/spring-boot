@@ -31,11 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link EndpointHandlerMapping}.
@@ -61,14 +57,11 @@ public class EndpointHandlerMappingTests {
 				Arrays.asList(endpointA, endpointB));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
-		assertThat(
-				mapping.getHandler(new MockHttpServletRequest("GET", "/a")).getHandler(),
-				equalTo((Object) new HandlerMethod(endpointA, this.method)));
-		assertThat(
-				mapping.getHandler(new MockHttpServletRequest("GET", "/b")).getHandler(),
-				equalTo((Object) new HandlerMethod(endpointB, this.method)));
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/c")),
-				nullValue());
+		assertThat(mapping.getHandler(request("GET", "/a")).getHandler())
+				.isEqualTo(new HandlerMethod(endpointA, this.method));
+		assertThat(mapping.getHandler(request("GET", "/b")).getHandler())
+				.isEqualTo(new HandlerMethod(endpointB, this.method));
+		assertThat(mapping.getHandler(request("GET", "/c"))).isNull();
 	}
 
 	@Test
@@ -80,16 +73,11 @@ public class EndpointHandlerMappingTests {
 		mapping.setApplicationContext(this.context);
 		mapping.setPrefix("/a");
 		mapping.afterPropertiesSet();
-		assertThat(
-				mapping.getHandler(new MockHttpServletRequest("GET", "/a/a"))
-						.getHandler(),
-				equalTo((Object) new HandlerMethod(endpointA, this.method)));
-		assertThat(
-				mapping.getHandler(new MockHttpServletRequest("GET", "/a/b"))
-						.getHandler(),
-				equalTo((Object) new HandlerMethod(endpointB, this.method)));
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a")),
-				nullValue());
+		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a/a"))
+				.getHandler()).isEqualTo(new HandlerMethod(endpointA, this.method));
+		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a/b"))
+				.getHandler()).isEqualTo(new HandlerMethod(endpointB, this.method));
+		assertThat(mapping.getHandler(request("GET", "/a"))).isNull();
 	}
 
 	@Test(expected = HttpRequestMethodNotSupportedException.class)
@@ -99,8 +87,8 @@ public class EndpointHandlerMappingTests {
 				Arrays.asList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
-		assertNotNull(mapping.getHandler(new MockHttpServletRequest("GET", "/a")));
-		assertNull(mapping.getHandler(new MockHttpServletRequest("POST", "/a")));
+		assertThat(mapping.getHandler(request("GET", "/a"))).isNotNull();
+		assertThat(mapping.getHandler(request("POST", "/a"))).isNull();
 	}
 
 	@Test
@@ -110,7 +98,7 @@ public class EndpointHandlerMappingTests {
 				Arrays.asList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
-		assertNotNull(mapping.getHandler(new MockHttpServletRequest("POST", "/a")));
+		assertThat(mapping.getHandler(request("POST", "/a"))).isNotNull();
 	}
 
 	@Test(expected = HttpRequestMethodNotSupportedException.class)
@@ -120,8 +108,8 @@ public class EndpointHandlerMappingTests {
 				Arrays.asList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
-		assertNotNull(mapping.getHandler(new MockHttpServletRequest("POST", "/a")));
-		assertNull(mapping.getHandler(new MockHttpServletRequest("GET", "/a")));
+		assertThat(mapping.getHandler(request("POST", "/a"))).isNotNull();
+		assertThat(mapping.getHandler(request("GET", "/a"))).isNull();
 	}
 
 	@Test
@@ -132,8 +120,7 @@ public class EndpointHandlerMappingTests {
 		mapping.setDisabled(true);
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a")),
-				nullValue());
+		assertThat(mapping.getHandler(request("GET", "/a"))).isNull();
 	}
 
 	@Test
@@ -145,10 +132,12 @@ public class EndpointHandlerMappingTests {
 		mapping.setDisabled(true);
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a")),
-				nullValue());
-		assertThat(mapping.getHandler(new MockHttpServletRequest("POST", "/a")),
-				nullValue());
+		assertThat(mapping.getHandler(request("GET", "/a"))).isNull();
+		assertThat(mapping.getHandler(request("POST", "/a"))).isNull();
+	}
+
+	private MockHttpServletRequest request(String method, String requestURI) {
+		return new MockHttpServletRequest(method, requestURI);
 	}
 
 	private static class TestEndpoint extends AbstractEndpoint<Object> {

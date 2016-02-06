@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -43,7 +43,7 @@ public class MetricReaderPublicMetricsTests {
 		MetricReader reader = mock(MetricReader.class);
 		given(reader.findAll()).willReturn(metrics);
 		MetricReaderPublicMetrics publicMetrics = new MetricReaderPublicMetrics(reader);
-		assertEquals(metrics, publicMetrics.metrics());
+		assertThat(publicMetrics.metrics()).isEqualTo(metrics);
 	}
 
 }

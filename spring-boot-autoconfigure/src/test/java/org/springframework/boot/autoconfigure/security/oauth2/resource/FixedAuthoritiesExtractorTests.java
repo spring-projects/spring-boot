@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link FixedAuthoritiesExtractor}.
@@ -38,29 +38,29 @@ public class FixedAuthoritiesExtractorTests {
 	@Test
 	public void authorities() {
 		this.map.put("authorities", "ROLE_ADMIN");
-		assertEquals("[ROLE_ADMIN]",
-				this.extractor.extractAuthorities(this.map).toString());
+		assertThat(this.extractor.extractAuthorities(this.map).toString())
+				.isEqualTo("[ROLE_ADMIN]");
 	}
 
 	@Test
 	public void authoritiesCommaSeparated() {
 		this.map.put("authorities", "ROLE_USER,ROLE_ADMIN");
-		assertEquals("[ROLE_USER, ROLE_ADMIN]",
-				this.extractor.extractAuthorities(this.map).toString());
+		assertThat(this.extractor.extractAuthorities(this.map).toString())
+				.isEqualTo("[ROLE_USER, ROLE_ADMIN]");
 	}
 
 	@Test
 	public void authoritiesArray() {
 		this.map.put("authorities", new String[] { "ROLE_USER", "ROLE_ADMIN" });
-		assertEquals("[ROLE_USER, ROLE_ADMIN]",
-				this.extractor.extractAuthorities(this.map).toString());
+		assertThat(this.extractor.extractAuthorities(this.map).toString())
+				.isEqualTo("[ROLE_USER, ROLE_ADMIN]");
 	}
 
 	@Test
 	public void authoritiesList() {
 		this.map.put("authorities", Arrays.asList("ROLE_USER", "ROLE_ADMIN"));
-		assertEquals("[ROLE_USER, ROLE_ADMIN]",
-				this.extractor.extractAuthorities(this.map).toString());
+		assertThat(this.extractor.extractAuthorities(this.map).toString())
+				.isEqualTo("[ROLE_USER, ROLE_ADMIN]");
 	}
 
 }

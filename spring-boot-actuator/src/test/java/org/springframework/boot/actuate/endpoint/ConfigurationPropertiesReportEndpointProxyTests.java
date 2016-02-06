@@ -38,8 +38,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationPropertiesReportEndpoint} when used against a proxy
@@ -69,7 +68,7 @@ public class ConfigurationPropertiesReportEndpointProxyTests {
 		this.context.refresh();
 		Map<String, Object> report = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class).invoke();
-		assertThat(report.toString(), containsString("prefix=executor.sql"));
+		assertThat(report.toString()).contains("prefix=executor.sql");
 	}
 
 	@Configuration

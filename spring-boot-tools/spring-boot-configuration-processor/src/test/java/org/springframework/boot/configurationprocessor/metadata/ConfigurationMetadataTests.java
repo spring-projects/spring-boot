@@ -18,8 +18,7 @@ package org.springframework.boot.configurationprocessor.metadata;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationMetadata}.
@@ -30,43 +29,44 @@ public class ConfigurationMetadataTests {
 
 	@Test
 	public void toDashedCaseCamelCase() {
-		assertThat(toDashedCase("simpleCamelCase"), is("simple-camel-case"));
+		assertThat(toDashedCase("simpleCamelCase")).isEqualTo("simple-camel-case");
 	}
 
 	@Test
 	public void toDashedCaseWordsUnderscore() {
-		assertThat(toDashedCase("Word_With_underscore"), is("word_with_underscore"));
+		assertThat(toDashedCase("Word_With_underscore"))
+				.isEqualTo("word_with_underscore");
 	}
 
 	@Test
 	public void toDashedCaseWordsSeveralUnderscores() {
-		assertThat(toDashedCase("Word___With__underscore"),
-				is("word___with__underscore"));
+		assertThat(toDashedCase("Word___With__underscore"))
+				.isEqualTo("word___with__underscore");
 	}
 
 	@Test
 	public void toDashedCaseLowerCaseUnderscore() {
-		assertThat(toDashedCase("lower_underscore"), is("lower_underscore"));
+		assertThat(toDashedCase("lower_underscore")).isEqualTo("lower_underscore");
 	}
 
 	@Test
 	public void toDashedCaseUpperUnderscore() {
-		assertThat(toDashedCase("UPPER_UNDERSCORE"), is("upper_underscore"));
+		assertThat(toDashedCase("UPPER_UNDERSCORE")).isEqualTo("upper_underscore");
 	}
 
 	@Test
 	public void toDashedCaseMultipleUnderscores() {
-		assertThat(toDashedCase("super___crazy"), is("super___crazy"));
+		assertThat(toDashedCase("super___crazy")).isEqualTo("super___crazy");
 	}
 
 	@Test
 	public void toDashedCaseUppercase() {
-		assertThat(toDashedCase("UPPERCASE"), is("uppercase"));
+		assertThat(toDashedCase("UPPERCASE")).isEqualTo("uppercase");
 	}
 
 	@Test
 	public void toDashedCaseLowercase() {
-		assertThat(toDashedCase("lowercase"), is("lowercase"));
+		assertThat(toDashedCase("lowercase")).isEqualTo("lowercase");
 	}
 
 	private String toDashedCase(String name) {
