@@ -27,8 +27,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -48,8 +47,8 @@ public class DependencyFilterMojoTests {
 		Set<Artifact> artifacts = mojo.filterDependencies(
 				createArtifact("com.foo", "one"), createArtifact("com.foo", "two"),
 				createArtifact("com.bar", "exclude-id"), artifact);
-		assertEquals("wrong filtering of artifacts", 1, artifacts.size());
-		assertSame("Wrong filtered artifact", artifact, artifacts.iterator().next());
+		assertThat(artifacts).hasSize(1);
+		assertThat(artifacts.iterator().next()).isSameAs(artifact);
 	}
 
 	@Test
@@ -61,8 +60,8 @@ public class DependencyFilterMojoTests {
 		Set<Artifact> artifacts = mojo.filterDependencies(
 				createArtifact("com.foo", "one"), createArtifact("com.foo", "two"),
 				artifact);
-		assertEquals("wrong filtering of artifacts", 1, artifacts.size());
-		assertSame("Wrong filtered artifact", artifact, artifacts.iterator().next());
+		assertThat(artifacts).hasSize(1);
+		assertThat(artifacts.iterator().next()).isSameAs(artifact);
 	}
 
 	private Artifact createArtifact(String groupId, String artifactId) {

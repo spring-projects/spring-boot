@@ -31,8 +31,7 @@ import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
@@ -62,7 +61,7 @@ public class CentralDirectoryParserTests {
 
 	@Test
 	public void visitsInOrder() throws Exception {
-		CentralDirectoryVisitor visitor = mock(CentralDirectoryVisitor.class);
+		CentralDirectoryVisitor visitor = mock(TestCentralDirectoryVisitor.class);
 		CentralDirectoryParser parser = new CentralDirectoryParser();
 		parser.addVisitor(visitor);
 		parser.parse(this.jarData, false);
@@ -81,17 +80,17 @@ public class CentralDirectoryParserTests {
 		parser.addVisitor(collector);
 		parser.parse(this.jarData, false);
 		Iterator<CentralDirectoryFileHeader> headers = collector.getHeaders().iterator();
-		assertThat(headers.next().getName().toString(), equalTo("META-INF/"));
-		assertThat(headers.next().getName().toString(), equalTo("META-INF/MANIFEST.MF"));
-		assertThat(headers.next().getName().toString(), equalTo("1.dat"));
-		assertThat(headers.next().getName().toString(), equalTo("2.dat"));
-		assertThat(headers.next().getName().toString(), equalTo("d/"));
-		assertThat(headers.next().getName().toString(), equalTo("d/9.dat"));
-		assertThat(headers.next().getName().toString(), equalTo("special/"));
-		assertThat(headers.next().getName().toString(), equalTo("special/\u00EB.dat"));
-		assertThat(headers.next().getName().toString(), equalTo("nested.jar"));
-		assertThat(headers.next().getName().toString(), equalTo("another-nested.jar"));
-		assertThat(headers.hasNext(), equalTo(false));
+		assertThat(headers.next().getName().toString()).isEqualTo("META-INF/");
+		assertThat(headers.next().getName().toString()).isEqualTo("META-INF/MANIFEST.MF");
+		assertThat(headers.next().getName().toString()).isEqualTo("1.dat");
+		assertThat(headers.next().getName().toString()).isEqualTo("2.dat");
+		assertThat(headers.next().getName().toString()).isEqualTo("d/");
+		assertThat(headers.next().getName().toString()).isEqualTo("d/9.dat");
+		assertThat(headers.next().getName().toString()).isEqualTo("special/");
+		assertThat(headers.next().getName().toString()).isEqualTo("special/\u00EB.dat");
+		assertThat(headers.next().getName().toString()).isEqualTo("nested.jar");
+		assertThat(headers.next().getName().toString()).isEqualTo("another-nested.jar");
+		assertThat(headers.hasNext()).isFalse();
 	}
 
 	private static class Collector implements CentralDirectoryVisitor {
@@ -116,6 +115,10 @@ public class CentralDirectoryParserTests {
 		public List<CentralDirectoryFileHeader> getHeaders() {
 			return this.headers;
 		}
+
+	}
+
+	public interface TestCentralDirectoryVisitor extends CentralDirectoryVisitor {
 
 	}
 

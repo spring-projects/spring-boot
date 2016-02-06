@@ -30,8 +30,7 @@ import org.springframework.boot.loader.tools.MainClassFinder.ClassNameCallback;
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
 import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MainClassFinder}.
@@ -58,7 +57,7 @@ public class MainClassFinderTests {
 		this.testJarFile.addClass("B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("A.class", ClassWithoutMainMethod.class);
 		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarFile(), "");
-		assertThat(actual, equalTo("B"));
+		assertThat(actual).isEqualTo("B");
 	}
 
 	@Test
@@ -67,7 +66,7 @@ public class MainClassFinderTests {
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithoutMainMethod.class);
 		this.testJarFile.addClass("a/b/F.class", ClassWithoutMainMethod.class);
 		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarFile(), "");
-		assertThat(actual, equalTo("a.b.c.D"));
+		assertThat(actual).isEqualTo("a.b.c.D");
 	}
 
 	@Test
@@ -75,7 +74,7 @@ public class MainClassFinderTests {
 		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithMainMethod.class);
 		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarFile(), "");
-		assertThat(actual, equalTo("a.B"));
+		assertThat(actual).isEqualTo("a.B");
 	}
 
 	@Test
@@ -94,7 +93,7 @@ public class MainClassFinderTests {
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithMainMethod.class);
 		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarFile(),
 				"a/");
-		assertThat(actual, equalTo("B"));
+		assertThat(actual).isEqualTo("B");
 
 	}
 
@@ -103,7 +102,7 @@ public class MainClassFinderTests {
 		this.testJarFile.addClass("B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("A.class", ClassWithoutMainMethod.class);
 		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarSource());
-		assertThat(actual, equalTo("B"));
+		assertThat(actual).isEqualTo("B");
 	}
 
 	@Test
@@ -112,7 +111,7 @@ public class MainClassFinderTests {
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithoutMainMethod.class);
 		this.testJarFile.addClass("a/b/F.class", ClassWithoutMainMethod.class);
 		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarSource());
-		assertThat(actual, equalTo("a.b.c.D"));
+		assertThat(actual).isEqualTo("a.b.c.D");
 	}
 
 	@Test
@@ -120,7 +119,7 @@ public class MainClassFinderTests {
 		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithMainMethod.class);
 		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarSource());
-		assertThat(actual, equalTo("a.B"));
+		assertThat(actual).isEqualTo("a.B");
 	}
 
 	@Test
@@ -141,7 +140,7 @@ public class MainClassFinderTests {
 		this.testJarFile.addClass("a/b/G.class", ClassWithMainMethod.class);
 		ClassNameCollector callback = new ClassNameCollector();
 		MainClassFinder.doWithMainClasses(this.testJarFile.getJarSource(), callback);
-		assertThat(callback.getClassNames().toString(), equalTo("[a.b.G, a.b.c.D]"));
+		assertThat(callback.getClassNames().toString()).isEqualTo("[a.b.G, a.b.c.D]");
 	}
 
 	@Test
@@ -152,7 +151,7 @@ public class MainClassFinderTests {
 		this.testJarFile.addClass("a/b/G.class", ClassWithMainMethod.class);
 		ClassNameCollector callback = new ClassNameCollector();
 		MainClassFinder.doWithMainClasses(this.testJarFile.getJarFile(), "", callback);
-		assertThat(callback.getClassNames().toString(), equalTo("[a.b.G, a.b.c.D]"));
+		assertThat(callback.getClassNames().toString()).isEqualTo("[a.b.G, a.b.c.D]");
 	}
 
 	private static class ClassNameCollector implements ClassNameCallback<Object> {

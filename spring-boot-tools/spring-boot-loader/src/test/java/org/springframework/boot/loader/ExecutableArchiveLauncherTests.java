@@ -28,8 +28,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.loader.archive.Archive.Entry;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -87,8 +86,8 @@ public class ExecutableArchiveLauncherTests {
 	}
 
 	private void assertClassLoaderUrls(ClassLoader classLoader, URL[] urls) {
-		assertTrue(classLoader instanceof URLClassLoader);
-		assertArrayEquals(urls, ((URLClassLoader) classLoader).getURLs());
+		assertThat(classLoader).isInstanceOf(URLClassLoader.class);
+		assertThat(((URLClassLoader) classLoader).getURLs()).isEqualTo(urls);
 	}
 
 	private void doWithTccl(ClassLoader classLoader, Callable<?> action)

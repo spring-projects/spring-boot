@@ -20,9 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AsciiBytes}.
@@ -37,27 +35,27 @@ public class AsciiBytesTests {
 	@Test
 	public void createFromBytes() throws Exception {
 		AsciiBytes bytes = new AsciiBytes(new byte[] { 65, 66 });
-		assertThat(bytes.toString(), equalTo("AB"));
+		assertThat(bytes.toString()).isEqualTo("AB");
 	}
 
 	@Test
 	public void createFromBytesWithOffset() throws Exception {
 		AsciiBytes bytes = new AsciiBytes(new byte[] { 65, 66, 67, 68 }, 1, 2);
-		assertThat(bytes.toString(), equalTo("BC"));
+		assertThat(bytes.toString()).isEqualTo("BC");
 	}
 
 	@Test
 	public void createFromString() throws Exception {
 		AsciiBytes bytes = new AsciiBytes("AB");
-		assertThat(bytes.toString(), equalTo("AB"));
+		assertThat(bytes.toString()).isEqualTo("AB");
 	}
 
 	@Test
 	public void length() throws Exception {
 		AsciiBytes b1 = new AsciiBytes(new byte[] { 65, 66 });
 		AsciiBytes b2 = new AsciiBytes(new byte[] { 65, 66, 67, 68 }, 1, 2);
-		assertThat(b1.length(), equalTo(2));
-		assertThat(b2.length(), equalTo(2));
+		assertThat(b1.length()).isEqualTo(2);
+		assertThat(b2.length()).isEqualTo(2);
 	}
 
 	@Test
@@ -66,10 +64,10 @@ public class AsciiBytesTests {
 		AsciiBytes ab = new AsciiBytes(new byte[] { 65, 66 });
 		AsciiBytes bc = new AsciiBytes(new byte[] { 65, 66, 67 }, 1, 2);
 		AsciiBytes abcd = new AsciiBytes(new byte[] { 65, 66, 67, 68 });
-		assertThat(abc.startsWith(abc), equalTo(true));
-		assertThat(abc.startsWith(ab), equalTo(true));
-		assertThat(abc.startsWith(bc), equalTo(false));
-		assertThat(abc.startsWith(abcd), equalTo(false));
+		assertThat(abc.startsWith(abc)).isTrue();
+		assertThat(abc.startsWith(ab)).isTrue();
+		assertThat(abc.startsWith(bc)).isFalse();
+		assertThat(abc.startsWith(abcd)).isFalse();
 	}
 
 	@Test
@@ -78,20 +76,20 @@ public class AsciiBytesTests {
 		AsciiBytes bc = new AsciiBytes(new byte[] { 65, 66, 67 }, 1, 2);
 		AsciiBytes ab = new AsciiBytes(new byte[] { 65, 66 });
 		AsciiBytes aabc = new AsciiBytes(new byte[] { 65, 65, 66, 67 });
-		assertThat(abc.endsWith(abc), equalTo(true));
-		assertThat(abc.endsWith(bc), equalTo(true));
-		assertThat(abc.endsWith(ab), equalTo(false));
-		assertThat(abc.endsWith(aabc), equalTo(false));
+		assertThat(abc.endsWith(abc)).isTrue();
+		assertThat(abc.endsWith(bc)).isTrue();
+		assertThat(abc.endsWith(ab)).isFalse();
+		assertThat(abc.endsWith(aabc)).isFalse();
 	}
 
 	@Test
 	public void substringFromBeingIndex() throws Exception {
 		AsciiBytes abcd = new AsciiBytes(new byte[] { 65, 66, 67, 68 });
-		assertThat(abcd.substring(0).toString(), equalTo("ABCD"));
-		assertThat(abcd.substring(1).toString(), equalTo("BCD"));
-		assertThat(abcd.substring(2).toString(), equalTo("CD"));
-		assertThat(abcd.substring(3).toString(), equalTo("D"));
-		assertThat(abcd.substring(4).toString(), equalTo(""));
+		assertThat(abcd.substring(0).toString()).isEqualTo("ABCD");
+		assertThat(abcd.substring(1).toString()).isEqualTo("BCD");
+		assertThat(abcd.substring(2).toString()).isEqualTo("CD");
+		assertThat(abcd.substring(3).toString()).isEqualTo("D");
+		assertThat(abcd.substring(4).toString()).isEqualTo("");
 		this.thrown.expect(IndexOutOfBoundsException.class);
 		abcd.substring(5);
 	}
@@ -99,10 +97,10 @@ public class AsciiBytesTests {
 	@Test
 	public void substring() throws Exception {
 		AsciiBytes abcd = new AsciiBytes(new byte[] { 65, 66, 67, 68 });
-		assertThat(abcd.substring(0, 4).toString(), equalTo("ABCD"));
-		assertThat(abcd.substring(1, 3).toString(), equalTo("BC"));
-		assertThat(abcd.substring(3, 4).toString(), equalTo("D"));
-		assertThat(abcd.substring(3, 3).toString(), equalTo(""));
+		assertThat(abcd.substring(0, 4).toString()).isEqualTo("ABCD");
+		assertThat(abcd.substring(1, 3).toString()).isEqualTo("BC");
+		assertThat(abcd.substring(3, 4).toString()).isEqualTo("D");
+		assertThat(abcd.substring(3, 3).toString()).isEqualTo("");
 		this.thrown.expect(IndexOutOfBoundsException.class);
 		abcd.substring(3, 5);
 	}
@@ -111,16 +109,16 @@ public class AsciiBytesTests {
 	public void appendString() throws Exception {
 		AsciiBytes bc = new AsciiBytes(new byte[] { 65, 66, 67, 68 }, 1, 2);
 		AsciiBytes appended = bc.append("D");
-		assertThat(bc.toString(), equalTo("BC"));
-		assertThat(appended.toString(), equalTo("BCD"));
+		assertThat(bc.toString()).isEqualTo("BC");
+		assertThat(appended.toString()).isEqualTo("BCD");
 	}
 
 	@Test
 	public void appendBytes() throws Exception {
 		AsciiBytes bc = new AsciiBytes(new byte[] { 65, 66, 67, 68 }, 1, 2);
 		AsciiBytes appended = bc.append(new byte[] { 68 });
-		assertThat(bc.toString(), equalTo("BC"));
-		assertThat(appended.toString(), equalTo("BCD"));
+		assertThat(bc.toString()).isEqualTo("BC");
+		assertThat(appended.toString()).isEqualTo("BCD");
 	}
 
 	@Test
@@ -130,28 +128,28 @@ public class AsciiBytesTests {
 		AsciiBytes bc_substring = new AsciiBytes(new byte[] { 65, 66, 67, 68 })
 				.substring(1, 3);
 		AsciiBytes bc_string = new AsciiBytes("BC");
-		assertThat(bc.hashCode(), equalTo(bc.hashCode()));
-		assertThat(bc.hashCode(), equalTo(bc_substring.hashCode()));
-		assertThat(bc.hashCode(), equalTo(bc_string.hashCode()));
-		assertThat(bc, equalTo(bc));
-		assertThat(bc, equalTo(bc_substring));
-		assertThat(bc, equalTo(bc_string));
-		assertThat(bc.hashCode(), not(equalTo(abcd.hashCode())));
-		assertThat(bc, not(equalTo(abcd)));
+		assertThat(bc.hashCode()).isEqualTo(bc.hashCode());
+		assertThat(bc.hashCode()).isEqualTo(bc_substring.hashCode());
+		assertThat(bc.hashCode()).isEqualTo(bc_string.hashCode());
+		assertThat(bc).isEqualTo(bc);
+		assertThat(bc).isEqualTo(bc_substring);
+		assertThat(bc).isEqualTo(bc_string);
+		assertThat(bc.hashCode()).isNotEqualTo(abcd.hashCode());
+		assertThat(bc).isNotEqualTo(abcd);
 	}
 
 	@Test
 	public void hashCodeSameAsString() throws Exception {
 		String s = "abcABC123xyz!";
 		AsciiBytes a = new AsciiBytes(s);
-		assertThat(s.hashCode(), equalTo(a.hashCode()));
+		assertThat(s.hashCode()).isEqualTo(a.hashCode());
 	}
 
 	@Test
 	public void hashCodeSameAsStringWithSpecial() throws Exception {
 		String s = "special/\u00EB.dat";
 		AsciiBytes a = new AsciiBytes(s);
-		assertThat(s.hashCode(), equalTo(a.hashCode()));
+		assertThat(s.hashCode()).isEqualTo(a.hashCode());
 	}
 
 }

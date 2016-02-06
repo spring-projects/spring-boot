@@ -22,10 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link Layouts}.
@@ -40,18 +37,20 @@ public class LayoutsTests {
 
 	@Test
 	public void jarFile() throws Exception {
-		assertThat(Layouts.forFile(new File("test.jar")), instanceOf(Layouts.Jar.class));
-		assertThat(Layouts.forFile(new File("test.JAR")), instanceOf(Layouts.Jar.class));
-		assertThat(Layouts.forFile(new File("test.jAr")), instanceOf(Layouts.Jar.class));
-		assertThat(Layouts.forFile(new File("te.st.jar")), instanceOf(Layouts.Jar.class));
+		assertThat(Layouts.forFile(new File("test.jar"))).isInstanceOf(Layouts.Jar.class);
+		assertThat(Layouts.forFile(new File("test.JAR"))).isInstanceOf(Layouts.Jar.class);
+		assertThat(Layouts.forFile(new File("test.jAr"))).isInstanceOf(Layouts.Jar.class);
+		assertThat(Layouts.forFile(new File("te.st.jar")))
+				.isInstanceOf(Layouts.Jar.class);
 	}
 
 	@Test
 	public void warFile() throws Exception {
-		assertThat(Layouts.forFile(new File("test.war")), instanceOf(Layouts.War.class));
-		assertThat(Layouts.forFile(new File("test.WAR")), instanceOf(Layouts.War.class));
-		assertThat(Layouts.forFile(new File("test.wAr")), instanceOf(Layouts.War.class));
-		assertThat(Layouts.forFile(new File("te.st.war")), instanceOf(Layouts.War.class));
+		assertThat(Layouts.forFile(new File("test.war"))).isInstanceOf(Layouts.War.class);
+		assertThat(Layouts.forFile(new File("test.WAR"))).isInstanceOf(Layouts.War.class);
+		assertThat(Layouts.forFile(new File("test.wAr"))).isInstanceOf(Layouts.War.class);
+		assertThat(Layouts.forFile(new File("te.st.war")))
+				.isInstanceOf(Layouts.War.class);
 	}
 
 	@Test
@@ -64,40 +63,40 @@ public class LayoutsTests {
 	@Test
 	public void jarLayout() throws Exception {
 		Layout layout = new Layouts.Jar();
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE),
-				equalTo("lib/"));
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM),
-				equalTo("lib/"));
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED),
-				equalTo("lib/"));
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME),
-				equalTo("lib/"));
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE))
+				.isEqualTo("lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM))
+				.isEqualTo("lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED))
+				.isEqualTo("lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME))
+				.isEqualTo("lib/");
 	}
 
 	@Test
 	public void warLayout() throws Exception {
 		Layout layout = new Layouts.War();
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE),
-				equalTo("WEB-INF/lib/"));
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM),
-				equalTo("WEB-INF/lib/"));
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED),
-				equalTo("WEB-INF/lib-provided/"));
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME),
-				equalTo("WEB-INF/lib/"));
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE))
+				.isEqualTo("WEB-INF/lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM))
+				.isEqualTo("WEB-INF/lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED))
+				.isEqualTo("WEB-INF/lib-provided/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME))
+				.isEqualTo("WEB-INF/lib/");
 	}
 
 	@Test
 	public void moduleLayout() throws Exception {
 		Layout layout = new Layouts.Module();
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE),
-				equalTo("lib/"));
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED),
-				nullValue());
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME),
-				equalTo("lib/"));
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM),
-				equalTo("lib/"));
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE))
+				.isEqualTo("lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED))
+				.isNull();
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME))
+				.isEqualTo("lib/");
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM))
+				.isEqualTo("lib/");
 	}
 
 }
