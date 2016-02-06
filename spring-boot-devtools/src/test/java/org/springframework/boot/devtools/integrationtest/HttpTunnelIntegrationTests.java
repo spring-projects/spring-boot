@@ -62,9 +62,9 @@ import static org.junit.Assert.assertEquals;
  * @author Phillip Webb
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(HttpTunnelIntegrationTest.Config.class)
+@SpringApplicationConfiguration(HttpTunnelIntegrationTests.Config.class)
 @WebIntegrationTest
-public class HttpTunnelIntegrationTest {
+public class HttpTunnelIntegrationTests {
 
 	@Autowired
 	private Config config;

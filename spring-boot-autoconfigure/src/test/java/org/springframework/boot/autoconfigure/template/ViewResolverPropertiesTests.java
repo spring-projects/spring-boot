@@ -23,14 +23,14 @@ import org.junit.Test;
 import org.springframework.util.MimeTypeUtils;
 
 import static org.hamcrest.Matchers.hasToString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AbstractViewResolverProperties}.
  *
  * @author Stephane Nicoll
  */
-public class ViewResolverPropertiesTest {
+public class ViewResolverPropertiesTests {
 
 	@Test
 	public void defaultContentType() {

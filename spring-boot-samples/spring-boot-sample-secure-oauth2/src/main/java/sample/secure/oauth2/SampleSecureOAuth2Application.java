@@ -98,7 +98,7 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RestController
 public class SampleSecureOAuth2Application {
-	
+
 	@RequestMapping("/user")
 	public Principal user(Principal user) {
 		return user;

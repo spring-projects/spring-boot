@@ -17,8 +17,8 @@
 package org.springframework.boot.configurationmetadata;
 
 /**
- * An extension of {@link ConfigurationMetadataProperty} that provides a reference to
- * its source.
+ * An extension of {@link ConfigurationMetadataProperty} that provides a reference to its
+ * source.
  *
  * @author Stephane Nicoll
  * @since 1.3.0

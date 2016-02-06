@@ -38,10 +38,9 @@ public class BootRunTask extends JavaExec {
 
 	/**
 	 * Whether or not resources (typically in {@code src/main/resources} are added
-	 * directly to the classpath. When enabled, this allows live in-place editing
-	 * of resources. Duplicate resources are removed from the resource output
-	 * directory to prevent them from appearing twice if
-	 * {@code ClassLoader.getResources()} is called.
+	 * directly to the classpath. When enabled, this allows live in-place editing of
+	 * resources. Duplicate resources are removed from the resource output directory to
+	 * prevent them from appearing twice if {@code ClassLoader.getResources()} is called.
 	 */
 	private boolean addResources = false;
 

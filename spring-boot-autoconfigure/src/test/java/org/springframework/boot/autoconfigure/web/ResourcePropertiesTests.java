@@ -20,14 +20,14 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ResourceProperties}.
  *
  * @author Stephane Nicoll
  */
-public class ResourcePropertiesTest {
+public class ResourcePropertiesTests {
 
 	private final ResourceProperties properties = new ResourceProperties();
 
