@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import org.springframework.util.MimeTypeUtils;
 
-import static org.hamcrest.Matchers.hasToString;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -34,22 +33,22 @@ public class ViewResolverPropertiesTests {
 
 	@Test
 	public void defaultContentType() {
-		assertThat(new ViewResolverProperties().getContentType(),
-				hasToString("text/html;charset=UTF-8"));
+		assertThat(new ViewResolverProperties().getContentType())
+				.hasToString("text/html;charset=UTF-8");
 	}
 
 	@Test
 	public void customContentTypeDefaultCharset() {
 		ViewResolverProperties properties = new ViewResolverProperties();
 		properties.setContentType(MimeTypeUtils.parseMimeType("text/plain"));
-		assertThat(properties.getContentType(), hasToString("text/plain;charset=UTF-8"));
+		assertThat(properties.getContentType()).hasToString("text/plain;charset=UTF-8");
 	}
 
 	@Test
 	public void defaultContentTypeCustomCharset() {
 		ViewResolverProperties properties = new ViewResolverProperties();
 		properties.setCharset(Charset.forName("UTF-16"));
-		assertThat(properties.getContentType(), hasToString("text/html;charset=UTF-16"));
+		assertThat(properties.getContentType()).hasToString("text/html;charset=UTF-16");
 	}
 
 	@Test
@@ -57,7 +56,7 @@ public class ViewResolverPropertiesTests {
 		ViewResolverProperties properties = new ViewResolverProperties();
 		properties.setContentType(MimeTypeUtils.parseMimeType("text/plain"));
 		properties.setCharset(Charset.forName("UTF-16"));
-		assertThat(properties.getContentType(), hasToString("text/plain;charset=UTF-16"));
+		assertThat(properties.getContentType()).hasToString("text/plain;charset=UTF-16");
 	}
 
 	@Test
@@ -65,8 +64,8 @@ public class ViewResolverPropertiesTests {
 		ViewResolverProperties properties = new ViewResolverProperties();
 		properties.setContentType(MimeTypeUtils.parseMimeType("text/plain;foo=bar"));
 		properties.setCharset(Charset.forName("UTF-16"));
-		assertThat(properties.getContentType(),
-				hasToString("text/plain;charset=UTF-16;foo=bar"));
+		assertThat(properties.getContentType())
+				.hasToString("text/plain;charset=UTF-16;foo=bar");
 	}
 
 	private static class ViewResolverProperties extends AbstractViewResolverProperties {

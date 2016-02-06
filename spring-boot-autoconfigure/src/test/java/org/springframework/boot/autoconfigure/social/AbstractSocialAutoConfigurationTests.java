@@ -25,7 +25,7 @@ import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -49,10 +49,10 @@ public class AbstractSocialAutoConfigurationTests {
 	}
 
 	protected void assertConnectionFrameworkBeans() {
-		assertNotNull(this.context.getBean(UsersConnectionRepository.class));
-		assertNotNull(this.context.getBean(ConnectionRepository.class));
-		assertNotNull(this.context.getBean(ConnectionFactoryLocator.class));
-		assertNotNull(this.context.getBean(UserIdSource.class));
+		assertThat(this.context.getBean(UsersConnectionRepository.class)).isNotNull();
+		assertThat(this.context.getBean(ConnectionRepository.class)).isNotNull();
+		assertThat(this.context.getBean(ConnectionFactoryLocator.class)).isNotNull();
+		assertThat(this.context.getBean(UserIdSource.class)).isNotNull();
 	}
 
 	protected void assertNoConnectionFrameworkBeans() {
@@ -64,7 +64,7 @@ public class AbstractSocialAutoConfigurationTests {
 
 	protected void assertMissingBean(Class<?> beanClass) {
 		try {
-			assertNotNull(this.context.getBean(beanClass));
+			assertThat(this.context.getBean(beanClass)).isNotNull();
 			fail("Unexpected bean in context of type " + beanClass.getName());
 		}
 		catch (NoSuchBeanDefinitionException ex) {

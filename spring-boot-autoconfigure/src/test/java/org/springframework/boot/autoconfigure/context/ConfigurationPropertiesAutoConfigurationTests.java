@@ -26,8 +26,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationPropertiesAutoConfiguration}.
@@ -48,13 +47,13 @@ public class ConfigurationPropertiesAutoConfigurationTests {
 	@Test
 	public void processAnnotatedBean() {
 		load(new Class[] { AutoConfig.class, SampleBean.class }, "foo.name:test");
-		assertThat(this.context.getBean(SampleBean.class).getName(), equalTo("test"));
+		assertThat(this.context.getBean(SampleBean.class).getName()).isEqualTo("test");
 	}
 
 	@Test
 	public void processAnnotatedBeanNoAutoConfig() {
 		load(new Class[] { SampleBean.class }, "foo.name:test");
-		assertThat(this.context.getBean(SampleBean.class).getName(), equalTo("default"));
+		assertThat(this.context.getBean(SampleBean.class).getName()).isEqualTo("default");
 	}
 
 	private void load(Class<?>[] configs, String... environment) {

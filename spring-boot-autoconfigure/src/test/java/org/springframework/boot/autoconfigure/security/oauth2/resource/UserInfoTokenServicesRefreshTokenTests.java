@@ -53,7 +53,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link UserInfoTokenServices}.
@@ -84,7 +84,7 @@ public class UserInfoTokenServicesRefreshTokenTests {
 
 	@Test
 	public void sunnyDay() {
-		assertEquals("me", this.services.loadAuthentication("FOO").getName());
+		assertThat(this.services.loadAuthentication("FOO").getName()).isEqualTo("me");
 	}
 
 	@Test
@@ -95,10 +95,11 @@ public class UserInfoTokenServicesRefreshTokenTests {
 		token.setRefreshToken(new DefaultExpiringOAuth2RefreshToken("BAR", new Date(0L)));
 		context.setAccessToken(token);
 		this.services.setRestTemplate(new OAuth2RestTemplate(resource, context));
-		assertEquals("me", this.services.loadAuthentication("FOO").getName());
-		assertEquals("FOO", context.getAccessToken().getValue());
+		assertThat(this.services.loadAuthentication("FOO").getName()).isEqualTo("me");
+		assertThat(context.getAccessToken().getValue()).isEqualTo("FOO");
 		// The refresh token is still intact
-		assertEquals(token.getRefreshToken(), context.getAccessToken().getRefreshToken());
+		assertThat(context.getAccessToken().getRefreshToken())
+				.isEqualTo(token.getRefreshToken());
 	}
 
 	@Test
@@ -107,8 +108,8 @@ public class UserInfoTokenServicesRefreshTokenTests {
 		OAuth2ClientContext context = new DefaultOAuth2ClientContext();
 		context.setAccessToken(new DefaultOAuth2AccessToken("FOO"));
 		this.services.setRestTemplate(new OAuth2RestTemplate(resource, context));
-		assertEquals("me", this.services.loadAuthentication("BAR").getName());
-		assertEquals("BAR", context.getAccessToken().getValue());
+		assertThat(this.services.loadAuthentication("BAR").getName()).isEqualTo("me");
+		assertThat(context.getAccessToken().getValue()).isEqualTo("BAR");
 	}
 
 	@Configuration

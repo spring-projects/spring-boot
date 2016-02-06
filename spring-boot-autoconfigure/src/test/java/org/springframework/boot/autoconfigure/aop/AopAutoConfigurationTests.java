@@ -26,8 +26,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AopAutoConfiguration}.
@@ -46,10 +45,10 @@ public class AopAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.aop.auto:false");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
-		assertFalse(aspect.isCalled());
+		assertThat(aspect.isCalled()).isFalse();
 		TestBean bean = this.context.getBean(TestBean.class);
 		bean.foo();
-		assertFalse(aspect.isCalled());
+		assertThat(aspect.isCalled()).isFalse();
 	}
 
 	@Test
@@ -61,10 +60,10 @@ public class AopAutoConfigurationTests {
 				"spring.aop.proxyTargetClass:true");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
-		assertFalse(aspect.isCalled());
+		assertThat(aspect.isCalled()).isFalse();
 		TestBean bean = this.context.getBean(TestBean.class);
 		bean.foo();
-		assertTrue(aspect.isCalled());
+		assertThat(aspect.isCalled()).isTrue();
 	}
 
 	@Test
@@ -76,10 +75,10 @@ public class AopAutoConfigurationTests {
 				"spring.aop.proxyTargetClass:false");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
-		assertFalse(aspect.isCalled());
+		assertThat(aspect.isCalled()).isFalse();
 		TestInterface bean = this.context.getBean(TestInterface.class);
 		bean.foo();
-		assertTrue(aspect.isCalled());
+		assertThat(aspect.isCalled()).isTrue();
 	}
 
 	@Configuration

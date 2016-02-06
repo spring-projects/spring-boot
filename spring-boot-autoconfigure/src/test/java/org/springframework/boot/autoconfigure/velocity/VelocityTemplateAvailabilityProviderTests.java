@@ -23,8 +23,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.env.MockEnvironment;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link VelocityTemplateAvailabilityProvider}.
@@ -41,35 +40,35 @@ public class VelocityTemplateAvailabilityProviderTests {
 
 	@Test
 	public void availabilityOfTemplateInDefaultLocation() {
-		assertTrue(this.provider.isTemplateAvailable("home", this.environment,
-				getClass().getClassLoader(), this.resourceLoader));
+		assertThat(this.provider.isTemplateAvailable("home", this.environment,
+				getClass().getClassLoader(), this.resourceLoader)).isTrue();
 	}
 
 	@Test
 	public void availabilityOfTemplateThatDoesNotExist() {
-		assertFalse(this.provider.isTemplateAvailable("whatever", this.environment,
-				getClass().getClassLoader(), this.resourceLoader));
+		assertThat(this.provider.isTemplateAvailable("whatever", this.environment,
+				getClass().getClassLoader(), this.resourceLoader)).isFalse();
 	}
 
 	@Test
 	public void availabilityOfTemplateWithCustomLoaderPath() {
 		this.environment.setProperty("spring.velocity.resourceLoaderPath",
 				"classpath:/custom-templates/");
-		assertTrue(this.provider.isTemplateAvailable("custom", this.environment,
-				getClass().getClassLoader(), this.resourceLoader));
+		assertThat(this.provider.isTemplateAvailable("custom", this.environment,
+				getClass().getClassLoader(), this.resourceLoader)).isTrue();
 	}
 
 	@Test
 	public void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.velocity.prefix", "prefix/");
-		assertTrue(this.provider.isTemplateAvailable("prefixed", this.environment,
-				getClass().getClassLoader(), this.resourceLoader));
+		assertThat(this.provider.isTemplateAvailable("prefixed", this.environment,
+				getClass().getClassLoader(), this.resourceLoader)).isTrue();
 	}
 
 	@Test
 	public void availabilityOfTemplateWithCustomSuffix() {
 		this.environment.setProperty("spring.velocity.suffix", ".freemarker");
-		assertTrue(this.provider.isTemplateAvailable("suffixed", this.environment,
-				getClass().getClassLoader(), this.resourceLoader));
+		assertThat(this.provider.isTemplateAvailable("suffixed", this.environment,
+				getClass().getClassLoader(), this.resourceLoader)).isTrue();
 	}
 }

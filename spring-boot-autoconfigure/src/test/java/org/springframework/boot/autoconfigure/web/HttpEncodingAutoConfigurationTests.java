@@ -38,9 +38,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HttpEncodingAutoConfiguration}
@@ -100,16 +98,16 @@ public class HttpEncodingAutoConfigurationTests {
 		List<Filter> beans = new ArrayList<Filter>(
 				this.context.getBeansOfType(Filter.class).values());
 		AnnotationAwareOrderComparator.sort(beans);
-		assertThat(beans.get(0), instanceOf(CharacterEncodingFilter.class));
-		assertThat(beans.get(1), instanceOf(HiddenHttpMethodFilter.class));
+		assertThat(beans.get(0)).isInstanceOf(CharacterEncodingFilter.class);
+		assertThat(beans.get(1)).isInstanceOf(HiddenHttpMethodFilter.class);
 	}
 
 	private void assertCharacterEncodingFilter(CharacterEncodingFilter actual,
 			String encoding, boolean forceEncoding) {
 		DirectFieldAccessor accessor = new DirectFieldAccessor(actual);
-		assertEquals("Wrong encoding", encoding, accessor.getPropertyValue("encoding"));
-		assertEquals("Wrong forceEncoding flag", forceEncoding,
-				accessor.getPropertyValue("forceEncoding"));
+		assertThat(accessor.getPropertyValue("encoding")).as("Wrong encoding")
+				.isEqualTo(encoding);
+		assertThat(accessor.getPropertyValue("forceEncoding")).isEqualTo(forceEncoding);
 	}
 
 	private void load(Class<?> config, String... environment) {

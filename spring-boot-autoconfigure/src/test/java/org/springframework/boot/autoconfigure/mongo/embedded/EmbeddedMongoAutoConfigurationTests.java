@@ -36,11 +36,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.SocketUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link EmbeddedMongoAutoConfiguration}.
@@ -78,8 +74,8 @@ public class EmbeddedMongoAutoConfigurationTests {
 				"spring.mongodb.embedded.features=TEXT_SEARCH, SYNC_DELAY");
 		this.context.register(EmbeddedMongoAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(EmbeddedMongoProperties.class).getFeatures(),
-				hasItems(Feature.TEXT_SEARCH, Feature.SYNC_DELAY));
+		assertThat(this.context.getBean(EmbeddedMongoProperties.class).getFeatures())
+				.contains(Feature.TEXT_SEARCH, Feature.SYNC_DELAY);
 	}
 
 	@Test
@@ -90,9 +86,9 @@ public class EmbeddedMongoAutoConfigurationTests {
 				MongoClientConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(MongoClient.class).getAddress().getPort(),
-				equalTo(Integer.valueOf(
-						this.context.getEnvironment().getProperty("local.mongo.port"))));
+		assertThat(this.context.getBean(MongoClient.class).getAddress().getPort())
+				.isEqualTo(Integer.valueOf(
+						this.context.getEnvironment().getProperty("local.mongo.port")));
 	}
 
 	@Test
@@ -108,8 +104,8 @@ public class EmbeddedMongoAutoConfigurationTests {
 					MongoClientConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class);
 			this.context.refresh();
-			assertThat(parent.getEnvironment().getProperty("local.mongo.port"),
-					is(notNullValue()));
+			assertThat(parent.getEnvironment().getProperty("local.mongo.port"))
+					.isNotNull();
 		}
 		finally {
 			parent.close();
@@ -132,7 +128,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 		MongoTemplate mongo = this.context.getBean(MongoTemplate.class);
 		CommandResult buildInfo = mongo.executeCommand("{ buildInfo: 1 }");
 
-		assertThat(buildInfo.getString("version"), equalTo(expectedVersion));
+		assertThat(buildInfo.getString("version")).isEqualTo(expectedVersion);
 	}
 
 	@Configuration

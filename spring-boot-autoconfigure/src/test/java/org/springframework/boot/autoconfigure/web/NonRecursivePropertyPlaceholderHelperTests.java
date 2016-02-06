@@ -20,8 +20,7 @@ import java.util.Properties;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link NonRecursivePropertyPlaceholderHelper}.
@@ -38,7 +37,7 @@ public class NonRecursivePropertyPlaceholderHelperTests {
 		Properties properties = new Properties();
 		properties.put("a", "b");
 		String result = this.helper.replacePlaceholders("${a}", properties);
-		assertThat(result, equalTo("b"));
+		assertThat(result).isEqualTo("b");
 	}
 
 	@Test
@@ -47,7 +46,7 @@ public class NonRecursivePropertyPlaceholderHelperTests {
 		properties.put("a", "${b}");
 		properties.put("b", "c");
 		String result = this.helper.replacePlaceholders("${a}", properties);
-		assertThat(result, equalTo("${b}"));
+		assertThat(result).isEqualTo("${b}");
 	}
 
 }

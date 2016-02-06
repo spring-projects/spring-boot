@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc.metadata;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.junit.Before;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link TomcatDataSourcePoolMetadata}.
@@ -46,8 +46,8 @@ public class TomcatDataSourcePoolMetadataTests
 	public void getValidationQuery() {
 		DataSource dataSource = createDataSource(0, 4);
 		dataSource.setValidationQuery("SELECT FROM FOO");
-		assertEquals("SELECT FROM FOO",
-				new TomcatDataSourcePoolMetadata(dataSource).getValidationQuery());
+		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getValidationQuery())
+				.isEqualTo("SELECT FROM FOO");
 	}
 
 	private DataSource createDataSource(int minSize, int maxSize) {

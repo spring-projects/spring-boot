@@ -58,7 +58,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractView;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -89,7 +89,7 @@ public class BasicErrorControllerMockMvcTests {
 		MvcResult response = this.mockMvc.perform(get("/error"))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("999"));
+		assertThat(content).contains("999");
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class BasicErrorControllerMockMvcTests {
 		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error"))
 				.andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("Expected!"));
+		assertThat(content).contains("Expected!");
 	}
 
 	@Test
@@ -114,7 +114,7 @@ public class BasicErrorControllerMockMvcTests {
 		// And the rendered status code is always wrong (but would be 400 in a real
 		// system)
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("Error count: 1"));
+		assertThat(content).contains("Error count: 1");
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class BasicErrorControllerMockMvcTests {
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("ERROR_BEAN"));
+		assertThat(content).contains("ERROR_BEAN");
 	}
 
 	@Target(ElementType.TYPE)
@@ -214,6 +214,7 @@ public class BasicErrorControllerMockMvcTests {
 			request.setRequestURI(this.path);
 			return request;
 		}
+
 	}
 
 }

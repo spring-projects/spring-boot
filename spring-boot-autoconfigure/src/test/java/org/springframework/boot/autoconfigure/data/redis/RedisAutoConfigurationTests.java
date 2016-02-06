@@ -32,9 +32,7 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.StringUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RedisAutoConfiguration}.
@@ -63,34 +61,36 @@ public class RedisAutoConfigurationTests {
 	@Test
 	public void testDefaultRedisConfiguration() throws Exception {
 		load();
-		assertNotNull(this.context.getBean("redisTemplate", RedisOperations.class));
-		assertNotNull(this.context.getBean(StringRedisTemplate.class));
+		assertThat(this.context.getBean("redisTemplate", RedisOperations.class))
+				.isNotNull();
+		assertThat(this.context.getBean(StringRedisTemplate.class)).isNotNull();
 	}
 
 	@Test
 	public void testOverrideRedisConfiguration() throws Exception {
 		load("spring.redis.host:foo", "spring.redis.database:1");
-		assertEquals("foo",
-				this.context.getBean(JedisConnectionFactory.class).getHostName());
-		assertEquals(1, this.context.getBean(JedisConnectionFactory.class).getDatabase());
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
+				.isEqualTo("foo");
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getDatabase())
+				.isEqualTo(1);
 	}
 
 	@Test
 	public void testRedisConfigurationWithPool() throws Exception {
 		load("spring.redis.host:foo", "spring.redis.pool.max-idle:1");
-		assertEquals("foo",
-				this.context.getBean(JedisConnectionFactory.class).getHostName());
-		assertEquals(1, this.context.getBean(JedisConnectionFactory.class).getPoolConfig()
-				.getMaxIdle());
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
+				.isEqualTo("foo");
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getPoolConfig()
+				.getMaxIdle()).isEqualTo(1);
 	}
 
 	@Test
 	public void testRedisConfigurationWithTimeout() throws Exception {
 		load("spring.redis.host:foo", "spring.redis.timeout:100");
-		assertEquals("foo",
-				this.context.getBean(JedisConnectionFactory.class).getHostName());
-		assertEquals(100,
-				this.context.getBean(JedisConnectionFactory.class).getTimeout());
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
+				.isEqualTo("foo");
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getTimeout())
+				.isEqualTo(100);
 	}
 
 	@Test
@@ -99,9 +99,8 @@ public class RedisAutoConfigurationTests {
 		if (isAtLeastOneSentinelAvailable(sentinels)) {
 			load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
 					+ StringUtils.collectionToCommaDelimitedString(sentinels));
-
-			assertTrue(this.context.getBean(JedisConnectionFactory.class)
-					.isRedisSentinelAware());
+			assertThat(this.context.getBean(JedisConnectionFactory.class)
+					.isRedisSentinelAware()).isTrue();
 		}
 	}
 

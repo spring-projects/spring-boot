@@ -48,7 +48,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -87,7 +87,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("status=999"));
+		assertThat(content).contains("status=999");
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("status=999"));
+		assertThat(content).contains("status=999");
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("status=999"));
+		assertThat(content).contains("status=999");
 	}
 
 	@Target(ElementType.TYPE)

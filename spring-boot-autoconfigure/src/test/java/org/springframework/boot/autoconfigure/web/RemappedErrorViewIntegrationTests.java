@@ -38,7 +38,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Dave Syer
@@ -59,16 +59,16 @@ public class RemappedErrorViewIntegrationTests {
 	public void directAccessToErrorPage() throws Exception {
 		String content = this.template.getForObject(
 				"http://localhost:" + this.port + "/spring/error", String.class);
-		assertTrue("Wrong content: " + content, content.contains("error"));
-		assertTrue("Wrong content: " + content, content.contains("999"));
+		assertThat(content).contains("error");
+		assertThat(content).contains("999");
 	}
 
 	@Test
 	public void forwardToErrorPage() throws Exception {
 		String content = this.template
 				.getForObject("http://localhost:" + this.port + "/spring/", String.class);
-		assertTrue("Wrong content: " + content, content.contains("error"));
-		assertTrue("Wrong content: " + content, content.contains("500"));
+		assertThat(content).contains("error");
+		assertThat(content).contains("500");
 	}
 
 	@Configuration

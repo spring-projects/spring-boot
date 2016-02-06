@@ -26,7 +26,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ElasticsearchDataAutoConfiguration}.
@@ -55,8 +55,8 @@ public class ElasticsearchDataAutoConfigurationTests {
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchDataAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1,
-				this.context.getBeanNamesForType(ElasticsearchTemplate.class).length);
+		assertThat(this.context.getBeanNamesForType(ElasticsearchTemplate.class))
+				.hasSize(1);
 	}
 
 	@Test
@@ -69,8 +69,9 @@ public class ElasticsearchDataAutoConfigurationTests {
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchDataAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context
-				.getBeanNamesForType(SimpleElasticsearchMappingContext.class).length);
+		assertThat(
+				this.context.getBeanNamesForType(SimpleElasticsearchMappingContext.class))
+						.hasSize(1);
 	}
 
 	@Test
@@ -83,8 +84,8 @@ public class ElasticsearchDataAutoConfigurationTests {
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchDataAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1,
-				this.context.getBeanNamesForType(ElasticsearchConverter.class).length);
+		assertThat(this.context.getBeanNamesForType(ElasticsearchConverter.class))
+				.hasSize(1);
 	}
 
 }

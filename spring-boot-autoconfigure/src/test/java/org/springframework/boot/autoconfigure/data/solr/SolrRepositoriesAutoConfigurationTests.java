@@ -33,9 +33,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.solr.repository.config.EnableSolrRepositories;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SolrRepositoriesAutoConfiguration}.
@@ -55,23 +53,22 @@ public class SolrRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() {
 		initContext(TestConfiguration.class);
-
-		assertThat(this.context.getBean(CityRepository.class), notNullValue());
-		assertThat(this.context.getBean(SolrServer.class),
-				instanceOf(HttpSolrServer.class));
+		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
+		assertThat(this.context.getBean(SolrServer.class))
+				.isInstanceOf(HttpSolrServer.class);
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() {
 		initContext(EmptyConfiguration.class);
-		assertThat(this.context.getBean(SolrServer.class),
-				instanceOf(HttpSolrServer.class));
+		assertThat(this.context.getBean(SolrServer.class))
+				.isInstanceOf(HttpSolrServer.class);
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		initContext(CustomizedConfiguration.class);
-		assertThat(this.context.getBean(CitySolrRepository.class), notNullValue());
+		assertThat(this.context.getBean(CitySolrRepository.class)).isNotNull();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)

@@ -24,8 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AllNestedConditions}.
@@ -35,28 +34,28 @@ public class AllNestedConditionsTests {
 	@Test
 	public void neither() throws Exception {
 		AnnotationConfigApplicationContext context = load(Config.class);
-		assertThat(context.containsBean("myBean"), equalTo(false));
+		assertThat(context.containsBean("myBean")).isFalse();
 		context.close();
 	}
 
 	@Test
 	public void propertyA() throws Exception {
 		AnnotationConfigApplicationContext context = load(Config.class, "a:a");
-		assertThat(context.containsBean("myBean"), equalTo(false));
+		assertThat(context.containsBean("myBean")).isFalse();
 		context.close();
 	}
 
 	@Test
 	public void propertyB() throws Exception {
 		AnnotationConfigApplicationContext context = load(Config.class, "b:b");
-		assertThat(context.containsBean("myBean"), equalTo(false));
+		assertThat(context.containsBean("myBean")).isFalse();
 		context.close();
 	}
 
 	@Test
 	public void both() throws Exception {
 		AnnotationConfigApplicationContext context = load(Config.class, "a:a", "b:b");
-		assertThat(context.containsBean("myBean"), equalTo(true));
+		assertThat(context.containsBean("myBean")).isTrue();
 		context.close();
 	}
 

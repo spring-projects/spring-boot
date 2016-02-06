@@ -22,8 +22,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.env.MockEnvironment;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JspTemplateAvailabilityProvider}.
@@ -40,14 +39,14 @@ public class JspTemplateAvailabilityProviderTests {
 
 	@Test
 	public void availabilityOfTemplateThatDoesNotExist() {
-		assertThat(isTemplateAvailable("whatever"), equalTo(false));
+		assertThat(isTemplateAvailable("whatever")).isFalse();
 	}
 
 	@Test
 	public void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.mvc.view.prefix",
 				"classpath:/custom-templates/");
-		assertThat(isTemplateAvailable("custom.jsp"), equalTo(true));
+		assertThat(isTemplateAvailable("custom.jsp")).isTrue();
 	}
 
 	@Test
@@ -55,7 +54,7 @@ public class JspTemplateAvailabilityProviderTests {
 		this.environment.setProperty("spring.mvc.view.prefix",
 				"classpath:/custom-templates/");
 		this.environment.setProperty("spring.mvc.view.suffix", ".jsp");
-		assertThat(isTemplateAvailable("suffixed"), equalTo(true));
+		assertThat(isTemplateAvailable("suffixed")).isTrue();
 	}
 
 	private boolean isTemplateAvailable(String view) {

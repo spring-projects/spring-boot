@@ -24,8 +24,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConditionalOnEnabledResourceChain}.
@@ -44,31 +43,31 @@ public class ConditionalOnEnabledResourceChainTests {
 	@Test
 	public void disabledByDefault() {
 		load();
-		assertFalse(this.context.containsBean("foo"));
+		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
 	public void disabledExplicitly() {
 		load("spring.resources.chain.enabled:false");
-		assertFalse(this.context.containsBean("foo"));
+		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
 	public void enabledViaMainEnabledFlag() {
 		load("spring.resources.chain.enabled:true");
-		assertTrue(this.context.containsBean("foo"));
+		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
 	public void enabledViaFixedStrategyFlag() {
 		load("spring.resources.chain.strategy.fixed.enabled:true");
-		assertTrue(this.context.containsBean("foo"));
+		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
 	public void enabledViaContentStrategyFlag() {
 		load("spring.resources.chain.strategy.content.enabled:true");
-		assertTrue(this.context.containsBean("foo"));
+		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	private void load(String... environment) {
