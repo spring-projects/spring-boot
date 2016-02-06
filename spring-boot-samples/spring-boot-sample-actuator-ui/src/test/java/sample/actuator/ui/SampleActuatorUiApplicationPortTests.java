@@ -30,7 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for separate management and main service ports.
@@ -53,7 +53,7 @@ public class SampleActuatorUiApplicationPortTests {
 	public void testHome() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
@@ -61,15 +61,15 @@ public class SampleActuatorUiApplicationPortTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/metrics", Map.class);
-		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/health", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("{\"status\":\"UP\"}", entity.getBody());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("{\"status\":\"UP\"}");
 	}
 
 }

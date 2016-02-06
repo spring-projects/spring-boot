@@ -25,7 +25,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for service demo application.
@@ -42,7 +42,7 @@ public class SampleActuatorNoWebApplicationTests {
 
 	@Test
 	public void endpointsExist() throws Exception {
-		assertNotNull(this.endpoint);
+		assertThat(this.endpoint).isNotNull();
 	}
 
 }

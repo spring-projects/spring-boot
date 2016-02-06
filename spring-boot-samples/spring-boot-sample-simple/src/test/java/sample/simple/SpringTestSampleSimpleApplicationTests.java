@@ -24,8 +24,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SampleSimpleApplication}.
@@ -41,9 +40,9 @@ public class SpringTestSampleSimpleApplicationTests {
 
 	@Test
 	public void testContextLoads() throws Exception {
-		assertNotNull(this.ctx);
-		assertTrue(this.ctx.containsBean("helloWorldService"));
-		assertTrue(this.ctx.containsBean("sampleSimpleApplication"));
+		assertThat(this.ctx).isNotNull();
+		assertThat(this.ctx.containsBean("helloWorldService")).isTrue();
+		assertThat(this.ctx.containsBean("sampleSimpleApplication")).isTrue();
 	}
 
 }

@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import org.springframework.boot.test.OutputCapture;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SampleSpringXmlApplicationTests {
 
@@ -32,7 +32,7 @@ public class SampleSpringXmlApplicationTests {
 	public void testDefaultSettings() throws Exception {
 		SampleSpringXmlApplication.main(new String[0]);
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output, output.contains("Hello World"));
+		assertThat(output).contains("Hello World");
 	}
 
 }

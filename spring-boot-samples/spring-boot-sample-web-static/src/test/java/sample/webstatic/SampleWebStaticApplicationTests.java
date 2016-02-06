@@ -18,20 +18,19 @@ package sample.webstatic;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.WebIntegrationTest;
 import sample.web.staticcontent.SampleWebStaticApplication;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for demo application.
@@ -51,9 +50,8 @@ public class SampleWebStaticApplicationTests {
 	public void testHome() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(),
-				entity.getBody().contains("<title>Static"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("<title>Static");
 	}
 
 	@Test
@@ -63,11 +61,10 @@ public class SampleWebStaticApplicationTests {
 						"http://localhost:" + this.port
 								+ "/webjars/bootstrap/3.0.3/css/bootstrap.min.css",
 						String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
-		assertEquals("Wrong content type:\n" + entity.getHeaders().getContentType(),
-				MediaType.valueOf("text/css;charset=UTF-8"),
-				entity.getHeaders().getContentType());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("body");
+		assertThat(entity.getHeaders().getContentType())
+				.isEqualTo(MediaType.valueOf("text/css;charset=UTF-8"));
 	}
 
 }

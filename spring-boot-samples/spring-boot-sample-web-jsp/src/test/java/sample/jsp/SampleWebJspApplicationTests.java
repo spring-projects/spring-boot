@@ -28,8 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for JSP application.
@@ -49,9 +48,8 @@ public class SampleWebJspApplicationTests {
 	public void testJspWithEl() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(),
-				entity.getBody().contains("/resources/text.txt"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("/resources/text.txt");
 	}
 
 }

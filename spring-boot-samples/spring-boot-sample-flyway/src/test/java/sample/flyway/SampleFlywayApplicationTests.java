@@ -24,7 +24,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleFlywayApplication.class)
@@ -35,8 +35,8 @@ public class SampleFlywayApplicationTests {
 
 	@Test
 	public void testDefaultSettings() throws Exception {
-		assertEquals(new Integer(1), this.template
-				.queryForObject("SELECT COUNT(*) from PERSON", Integer.class));
+		assertThat(this.template.queryForObject("SELECT COUNT(*) from PERSON",
+				Integer.class)).isEqualTo(1);
 	}
 
 }

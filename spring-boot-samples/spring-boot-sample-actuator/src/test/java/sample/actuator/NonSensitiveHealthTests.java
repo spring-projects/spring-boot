@@ -28,8 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for /health with {@code endpoints.health.sensitive=false}.
@@ -49,9 +48,8 @@ public class NonSensitiveHealthTests {
 	public void testSecureHealth() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port + "/health", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertFalse("Wrong body: " + entity.getBody(),
-				entity.getBody().contains("\"hello\":1"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).doesNotContain("\"hello\":1");
 	}
 
 }

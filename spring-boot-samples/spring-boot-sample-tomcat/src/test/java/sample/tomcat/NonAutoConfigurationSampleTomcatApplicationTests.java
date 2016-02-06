@@ -18,7 +18,6 @@ package sample.tomcat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.WebIntegrationTest;
 import sample.tomcat.NonAutoConfigurationSampleTomcatApplicationTests.NonAutoConfigurationSampleTomcatApplication;
 import sample.tomcat.service.HelloWorldService;
 import sample.tomcat.web.SampleController;
@@ -33,6 +32,7 @@ import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfigurat
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -41,7 +41,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for demo application.
@@ -77,8 +77,8 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 	public void testHome() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("Hello World", entity.getBody());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}
 
 }

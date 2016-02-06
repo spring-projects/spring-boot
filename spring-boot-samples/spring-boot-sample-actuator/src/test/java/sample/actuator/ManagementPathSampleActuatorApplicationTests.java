@@ -30,9 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for endpoints configuration.
@@ -52,9 +50,8 @@ public class ManagementPathSampleActuatorApplicationTests {
 	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/admin/health", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
-				entity.getBody().contains("\"status\":\"UP\""));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}
 
 	@Test
@@ -62,12 +59,11 @@ public class ManagementPathSampleActuatorApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, Map.class);
-		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertEquals("Wrong body: " + body, "Unauthorized", body.get("error"));
-		assertFalse("Wrong headers: " + entity.getHeaders(),
-				entity.getHeaders().containsKey("Set-Cookie"));
+		assertThat(body.get("error")).isEqualTo("Unauthorized");
+		assertThat(entity.getHeaders()).doesNotContainKey("Set-Cookie");
 	}
 
 }

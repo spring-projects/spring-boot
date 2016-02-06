@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SampleSolrApplicationTests {
 
@@ -41,7 +41,7 @@ public class SampleSolrApplicationTests {
 			}
 		}
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output, output.contains("name=Sony Playstation"));
+		assertThat(output).contains("name=Sony Playstation");
 	}
 
 	private boolean serverNotRunning(IllegalStateException ex) {

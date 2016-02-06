@@ -23,19 +23,19 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.WebIntegrationTest;
 import sample.tomcat.ssl.SampleTomcatSslApplication;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleTomcatSslApplication.class)
@@ -60,8 +60,8 @@ public class SampleTomcatSslApplicationTests {
 				.setHttpClient(httpClient);
 		ResponseEntity<String> entity = testRestTemplate
 				.getForEntity("https://localhost:" + this.port, String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("Hello, world", entity.getBody());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("Hello, world");
 	}
 
 }

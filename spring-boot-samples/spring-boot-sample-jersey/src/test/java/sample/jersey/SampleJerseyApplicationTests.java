@@ -28,7 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleJerseyApplication.class)
@@ -44,22 +44,22 @@ public class SampleJerseyApplicationTests {
 	public void contextLoads() {
 		ResponseEntity<String> entity = this.restTemplate
 				.getForEntity("http://localhost:" + this.port + "/hello", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void reverse() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity(
 				"http://localhost:" + this.port + "/reverse?input=olleh", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("hello", entity.getBody());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("hello");
 	}
 
 	@Test
 	public void validation() {
 		ResponseEntity<String> entity = this.restTemplate
 				.getForEntity("http://localhost:" + this.port + "/reverse", String.class);
-		assertEquals(HttpStatus.BAD_REQUEST, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 
 }

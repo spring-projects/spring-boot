@@ -25,7 +25,7 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleJersey1Application.class)
@@ -37,8 +37,9 @@ public class SampleJersey1ApplicationTests {
 
 	@Test
 	public void contextLoads() {
-		assertEquals("Hello World", new TestRestTemplate()
-				.getForObject("http://localhost:" + this.port + "/", String.class));
+		assertThat(new TestRestTemplate()
+				.getForObject("http://localhost:" + this.port + "/", String.class))
+						.isEqualTo("Hello World");
 	}
 
 }

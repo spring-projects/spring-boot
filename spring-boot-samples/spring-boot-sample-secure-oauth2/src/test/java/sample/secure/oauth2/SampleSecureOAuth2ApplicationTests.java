@@ -20,8 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -100,11 +99,11 @@ public class SampleSecureOAuth2ApplicationTests {
 		Flight flight = this.objectMapper.readValue(
 				flightsAction.getResponse().getContentAsString(), Flight.class);
 
-		assertThat(flight.getOrigin(), is("Nashville"));
-		assertThat(flight.getDestination(), is("Dallas"));
-		assertThat(flight.getAirline(), is("Spring Ways"));
-		assertThat(flight.getFlightNumber(), is("OAUTH2"));
-		assertThat(flight.getTraveler(), is("Greg Turnquist"));
+		assertThat(flight.getOrigin()).isEqualTo("Nashville");
+		assertThat(flight.getDestination()).isEqualTo("Dallas");
+		assertThat(flight.getAirline()).isEqualTo("Spring Ways");
+		assertThat(flight.getFlightNumber()).isEqualTo("OAUTH2");
+		assertThat(flight.getTraveler()).isEqualTo("Greg Turnquist");
 	}
 
 }

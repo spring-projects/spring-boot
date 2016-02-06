@@ -37,7 +37,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for demo application.
@@ -58,8 +58,8 @@ public class SampleJetty8ApplicationTests {
 	public void testHome() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("Hello World", entity.getBody());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}
 
 	@Test
@@ -71,12 +71,12 @@ public class SampleJetty8ApplicationTests {
 		ResponseEntity<byte[]> entity = restTemplate.exchange(
 				"http://localhost:" + this.port, HttpMethod.GET, requestEntity,
 				byte[].class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		GZIPInputStream inflater = new GZIPInputStream(
 				new ByteArrayInputStream(entity.getBody()));
 		try {
-			assertEquals("Hello World",
-					StreamUtils.copyToString(inflater, Charset.forName("UTF-8")));
+			assertThat(StreamUtils.copyToString(inflater, Charset.forName("UTF-8")))
+					.isEqualTo("Hello World");
 		}
 		finally {
 			inflater.close();
