@@ -26,15 +26,21 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.CommonProperties;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -43,6 +49,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.embedded.RegistrationBean;
@@ -73,6 +80,7 @@ import org.springframework.web.filter.RequestContextFilter;
 @ConditionalOnWebApplication
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @AutoConfigureBefore(DispatcherServletAutoConfiguration.class)
+@AutoConfigureAfter(JacksonAutoConfiguration.class)
 @EnableConfigurationProperties(JerseyProperties.class)
 public class JerseyAutoConfiguration implements ServletContextAware {
 
@@ -84,10 +92,24 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	@Autowired
 	private ResourceConfig config;
 
+	@Autowired(required = false)
+	private ResourceConfigCustomizer customizer;
+
 	private String path;
 
 	@PostConstruct
 	public void path() {
+		resolveApplicationPath();
+		applyCustomConfig();
+	}
+
+	private void applyCustomConfig() {
+		if (this.customizer != null) {
+			this.customizer.customize(this.config);
+		}
+	}
+
+	private void resolveApplicationPath() {
 		if (StringUtils.hasLength(this.jersey.getApplicationPath())) {
 			this.path = parseApplicationPath(this.jersey.getApplicationPath());
 		}
@@ -192,6 +214,36 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 			// We need to switch *off* the Jersey WebApplicationInitializer because it
 			// will try and register a ContextLoaderListener which we don't need
 			servletContext.setInitParameter("contextConfigLocation", "<NONE>");
+		}
+	}
+
+	@ConditionalOnClass(JacksonFeature.class)
+	@Configuration
+	static class ObjectMapperResourceConfigCustomizer {
+
+		@Bean
+		public ResourceConfigCustomizer resourceConfigCustomizer() {
+			return new ResourceConfigCustomizer() {
+				@Override
+				public void customize(ResourceConfig config) {
+					config.register(JacksonFeature.class);
+					config.register(ObjectMapperContextResolver.class);
+				}
+			};
+		}
+
+		@Provider
+		static class ObjectMapperContextResolver
+				implements ContextResolver<ObjectMapper> {
+
+			@Autowired
+			private ObjectMapper objectMapper;
+
+			@Override
+			public ObjectMapper getContext(Class<?> type) {
+				return this.objectMapper;
+			}
+
 		}
 
 	}
