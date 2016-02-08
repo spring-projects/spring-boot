@@ -207,24 +207,29 @@ public class SysVinitLaunchScriptIT {
 		DockerClient docker = createClient();
 		String imageId = buildImage(docker);
 		String container = createContainer(docker, imageId, script);
-		copyFilesToContainer(docker, container, script);
-		docker.startContainerCmd(container).exec();
-		StringBuilder output = new StringBuilder();
-		AttachContainerResultCallback resultCallback = docker
-				.attachContainerCmd(container).withStdOut(true).withStdErr(true)
-				.withFollowStream(true).withLogs(true)
-				.exec(new AttachContainerResultCallback() {
+		try {
+			copyFilesToContainer(docker, container, script);
+			docker.startContainerCmd(container).exec();
+			StringBuilder output = new StringBuilder();
+			AttachContainerResultCallback resultCallback = docker
+					.attachContainerCmd(container).withStdOut(true).withStdErr(true)
+					.withFollowStream(true).withLogs(true)
+					.exec(new AttachContainerResultCallback() {
 
-					@Override
-					public void onNext(Frame item) {
-						output.append(new String(item.getPayload()));
-						super.onNext(item);
-					}
+						@Override
+						public void onNext(Frame item) {
+							output.append(new String(item.getPayload()));
+							super.onNext(item);
+						}
 
-				});
-		resultCallback.awaitCompletion(60, TimeUnit.SECONDS).close();
-		docker.waitContainerCmd(container).exec();
-		return output.toString();
+					});
+			resultCallback.awaitCompletion(60, TimeUnit.SECONDS).close();
+			docker.waitContainerCmd(container).exec();
+			return output.toString();
+		}
+		finally {
+			docker.removeContainerCmd(container).exec();
+		}
 	}
 
 	private DockerClient createClient() {
