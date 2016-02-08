@@ -50,6 +50,8 @@ import org.springframework.web.client.RestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Tests for {@link JerseyAutoConfiguration} with a ObjectMapper.
+ *
  * @author Eddú Meléndez
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -68,7 +70,8 @@ public class JerseyAutoConfigurationObjectMapperProviderTests {
 		ResponseEntity<String> response = this.restTemplate.getForEntity(
 				"http://localhost:" + this.port + "/rest/message", String.class);
 		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
-		assertThat("{\"subject\":\"Jersey\",\"body\":null}").isEqualTo(response.getBody());
+		assertThat("{\"subject\":\"Jersey\",\"body\":null}")
+				.isEqualTo(response.getBody());
 	}
 
 	@MinimalWebConfiguration
@@ -121,6 +124,7 @@ public class JerseyAutoConfigurationObjectMapperProviderTests {
 		public void setBody(String body) {
 			this.body = body;
 		}
+
 	}
 
 	@Target(ElementType.TYPE)
@@ -130,6 +134,7 @@ public class JerseyAutoConfigurationObjectMapperProviderTests {
 			JacksonAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
 			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
+
 	}
 
 }

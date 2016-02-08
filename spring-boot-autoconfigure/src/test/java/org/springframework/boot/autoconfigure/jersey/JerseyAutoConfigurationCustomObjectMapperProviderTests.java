@@ -49,8 +49,9 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 /**
+ * Tests for {@link JerseyAutoConfiguration} when using custom ObjectMapper.
+ *
  * @author Eddú Meléndez
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -98,10 +99,6 @@ public class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 
 		private String body;
 
-		public Message() {
-
-		}
-
 		public Message(String subject, String body) {
 			this.subject = subject;
 			this.body = body;
@@ -122,6 +119,7 @@ public class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 		public void setBody(String body) {
 			this.body = body;
 		}
+
 	}
 
 	@Target(ElementType.TYPE)
@@ -131,6 +129,7 @@ public class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 			JacksonAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
 			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
+
 	}
 
 }
