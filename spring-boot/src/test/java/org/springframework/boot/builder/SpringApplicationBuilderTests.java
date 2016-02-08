@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.Collections;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.test.ApplicationContextTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -98,11 +99,15 @@ public class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ChildConfig.class).contextClass(SpyApplicationContext.class);
 		application.parent(ExampleConfig.class);
-		this.context = application.run();
+		this.context = application.run("foo.bar=baz");
 		verify(((SpyApplicationContext) this.context).getApplicationContext())
 				.setParent(any(ApplicationContext.class));
 		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook())
 				.isFalse();
+		assertThat(this.context.getParent().getBean(ApplicationArguments.class)
+				.getNonOptionArgs()).contains("foo.bar=baz");
+		assertThat(this.context.getBean(ApplicationArguments.class).getNonOptionArgs())
+				.contains("foo.bar=baz");
 	}
 
 	@Test
@@ -110,11 +115,15 @@ public class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ChildConfig.class).contextClass(SpyApplicationContext.class);
 		application.parent(ExampleConfig.class);
-		this.context = application.build().run();
+		this.context = application.build("a=alpha").run("b=bravo");
 		verify(((SpyApplicationContext) this.context).getApplicationContext())
 				.setParent(any(ApplicationContext.class));
 		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook())
 				.isFalse();
+		assertThat(this.context.getParent().getBean(ApplicationArguments.class)
+				.getNonOptionArgs()).contains("a=alpha");
+		assertThat(this.context.getBean(ApplicationArguments.class).getNonOptionArgs())
+				.contains("b=bravo");
 	}
 
 	@Test
