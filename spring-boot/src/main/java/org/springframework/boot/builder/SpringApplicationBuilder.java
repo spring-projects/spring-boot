@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,7 +127,7 @@ public class SpringApplicationBuilder {
 			// If already created we just return the existing context
 			return this.context;
 		}
-		configureAsChildIfNecessary();
+		configureAsChildIfNecessary(args);
 		if (this.running.compareAndSet(false, true)) {
 			synchronized (this.running) {
 				// If not already running copy the sources over and then run.
@@ -137,14 +137,14 @@ public class SpringApplicationBuilder {
 		return this.context;
 	}
 
-	private void configureAsChildIfNecessary() {
+	private void configureAsChildIfNecessary(String... args) {
 		if (this.parent != null && !this.configuredAsChild) {
 			this.configuredAsChild = true;
 			if (!this.registerShutdownHookApplied) {
 				this.application.setRegisterShutdownHook(false);
 			}
-			initializers(
-					new ParentContextApplicationContextInitializer(this.parent.run()));
+			initializers(new ParentContextApplicationContextInitializer(
+					this.parent.run(args)));
 		}
 	}
 
@@ -153,7 +153,17 @@ public class SpringApplicationBuilder {
 	 * @return the fully configured {@link SpringApplication}.
 	 */
 	public SpringApplication build() {
-		configureAsChildIfNecessary();
+		return build(new String[0]);
+	}
+
+	/**
+	 * Returns a fully configured {@link SpringApplication} that is ready to run. Any
+	 * parent that has been configured will be run with the given {@code args}.
+	 * @param args the parent's args
+	 * @return the fully configured {@link SpringApplication}.
+	 */
+	public SpringApplication build(String... args) {
+		configureAsChildIfNecessary(args);
 		this.application.setSources(this.sources);
 		return this.application;
 	}
