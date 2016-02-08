@@ -18,17 +18,19 @@ package org.springframework.boot.autoconfigure.jersey;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
-import org.springframework.context.annotation.Configuration;
-
 /**
- * Callback for customizing the Jersey {@link Configuration}.
+ * Callback interface that can be implemented by beans wishing to customize Jersey's
+ * {@link ResourceConfig} before it is used.
  *
  * @author Eddú Meléndez
  * @since 1.4.0
- * @see JerseyAutoConfiguration
  */
 public interface ResourceConfigCustomizer {
 
+	/**
+	 * Customize the resource config.
+	 * @param config the {@link ResourceConfig} to customize
+	 */
 	void customize(ResourceConfig config);
 
 }

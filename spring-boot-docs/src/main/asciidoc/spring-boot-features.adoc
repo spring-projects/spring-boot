@@ -1754,6 +1754,9 @@ all the endpoints:
 	}
 ----
 
+You can also register an arbitrary number of beans implementing `ResourceConfigCustomizer`
+for more advanced customizations.
+
 All the registered endpoints should be `@Components` with HTTP resource annotations
 (`@GET` etc.), e.g.
 

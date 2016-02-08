@@ -47,7 +47,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Eddú Meléndez
@@ -67,8 +67,8 @@ public class JerseyAutoConfigurationObjectMapperProviderTests {
 	public void contextLoads() {
 		ResponseEntity<String> response = this.restTemplate.getForEntity(
 				"http://localhost:" + this.port + "/rest/message", String.class);
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals("{\"subject\":\"Jersey\",\"body\":null}", response.getBody());
+		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
+		assertThat("{\"subject\":\"Jersey\",\"body\":null}").isEqualTo(response.getBody());
 	}
 
 	@MinimalWebConfiguration

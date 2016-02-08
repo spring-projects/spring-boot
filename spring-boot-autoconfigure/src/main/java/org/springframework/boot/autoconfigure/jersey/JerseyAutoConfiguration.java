@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jersey;
 
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
@@ -48,6 +49,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
@@ -58,6 +60,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.ClassUtils;
@@ -93,20 +96,14 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	private ResourceConfig config;
 
 	@Autowired(required = false)
-	private ResourceConfigCustomizer customizer;
+	private List<ResourceConfigCustomizer> customizers;
 
 	private String path;
 
 	@PostConstruct
 	public void path() {
 		resolveApplicationPath();
-		applyCustomConfig();
-	}
-
-	private void applyCustomConfig() {
-		if (this.customizer != null) {
-			this.customizer.customize(this.config);
-		}
+		customize();
 	}
 
 	private void resolveApplicationPath() {
@@ -116,6 +113,15 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 		else {
 			this.path = findApplicationPath(AnnotationUtils
 					.findAnnotation(this.config.getClass(), ApplicationPath.class));
+		}
+	}
+
+	private void customize() {
+		if (this.customizers != null) {
+			AnnotationAwareOrderComparator.sort(this.customizers);
+			for (ResourceConfigCustomizer customizer : this.customizers) {
+				customizer.customize(this.config);
+			}
 		}
 	}
 
@@ -218,8 +224,9 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	}
 
 	@ConditionalOnClass(JacksonFeature.class)
+	@ConditionalOnSingleCandidate(ObjectMapper.class)
 	@Configuration
-	static class ObjectMapperResourceConfigCustomizer {
+	static class JacksonResourceConfigCustomizer {
 
 		@Bean
 		public ResourceConfigCustomizer resourceConfigCustomizer() {
