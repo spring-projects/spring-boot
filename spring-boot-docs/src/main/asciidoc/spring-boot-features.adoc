@@ -762,6 +762,18 @@ definitions by simply listing the properties classes directly in the
 	}
 ----
 
+[NOTE]
+====
+When `@ConfigurationProperties` bean are registered that way, the bean will have a
+conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix
+specified in the `@ConfigurationProperties` annotation and <fqn> the fully qualified
+name of the bean. If the annotation does not provide any prefix, only the fully qualified
+name of the bean is used.
+
+The bean name in the example above will be `connection-com.example.ConnectionSettings`,
+assuming that `ConnectionSettings` sits in the `com.example` package.
+====
+
 TIP: Using `@ConfigurationProperties` also allows you to generate meta-data files that can
 be used by IDEs. See the <<configuration-metadata>> appendix for details.
 

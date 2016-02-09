@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,6 +67,7 @@ public class EnableConfigurationPropertiesTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(TestProperties.class)).hasSize(1);
+		assertThat(this.context.containsBean(TestProperties.class.getName())).isTrue();
 		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
 	}
 
@@ -366,6 +367,8 @@ public class EnableConfigurationPropertiesTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "external.name:foo");
 		this.context.register(AnotherExampleConfig.class);
 		this.context.refresh();
+		assertThat(this.context.containsBean("external-" + External.class.getName()))
+				.isTrue();
 		assertThat(this.context.getBean(External.class).getName()).isEqualTo("foo");
 	}
 
