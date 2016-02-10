@@ -222,6 +222,40 @@ the `deprecation` element. This is still supported in a deprecated fashion and s
 be used. If no reason and replacement are available, an empty `deprecation` object should be
 set.
 
+Deprecation can also be specified declaratively in code by adding the
+`@DeprecatedConfigurationProperty` annotation to the getter exposing the deprecated
+property. For instance, let's assume the `app.foo.target` property was confusing and
+was renamed to `app.foo.name`
+
+[source,java,indent=0]
+----
+	@ConfigurationProperties("app.foo")
+	public class FooProperties {
+
+		private String name;
+
+		public String getName() { ... }
+
+		public void setName(String name) { ... }
+
+		@DeprecatedConfigurationProperty(replacement = "app.foo.name")
+		@Deprecated
+		public String getTarget() {
+			return getName();
+		}
+
+		@Deprecated
+		public void setTarget(String target) {
+			setName(target);
+		}
+	}
+----
+
+The code above makes sure that the deprecated property still works (delegating
+to the `name` property behind the scenes). Once the `getTarget` and `setTarget`
+methods can be removed from your public API, the automatic deprecation hint in the
+meta-data will go away as well.
+
 
 [[configuration-metadata-hints-attributes]]
 ==== Hint Attributes
