@@ -91,6 +91,12 @@ enum DatabaseDriver {
 			"com.microsoft.sqlserver.jdbc.SQLServerXADataSource"),
 
 	/**
+	 * Firebird.
+	 */
+	FIREBIRD("org.firebirdsql.jdbc.FBDriver",
+			"org.firebirdsql.pool.FBConnectionPoolDataSource"),
+
+	/**
 	 * DB2 Server.
 	 */
 	DB2("com.ibm.db2.jcc.DB2Driver", "com.ibm.db2.jcc.DB2XADataSource"),
@@ -99,7 +105,12 @@ enum DatabaseDriver {
 	 * DB2 AS400 Server.
 	 */
 	AS400("com.ibm.as400.access.AS400JDBCDriver",
-			"com.ibm.as400.access.AS400JDBCXADataSource");
+			"com.ibm.as400.access.AS400JDBCXADataSource"),
+
+	/**
+	 * Teradata.
+	 */
+	TERADATA("com.teradata.jdbc.TeraDriver");
 
 	private final String driverClassName;
 
