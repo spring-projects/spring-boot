@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -51,8 +52,15 @@ abstract class DataSourceConfiguration {
 		@ConfigurationProperties("spring.datasource.tomcat")
 		public org.apache.tomcat.jdbc.pool.DataSource dataSource(
 				DataSourceProperties properties) {
-			return createDataSource(properties,
+			org.apache.tomcat.jdbc.pool.DataSource dataSource = createDataSource(properties,
 					org.apache.tomcat.jdbc.pool.DataSource.class);
+			DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(properties.determineUrl());
+			String validationQuery = databaseDriver.getValidationQuery();
+			if (validationQuery != null) {
+				dataSource.setTestOnBorrow(true);
+				dataSource.setValidationQuery(validationQuery);
+			}
+			return dataSource;
 		}
 
 	}
@@ -76,8 +84,15 @@ abstract class DataSourceConfiguration {
 		@ConfigurationProperties("spring.datasource.dbcp")
 		public org.apache.commons.dbcp.BasicDataSource dataSource(
 				DataSourceProperties properties) {
-			return createDataSource(properties,
+			org.apache.commons.dbcp.BasicDataSource dataSource = createDataSource(properties,
 					org.apache.commons.dbcp.BasicDataSource.class);
+			DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(properties.determineUrl());
+			String validationQuery = databaseDriver.getValidationQuery();
+			if (validationQuery != null) {
+				dataSource.setTestOnBorrow(true);
+				dataSource.setValidationQuery(validationQuery);
+			}
+			return dataSource;
 		}
 	}
 

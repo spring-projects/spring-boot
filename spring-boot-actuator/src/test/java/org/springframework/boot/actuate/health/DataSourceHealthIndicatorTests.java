@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.health.DataSourceHealthIndicator.Product;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
@@ -102,22 +101,6 @@ public class DataSourceHealthIndicatorTests {
 		Health health = this.indicator.health();
 		assertThat(health.getDetails().get("database")).isNotNull();
 		verify(connection, times(2)).close();
-	}
-
-	@Test
-	public void productLookups() throws Exception {
-		assertThat(Product.forProduct("newone")).isNull();
-		assertThat(Product.forProduct("HSQL Database Engine")).isEqualTo(Product.HSQLDB);
-		assertThat(Product.forProduct("Oracle")).isEqualTo(Product.ORACLE);
-		assertThat(Product.forProduct("Apache Derby")).isEqualTo(Product.DERBY);
-		assertThat(Product.forProduct("DB2")).isEqualTo(Product.DB2);
-		assertThat(Product.forProduct("DB2/LINUXX8664")).isEqualTo(Product.DB2);
-		assertThat(Product.forProduct("DB2 UDB for AS/400")).isEqualTo(Product.DB2_AS400);
-		assertThat(Product.forProduct("DB3 XDB for AS/400")).isEqualTo(Product.DB2_AS400);
-		assertThat(Product.forProduct("Informix Dynamic Server"))
-				.isEqualTo(Product.INFORMIX);
-		assertThat(Product.forProduct("Firebird 2.5.WI")).isEqualTo(Product.FIREBIRD);
-		assertThat(Product.forProduct("Firebird 2.1.LI")).isEqualTo(Product.FIREBIRD);
 	}
 
 }
