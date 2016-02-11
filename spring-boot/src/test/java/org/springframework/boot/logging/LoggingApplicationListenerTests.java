@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -98,6 +99,9 @@ public class LoggingApplicationListenerTests {
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
 		System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");
+		System.clearProperty("CONSOLE_LOG_PATTERN");
+		System.clearProperty("FILE_LOG_PATTERN");
+		System.clearProperty("LOG_LEVEL_PATTERN");
 		System.clearProperty(LoggingSystem.SYSTEM_PROPERTY);
 		if (this.context != null) {
 			this.context.close();
@@ -417,6 +421,24 @@ public class LoggingApplicationListenerTests {
 		this.initializer.onApplicationEvent(new ContextClosedEvent(this.context));
 		assertThat(loggingSystem.cleanedUp, is(true));
 		childContext.close();
+	}
+
+	@Test
+	public void systemPropertiesAreSetForLoggingConfiguration() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.exception-conversion-word=conversion", "logging.file=file",
+				"logging.path=path", "logging.pattern.console=console",
+				"logging.pattern.file=file", "logging.pattern.level=level");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertThat(System.getProperty("CONSOLE_LOG_PATTERN"), is(equalTo("console")));
+		assertThat(System.getProperty("FILE_LOG_PATTERN"), is(equalTo("file")));
+		assertThat(System.getProperty("LOG_EXCEPTION_CONVERSION_WORD"),
+				is(equalTo("conversion")));
+		assertThat(System.getProperty("LOG_FILE"), is(equalTo("file")));
+		assertThat(System.getProperty("LOG_LEVEL_PATTERN"), is(equalTo("level")));
+		assertThat(System.getProperty("LOG_PATH"), is(equalTo("path")));
+		assertThat(System.getProperty("PID"), is(not(nullValue())));
 	}
 
 	private boolean bridgeHandlerInstalled() {
