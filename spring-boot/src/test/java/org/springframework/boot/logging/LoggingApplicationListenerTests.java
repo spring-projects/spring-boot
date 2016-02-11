@@ -426,7 +426,7 @@ public class LoggingApplicationListenerTests {
 	@Test
 	public void systemPropertiesAreSetForLoggingConfiguration() {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"logging.exception-conversion-word=conversion", "logging.file=file",
+				"logging.exception-conversion-word=conversion", "logging.file=target/log",
 				"logging.path=path", "logging.pattern.console=console",
 				"logging.pattern.file=file", "logging.pattern.level=level");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -435,7 +435,7 @@ public class LoggingApplicationListenerTests {
 		assertThat(System.getProperty("FILE_LOG_PATTERN"), is(equalTo("file")));
 		assertThat(System.getProperty("LOG_EXCEPTION_CONVERSION_WORD"),
 				is(equalTo("conversion")));
-		assertThat(System.getProperty("LOG_FILE"), is(equalTo("file")));
+		assertThat(System.getProperty("LOG_FILE"), is(equalTo("target/log")));
 		assertThat(System.getProperty("LOG_LEVEL_PATTERN"), is(equalTo("level")));
 		assertThat(System.getProperty("LOG_PATH"), is(equalTo("path")));
 		assertThat(System.getProperty("PID"), is(not(nullValue())));

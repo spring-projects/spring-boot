@@ -120,17 +120,17 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	public static final String LOG_PATH = "LOG_PATH";
 
 	/**
-	 * The name of the System property that contains the console log pattern
+	 * The name of the System property that contains the console log pattern.
 	 */
 	public static final String CONSOLE_LOG_PATTERN = "CONSOLE_LOG_PATTERN";
 
 	/**
-	 * The name of the System property that contains the file log pattern
+	 * The name of the System property that contains the file log pattern.
 	 */
 	public static final String FILE_LOG_PATTERN = "FILE_LOG_PATTERN";
 
 	/**
-	 * The name of the System property that contains the log level pattern
+	 * The name of the System property that contains the log level pattern.
 	 */
 	public static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
 
