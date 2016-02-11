@@ -1959,17 +1959,19 @@ requests). To switch that on in a Spring Boot application you just need to set
 
 [[howto-reload-static-content]]
 === Reload static content
-There are several options for hot reloading. Running in an IDE (especially with debugging
-on) is a good way to do development (all modern IDEs allow reloading of static resources
-and usually also hot-swapping of Java class changes).
+There are several options for hot reloading. The recommended approach is to use
+<<using-spring-boot.adoc#using-boot-devtools,`spring-boot-devtools`>> as it provides
+additional development-time features such as support for fast application restarts
+and LiveReload as well as sensible development-time configuration (e.g. template caching).
 
-The <<using-spring-boot.adoc#using-boot-devtools,`spring-boot-devtools`>> module is also
-available with support for fast application restarts and LiveReload.
+Alternatively, running in an IDE (especially with debugging on) is a good way to do
+development (all modern IDEs allow reloading of static resources and usually also
+hot-swapping of Java class changes).
 
 Finally, the <<build-tool-plugins.adoc#build-tool-plugins, Maven and Gradle plugins>> can
-be configured to support running from the command line with reloading of static files. You
-can use that with an external css/js compiler process if you are writing that code with
-higher level tools.
+be configured (see the `addResources` property) to support running from the command line
+with reloading of static files. You can use that with an external css/js compiler process
+if you are writing that code with higher level tools.
 
 
 

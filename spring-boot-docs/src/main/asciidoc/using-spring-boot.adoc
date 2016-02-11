@@ -941,7 +941,9 @@ TIP: For a complete list of the properties that are applied see
 Applications that use `spring-boot-devtools` will automatically restart whenever files
 on the classpath change. This can be a useful feature when working in an IDE as it gives
 a very fast feedback loop for code changes. By default, any entry on the classpath that
-points to a folder will be monitored for changes.
+points to a folder will be monitored for changes. Note that certain resources such as
+static assets and view templates <<using-boot-devtools-restart-exclude, do not need to
+restart the application>>.
 
 .Triggering a restart
 ****
