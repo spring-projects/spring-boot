@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ public class RedisAutoConfigurationTests {
 	@Test
 	public void testRedisConfigurationWithSentinel() throws Exception {
 		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
-		if (isAtLeastOneSentinelAvailable(sentinels)) {
+		if (isAtLeastOneNodeAvailable(sentinels)) {
 			load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
 					+ StringUtils.collectionToCommaDelimitedString(sentinels));
 			assertThat(this.context.getBean(JedisConnectionFactory.class)
@@ -104,9 +104,22 @@ public class RedisAutoConfigurationTests {
 		}
 	}
 
-	private boolean isAtLeastOneSentinelAvailable(List<String> sentinels) {
-		for (String sentinel : sentinels) {
-			if (isSentinelAvailable(sentinel)) {
+	@Test
+	public void testRedisConfigurationWithCluster() throws Exception {
+
+		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
+		if (isAtLeastOneNodeAvailable(clusterNodes)) {
+			load("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
+					"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));
+			assertThat(
+					this.context.getBean(JedisConnectionFactory.class)
+							.getClusterConnection()).isNotNull();
+		}
+	}
+
+	private boolean isAtLeastOneNodeAvailable(List<String> nodes) {
+		for (String node : nodes) {
+			if (isAvailable(node)) {
 				return true;
 			}
 		}
@@ -114,7 +127,7 @@ public class RedisAutoConfigurationTests {
 		return false;
 	}
 
-	private boolean isSentinelAvailable(String node) {
+	private boolean isAvailable(String node) {
 		Jedis jedis = null;
 		try {
 			String[] hostAndPort = node.split(":");
