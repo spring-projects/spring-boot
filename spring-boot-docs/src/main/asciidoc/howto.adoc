@@ -507,6 +507,35 @@ the two to configure programmatically. See the
 {github-code}/spring-boot-samples/spring-boot-sample-tomcat-multi-connectors[`spring-boot-sample-tomcat-multi-connectors`]
 sample project for an example.
 
+[[howto-configure-accesslogs]]
+=== Configure Access Logging
+Access logs can be configured for Tomcat and Undertow via their respective namespaces.
+
+For instance, the following logs access on Tomcat with a
+https://tomcat.apache.org/tomcat-8.0-doc/config/valve.html#Access_Logging[custom pattern].
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	server.tomcat.basedir=my-tomcat
+	server.tomcat.accesslog.enabled=true
+	server.tomcat.accesslog.pattern=%t %a "%r" %s (%D ms)
+----
+
+NOTE: The default location for logs is a `logs` directory relative to the tomcat base dir
+and said directory is a temp directory by default so you may want to fix Tomcat's base
+directory or use an absolute path for the logs. In the example above, the logs will
+be available in `my-tomcat/logs` relative to the working directory of the application.
+
+Access logging for undertow can be configured in a similar fashion
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	server.undertow.accesslog.enabled=true
+	server.undertow.accesslog.pattern=%t %a "%r" %s (%D ms)
+----
+
+Logs are stored in a `logs` directory relative to the working directory of the
+application. This can be customized via `server.undertow.accesslog.directory`.
 
 
 [[howto-use-behind-a-proxy-server]]

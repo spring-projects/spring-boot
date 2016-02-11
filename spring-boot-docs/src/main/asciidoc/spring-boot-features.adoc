@@ -1890,11 +1890,22 @@ file.
 
 Common server settings include:
 
-* `server.port` -- The listen port for incoming HTTP requests.
-* `server.address` -- The interface address to bind to.
-* `server.session.timeout` -- A session timeout.
+* Network settings: listen port for incoming HTTP requests (`server.port`), interface
+address to bind to `server.address`, etc.
+* Session settings: whether the session is persistent (`server.session.persistence`),
+session timeout (`server.session.timeout`), location of session data
+(`server.session.store-dir`) and session-cookie configuration (`server.session.cookie.*`).
+* Error management: location of the error page (`server.error.path`), etc.
+* <<howto.adoc#howto-configure-ssl,SSL>>
+* <<howto.adoc#how-to-enable-http-response-compression,HTTP compression>>
 
-See the {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`]
+Spring Boot tries as much as possible to expose common settings but this is not always
+possible. For those cases, dedicated namespaces offer server-specific customizations (see
+`server.tomcat` and `server.undertow`). For instance,
+<<howto.adoc#howto-configure-accesslogs,access logs>> can be configured with specific
+features of the embedded servlet container.
+
+TIP: See the {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`]
 class for a complete list.
 
 
