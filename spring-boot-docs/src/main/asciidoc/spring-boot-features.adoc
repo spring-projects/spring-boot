@@ -1509,9 +1509,10 @@ for all static resources, effectively adding a content hash in URLs, such as
 ----
 
 NOTE: Links to resources are rewritten at runtime in template, thanks to a
-`ResourceUrlEncodingFilter`, auto-configured for Thymeleaf and Velocity. You should
-manually declare this filter when using JSPs. Other template engines aren't automatically
-supported right now, but can be with custom template macros/helpers and the use of the
+`ResourceUrlEncodingFilter`, auto-configured for Thymeleaf, Velocity and FreeMarker. You
+should manually declare this filter when using JSPs. Other template engines aren't
+automatically supported right now, but can be with custom template macros/helpers and the
+use of the
 {spring-javadoc}/web/servlet/resource/ResourceUrlProvider.{dc-ext}[`ResourceUrlProvider`].
 
 When loading resources dynamically with, for example, a JavaScript module loader, renaming
