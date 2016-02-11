@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
@@ -48,6 +49,7 @@ import static org.hamcrest.Matchers.containsString;
  * Tests for {@link FreeMarkerAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
 public class FreeMarkerAutoConfigurationTests {
 
@@ -187,6 +189,20 @@ public class FreeMarkerAutoConfigurationTests {
 		finally {
 			context.close();
 		}
+	}
+
+	@Test
+	public void registerResourceHandlingFilterDisabledByDefault() throws Exception {
+		registerAndRefreshContext();
+		assertThat(this.context.getBeansOfType(ResourceUrlEncodingFilter.class))
+				.isEmpty();
+	}
+
+	@Test
+	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled()
+			throws Exception {
+		registerAndRefreshContext("spring.resources.chain.enabled:true");
+		assertThat(this.context.getBean(ResourceUrlEncodingFilter.class)).isNotNull();
 	}
 
 	private void registerAndRefreshContext(String... env) {
