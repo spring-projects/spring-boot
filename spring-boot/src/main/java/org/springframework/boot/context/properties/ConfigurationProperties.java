@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,7 +86,8 @@ public @interface ConfigurationProperties {
 	/**
 	 * Optionally provide explicit resource locations to bind to. By default the
 	 * configuration at these specified locations will be merged with the default
-	 * configuration.
+	 * configuration. These resources take precedence over any other property sources
+	 * defined in the environment.
 	 * @return the path (or paths) of resources to bind to
 	 * @see #merge()
 	 */
