@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,11 @@ import org.springframework.context.annotation.Conditional;
 /**
  * {@link Conditional} that only matches when the specified bean classes and/or names are
  * not already contained in the {@link BeanFactory}.
+ * <p>
+ * The condition can only match the bean definitions that have been processed by the
+ * application context so far and, as such, it is strongly recommended to use this
+ * condition on auto-configuration classes only. If a candidate bean may be created by
+ * another auto-configuration, make sure that the one using this condition runs after.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
