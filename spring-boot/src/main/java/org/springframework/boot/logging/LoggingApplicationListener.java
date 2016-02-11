@@ -115,7 +115,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	public static final String LOG_FILE = "LOG_FILE";
 
 	/**
-	 * The name of the System property that contains the log file.
+	 * The name of the System property that contains the log path.
 	 */
 	public static final String LOG_PATH = "LOG_PATH";
 
