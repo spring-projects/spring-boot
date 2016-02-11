@@ -165,7 +165,7 @@ content into your application; rather pick only the properties that you need.
 	server.session.cookie.secure= # "Secure" flag for the session cookie.
 	server.session.persistent=false # Persist session data between restarts.
 	server.session.store-dir= # Directory used to store session data.
-	server.session.timeout= # Session timeout in seconds.
+	server.session.timeout= # Session timeout in minutes.
 	server.session.tracking-modes= # Session tracking modes (one or more of the following: "cookie", "url", "ssl").
 	server.ssl.ciphers= # Supported SSL ciphers.
 	server.ssl.client-auth= # Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store.
