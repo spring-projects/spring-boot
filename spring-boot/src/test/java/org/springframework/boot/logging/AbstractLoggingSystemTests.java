@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,9 @@ public abstract class AbstractLoggingSystemTests {
 	}
 
 	protected final LogFile getLogFile(String file, String path) {
-		return new LogFile(file, path);
+		LogFile logFile = new LogFile(file, path);
+		logFile.applyToSystemProperties();
+		return logFile;
 	}
 
 	protected final String tmpDir() {
