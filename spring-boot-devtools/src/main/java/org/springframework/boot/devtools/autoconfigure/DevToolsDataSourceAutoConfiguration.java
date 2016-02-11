@@ -64,7 +64,7 @@ public class DevToolsDataSourceAutoConfiguration {
 
 		private final DataSourceProperties dataSourceProperties;
 
-		public NonEmbeddedInMemoryDatabaseShutdownExecutor(DataSource dataSource,
+		NonEmbeddedInMemoryDatabaseShutdownExecutor(DataSource dataSource,
 				DataSourceProperties dataSourceProperties) {
 			this.dataSource = dataSource;
 			this.dataSourceProperties = dataSourceProperties;
