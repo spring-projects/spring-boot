@@ -94,6 +94,9 @@ public class LoggingApplicationListenerTests {
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
 		System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");
+		System.clearProperty("CONSOLE_LOG_PATTERN");
+		System.clearProperty("FILE_LOG_PATTERN");
+		System.clearProperty("LOG_LEVEL_PATTERN");
 		System.clearProperty(LoggingSystem.SYSTEM_PROPERTY);
 		if (this.context != null) {
 			this.context.close();
@@ -407,6 +410,24 @@ public class LoggingApplicationListenerTests {
 		this.initializer.onApplicationEvent(new ContextClosedEvent(this.context));
 		assertThat(loggingSystem.cleanedUp).isTrue();
 		childContext.close();
+	}
+
+	@Test
+	public void systemPropertiesAreSetForLoggingConfiguration() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.exception-conversion-word=conversion", "logging.file=file",
+				"logging.path=path", "logging.pattern.console=console",
+				"logging.pattern.file=file", "logging.pattern.level=level");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertThat(System.getProperty("CONSOLE_LOG_PATTERN")).isEqualTo("console");
+		assertThat(System.getProperty("FILE_LOG_PATTERN")).isEqualTo("file");
+		assertThat(System.getProperty("LOG_EXCEPTION_CONVERSION_WORD"))
+				.isEqualTo("conversion");
+		assertThat(System.getProperty("LOG_FILE")).isEqualTo("file");
+		assertThat(System.getProperty("LOG_LEVEL_PATTERN")).isEqualTo("level");
+		assertThat(System.getProperty("LOG_PATH")).isEqualTo("path");
+		assertThat(System.getProperty("PID")).isNotNull();
 	}
 
 	private boolean bridgeHandlerInstalled() {
