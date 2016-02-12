@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
 
 /**
@@ -53,6 +54,9 @@ public class JmsAutoConfiguration {
 	@Autowired(required = false)
 	private DestinationResolver destinationResolver;
 
+	@Autowired(required = false)
+	private MessageConverter messageConverter;
+
 	@Bean
 	@ConditionalOnMissingBean
 	public JmsTemplate jmsTemplate() {
@@ -61,6 +65,11 @@ public class JmsAutoConfiguration {
 		if (this.destinationResolver != null) {
 			jmsTemplate.setDestinationResolver(this.destinationResolver);
 		}
+
+		if (this.messageConverter != null) {
+			jmsTemplate.setMessageConverter(this.messageConverter);
+		}
+
 		return jmsTemplate;
 	}
 

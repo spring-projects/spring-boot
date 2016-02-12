@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerConfigUtils;
+import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.JndiDestinationResolver;
 import org.springframework.transaction.jta.JtaTransactionManager;
@@ -44,6 +45,9 @@ class JmsAnnotationDrivenConfiguration {
 
 	@Autowired(required = false)
 	private DestinationResolver destinationResolver;
+
+	@Autowired(required = false)
+	private MessageConverter messageConverter;
 
 	@Autowired(required = false)
 	private JtaTransactionManager transactionManager;
@@ -66,6 +70,9 @@ class JmsAnnotationDrivenConfiguration {
 		}
 		if (this.destinationResolver != null) {
 			factory.setDestinationResolver(this.destinationResolver);
+		}
+		if (this.messageConverter != null) {
+			factory.setMessageConverter(this.messageConverter);
 		}
 		JmsProperties.Listener listener = this.properties.getListener();
 		factory.setAutoStartup(listener.isAutoStartup());
