@@ -60,6 +60,8 @@
   -- Example showing message-oriented application using HornetQ
 * link:spring-boot-sample-batch[spring-boot-sample-batch]
   -- Define and run a Batch job in a few lines of code
+* link:spring-boot-sample-data-couchbase[spring-boot-sample-data-couchbase]
+    -- Spring Data Couchbase repositories
 * link:spring-boot-sample-data-jpa[spring-boot-sample-data-jpa]
   -- Spring Data JPA + Hibernate + HSQLDB
 * link:spring-boot-sample-data-mongodb[spring-boot-sample-data-mongodb]
