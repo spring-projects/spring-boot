@@ -38,6 +38,7 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
+import org.junit.After;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -70,6 +71,11 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	@Override
 	protected TomcatEmbeddedServletContainerFactory getFactory() {
 		return new TomcatEmbeddedServletContainerFactory(0);
+	}
+
+	@After
+	public void restoreTccl() {
+		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 	}
 
 	// JMX MBean names clash if you get more than one Engine with the same name...
@@ -356,6 +362,17 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		String message = "Session error s1=" + s1 + " s2=" + s2 + " s3=" + s3;
 		assertThat(s2.split(":")[0]).as(message).isEqualTo(s1.split(":")[1]);
 		assertThat(s3.split(":")[0]).as(message).isNotEqualTo(s2.split(":")[1]);
+	}
+
+	@Test
+	public void tcclOfMainThreadIsTomcatWebAppClassLoader() {
+		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+		assertThat(Thread.currentThread().getContextClassLoader())
+				.isInstanceOf(TomcatEmbeddedWebappClassLoader.class);
+		this.container.stop();
 	}
 
 	@Override
