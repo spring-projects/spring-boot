@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,6 +88,10 @@ import org.springframework.util.Assert;
  * <td>410 (Gone)</td>
  * <td>The target server has disconnected.</td>
  * </tr>
+ * <tr>
+ * <td>503 (Service Unavailable)</td>
+ * <td>The target server is unavailable</td>
+ * </tr>
  * </table>
  * <p>
  * Requests and responses that contain payloads include a {@code x-seq} header that
@@ -96,6 +100,7 @@ import org.springframework.util.Assert;
  * {@code 1}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.3.0
  * @see org.springframework.boot.devtools.tunnel.client.HttpTunnelConnection
  */
@@ -152,6 +157,9 @@ public class HttpTunnelServer {
 		}
 		catch (ConnectException ex) {
 			httpConnection.respond(HttpStatus.GONE);
+		}
+		catch (RemoteDebugNotRunningException ex) {
+			httpConnection.respond(HttpStatus.SERVICE_UNAVAILABLE);
 		}
 	}
 

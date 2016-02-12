@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.lang.UsesUnsafeJava;
-import org.springframework.util.Assert;
 
 /**
  * {@link PortProvider} that provides the port being used by the Java remote debugging.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class RemoteDebugPortProvider implements PortProvider {
 
@@ -35,7 +35,9 @@ public class RemoteDebugPortProvider implements PortProvider {
 
 	@Override
 	public int getPort() {
-		Assert.state(isRemoteDebugRunning(), "Remote debug is not running");
+		if (!isRemoteDebugRunning()) {
+			throw new RemoteDebugNotRunningException();
+		}
 		return getRemoteDebugPort();
 	}
 

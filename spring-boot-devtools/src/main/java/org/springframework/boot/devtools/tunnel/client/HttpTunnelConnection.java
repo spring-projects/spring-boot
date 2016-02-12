@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.tunnel.client;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -46,6 +47,7 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Rob Winch
+ * @author Andy Wilkinson
  * @since 1.3.0
  * @see TunnelClient
  * @see org.springframework.boot.devtools.tunnel.server.HttpTunnelServer
@@ -157,7 +159,13 @@ public class HttpTunnelConnection implements TunnelConnection {
 						sendAndReceive(payload);
 					}
 					catch (IOException ex) {
-						logger.trace("Unexpected connection error", ex);
+						if (ex instanceof ConnectException) {
+							logger.warn("Failed to connect to remote application at "
+									+ HttpTunnelConnection.this.uri);
+						}
+						else {
+							logger.trace("Unexpected connection error", ex);
+						}
 						closeQuietly();
 					}
 				}
@@ -185,6 +193,12 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 		private void handleResponse(ClientHttpResponse response) throws IOException {
 			if (response.getStatusCode() == HttpStatus.GONE) {
+				close();
+				return;
+			}
+			if (response.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) {
+				logger.warn("Remote application responded with service unavailable. Did "
+						+ "you forget to start it with remote debugging enabled?");
 				close();
 				return;
 			}

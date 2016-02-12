@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
@@ -36,6 +37,7 @@ import org.springframework.util.Assert;
  * specified port for local clients to connect to.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.3.0
  */
 public class TunnelClient implements SmartInitializingSingleton {
@@ -142,6 +144,9 @@ public class TunnelClient implements SmartInitializingSingleton {
 					SocketChannel socket = this.serverSocketChannel.accept();
 					try {
 						handleConnection(socket);
+					}
+					catch (AsynchronousCloseException ex) {
+						// Connection has been closed. Keep the server running
 					}
 					finally {
 						socket.close();

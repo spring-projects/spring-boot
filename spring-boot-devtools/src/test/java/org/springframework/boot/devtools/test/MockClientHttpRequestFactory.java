@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,12 +37,13 @@ import org.springframework.mock.http.client.MockClientHttpResponse;
  * Mock {@link ClientHttpRequestFactory}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 	private AtomicLong seq = new AtomicLong();
 
-	private Deque<Response> responses = new ArrayDeque<Response>();
+	private Deque<Object> responses = new ArrayDeque<Object>();
 
 	private List<MockClientHttpRequest> executedRequests = new ArrayList<MockClientHttpRequest>();
 
@@ -55,6 +56,12 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 	public void willRespond(HttpStatus... response) {
 		for (HttpStatus status : response) {
 			this.responses.add(new Response(0, null, status));
+		}
+	}
+
+	public void willRespond(IOException... response) {
+		for (IOException exception : response) {
+			this.responses.addLast(exception);
 		}
 	}
 
@@ -81,11 +88,15 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 		@Override
 		protected ClientHttpResponse executeInternal() throws IOException {
 			MockClientHttpRequestFactory.this.executedRequests.add(this);
-			Response response = MockClientHttpRequestFactory.this.responses.pollFirst();
+			Object response = MockClientHttpRequestFactory.this.responses.pollFirst();
+			if (response instanceof IOException) {
+				throw (IOException) response;
+			}
 			if (response == null) {
 				response = new Response(0, null, HttpStatus.GONE);
 			}
-			return response.asHttpResponse(MockClientHttpRequestFactory.this.seq);
+			return ((Response) response)
+					.asHttpResponse(MockClientHttpRequestFactory.this.seq);
 		}
 
 	}
