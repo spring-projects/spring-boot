@@ -170,6 +170,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				.createAsyncRequest(new URI(getLocalUrl("/hello")), HttpMethod.GET)
 				.executeAsync();
 		assertThat(response2.get(10, TimeUnit.SECONDS).getRawStatusCode()).isEqualTo(200);
+		clientHttpRequestFactory.destroy();
 	}
 
 	@Test

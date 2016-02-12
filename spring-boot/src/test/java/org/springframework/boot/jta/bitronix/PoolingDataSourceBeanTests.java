@@ -21,6 +21,7 @@ import java.sql.Connection;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
+import bitronix.tm.TransactionManagerServices;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,6 +73,7 @@ public class PoolingDataSourceBeanTests {
 		this.bean.init();
 		this.bean.createPooledConnection(dataSource, this.bean);
 		verify(dataSource).getXAConnection();
+		TransactionManagerServices.getTaskScheduler().shutdown();
 	}
 
 }
