@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Listener;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -38,29 +37,17 @@ import org.springframework.context.annotation.Configuration;
 class RabbitAnnotationDrivenConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean
+	public RabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactoryConfigurer() {
+		return new RabbitListenerContainerFactoryConfigurer();
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-			ConnectionFactory connectionFactory, RabbitProperties config) {
-		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-		factory.setConnectionFactory(connectionFactory);
-		Listener listenerConfig = config.getListener();
-		factory.setAutoStartup(listenerConfig.isAutoStartup());
-		if (listenerConfig.getAcknowledgeMode() != null) {
-			factory.setAcknowledgeMode(listenerConfig.getAcknowledgeMode());
-		}
-		if (listenerConfig.getConcurrency() != null) {
-			factory.setConcurrentConsumers(listenerConfig.getConcurrency());
-		}
-		if (listenerConfig.getMaxConcurrency() != null) {
-			factory.setMaxConcurrentConsumers(listenerConfig.getMaxConcurrency());
-		}
-		if (listenerConfig.getPrefetch() != null) {
-			factory.setPrefetchCount(listenerConfig.getPrefetch());
-		}
-		if (listenerConfig.getTransactionSize() != null) {
-			factory.setTxSize(listenerConfig.getTransactionSize());
-		}
-		return factory;
+			RabbitListenerContainerFactoryConfigurer configurer,
+			ConnectionFactory connectionFactory) {
+		return configurer.createRabbitListenerContainerFactory(connectionFactory);
 	}
 
 	@EnableRabbit
