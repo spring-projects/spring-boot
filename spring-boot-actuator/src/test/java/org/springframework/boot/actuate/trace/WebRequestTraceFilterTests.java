@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link WebRequestTraceFilter}.
@@ -46,6 +49,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  * @author Wallace Wadge
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class WebRequestTraceFilterTests {
 
@@ -59,13 +63,14 @@ public class WebRequestTraceFilterTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void filterAddsTraceWithDefaultIncludes() {
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+		MockHttpServletRequest request = spy(new MockHttpServletRequest("GET", "/foo"));
 		request.addHeader("Accept", "application/json");
 		Map<String, Object> trace = this.filter.getTrace(request);
 		assertEquals("GET", trace.get("method"));
 		assertEquals("/foo", trace.get("path"));
 		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
 		assertEquals("{Accept=application/json}", map.get("request").toString());
+		verify(request, times(0)).getParameterMap();
 	}
 
 	@Test

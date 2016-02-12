@@ -45,6 +45,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  *
  * @author Dave Syer
  * @author Wallace Wadge
+ * @author Andy Wilkinson
  */
 public class WebRequestTraceFilter extends OncePerRequestFilter implements Ordered {
 
@@ -135,7 +136,9 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		add(trace, Include.CONTEXT_PATH, "contextPath", request.getContextPath());
 		add(trace, Include.USER_PRINCIPAL, "userPrincipal",
 				(userPrincipal == null ? null : userPrincipal.getName()));
-		add(trace, Include.PARAMETERS, "parameters", request.getParameterMap());
+		if (isIncluded(Include.PARAMETERS)) {
+			trace.put("parameters", request.getParameterMap());
+		}
 		add(trace, Include.QUERY_STRING, "query", request.getQueryString());
 		add(trace, Include.AUTH_TYPE, "authType", request.getAuthType());
 		add(trace, Include.REMOTE_ADDRESS, "remoteAddress", request.getRemoteAddr());
