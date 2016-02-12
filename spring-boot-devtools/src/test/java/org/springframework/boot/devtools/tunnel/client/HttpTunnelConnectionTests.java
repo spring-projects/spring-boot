@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.devtools.tunnel.client;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
@@ -33,10 +34,12 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.devtools.test.MockClientHttpRequestFactory;
 import org.springframework.boot.devtools.tunnel.client.HttpTunnelConnection.TunnelChannel;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,11 +49,15 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  * @author Rob Winch
+ * @author Andy Wilkinson
  */
 public class HttpTunnelConnectionTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	@Rule
+	public OutputCapture outputCapture = new OutputCapture();
 
 	private int port = SocketUtils.findAvailableTcpPort();
 
@@ -140,6 +147,25 @@ public class HttpTunnelConnectionTests {
 		write(channel, "hello");
 		assertThat(this.incomingData.toString()).isEqualTo("hi");
 		assertThat(this.requestFactory.getExecutedRequests().size()).isGreaterThan(10);
+	}
+
+	@Test
+	public void serviceUnavailableResponseLogsWarningAndClosesTunnel() throws Exception {
+		this.requestFactory.willRespond(HttpStatus.SERVICE_UNAVAILABLE);
+		TunnelChannel tunnel = openTunnel(true);
+		assertThat(tunnel.isOpen()).isFalse();
+		this.outputCapture.expect(containsString(
+				"Did you forget to start it with remote debugging enabled?"));
+	}
+
+	@Test
+	public void connectFailureLogsWarning() throws Exception {
+		this.requestFactory.willRespond(new ConnectException());
+		TunnelChannel tunnel = openTunnel(true);
+		assertThat(tunnel.isOpen()).isFalse();
+		this.outputCapture.expect(containsString(
+				"Failed to connect to remote application at http://localhost:"
+						+ this.port));
 	}
 
 	private void write(TunnelChannel channel, String string) throws IOException {
