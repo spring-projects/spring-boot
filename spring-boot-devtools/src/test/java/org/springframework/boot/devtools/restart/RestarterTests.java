@@ -97,7 +97,7 @@ public class RestarterTests {
 		String output = this.out.toString();
 		assertThat(StringUtils.countOccurrencesOf(output, "Tick 0")).isGreaterThan(1);
 		assertThat(StringUtils.countOccurrencesOf(output, "Tick 1")).isGreaterThan(1);
-		assertThat(CloseCountingApplicationListener.closed).isGreaterThan(1);
+		assertThat(CloseCountingApplicationListener.closed).isGreaterThan(0);
 	}
 
 	@Test
