@@ -203,6 +203,20 @@ public class JmsAutoConfigurationTests {
 	}
 
 	@Test
+	public void testCustomContainerFactoryWithConfigurer() {
+		this.context = doLoad(new Class<?>[]{TestConfiguration9.class,
+				EnableJmsConfiguration.class}, "spring.jms.listener.autoStartup=false");
+		assertThat(this.context.containsBean("jmsListenerContainerFactory")).isTrue();
+		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context.getBean(
+				"customListenerContainerFactory", JmsListenerContainerFactory.class);
+		assertThat(jmsListenerContainerFactory).isInstanceOf(DefaultJmsListenerContainerFactory.class);
+		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
+				.createListenerContainer(mock(JmsListenerEndpoint.class));
+		assertThat(listenerContainer.getCacheLevel()).isEqualTo(DefaultMessageListenerContainer.CACHE_CONSUMER);
+		assertThat(listenerContainer.isAutoStartup()).isFalse();
+	}
+
+	@Test
 	public void testPubSubDisabledByDefault() {
 		load(TestConfiguration.class);
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
@@ -433,6 +447,21 @@ public class JmsAutoConfigurationTests {
 			return mock(DataSourceTransactionManager.class);
 		}
 
+	}
+
+	@Configuration
+	protected static class TestConfiguration9 {
+
+		@Bean
+		JmsListenerContainerFactory<?> customListenerContainerFactory(
+				JmsListenerContainerFactoryConfigurer configurer,
+				ConnectionFactory connectionFactory) {
+			DefaultJmsListenerContainerFactory factory = configurer
+					.createJmsListenerContainerFactory(connectionFactory);
+			factory.setCacheLevel(DefaultMessageListenerContainer.CACHE_CONSUMER);
+			return factory;
+
+		}
 	}
 
 	@Configuration
