@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,9 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.test.OutputCapture;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -51,6 +53,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * Tests for {@link Restarter}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class RestarterTests {
 
@@ -94,7 +97,7 @@ public class RestarterTests {
 		String output = this.out.toString();
 		assertThat(StringUtils.countOccurrencesOf(output, "Tick 0")).isGreaterThan(1);
 		assertThat(StringUtils.countOccurrencesOf(output, "Tick 1")).isGreaterThan(1);
-		assertThat(TestRestartListener.restarts).isGreaterThan(0);
+		assertThat(CloseCountingApplicationListener.closed).isGreaterThan(1);
 	}
 
 	@Test
@@ -213,15 +216,14 @@ public class RestarterTests {
 		}
 
 		public static void main(String... args) {
-			Restarter.initialize(args, false, new MockRestartInitializer(), true,
-					new TestRestartListener());
+			Restarter.initialize(args, false, new MockRestartInitializer(), true);
 			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 					SampleApplication.class);
-			context.registerShutdownHook();
+			context.addApplicationListener(new CloseCountingApplicationListener());
+			Restarter.getInstance().prepare(context);
 			System.out.println("Sleep " + Thread.currentThread());
 			sleep();
 			quit = true;
-			context.close();
 		}
 
 		private static void sleep() {
@@ -231,6 +233,18 @@ public class RestarterTests {
 			catch (InterruptedException ex) {
 				// Ignore
 			}
+		}
+
+	}
+
+	private static class CloseCountingApplicationListener
+			implements ApplicationListener<ContextClosedEvent> {
+
+		static int closed = 0;
+
+		@Override
+		public void onApplicationEvent(ContextClosedEvent event) {
+			closed++;
 		}
 
 	}
@@ -272,17 +286,6 @@ public class RestarterTests {
 
 		public ClassLoader getRelaunchClassLoader() {
 			return this.relaunchClassLoader;
-		}
-
-	}
-
-	private static class TestRestartListener implements RestartListener {
-
-		private static int restarts;
-
-		@Override
-		public void beforeRestart() {
-			restarts++;
 		}
 
 	}
