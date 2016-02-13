@@ -84,15 +84,15 @@ import org.springframework.web.filter.RequestContextFilter;
 @AutoConfigureBefore(DispatcherServletAutoConfiguration.class)
 @AutoConfigureAfter(JacksonAutoConfiguration.class)
 @EnableConfigurationProperties(JerseyProperties.class)
-public class JerseyAutoConfiguration implements ServletContextAware {
+public class JerseyAutoConfiguration<J extends JerseyProperties, R extends ResourceConfig> implements ServletContextAware {
 
 	private static final Log logger = LogFactory.getLog(JerseyAutoConfiguration.class);
 
 	@Autowired
-	private JerseyProperties jersey;
+	private J jersey;
 
 	@Autowired
-	private ResourceConfig config;
+	private R config;
 
 	@Autowired(required = false)
 	private List<ResourceConfigCustomizer> customizers;
