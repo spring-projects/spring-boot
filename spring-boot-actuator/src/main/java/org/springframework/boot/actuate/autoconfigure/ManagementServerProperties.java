@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,23 @@ import java.net.InetAddress;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.boot.autoconfigure.security.SecurityPrequisite;
+import org.springframework.boot.autoconfigure.security.SecurityPrerequisite;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Properties for the management server (e.g. port and path settings).
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  * @see ServerProperties
  */
-@ConfigurationProperties(prefix = "management", ignoreUnknownFields = false)
-public class ManagementServerProperties implements SecurityPrequisite {
+@ConfigurationProperties(prefix = "management", ignoreUnknownFields = true)
+public class ManagementServerProperties implements SecurityPrerequisite {
 
 	private static final String SECURITY_CHECK_CLASS = "org.springframework.security.config.http.SessionCreationPolicy";
 
@@ -51,22 +53,43 @@ public class ManagementServerProperties implements SecurityPrequisite {
 	 * management endpoints. This is a useful place to put user-defined access rules if
 	 * you want to override the default access rules.
 	 */
-	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER - 1;
+	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER
+			- 1;
 
+	/**
+	 * Management endpoint HTTP port. Use the same port as the application by default.
+	 */
 	private Integer port;
 
+	/**
+	 * Network address that the management endpoints should bind to.
+	 */
 	private InetAddress address;
 
+	/**
+	 * Management endpoint context-path.
+	 */
 	@NotNull
 	private String contextPath = "";
 
+	/**
+	 * Add the "X-Application-Context" HTTP header in each response.
+	 */
 	private boolean addApplicationContextHeader = true;
 
 	private final Security security = maybeCreateSecurity();
 
+	private Security maybeCreateSecurity() {
+		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
+			return new Security();
+		}
+		return null;
+	}
+
 	/**
 	 * Returns the management port or {@code null} if the
 	 * {@link ServerProperties#getPort() server port} should be used.
+	 * @return the port
 	 * @see #setPort(Integer)
 	 */
 	public Integer getPort() {
@@ -76,6 +99,7 @@ public class ManagementServerProperties implements SecurityPrequisite {
 	/**
 	 * Sets the port of the management server, use {@code null} if the
 	 * {@link ServerProperties#getPort() server port} should be used. To disable use 0.
+	 * @param port the port
 	 */
 	public void setPort(Integer port) {
 		this.port = port;
@@ -89,12 +113,24 @@ public class ManagementServerProperties implements SecurityPrequisite {
 		this.address = address;
 	}
 
+	/**
+	 * Return the context path with no trailing slash (i.e. the '/' root context is
+	 * represented as the empty string).
+	 * @return the context path (no trailing slash)
+	 */
 	public String getContextPath() {
 		return this.contextPath;
 	}
 
 	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
+		this.contextPath = cleanContextPath(contextPath);
+	}
+
+	private String cleanContextPath(String contextPath) {
+		if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
+			return contextPath.substring(0, contextPath.length() - 1);
+		}
+		return contextPath;
 	}
 
 	public Security getSecurity() {
@@ -114,10 +150,19 @@ public class ManagementServerProperties implements SecurityPrequisite {
 	 */
 	public static class Security {
 
+		/**
+		 * Enable security.
+		 */
 		private boolean enabled = true;
 
+		/**
+		 * Role required to access the management endpoint.
+		 */
 		private String role = "ADMIN";
 
+		/**
+		 * Session creating policy to use (always, never, if_required, stateless).
+		 */
 		private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
 
 		public SessionCreationPolicy getSessions() {
@@ -144,13 +189,6 @@ public class ManagementServerProperties implements SecurityPrequisite {
 			this.enabled = enabled;
 		}
 
-	}
-
-	private static Security maybeCreateSecurity() {
-		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
-			return new Security();
-		}
-		return null;
 	}
 
 }

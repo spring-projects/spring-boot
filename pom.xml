@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-build</artifactId>
-	<version>1.1.13.BUILD-SNAPSHOT</version>
+	<version>1.3.3.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Spring Boot Build</name>
 	<description>Spring Boot Build</description>
@@ -44,7 +44,7 @@
 		</developer>
 	</developers>
 	<prerequisites>
-		<maven>3.0.0</maven>
+		<maven>3.2.1</maven>
 	</prerequisites>
 	<properties>
 		<main.basedir>${basedir}</main.basedir>
@@ -79,14 +79,15 @@
 			</activation>
 			<modules>
 				<module>spring-boot-dependencies</module>
-				<module>spring-boot-versions</module>
 				<module>spring-boot-parent</module>
 				<module>spring-boot-tools</module>
 				<module>spring-boot</module>
 				<module>spring-boot-autoconfigure</module>
 				<module>spring-boot-actuator</module>
+				<module>spring-boot-devtools</module>
 				<module>spring-boot-docs</module>
 				<module>spring-boot-starters</module>
+				<module>spring-boot-actuator-docs</module>
 				<module>spring-boot-cli</module>
 			</modules>
 		</profile>
@@ -100,14 +101,16 @@
 			</modules>
 		</profile>
 		<profile>
+			<id>full</id>
+		</profile>
+		<profile>
 			<id>prepare</id>
 			<properties>
 				<skipTests>true</skipTests>
 			</properties>
 			<modules>
-				<module>spring-boot-parent</module>
 				<module>spring-boot-dependencies</module>
-				<module>spring-boot-versions</module>
+				<module>spring-boot-parent</module>
 				<module>spring-boot-tools</module>
 			</modules>
 			<build>
@@ -252,7 +255,33 @@
 			</build>
 		</profile>
 		<profile>
-			<id>full</id>
+			<id>ci</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.google.code.maven-replacer-plugin</groupId>
+						<artifactId>replacer</artifactId>
+						<executions>
+							<execution>
+								<id>remove-repo-samples</id>
+								<goals>
+									<goal>replace</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>${basedir}/spring-boot-dependencies/pom.xml</include>
+									</includes>
+									<regexFlags>
+										<regexFlag>DOTALL</regexFlag>
+									</regexFlags>
+									<token>\n\t&lt;profiles&gt;.*&lt;/profiles&gt;</token>
+									<value />
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 </project>

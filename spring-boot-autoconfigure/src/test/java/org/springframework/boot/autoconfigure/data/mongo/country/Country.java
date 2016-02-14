@@ -19,11 +19,12 @@ package org.springframework.boot.autoconfigure.data.mongo.country;
 import java.io.Serializable;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-@Entity
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document
 public class Country implements Serializable {
 
 	private static final long serialVersionUID = 1L;

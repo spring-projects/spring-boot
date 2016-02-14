@@ -24,21 +24,26 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.beans.factory.BeanCreationException;
+
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
+import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -48,6 +53,9 @@ import static org.junit.Assert.assertThat;
  * @author Andy Wilkinson
  */
 public class FreeMarkerAutoConfigurationTests {
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
@@ -70,10 +78,11 @@ public class FreeMarkerAutoConfigurationTests {
 		assertThat(this.context.getBean(FreeMarkerConfigurer.class), notNullValue());
 	}
 
-	@Test(expected = BeanCreationException.class)
-	public void nonExistentTemplateLocation() {
+	@Test
+	public void nonExistentTemplateLocation() throws Exception {
 		registerAndRefreshContext("spring.freemarker.templateLoaderPath:"
-				+ "classpath:/does-not-exist/");
+				+ "classpath:/does-not-exist/,classpath:/also-does-not-exist");
+		this.output.expect(containsString("Cannot find template location"));
 	}
 
 	@Test
@@ -81,6 +90,13 @@ public class FreeMarkerAutoConfigurationTests {
 		new File("target/test-classes/templates/empty-directory").mkdir();
 		registerAndRefreshContext("spring.freemarker.templateLoaderPath:"
 				+ "classpath:/templates/empty-directory/");
+	}
+
+	@Test
+	public void nonExistentLocationAndEmptyLocation() {
+		new File("target/test-classes/templates/empty-directory").mkdir();
+		registerAndRefreshContext("spring.freemarker.templateLoaderPath:"
+				+ "classpath:/does-not-exist/,classpath:/templates/empty-directory/");
 	}
 
 	@Test
@@ -119,7 +135,8 @@ public class FreeMarkerAutoConfigurationTests {
 
 	@Test
 	public void customTemplateLoaderPath() throws Exception {
-		registerAndRefreshContext("spring.freemarker.templateLoaderPath:classpath:/custom-templates/");
+		registerAndRefreshContext(
+				"spring.freemarker.templateLoaderPath:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
 		assertThat(result, containsString("custom"));
@@ -130,6 +147,15 @@ public class FreeMarkerAutoConfigurationTests {
 		registerAndRefreshContext("spring.freemarker.cache:false");
 		assertThat(this.context.getBean(FreeMarkerViewResolver.class).getCacheLimit(),
 				equalTo(0));
+	}
+
+	@Test
+	public void allowSessionOverride() {
+		registerAndRefreshContext("spring.freemarker.allow-session-override:true");
+		AbstractTemplateViewResolver viewResolver = this.context
+				.getBean(FreeMarkerViewResolver.class);
+		assertThat((Boolean) ReflectionTestUtils.getField(viewResolver,
+				"allowSessionOverride"), is(true));
 	}
 
 	@SuppressWarnings("deprecation")

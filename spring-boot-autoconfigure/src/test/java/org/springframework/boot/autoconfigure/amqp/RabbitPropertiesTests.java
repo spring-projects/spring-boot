@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNull;
  * Tests for {@link RabbitProperties}.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class RabbitPropertiesTests {
 
@@ -63,7 +64,7 @@ public class RabbitPropertiesTests {
 	public void addressesDoubleValuedPreservesOrder() {
 		this.properties.setAddresses("myhost:9999,ahost:1111/host");
 		assertNull(this.properties.getHost());
-		assertEquals("myhost:9999,ahost:1111", properties.getAddresses());
+		assertEquals("myhost:9999,ahost:1111", this.properties.getAddresses());
 	}
 
 	@Test
@@ -86,13 +87,22 @@ public class RabbitPropertiesTests {
 	}
 
 	@Test
+	public void addressWithTrailingSlash() {
+		this.properties.setAddresses("amqp://root:password@otherhost:1111/");
+		assertEquals("otherhost", this.properties.getHost());
+		assertEquals(1111, this.properties.getPort());
+		assertEquals("root", this.properties.getUsername());
+		assertEquals("/", this.properties.getVirtualHost());
+	}
+
+	@Test
 	public void testDefaultVirtualHost() {
 		this.properties.setVirtualHost("/");
 		assertEquals("/", this.properties.getVirtualHost());
 	}
 
 	@Test
-	public void testemptyVirtualHost() {
+	public void testEmptyVirtualHost() {
 		this.properties.setVirtualHost("");
 		assertEquals("/", this.properties.getVirtualHost());
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 import org.springframework.boot.loader.util.AsciiBytes;
@@ -91,6 +92,7 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName(), equalTo("special/"));
 		assertThat(entries.nextElement().getName(), equalTo("special/\u00EB.dat"));
 		assertThat(entries.nextElement().getName(), equalTo("nested.jar"));
+		assertThat(entries.nextElement().getName(), equalTo("another-nested.jar"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
 		URL jarUrl = new URL("jar:" + this.rootJarFile.toURI() + "!/");
 		URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarUrl });
@@ -132,6 +134,7 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName(), equalTo("special/"));
 		assertThat(entries.nextElement().getName(), equalTo("special/\u00EB.dat"));
 		assertThat(entries.nextElement().getName(), equalTo("nested.jar"));
+		assertThat(entries.nextElement().getName(), equalTo("another-nested.jar"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
 	}
 
@@ -152,8 +155,8 @@ public class JarFileTests {
 
 	@Test
 	public void getInputStream() throws Exception {
-		InputStream inputStream = this.jarFile.getInputStream(this.jarFile
-				.getEntry("1.dat"));
+		InputStream inputStream = this.jarFile
+				.getInputStream(this.jarFile.getEntry("1.dat"));
 		assertThat(inputStream.available(), equalTo(1));
 		assertThat(inputStream.read(), equalTo(1));
 		assertThat(inputStream.available(), equalTo(0));
@@ -171,9 +174,17 @@ public class JarFileTests {
 	}
 
 	@Test
+	public void getEntryTime() throws Exception {
+		java.util.jar.JarFile jdkJarFile = new java.util.jar.JarFile(this.rootJarFile);
+		assertThat(this.jarFile.getEntry("META-INF/MANIFEST.MF").getTime(),
+				equalTo(jdkJarFile.getEntry("META-INF/MANIFEST.MF").getTime()));
+		jdkJarFile.close();
+	}
+
+	@Test
 	public void close() throws Exception {
-		RandomAccessDataFile randomAccessDataFile = spy(new RandomAccessDataFile(
-				this.rootJarFile, 1));
+		RandomAccessDataFile randomAccessDataFile = spy(
+				new RandomAccessDataFile(this.rootJarFile, 1));
 		JarFile jarFile = new JarFile(randomAccessDataFile);
 		jarFile.close();
 		verify(randomAccessDataFile).close();
@@ -196,7 +207,8 @@ public class JarFileTests {
 	@Test
 	public void createEntryUrl() throws Exception {
 		URL url = new URL(this.jarFile.getUrl(), "1.dat");
-		assertThat(url.toString(), equalTo("jar:" + this.rootJarFile.toURI() + "!/1.dat"));
+		assertThat(url.toString(),
+				equalTo("jar:" + this.rootJarFile.toURI() + "!/1.dat"));
 		JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
 		assertThat(jarURLConnection.getJarFile(), sameInstance(this.jarFile));
 		assertThat(jarURLConnection.getJarEntry(),
@@ -209,8 +221,8 @@ public class JarFileTests {
 	@Test
 	public void getMissingEntryUrl() throws Exception {
 		URL url = new URL(this.jarFile.getUrl(), "missing.dat");
-		assertThat(url.toString(), equalTo("jar:" + this.rootJarFile.toURI()
-				+ "!/missing.dat"));
+		assertThat(url.toString(),
+				equalTo("jar:" + this.rootJarFile.toURI() + "!/missing.dat"));
 		this.thrown.expect(FileNotFoundException.class);
 		((JarURLConnection) url.openConnection()).getJarEntry();
 	}
@@ -234,8 +246,8 @@ public class JarFileTests {
 
 	@Test
 	public void getNestedJarFile() throws Exception {
-		JarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
-				.getEntry("nested.jar"));
+		JarFile nestedJarFile = this.jarFile
+				.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
 
 		Enumeration<java.util.jar.JarEntry> entries = nestedJarFile.entries();
 		assertThat(entries.nextElement().getName(), equalTo("META-INF/"));
@@ -245,14 +257,14 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName(), equalTo("\u00E4.dat"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
 
-		InputStream inputStream = nestedJarFile.getInputStream(nestedJarFile
-				.getEntry("3.dat"));
+		InputStream inputStream = nestedJarFile
+				.getInputStream(nestedJarFile.getEntry("3.dat"));
 		assertThat(inputStream.read(), equalTo(3));
 		assertThat(inputStream.read(), equalTo(-1));
 
 		URL url = nestedJarFile.getUrl();
-		assertThat(url.toString(), equalTo("jar:" + this.rootJarFile.toURI()
-				+ "!/nested.jar!/"));
+		assertThat(url.toString(),
+				equalTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar!/"));
 		JarURLConnection conn = (JarURLConnection) url.openConnection();
 		assertThat(conn.getJarFile(), sameInstance(nestedJarFile));
 		assertThat(conn.getJarFileURL().toString(),
@@ -268,8 +280,8 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName(), equalTo("9.dat"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
 
-		InputStream inputStream = nestedJarFile.getInputStream(nestedJarFile
-				.getEntry("9.dat"));
+		InputStream inputStream = nestedJarFile
+				.getInputStream(nestedJarFile.getEntry("9.dat"));
 		assertThat(inputStream.read(), equalTo(9));
 		assertThat(inputStream.read(), equalTo(-1));
 
@@ -281,11 +293,11 @@ public class JarFileTests {
 
 	@Test
 	public void getNestJarEntryUrl() throws Exception {
-		JarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
-				.getEntry("nested.jar"));
+		JarFile nestedJarFile = this.jarFile
+				.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
 		URL url = nestedJarFile.getJarEntry("3.dat").getUrl();
-		assertThat(url.toString(), equalTo("jar:" + this.rootJarFile.toURI()
-				+ "!/nested.jar!/3.dat"));
+		assertThat(url.toString(),
+				equalTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar!/3.dat"));
 		InputStream inputStream = url.openStream();
 		assertThat(inputStream, notNullValue());
 		assertThat(inputStream.read(), equalTo(3));
@@ -302,8 +314,8 @@ public class JarFileTests {
 		assertThat(inputStream.read(), equalTo(3));
 		JarURLConnection connection = (JarURLConnection) url.openConnection();
 		assertThat(connection.getURL().toString(), equalTo(spec));
-		assertThat(connection.getJarFileURL().toString(), equalTo("jar:"
-				+ this.rootJarFile.toURI() + "!/nested.jar"));
+		assertThat(connection.getJarFileURL().toString(),
+				equalTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar"));
 		assertThat(connection.getEntryName(), equalTo("3.dat"));
 	}
 
@@ -352,8 +364,8 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName(), equalTo("x.dat"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
 
-		InputStream inputStream = filteredJarFile.getInputStream(filteredJarFile
-				.getEntry("x.dat"));
+		InputStream inputStream = filteredJarFile
+				.getInputStream(filteredJarFile.getEntry("x.dat"));
 		assertThat(inputStream.read(), equalTo(1));
 		assertThat(inputStream.read(), equalTo(-1));
 	}
@@ -361,8 +373,10 @@ public class JarFileTests {
 	@Test
 	public void sensibleToString() throws Exception {
 		assertThat(this.jarFile.toString(), equalTo(this.rootJarFile.getPath()));
-		assertThat(this.jarFile.getNestedJarFile(this.jarFile.getEntry("nested.jar"))
-				.toString(), equalTo(this.rootJarFile.getPath() + "!/nested.jar"));
+		assertThat(
+				this.jarFile.getNestedJarFile(this.jarFile.getEntry("nested.jar"))
+						.toString(),
+				equalTo(this.rootJarFile.getPath() + "!/nested.jar"));
 	}
 
 	@Test
@@ -410,8 +424,8 @@ public class JarFileTests {
 	@Test
 	public void cannotLoadMissingJar() throws Exception {
 		// relates to gh-1070
-		JarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
-				.getEntry("nested.jar"));
+		JarFile nestedJarFile = this.jarFile
+				.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
 		URL nestedUrl = nestedJarFile.getUrl();
 		URL url = new URL(nestedUrl, nestedJarFile.getUrl() + "missing.jar!/3.dat");
 		this.thrown.expect(FileNotFoundException.class);

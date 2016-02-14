@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.groovy.template;
 
-import groovy.text.TemplateEngine;
-
 import java.io.File;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -27,10 +25,11 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
+import groovy.text.markup.MarkupTemplateEngine;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.groovy.template.web.GroovyTemplateViewResolver;
+
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ClassPathResource;
@@ -39,15 +38,20 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.support.RequestContext;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for GroovyTemplateAutoConfiguration.
+ * Tests for {@link GroovyTemplateAutoConfiguration}.
  *
  * @author Dave Syer
  */
@@ -71,13 +75,13 @@ public class GroovyTemplateAutoConfigurationTests {
 	@Test
 	public void defaultConfiguration() {
 		registerAndRefreshContext();
-		assertThat(this.context.getBean(GroovyTemplateViewResolver.class), notNullValue());
+		assertThat(this.context.getBean(GroovyMarkupViewResolver.class), notNullValue());
 	}
 
 	@Test
 	public void emptyTemplateLocation() {
 		new File("target/test-classes/templates/empty-directory").mkdir();
-		registerAndRefreshContext("spring.groovy.template.prefix:"
+		registerAndRefreshContext("spring.groovy.template.resource-loader-path:"
 				+ "classpath:/templates/empty-directory/");
 	}
 
@@ -100,8 +104,16 @@ public class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	public void disableViewResolution() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.groovy.template.enabled:false");
+		registerAndRefreshContext();
+		assertThat(this.context.getBeanNamesForType(ViewResolver.class).length,
+				equalTo(0));
+	}
+
+	@Test
 	public void localeViewResolution() throws Exception {
-		LocaleContextHolder.setLocale(Locale.FRENCH);
 		registerAndRefreshContext();
 		MockHttpServletResponse response = render("includes", Locale.FRENCH);
 		String result = response.getContentAsString();
@@ -120,7 +132,7 @@ public class GroovyTemplateAutoConfigurationTests {
 
 	@Test
 	public void customPrefix() throws Exception {
-		registerAndRefreshContext("spring.groovy.template.prefix:classpath:/templates/prefix/");
+		registerAndRefreshContext("spring.groovy.template.prefix:prefix/");
 		MockHttpServletResponse response = render("prefixed");
 		String result = response.getContentAsString();
 		assertThat(result, containsString("prefixed"));
@@ -136,7 +148,8 @@ public class GroovyTemplateAutoConfigurationTests {
 
 	@Test
 	public void customTemplateLoaderPath() throws Exception {
-		registerAndRefreshContext("spring.groovy.template.prefix:classpath:/custom-templates/");
+		registerAndRefreshContext(
+				"spring.groovy.template.resource-loader-path:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
 		assertThat(result, containsString("custom"));
@@ -145,20 +158,29 @@ public class GroovyTemplateAutoConfigurationTests {
 	@Test
 	public void disableCache() {
 		registerAndRefreshContext("spring.groovy.template.cache:false");
-		assertThat(
-				this.context.getBean(GroovyTemplateViewResolver.class).getCacheLimit(),
+		assertThat(this.context.getBean(GroovyMarkupViewResolver.class).getCacheLimit(),
 				equalTo(0));
 	}
 
 	@Test
 	public void renderTemplate() throws Exception {
 		registerAndRefreshContext();
-		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
+		GroovyMarkupConfig config = this.context.getBean(GroovyMarkupConfig.class);
+		MarkupTemplateEngine engine = config.getTemplateEngine();
 		Writer writer = new StringWriter();
 		engine.createTemplate(new ClassPathResource("templates/message.tpl").getFile())
-				.make(new HashMap<String, Object>(Collections.singletonMap("greeting",
-						"Hello World"))).writeTo(writer);
+				.make(new HashMap<String, Object>(
+						Collections.singletonMap("greeting", "Hello World")))
+				.writeTo(writer);
 		assertThat(writer.toString(), containsString("Hello World"));
+	}
+
+	@Test
+	public void customConfiguration() throws Exception {
+		registerAndRefreshContext(
+				"spring.groovy.template.configuration.auto-indent:true");
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isAutoIndent(),
+				is(true));
 	}
 
 	private void registerAndRefreshContext(String... env) {
@@ -173,8 +195,9 @@ public class GroovyTemplateAutoConfigurationTests {
 
 	private MockHttpServletResponse render(String viewName, Locale locale)
 			throws Exception {
-		GroovyTemplateViewResolver resolver = this.context
-				.getBean(GroovyTemplateViewResolver.class);
+		LocaleContextHolder.setLocale(locale);
+		GroovyMarkupViewResolver resolver = this.context
+				.getBean(GroovyMarkupViewResolver.class);
 		View view = resolver.resolveViewName(viewName, locale);
 		assertThat(view, notNullValue());
 		HttpServletRequest request = new MockHttpServletRequest();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.springframework.boot.bind;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.util.StringUtils;
 
@@ -31,6 +33,11 @@ import org.springframework.util.StringUtils;
  * @see RelaxedPropertyResolver
  */
 public final class RelaxedNames implements Iterable<String> {
+
+	private static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("([^A-Z-])([A-Z])");
+
+	private static final Pattern SEPARATED_TO_CAMEL_CASE_PATTERN = Pattern
+			.compile("[_\\-.]");
 
 	private final String name;
 
@@ -66,7 +73,10 @@ public final class RelaxedNames implements Iterable<String> {
 		}
 	}
 
-	static enum Variation {
+	/**
+	 * Name variations.
+	 */
+	enum Variation {
 
 		NONE {
 			@Override
@@ -93,7 +103,10 @@ public final class RelaxedNames implements Iterable<String> {
 
 	}
 
-	static enum Manipulation {
+	/**
+	 * Name manipulations.
+	 */
+	enum Manipulation {
 
 		NONE {
 			@Override
@@ -126,39 +139,72 @@ public final class RelaxedNames implements Iterable<String> {
 		CAMELCASE_TO_UNDERSCORE {
 			@Override
 			public String apply(String value) {
-				value = value.replaceAll("([^A-Z-])([A-Z])", "$1_$2");
-				StringBuilder builder = new StringBuilder();
-				for (String field : value.split("_")) {
-					if (builder.length() == 0) {
-						builder.append(field);
-					}
-					else {
-						builder.append("_").append(StringUtils.uncapitalize(field));
-					}
+				Matcher matcher = CAMEL_CASE_PATTERN.matcher(value);
+				StringBuffer result = new StringBuffer();
+				while (matcher.find()) {
+					matcher.appendReplacement(result, matcher.group(1) + '_'
+							+ StringUtils.uncapitalize(matcher.group(2)));
 				}
-				return builder.toString();
+				matcher.appendTail(result);
+				return result.toString();
+			}
+		},
+
+		CAMELCASE_TO_HYPHEN {
+			@Override
+			public String apply(String value) {
+				Matcher matcher = CAMEL_CASE_PATTERN.matcher(value);
+				StringBuffer result = new StringBuffer();
+				while (matcher.find()) {
+					matcher.appendReplacement(result, matcher.group(1) + '-'
+							+ StringUtils.uncapitalize(matcher.group(2)));
+				}
+				matcher.appendTail(result);
+				return result.toString();
 			}
 		},
 
 		SEPARATED_TO_CAMELCASE {
 			@Override
 			public String apply(String value) {
-				StringBuilder builder = new StringBuilder();
-				for (String field : value.split("[_\\-.]")) {
-					builder.append(builder.length() == 0 ? field : StringUtils
-							.capitalize(field));
-				}
-				for (String suffix : new String[] { "_", "-", "." }) {
-					if (value.endsWith(suffix)) {
-						builder.append(suffix);
-					}
-				}
-				return builder.toString();
+				return separatedToCamelCase(value, false);
+			}
+		},
+
+		CASE_INSENSITIVE_SEPARATED_TO_CAMELCASE {
+			@Override
+			public String apply(String value) {
+				return separatedToCamelCase(value, true);
 			}
 		};
 
 		public abstract String apply(String value);
 
+		private static String separatedToCamelCase(String value,
+				boolean caseInsensitive) {
+			StringBuilder builder = new StringBuilder();
+			for (String field : SEPARATED_TO_CAMEL_CASE_PATTERN.split(value)) {
+				field = (caseInsensitive ? field.toLowerCase() : field);
+				builder.append(
+						builder.length() == 0 ? field : StringUtils.capitalize(field));
+			}
+			for (String suffix : new String[] { "_", "-", "." }) {
+				if (value.endsWith(suffix)) {
+					builder.append(suffix);
+				}
+			}
+			return builder.toString();
+
+		}
+	}
+
+	/**
+	 * Return a {@link RelaxedNames} for the given source camelCase source name.
+	 * @param name the source name in camelCase
+	 * @return the relaxed names
+	 */
+	public static RelaxedNames forCamelCase(String name) {
+		return new RelaxedNames(Manipulation.CAMELCASE_TO_HYPHEN.apply(name));
 	}
 
 }

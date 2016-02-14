@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,17 @@
 
 package org.springframework.boot.cli.compiler.grape;
 
-import groovy.grape.GrapeEngine;
-import groovy.lang.GroovyClassLoader;
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import groovy.grape.GrapeEngine;
+import groovy.lang.GroovyClassLoader;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.artifact.Artifact;
@@ -45,9 +43,9 @@ import org.eclipse.aether.util.artifact.JavaScopes;
 import org.eclipse.aether.util.filter.DependencyFilterUtils;
 
 /**
- * A {@link GrapeEngine} implementation that uses <a
- * href="http://eclipse.org/aether">Aether</a>, the dependency resolution system used by
- * Maven.
+ * A {@link GrapeEngine} implementation that uses
+ * <a href="http://eclipse.org/aether">Aether</a>, the dependency resolution system used
+ * by Maven.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
@@ -55,8 +53,13 @@ import org.eclipse.aether.util.filter.DependencyFilterUtils;
 @SuppressWarnings("rawtypes")
 public class AetherGrapeEngine implements GrapeEngine {
 
-	private static final Collection<Exclusion> WILDCARD_EXCLUSION = Arrays
-			.asList(new Exclusion("*", "*", "*", "*"));
+	private static final Collection<Exclusion> WILDCARD_EXCLUSION;
+
+	static {
+		List<Exclusion> exclusions = new ArrayList<Exclusion>();
+		exclusions.add(new Exclusion("*", "*", "*", "*"));
+		WILDCARD_EXCLUSION = Collections.unmodifiableList(exclusions);
+	}
 
 	private final DependencyResolutionContext resolutionContext;
 
@@ -79,7 +82,6 @@ public class AetherGrapeEngine implements GrapeEngine {
 		this.repositorySystem = repositorySystem;
 		this.session = repositorySystemSession;
 		this.resolutionContext = resolutionContext;
-
 		this.repositories = new ArrayList<RemoteRepository>();
 		List<RemoteRepository> remotes = new ArrayList<RemoteRepository>(
 				remoteRepositories);
@@ -87,7 +89,6 @@ public class AetherGrapeEngine implements GrapeEngine {
 		for (RemoteRepository repository : remotes) {
 			addRepository(repository);
 		}
-
 		this.progressReporter = getProgressReporter(this.session);
 	}
 
@@ -95,9 +96,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 		if (Boolean.getBoolean("groovy.grape.report.downloads")) {
 			return new DetailedProgressReporter(session, System.out);
 		}
-		else {
-			return new SummaryProgressReporter(session, System.out);
-		}
+		return new SummaryProgressReporter(session, System.out);
 	}
 
 	@Override
@@ -161,25 +160,24 @@ public class AetherGrapeEngine implements GrapeEngine {
 		if (isTransitive(dependencyMap)) {
 			return new Dependency(artifact, JavaScopes.COMPILE, false, exclusions);
 		}
-		else {
-			return new Dependency(artifact, JavaScopes.COMPILE, null, WILDCARD_EXCLUSION);
-		}
+		return new Dependency(artifact, JavaScopes.COMPILE, null, WILDCARD_EXCLUSION);
 	}
 
 	private Artifact createArtifact(Map<?, ?> dependencyMap) {
 		String group = (String) dependencyMap.get("group");
 		String module = (String) dependencyMap.get("module");
 		String version = (String) dependencyMap.get("version");
+		if (version == null) {
+			version = this.resolutionContext.getManagedVersion(group, module);
+		}
 		String classifier = (String) dependencyMap.get("classifier");
 		String type = determineType(dependencyMap);
-
 		return new DefaultArtifact(group, module, classifier, type, version);
 	}
 
 	private String determineType(Map<?, ?> dependencyMap) {
 		String type = (String) dependencyMap.get("type");
 		String ext = (String) dependencyMap.get("ext");
-
 		if (type == null) {
 			type = ext;
 			if (type == null) {
@@ -198,40 +196,11 @@ public class AetherGrapeEngine implements GrapeEngine {
 		return (transitive == null ? true : transitive);
 	}
 
-	private List<File> resolve(List<Dependency> dependencies)
-			throws ArtifactResolutionException {
-
-		try {
-			CollectRequest collectRequest = new CollectRequest((Dependency) null,
-					dependencies, new ArrayList<RemoteRepository>(this.repositories));
-			collectRequest.setManagedDependencies(this.resolutionContext
-					.getManagedDependencies());
-
-			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest,
-					DependencyFilterUtils.classpathFilter(JavaScopes.COMPILE,
-							JavaScopes.RUNTIME));
-
-			DependencyResult dependencyResult = this.repositorySystem
-					.resolveDependencies(this.session, dependencyRequest);
-
-			this.resolutionContext.getManagedDependencies().addAll(
-					getDependencies(dependencyResult));
-
-			return getFiles(dependencyResult);
-		}
-		catch (Exception ex) {
-			throw new DependencyResolutionFailedException(ex);
-		}
-		finally {
-			this.progressReporter.finished();
-		}
-	}
-
 	private List<Dependency> getDependencies(DependencyResult dependencyResult) {
 		List<Dependency> dependencies = new ArrayList<Dependency>();
 		for (ArtifactResult artifactResult : dependencyResult.getArtifactResults()) {
-			dependencies.add(new Dependency(artifactResult.getArtifact(),
-					JavaScopes.COMPILE));
+			dependencies.add(
+					new Dependency(artifactResult.getArtifact(), JavaScopes.COMPILE));
 		}
 		return dependencies;
 	}
@@ -263,21 +232,18 @@ public class AetherGrapeEngine implements GrapeEngine {
 		if (this.repositories.contains(repository)) {
 			return;
 		}
-
 		repository = getPossibleMirror(repository);
 		repository = applyProxy(repository);
 		repository = applyAuthentication(repository);
-
 		this.repositories.add(0, repository);
 	}
 
 	private RemoteRepository getPossibleMirror(RemoteRepository remoteRepository) {
-		RemoteRepository mirror = this.session.getMirrorSelector().getMirror(
-				remoteRepository);
+		RemoteRepository mirror = this.session.getMirrorSelector()
+				.getMirror(remoteRepository);
 		if (mirror != null) {
 			return mirror;
 		}
-
 		return remoteRepository;
 	}
 
@@ -314,7 +280,6 @@ public class AetherGrapeEngine implements GrapeEngine {
 	public URI[] resolve(Map args, List depsInfo, Map... dependencyMaps) {
 		List<Exclusion> exclusions = createExclusions(args);
 		List<Dependency> dependencies = createDependencies(dependencyMaps, exclusions);
-
 		try {
 			List<File> files = resolve(dependencies);
 			List<URI> uris = new ArrayList<URI>(files.size());
@@ -323,9 +288,46 @@ public class AetherGrapeEngine implements GrapeEngine {
 			}
 			return uris.toArray(new URI[uris.size()]);
 		}
-		catch (Exception e) {
-			throw new DependencyResolutionFailedException(e);
+		catch (Exception ex) {
+			throw new DependencyResolutionFailedException(ex);
 		}
+	}
+
+	private List<File> resolve(List<Dependency> dependencies)
+			throws ArtifactResolutionException {
+		try {
+			CollectRequest collectRequest = getCollectRequest(dependencies);
+			DependencyRequest dependencyRequest = getDependencyRequest(collectRequest);
+			DependencyResult result = this.repositorySystem
+					.resolveDependencies(this.session, dependencyRequest);
+			addManagedDependencies(result);
+			return getFiles(result);
+		}
+		catch (Exception ex) {
+			throw new DependencyResolutionFailedException(ex);
+		}
+		finally {
+			this.progressReporter.finished();
+		}
+	}
+
+	private CollectRequest getCollectRequest(List<Dependency> dependencies) {
+		CollectRequest collectRequest = new CollectRequest((Dependency) null,
+				dependencies, new ArrayList<RemoteRepository>(this.repositories));
+		collectRequest
+				.setManagedDependencies(this.resolutionContext.getManagedDependencies());
+		return collectRequest;
+	}
+
+	private DependencyRequest getDependencyRequest(CollectRequest collectRequest) {
+		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest,
+				DependencyFilterUtils.classpathFilter(JavaScopes.COMPILE,
+						JavaScopes.RUNTIME));
+		return dependencyRequest;
+	}
+
+	private void addManagedDependencies(DependencyResult result) {
+		this.resolutionContext.addManagedDependencies(getDependencies(result));
 	}
 
 	@Override

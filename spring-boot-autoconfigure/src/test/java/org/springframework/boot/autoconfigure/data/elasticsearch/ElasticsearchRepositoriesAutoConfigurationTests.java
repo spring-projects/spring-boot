@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ package org.springframework.boot.autoconfigure.data.elasticsearch;
 import org.elasticsearch.client.Client;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.alt.elasticsearch.CityElasticsearchDbRepository;
 import org.springframework.boot.autoconfigure.data.elasticsearch.city.City;
 import org.springframework.boot.autoconfigure.data.elasticsearch.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchDataAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
@@ -50,6 +50,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
+		addElasticsearchProperties(this.context);
 		this.context.register(TestConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchRepositoriesAutoConfiguration.class,
@@ -63,6 +64,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
+		addElasticsearchProperties(this.context);
 		this.context.register(EmptyConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchRepositoriesAutoConfiguration.class,
@@ -75,6 +77,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		this.context = new AnnotationConfigApplicationContext();
+		addElasticsearchProperties(this.context);
 		this.context.register(CustomizedConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchRepositoriesAutoConfiguration.class,
@@ -82,6 +85,12 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(CityElasticsearchDbRepository.class));
+	}
+
+	private void addElasticsearchProperties(AnnotationConfigApplicationContext context) {
+		EnvironmentTestUtils.addEnvironment(context,
+				"spring.data.elasticsearch.properties.path.data:target/data",
+				"spring.data.elasticsearch.properties.path.logs:target/logs");
 	}
 
 	@Configuration

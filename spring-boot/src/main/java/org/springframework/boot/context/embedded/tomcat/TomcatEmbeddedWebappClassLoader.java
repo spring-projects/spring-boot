@@ -46,7 +46,6 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 	@Override
 	public synchronized Class<?> loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
-
 		Class<?> resultClass = null;
 
 		// Check local class caches
@@ -117,8 +116,8 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 	private void checkPackageAccess(String name) throws ClassNotFoundException {
 		if (this.securityManager != null && name.lastIndexOf('.') >= 0) {
 			try {
-				this.securityManager.checkPackageAccess(name.substring(0,
-						name.lastIndexOf('.')));
+				this.securityManager
+						.checkPackageAccess(name.substring(0, name.lastIndexOf('.')));
 			}
 			catch (SecurityException ex) {
 				throw new ClassNotFoundException("Security Violation, attempt to use "

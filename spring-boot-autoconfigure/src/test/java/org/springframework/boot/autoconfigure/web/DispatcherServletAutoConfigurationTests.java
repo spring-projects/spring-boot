@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,31 @@
 package org.springframework.boot.autoconfigure.web;
 
 import javax.servlet.MultipartConfigElement;
+import javax.servlet.http.HttpServletRequest;
 
+import org.junit.After;
 import org.junit.Test;
+
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.context.embedded.MultipartConfigFactory;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link DispatcherServletAutoConfiguration}.
@@ -41,6 +51,13 @@ import static org.junit.Assert.assertNull;
 public class DispatcherServletAutoConfigurationTests {
 
 	private AnnotationConfigWebApplicationContext context;
+
+	@After
+	public void closeContext() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
 	@Test
 	public void registrationProperties() throws Exception {
@@ -115,6 +132,43 @@ public class DispatcherServletAutoConfigurationTests {
 		assertNotNull(registration.getMultipartConfig());
 	}
 
+	@Test
+	public void renamesMultipartResolver() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(MultipartResolverConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
+		this.context.refresh();
+		DispatcherServlet dispatcherServlet = this.context
+				.getBean(DispatcherServlet.class);
+		dispatcherServlet.onApplicationEvent(new ContextRefreshedEvent(this.context));
+		assertThat(dispatcherServlet.getMultipartResolver(),
+				instanceOf(MockMultipartResolver.class));
+	}
+
+	@Test
+	public void dispatcherServletConfig() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(ServerPropertiesAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mvc.throw-exception-if-no-handler-found:true");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mvc.dispatch-options-request:true");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mvc.dispatch-trace-request:true");
+		this.context.refresh();
+		DispatcherServlet bean = this.context.getBean(DispatcherServlet.class);
+		assertEquals(true, new DirectFieldAccessor(bean)
+				.getPropertyValue("throwExceptionIfNoHandlerFound"));
+		assertEquals(true,
+				new DirectFieldAccessor(bean).getPropertyValue("dispatchOptionsRequest"));
+		assertEquals(true,
+				new DirectFieldAccessor(bean).getPropertyValue("dispatchTraceRequest"));
+	}
+
 	@Configuration
 	protected static class MultipartConfiguration {
 
@@ -130,6 +184,7 @@ public class DispatcherServletAutoConfigurationTests {
 
 	@Configuration
 	protected static class CustomDispatcherRegistration {
+
 		@Bean
 		public ServletRegistrationBean dispatcherServletRegistration() {
 			ServletRegistrationBean registration = new ServletRegistrationBean(
@@ -137,10 +192,12 @@ public class DispatcherServletAutoConfigurationTests {
 			registration.setName("customDispatcher");
 			return registration;
 		}
+
 	}
 
 	@Configuration
 	protected static class CustomAutowiredRegistration {
+
 		@Bean
 		public ServletRegistrationBean dispatcherServletRegistration(
 				DispatcherServlet dispatcherServlet) {
@@ -149,6 +206,36 @@ public class DispatcherServletAutoConfigurationTests {
 			registration.setName("customDispatcher");
 			return registration;
 		}
+
+	}
+
+	@Configuration
+	protected static class MultipartResolverConfiguration {
+
+		@Bean
+		public MultipartResolver getMultipartResolver() {
+			return new MockMultipartResolver();
+		}
+
+	}
+
+	private static class MockMultipartResolver implements MultipartResolver {
+
+		@Override
+		public boolean isMultipart(HttpServletRequest request) {
+			return false;
+		}
+
+		@Override
+		public MultipartHttpServletRequest resolveMultipart(HttpServletRequest request)
+				throws MultipartException {
+			return null;
+		}
+
+		@Override
+		public void cleanupMultipart(MultipartHttpServletRequest request) {
+		}
+
 	}
 
 }

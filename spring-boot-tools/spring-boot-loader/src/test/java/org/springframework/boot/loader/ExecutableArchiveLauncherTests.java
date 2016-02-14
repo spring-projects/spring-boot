@@ -25,11 +25,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.boot.loader.archive.Archive.Entry;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
 /**
  * Tests for {@link ExecutableArchiveLauncher}
@@ -71,9 +72,7 @@ public class ExecutableArchiveLauncherTests {
 	public void javaAgentJarsAreExcludedFromClasspath() throws Exception {
 		URL javaAgent = new File("my-agent.jar").getCanonicalFile().toURI().toURL();
 		final URL one = new URL("file:one");
-
-		when(this.javaAgentDetector.isJavaAgentJar(javaAgent)).thenReturn(true);
-
+		given(this.javaAgentDetector.isJavaAgentJar(javaAgent)).willReturn(true);
 		doWithTccl(new URLClassLoader(new URL[] { javaAgent, one }),
 				new Callable<Void>() {
 
@@ -92,20 +91,8 @@ public class ExecutableArchiveLauncherTests {
 		assertArrayEquals(urls, ((URLClassLoader) classLoader).getURLs());
 	}
 
-	private static final class UnitTestExecutableArchiveLauncher extends
-			ExecutableArchiveLauncher {
-
-		public UnitTestExecutableArchiveLauncher(JavaAgentDetector javaAgentDetector) {
-			super(javaAgentDetector);
-		}
-
-		@Override
-		protected boolean isNestedArchive(Entry entry) {
-			return false;
-		}
-	}
-
-	private void doWithTccl(ClassLoader classLoader, Callable<?> action) throws Exception {
+	private void doWithTccl(ClassLoader classLoader, Callable<?> action)
+			throws Exception {
 		ClassLoader old = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(classLoader);
@@ -113,6 +100,19 @@ public class ExecutableArchiveLauncherTests {
 		}
 		finally {
 			Thread.currentThread().setContextClassLoader(old);
+		}
+	}
+
+	private static final class UnitTestExecutableArchiveLauncher
+			extends ExecutableArchiveLauncher {
+
+		UnitTestExecutableArchiveLauncher(JavaAgentDetector javaAgentDetector) {
+			super(javaAgentDetector);
+		}
+
+		@Override
+		protected boolean isNestedArchive(Entry entry) {
+			return false;
 		}
 	}
 

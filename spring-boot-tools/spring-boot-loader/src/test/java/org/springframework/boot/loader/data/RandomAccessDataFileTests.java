@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.loader.ByteArrayStartsWith;
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
@@ -50,6 +51,7 @@ import static org.junit.Assert.assertThat;
 public class RandomAccessDataFileTests {
 
 	private static final byte[] BYTES;
+
 	static {
 		BYTES = new byte[256];
 		for (int i = 0; i < BYTES.length; i++) {
@@ -128,7 +130,7 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void intputStreamReadNullBytesWithOffset() throws Exception {
+	public void inputStreamReadNullBytesWithOffset() throws Exception {
 		this.thrown.expect(NullPointerException.class);
 		this.thrown.expectMessage("Bytes must not be null");
 		this.inputStream.read(null, 0, 1);
@@ -143,7 +145,7 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void inputSteamReadOffsetBytes() throws Exception {
+	public void inputStreamReadOffsetBytes() throws Exception {
 		byte[] b = new byte[7];
 		this.inputStream.skip(1);
 		int amountRead = this.inputStream.read(b, 2, 3);
@@ -212,7 +214,8 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void subsectionZeroLength() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(0, 0);
-		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read(), equalTo(-1));
+		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read(),
+				equalTo(-1));
 	}
 
 	@Test

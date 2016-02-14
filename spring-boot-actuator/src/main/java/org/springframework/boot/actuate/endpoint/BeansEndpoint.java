@@ -36,8 +36,8 @@ import org.springframework.core.env.Environment;
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.beans", ignoreUnknownFields = false)
-public class BeansEndpoint extends AbstractEndpoint<List<Object>> implements
-		ApplicationContextAware {
+public class BeansEndpoint extends AbstractEndpoint<List<Object>>
+		implements ApplicationContextAware {
 
 	private final LiveBeansView liveBeansView = new LiveBeansView();
 

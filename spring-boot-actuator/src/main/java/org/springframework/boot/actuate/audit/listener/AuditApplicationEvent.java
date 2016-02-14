@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,15 +35,22 @@ public class AuditApplicationEvent extends ApplicationEvent {
 	/**
 	 * Create a new {@link AuditApplicationEvent} that wraps a newly created
 	 * {@link AuditEvent}.
+	 * @param principal the principal
+	 * @param type the event type
+	 * @param data the event data
 	 * @see AuditEvent#AuditEvent(String, String, Map)
 	 */
-	public AuditApplicationEvent(String principal, String type, Map<String, Object> data) {
+	public AuditApplicationEvent(String principal, String type,
+			Map<String, Object> data) {
 		this(new AuditEvent(principal, type, data));
 	}
 
 	/**
 	 * Create a new {@link AuditApplicationEvent} that wraps a newly created
 	 * {@link AuditEvent}.
+	 * @param principal the principal
+	 * @param type the event type
+	 * @param data the event data
 	 * @see AuditEvent#AuditEvent(String, String, String...)
 	 */
 	public AuditApplicationEvent(String principal, String type, String... data) {
@@ -53,6 +60,10 @@ public class AuditApplicationEvent extends ApplicationEvent {
 	/**
 	 * Create a new {@link AuditApplicationEvent} that wraps a newly created
 	 * {@link AuditEvent}.
+	 * @param timestamp the time stamp
+	 * @param principal the principal
+	 * @param type the event type
+	 * @param data the event data
 	 * @see AuditEvent#AuditEvent(Date, String, String, Map)
 	 */
 	public AuditApplicationEvent(Date timestamp, String principal, String type,
@@ -72,6 +83,7 @@ public class AuditApplicationEvent extends ApplicationEvent {
 	}
 
 	/**
+	 * Get the audit event.
 	 * @return the audit event
 	 */
 	public AuditEvent getAuditEvent() {

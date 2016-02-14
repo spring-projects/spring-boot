@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,31 +25,84 @@ package org.springframework.boot.context.embedded;
  */
 public class Ssl {
 
+	/**
+	 * Enable SSL support.
+	 */
+	private boolean enabled = true;
+
+	/**
+	 * Whether client authentication is wanted ("want") or needed ("need"). Requires a
+	 * trust store.
+	 */
 	private ClientAuth clientAuth;
 
+	/**
+	 * Supported SSL ciphers.
+	 */
 	private String[] ciphers;
 
+	/**
+	 * Alias that identifies the key in the key store.
+	 */
 	private String keyAlias;
 
+	/**
+	 * Password used to access the key in the key store.
+	 */
 	private String keyPassword;
 
+	/**
+	 * Path to the key store that holds the SSL certificate (typically a jks file).
+	 */
 	private String keyStore;
 
+	/**
+	 * Password used to access the key store.
+	 */
 	private String keyStorePassword;
 
+	/**
+	 * Type of the key store.
+	 */
 	private String keyStoreType;
 
+	/**
+	 * Provider for the key store.
+	 */
 	private String keyStoreProvider;
 
+	/**
+	 * Trust store that holds SSL certificates.
+	 */
 	private String trustStore;
 
+	/**
+	 * Password used to access the trust store.
+	 */
 	private String trustStorePassword;
 
+	/**
+	 * Type of the trust store.
+	 */
 	private String trustStoreType;
 
+	/**
+	 * Provider for the trust store.
+	 */
 	private String trustStoreProvider;
 
+	/**
+	 * SSL protocol to use.
+	 */
 	private String protocol = "TLS";
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	public ClientAuth getClientAuth() {
 		return this.clientAuth;
@@ -155,7 +208,21 @@ public class Ssl {
 		this.protocol = protocol;
 	}
 
+	/**
+	 * Client authentication types.
+	 */
 	public enum ClientAuth {
-		WANT, NEED;
+
+		/**
+		 * Client authentication is wanted but not mandatory.
+		 */
+		WANT,
+
+		/**
+		 * Client authentication is needed and mandatory.
+		 */
+		NEED
+
 	}
+
 }

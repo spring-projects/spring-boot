@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,12 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.nio.charset.Charset;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration.ResourceBundleCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -39,25 +32,22 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.util.ResourceUtils;
+import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.StringUtils;
-
-import static org.springframework.util.StringUtils.commaDelimitedListToStringArray;
-import static org.springframework.util.StringUtils.trimAllWhitespace;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link MessageSource}.
  *
  * @author Dave Syer
+ * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 @Configuration
-@ConditionalOnMissingBean(MessageSource.class)
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@ConditionalOnMissingBean(value = MessageSource.class, search = SearchStrategy.CURRENT)
+@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Conditional(ResourceBundleCondition.class)
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "spring.messages")
@@ -65,20 +55,42 @@ public class MessageSourceAutoConfiguration {
 
 	private static final Resource[] NO_RESOURCES = {};
 
+	/**
+	 * Comma-separated list of basenames, each following the ResourceBundle convention.
+	 * Essentially a fully-qualified classpath location. If it doesn't contain a package
+	 * qualifier (such as "org.mypackage"), it will be resolved from the classpath root.
+	 */
 	private String basename = "messages";
 
-	private String encoding = "utf-8";
+	/**
+	 * Message bundles encoding.
+	 */
+	private Charset encoding = Charset.forName("UTF-8");
 
+	/**
+	 * Loaded resource bundle files cache expiration, in seconds. When set to -1, bundles
+	 * are cached forever.
+	 */
 	private int cacheSeconds = -1;
+
+	/**
+	 * Set whether to fall back to the system Locale if no files for a specific Locale
+	 * have been found. if this is turned off, the only fallback will be the default file
+	 * (e.g. "messages.properties" for basename "messages").
+	 */
+	private boolean fallbackToSystemLocale = true;
 
 	@Bean
 	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		if (StringUtils.hasText(this.basename)) {
-			messageSource
-					.setBasenames(commaDelimitedListToStringArray(trimAllWhitespace(this.basename)));
+			messageSource.setBasenames(StringUtils.commaDelimitedListToStringArray(
+					StringUtils.trimAllWhitespace(this.basename)));
 		}
-		messageSource.setDefaultEncoding(this.encoding);
+		if (this.encoding != null) {
+			messageSource.setDefaultEncoding(this.encoding.name());
+		}
+		messageSource.setFallbackToSystemLocale(this.fallbackToSystemLocale);
 		messageSource.setCacheSeconds(this.cacheSeconds);
 		return messageSource;
 	}
@@ -91,11 +103,11 @@ public class MessageSourceAutoConfiguration {
 		this.basename = basename;
 	}
 
-	public String getEncoding() {
+	public Charset getEncoding() {
 		return this.encoding;
 	}
 
-	public void setEncoding(String encoding) {
+	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
 	}
 
@@ -107,14 +119,35 @@ public class MessageSourceAutoConfiguration {
 		this.cacheSeconds = cacheSeconds;
 	}
 
+	public boolean isFallbackToSystemLocale() {
+		return this.fallbackToSystemLocale;
+	}
+
+	public void setFallbackToSystemLocale(boolean fallbackToSystemLocale) {
+		this.fallbackToSystemLocale = fallbackToSystemLocale;
+	}
+
 	protected static class ResourceBundleCondition extends SpringBootCondition {
+
+		private static ConcurrentReferenceHashMap<String, ConditionOutcome> cache = new ConcurrentReferenceHashMap<String, ConditionOutcome>();
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			String basename = context.getEnvironment().getProperty(
-					"spring.messages.basename", "messages");
-			for (String name : commaDelimitedListToStringArray(trimAllWhitespace(basename))) {
+			String basename = context.getEnvironment()
+					.getProperty("spring.messages.basename", "messages");
+			ConditionOutcome outcome = cache.get(basename);
+			if (outcome == null) {
+				outcome = getMatchOutcomeForBasename(context, basename);
+				cache.put(basename, outcome);
+			}
+			return outcome;
+		}
+
+		private ConditionOutcome getMatchOutcomeForBasename(ConditionContext context,
+				String basename) {
+			for (String name : StringUtils.commaDelimitedListToStringArray(
+					StringUtils.trimAllWhitespace(basename))) {
 				for (Resource resource : getResources(context.getClassLoader(), name)) {
 					if (resource.exists()) {
 						return ConditionOutcome.match("Bundle found for "
@@ -122,109 +155,18 @@ public class MessageSourceAutoConfiguration {
 					}
 				}
 			}
-			return ConditionOutcome.noMatch("No bundle found for "
-					+ "spring.messages.basename: " + basename);
+			return ConditionOutcome.noMatch(
+					"No bundle found for " + "spring.messages.basename: " + basename);
 		}
 
 		private Resource[] getResources(ClassLoader classLoader, String name) {
 			try {
-				return new ExtendedPathMatchingResourcePatternResolver(classLoader)
-						.getResources("classpath*:" + name + "*.properties");
+				return new PathMatchingResourcePatternResolver(classLoader)
+						.getResources("classpath*:" + name + ".properties");
 			}
-			catch (IOException ex) {
+			catch (Exception ex) {
 				return NO_RESOURCES;
 			}
-		}
-
-	}
-
-	/**
-	 * Extended version of {@link PathMatchingResourcePatternResolver} to deal with the
-	 * fact that "{@code classpath*:...*.properties}" patterns don't work with
-	 * {@link URLClassLoader}s.
-	 */
-	private static class ExtendedPathMatchingResourcePatternResolver extends
-			PathMatchingResourcePatternResolver {
-
-		private static final Log logger = LogFactory
-				.getLog(PathMatchingResourcePatternResolver.class);
-
-		private static final String JAR_FILE_EXTENSION = ".jar";
-
-		private static final String JAR_URL_PREFIX = "jar:";
-
-		public ExtendedPathMatchingResourcePatternResolver(ClassLoader classLoader) {
-			super(classLoader);
-		}
-
-		@Override
-		protected Resource[] findAllClassPathResources(String location)
-				throws IOException {
-			String path = location;
-			if (path.startsWith("/")) {
-				path = path.substring(1);
-			}
-			if ("".equals(path)) {
-				Set<Resource> result = new LinkedHashSet<Resource>(16);
-				result.addAll(Arrays.asList(super.findAllClassPathResources(location)));
-				addAllClassLoaderJarRoots(getClassLoader(), result);
-				return result.toArray(new Resource[result.size()]);
-			}
-			return super.findAllClassPathResources(location);
-		}
-
-		private void addAllClassLoaderJarRoots(ClassLoader classLoader,
-				Set<Resource> result) {
-			if (classLoader != null) {
-				if (classLoader instanceof URLClassLoader) {
-					try {
-						addAllClassLoaderJarUrls(
-								((URLClassLoader) classLoader).getURLs(), result);
-					}
-					catch (Exception ex) {
-						if (logger.isDebugEnabled()) {
-							logger.debug("Cannot introspect jar files since "
-									+ "ClassLoader [" + classLoader
-									+ "] does not support 'getURLs()': " + ex);
-						}
-					}
-				}
-				try {
-					addAllClassLoaderJarRoots(classLoader.getParent(), result);
-				}
-				catch (Exception ex) {
-					if (logger.isDebugEnabled()) {
-						logger.debug("Cannot introspect jar files in parent "
-								+ "ClassLoader since [" + classLoader
-								+ "] does not support 'getParent()': " + ex);
-					}
-				}
-			}
-		}
-
-		private void addAllClassLoaderJarUrls(URL[] urls, Set<Resource> result) {
-			for (URL url : urls) {
-				if (isJarFileUrl(url)) {
-					try {
-						UrlResource jarResource = new UrlResource(JAR_URL_PREFIX
-								+ url.toString() + ResourceUtils.JAR_URL_SEPARATOR);
-						if (jarResource.exists()) {
-							result.add(jarResource);
-						}
-					}
-					catch (MalformedURLException ex) {
-						if (logger.isDebugEnabled()) {
-							logger.debug("Cannot search for matching files underneath "
-									+ url + " because it cannot be accessed as a JAR", ex);
-						}
-					}
-				}
-			}
-		}
-
-		private boolean isJarFileUrl(URL url) {
-			return ResourceUtils.URL_PROTOCOL_FILE.equals(url.getProtocol())
-					&& url.getPath().toLowerCase().endsWith(JAR_FILE_EXTENSION);
 		}
 
 	}

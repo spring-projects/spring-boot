@@ -1,0 +1,310 @@
+{"properties": [
+  {
+    "name": "error.path",
+    "type": "java.lang.String",
+    "description": "Path of the error controller.",
+    "deprecation": {
+      "replacement": "server.error.path"
+    }
+  },
+  {
+    "name": "multipart.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable support of multi-part uploads.",
+    "defaultValue": true
+  },
+  {
+    "name": "server.error.whitelabel.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable the default error page displayed in browsers in case of a server error.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.aop.auto",
+    "type": "java.lang.Boolean",
+    "description": "Add @EnableAspectJAutoProxy.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.aop.proxy-target-class",
+    "type": "java.lang.Boolean",
+    "description": "Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false).",
+    "defaultValue": false
+  },
+  {
+    "name": "spring.application.admin.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable admin features for the application.",
+    "defaultValue": false
+  },
+  {
+    "name": "spring.application.admin.jmx-name",
+    "type": "java.lang.String",
+    "description": "JMX name of the application admin MBean.",
+    "defaultValue": "org.springframework.boot:type=Admin,name=SpringApplication"
+  },
+  {
+    "name": "spring.autoconfigure.exclude",
+    "type": "java.util.List<java.lang.Class>",
+    "description": "Auto-configuration classes to exclude."
+  },
+  {
+    "name": "spring.batch.job.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Execute all Spring Batch jobs in the context on startup.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.dao.exceptiontranslation.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable the PersistenceExceptionTranslationPostProcessor.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.datasource.jmx-enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable JMX support (if provided by the underlying pool).",
+    "defaultValue": false
+  },
+  {
+    "name": "spring.data.elasticsearch.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Elasticsearch repositories.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.data.jpa.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable JPA repositories.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.data.mongodb.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Mongo repositories.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.data.solr.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Solr repositories.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.http.encoding.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable http encoding support.",
+    "defaultValue": true
+  },
+  {
+  	"name": "spring.http.converters.preferred-json-mapper",
+  	"type": "java.lang.String",
+  	"description": "Preferred JSON mapper to use for HTTP message conversion. Set to \"gson\" to force the use of Gson when both it and Jackson are on the classpath."
+  },
+  {
+    "name": "spring.jmx.default-domain",
+    "type": "java.lang.String",
+    "description": "JMX domain name."
+  },
+  {
+    "name": "spring.jmx.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Expose management beans to the JMX domain.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.jmx.server",
+    "type": "java.lang.String",
+    "description": "MBeanServer bean name.",
+    "defaultValue": "mbeanServer"
+  },
+  {
+    "name": "spring.jpa.open-in-view",
+    "type": "java.lang.Boolean",
+    "description": "Register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the thread for the entire processing of the request.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.jta.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable JTA support.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.mobile.devicedelegatingviewresolver.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable device view resolver.",
+    "defaultValue": false
+  },
+  {
+    "name": "spring.mobile.sitepreference.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable SitePreferenceHandler.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.mvc.favicon.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable resolution of favicon.ico.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.rabbitmq.dynamic",
+    "type": "java.lang.Boolean",
+    "description": "Create an AmqpAdmin bean.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.social.auto-connection-views",
+    "type": "java.lang.Boolean",
+    "description": "Enable the connection status view for supported providers.",
+    "defaultValue": false
+  },
+  {
+    "name": "spring.view.prefix",
+    "type": "java.lang.String",
+    "description": "Spring MVC view prefix.",
+    "deprecation": {
+      "replacement": "spring.mvc.view.prefix"
+    }
+  },
+  {
+    "name": "spring.view.suffix",
+    "type": "java.lang.String",
+    "description": "Spring MVC view suffix.",
+    "deprecation": {
+      "replacement": "spring.mvc.view.suffix"
+    }
+  }
+],"hints": [
+  {
+    "name": "liquibase.change-log",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.springframework.core.io.Resource"
+        }
+      }
+    ]
+  },
+  {
+    "name": "server.jsp-servlet.class-name",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "javax.servlet.http.HttpServlet"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.cache.jcache.provider",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "javax.cache.spi.CachingProvider"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.data.mongodb.field-naming-strategy",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "org.springframework.data.mapping.model.FieldNamingStrategy"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.datasource.driver-class-name",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "java.sql.Driver"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.datasource.xa.data-source-class-name",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "javax.sql.XADataSource"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.http.converters.preferred-json-mapper",
+    "values": [
+      {
+        "value": "gson"
+      },
+      {
+        "value": "jackson"
+      }
+    ],
+    "providers": [
+      {
+        "name": "any"
+      }
+    ]
+  },
+  {
+    "name": "spring.jmx.server",
+    "providers": [
+      {
+        "name": "spring-bean-reference",
+        "parameters": {
+          "target": "javax.management.MBeanServer"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.jpa.hibernate.ddl-auto",
+    "values": [
+      {
+        "value": "none",
+        "description": "Disable DDL handling."
+      },
+      {
+        "value": "validate",
+        "description": "Validate the schema, make no changes to the database."
+      },
+      {
+        "value": "update",
+        "description": "Update the schema if necessary."
+      },
+      {
+        "value": "create",
+        "description": "Create the schema and destroy previous data."
+      },
+      {
+        "value": "create-drop",
+        "description": "Create and then destroy the schema at the end of the session."
+      }
+    ]
+  },
+  {
+    "name": "spring.jpa.hibernate.naming-strategy",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "org.hibernate.cfg.NamingStrategy"
+        }
+      }
+    ]
+  }
+]}
+

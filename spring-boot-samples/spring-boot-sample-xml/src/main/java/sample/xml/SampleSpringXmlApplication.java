@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package sample.xml;
 
+import sample.xml.service.HelloWorldService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-
-import sample.xml.service.HelloWorldService;
 
 public class SampleSpringXmlApplication implements CommandLineRunner {
 
@@ -35,4 +35,5 @@ public class SampleSpringXmlApplication implements CommandLineRunner {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run("classpath:/META-INF/application-context.xml", args);
 	}
+
 }

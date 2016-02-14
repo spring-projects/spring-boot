@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.io.DefaultResourceLoader;
 
 import static org.junit.Assert.assertThat;
@@ -51,6 +51,8 @@ public class AutoConfigurationSorterTests {
 	private static final String X = AutoConfigureX.class.getName();
 	private static final String Y = AutoConfigureY.class.getName();
 	private static final String Z = AutoConfigureZ.class.getName();
+	private static final String A2 = AutoConfigureA2.class.getName();
+	private static final String W2 = AutoConfigureW2.class.getName();
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -64,8 +66,8 @@ public class AutoConfigurationSorterTests {
 
 	@Test
 	public void byOrderAnnotation() throws Exception {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(LOWEST,
-				HIGHEST));
+		List<String> actual = this.sorter
+				.getInPriorityOrder(Arrays.asList(LOWEST, HIGHEST));
 		assertThat(actual, nameMatcher(HIGHEST, LOWEST));
 	}
 
@@ -92,6 +94,13 @@ public class AutoConfigurationSorterTests {
 		List<String> actual = this.sorter
 				.getInPriorityOrder(Arrays.asList(A, B, C, W, X));
 		assertThat(actual, nameMatcher(C, W, B, A, X));
+	}
+
+	@Test
+	public void byAutoConfigureMixedBeforeAndAfterWithClassNames() throws Exception {
+		List<String> actual = this.sorter
+				.getInPriorityOrder(Arrays.asList(A2, B, C, W2, X));
+		assertThat(actual, nameMatcher(C, W2, B, A2, X));
 	}
 
 	@Test
@@ -148,16 +157,20 @@ public class AutoConfigurationSorterTests {
 
 	}
 
-	@Order(Ordered.LOWEST_PRECEDENCE)
+	@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 	public static class OrderLowest {
 	}
 
-	@Order(Ordered.HIGHEST_PRECEDENCE)
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 	public static class OrderHighest {
 	}
 
 	@AutoConfigureAfter(AutoConfigureB.class)
 	public static class AutoConfigureA {
+	}
+
+	@AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureB")
+	public static class AutoConfigureA2 {
 	}
 
 	@AutoConfigureAfter({ AutoConfigureC.class, AutoConfigureD.class,
@@ -177,6 +190,10 @@ public class AutoConfigurationSorterTests {
 
 	@AutoConfigureBefore(AutoConfigureB.class)
 	public static class AutoConfigureW {
+	}
+
+	@AutoConfigureBefore(name = "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureB")
+	public static class AutoConfigureW2 {
 	}
 
 	public static class AutoConfigureX {

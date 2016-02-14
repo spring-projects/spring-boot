@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "endpoints.health", ignoreUnknownFields = true)
 public class HealthEndpoint extends AbstractEndpoint<Health> {
@@ -37,26 +38,39 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 	private final HealthIndicator healthIndicator;
 
 	/**
+	 * Time to live for cached result, in milliseconds.
+	 */
+	private long timeToLive = 1000;
+
+	/**
 	 * Create a new {@link HealthIndicator} instance.
+	 * @param healthAggregator the health aggregator
+	 * @param healthIndicators the health indicators
 	 */
 	public HealthEndpoint(HealthAggregator healthAggregator,
 			Map<String, HealthIndicator> healthIndicators) {
-		super("health", false, true);
-
+		super("health", false);
 		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
+		CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
+				healthAggregator);
+		for (Map.Entry<String, HealthIndicator> entry : healthIndicators.entrySet()) {
+			healthIndicator.addHealthIndicator(getKey(entry.getKey()), entry.getValue());
+		}
+		this.healthIndicator = healthIndicator;
+	}
 
-		if (healthIndicators.size() == 1) {
-			this.healthIndicator = healthIndicators.values().iterator().next();
-		}
-		else {
-			CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
-					healthAggregator);
-			for (Map.Entry<String, HealthIndicator> h : healthIndicators.entrySet()) {
-				healthIndicator.addHealthIndicator(getKey(h.getKey()), h.getValue());
-			}
-			this.healthIndicator = healthIndicator;
-		}
+	/**
+	 * Time to live for cached result. This is particularly useful to cache the result of
+	 * this endpoint to prevent a DOS attack if it is accessed anonymously.
+	 * @return time to live in milliseconds (default 1000)
+	 */
+	public long getTimeToLive() {
+		return this.timeToLive;
+	}
+
+	public void setTimeToLive(long ttl) {
+		this.timeToLive = ttl;
 	}
 
 	/**
@@ -69,6 +83,8 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 
 	/**
 	 * Turns the bean name into a key that can be used in the map of health information.
+	 * @param name the bean name
+	 * @return the key
 	 */
 	private String getKey(String name) {
 		int index = name.toLowerCase().indexOf("healthindicator");

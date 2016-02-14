@@ -21,6 +21,8 @@ import org.springframework.beans.factory.config.BeanExpressionResolver;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.expression.StandardBeanExpressionResolver;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.ClassMetadata;
 
@@ -30,14 +32,16 @@ import org.springframework.core.type.ClassMetadata;
  * @author Dave Syer
  * @see ConditionalOnExpression
  */
+@Order(Ordered.LOWEST_PRECEDENCE - 20)
 class OnExpressionCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 
-		String expression = (String) metadata.getAnnotationAttributes(
-				ConditionalOnExpression.class.getName()).get("value");
+		String expression = (String) metadata
+				.getAnnotationAttributes(ConditionalOnExpression.class.getName())
+				.get("value");
 		String rawExpression = expression;
 		if (!expression.startsWith("#{")) {
 			// For convenience allow user to provide bare expression with no #{} wrapper
@@ -47,9 +51,10 @@ class OnExpressionCondition extends SpringBootCondition {
 		// Explicitly allow environment placeholders inside the expression
 		expression = context.getEnvironment().resolvePlaceholders(expression);
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		BeanExpressionResolver resolver = beanFactory.getBeanExpressionResolver();
-		BeanExpressionContext expressionContext = (beanFactory != null) ? new BeanExpressionContext(
-				beanFactory, null) : null;
+		BeanExpressionResolver resolver = (beanFactory != null)
+				? beanFactory.getBeanExpressionResolver() : null;
+		BeanExpressionContext expressionContext = (beanFactory != null)
+				? new BeanExpressionContext(beanFactory, null) : null;
 		if (resolver == null) {
 			resolver = new StandardBeanExpressionResolver();
 		}

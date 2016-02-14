@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 
 package org.springframework.boot.yaml;
 
+import java.util.Collections;
 import java.util.Properties;
 import java.util.Set;
 
-import org.springframework.boot.yaml.YamlProcessor.DocumentMatcher;
-import org.springframework.boot.yaml.YamlProcessor.MatchStatus;
+import org.springframework.beans.factory.config.YamlProcessor.DocumentMatcher;
+import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
 import org.springframework.util.StringUtils;
 
 /**
@@ -47,8 +48,11 @@ public class ArrayDocumentMatcher implements DocumentMatcher {
 		if (!properties.containsKey(this.key)) {
 			return MatchStatus.ABSTAIN;
 		}
-		Set<String> values = StringUtils.commaDelimitedListToSet(properties
-				.getProperty(this.key));
+		Set<String> values = StringUtils
+				.commaDelimitedListToSet(properties.getProperty(this.key));
+		if (values.isEmpty()) {
+			values = Collections.singleton("");
+		}
 		for (String pattern : this.patterns) {
 			for (String value : values) {
 				if (value.matches(pattern)) {

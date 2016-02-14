@@ -9,6 +9,9 @@ buildscript {
 
 project(':projectA') {
 	apply plugin: 'spring-boot'
+	repositories {
+		mavenLocal()
+	}
 	dependencies {
 		runtime project(':projectB')
 	}

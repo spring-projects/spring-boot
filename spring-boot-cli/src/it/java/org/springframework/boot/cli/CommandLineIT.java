@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.cli;
 import java.io.IOException;
 
 import org.junit.Test;
+
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker.Invocation;
 
@@ -38,17 +39,18 @@ public class CommandLineIT {
 	private final CommandLineInvoker cli = new CommandLineInvoker();
 
 	@Test
-	public void hintProducesListOfValidCommands() throws IOException,
-			InterruptedException {
+	public void hintProducesListOfValidCommands()
+			throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke("hint");
 		assertThat(cli.await(), equalTo(0));
-		assertThat(cli.getErrorOutput().length(), equalTo(0));
-		assertThat(cli.getStandardOutputLines().size(), equalTo(7));
+		assertThat("Unexpected error: \n" + cli.getErrorOutput(),
+				cli.getErrorOutput().length(), equalTo(0));
+		assertThat(cli.getStandardOutputLines().size(), equalTo(11));
 	}
 
 	@Test
-	public void invokingWithNoArgumentsDisplaysHelp() throws IOException,
-			InterruptedException {
+	public void invokingWithNoArgumentsDisplaysHelp()
+			throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke();
 		assertThat(cli.await(), equalTo(1));
 		assertThat(cli.getErrorOutput().length(), equalTo(0));
@@ -56,8 +58,8 @@ public class CommandLineIT {
 	}
 
 	@Test
-	public void unrecognizedCommandsAreHandledGracefully() throws IOException,
-			InterruptedException {
+	public void unrecognizedCommandsAreHandledGracefully()
+			throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke("not-a-real-command");
 		assertThat(cli.await(), equalTo(1));
 		assertThat(cli.getErrorOutput(),

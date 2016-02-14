@@ -36,8 +36,8 @@ import org.springframework.util.ObjectUtils;
  * @author Dave Syer
  * @since 1.1.1
  */
-public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
-		ApplicationContextAware {
+public class ParentAwareNamingStrategy extends MetadataNamingStrategy
+		implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
 
@@ -48,9 +48,11 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
 	}
 
 	/**
-	 * @param ensureUniqueRuntimeObjectNames the ensureUniqueRuntimeObjectNames to set
+	 * Set if unique runtime object names should be ensured.
+	 * @param ensureUniqueRuntimeObjectNames {@code true} if unique names should ensured.
 	 */
-	public void setEnsureUniqueRuntimeObjectNames(boolean ensureUniqueRuntimeObjectNames) {
+	public void setEnsureUniqueRuntimeObjectNames(
+			boolean ensureUniqueRuntimeObjectNames) {
 		this.ensureUniqueRuntimeObjectNames = ensureUniqueRuntimeObjectNames;
 	}
 

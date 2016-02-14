@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.MessageSourceAutoConfigurationIntegrationTests.Config;
 import org.springframework.boot.test.IntegrationTest;
@@ -35,8 +36,8 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Dave Syer
  */
-@SpringApplicationConfiguration(classes = { Config.class,
-		MessageSourceAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+@SpringApplicationConfiguration({ Config.class, MessageSourceAutoConfiguration.class,
+		PropertyPlaceholderAutoConfiguration.class })
 @RunWith(SpringJUnit4ClassRunner.class)
 @IntegrationTest("spring.messages.basename:test/messages")
 public class MessageSourceAutoConfigurationIntegrationTests {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,25 +21,27 @@ import java.util.Collections;
 import javax.sql.DataSource;
 
 import org.junit.Test;
-import org.mockito.Mockito;
+
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link EntityManagerFactoryBuilder}.
  *
  * @author Dave Syer
  */
+@Deprecated
 public class EntityManagerFactoryBuilderTests {
 
 	private JpaProperties properties = new JpaProperties();
 
-	private DataSource dataSource1 = Mockito.mock(DataSource.class);
+	private DataSource dataSource1 = mock(DataSource.class);
 
-	private DataSource dataSource2 = Mockito.mock(DataSource.class);
+	private DataSource dataSource2 = mock(DataSource.class);
 
 	@Test
 	public void entityManagerFactoryPropertiesNotOverwritingDefaults() {
@@ -60,8 +62,8 @@ public class EntityManagerFactoryBuilderTests {
 				.dataSource(this.dataSource1)
 				.properties(Collections.singletonMap("foo", "spam")).build();
 		assertFalse(result1.getJpaPropertyMap().isEmpty());
-		LocalContainerEntityManagerFactoryBean result2 = factory.dataSource(
-				this.dataSource2).build();
+		LocalContainerEntityManagerFactoryBean result2 = factory
+				.dataSource(this.dataSource2).build();
 		assertTrue(result2.getJpaPropertyMap().isEmpty());
 	}
 

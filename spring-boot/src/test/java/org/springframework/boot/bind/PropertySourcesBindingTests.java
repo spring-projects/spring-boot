@@ -18,6 +18,7 @@ package org.springframework.boot.bind;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.bind.PropertySourcesBindingTests.TestConfig;
@@ -42,7 +43,7 @@ import static org.junit.Assert.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestConfig.class)
+@SpringApplicationConfiguration(TestConfig.class)
 @IntegrationTest
 public class PropertySourcesBindingTests {
 
@@ -55,6 +56,16 @@ public class PropertySourcesBindingTests {
 	@Test
 	public void overridingOfPropertiesOrderOfAtPropertySources() {
 		assertThat(this.properties.getBar(), is("override"));
+	}
+
+	@Test
+	public void overridingOfPropertiesOrderOfAtPropertySourcesWherePropertyIsCapitalized() {
+		assertThat(this.properties.getSpam(), is("BUCKET"));
+	}
+
+	@Test
+	public void overridingOfPropertiesOrderOfAtPropertySourcesWherePropertyNamesDiffer() {
+		assertThat(this.properties.getTheName(), is("NAME"));
 	}
 
 	@Test
@@ -93,6 +104,10 @@ public class PropertySourcesBindingTests {
 
 		private String bar;
 
+		private String spam;
+
+		private String theName;
+
 		public String getBar() {
 			return this.bar;
 		}
@@ -107,6 +122,22 @@ public class PropertySourcesBindingTests {
 
 		public void setFoo(String foo) {
 			this.foo = foo;
+		}
+
+		public String getSpam() {
+			return this.spam;
+		}
+
+		public void setSpam(String spam) {
+			this.spam = spam;
+		}
+
+		public String getTheName() {
+			return this.theName;
+		}
+
+		public void setTheName(String theName) {
+			this.theName = theName;
 		}
 	}
 

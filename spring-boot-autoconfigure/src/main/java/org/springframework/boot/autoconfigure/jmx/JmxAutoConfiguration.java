@@ -23,8 +23,8 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.context.annotation.MBeanExportConfiguration.SpecificPlatform;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
@@ -45,13 +46,13 @@ import org.springframework.util.StringUtils;
  * {@link EnableAutoConfiguration Auto-configuration} to enable/disable Spring's
  * {@link EnableMBeanExport} mechanism based on configuration properties.
  * <p>
- * To disable auto export of annotation beans set <code>spring.jmx.enabled: false</code>.
+ * To disable auto export of annotation beans set {@code spring.jmx.enabled: false}.
  *
  * @author Christian Dupuis
  */
 @Configuration
 @ConditionalOnClass({ MBeanExporter.class })
-@ConditionalOnExpression("${spring.jmx.enabled:true}")
+@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware {
 
 	private RelaxedPropertyResolver propertyResolver;
@@ -69,6 +70,7 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 	}
 
 	@Bean
+	@Primary
 	@ConditionalOnMissingBean(value = MBeanExporter.class, search = SearchStrategy.CURRENT)
 	public AnnotationMBeanExporter mbeanExporter(ObjectNamingStrategy namingStrategy) {
 		AnnotationMBeanExporter exporter = new AnnotationMBeanExporter();

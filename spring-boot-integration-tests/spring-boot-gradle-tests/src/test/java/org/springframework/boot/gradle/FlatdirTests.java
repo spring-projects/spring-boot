@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.io.File;
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.dependency.tools.ManagedDependencies;
+
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 
@@ -36,8 +36,7 @@ public class FlatdirTests {
 
 	private File libs = new File("target/flatdir/lib");
 
-	private static final String BOOT_VERSION = ManagedDependencies.get()
-			.find("spring-boot").getVersion();
+	private static final String BOOT_VERSION = Versions.getBootVersion();
 
 	@Before
 	public void init() {
@@ -52,8 +51,8 @@ public class FlatdirTests {
 		if (!this.libs.exists()) {
 			this.libs.mkdirs();
 		}
-		FileCopyUtils.copy(new File("src/test/resources/foo.jar"), new File(this.libs,
-				"foo-1.0.0.jar"));
+		FileCopyUtils.copy(new File("src/test/resources/foo.jar"),
+				new File(this.libs, "foo-1.0.0.jar"));
 		this.project.newBuild().forTasks("build")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
 	}

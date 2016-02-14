@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,23 @@
 
 package org.springframework.boot.autoconfigure.groovy.template;
 
-import groovy.text.SimpleTemplateEngine;
-import groovy.text.TemplateEngine;
-import groovy.text.markup.MarkupTemplateEngine;
-import groovy.text.markup.TemplateConfiguration;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-
+import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
-import org.springframework.beans.factory.BeanClassLoaderAware;
+import groovy.text.markup.MarkupTemplateEngine;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.groovy.template.web.GroovyTemplateViewResolver;
+import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -43,104 +40,92 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.Ordered;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 
 /**
- * Autoconfiguration support for Groovy templates in MVC. By default creates a
+ * Auto-configuration support for Groovy templates in MVC. By default creates a
  * {@link MarkupTemplateEngine} configured from {@link GroovyTemplateProperties}, but you
- * can override that by providing a {@link TemplateEngine} of a different type.
+ * can override that by providing your own {@link GroovyMarkupConfig} or even a
+ * {@link MarkupTemplateEngine} of a different type.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Brian Clozel
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass(TemplateEngine.class)
+@ConditionalOnClass(MarkupTemplateEngine.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(GroovyTemplateProperties.class)
 public class GroovyTemplateAutoConfiguration {
 
-	@Autowired
-	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
+	private static final Log logger = LogFactory
+			.getLog(GroovyTemplateAutoConfiguration.class);
 
-	@Autowired
-	private GroovyTemplateProperties properties;
+	@Configuration
+	@ConditionalOnClass(GroovyMarkupConfigurer.class)
+	public static class GroovyMarkupConfiguration {
 
-	public abstract static class BaseGroovyTemplateConfiguration implements
-			BeanClassLoaderAware {
+		@Autowired
+		private ApplicationContext applicationContext;
 
 		@Autowired
 		private GroovyTemplateProperties properties;
 
-		@Autowired
-		private ApplicationContext resourceLoader;
+		@Autowired(required = false)
+		private MarkupTemplateEngine templateEngine;
 
-		private ClassLoader classLoader = GroovyWebConfiguration.class.getClassLoader();
-
-		@Override
-		public void setBeanClassLoader(ClassLoader classLoader) {
-			this.classLoader = classLoader;
-		}
-
-		protected ClassLoader createParentLoaderForTemplates() throws Exception {
-			Resource[] resources = this.resourceLoader.getResources(this.properties
-					.getPrefix());
-			if (resources.length > 0) {
-				List<URL> urls = new ArrayList<URL>();
-				for (Resource resource : resources) {
-					if (resource.exists()) {
-						urls.add(resource.getURL());
-					}
+		@PostConstruct
+		public void checkTemplateLocationExists() {
+			if (this.properties.isCheckTemplateLocation() && !isUsingGroovyAllJar()) {
+				TemplateLocation location = new TemplateLocation(
+						this.properties.getResourceLoaderPath());
+				if (!location.exists(this.applicationContext)) {
+					logger.warn("Cannot find template location: " + location
+							+ " (please add some templates, check your Groovy "
+							+ "configuration, or set spring.groovy.template."
+							+ "check-template-location=false)");
 				}
-				return new URLClassLoader(urls.toArray(new URL[urls.size()]),
-						this.classLoader);
-			}
-			else {
-				return this.classLoader;
 			}
 		}
 
-	}
-
-	@Configuration
-	@ConditionalOnClass(MarkupTemplateEngine.class)
-	public static class GroovyMarkupConfiguration extends BaseGroovyTemplateConfiguration {
-
-		@Autowired
-		private GroovyTemplateProperties properties;
+		/**
+		 * MarkupTemplateEngine could be loaded from groovy-templates or groovy-all.
+		 * Unfortunately it's quite common for people to use groovy-all and not actually
+		 * need templating support. This method check attempts to check the source jar so
+		 * that we can skip the {@code /template} folder check for such cases.
+		 * @return true if the groovy-all jar is used
+		 */
+		private boolean isUsingGroovyAllJar() {
+			try {
+				ProtectionDomain domain = MarkupTemplateEngine.class
+						.getProtectionDomain();
+				CodeSource codeSource = domain.getCodeSource();
+				if (codeSource != null
+						&& codeSource.getLocation().toString().contains("-all")) {
+					return true;
+				}
+				return false;
+			}
+			catch (Exception ex) {
+				return false;
+			}
+		}
 
 		@Bean
+		@ConditionalOnMissingBean(GroovyMarkupConfig.class)
 		@ConfigurationProperties(prefix = "spring.groovy.template.configuration")
-		public TemplateConfiguration groovyTemplateConfiguration() {
-			return new TemplateConfiguration();
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(TemplateEngine.class)
-		public TemplateEngine groovyTemplateEngine() throws Exception {
-			TemplateConfiguration configuration = groovyTemplateConfiguration();
-			configuration.setCacheTemplates(this.properties.isCache());
-			return new MarkupTemplateEngine(createParentLoaderForTemplates(),
-					configuration, new GroovyTemplateResolver());
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnMissingClass(name = "groovy.text.markup.MarkupTemplateEngine")
-	public static class GroovySimpleConfiguration extends BaseGroovyTemplateConfiguration {
-
-		@Autowired
-		private GroovyTemplateProperties properties;
-
-		@Bean
-		@ConditionalOnMissingBean(TemplateEngine.class)
-		public TemplateEngine groovyTemplateEngine() throws Exception {
-			return new SimpleTemplateEngine(createParentLoaderForTemplates());
+		public GroovyMarkupConfigurer groovyMarkupConfigurer() {
+			GroovyMarkupConfigurer configurer = new GroovyMarkupConfigurer();
+			configurer.setResourceLoaderPath(this.properties.getResourceLoaderPath());
+			configurer.setCacheTemplates(this.properties.isCache());
+			if (this.templateEngine != null) {
+				configurer.setTemplateEngine(this.templateEngine);
+			}
+			return configurer;
 		}
 
 	}
@@ -149,26 +134,17 @@ public class GroovyTemplateAutoConfiguration {
 	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class,
 			UrlBasedViewResolver.class })
 	@ConditionalOnWebApplication
+	@ConditionalOnProperty(name = "spring.groovy.template.enabled", matchIfMissing = true)
 	public static class GroovyWebConfiguration {
 
 		@Autowired
 		private GroovyTemplateProperties properties;
 
 		@Bean
-		@ConditionalOnMissingBean(name = "groovyTemplateViewResolver")
-		public GroovyTemplateViewResolver groovyTemplateViewResolver(TemplateEngine engine) {
-			GroovyTemplateViewResolver resolver = new GroovyTemplateViewResolver();
-			resolver.setPrefix(this.properties.getPrefix());
-			resolver.setSuffix(this.properties.getSuffix());
-			resolver.setCache(this.properties.isCache());
-			resolver.setContentType(this.properties.getContentType());
-			resolver.setViewNames(this.properties.getViewNames());
-			resolver.setTemplateEngine(engine);
-
-			// This resolver acts as a fallback resolver (e.g. like a
-			// InternalResourceViewResolver) so it needs to have low precedence
-			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 6);
-
+		@ConditionalOnMissingBean(name = "groovyMarkupViewResolver")
+		public GroovyMarkupViewResolver groovyMarkupViewResolver() {
+			GroovyMarkupViewResolver resolver = new GroovyMarkupViewResolver();
+			this.properties.applyToViewResolver(resolver);
 			return resolver;
 		}
 

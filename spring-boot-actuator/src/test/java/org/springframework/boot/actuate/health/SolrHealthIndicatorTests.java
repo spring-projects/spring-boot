@@ -23,6 +23,7 @@ import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.common.util.NamedList;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -32,8 +33,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link SolrHealthIndicator}
@@ -69,7 +70,7 @@ public class SolrHealthIndicatorTests {
 		NamedList<Object> response = new NamedList<Object>();
 		response.add("status", "OK");
 		pingResponse.setResponse(response);
-		when(solrServer.ping()).thenReturn(pingResponse);
+		given(solrServer.ping()).willReturn(pingResponse);
 
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrServer);
 		Health health = healthIndicator.health();
@@ -80,7 +81,7 @@ public class SolrHealthIndicatorTests {
 	@Test
 	public void solrIsDown() throws Exception {
 		SolrServer solrServer = mock(SolrServer.class);
-		when(solrServer.ping()).thenThrow(new IOException("Connection failed"));
+		given(solrServer.ping()).willThrow(new IOException("Connection failed"));
 
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrServer);
 		Health health = healthIndicator.health();

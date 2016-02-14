@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,26 +18,25 @@ package org.springframework.boot.autoconfigure.mobile;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.EnvironmentAware;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.Environment;
 import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Mobile's
@@ -54,36 +53,27 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 @AutoConfigureAfter({ WebMvcAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 public class DeviceDelegatingViewResolverAutoConfiguration {
 
-	private static Log logger = LogFactory
+	private static final Log logger = LogFactory
 			.getLog(DeviceDelegatingViewResolverAutoConfiguration.class);
 
-	private static abstract class AbstractDelegateConfiguration implements
-			EnvironmentAware {
+	private static abstract class AbstractDelegateConfiguration {
 
-		private RelaxedPropertyResolver environment;
-
-		@Override
-		public void setEnvironment(Environment environment) {
-			this.environment = new RelaxedPropertyResolver(environment,
-					"spring.mobile.devicedelegatingviewresolver.");
-		}
+		@Autowired
+		private DeviceDelegatingViewResolverProperties viewResolverProperties;
 
 		protected LiteDeviceDelegatingViewResolver getConfiguredViewResolver(
 				ViewResolver delegate, int delegateOrder) {
 			LiteDeviceDelegatingViewResolver resolver = new LiteDeviceDelegatingViewResolver(
 					delegate);
-			resolver.setNormalPrefix(getProperty("normal-prefix", ""));
-			resolver.setNormalSuffix(getProperty("normal-suffix", ""));
-			resolver.setMobilePrefix(getProperty("mobile-prefix", "mobile/"));
-			resolver.setMobileSuffix(getProperty("mobile-suffix", ""));
-			resolver.setTabletPrefix(getProperty("tablet-prefix", "tablet/"));
-			resolver.setTabletSuffix(getProperty("tablet-suffix", ""));
+			resolver.setEnableFallback(this.viewResolverProperties.isEnableFallback());
+			resolver.setNormalPrefix(this.viewResolverProperties.getNormalPrefix());
+			resolver.setNormalSuffix(this.viewResolverProperties.getNormalSuffix());
+			resolver.setMobilePrefix(this.viewResolverProperties.getMobilePrefix());
+			resolver.setMobileSuffix(this.viewResolverProperties.getMobileSuffix());
+			resolver.setTabletPrefix(this.viewResolverProperties.getTabletPrefix());
+			resolver.setTabletSuffix(this.viewResolverProperties.getTabletSuffix());
 			resolver.setOrder(getAdjustedOrder(delegateOrder));
 			return resolver;
-		}
-
-		private String getProperty(String key, String defaultValue) {
-			return this.environment.getProperty(key, defaultValue);
 		}
 
 		private int getAdjustedOrder(int order) {
@@ -98,8 +88,9 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 	}
 
 	@Configuration
+	@EnableConfigurationProperties(DeviceDelegatingViewResolverProperties.class)
 	@ConditionalOnMissingBean(name = "deviceDelegatingViewResolver")
-	@ConditionalOnExpression("${spring.mobile.devicedelegatingviewresolver.enabled:false}")
+	@ConditionalOnProperty(prefix = "spring.mobile.devicedelegatingviewresolver", name = "enabled", havingValue = "true", matchIfMissing = false)
 	protected static class DeviceDelegatingViewResolverConfiguration {
 
 		@Configuration
@@ -123,10 +114,11 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 		}
 
 		@Configuration
+		@EnableConfigurationProperties(DeviceDelegatingViewResolverProperties.class)
 		@ConditionalOnMissingBean(name = "thymeleafViewResolver")
 		@ConditionalOnBean(InternalResourceViewResolver.class)
-		protected static class InternalResourceViewResolverDelegateConfiguration extends
-				AbstractDelegateConfiguration {
+		protected static class InternalResourceViewResolverDelegateConfiguration
+				extends AbstractDelegateConfiguration {
 
 			@Autowired
 			private InternalResourceViewResolver viewResolver;

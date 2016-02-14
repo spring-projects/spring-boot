@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.Mockito;
+
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -33,6 +33,9 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link RedisHealthIndicator}.
@@ -67,11 +70,11 @@ public class RedisHealthIndicatorTests {
 		Properties info = new Properties();
 		info.put("redis_version", "2.8.9");
 
-		RedisConnection redisConnection = Mockito.mock(RedisConnection.class);
-		RedisConnectionFactory redisConnectionFactory = Mockito
-				.mock(RedisConnectionFactory.class);
-		Mockito.when(redisConnectionFactory.getConnection()).thenReturn(redisConnection);
-		Mockito.when(redisConnection.info()).thenReturn(info);
+		RedisConnection redisConnection = mock(RedisConnection.class);
+		RedisConnectionFactory redisConnectionFactory = mock(
+				RedisConnectionFactory.class);
+		given(redisConnectionFactory.getConnection()).willReturn(redisConnection);
+		given(redisConnection.info()).willReturn(info);
 		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(
 				redisConnectionFactory);
 
@@ -79,18 +82,18 @@ public class RedisHealthIndicatorTests {
 		assertEquals(Status.UP, health.getStatus());
 		assertEquals("2.8.9", health.getDetails().get("version"));
 
-		Mockito.verify(redisConnectionFactory).getConnection();
-		Mockito.verify(redisConnection).info();
+		verify(redisConnectionFactory).getConnection();
+		verify(redisConnection).info();
 	}
 
 	@Test
 	public void redisIsDown() throws Exception {
-		RedisConnection redisConnection = Mockito.mock(RedisConnection.class);
-		RedisConnectionFactory redisConnectionFactory = Mockito
-				.mock(RedisConnectionFactory.class);
-		Mockito.when(redisConnectionFactory.getConnection()).thenReturn(redisConnection);
-		Mockito.when(redisConnection.info()).thenThrow(
-				new RedisConnectionFailureException("Connection failed"));
+		RedisConnection redisConnection = mock(RedisConnection.class);
+		RedisConnectionFactory redisConnectionFactory = mock(
+				RedisConnectionFactory.class);
+		given(redisConnectionFactory.getConnection()).willReturn(redisConnection);
+		given(redisConnection.info())
+				.willThrow(new RedisConnectionFailureException("Connection failed"));
 		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(
 				redisConnectionFactory);
 
@@ -99,7 +102,7 @@ public class RedisHealthIndicatorTests {
 		assertTrue(((String) health.getDetails().get("error"))
 				.contains("Connection failed"));
 
-		Mockito.verify(redisConnectionFactory).getConnection();
-		Mockito.verify(redisConnection).info();
+		verify(redisConnectionFactory).getConnection();
+		verify(redisConnection).info();
 	}
 }

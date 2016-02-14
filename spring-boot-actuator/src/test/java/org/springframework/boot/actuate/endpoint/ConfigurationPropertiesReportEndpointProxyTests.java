@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -67,8 +67,8 @@ public class ConfigurationPropertiesReportEndpointProxyTests {
 	public void testWithProxyClass() throws Exception {
 		this.context.register(Config.class, SqlExecutor.class);
 		this.context.refresh();
-		Map<String, Object> report = this.context.getBean(
-				ConfigurationPropertiesReportEndpoint.class).invoke();
+		Map<String, Object> report = this.context
+				.getBean(ConfigurationPropertiesReportEndpoint.class).invoke();
 		assertThat(report.toString(), containsString("prefix=executor.sql"));
 	}
 
@@ -78,11 +78,8 @@ public class ConfigurationPropertiesReportEndpointProxyTests {
 	public static class Config {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint(
-				ConfigurationBeanFactoryMetaData beanFactoryMetaData) {
-			ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
-			endpoint.setConfigurationBeanFactoryMetaData(beanFactoryMetaData);
-			return endpoint;
+		public ConfigurationPropertiesReportEndpoint endpoint() {
+			return new ConfigurationPropertiesReportEndpoint();
 		}
 
 		@Bean
@@ -98,9 +95,9 @@ public class ConfigurationPropertiesReportEndpointProxyTests {
 
 	}
 
-	public static interface Executor {
+	public interface Executor {
 
-		public void execute();
+		void execute();
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,30 +19,79 @@ package org.springframework.boot.actuate.endpoint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
+
 /**
  * Abstract base for {@link Endpoint} implementations.
  *
+ * @param <T> the endpoint data type
  * @author Phillip Webb
  * @author Christian Dupuis
  */
-public abstract class AbstractEndpoint<T> implements Endpoint<T> {
+public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAware {
 
+	private Environment environment;
+
+	/**
+	 * Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped
+	 * to a URL (e.g. 'foo' is mapped to '/foo').
+	 */
 	@NotNull
 	@Pattern(regexp = "\\w+", message = "ID must only contains letters, numbers and '_'")
 	private String id;
 
-	private boolean sensitive;
+	private final boolean sensitiveDefault;
 
-	private boolean enabled = true;
+	/**
+	 * Mark if the endpoint exposes sensitive information.
+	 */
+	private Boolean sensitive;
 
+	/**
+	 * Enable the endpoint.
+	 */
+	private Boolean enabled;
+
+	/**
+	 * Create a new sensitive endpoint instance. The endpoint will enabled flag will be
+	 * based on the spring {@link Environment} unless explicitly set.
+	 * @param id the endpoint ID
+	 */
 	public AbstractEndpoint(String id) {
-		this(id, true, true);
+		this(id, true);
 	}
 
+	/**
+	 * Create a new endpoint instance. The endpoint will enabled flag will be based on the
+	 * spring {@link Environment} unless explicitly set.
+	 * @param id the endpoint ID
+	 * @param sensitive if the endpoint is sensitive by default
+	 */
+	public AbstractEndpoint(String id, boolean sensitive) {
+		this.id = id;
+		this.sensitiveDefault = sensitive;
+	}
+
+	/**
+	 * Create a new endpoint instance.
+	 * @param id the endpoint ID
+	 * @param sensitive if the endpoint is sensitive
+	 * @param enabled if the endpoint is enabled or not.
+	 */
 	public AbstractEndpoint(String id, boolean sensitive, boolean enabled) {
 		this.id = id;
-		this.sensitive = sensitive;
+		this.sensitiveDefault = sensitive;
 		this.enabled = enabled;
+	}
+
+	protected final Environment getEnvironment() {
+		return this.environment;
+	}
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 	@Override
@@ -56,19 +105,20 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T> {
 
 	@Override
 	public boolean isEnabled() {
-		return this.enabled;
+		return EndpointProperties.isEnabled(this.environment, this.enabled);
 	}
 
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
 	@Override
 	public boolean isSensitive() {
-		return this.sensitive;
+		return EndpointProperties.isSensitive(this.environment, this.sensitive,
+				this.sensitiveDefault);
 	}
 
-	public void setSensitive(boolean sensitive) {
+	public void setSensitive(Boolean sensitive) {
 		this.sensitive = sensitive;
 	}
 

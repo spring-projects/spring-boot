@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import org.springframework.util.Assert;
 
 /**
  * Factory that can be used to create a {@link MultipartConfigElement}. Size values can be
- * set using traditional {@literal long} values or using more readable {@literal String}
- * variants that accept KB or MB suffixes, for example:
+ * set using traditional {@literal long} values which are set in bytes or using more
+ * readable {@literal String} variants that accept KB or MB suffixes, for example:
  *
  * <pre class="code">
  * factory.setMaxFileSize(&quot;10Mb&quot;);
@@ -44,13 +44,15 @@ public class MultipartConfigFactory {
 
 	/**
 	 * Sets the directory location where files will be stored.
+	 * @param location the location
 	 */
 	public void setLocation(String location) {
 		this.location = location;
 	}
 
 	/**
-	 * Sets the maximum size allowed for uploaded files.
+	 * Sets the maximum size in bytes allowed for uploaded files.
+	 * @param maxFileSize the maximum file size
 	 * @see #setMaxFileSize(String)
 	 */
 	public void setMaxFileSize(long maxFileSize) {
@@ -60,6 +62,7 @@ public class MultipartConfigFactory {
 	/**
 	 * Sets the maximum size allowed for uploaded files. Values can use the suffixed "MB"
 	 * or "KB" to indicate a Megabyte or Kilobyte size.
+	 * @param maxFileSize the maximum file size
 	 * @see #setMaxFileSize(long)
 	 */
 	public void setMaxFileSize(String maxFileSize) {
@@ -67,7 +70,8 @@ public class MultipartConfigFactory {
 	}
 
 	/**
-	 * Sets the maximum size allowed for multipart/form-data requests.
+	 * Sets the maximum size allowed in bytes for multipart/form-data requests.
+	 * @param maxRequestSize the maximum request size
 	 * @see #setMaxRequestSize(String)
 	 */
 	public void setMaxRequestSize(long maxRequestSize) {
@@ -77,6 +81,7 @@ public class MultipartConfigFactory {
 	/**
 	 * Sets the maximum size allowed for multipart/form-data requests. Values can use the
 	 * suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
+	 * @param maxRequestSize the maximum request size
 	 * @see #setMaxRequestSize(long)
 	 */
 	public void setMaxRequestSize(String maxRequestSize) {
@@ -84,7 +89,8 @@ public class MultipartConfigFactory {
 	}
 
 	/**
-	 * Sets the size threshold after which files will be written to disk.
+	 * Sets the size threshold in bytes after which files will be written to disk.
+	 * @param fileSizeThreshold the file size threshold
 	 * @see #setFileSizeThreshold(String)
 	 */
 	public void setFileSizeThreshold(int fileSizeThreshold) {
@@ -94,6 +100,7 @@ public class MultipartConfigFactory {
 	/**
 	 * Sets the size threshold after which files will be written to disk. Values can use
 	 * the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
+	 * @param fileSizeThreshold the file size threshold
 	 * @see #setFileSizeThreshold(int)
 	 */
 	public void setFileSizeThreshold(String fileSizeThreshold) {
@@ -114,6 +121,7 @@ public class MultipartConfigFactory {
 
 	/**
 	 * Create a new {@link MultipartConfigElement} instance.
+	 * @return the multipart config element
 	 */
 	public MultipartConfigElement createMultipartConfig() {
 		return new MultipartConfigElement(this.location, this.maxFileSize,

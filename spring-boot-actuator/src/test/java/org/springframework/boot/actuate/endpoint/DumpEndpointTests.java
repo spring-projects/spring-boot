@@ -20,6 +20,7 @@ import java.lang.management.ThreadInfo;
 import java.util.List;
 
 import org.junit.Test;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

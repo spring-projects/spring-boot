@@ -26,12 +26,16 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.jolokia.http.AgentServlet;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.EndpointProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
@@ -45,21 +49,32 @@ import org.springframework.web.util.UrlPathHelper;
  * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "endpoints.jolokia", ignoreUnknownFields = false)
+@HypermediaDisabled
 public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
-		ApplicationContextAware, ServletContextAware {
+		ApplicationContextAware, ServletContextAware, EnvironmentAware {
 
+	private Environment environment;
+
+	/**
+	 * Endpoint URL path.
+	 */
 	@NotNull
-	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
-	private String path;
+	@Pattern(regexp = "/[^?#]*", message = "Path must start with /")
+	private String path = "/jolokia";;
 
-	private boolean sensitive = true;
-
+	/**
+	 * Enable the endpoint.
+	 */
 	private boolean enabled = true;
+
+	/**
+	 * Mark if the endpoint exposes sensitive information.
+	 */
+	private Boolean sensitive;
 
 	private final ServletWrappingController controller = new ServletWrappingController();
 
 	public JolokiaMvcEndpoint() {
-		this.path = "/jolokia";
 		this.controller.setServletClass(AgentServlet.class);
 		this.controller.setServletName("jolokia");
 	}
@@ -84,6 +99,11 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 		this.controller.setApplicationContext(context);
 	}
 
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
+
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -93,21 +113,21 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 	}
 
 	@Override
+	public boolean isSensitive() {
+		return EndpointProperties.isSensitive(this.environment, this.sensitive, true);
+	}
+
+	public void setSensitive(Boolean sensitive) {
+		this.sensitive = sensitive;
+	}
+
+	@Override
 	public String getPath() {
 		return this.path;
 	}
 
 	public void setPath(String path) {
 		this.path = path;
-	}
-
-	@Override
-	public boolean isSensitive() {
-		return this.sensitive;
-	}
-
-	public void setSensitive(boolean sensitive) {
-		this.sensitive = sensitive;
 	}
 
 	@Override
@@ -126,9 +146,10 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 	private static class PathStripper extends HttpServletRequestWrapper {
 
 		private final String path;
+
 		private final UrlPathHelper urlPathHelper;
 
-		public PathStripper(HttpServletRequest request, String path) {
+		PathStripper(HttpServletRequest request, String path) {
 			super(request);
 			this.path = path;
 			this.urlPathHelper = new UrlPathHelper();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,84 +22,64 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 
 /**
- * Abstract base class for {@link ConfigurationProperties} for
- * {@link AbstractTemplateViewResolver view resolvers}.
+ * Base class for {@link ConfigurationProperties} of a
+ * {@link AbstractTemplateViewResolver}.
  *
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-public abstract class AbstractTemplateViewResolverProperties {
+public abstract class AbstractTemplateViewResolverProperties
+		extends AbstractViewResolverProperties {
 
+	/**
+	 * Prefix that gets prepended to view names when building a URL.
+	 */
 	private String prefix;
 
+	/**
+	 * Suffix that gets appended to view names when building a URL.
+	 */
 	private String suffix;
 
-	private boolean cache;
-
-	private String contentType = "text/html";
-
-	private String charSet = "UTF-8";
-
-	private String[] viewNames;
-
-	private boolean checkTemplateLocation = true;
-
+	/**
+	 * Name of the RequestContext attribute for all views.
+	 */
 	private String requestContextAttribute;
 
+	/**
+	 * Set whether all request attributes should be added to the model prior to merging
+	 * with the template.
+	 */
 	private boolean exposeRequestAttributes = false;
 
+	/**
+	 * Set whether all HttpSession attributes should be added to the model prior to
+	 * merging with the template.
+	 */
 	private boolean exposeSessionAttributes = false;
 
+	/**
+	 * Set whether HttpServletRequest attributes are allowed to override (hide) controller
+	 * generated model attributes of the same name.
+	 */
 	private boolean allowRequestOverride = false;
 
+	/**
+	 * Set whether to expose a RequestContext for use by Spring's macro library, under the
+	 * name "springMacroRequestContext".
+	 */
 	private boolean exposeSpringMacroHelpers = true;
+
+	/**
+	 * Set whether HttpSession attributes are allowed to override (hide) controller
+	 * generated model attributes of the same name.
+	 */
+	private boolean allowSessionOverride = false;
 
 	protected AbstractTemplateViewResolverProperties(String defaultPrefix,
 			String defaultSuffix) {
 		this.prefix = defaultPrefix;
 		this.suffix = defaultSuffix;
-	}
-
-	public void setCheckTemplateLocation(boolean checkTemplateLocation) {
-		this.checkTemplateLocation = checkTemplateLocation;
-	}
-
-	public boolean isCheckTemplateLocation() {
-		return this.checkTemplateLocation;
-	}
-
-	public String[] getViewNames() {
-		return this.viewNames;
-	}
-
-	public void setViewNames(String[] viewNames) {
-		this.viewNames = viewNames;
-	}
-
-	public boolean isCache() {
-		return this.cache;
-	}
-
-	public void setCache(boolean cache) {
-		this.cache = cache;
-	}
-
-	public String getContentType() {
-		return this.contentType
-				+ (this.contentType.contains(";charset=") ? "" : ";charset="
-						+ this.charSet);
-	}
-
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
-
-	public String getCharSet() {
-		return this.charSet;
-	}
-
-	public void setCharSet(String charSet) {
-		this.charSet = charSet;
 	}
 
 	public String getPrefix() {
@@ -150,6 +130,14 @@ public abstract class AbstractTemplateViewResolverProperties {
 		this.allowRequestOverride = allowRequestOverride;
 	}
 
+	public boolean isAllowSessionOverride() {
+		return this.allowSessionOverride;
+	}
+
+	public void setAllowSessionOverride(boolean allowSessionOverride) {
+		this.allowSessionOverride = allowSessionOverride;
+	}
+
 	public boolean isExposeSpringMacroHelpers() {
 		return this.exposeSpringMacroHelpers;
 	}
@@ -162,11 +150,9 @@ public abstract class AbstractTemplateViewResolverProperties {
 	 * Apply the given properties to a {@link AbstractTemplateViewResolver}. Use Object in
 	 * signature to avoid runtime dependency on MVC, which means that the template engine
 	 * can be used in a non-web application.
-	 *
 	 * @param viewResolver the resolver to apply the properties to.
 	 */
 	public void applyToViewResolver(Object viewResolver) {
-
 		Assert.isInstanceOf(AbstractTemplateViewResolver.class, viewResolver,
 				"ViewResolver is not an instance of AbstractTemplateViewResolver :"
 						+ viewResolver);
@@ -174,17 +160,19 @@ public abstract class AbstractTemplateViewResolverProperties {
 		resolver.setPrefix(getPrefix());
 		resolver.setSuffix(getSuffix());
 		resolver.setCache(isCache());
-		resolver.setContentType(getContentType());
+		if (getContentType() != null) {
+			resolver.setContentType(getContentType().toString());
+		}
 		resolver.setViewNames(getViewNames());
 		resolver.setExposeRequestAttributes(isExposeRequestAttributes());
 		resolver.setAllowRequestOverride(isAllowRequestOverride());
+		resolver.setAllowSessionOverride(isAllowSessionOverride());
 		resolver.setExposeSessionAttributes(isExposeSessionAttributes());
 		resolver.setExposeSpringMacroHelpers(isExposeSpringMacroHelpers());
 		resolver.setRequestContextAttribute(getRequestContextAttribute());
 		// The resolver usually acts as a fallback resolver (e.g. like a
 		// InternalResourceViewResolver) so it needs to have low precedence
 		resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
-
 	}
 
 }

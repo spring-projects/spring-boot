@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.metrics.export;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.metrics.Iterables;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
@@ -25,12 +26,16 @@ import org.springframework.boot.actuate.metrics.rich.InMemoryRichGaugeRepository
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link RichGaugeExporter}.
+ *
  * @author Dave Syer
  */
 public class RichGaugeExporterTests {
 
 	private final InMemoryRichGaugeRepository reader = new InMemoryRichGaugeRepository();
+
 	private final InMemoryMetricRepository writer = new InMemoryMetricRepository();
+
 	private final RichGaugeExporter exporter = new RichGaugeExporter(this.reader,
 			this.writer);
 

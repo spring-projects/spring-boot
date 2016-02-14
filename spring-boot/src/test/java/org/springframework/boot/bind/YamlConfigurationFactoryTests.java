@@ -24,11 +24,12 @@ import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
 
 import org.junit.Test;
+import org.yaml.snakeyaml.error.YAMLException;
+
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -87,8 +88,8 @@ public class YamlConfigurationFactoryTests {
 
 	@Test(expected = BindException.class)
 	public void missingPropertyCausesValidationError() throws Exception {
-		this.validator = new SpringValidatorAdapter(Validation
-				.buildDefaultValidatorFactory().getValidator());
+		this.validator = new SpringValidatorAdapter(
+				Validation.buildDefaultValidatorFactory().getValidator());
 		createFoo("bar: blah");
 	}
 

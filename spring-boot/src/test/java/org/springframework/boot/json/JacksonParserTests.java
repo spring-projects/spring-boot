@@ -21,10 +21,11 @@ package org.springframework.boot.json;
  *
  * @author Dave Syer
  */
-public class JacksonParserTests extends SimpleJsonParserTests {
+public class JacksonParserTests extends AbstractJsonParserTests {
 
 	@Override
 	protected JsonParser getParser() {
 		return new JacksonJsonParser();
 	}
+
 }

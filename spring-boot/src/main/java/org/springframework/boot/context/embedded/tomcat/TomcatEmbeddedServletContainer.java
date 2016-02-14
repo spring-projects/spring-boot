@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,6 +29,7 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.util.Assert;
@@ -44,7 +45,8 @@ import org.springframework.util.Assert;
  */
 public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer {
 
-	private final Log logger = LogFactory.getLog(TomcatEmbeddedServletContainer.class);
+	private static final Log logger = LogFactory
+			.getLog(TomcatEmbeddedServletContainer.class);
 
 	private static AtomicInteger containerCounter = new AtomicInteger(-1);
 
@@ -75,6 +77,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 	}
 
 	private synchronized void initialize() throws EmbeddedServletContainerException {
+		TomcatEmbeddedServletContainer.logger
+				.info("Tomcat initialized with port(s): " + getPortsDescription(false));
 		try {
 			addInstanceIdToEngineName();
 
@@ -92,8 +96,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			startDaemonAwaitThread();
 		}
 		catch (Exception ex) {
-			throw new EmbeddedServletContainerException(
-					"Unable to start embedded Tomcat", ex);
+			throw new EmbeddedServletContainerException("Unable to start embedded Tomcat",
+					ex);
 		}
 	}
 
@@ -130,10 +134,12 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	private void startDaemonAwaitThread() {
 		Thread awaitThread = new Thread("container-" + (containerCounter.get())) {
+
 			@Override
 			public void run() {
 				TomcatEmbeddedServletContainer.this.tomcat.getServer().await();
-			};
+			}
+
 		};
 		awaitThread.setDaemon(false);
 		awaitThread.start();
@@ -141,17 +147,23 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	@Override
 	public void start() throws EmbeddedServletContainerException {
-		addPreviouslyRemovedConnectors();
-		Connector connector = this.tomcat.getConnector();
-		if (connector != null && this.autoStart) {
-			startConnector(connector);
+		try {
+			addPreviouslyRemovedConnectors();
+			Connector connector = this.tomcat.getConnector();
+			if (connector != null && this.autoStart) {
+				startConnector(connector);
+			}
+			// Ensure process isn't left running if it actually failed to start
+			if (connectorsHaveFailedToStart()) {
+				stopSilently();
+				throw new IllegalStateException("Tomcat connector in failed state");
+			}
+			TomcatEmbeddedServletContainer.logger
+					.info("Tomcat started on port(s): " + getPortsDescription(true));
 		}
-
-		// Ensure process isn't left running if it actually failed to start
-
-		if (connectorsHaveFailedToStart()) {
-			stopSilently();
-			throw new IllegalStateException("Tomcat connector in failed state");
+		catch (Exception ex) {
+			throw new EmbeddedServletContainerException(
+					"Unable to start embedded Tomcat servlet container", ex);
 		}
 	}
 
@@ -169,6 +181,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			this.tomcat.stop();
 		}
 		catch (LifecycleException ex) {
+			// Ignore
 		}
 	}
 
@@ -193,7 +206,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			connector.getProtocolHandler().stop();
 		}
 		catch (Exception ex) {
-			this.logger.error("Cannot pause connector: ", ex);
+			TomcatEmbeddedServletContainer.logger.error("Cannot pause connector: ", ex);
 		}
 	}
 
@@ -204,10 +217,9 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 					((TomcatEmbeddedContext) child).deferredLoadOnStartup();
 				}
 			}
-			logPorts();
 		}
 		catch (Exception ex) {
-			this.logger.error("Cannot start connector: ", ex);
+			TomcatEmbeddedServletContainer.logger.error("Cannot start connector: ", ex);
 			throw new EmbeddedServletContainerException(
 					"Unable to start embedded Tomcat connectors", ex);
 		}
@@ -215,16 +227,6 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	Map<Service, Connector[]> getServiceConnectors() {
 		return this.serviceConnectors;
-	}
-
-	private void logPorts() {
-		StringBuilder ports = new StringBuilder();
-		for (Connector additionalConnector : this.tomcat.getService().findConnectors()) {
-			ports.append(ports.length() == 0 ? "" : " ");
-			ports.append(additionalConnector.getLocalPort() + "/"
-					+ additionalConnector.getScheme());
-		}
-		this.logger.info("Tomcat started on port(s): " + ports.toString());
 	}
 
 	@Override
@@ -247,6 +249,16 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		}
 	}
 
+	private String getPortsDescription(boolean localPort) {
+		StringBuilder ports = new StringBuilder();
+		for (Connector connector : this.tomcat.getService().findConnectors()) {
+			ports.append(ports.length() == 0 ? "" : " ");
+			int port = (localPort ? connector.getLocalPort() : connector.getPort());
+			ports.append(port + " (" + connector.getScheme() + ")");
+		}
+		return ports.toString();
+	}
+
 	@Override
 	public int getPort() {
 		Connector connector = this.tomcat.getConnector();
@@ -258,6 +270,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	/**
 	 * Returns access to the underlying Tomcat server.
+	 * @return the Tomcat server
 	 */
 	public Tomcat getTomcat() {
 		return this.tomcat;

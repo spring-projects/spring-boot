@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,9 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -48,6 +50,14 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
+	public void retrySample() throws Exception {
+		String output = this.cli.run("retry.groovy");
+		URI scriptUri = new File("samples/retry.groovy").toURI();
+		assertTrue("Wrong output: " + output,
+				output.contains("Hello World! From " + scriptUri));
+	}
+
+	@Test
 	public void beansSample() throws Exception {
 		this.cli.run("beans.groovy");
 		String output = this.cli.getHttpOutput();
@@ -65,6 +75,15 @@ public class SampleIntegrationTests {
 		String output = this.cli.run("job.groovy", "foo=bar");
 		assertTrue("Wrong output: " + output,
 				output.contains("completed with the following parameters"));
+	}
+
+	@Test
+	public void oauth2Sample() throws Exception {
+		String output = this.cli.run("oauth2.groovy");
+		assertTrue("Wrong output: " + output,
+				output.contains("security.oauth2.client.clientId"));
+		assertTrue("Wrong output: " + output,
+				output.contains("security.oauth2.client.secret ="));
 	}
 
 	@Test
@@ -151,6 +170,12 @@ public class SampleIntegrationTests {
 	public void deviceSample() throws Exception {
 		this.cli.run("device.groovy");
 		assertEquals("Hello Normal Device!", this.cli.getHttpOutput());
+	}
+
+	@Test
+	public void caching() throws Exception {
+		this.cli.run("caching.groovy");
+		assertThat(this.cli.getOutput(), containsString("Hello World"));
 	}
 
 }

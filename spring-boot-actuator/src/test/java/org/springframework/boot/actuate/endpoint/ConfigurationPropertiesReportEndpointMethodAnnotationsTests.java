@@ -21,7 +21,7 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -32,6 +32,11 @@ import org.springframework.context.annotation.Configuration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+/**
+ * Tests for {@link ConfigurationPropertiesReportEndpoint} when used with bean methods.
+ *
+ * @author Dave Syer
+ */
 public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 
 	private AnnotationConfigApplicationContext context;
@@ -86,11 +91,8 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 	public static class Config {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint(
-				ConfigurationBeanFactoryMetaData beanFactoryMetaData) {
-			ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
-			endpoint.setConfigurationBeanFactoryMetaData(beanFactoryMetaData);
-			return endpoint;
+		public ConfigurationPropertiesReportEndpoint endpoint() {
+			return new ConfigurationPropertiesReportEndpoint();
 		}
 
 		@Bean
@@ -112,11 +114,8 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 	public static class Other {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint(
-				ConfigurationBeanFactoryMetaData beanFactoryMetaData) {
-			ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
-			endpoint.setConfigurationBeanFactoryMetaData(beanFactoryMetaData);
-			return endpoint;
+		public ConfigurationPropertiesReportEndpoint endpoint() {
+			return new ConfigurationPropertiesReportEndpoint();
 		}
 
 		@Bean

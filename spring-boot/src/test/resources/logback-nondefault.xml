@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}tmp.log}"/>
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>${LOG_FILE} [%t] ${PID:-????} %c{1}: %m%n</pattern>
+			<pattern>${LOG_FILE} [%t] ${PID:-????} %c{1}: %m%n BOOTBOOT</pattern>
 		</encoder>
 	</appender>
 	<root level="INFO">

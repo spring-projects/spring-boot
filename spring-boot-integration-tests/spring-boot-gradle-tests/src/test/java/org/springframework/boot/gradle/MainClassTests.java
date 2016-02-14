@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,9 @@ import java.io.IOException;
 import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 /**
- * Tests for using the Gradle plugin's support for installing artifacts
+ * Tests for configuring a project's main class
  *
  * @author Dave Syer
  */
@@ -32,16 +31,15 @@ public class MainClassTests {
 
 	private static ProjectConnection project;
 
-	private static final String BOOT_VERSION = ManagedDependencies.get()
-			.find("spring-boot").getVersion();
+	private static final String BOOT_VERSION = Versions.getBootVersion();
 
 	@BeforeClass
 	public static void createProject() throws IOException {
-		project = new ProjectCreator().createProject("main-in-run");
+		project = new ProjectCreator().createProject("main-in-boot-run");
 	}
 
 	@Test
-	public void buildFromRunTask() {
+	public void mainFromBootRun() {
 		project.newBuild().forTasks("build")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "--info").run();
 	}

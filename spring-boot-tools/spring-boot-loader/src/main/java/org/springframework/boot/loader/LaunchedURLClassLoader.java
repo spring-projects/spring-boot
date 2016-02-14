@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,14 +27,18 @@ import java.util.Enumeration;
 
 import org.springframework.boot.loader.jar.Handler;
 import org.springframework.boot.loader.jar.JarFile;
+import org.springframework.lang.UsesJava7;
 
 /**
  * {@link ClassLoader} used by the {@link Launcher}.
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
+
+	private static LockProvider LOCK_PROVIDER = setupLockProvider();
 
 	private final ClassLoader rootClassLoader;
 
@@ -58,6 +62,11 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		return null;
 	}
 
+	/**
+	 * Gets the resource with the given {@code name}. Unlike a standard
+	 * {@link ClassLoader}, this method will first search the root class loader. If the
+	 * resource is not found, this method will call {@link #findResource(String)}.
+	 */
 	@Override
 	public URL getResource(String name) {
 		URL url = null;
@@ -73,7 +82,13 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			if (name.equals("") && hasURLs()) {
 				return getURLs()[0];
 			}
-			return super.findResource(name);
+			Handler.setUseFastConnectionExceptions(true);
+			try {
+				return super.findResource(name);
+			}
+			finally {
+				Handler.setUseFastConnectionExceptions(false);
+			}
 		}
 		catch (IllegalArgumentException ex) {
 			return null;
@@ -85,39 +100,32 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		if (name.equals("") && hasURLs()) {
 			return Collections.enumeration(Arrays.asList(getURLs()));
 		}
-		return super.findResources(name);
+		Handler.setUseFastConnectionExceptions(true);
+		try {
+			return super.findResources(name);
+		}
+		finally {
+			Handler.setUseFastConnectionExceptions(false);
+		}
 	}
 
 	private boolean hasURLs() {
 		return getURLs().length > 0;
 	}
 
+	/**
+	 * Gets the resources with the given {@code name}. Returns a combination of the
+	 * resources found by {@link #findResources(String)} and from
+	 * {@link ClassLoader#getResources(String) getResources(String)} on the root class
+	 * loader, if any.
+	 */
 	@Override
 	public Enumeration<URL> getResources(String name) throws IOException {
 		if (this.rootClassLoader == null) {
 			return findResources(name);
 		}
-
-		final Enumeration<URL> rootResources = this.rootClassLoader.getResources(name);
-		final Enumeration<URL> localResources = findResources(name);
-
-		return new Enumeration<URL>() {
-
-			@Override
-			public boolean hasMoreElements() {
-				return rootResources.hasMoreElements()
-						|| localResources.hasMoreElements();
-			}
-
-			@Override
-			public URL nextElement() {
-				if (rootResources.hasMoreElements()) {
-					return rootResources.nextElement();
-				}
-				return localResources.nextElement();
-			}
-
-		};
+		return new ResourceEnumeration(this.rootClassLoader.getResources(name),
+				findResources(name));
 	}
 
 	/**
@@ -126,7 +134,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
-		synchronized (this) {
+		synchronized (LaunchedURLClassLoader.LOCK_PROVIDER.getLock(this, name)) {
 			Class<?> loadedClass = findLoadedClass(name);
 			if (loadedClass == null) {
 				Handler.setUseFastConnectionExceptions(true);
@@ -153,6 +161,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			}
 		}
 		catch (Exception ex) {
+			// Ignore and continue
 		}
 
 		// 2) Try to find locally
@@ -162,6 +171,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			return cls;
 		}
 		catch (Exception ex) {
+			// Ignore and continue
 		}
 
 		// 3) Use standard loading
@@ -203,7 +213,8 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 								// manifest
 								if (jarFile.getJarEntryData(path) != null
 										&& jarFile.getManifest() != null) {
-									definePackage(packageName, jarFile.getManifest(), url);
+									definePackage(packageName, jarFile.getManifest(),
+											url);
 									return null;
 								}
 
@@ -220,6 +231,78 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		catch (java.security.PrivilegedActionException ex) {
 			// Ignore
 		}
+	}
+
+	@UsesJava7
+	private static LockProvider setupLockProvider() {
+		try {
+			ClassLoader.registerAsParallelCapable();
+			return new Java7LockProvider();
+		}
+		catch (NoSuchMethodError ex) {
+			return new LockProvider();
+		}
+	}
+
+	/**
+	 * Strategy used to provide the synchronize lock object to use when loading classes.
+	 */
+	private static class LockProvider {
+
+		public Object getLock(LaunchedURLClassLoader classLoader, String className) {
+			return classLoader;
+		}
+
+	}
+
+	/**
+	 * Java 7 specific {@link LockProvider}.
+	 */
+	@UsesJava7
+	private static class Java7LockProvider extends LockProvider {
+
+		@Override
+		public Object getLock(LaunchedURLClassLoader classLoader, String className) {
+			return classLoader.getClassLoadingLock(className);
+		}
+
+	}
+
+	/**
+	 * {@link Enumeration} implementation used for {@code getResources()}.
+	 */
+	private static class ResourceEnumeration implements Enumeration<URL> {
+
+		private final Enumeration<URL> rootResources;
+
+		private final Enumeration<URL> localResources;
+
+		ResourceEnumeration(Enumeration<URL> rootResources,
+				Enumeration<URL> localResources) {
+			this.rootResources = rootResources;
+			this.localResources = localResources;
+		}
+
+		@Override
+		public boolean hasMoreElements() {
+			try {
+				Handler.setUseFastConnectionExceptions(true);
+				return this.rootResources.hasMoreElements()
+						|| this.localResources.hasMoreElements();
+			}
+			finally {
+				Handler.setUseFastConnectionExceptions(false);
+			}
+		}
+
+		@Override
+		public URL nextElement() {
+			if (this.rootResources.hasMoreElements()) {
+				return this.rootResources.nextElement();
+			}
+			return this.localResources.nextElement();
+		}
+
 	}
 
 }

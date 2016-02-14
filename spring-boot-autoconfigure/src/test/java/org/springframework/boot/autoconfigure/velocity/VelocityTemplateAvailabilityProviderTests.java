@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.velocity;
 
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -40,8 +41,8 @@ public class VelocityTemplateAvailabilityProviderTests {
 
 	@Test
 	public void availabilityOfTemplateInDefaultLocation() {
-		assertTrue(this.provider.isTemplateAvailable("home", this.environment, getClass()
-				.getClassLoader(), this.resourceLoader));
+		assertTrue(this.provider.isTemplateAvailable("home", this.environment,
+				getClass().getClassLoader(), this.resourceLoader));
 	}
 
 	@Test
@@ -54,7 +55,6 @@ public class VelocityTemplateAvailabilityProviderTests {
 	public void availabilityOfTemplateWithCustomLoaderPath() {
 		this.environment.setProperty("spring.velocity.resourceLoaderPath",
 				"classpath:/custom-templates/");
-
 		assertTrue(this.provider.isTemplateAvailable("custom", this.environment,
 				getClass().getClassLoader(), this.resourceLoader));
 	}
@@ -62,7 +62,6 @@ public class VelocityTemplateAvailabilityProviderTests {
 	@Test
 	public void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.velocity.prefix", "prefix/");
-
 		assertTrue(this.provider.isTemplateAvailable("prefixed", this.environment,
 				getClass().getClassLoader(), this.resourceLoader));
 	}
@@ -70,7 +69,6 @@ public class VelocityTemplateAvailabilityProviderTests {
 	@Test
 	public void availabilityOfTemplateWithCustomSuffix() {
 		this.environment.setProperty("spring.velocity.suffix", ".freemarker");
-
 		assertTrue(this.provider.isTemplateAvailable("suffixed", this.environment,
 				getClass().getClassLoader(), this.resourceLoader));
 	}

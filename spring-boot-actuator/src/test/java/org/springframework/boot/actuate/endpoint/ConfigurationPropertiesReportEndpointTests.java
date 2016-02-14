@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,31 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public class ConfigurationPropertiesReportEndpointTests extends
-		AbstractEndpointTests<ConfigurationPropertiesReportEndpoint> {
+/**
+ * Tests for {@link ConfigurationPropertiesReportEndpoint}.
+ *
+ * @author Dave Syer
+ */
+public class ConfigurationPropertiesReportEndpointTests
+		extends AbstractEndpointTests<ConfigurationPropertiesReportEndpoint> {
 
 	public ConfigurationPropertiesReportEndpointTests() {
 		super(Config.class, ConfigurationPropertiesReportEndpoint.class, "configprops",
@@ -70,13 +80,111 @@ public class ConfigurationPropertiesReportEndpointTests extends
 	@SuppressWarnings("unchecked")
 	public void testKeySanitization() throws Exception {
 		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		report.setKeysToSanitize(new String[] { "property" });
+		report.setKeysToSanitize("property");
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
 				.get("testProperties")).get("properties");
 		assertNotNull(nestedProperties);
 		assertEquals("123456", nestedProperties.get("dbPassword"));
 		assertEquals("******", nestedProperties.get("myTestProperty"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testKeySanitizationWithCustomPattern() throws Exception {
+		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
+		report.setKeysToSanitize(".*pass.*");
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+				.get("testProperties")).get("properties");
+		assertNotNull(nestedProperties);
+		assertEquals("******", nestedProperties.get("dbPassword"));
+		assertEquals("654321", nestedProperties.get("myTestProperty"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testKeySanitizationWithCustomKeysByEnvironment() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"endpoints.configprops.keys-to-sanitize:property");
+		this.context.register(Config.class);
+		this.context.refresh();
+		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+				.get("testProperties")).get("properties");
+		assertNotNull(nestedProperties);
+		assertEquals("123456", nestedProperties.get("dbPassword"));
+		assertEquals("******", nestedProperties.get("myTestProperty"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testKeySanitizationWithCustomPatternByEnvironment() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"endpoints.configprops.keys-to-sanitize: .*pass.*");
+		this.context.register(Config.class);
+		this.context.refresh();
+		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+				.get("testProperties")).get("properties");
+		assertNotNull(nestedProperties);
+		assertEquals("******", nestedProperties.get("dbPassword"));
+		assertEquals("654321", nestedProperties.get("myTestProperty"));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testKeySanitizationWithCustomPatternAndKeyByEnvironment()
+			throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"endpoints.configprops.keys-to-sanitize: .*pass.*, property");
+		this.context.register(Config.class);
+		this.context.refresh();
+		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+				.get("testProperties")).get("properties");
+		assertNotNull(nestedProperties);
+		assertEquals("******", nestedProperties.get("dbPassword"));
+		assertEquals("******", nestedProperties.get("myTestProperty"));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testKeySanitizationWithCustomPatternUsingCompositeKeys()
+			throws Exception {
+		// gh-4415
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"endpoints.configprops.keys-to-sanitize: .*\\.secrets\\..*, .*\\.hidden\\..*");
+		this.context.register(Config.class);
+		this.context.refresh();
+		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+				.get("testProperties")).get("properties");
+		assertNotNull(nestedProperties);
+		Map<String, Object> secrets = (Map<String, Object>) nestedProperties
+				.get("secrets");
+		Map<String, Object> hidden = (Map<String, Object>) nestedProperties.get("hidden");
+		assertEquals("******", secrets.get("mine"));
+		assertEquals("******", secrets.get("yours"));
+		assertEquals("******", hidden.get("mine"));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void mixedBoolean() throws Exception {
+		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+				.get("testProperties")).get("properties");
+		assertThat(nestedProperties.get("mixedBoolean"), equalTo((Object) true));
 	}
 
 	@Configuration
@@ -111,6 +219,17 @@ public class ConfigurationPropertiesReportEndpointTests extends
 
 		private String myTestProperty = "654321";
 
+		private Boolean mixedBoolean = true;
+
+		private Map<String, Object> secrets = new HashMap<String, Object>();
+
+		private Hidden hidden = new Hidden();
+
+		public TestProperties() {
+			this.secrets.put("mine", "myPrivateThing");
+			this.secrets.put("yours", "yourPrivateThing");
+		}
+
 		public String getDbPassword() {
 			return this.dbPassword;
 		}
@@ -125,6 +244,44 @@ public class ConfigurationPropertiesReportEndpointTests extends
 
 		public void setMyTestProperty(String myTestProperty) {
 			this.myTestProperty = myTestProperty;
+		}
+
+		public boolean isMixedBoolean() {
+			return (this.mixedBoolean == null ? false : this.mixedBoolean);
+		}
+
+		public void setMixedBoolean(Boolean mixedBoolean) {
+			this.mixedBoolean = mixedBoolean;
+		}
+
+		public Map<String, Object> getSecrets() {
+			return this.secrets;
+		}
+
+		public void setSecrets(Map<String, Object> secrets) {
+			this.secrets = secrets;
+		}
+
+		public Hidden getHidden() {
+			return this.hidden;
+		}
+
+		public void setHidden(Hidden hidden) {
+			this.hidden = hidden;
+		}
+
+		public static class Hidden {
+
+			private String mine = "mySecret";
+
+			public String getMine() {
+				return this.mine;
+			}
+
+			public void setMine(String mine) {
+				this.mine = mine;
+			}
+
 		}
 
 	}

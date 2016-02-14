@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.flywaydb.core.Flyway;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -35,18 +37,41 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "flyway", ignoreUnknownFields = true)
 public class FlywayProperties {
 
-	private List<String> locations = Arrays.asList("db/migration");
+	/**
+	 * Locations of migrations scripts.
+	 */
+	private List<String> locations = new ArrayList<String>(Arrays.asList("db/migration"));
 
+	/**
+	 * Check that migration scripts location exists.
+	 */
 	private boolean checkLocation = false;
 
+	/**
+	 * Enable flyway.
+	 */
 	private boolean enabled = true;
 
+	/**
+	 * Login user of the database to migrate.
+	 */
 	private String user;
 
+	/**
+	 * Login password of the database to migrate.
+	 */
 	private String password;
 
+	/**
+	 * JDBC url of the database to migrate. If not set, the primary configured data source
+	 * is used.
+	 */
 	private String url;
 
+	/**
+	 * SQL statements to execute to initialize a connection immediately after obtaining
+	 * it.
+	 */
 	private List<String> initSqls = Collections.emptyList();
 
 	public void setLocations(List<String> locations) {

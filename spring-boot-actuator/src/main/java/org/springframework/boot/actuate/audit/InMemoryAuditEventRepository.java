@@ -46,7 +46,8 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 	}
 
 	/**
-	 * @param capacity the capacity to set
+	 * Set the capacity of this event repository.
+	 * @param capacity the capacity
 	 */
 	public synchronized void setCapacity(int capacity) {
 		this.events = new AuditEvent[capacity];

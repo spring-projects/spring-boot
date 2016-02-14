@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,55 +16,12 @@
 
 package org.springframework.boot.maven;
 
-import org.apache.maven.plugins.annotations.Parameter;
-
 /**
  * A model for a dependency to exclude.
  *
  * @author Stephane Nicoll
  * @since 1.1
  */
-public class Exclude {
+public class Exclude extends FilterableDependency {
 
-	/**
-	 * The groupId of the artifact to exclude.
-	 */
-	@Parameter(required = true)
-	private String groupId;
-
-	/**
-	 * The artifactId of the artifact to exclude.
-	 */
-	@Parameter(required = true)
-	private String artifactId;
-
-	/**
-	 * The classifier of the artifact to exclude
-	 */
-	@Parameter
-	private String classifier;
-
-	public String getGroupId() {
-		return this.groupId;
-	}
-
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
-
-	public String getArtifactId() {
-		return this.artifactId;
-	}
-
-	public void setArtifactId(String artifactId) {
-		this.artifactId = artifactId;
-	}
-
-	public String getClassifier() {
-		return this.classifier;
-	}
-
-	public void setClassifier(String classifier) {
-		this.classifier = classifier;
-	}
 }

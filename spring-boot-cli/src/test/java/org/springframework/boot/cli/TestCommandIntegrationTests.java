@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.boot.cli.command.test.TestCommand;
 
 import static org.hamcrest.Matchers.containsString;
@@ -41,12 +42,12 @@ public class TestCommandIntegrationTests {
 	public CliTester cli = new CliTester("test-samples/");
 
 	@Before
-	public void setup() throws Exception {
+	public void setUp() throws Exception {
 		System.setProperty("disableSpringSnapshotRepos", "false");
 	}
 
 	@After
-	public void teardown() {
+	public void tearDown() {
 		System.clearProperty("disableSpringSnapshotRepos");
 	}
 

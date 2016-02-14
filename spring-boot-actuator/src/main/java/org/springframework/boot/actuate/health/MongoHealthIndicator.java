@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.health;
 
+import com.mongodb.CommandResult;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.Assert;
-
-import com.mongodb.CommandResult;
 
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for

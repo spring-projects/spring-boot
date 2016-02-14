@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringJUnitTests.TestConfiguration;
@@ -34,7 +35,7 @@ import static org.junit.Assert.assertNotNull;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestConfiguration.class)
+@SpringApplicationConfiguration(TestConfiguration.class)
 public class SpringJUnitTests {
 
 	@Autowired

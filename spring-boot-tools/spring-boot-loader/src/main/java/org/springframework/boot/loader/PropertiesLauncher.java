@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,34 +52,34 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * well-behaved OS-level services than a model based on executable jars.
  * <p>
  * Looks in various places for a properties file to extract loader settings, defaulting to
- * <code>application.properties</code> either on the current classpath or in the current
+ * {@code application.properties} either on the current classpath or in the current
  * working directory. The name of the properties file can be changed by setting a System
- * property <code>loader.config.name</code> (e.g. <code>-Dloader.config.name=foo</code>
- * will look for <code>foo.properties</code>. If that file doesn't exist then tries
- * <code>loader.config.location</code> (with allowed prefixes <code>classpath:</code> and
- * <code>file:</code> or any valid URL). Once that file is located turns it into
- * Properties and extracts optional values (which can also be provided overridden as
- * System properties in case the file doesn't exist):
+ * property {@code loader.config.name} (e.g. {@code -Dloader.config.name=foo} will look
+ * for {@code foo.properties}. If that file doesn't exist then tries
+ * {@code loader.config.location} (with allowed prefixes {@code classpath:} and
+ * {@code file:} or any valid URL). Once that file is located turns it into Properties and
+ * extracts optional values (which can also be provided overridden as System properties in
+ * case the file doesn't exist):
  * <ul>
- * <li><code>loader.path</code>: a comma-separated list of directories to append to the
+ * <li>{@code loader.path}: a comma-separated list of directories to append to the
  * classpath (containing file resources and/or nested archives in *.jar or *.zip).
- * Defaults to <code>lib</code> (i.e. a directory in the current working directory)</li>
- * <li><code>loader.main</code>: the main method to delegate execution to once the class
- * loader is set up. No default, but will fall back to looking for a
- * <code>Start-Class</code> in a <code>MANIFEST.MF</code>, if there is one in
- * <code>${loader.home}/META-INF</code>.</li>
+ * Defaults to {@code lib} in your application archive</li>
+ * <li>{@code loader.main}: the main method to delegate execution to once the class loader
+ * is set up. No default, but will fall back to looking for a {@code Start-Class} in a
+ * {@code MANIFEST.MF}, if there is one in <code>${loader.home}/META-INF</code>.</li>
  * </ul>
  *
  * @author Dave Syer
  * @author Janne Valkealahti
+ * @author Andy Wilkinson
  */
 public class PropertiesLauncher extends Launcher {
 
-	private final Logger logger = Logger.getLogger(Launcher.class.getName());
+	private static final Logger logger = Logger.getLogger(Launcher.class.getName());
 
 	/**
 	 * Properties key for main class. As a manifest entry can also be specified as
-	 * <code>Start-Class</code>.
+	 * {@code Start-Class}.
 	 */
 	public static final String MAIN = "loader.main";
 
@@ -113,7 +113,7 @@ public class PropertiesLauncher extends Launcher {
 
 	/**
 	 * Properties key for config file location (including optional classpath:, file: or
-	 * URL prefix)
+	 * URL prefix).
 	 */
 	public static final String CONFIG_LOCATION = "loader.config.location";
 
@@ -132,6 +132,8 @@ public class PropertiesLauncher extends Launcher {
 
 	private final File home;
 
+	private final JavaAgentDetector javaAgentDetector;
+
 	private List<String> paths = new ArrayList<String>(DEFAULT_PATHS);
 
 	private final Properties properties = new Properties();
@@ -139,11 +141,16 @@ public class PropertiesLauncher extends Launcher {
 	private Archive parent;
 
 	public PropertiesLauncher() {
+		this(new InputArgumentsJavaAgentDetector());
+	}
+
+	PropertiesLauncher(JavaAgentDetector javaAgentDetector) {
 		if (!isDebug()) {
-			this.logger.setLevel(Level.SEVERE);
+			logger.setLevel(Level.SEVERE);
 		}
 		try {
 			this.home = getHomeDirectory();
+			this.javaAgentDetector = javaAgentDetector;
 			initializeProperties(this.home);
 			initializePaths();
 			this.parent = createArchive();
@@ -170,20 +177,21 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	protected File getHomeDirectory() {
-		return new File(SystemPropertyUtils.resolvePlaceholders(System.getProperty(HOME,
-				"${user.dir}")));
+		return new File(SystemPropertyUtils
+				.resolvePlaceholders(System.getProperty(HOME, "${user.dir}")));
 	}
 
 	private void initializeProperties(File home) throws Exception, IOException {
 		String config = "classpath:"
-				+ SystemPropertyUtils.resolvePlaceholders(SystemPropertyUtils
-						.getProperty(CONFIG_NAME, "application")) + ".properties";
-		config = SystemPropertyUtils.resolvePlaceholders(SystemPropertyUtils.getProperty(
-				CONFIG_LOCATION, config));
+				+ SystemPropertyUtils.resolvePlaceholders(
+						SystemPropertyUtils.getProperty(CONFIG_NAME, "application"))
+				+ ".properties";
+		config = SystemPropertyUtils.resolvePlaceholders(
+				SystemPropertyUtils.getProperty(CONFIG_LOCATION, config));
 		InputStream resource = getResource(config);
 
 		if (resource != null) {
-			this.logger.info("Found: " + config);
+			logger.info("Found: " + config);
 			try {
 				this.properties.load(resource);
 			}
@@ -198,9 +206,10 @@ public class PropertiesLauncher extends Launcher {
 					this.properties.put(key, value);
 				}
 			}
-			if (SystemPropertyUtils.resolvePlaceholders(
-					"${" + SET_SYSTEM_PROPERTIES + ":false}").equals("true")) {
-				this.logger.info("Adding resolved properties to System properties");
+			if (SystemPropertyUtils
+					.resolvePlaceholders("${" + SET_SYSTEM_PROPERTIES + ":false}")
+					.equals("true")) {
+				logger.info("Adding resolved properties to System properties");
 				for (Object key : Collections.list(this.properties.propertyNames())) {
 					String value = this.properties.getProperty((String) key);
 					System.setProperty((String) key, value);
@@ -208,7 +217,7 @@ public class PropertiesLauncher extends Launcher {
 			}
 		}
 		else {
-			this.logger.info("Not found: " + config);
+			logger.info("Not found: " + config);
 		}
 
 	}
@@ -243,13 +252,13 @@ public class PropertiesLauncher extends Launcher {
 			config = config.substring(1);
 		}
 		config = "/" + config;
-		this.logger.fine("Trying classpath: " + config);
+		logger.fine("Trying classpath: " + config);
 		return getClass().getResourceAsStream(config);
 	}
 
 	private InputStream getFileResource(String config) throws Exception {
 		File file = new File(config);
-		this.logger.fine("Trying file: " + config);
+		logger.fine("Trying file: " + config);
 		if (file.canRead()) {
 			return new FileInputStream(file);
 		}
@@ -278,8 +287,8 @@ public class PropertiesLauncher extends Launcher {
 		// Try a URL connection content-length header...
 		URLConnection connection = url.openConnection();
 		try {
-			connection.setUseCaches(connection.getClass().getSimpleName()
-					.startsWith("JNLP"));
+			connection.setUseCaches(
+					connection.getClass().getSimpleName().startsWith("JNLP"));
 			if (connection instanceof HttpURLConnection) {
 				HttpURLConnection httpConnection = (HttpURLConnection) connection;
 				httpConnection.setRequestMethod("HEAD");
@@ -306,9 +315,10 @@ public class PropertiesLauncher extends Launcher {
 			path = this.properties.getProperty(PATH);
 		}
 		if (path != null) {
-			this.paths = parsePathsProperty(SystemPropertyUtils.resolvePlaceholders(path));
+			this.paths = parsePathsProperty(
+					SystemPropertyUtils.resolvePlaceholders(path));
 		}
-		this.logger.info("Nested archive paths: " + this.paths);
+		logger.info("Nested archive paths: " + this.paths);
 	}
 
 	private List<String> parsePathsProperty(String commaSeparatedPaths) {
@@ -344,8 +354,8 @@ public class PropertiesLauncher extends Launcher {
 	protected String getMainClass() throws Exception {
 		String mainClass = getProperty(MAIN, "Start-Class");
 		if (mainClass == null) {
-			throw new IllegalStateException("No '" + MAIN
-					+ "' or 'Start-Class' specified");
+			throw new IllegalStateException(
+					"No '" + MAIN + "' or 'Start-Class' specified");
 		}
 		return mainClass;
 	}
@@ -356,7 +366,7 @@ public class PropertiesLauncher extends Launcher {
 		String customLoaderClassName = getProperty("loader.classLoader");
 		if (customLoaderClassName != null) {
 			loader = wrapWithCustomClassLoader(loader, customLoaderClassName);
-			this.logger.info("Using custom class loader: " + customLoaderClassName);
+			logger.info("Using custom class loader: " + customLoaderClassName);
 		}
 		return loader;
 	}
@@ -365,8 +375,8 @@ public class PropertiesLauncher extends Launcher {
 	private ClassLoader wrapWithCustomClassLoader(ClassLoader parent,
 			String loaderClassName) throws Exception {
 
-		Class<ClassLoader> loaderClass = (Class<ClassLoader>) Class.forName(
-				loaderClassName, true, parent);
+		Class<ClassLoader> loaderClass = (Class<ClassLoader>) Class
+				.forName(loaderClassName, true, parent);
 
 		try {
 			return loaderClass.getConstructor(ClassLoader.class).newInstance(parent);
@@ -399,14 +409,14 @@ public class PropertiesLauncher extends Launcher {
 		String property = SystemPropertyUtils.getProperty(propertyKey);
 		if (property != null) {
 			String value = SystemPropertyUtils.resolvePlaceholders(property);
-			this.logger.fine("Property '" + propertyKey + "' from environment: " + value);
+			logger.fine("Property '" + propertyKey + "' from environment: " + value);
 			return value;
 		}
 
 		if (this.properties.containsKey(propertyKey)) {
-			String value = SystemPropertyUtils.resolvePlaceholders(this.properties
-					.getProperty(propertyKey));
-			this.logger.fine("Property '" + propertyKey + "' from properties: " + value);
+			String value = SystemPropertyUtils
+					.resolvePlaceholders(this.properties.getProperty(propertyKey));
+			logger.fine("Property '" + propertyKey + "' from properties: " + value);
 			return value;
 		}
 
@@ -415,7 +425,7 @@ public class PropertiesLauncher extends Launcher {
 			Manifest manifest = new ExplodedArchive(this.home, false).getManifest();
 			if (manifest != null) {
 				String value = manifest.getMainAttributes().getValue(manifestKey);
-				this.logger.fine("Property '" + manifestKey
+				logger.fine("Property '" + manifestKey
 						+ "' from home directory manifest: " + value);
 				return value;
 			}
@@ -429,8 +439,8 @@ public class PropertiesLauncher extends Launcher {
 		if (manifest != null) {
 			String value = manifest.getMainAttributes().getValue(manifestKey);
 			if (value != null) {
-				this.logger.fine("Property '" + manifestKey + "' from archive manifest: "
-						+ value);
+				logger.fine(
+						"Property '" + manifestKey + "' from archive manifest: " + value);
 				return value;
 			}
 		}
@@ -449,8 +459,6 @@ public class PropertiesLauncher extends Launcher {
 			}
 		}
 		addParentClassLoaderEntries(lib);
-		// Entries are reversed when added to the actual classpath
-		Collections.reverse(lib);
 		return lib;
 	}
 
@@ -462,20 +470,19 @@ public class PropertiesLauncher extends Launcher {
 			file = new File(this.home, root);
 		}
 		if (file.isDirectory()) {
-			this.logger.info("Adding classpath entries from " + file);
+			logger.info("Adding classpath entries from " + file);
 			Archive archive = new ExplodedArchive(file, false);
 			lib.add(archive);
 		}
 		Archive archive = getArchive(file);
 		if (archive != null) {
-			this.logger.info("Adding classpath entries from archive " + archive.getUrl()
-					+ root);
+			logger.info(
+					"Adding classpath entries from archive " + archive.getUrl() + root);
 			lib.add(archive);
 		}
 		Archive nested = getNestedArchive(root);
 		if (nested != null) {
-			this.logger.info("Adding classpath entries from nested " + nested.getUrl()
-					+ root);
+			logger.info("Adding classpath entries from nested " + nested.getUrl() + root);
 			lib.add(nested);
 		}
 		return lib;
@@ -509,25 +516,16 @@ public class PropertiesLauncher extends Launcher {
 		return new FilteredArchive(this.parent, filter);
 	}
 
-	private void addParentClassLoaderEntries(List<Archive> lib) throws IOException,
-			URISyntaxException {
+	private void addParentClassLoaderEntries(List<Archive> lib)
+			throws IOException, URISyntaxException {
 		ClassLoader parentClassLoader = getClass().getClassLoader();
 		List<Archive> urls = new ArrayList<Archive>();
 		for (URL url : getURLs(parentClassLoader)) {
-			if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
-				urls.add(new JarFileArchive(new File(url.toURI())));
-			}
-			else if (url.toString().endsWith("/*")) {
-				String name = url.getFile();
-				File dir = new File(name.substring(0, name.length() - 1));
-				if (dir.exists()) {
-					urls.add(new ExplodedArchive(new File(name.substring(0,
-							name.length() - 1)), false));
+			if (!this.javaAgentDetector.isJavaAgentJar(url)) {
+				Archive archive = createArchiveIfPossible(url);
+				if (archive != null) {
+					urls.add(archive);
 				}
-			}
-			else {
-				String filename = URLDecoder.decode(url.getFile(), "UTF-8");
-				urls.add(new ExplodedArchive(new File(filename)));
 			}
 		}
 		// The parent archive might have a "lib/" directory, meaning we are running from
@@ -540,6 +538,20 @@ public class PropertiesLauncher extends Launcher {
 				lib.add(archive);
 			}
 		}
+	}
+
+	private Archive createArchiveIfPossible(URL url)
+			throws IOException, URISyntaxException {
+		if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
+			return new JarFileArchive(new File(url.toURI()));
+		}
+		if (url.toString().endsWith("/*")) {
+			String name = url.getFile();
+			File dir = new File(name.substring(0, name.length() - 1));
+			return (dir.exists() ? new ExplodedArchive(dir, false) : null);
+		}
+		String filename = URLDecoder.decode(url.getFile(), "UTF-8");
+		return new ExplodedArchive(new File(filename));
 	}
 
 	private void addNestedArchivesFromParent(List<Archive> urls) {

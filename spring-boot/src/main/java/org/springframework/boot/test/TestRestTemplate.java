@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.test;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.protocol.HttpContext;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -36,6 +38,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
+import org.springframework.util.Base64Utils;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
@@ -50,6 +53,8 @@ import org.springframework.web.client.RestTemplate;
  * @author Phillip Webb
  */
 public class TestRestTemplate extends RestTemplate {
+
+	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	/**
 	 * Create a new {@link TestRestTemplate} instance.
@@ -68,8 +73,8 @@ public class TestRestTemplate extends RestTemplate {
 	public TestRestTemplate(String username, String password,
 			HttpClientOption... httpClientOptions) {
 		if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
-			setRequestFactory(new CustomHttpComponentsClientHttpRequestFactory(
-					httpClientOptions));
+			setRequestFactory(
+					new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
 		}
 		addAuthentication(username, password);
 		setErrorHandler(new DefaultResponseErrorHandler() {
@@ -85,8 +90,8 @@ public class TestRestTemplate extends RestTemplate {
 			return;
 		}
 		List<ClientHttpRequestInterceptor> interceptors = Collections
-				.<ClientHttpRequestInterceptor> singletonList(new BasicAuthorizationInterceptor(
-						username, password));
+				.<ClientHttpRequestInterceptor>singletonList(
+						new BasicAuthorizationInterceptor(username, password));
 		setRequestFactory(new InterceptingClientHttpRequestFactory(getRequestFactory(),
 				interceptors));
 	}
@@ -94,7 +99,7 @@ public class TestRestTemplate extends RestTemplate {
 	/**
 	 * Options used to customize the Apache Http Client if it is used.
 	 */
-	public static enum HttpClientOption {
+	public enum HttpClientOption {
 
 		/**
 		 * Enable cookies.
@@ -108,14 +113,14 @@ public class TestRestTemplate extends RestTemplate {
 
 	}
 
-	private static class BasicAuthorizationInterceptor implements
-			ClientHttpRequestInterceptor {
+	private static class BasicAuthorizationInterceptor
+			implements ClientHttpRequestInterceptor {
 
 		private final String username;
 
 		private final String password;
 
-		public BasicAuthorizationInterceptor(String username, String password) {
+		BasicAuthorizationInterceptor(String username, String password) {
 			this.username = username;
 			this.password = (password == null ? "" : password);
 		}
@@ -123,16 +128,19 @@ public class TestRestTemplate extends RestTemplate {
 		@Override
 		public ClientHttpResponse intercept(HttpRequest request, byte[] body,
 				ClientHttpRequestExecution execution) throws IOException {
-			byte[] token = Base64
-					.encode((this.username + ":" + this.password).getBytes());
-			request.getHeaders().add("Authorization", "Basic " + new String(token));
+			String token = Base64Utils.encodeToString(
+					(this.username + ":" + this.password).getBytes(UTF_8));
+			request.getHeaders().add("Authorization", "Basic " + token);
 			return execution.execute(request, body);
 		}
 
 	}
 
-	protected static class CustomHttpComponentsClientHttpRequestFactory extends
-			HttpComponentsClientHttpRequestFactory {
+	/**
+	 * {@link HttpComponentsClientHttpRequestFactory} to apply customizations.
+	 */
+	protected static class CustomHttpComponentsClientHttpRequestFactory
+			extends HttpComponentsClientHttpRequestFactory {
 
 		private final String cookieSpec;
 
@@ -142,8 +150,8 @@ public class TestRestTemplate extends RestTemplate {
 				HttpClientOption[] httpClientOptions) {
 			Set<HttpClientOption> options = new HashSet<TestRestTemplate.HttpClientOption>(
 					Arrays.asList(httpClientOptions));
-			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? CookieSpecs.STANDARD
-					: CookieSpecs.IGNORE_COOKIES);
+			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES)
+					? CookieSpecs.STANDARD : CookieSpecs.IGNORE_COOKIES);
 			this.enableRedirects = options.contains(HttpClientOption.ENABLE_REDIRECTS);
 		}
 

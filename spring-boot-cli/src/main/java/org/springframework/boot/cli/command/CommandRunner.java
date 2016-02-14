@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,9 @@ import org.springframework.util.StringUtils;
 /**
  * Main class used to run {@link Command}s.
  *
+ * @author Phillip Webb
  * @see #addCommand(Command)
  * @see CommandRunner#runAndHandleErrors(String[])
- * @author Phillip Webb
  */
 public class CommandRunner implements Iterable<Command> {
 
@@ -60,6 +60,7 @@ public class CommandRunner implements Iterable<Command> {
 	/**
 	 * Return the name of the runner or an empty string. Non-empty names will include a
 	 * trailing space character so that they can be used as a prefix.
+	 * @return the name of the runner
 	 */
 	public String getName() {
 		return this.name;
@@ -147,8 +148,8 @@ public class CommandRunner implements Iterable<Command> {
 	public Command findCommand(String name) {
 		for (Command candidate : this.commands) {
 			String candidateName = candidate.getName();
-			if (candidateName.equals(name)
-					|| (isOptionCommand(candidate) && ("--" + candidateName).equals(name))) {
+			if (candidateName.equals(name) || (isOptionCommand(candidate)
+					&& ("--" + candidateName).equals(name))) {
 				return candidate;
 			}
 		}
@@ -200,7 +201,8 @@ public class CommandRunner implements Iterable<Command> {
 	/**
 	 * Parse the arguments and run a suitable command.
 	 * @param args the arguments
-	 * @throws Exception
+	 * @return the outcome of the command
+	 * @throws Exception if the command fails
 	 */
 	protected ExitStatus run(String... args) throws Exception {
 		if (args.length == 0) {
@@ -278,8 +280,8 @@ public class CommandRunner implements Iterable<Command> {
 				String usageHelp = command.getUsageHelp();
 				String description = command.getDescription();
 				Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", command.getName(),
-						(usageHelp == null ? "" : usageHelp), (description == null ? ""
-								: description)));
+						(usageHelp == null ? "" : usageHelp),
+						(description == null ? "" : description)));
 			}
 		}
 		Log.info("");

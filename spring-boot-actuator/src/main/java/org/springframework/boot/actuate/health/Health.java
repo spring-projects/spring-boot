@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.util.Assert;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
+import org.springframework.util.Assert;
 
 /**
  * Carries information about the health of a component or subsystem.
@@ -68,7 +68,8 @@ public final class Health {
 	}
 
 	/**
-	 * @return the status of the health (never {@code null})
+	 * Return the status of the health.
+	 * @return the status (never {@code null})
 	 */
 	@JsonUnwrapped
 	public Status getStatus() {
@@ -76,7 +77,8 @@ public final class Health {
 	}
 
 	/**
-	 * @return the details of the health or an empty map.
+	 * Return the details of the health.
+	 * @return the details (or an empty map)
 	 */
 	@JsonAnyGetter
 	public Map<String, Object> getDetails() {
@@ -150,6 +152,7 @@ public final class Health {
 
 	/**
 	 * Create a new {@link Builder} instance with a specific status code.
+	 * @param statusCode the status code
 	 * @return a new {@link Builder} instance
 	 */
 	public static Builder status(String statusCode) {
@@ -158,6 +161,7 @@ public final class Health {
 
 	/**
 	 * Create a new {@link Builder} instance with a specific {@link Status}.
+	 * @param status the status
 	 * @return a new {@link Builder} instance
 	 */
 	public static Builder status(Status status) {
@@ -182,7 +186,7 @@ public final class Health {
 		}
 
 		/**
-		 * Create new Builder instance, setting status to given <code>status</code>.
+		 * Create new Builder instance, setting status to given {@code status}.
 		 * @param status the {@link Status} to use
 		 */
 		public Builder(Status status) {
@@ -192,8 +196,8 @@ public final class Health {
 		}
 
 		/**
-		 * Create new Builder instance, setting status to given <code>status</code> and
-		 * details to given <code>details</code>.
+		 * Create new Builder instance, setting status to given {@code status} and details
+		 * to given {@code details}.
 		 * @param status the {@link Status} to use
 		 * @param details the details {@link Map} to use
 		 */
@@ -215,7 +219,7 @@ public final class Health {
 		}
 
 		/**
-		 * Record detail using <code>key</code> and <code>value</code>.
+		 * Record detail using {@code key} and {@code value}.
 		 * @param key the detail key
 		 * @param data the detail data
 		 * @return this {@link Builder} instance
@@ -269,7 +273,8 @@ public final class Health {
 		}
 
 		/**
-		 * Set status to given <code>statusCode</code>.
+		 * Set status to given {@code statusCode}.
+		 * @param statusCode the status code
 		 * @return this {@link Builder} instance
 		 */
 		public Builder status(String statusCode) {
@@ -277,8 +282,8 @@ public final class Health {
 		}
 
 		/**
-		 * Set status to given {@link Status} instance
-		 * @param status
+		 * Set status to given {@link Status} instance.
+		 * @param status the status
 		 * @return this {@link Builder} instance
 		 */
 		public Builder status(Status status) {

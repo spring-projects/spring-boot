@@ -22,8 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,13 +47,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @ConditionalOnClass({ SitePreferenceHandlerInterceptor.class,
 		SitePreferenceHandlerMethodArgumentResolver.class })
 @AutoConfigureAfter(DeviceResolverAutoConfiguration.class)
-@ConditionalOnExpression("${spring.mobile.sitepreference.enabled:true}")
+@ConditionalOnProperty(prefix = "spring.mobile.sitepreference", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class SitePreferenceAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnWebApplication
-	protected static class SitePreferenceAutoConfigurationAdapter extends
-			WebMvcConfigurerAdapter {
+	protected static class SitePreferenceMvcConfiguration
+			extends WebMvcConfigurerAdapter {
 
 		@Autowired
 		private SitePreferenceHandlerInterceptor sitePreferenceHandlerInterceptor;

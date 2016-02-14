@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.loader;
 import java.net.URL;
 
 /**
- * A strategy for detecting Java agents
+ * A strategy for detecting Java agents.
  *
  * @author Andy Wilkinson
  * @since 1.1.0
@@ -30,7 +30,8 @@ public interface JavaAgentDetector {
 	 * Returns {@code true} if {@code url} points to a Java agent jar file, otherwise
 	 * {@code false} is returned.
 	 * @param url The url to examine
+	 * @return if the URL points to a Java agent
 	 */
-	public boolean isJavaAgentJar(URL url);
+	boolean isJavaAgentJar(URL url);
 
 }

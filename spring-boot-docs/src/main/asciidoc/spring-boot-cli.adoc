@@ -4,16 +4,17 @@
 [partintro]
 --
 The Spring Boot CLI is a command line tool that can be used if you want to quickly
-prototype with Spring. It allows you to run Groovy scripts, which means that you have a
-familiar Java-like syntax, without so much boilerplate code.
+develop with Spring. It allows you to run Groovy scripts, which means that you have a
+familiar Java-like syntax, without so much boilerplate code. You can also bootstrap
+a new project or write your own command for it.
 --
 
 
 
 [[cli-installation]]
 == Installing the CLI
-The Spring Boot CLI can be installed manually; using GVM (the Groovy Environment
-Manually) or using Homebrew if you are an OSX user. See
+The Spring Boot CLI can be installed manually; using SDKMAN! (the SDK Manager)
+or using Homebrew or MacPorts if you are an OSX user. See
 _<<getting-started.adoc#getting-started-installing-the-cli>>_
 in the "`Getting started`" section for comprehensive installation instructions.
 
@@ -80,6 +81,7 @@ is completely self-contained so you don't need any external Groovy installation.
 
 Here is an example "`hello world`" web application written in Groovy:
 
+.hello.groovy
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RestController
@@ -93,13 +95,35 @@ Here is an example "`hello world`" web application written in Groovy:
 	}
 ----
 
+To compile and run the application type:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ spring run hello.groovy
+----
+
+To pass command line arguments to the application, you need to use a `--` to separate
+them from the "`spring`" command arguments, e.g.
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ spring run hello.groovy -- --server.port=9000
+----
+
+To set JVM command line arguments you can use the `JAVA_OPTS` environment variable, e.g.
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ JAVA_OPTS=-Xmx1024m spring run hello.groovy
+----
+
 
 
 [[cli-deduced-grab-annotations]]
 ==== Deduced "`grab`" dependencies
 Standard Groovy includes a `@Grab` annotation which allows you to declare dependencies
 on a third-party libraries. This useful technique allows Groovy to download jars in the
-same way as Maven or Gradle would; but without requiring you to use a build tool.
+same way as Maven or Gradle would, but without requiring you to use a build tool.
 
 Spring Boot extends this technique further, and will attempt to deduce which libraries
 to "`grab`" based on your code. For example, since the `WebApplication` code above uses
@@ -113,13 +137,16 @@ The following items are used as "`grab hints`":
 |`JdbcTemplate`, `NamedParameterJdbcTemplate`, `DataSource`
 |JDBC Application.
 
-|`@EnableJmsMessaging`
+|`@EnableJms`
 |JMS Application.
+
+|`@EnableCaching`
+|Caching abstraction.
 
 |`@Test`
 |JUnit.
 
-|`@EnableRabbitMessaging`
+|`@EnableRabbit`
 |RabbitMQ.
 
 |`@EnableReactor`
@@ -165,24 +192,6 @@ metadata can be found in the <<appendix-dependency-versions, appendix>>.
 
 
 
-[[cli-default-grab-deduced-coordinates-custom-metadata]]
-===== Custom "`grab`" metadata
-Spring Boot provides a new annotation, `@GrabMetadata` that can be used to provide custom
-dependency metadata that overrides Spring Boot's defaults. This metadata is specified by
-using this annotation to provide the coordinates of one or more properties files (deployed
-to a Maven repository with a "type" identifier: "properties"). For example
-`@GrabMetadata(['com.example:versions-one:1.0.0', 'com.example.versions-two:1.0.0'])` will
-pick up files in a Maven repository in "com/example/versions-*/1.0.0/versions-*-1.0.0.properties". The
-properties files are applied in the order that they're specified. In the example above, this
-means that properties in `versions-two` will override properties in `versions-one`. Each entry
-in each properties file must be in the form `group:module=version`. You can use `@GrabMetadata`
-anywhere that you can use `@Grab`, however, to ensure consistent ordering of the metadata, you
-can only use `@GrabMetadata` at most once in your application. A useful source of dependency
-metadata (a superset of Spring Boot) is the http://platform.spring.io/[Spring IO Platform], e.g.
-`@GrabMetadata('io.spring.platform:platform-versions:1.0.0.RELEASE')`.
-
-
-
 [[cli-default-import-statements]]
 ==== Default import statements
 To help reduce the size of your Groovy code, several `import` statements are
@@ -201,6 +210,45 @@ Unlike the equivalent Java application, you do not need to include a
 `public static void main(String[] args)` method with your `Groovy` scripts. A
 `SpringApplication` is automatically created, with your compiled code acting as the
 `source`.
+
+
+
+[[cli-default-grab-deduced-coordinates-custom-dependency-management]]
+==== Custom dependency management
+By default, the CLI uses the dependency management declared in `spring-boot-dependencies`
+when resolving `@Grab` dependencies. Additional dependency management, that will override
+the default dependency management, can be configured using the `@DependencyManagementBom`
+annotation. The annotation's value should specify the coordinates
+(`groupId:artifactId:version`) of one or more Maven BOMs.
+
+For example, the following declaration:
+
+[source,groovy,indent=0]
+----
+	@DependencyManagementBom("com.example.custom-bom:1.0.0")
+----
+
+Will pick up  `custom-bom-1.0.0.pom` in a Maven repository under
+`com/example/custom-versions/1.0.0/`.
+
+When multiple BOMs are specified they are applied in the order that they're declared.
+For example:
+
+[source,java,indent=0]
+----
+	@DependencyManagementBom(["com.example.custom-bom:1.0.0",
+			"com.example.another-bom:1.0.0"])
+----
+
+indicates that dependency management in `another-bom` will override the dependency
+management in `custom-bom`.
+
+You can use `@DependencyManagementBom` anywhere that you can use `@Grab`, however, to
+ensure consistent ordering of the dependency management, you can only use
+`@DependencyManagementBom` at most once in your application. A useful source of
+dependency management (that is a superset of Spring Boot's dependency management) is the
+http://platform.spring.io/[Spring IO Platform], e.g.
+`@DependencyManagementBom('io.spring.platform:platform-bom:1.1.2.RELEASE')`.
 
 
 
@@ -292,6 +340,59 @@ See the output of `spring help jar` for more information.
 
 
 
+[[cli-init]]
+=== Initialize a new project
+The `init` command allows you to create a new project using https://start.spring.io
+without leaving the shell.  For example:
+
+[indent=0]
+----
+	$ spring init --dependencies=web,data-jpa my-project
+	Using service at https://start.spring.io
+	Project extracted to '/Users/developer/example/my-project'
+----
+
+This creates a `my-project` directory with a Maven-based project using
+`spring-boot-starter-web` and `spring-boot-starter-data-jpa`. You can list the
+capabilities of the service using the `--list` flag
+
+[indent=0]
+----
+	$ spring init --list
+	=======================================
+	Capabilities of https://start.spring.io
+	=======================================
+
+	Available dependencies:
+	-----------------------
+	actuator - Actuator: Production ready features to help you monitor and manage your application
+	...
+	web - Web: Support for full-stack web development, including Tomcat and spring-webmvc
+	websocket - Websocket: Support for WebSocket development
+	ws - WS: Support for Spring Web Services
+
+	Available project types:
+	------------------------
+	gradle-build -  Gradle Config [format:build, build:gradle]
+	gradle-project -  Gradle Project [format:project, build:gradle]
+	maven-build -  Maven POM [format:build, build:maven]
+	maven-project -  Maven Project [format:project, build:maven] (default)
+
+	...
+----
+
+The `init` command supports many options, check the `help` output for more details. For
+instance, the following command creates a gradle project using Java 8 and `war` packaging:
+
+[indent=0]
+----
+	$ spring init --build=gradle --java-version=1.8 --dependencies=websocket --packaging=war sample-app.zip
+	Using service at https://start.spring.io
+	Content saved to 'sample-app.zip'
+----
+
+
+
 [[cli-shell]]
 === Using the embedded shell
 Spring Boot includes command-line completion scripts for BASH and zsh shells. If you
@@ -316,6 +417,42 @@ From inside the embedded shell you can run other commands directly:
 The embedded shell supports ANSI color output as well as `tab` completion. If you need
 to run a native command you can use the `$` prefix. Hitting `ctrl-c` will exit the
 embedded shell.
+
+
+
+[[cli-install-uninstall]]
+=== Adding extensions to the CLI
+You can add extensions to the CLI using the `install` command. The command takes one
+or more sets of artifact coordinates in the format `group:artifact:version`. For example:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ spring install com.example:spring-boot-cli-extension:1.0.0.RELEASE
+----
+
+In addition to installing the artifacts identified by the coordinates you supply, all of
+the artifacts' dependencies will also be installed.
+
+To uninstall a dependency use the `uninstall` command. As with the `install` command, it
+takes one or more sets of artifact coordinates in the format `group:artifact:version`.
+For example:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ spring uninstall com.example:spring-boot-cli-extension:1.0.0.RELEASE
+----
+
+It will uninstall the artifacts identified by the coordinates you supply and their
+dependencies.
+
+To uninstall all additional dependencies you can use the `--all` option. For example:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ spring uninstall --all
+----
+
+
 
 [[cli-groovy-beans-dsl]]
 == Developing application with the Groovy beans DSL
@@ -350,6 +487,26 @@ external features like middleware declarations. For example:
 
 You can mix class declarations with `beans{}` in the same file as long as they stay at
 the top level, or you can put the beans DSL in a separate file if you prefer.
+
+
+
+[[cli-maven-settings]]
+== Configuring the CLI with settings.xml
+The Spring Boot CLI uses Aether, Maven's dependency resolution engine, to resolve
+dependencies. The CLI makes use of the Maven configuration found in `~/.m2/settings.xml`
+to configure Aether. The following configuration settings are honored by the CLI:
+
+ * Offline
+ * Mirrors
+ * Servers
+ * Proxies
+ * Profiles
+ ** Activation
+ ** Repositories
+ * Active profiles
+
+Please refer to https://maven.apache.org/settings.html[Maven's settings documentation] for
+further information.
 
 
 

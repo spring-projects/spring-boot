@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,16 @@
 
 package org.springframework.boot;
 
-import groovy.lang.Closure;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import groovy.lang.Closure;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
+import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -54,15 +55,13 @@ import org.springframework.util.StringUtils;
  */
 class BeanDefinitionLoader {
 
-	private static final ResourceLoader DEFAULT_RESOURCE_LOADER = new PathMatchingResourcePatternResolver();
-
 	private final Object[] sources;
 
 	private final AnnotatedBeanDefinitionReader annotatedReader;
 
 	private final XmlBeanDefinitionReader xmlReader;
 
-	private GroovyBeanDefinitionReader groovyReader;
+	private BeanDefinitionReader groovyReader;
 
 	private final ClassPathBeanDefinitionScanner scanner;
 
@@ -74,7 +73,7 @@ class BeanDefinitionLoader {
 	 * @param registry the bean definition registry that will contain the loaded beans
 	 * @param sources the bean sources
 	 */
-	public BeanDefinitionLoader(BeanDefinitionRegistry registry, Object... sources) {
+	BeanDefinitionLoader(BeanDefinitionRegistry registry, Object... sources) {
 		Assert.notNull(registry, "Registry must not be null");
 		Assert.notEmpty(sources, "Sources must not be empty");
 		this.sources = sources;
@@ -109,7 +108,7 @@ class BeanDefinitionLoader {
 
 	/**
 	 * Set the environment to be used by the underlying readers and scanner.
-	 * @param environment
+	 * @param environment the environment
 	 */
 	public void setEnvironment(ConfigurableEnvironment environment) {
 		this.annotatedReader.setEnvironment(environment);
@@ -164,7 +163,7 @@ class BeanDefinitionLoader {
 
 	private int load(GroovyBeanDefinitionSource source) {
 		int before = this.xmlReader.getRegistry().getBeanDefinitionCount();
-		this.groovyReader.beans(source.getBeans());
+		((GroovyBeanDefinitionReader) this.groovyReader).beans(source.getBeans());
 		int after = this.xmlReader.getRegistry().getBeanDefinitionCount();
 		return after - before;
 	}
@@ -185,10 +184,8 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(CharSequence source) {
-
-		String resolvedSource = this.xmlReader.getEnvironment().resolvePlaceholders(
-				source.toString());
-
+		String resolvedSource = this.xmlReader.getEnvironment()
+				.resolvePlaceholders(source.toString());
 		// Attempt as a Class
 		try {
 			return load(ClassUtils.forName(resolvedSource, null));
@@ -199,7 +196,6 @@ class BeanDefinitionLoader {
 		catch (ClassNotFoundException ex) {
 			// swallow exception and continue
 		}
-
 		// Attempt as resources
 		Resource[] resources = findResources(resolvedSource);
 		int loadCount = 0;
@@ -213,13 +209,11 @@ class BeanDefinitionLoader {
 		if (atLeastOneResourceExists) {
 			return loadCount;
 		}
-
 		// Attempt as package
 		Package packageResource = findPackage(resolvedSource);
 		if (packageResource != null) {
 			return load(packageResource);
 		}
-
 		throw new IllegalArgumentException("Invalid source '" + resolvedSource + "'");
 	}
 
@@ -228,8 +222,8 @@ class BeanDefinitionLoader {
 	}
 
 	private Resource[] findResources(String source) {
-		ResourceLoader loader = this.resourceLoader != null ? this.resourceLoader
-				: DEFAULT_RESOURCE_LOADER;
+		ResourceLoader loader = (this.resourceLoader != null ? this.resourceLoader
+				: new PathMatchingResourcePatternResolver());
 		try {
 			if (loader instanceof ResourcePatternResolver) {
 				return ((ResourcePatternResolver) loader).getResources(source);
@@ -250,11 +244,12 @@ class BeanDefinitionLoader {
 			// Attempt to find a class in this package
 			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
 					getClass().getClassLoader());
-			Resource[] resources = resolver.getResources(ClassUtils
-					.convertClassNameToResourcePath(source.toString()) + "/*.class");
+			Resource[] resources = resolver.getResources(
+					ClassUtils.convertClassNameToResourcePath(source.toString())
+							+ "/*.class");
 			for (Resource resource : resources) {
-				String className = StringUtils.stripFilenameExtension(resource
-						.getFilename());
+				String className = StringUtils
+						.stripFilenameExtension(resource.getFilename());
 				load(Class.forName(source.toString() + "." + className));
 				break;
 			}
@@ -284,11 +279,12 @@ class BeanDefinitionLoader {
 	 * Simple {@link TypeFilter} used to ensure that specified {@link Class} sources are
 	 * not accidentally re-added during scanning.
 	 */
-	private static class ClassExcludeFilter extends AbstractTypeHierarchyTraversingFilter {
+	private static class ClassExcludeFilter
+			extends AbstractTypeHierarchyTraversingFilter {
 
 		private final Set<String> classNames = new HashSet<String>();
 
-		public ClassExcludeFilter(Object... sources) {
+		ClassExcludeFilter(Object... sources) {
 			super(false, false);
 			for (Object source : sources) {
 				if (source instanceof Class<?>) {
@@ -304,6 +300,9 @@ class BeanDefinitionLoader {
 
 	}
 
+	/**
+	 * Source for Bean definitions defined in Groovy.
+	 */
 	protected interface GroovyBeanDefinitionSource {
 
 		Closure<?> getBeans();

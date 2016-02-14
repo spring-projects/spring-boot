@@ -20,9 +20,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.metrics.Iterables;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
+import org.springframework.boot.redis.RedisTestServer;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import static org.junit.Assert.assertEquals;
@@ -30,31 +32,34 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
+ * Tests for {@link RedisMetricRepository}.
+ *
  * @author Dave Syer
  */
 public class RedisMetricRepositoryTests {
 
 	@Rule
-	public RedisServer redis = RedisServer.running();
+	public RedisTestServer redis = new RedisTestServer();
+
 	private RedisMetricRepository repository;
+
 	private String prefix;
 
 	@Before
 	public void init() {
-		this.repository = new RedisMetricRepository(this.redis.getResource());
 		this.prefix = "spring.test." + System.currentTimeMillis();
-		this.repository.setPrefix(this.prefix);
-		this.repository.afterPropertiesSet();
+		this.repository = new RedisMetricRepository(this.redis.getConnectionFactory(),
+				this.prefix);
 	}
 
 	@After
 	public void clear() {
-		assertNotNull(new StringRedisTemplate(this.redis.getResource()).opsForValue()
-				.get(this.prefix + ".foo"));
+		assertNotNull(new StringRedisTemplate(this.redis.getConnectionFactory())
+				.opsForValue().get(this.prefix + ".foo"));
 		this.repository.reset("foo");
 		this.repository.reset("bar");
-		assertNull(new StringRedisTemplate(this.redis.getResource()).opsForValue().get(
-				this.prefix + ".foo"));
+		assertNull(new StringRedisTemplate(this.redis.getConnectionFactory())
+				.opsForValue().get(this.prefix + ".foo"));
 	}
 
 	@Test

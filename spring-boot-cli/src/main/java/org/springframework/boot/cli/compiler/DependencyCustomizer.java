@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package org.springframework.boot.cli.compiler;
 
 import groovy.lang.Grab;
 import groovy.lang.GroovyClassLoader;
-
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
+
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 
@@ -47,7 +47,9 @@ public class DependencyCustomizer {
 
 	/**
 	 * Create a new {@link DependencyCustomizer} instance.
-	 * @param loader
+	 * @param loader the current classloader
+	 * @param moduleNode the current module
+	 * @param dependencyResolutionContext the context for dependency resolution
 	 */
 	public DependencyCustomizer(GroovyClassLoader loader, ModuleNode moduleNode,
 			DependencyResolutionContext dependencyResolutionContext) {
@@ -58,7 +60,7 @@ public class DependencyCustomizer {
 
 	/**
 	 * Create a new nested {@link DependencyCustomizer}.
-	 * @param parent
+	 * @param parent the parent customizer
 	 */
 	protected DependencyCustomizer(DependencyCustomizer parent) {
 		this.loader = parent.loader;
@@ -72,8 +74,8 @@ public class DependencyCustomizer {
 	}
 
 	public String getVersion(String artifactId, String defaultVersion) {
-		String version = this.dependencyResolutionContext
-				.getArtifactCoordinatesResolver().getVersion(artifactId);
+		String version = this.dependencyResolutionContext.getArtifactCoordinatesResolver()
+				.getVersion(artifactId);
 		if (version == null) {
 			version = defaultVersion;
 		}
@@ -90,9 +92,9 @@ public class DependencyCustomizer {
 		return new DependencyCustomizer(this) {
 			@Override
 			protected boolean canAdd() {
-				for (String classname : classNames) {
+				for (String className : classNames) {
 					try {
-						DependencyCustomizer.this.loader.loadClass(classname);
+						DependencyCustomizer.this.loader.loadClass(className);
 					}
 					catch (Exception ex) {
 						return true;
@@ -113,9 +115,9 @@ public class DependencyCustomizer {
 		return new DependencyCustomizer(this) {
 			@Override
 			protected boolean canAdd() {
-				for (String classname : classNames) {
+				for (String className : classNames) {
 					try {
-						DependencyCustomizer.this.loader.loadClass(classname);
+						DependencyCustomizer.this.loader.loadClass(className);
 						return false;
 					}
 					catch (Exception ex) {
@@ -222,11 +224,11 @@ public class DependencyCustomizer {
 		if (canAdd()) {
 			ArtifactCoordinatesResolver artifactCoordinatesResolver = this.dependencyResolutionContext
 					.getArtifactCoordinatesResolver();
-			this.classNode.addAnnotation(createGrabAnnotation(
-					artifactCoordinatesResolver.getGroupId(module),
-					artifactCoordinatesResolver.getArtifactId(module),
-					artifactCoordinatesResolver.getVersion(module), classifier, type,
-					transitive));
+			this.classNode.addAnnotation(
+					createGrabAnnotation(artifactCoordinatesResolver.getGroupId(module),
+							artifactCoordinatesResolver.getArtifactId(module),
+							artifactCoordinatesResolver.getVersion(module), classifier,
+							type, transitive));
 		}
 		return this;
 	}
@@ -250,7 +252,9 @@ public class DependencyCustomizer {
 
 	/**
 	 * Strategy called to test if dependencies can be added. Subclasses override as
-	 * required.
+	 * required. Returns {@code true} by default.
+	 *
+	 * @return {@code true} if dependencies can be added, otherwise {@code false}
 	 */
 	protected boolean canAdd() {
 		return true;

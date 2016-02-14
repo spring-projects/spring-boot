@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
@@ -38,6 +39,7 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link RelaxedPropertyResolver}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class RelaxedPropertyResolverTests {
 
@@ -58,8 +60,8 @@ public class RelaxedPropertyResolverTests {
 		this.source.put("myobject", "object");
 		this.source.put("myInteger", 123);
 		this.source.put("myClass", "java.lang.String");
-		this.environment.getPropertySources().addFirst(
-				new MapPropertySource("test", this.source));
+		this.environment.getPropertySources()
+				.addFirst(new MapPropertySource("test", this.source));
 		this.resolver = new RelaxedPropertyResolver(this.environment);
 	}
 

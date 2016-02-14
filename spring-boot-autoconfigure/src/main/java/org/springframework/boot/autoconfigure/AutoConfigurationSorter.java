@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,16 @@ package org.springframework.boot.autoconfigure;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
@@ -40,8 +37,8 @@ import org.springframework.util.Assert;
 
 /**
  * Sort {@link EnableAutoConfiguration auto-configuration} classes into priority order by
- * reading {@link Ordered} and {@link AutoConfigureAfter} annotations (without loading
- * classes).
+ * reading {@link Ordered}, {@link AutoConfigureBefore} and {@link AutoConfigureAfter}
+ * annotations (without loading classes).
  *
  * @author Phillip Webb
  */
@@ -49,22 +46,18 @@ class AutoConfigurationSorter {
 
 	private final CachingMetadataReaderFactory metadataReaderFactory;
 
-	public AutoConfigurationSorter(ResourceLoader resourceLoader) {
+	AutoConfigurationSorter(ResourceLoader resourceLoader) {
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
 		this.metadataReaderFactory = new CachingMetadataReaderFactory(resourceLoader);
 	}
 
 	public List<String> getInPriorityOrder(Collection<String> classNames)
 			throws IOException {
-
 		final AutoConfigurationClasses classes = new AutoConfigurationClasses(
 				this.metadataReaderFactory, classNames);
-
 		List<String> orderedClassNames = new ArrayList<String>(classNames);
-
 		// Initially sort alphabetically
 		Collections.sort(orderedClassNames);
-
 		// Then sort by order
 		Collections.sort(orderedClassNames, new Comparator<String>() {
 			@Override
@@ -74,43 +67,36 @@ class AutoConfigurationSorter {
 				return (i1 < i2) ? -1 : (i1 > i2) ? 1 : 0;
 			}
 		});
-
 		// Then respect @AutoConfigureBefore @AutoConfigureAfter
 		orderedClassNames = sortByAnnotation(classes, orderedClassNames);
-
 		return orderedClassNames;
-
 	}
 
 	private List<String> sortByAnnotation(AutoConfigurationClasses classes,
 			List<String> classNames) {
-		List<String> tosort = new ArrayList<String>(classNames);
+		List<String> toSort = new ArrayList<String>(classNames);
 		Set<String> sorted = new LinkedHashSet<String>();
 		Set<String> processing = new LinkedHashSet<String>();
-		while (!tosort.isEmpty()) {
-			doSortByAfterAnnotation(classes, tosort, sorted, processing, null);
+		while (!toSort.isEmpty()) {
+			doSortByAfterAnnotation(classes, toSort, sorted, processing, null);
 		}
 		return new ArrayList<String>(sorted);
 	}
 
 	private void doSortByAfterAnnotation(AutoConfigurationClasses classes,
-			List<String> tosort, Set<String> sorted, Set<String> processing,
+			List<String> toSort, Set<String> sorted, Set<String> processing,
 			String current) {
-
 		if (current == null) {
-			current = tosort.remove(0);
+			current = toSort.remove(0);
 		}
-
 		processing.add(current);
-
 		for (String after : classes.getClassesRequestedAfter(current)) {
 			Assert.state(!processing.contains(after),
 					"AutoConfigure cycle detected between " + current + " and " + after);
-			if (!sorted.contains(after) && tosort.contains(after)) {
-				doSortByAfterAnnotation(classes, tosort, sorted, processing, after);
+			if (!sorted.contains(after) && toSort.contains(after)) {
+				doSortByAfterAnnotation(classes, toSort, sorted, processing, after);
 			}
 		}
-
 		processing.remove(current);
 		sorted.add(current);
 	}
@@ -119,7 +105,7 @@ class AutoConfigurationSorter {
 
 		private final Map<String, AutoConfigurationClass> classes = new HashMap<String, AutoConfigurationClass>();
 
-		public AutoConfigurationClasses(MetadataReaderFactory metadataReaderFactory,
+		AutoConfigurationClasses(MetadataReaderFactory metadataReaderFactory,
 				Collection<String> classNames) throws IOException {
 			for (String className : classNames) {
 				MetadataReader metadataReader = metadataReaderFactory
@@ -149,13 +135,13 @@ class AutoConfigurationSorter {
 
 		private final AnnotationMetadata metadata;
 
-		public AutoConfigurationClass(MetadataReader metadataReader) {
+		AutoConfigurationClass(MetadataReader metadataReader) {
 			this.metadata = metadataReader.getAnnotationMetadata();
 		}
 
 		public int getOrder() {
 			Map<String, Object> orderedAnnotation = this.metadata
-					.getAnnotationAttributes(Order.class.getName());
+					.getAnnotationAttributes(AutoConfigureOrder.class.getName());
 			return (orderedAnnotation == null ? Ordered.LOWEST_PRECEDENCE
 					: (Integer) orderedAnnotation.get("value"));
 		}
@@ -169,12 +155,15 @@ class AutoConfigurationSorter {
 		}
 
 		private Set<String> getAnnotationValue(Class<?> annotation) {
-			Map<String, Object> attributes = this.metadata.getAnnotationAttributes(
-					annotation.getName(), true);
+			Map<String, Object> attributes = this.metadata
+					.getAnnotationAttributes(annotation.getName(), true);
 			if (attributes == null) {
 				return Collections.emptySet();
 			}
-			return new HashSet<String>(Arrays.asList((String[]) attributes.get("value")));
+			Set<String> value = new LinkedHashSet<String>();
+			Collections.addAll(value, (String[]) attributes.get("value"));
+			Collections.addAll(value, (String[]) attributes.get("name"));
+			return value;
 		}
 
 	}

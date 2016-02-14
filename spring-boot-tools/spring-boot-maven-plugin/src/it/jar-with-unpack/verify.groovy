@@ -22,7 +22,7 @@ new Verify.JarArchiveVerification(f, Verify.SAMPLE_APP) {
 	@Override
 	protected void verifyZipEntries(Verify.ArchiveVerifier verifier) throws Exception {
 		super.verifyZipEntries(verifier)
-		verifier.hasUnpackEntry("lib/spring-core-")
-		verifier.hasNonUnpackEntry("lib/spring-context-")
+		verifier.assertHasUnpackEntry("lib/spring-core-")
+		verifier.assertHasNonUnpackEntry("lib/spring-context-")
 	}
 }.verify();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,14 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
+import java.util.Set;
+
+import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import org.junit.After;
 import org.junit.Test;
+
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.alt.mongo.CityMongoDbRepository;
@@ -25,14 +31,13 @@ import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.mongo.city.City;
 import org.springframework.boot.autoconfigure.data.mongo.city.CityRepository;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import com.mongodb.Mongo;
-import com.mongodb.MongoClient;
-
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -55,26 +60,22 @@ public class MongoRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class, MongoAutoConfiguration.class,
-				MongoDataAutoConfiguration.class,
-				MongoRepositoriesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(CityRepository.class));
+		prepareApplicationContext(TestConfiguration.class);
 
+		assertNotNull(this.context.getBean(CityRepository.class));
 		Mongo mongo = this.context.getBean(Mongo.class);
 		assertThat(mongo, is(instanceOf(MongoClient.class)));
+		MongoMappingContext mappingContext = this.context
+				.getBean(MongoMappingContext.class);
+		@SuppressWarnings("unchecked")
+		Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
+				.getField(mappingContext, "initialEntitySet");
+		assertThat(entities.size(), is(equalTo(1)));
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EmptyConfiguration.class, MongoAutoConfiguration.class,
-				MongoDataAutoConfiguration.class,
-				MongoRepositoriesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		prepareApplicationContext(EmptyConfiguration.class);
 
 		Mongo mongo = this.context.getBean(Mongo.class);
 		assertThat(mongo, is(instanceOf(MongoClient.class)));
@@ -82,13 +83,26 @@ public class MongoRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
+		prepareApplicationContext(CustomizedConfiguration.class);
+
+		assertNotNull(this.context.getBean(CityMongoDbRepository.class));
+	}
+
+	@Test(expected = NoSuchBeanDefinitionException.class)
+	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
+		prepareApplicationContext(SortOfInvalidCustomConfiguration.class);
+
+		this.context.getBean(CityRepository.class);
+	}
+
+	private void prepareApplicationContext(Class<?>... configurationClasses) {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(CustomizedConfiguration.class,
-				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+		this.context.register(configurationClasses);
+		this.context.register(MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class,
 				MongoRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CityMongoDbRepository.class));
 	}
 
 	@Configuration
@@ -107,6 +121,14 @@ public class MongoRepositoriesAutoConfigurationTests {
 	@TestAutoConfigurationPackage(MongoRepositoriesAutoConfigurationTests.class)
 	@EnableMongoRepositories(basePackageClasses = CityMongoDbRepository.class)
 	protected static class CustomizedConfiguration {
+
+	}
+
+	@Configuration
+	// To not find any repositories
+	@EnableMongoRepositories("foo.bar")
+	@TestAutoConfigurationPackage(MongoRepositoriesAutoConfigurationTests.class)
+	protected static class SortOfInvalidCustomConfiguration {
 
 	}
 }

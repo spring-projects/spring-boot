@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.orm.jpa.vendor.Database;
@@ -38,16 +36,31 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(prefix = "spring.jpa")
 public class JpaProperties {
 
-	private static final Log logger = LogFactory.getLog(JpaProperties.class);
-
+	/**
+	 * Additional native properties to set on the JPA provider.
+	 */
 	private Map<String, String> properties = new HashMap<String, String>();
 
+	/**
+	 * Name of the target database to operate on, auto-detected by default. Can be
+	 * alternatively set using the "Database" enum.
+	 */
 	private String databasePlatform;
 
+	/**
+	 * Target database to operate on, auto-detected by default. Can be alternatively set
+	 * using the "databasePlatform" property.
+	 */
 	private Database database = Database.DEFAULT;
 
+	/**
+	 * Initialize the schema on startup.
+	 */
 	private boolean generateDdl = false;
 
+	/**
+	 * Enable logging of SQL statements.
+	 */
 	private boolean showSql = false;
 
 	private Hibernate hibernate = new Hibernate();
@@ -103,7 +116,6 @@ public class JpaProperties {
 	/**
 	 * Get configuration properties for the initialization of the main Hibernate
 	 * EntityManagerFactory.
-	 *
 	 * @param dataSource the DataSource in case it is needed to determine the properties
 	 * @return some Hibernate properties for configuration
 	 */
@@ -113,10 +125,18 @@ public class JpaProperties {
 
 	public static class Hibernate {
 
+		private static final String DEFAULT_NAMING_STRATEGY = "org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy";
+
+		/**
+		 * Naming strategy fully qualified name.
+		 */
 		private Class<?> namingStrategy;
 
-		private static String DEFAULT_NAMING_STRATEGY = "org.springframework.boot.orm.jpa.SpringNamingStrategy";
-
+		/**
+		 * DDL mode. This is actually a shortcut for the "hibernate.hbm2ddl.auto"
+		 * property. Default to "create-drop" when using an embedded database, "none"
+		 * otherwise.
+		 */
 		private String ddlAuto;
 
 		public Class<?> getNamingStrategy() {
@@ -125,13 +145,6 @@ public class JpaProperties {
 
 		public void setNamingStrategy(Class<?> namingStrategy) {
 			this.namingStrategy = namingStrategy;
-		}
-
-		@Deprecated
-		public void setNamingstrategy(Class<?> namingStrategy) {
-			logger.warn("The property spring.jpa.namingstrategy has been renamed, "
-					+ "please update your configuration to use namingStrategy or naming-strategy or naming_strategy");
-			this.setNamingStrategy(namingStrategy);
 		}
 
 		public String getDdlAuto() {
@@ -144,13 +157,10 @@ public class JpaProperties {
 
 		private Map<String, String> getAdditionalProperties(Map<String, String> existing,
 				DataSource dataSource) {
-			Map<String, String> result = new HashMap<String, String>();
-			if (!isAlreadyProvided(existing, "ejb.naming_strategy")
-					&& this.namingStrategy != null) {
-				result.put("hibernate.ejb.naming_strategy", this.namingStrategy.getName());
-			}
-			else if (this.namingStrategy == null) {
-				result.put("hibernate.ejb.naming_strategy", DEFAULT_NAMING_STRATEGY);
+			Map<String, String> result = new HashMap<String, String>(existing);
+			if (!existing.containsKey("hibernate." + "ejb.naming_strategy_delegator")) {
+				result.put("hibernate.ejb.naming_strategy",
+						getHibernateNamingStrategy(existing));
 			}
 			String ddlAuto = getOrDeduceDdlAuto(existing, dataSource);
 			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
@@ -162,14 +172,23 @@ public class JpaProperties {
 			return result;
 		}
 
+		private String getHibernateNamingStrategy(Map<String, String> existing) {
+			if (!existing.containsKey("hibernate." + "ejb.naming_strategy")
+					&& this.namingStrategy != null) {
+				return this.namingStrategy.getName();
+			}
+			return DEFAULT_NAMING_STRATEGY;
+		}
+
 		private String getOrDeduceDdlAuto(Map<String, String> existing,
 				DataSource dataSource) {
 			String ddlAuto = (this.ddlAuto != null ? this.ddlAuto
 					: getDefaultDdlAuto(dataSource));
-			if (!isAlreadyProvided(existing, "hbm2ddl.auto") && !"none".equals(ddlAuto)) {
+			if (!existing.containsKey("hibernate." + "hbm2ddl.auto")
+					&& !"none".equals(ddlAuto)) {
 				return ddlAuto;
 			}
-			if (isAlreadyProvided(existing, "hbm2ddl.auto")) {
+			if (existing.containsKey("hibernate." + "hbm2ddl.auto")) {
 				return existing.get("hibernate.hbm2ddl.auto");
 			}
 			return "none";
@@ -180,10 +199,6 @@ public class JpaProperties {
 				return "create-drop";
 			}
 			return "none";
-		}
-
-		private boolean isAlreadyProvided(Map<String, String> existing, String key) {
-			return existing.containsKey("hibernate." + key);
 		}
 
 	}

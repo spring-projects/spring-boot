@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,16 +16,21 @@
 
 package org.springframework.boot.context.embedded.jetty;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EmbeddedServletContainer} that can be used to control an embedded Jetty server.
@@ -34,11 +39,14 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author David Liu
+ * @author Eddú Meléndez
  * @see JettyEmbeddedServletContainerFactory
  */
 public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
-	private final Log logger = LogFactory.getLog(JettyEmbeddedServletContainer.class);
+	private static final Log logger = LogFactory
+			.getLog(JettyEmbeddedServletContainer.class);
 
 	private final Server server;
 
@@ -57,6 +65,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainer} instance.
 	 * @param server the underlying Jetty server
+	 * @param autoStart if auto-starting the container
 	 */
 	public JettyEmbeddedServletContainer(Server server, boolean autoStart) {
 		this.autoStart = autoStart;
@@ -74,6 +83,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 			// Start the server so that the ServletContext is available
 			this.server.start();
+			this.server.setStopAtShutdown(false);
 		}
 		catch (Exception ex) {
 			// Ensure process isn't left running
@@ -88,13 +98,13 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			this.server.stop();
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 	}
 
 	@Override
 	public void start() throws EmbeddedServletContainerException {
 		this.server.setConnectors(this.connectors);
-
 		if (!this.autoStart) {
 			return;
 		}
@@ -106,8 +116,9 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			Connector[] connectors = this.server.getConnectors();
 			for (Connector connector : connectors) {
 				connector.start();
-				this.logger.info("Jetty started on port: " + getLocalPort(connector));
 			}
+			JettyEmbeddedServletContainer.logger
+					.info("Jetty started on port(s) " + getActualPortsDescription());
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
@@ -115,13 +126,13 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 		}
 	}
 
-	private void handleDeferredInitialize(Handler handler) throws Exception {
-		if (handler instanceof JettyEmbeddedWebAppContext) {
-			((JettyEmbeddedWebAppContext) handler).deferredInitialize();
+	private String getActualPortsDescription() {
+		StringBuilder ports = new StringBuilder();
+		for (Connector connector : this.server.getConnectors()) {
+			ports.append(ports.length() == 0 ? "" : ", ");
+			ports.append(getLocalPort(connector) + getProtocols(connector));
 		}
-		else if (handler instanceof HandlerWrapper) {
-			handleDeferredInitialize(((HandlerWrapper) handler).getHandler());
-		}
+		return ports.toString();
 	}
 
 	private Integer getLocalPort(Connector connector) {
@@ -132,8 +143,35 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 					connector);
 		}
 		catch (Exception ex) {
-			this.logger.info("could not determine port ( " + ex.getMessage() + ")");
+			JettyEmbeddedServletContainer.logger
+					.info("could not determine port ( " + ex.getMessage() + ")");
 			return 0;
+		}
+	}
+
+	private String getProtocols(Connector connector) {
+		try {
+			List<String> protocols = connector.getProtocols();
+			return " (" + StringUtils.collectionToDelimitedString(protocols, ", ") + ")";
+		}
+		catch (NoSuchMethodError ex) {
+			// Not available with Jetty 8
+			return "";
+		}
+
+	}
+
+	private void handleDeferredInitialize(Handler... handlers) throws Exception {
+		for (Handler handler : handlers) {
+			if (handler instanceof JettyEmbeddedWebAppContext) {
+				((JettyEmbeddedWebAppContext) handler).deferredInitialize();
+			}
+			else if (handler instanceof HandlerWrapper) {
+				handleDeferredInitialize(((HandlerWrapper) handler).getHandler());
+			}
+			else if (handler instanceof HandlerCollection) {
+				handleDeferredInitialize(((HandlerCollection) handler).getHandlers());
+			}
 		}
 	}
 
@@ -163,6 +201,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 	/**
 	 * Returns access to the underlying Jetty Server.
+	 * @return the Jetty server
 	 */
 	public Server getServer() {
 		return this.server;

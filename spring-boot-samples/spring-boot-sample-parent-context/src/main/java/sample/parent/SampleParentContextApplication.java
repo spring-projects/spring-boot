@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,24 @@
 package sample.parent;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 
-@Configuration
-@EnableAutoConfiguration
+@SpringBootApplication
 @EnableConfigurationProperties(ServiceProperties.class)
-@ComponentScan
 public class SampleParentContextApplication {
-
-	public static void main(String[] args) throws Exception {
-		new SpringApplicationBuilder(Parent.class).child(
-				SampleParentContextApplication.class).run(args);
-	}
 
 	@EnableAutoConfiguration
 	@ImportResource("integration-context.xml")
 	protected static class Parent {
 
+	}
+
+	public static void main(String[] args) throws Exception {
+		new SpringApplicationBuilder(Parent.class)
+				.child(SampleParentContextApplication.class).run(args);
 	}
 
 }

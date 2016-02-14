@@ -19,13 +19,9 @@ package sample.data.solr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@Configuration
-@EnableAutoConfiguration
-@ComponentScan
+@SpringBootApplication
 public class SampleSolrApplication implements CommandLineRunner {
 
 	@Autowired
@@ -50,7 +46,7 @@ public class SampleSolrApplication implements CommandLineRunner {
 		System.out.println();
 
 		// fetch a single product
-		System.out.println("Products founds with findByNameStartingWith('So'):");
+		System.out.println("Products found with findByNameStartingWith('So'):");
 		System.out.println("--------------------------------");
 		for (Product product : this.repository.findByNameStartingWith("So")) {
 			System.out.println(product);

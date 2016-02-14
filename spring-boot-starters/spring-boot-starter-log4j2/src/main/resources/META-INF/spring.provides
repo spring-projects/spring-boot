@@ -1,0 +1,1 @@
+provides: log4j2,log4j-slf4j-impl

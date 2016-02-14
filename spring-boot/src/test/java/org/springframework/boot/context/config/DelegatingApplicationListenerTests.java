@@ -20,6 +20,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -62,8 +63,10 @@ public class DelegatingApplicationListenerTests {
 				new SpringApplication(), new String[0], this.context.getEnvironment()));
 		this.context.getBeanFactory().registerSingleton("testListener", this.listener);
 		this.context.refresh();
-		assertThat(this.context.getBeanFactory().getSingleton("a"), equalTo((Object) "a"));
-		assertThat(this.context.getBeanFactory().getSingleton("b"), equalTo((Object) "b"));
+		assertThat(this.context.getBeanFactory().getSingleton("a"),
+				equalTo((Object) "a"));
+		assertThat(this.context.getBeanFactory().getSingleton("b"),
+				equalTo((Object) "b"));
 	}
 
 	@Test

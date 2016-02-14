@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.social;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -24,7 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -36,9 +37,7 @@ import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.web.GenericConnectionStatusView;
 import org.springframework.social.facebook.api.Facebook;
-import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
-import org.springframework.web.servlet.View;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
@@ -49,29 +48,19 @@ import org.springframework.web.servlet.View;
  */
 @Configuration
 @ConditionalOnClass({ SocialConfigurerAdapter.class, FacebookConnectionFactory.class })
-@ConditionalOnProperty(prefix = "spring.social.facebook.", value = "app-id")
+@ConditionalOnProperty(prefix = "spring.social.facebook", name = "app-id")
 @AutoConfigureBefore(SocialWebAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class FacebookAutoConfiguration {
 
 	@Configuration
 	@EnableSocial
+	@EnableConfigurationProperties(FacebookProperties.class)
 	@ConditionalOnWebApplication
-	protected static class FacebookAutoConfigurationAdapter extends
-			SocialAutoConfigurerAdapter {
+	protected static class FacebookConfigurerAdapter extends SocialAutoConfigurerAdapter {
 
-		@Override
-		protected String getPropertyPrefix() {
-			return "spring.social.facebook.";
-		}
-
-		@Override
-		protected ConnectionFactory<?> createConnectionFactory(
-				RelaxedPropertyResolver properties) {
-			return new FacebookConnectionFactory(
-					properties.getRequiredProperty("app-id"),
-					properties.getRequiredProperty("app-secret"));
-		}
+		@Autowired
+		private FacebookProperties properties;
 
 		@Bean
 		@ConditionalOnMissingBean(Facebook.class)
@@ -79,13 +68,19 @@ public class FacebookAutoConfiguration {
 		public Facebook facebook(ConnectionRepository repository) {
 			Connection<Facebook> connection = repository
 					.findPrimaryConnection(Facebook.class);
-			return connection != null ? connection.getApi() : new FacebookTemplate();
+			return connection != null ? connection.getApi() : null;
 		}
 
 		@Bean(name = { "connect/facebookConnect", "connect/facebookConnected" })
-		@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
-		public View facebookConnectView() {
+		@ConditionalOnProperty(prefix = "spring.social", name = "auto-connection-views")
+		public GenericConnectionStatusView facebookConnectView() {
 			return new GenericConnectionStatusView("facebook", "Facebook");
+		}
+
+		@Override
+		protected ConnectionFactory<?> createConnectionFactory() {
+			return new FacebookConnectionFactory(this.properties.getAppId(),
+					this.properties.getAppSecret());
 		}
 
 	}

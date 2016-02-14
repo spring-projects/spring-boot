@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,15 @@ package org.springframework.boot.autoconfigure.mongo;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import org.junit.Test;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-
-import com.mongodb.MongoClient;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -57,7 +57,7 @@ public class MongoPropertiesTests {
 	public void portCanBeCustomized() throws UnknownHostException {
 		MongoProperties properties = new MongoProperties();
 		properties.setPort(12345);
-		MongoClient client = properties.createMongoClient(null);
+		MongoClient client = properties.createMongoClient(null, null);
 		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses, hasSize(1));
 		assertServerAddress(allAddresses.get(0), "localhost", 12345);
@@ -67,7 +67,7 @@ public class MongoPropertiesTests {
 	public void hostCanBeCustomized() throws UnknownHostException {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("mongo.example.com");
-		MongoClient client = properties.createMongoClient(null);
+		MongoClient client = properties.createMongoClient(null, null);
 		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertThat(allAddresses, hasSize(1));
 		assertServerAddress(allAddresses.get(0), "mongo.example.com", 27017);
@@ -78,27 +78,46 @@ public class MongoPropertiesTests {
 		MongoProperties properties = new MongoProperties();
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
+		MongoClient client = properties.createMongoClient(null, null);
+		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret",
+				"test");
+	}
 
-		MongoClient client = properties.createMongoClient(null);
+	@Test
+	public void databaseCanBeCustomized() throws UnknownHostException {
+		MongoProperties properties = new MongoProperties();
+		properties.setDatabase("foo");
+		properties.setUsername("user");
+		properties.setPassword("secret".toCharArray());
+		MongoClient client = properties.createMongoClient(null, null);
+		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret",
+				"foo");
+	}
 
-		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret");
+	@Test
+	public void authenticationDatabaseCanBeCustomized() throws UnknownHostException {
+		MongoProperties properties = new MongoProperties();
+		properties.setAuthenticationDatabase("foo");
+		properties.setUsername("user");
+		properties.setPassword("secret".toCharArray());
+		MongoClient client = properties.createMongoClient(null, null);
+		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret",
+				"foo");
 	}
 
 	@Test
 	public void uriCanBeCustomized() throws UnknownHostException {
 		MongoProperties properties = new MongoProperties();
-		properties
-				.setUri("mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test");
-		MongoClient client = properties.createMongoClient(null);
-
+		properties.setUri("mongodb://user:secret@mongo1.example.com:12345,"
+				+ "mongo2.example.com:23456/test");
+		MongoClient client = properties.createMongoClient(null, null);
 		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertEquals(2, allAddresses.size());
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
 		assertServerAddress(allAddresses.get(1), "mongo2.example.com", 23456);
-
 		List<MongoCredential> credentialsList = client.getCredentialsList();
 		assertEquals(1, credentialsList.size());
-		assertMongoCredential(credentialsList.get(0), "user", "secret");
+		assertMongoCredential(credentialsList.get(0), "user", "secret", "test");
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,
@@ -108,9 +127,10 @@ public class MongoPropertiesTests {
 	}
 
 	private void assertMongoCredential(MongoCredential credentials,
-			String expectedUsername, String expectedPassword) {
+			String expectedUsername, String expectedPassword, String expectedSource) {
 		assertThat(credentials.getUserName(), equalTo(expectedUsername));
 		assertThat(credentials.getPassword(), equalTo(expectedPassword.toCharArray()));
+		assertThat(credentials.getSource(), equalTo(expectedSource));
 	}
 
 	@Configuration

@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.loader.tools.MainClassFinder.ClassNameCallback;
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
 import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
@@ -91,8 +92,8 @@ public class MainClassFinderTests {
 	public void findMainClassInJarSubLocation() throws Exception {
 		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithMainMethod.class);
-		String actual = MainClassFinder
-				.findMainClass(this.testJarFile.getJarFile(), "a/");
+		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarFile(),
+				"a/");
 		assertThat(actual, equalTo("B"));
 
 	}

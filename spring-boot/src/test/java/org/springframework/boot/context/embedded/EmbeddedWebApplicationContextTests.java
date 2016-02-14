@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,23 +29,35 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import org.apache.struts.mock.MockHttpServletRequest;
+import org.apache.struts.mock.MockHttpServletResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.SessionScope;
@@ -54,6 +66,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -71,6 +84,7 @@ import static org.mockito.Mockito.withSettings;
  * Tests for {@link EmbeddedWebApplicationContext}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class EmbeddedWebApplicationContextTests {
 
@@ -79,8 +93,12 @@ public class EmbeddedWebApplicationContextTests {
 
 	private EmbeddedWebApplicationContext context;
 
+	@Captor
+	private ArgumentCaptor<Filter> filterCaptor;
+
 	@Before
 	public void setup() {
+		MockitoAnnotations.initMocks(this);
 		this.context = new EmbeddedWebApplicationContext();
 	}
 
@@ -104,15 +122,13 @@ public class EmbeddedWebApplicationContextTests {
 
 		// Ensure WebApplicationContextUtils.registerWebApplicationScopes was called
 		assertThat(
-				this.context.getBeanFactory().getRegisteredScope(
-						WebApplicationContext.SCOPE_SESSION),
+				this.context.getBeanFactory()
+						.getRegisteredScope(WebApplicationContext.SCOPE_SESSION),
 				instanceOf(SessionScope.class));
 
 		// Ensure WebApplicationContextUtils.registerEnvironmentBeans was called
-		assertThat(
-				this.context
-						.containsBean(WebApplicationContext.SERVLET_CONTEXT_BEAN_NAME),
-				equalTo(true));
+		assertThat(this.context.containsBean(
+				WebApplicationContext.SERVLET_CONTEXT_BEAN_NAME), equalTo(true));
 	}
 
 	@Test
@@ -132,14 +148,24 @@ public class EmbeddedWebApplicationContextTests {
 	@Test
 	public void containerEventPublished() throws Exception {
 		addEmbeddedServletContainerFactoryBean();
-		this.context.registerBeanDefinition("listener", new RootBeanDefinition(
-				MockListener.class));
+		this.context.registerBeanDefinition("listener",
+				new RootBeanDefinition(MockListener.class));
 		this.context.refresh();
-		EmbeddedServletContainerInitializedEvent event = this.context.getBean(
-				MockListener.class).getEvent();
+		EmbeddedServletContainerInitializedEvent event = this.context
+				.getBean(MockListener.class).getEvent();
 		assertNotNull(event);
 		assertTrue(event.getSource().getPort() >= 0);
 		assertEquals(this.context, event.getApplicationContext());
+	}
+
+	@Test
+	public void localPortIsAvailable() throws Exception {
+		addEmbeddedServletContainerFactoryBean();
+		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
+		this.context.refresh();
+		ConfigurableEnvironment environment = this.context.getEnvironment();
+		assertTrue(environment.containsProperty("local.server.port"));
+		assertEquals("8080", environment.getProperty("local.server.port"));
 	}
 
 	@Test
@@ -206,7 +232,7 @@ public class EmbeddedWebApplicationContextTests {
 		OrderedFilter filter = new OrderedFilter();
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
 		FilterRegistrationBean registration = new FilterRegistrationBean();
-		registration.setFilter(Mockito.mock(Filter.class));
+		registration.setFilter(mock(Filter.class));
 		registration.setOrder(100);
 		this.context.registerBeanDefinition("filterRegistrationBean",
 				beanDefinition(registration));
@@ -234,10 +260,10 @@ public class EmbeddedWebApplicationContextTests {
 		InOrder ordered = inOrder(servletContext);
 		ordered.verify(servletContext).addServlet("servletBean1", servlet1);
 		ordered.verify(servletContext).addServlet("servletBean2", servlet2);
-		verify(escf.getRegisteredServlet(0).getRegistration()).addMapping(
-				"/servletBean1/");
-		verify(escf.getRegisteredServlet(1).getRegistration()).addMapping(
-				"/servletBean2/");
+		verify(escf.getRegisteredServlet(0).getRegistration())
+				.addMapping("/servletBean1/");
+		verify(escf.getRegisteredServlet(1).getRegistration())
+				.addMapping("/servletBean2/");
 	}
 
 	@Test
@@ -250,8 +276,8 @@ public class EmbeddedWebApplicationContextTests {
 				withSettings().extraInterfaces(Ordered.class));
 		given(((Ordered) servlet2).getOrder()).willReturn(2);
 		this.context.registerBeanDefinition("servletBean2", beanDefinition(servlet2));
-		this.context
-				.registerBeanDefinition("dispatcherServlet", beanDefinition(servlet1));
+		this.context.registerBeanDefinition("dispatcherServlet",
+				beanDefinition(servlet1));
 		this.context.refresh();
 		MockEmbeddedServletContainerFactory escf = getEmbeddedServletContainerFactory();
 		ServletContext servletContext = escf.getServletContext();
@@ -259,17 +285,19 @@ public class EmbeddedWebApplicationContextTests {
 		ordered.verify(servletContext).addServlet("dispatcherServlet", servlet1);
 		ordered.verify(servletContext).addServlet("servletBean2", servlet2);
 		verify(escf.getRegisteredServlet(0).getRegistration()).addMapping("/");
-		verify(escf.getRegisteredServlet(1).getRegistration()).addMapping(
-				"/servletBean2/");
+		verify(escf.getRegisteredServlet(1).getRegistration())
+				.addMapping("/servletBean2/");
 	}
 
 	@Test
 	public void servletAndFilterBeans() throws Exception {
 		addEmbeddedServletContainerFactoryBean();
 		Servlet servlet = mock(Servlet.class);
-		Filter filter1 = mock(Filter.class, withSettings().extraInterfaces(Ordered.class));
+		Filter filter1 = mock(Filter.class,
+				withSettings().extraInterfaces(Ordered.class));
 		given(((Ordered) filter1).getOrder()).willReturn(1);
-		Filter filter2 = mock(Filter.class, withSettings().extraInterfaces(Ordered.class));
+		Filter filter2 = mock(Filter.class,
+				withSettings().extraInterfaces(Ordered.class));
 		given(((Ordered) filter2).getOrder()).willReturn(2);
 		this.context.registerBeanDefinition("servletBean", beanDefinition(servlet));
 		this.context.registerBeanDefinition("filterBean2", beanDefinition(filter2));
@@ -283,9 +311,9 @@ public class EmbeddedWebApplicationContextTests {
 		ordered.verify(escf.getServletContext()).addFilter("filterBean1", filter1);
 		ordered.verify(escf.getServletContext()).addFilter("filterBean2", filter2);
 		verify(escf.getRegisteredFilter(0).getRegistration()).addMappingForUrlPatterns(
-				FilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "/*");
+				AbstractFilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "/*");
 		verify(escf.getRegisteredFilter(1).getRegistration()).addMappingForUrlPatterns(
-				FilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "/*");
+				AbstractFilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "/*");
 	}
 
 	@Test
@@ -362,7 +390,8 @@ public class EmbeddedWebApplicationContextTests {
 		addEmbeddedServletContainerFactoryBean();
 		Servlet servlet = mock(Servlet.class);
 		Filter filter = mock(Filter.class);
-		ServletRegistrationBean initializer = new ServletRegistrationBean(servlet, "/foo");
+		ServletRegistrationBean initializer = new ServletRegistrationBean(servlet,
+				"/foo");
 		this.context.registerBeanDefinition("initializerBean",
 				beanDefinition(initializer));
 		this.context.registerBeanDefinition("servletBean", beanDefinition(servlet));
@@ -375,7 +404,7 @@ public class EmbeddedWebApplicationContextTests {
 	}
 
 	@Test
-	public void filterReegistrationBeansSkipsRegisteredFilters() throws Exception {
+	public void filterRegistrationBeansSkipsRegisteredFilters() throws Exception {
 		addEmbeddedServletContainerFactoryBean();
 		Filter filter = mock(Filter.class);
 		FilterRegistrationBean initializer = new FilterRegistrationBean(filter);
@@ -386,6 +415,32 @@ public class EmbeddedWebApplicationContextTests {
 		ServletContext servletContext = getEmbeddedServletContainerFactory()
 				.getServletContext();
 		verify(servletContext, atMost(1)).addFilter(anyString(), (Filter) anyObject());
+	}
+
+	@Test
+	public void delegatingFilterProxyRegistrationBeansSkipsTargetBeanNames()
+			throws Exception {
+		addEmbeddedServletContainerFactoryBean();
+		DelegatingFilterProxyRegistrationBean initializer = new DelegatingFilterProxyRegistrationBean(
+				"filterBean");
+		this.context.registerBeanDefinition("initializerBean",
+				beanDefinition(initializer));
+		BeanDefinition filterBeanDefinition = beanDefinition(
+				new IllegalStateException("Create FilterBean Failure"));
+		filterBeanDefinition.setLazyInit(true);
+		this.context.registerBeanDefinition("filterBean", filterBeanDefinition);
+		this.context.refresh();
+		ServletContext servletContext = getEmbeddedServletContainerFactory()
+				.getServletContext();
+		verify(servletContext, atMost(1)).addFilter(anyString(),
+				this.filterCaptor.capture());
+		// Up to this point the filterBean should not have been created, calling
+		// the delegate proxy will trigger creation and an exception
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("Create FilterBean Failure");
+		this.filterCaptor.getValue().init(new MockFilterConfig());
+		this.filterCaptor.getValue().doFilter(new MockHttpServletRequest(),
+				new MockHttpServletResponse(), new MockFilterChain());
 	}
 
 	@Test
@@ -409,6 +464,23 @@ public class EmbeddedWebApplicationContextTests {
 				equalTo(8080));
 	}
 
+	@Test
+	public void doesNotReplaceExistingScopes() throws Exception { // gh-2082
+		Scope scope = mock(Scope.class);
+		ConfigurableListableBeanFactory factory = this.context.getBeanFactory();
+		factory.registerScope(WebApplicationContext.SCOPE_REQUEST, scope);
+		factory.registerScope(WebApplicationContext.SCOPE_SESSION, scope);
+		factory.registerScope(WebApplicationContext.SCOPE_GLOBAL_SESSION, scope);
+		addEmbeddedServletContainerFactoryBean();
+		this.context.refresh();
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_REQUEST),
+				sameInstance(scope));
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_SESSION),
+				sameInstance(scope));
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_GLOBAL_SESSION),
+				sameInstance(scope));
+	}
+
 	private void addEmbeddedServletContainerFactoryBean() {
 		this.context.registerBeanDefinition("embeddedServletContainerFactory",
 				new RootBeanDefinition(MockEmbeddedServletContainerFactory.class));
@@ -429,11 +501,14 @@ public class EmbeddedWebApplicationContextTests {
 	}
 
 	public static <T> T getBean(T object) {
+		if (object instanceof RuntimeException) {
+			throw (RuntimeException) object;
+		}
 		return object;
 	}
 
-	public static class MockListener implements
-			ApplicationListener<EmbeddedServletContainerInitializedEvent> {
+	public static class MockListener
+			implements ApplicationListener<EmbeddedServletContainerInitializedEvent> {
 
 		private EmbeddedServletContainerInitializedEvent event;
 

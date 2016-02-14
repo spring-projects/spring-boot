@@ -41,6 +41,22 @@ public class DefaultCounterServiceTests {
 	private ArgumentCaptor<Delta<Number>> captor;
 
 	@Test
+	public void incrementWithExistingCounter() {
+		this.service.increment("counter.foo");
+		verify(this.repository).increment(this.captor.capture());
+		assertEquals("counter.foo", this.captor.getValue().getName());
+		assertEquals(1L, this.captor.getValue().getValue());
+	}
+
+	@Test
+	public void incrementWithExistingNearCounter() {
+		this.service.increment("counter-foo");
+		verify(this.repository).increment(this.captor.capture());
+		assertEquals("counter.counter-foo", this.captor.getValue().getName());
+		assertEquals(1L, this.captor.getValue().getValue());
+	}
+
+	@Test
 	public void incrementPrependsCounter() {
 		this.service.increment("foo");
 		verify(this.repository).increment(this.captor.capture());

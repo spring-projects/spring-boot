@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,28 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
-import liquibase.integration.spring.SpringLiquibase;
+import java.util.Map;
 
+import liquibase.integration.spring.SpringLiquibase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -138,8 +144,8 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertEquals("jdbc:hsqldb:mem:liquibase", liquibase.getDataSource()
-				.getConnection().getMetaData().getURL());
+		assertEquals("jdbc:hsqldb:mem:liquibase",
+				liquibase.getDataSource().getConnection().getMetaData().getURL());
 	}
 
 	@Test(expected = BeanCreationException.class)
@@ -151,4 +157,43 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 	}
+
+	@Test
+	public void testLogger() throws Exception {
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+		Object log = ReflectionTestUtils.getField(liquibase, "log");
+		assertThat(log, instanceOf(CommonsLoggingLiquibaseLogger.class));
+	}
+
+	@Test
+	public void testOverrideLabels() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"liquibase.labels:test, production");
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+		assertEquals("test, production", liquibase.getLabels());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testOverrideParameters() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context, "liquibase.parameters.foo:bar");
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+		Map<String, String> parameters = (Map<String, String>) ReflectionTestUtils
+				.getField(liquibase, "parameters");
+		assertTrue(parameters.containsKey("foo"));
+		assertEquals("bar", parameters.get("foo"));
+	}
+
 }

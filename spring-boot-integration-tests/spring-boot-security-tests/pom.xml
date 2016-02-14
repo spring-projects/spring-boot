@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-integration-tests</artifactId>
-		<version>1.1.13.BUILD-SNAPSHOT</version>
+		<version>1.3.3.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-security-tests</artifactId>
 	<packaging>pom</packaging>
@@ -16,9 +16,9 @@
 		<url>http://www.spring.io</url>
 	</organization>
 	<properties>
-		<main.basedir>${basedir}/..</main.basedir>
+		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<modules>
-		<module>spring-boot-security-tests-web-helloworld</module>
+		<module>spring-boot-security-test-web-helloworld</module>
 	</modules>
 </project>

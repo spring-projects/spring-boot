@@ -27,6 +27,7 @@ import org.eclipse.jetty.server.Server;
 public interface JettyServerCustomizer {
 
 	/**
+	 * Customize the server.
 	 * @param server the server to customize
 	 */
 	void customize(Server server);

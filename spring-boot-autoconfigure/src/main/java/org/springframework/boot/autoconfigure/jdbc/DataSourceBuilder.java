@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.PropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.util.ClassUtils;
 
@@ -34,7 +33,7 @@ import org.springframework.util.ClassUtils;
  * and so that there can be a fallback to an embedded database if one can be detected on
  * the classpath, only a small set of common configuration properties are supported. To
  * inject additional properties into the result you can downcast it, or use
- * <code>@ConfigurationProperties</code>.
+ * {@code @ConfigurationProperties}.
  *
  * @author Dave Syer
  * @since 1.1.0
@@ -44,13 +43,12 @@ public class DataSourceBuilder {
 	private static final String[] DATA_SOURCE_TYPE_NAMES = new String[] {
 			"org.apache.tomcat.jdbc.pool.DataSource",
 			"com.zaxxer.hikari.HikariDataSource",
-			"org.apache.commons.dbcp.BasicDataSource" };
+			"org.apache.commons.dbcp.BasicDataSource",
+			"org.apache.commons.dbcp2.BasicDataSource" };
 
 	private Class<? extends DataSource> type;
 
 	private ClassLoader classLoader;
-
-	private DriverClassNameProvider driverClassNameProvider = new DriverClassNameProvider();
 
 	private Map<String, String> properties = new HashMap<String, String>();
 
@@ -77,22 +75,15 @@ public class DataSourceBuilder {
 	private void maybeGetDriverClassName() {
 		if (!this.properties.containsKey("driverClassName")
 				&& this.properties.containsKey("url")) {
-			String cls = this.driverClassNameProvider.getDriverClassName(this.properties
-					.get("url"));
-			this.properties.put("driverClassName", cls);
+			String url = this.properties.get("url");
+			String driverClass = DatabaseDriver.fromJdbcUrl(url).getDriverClassName();
+			this.properties.put("driverClassName", driverClass);
 		}
 	}
 
 	private void bind(DataSource result) {
-		new RelaxedDataBinder(result).bind(getPropertyValues());
-	}
-
-	private PropertyValues getPropertyValues() {
-		if (getType().getName().contains("Hikari") && this.properties.containsKey("url")) {
-			this.properties.put("jdbcUrl", this.properties.get("url"));
-			this.properties.remove("url");
-		}
-		return new MutablePropertyValues(this.properties);
+		MutablePropertyValues properties = new MutablePropertyValues(this.properties);
+		new RelaxedDataBinder(result).withAlias("url", "jdbcUrl").bind(properties);
 	}
 
 	public DataSourceBuilder type(Class<? extends DataSource> type) {
@@ -120,16 +111,18 @@ public class DataSourceBuilder {
 		return this;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Class<? extends DataSource> findType() {
 		if (this.type != null) {
 			return this.type;
 		}
 		for (String name : DATA_SOURCE_TYPE_NAMES) {
-			if (ClassUtils.isPresent(name, this.classLoader)) {
-				@SuppressWarnings("unchecked")
-				Class<DataSource> resolved = (Class<DataSource>) ClassUtils
-						.resolveClassName(name, this.classLoader);
-				return resolved;
+			try {
+				return (Class<? extends DataSource>) ClassUtils.forName(name,
+						this.classLoader);
+			}
+			catch (Exception ex) {
+				// Swallow and continue
 			}
 		}
 		return null;

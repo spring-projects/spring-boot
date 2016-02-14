@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,15 @@
 
 package org.springframework.boot.autoconfigure.freemarker;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -27,17 +32,16 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
-import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
@@ -56,8 +60,11 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 @EnableConfigurationProperties(FreeMarkerProperties.class)
 public class FreeMarkerAutoConfiguration {
 
+	private static final Log logger = LogFactory
+			.getLog(FreeMarkerAutoConfiguration.class);
+
 	@Autowired
-	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
+	private ApplicationContext applicationContext;
 
 	@Autowired
 	private FreeMarkerProperties properties;
@@ -65,12 +72,22 @@ public class FreeMarkerAutoConfiguration {
 	@PostConstruct
 	public void checkTemplateLocationExists() {
 		if (this.properties.isCheckTemplateLocation()) {
-			Resource resource = this.resourceLoader.getResource(this.properties
-					.getTemplateLoaderPath());
-			Assert.state(resource.exists(), "Cannot find template location: " + resource
-					+ " (please add some templates, "
-					+ "check your FreeMarker configuration, or set "
-					+ "spring.freemarker.checkTemplateLocation=false)");
+			TemplateLocation templatePathLocation = null;
+			List<TemplateLocation> locations = new ArrayList<TemplateLocation>();
+			for (String templateLoaderPath : this.properties.getTemplateLoaderPath()) {
+				TemplateLocation location = new TemplateLocation(templateLoaderPath);
+				locations.add(location);
+				if (location.exists(this.applicationContext)) {
+					templatePathLocation = location;
+					break;
+				}
+			}
+			if (templatePathLocation == null) {
+				logger.warn("Cannot find template location(s): " + locations
+						+ " (please add some templates, "
+						+ "check your FreeMarker configuration, or set "
+						+ "spring.freemarker.checkTemplateLocation=false)");
+			}
 		}
 	}
 
@@ -80,8 +97,9 @@ public class FreeMarkerAutoConfiguration {
 		protected FreeMarkerProperties properties;
 
 		protected void applyProperties(FreeMarkerConfigurationFactory factory) {
-			factory.setTemplateLoaderPath(this.properties.getTemplateLoaderPath());
-			factory.setDefaultEncoding(this.properties.getCharSet());
+			factory.setTemplateLoaderPaths(this.properties.getTemplateLoaderPath());
+			factory.setPreferFileSystemAccess(this.properties.isPreferFileSystemAccess());
+			factory.setDefaultEncoding(this.properties.getCharsetName());
 			Properties settings = new Properties();
 			settings.putAll(this.properties.getSettings());
 			factory.setFreemarkerSettings(settings);
@@ -124,6 +142,7 @@ public class FreeMarkerAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "freeMarkerViewResolver")
+		@ConditionalOnProperty(name = "spring.freemarker.enabled", matchIfMissing = true)
 		public FreeMarkerViewResolver freeMarkerViewResolver() {
 			FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
 			this.properties.applyToViewResolver(resolver);

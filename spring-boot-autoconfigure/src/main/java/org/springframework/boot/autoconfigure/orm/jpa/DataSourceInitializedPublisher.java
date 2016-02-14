@@ -66,8 +66,8 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		}
 		if (bean instanceof EntityManagerFactory && this.dataSource != null
 				&& isInitializingDatabase()) {
-			this.applicationContext.publishEvent(new DataSourceInitializedEvent(
-					this.dataSource));
+			this.applicationContext
+					.publishEvent(new DataSourceInitializedEvent(this.dataSource));
 		}
 		return bean;
 	}

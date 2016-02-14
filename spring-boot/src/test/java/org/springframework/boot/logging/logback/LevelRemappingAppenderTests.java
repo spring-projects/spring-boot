@@ -16,16 +16,16 @@
 
 package org.springframework.boot.logging.logback;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.logging.logback.LevelRemappingAppender.AppendableLogger;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.spi.ILoggingEvent;
+import org.springframework.boot.logging.logback.LevelRemappingAppender.AppendableLogger;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -70,7 +70,7 @@ public class LevelRemappingAppenderTests {
 	}
 
 	@Test
-	public void defaltRemapsInfo() throws Exception {
+	public void defaultRemapsInfo() throws Exception {
 		this.appender.append(mockLogEvent(Level.INFO));
 		verify(this.logger).callAppenders(this.logCaptor.capture());
 		assertThat(this.logCaptor.getValue().getLevel(), equalTo(Level.DEBUG));

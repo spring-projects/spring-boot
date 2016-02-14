@@ -21,7 +21,6 @@ import java.util.jar.JarFile;
 
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Test;
-import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -33,8 +32,7 @@ import static org.junit.Assert.assertThat;
  */
 public class MultiProjectRepackagingTests {
 
-	private static final String BOOT_VERSION = ManagedDependencies.get()
-			.find("spring-boot").getVersion();
+	private static final String BOOT_VERSION = Versions.getBootVersion();
 
 	@Test
 	public void repackageWithTransitiveFileDependency() throws Exception {
@@ -58,8 +56,8 @@ public class MultiProjectRepackagingTests {
 				.withArguments("-PbootVersion=" + BOOT_VERSION).run();
 		File buildLibs = new File(
 				"target/multi-project-common-file-dependency/build/libs");
-		JarFile jarFile = new JarFile(new File(buildLibs,
-				"multi-project-common-file-dependency.jar"));
+		JarFile jarFile = new JarFile(
+				new File(buildLibs, "multi-project-common-file-dependency.jar"));
 		assertThat(jarFile.getEntry("lib/foo.jar"), notNullValue());
 		jarFile.close();
 	}

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.command.options;
 
-import groovy.lang.Closure;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import groovy.lang.Closure;
 import joptsimple.BuiltinHelpFormatter;
 import joptsimple.HelpFormatter;
 import joptsimple.OptionDescriptor;
@@ -88,7 +87,7 @@ public class OptionHandler {
 				argsToUse[i] = "--cp";
 			}
 		}
-		OptionSet options = getParser().parse(args);
+		OptionSet options = getParser().parse(argsToUse);
 		return run(options);
 	}
 
@@ -96,7 +95,7 @@ public class OptionHandler {
 	 * Run the command using the specified parsed {@link OptionSet}.
 	 * @param options the parsed option set
 	 * @return an ExitStatus
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	protected ExitStatus run(OptionSet options) throws Exception {
 		if (this.closure != null) {
@@ -181,7 +180,7 @@ public class OptionHandler {
 
 		private final String description;
 
-		public OptionHelpAdapter(OptionDescriptor descriptor) {
+		OptionHelpAdapter(OptionDescriptor descriptor) {
 			this.options = new LinkedHashSet<String>();
 			for (String option : descriptor.options()) {
 				this.options.add((option.length() == 1 ? "-" : "--") + option);

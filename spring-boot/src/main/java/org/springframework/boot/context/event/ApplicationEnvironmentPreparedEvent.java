@@ -26,13 +26,15 @@ import org.springframework.core.env.Environment;
  *
  * @author Dave Syer
  */
+@SuppressWarnings("serial")
 public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent {
 
 	private final ConfigurableEnvironment environment;
 
 	/**
+	 * Create a new {@link ApplicationEnvironmentPreparedEvent} instance.
 	 * @param application the current application
-	 * @param args the argumemts the application is running with
+	 * @param args the arguments the application is running with
 	 * @param environment the environment that was just created
 	 */
 	public ApplicationEnvironmentPreparedEvent(SpringApplication application,
@@ -42,6 +44,7 @@ public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent 
 	}
 
 	/**
+	 * Return the environment.
 	 * @return the environment
 	 */
 	public ConfigurableEnvironment getEnvironment() {

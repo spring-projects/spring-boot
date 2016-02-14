@@ -39,10 +39,10 @@ public class HotelSummary implements Serializable {
 	public HotelSummary(City city, String name, Double averageRating) {
 		this.city = city;
 		this.name = name;
-		this.averageRating = averageRating == null ? null : new BigDecimal(averageRating,
-				MATH_CONTEXT).doubleValue();
-		this.averageRatingRounded = averageRating == null ? null : (int) Math
-				.round(averageRating);
+		this.averageRating = averageRating == null ? null
+				: new BigDecimal(averageRating, MATH_CONTEXT).doubleValue();
+		this.averageRatingRounded = averageRating == null ? null
+				: (int) Math.round(averageRating);
 	}
 
 	public City getCity() {

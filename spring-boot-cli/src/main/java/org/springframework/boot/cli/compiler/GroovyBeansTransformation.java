@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.codehaus.groovy.ast.expr.ClosureExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
+
 import org.springframework.core.annotation.Order;
 
 /**
@@ -42,14 +43,18 @@ import org.springframework.core.annotation.Order;
 @Order(GroovyBeansTransformation.ORDER)
 public class GroovyBeansTransformation implements ASTTransformation {
 
-	public static final int ORDER = GrabMetadataTransformation.ORDER + 200;
+	/**
+	 * The order of the transformation.
+	 */
+	public static final int ORDER = DependencyManagementBomTransformation.ORDER + 200;
 
 	@Override
 	public void visit(ASTNode[] nodes, SourceUnit source) {
 		for (ASTNode node : nodes) {
 			if (node instanceof ModuleNode) {
 				ModuleNode module = (ModuleNode) node;
-				for (ClassNode classNode : new ArrayList<ClassNode>(module.getClasses())) {
+				for (ClassNode classNode : new ArrayList<ClassNode>(
+						module.getClasses())) {
 					if (classNode.isScript()) {
 						classNode.visitContents(new ClassVisitor(source, classNode));
 					}
@@ -61,12 +66,16 @@ public class GroovyBeansTransformation implements ASTTransformation {
 	private class ClassVisitor extends ClassCodeVisitorSupport {
 
 		private static final String SOURCE_INTERFACE = "org.springframework.boot.BeanDefinitionLoader.GroovyBeanDefinitionSource";
+
 		private static final String BEANS = "beans";
+
 		private final SourceUnit source;
+
 		private final ClassNode classNode;
+
 		private boolean xformed = false;
 
-		public ClassVisitor(SourceUnit source, ClassNode classNode) {
+		ClassVisitor(SourceUnit source, ClassNode classNode) {
 			this.source = source;
 			this.classNode = classNode;
 		}
@@ -88,9 +97,10 @@ public class GroovyBeansTransformation implements ASTTransformation {
 				// Implement the interface by adding a public read-only property with the
 				// same name as the method in the interface (getBeans). Make it return the
 				// closure.
-				this.classNode.addProperty(new PropertyNode(BEANS, Modifier.PUBLIC
-						| Modifier.FINAL, ClassHelper.CLOSURE_TYPE
-						.getPlainNodeReference(), this.classNode, closure, null, null));
+				this.classNode.addProperty(
+						new PropertyNode(BEANS, Modifier.PUBLIC | Modifier.FINAL,
+								ClassHelper.CLOSURE_TYPE.getPlainNodeReference(),
+								this.classNode, closure, null, null));
 				// Only do this once per class
 				this.xformed = true;
 			}
@@ -105,5 +115,7 @@ public class GroovyBeansTransformation implements ASTTransformation {
 		private ClosureExpression beans(BlockStatement block) {
 			return AstUtils.getClosure(block, BEANS, true);
 		}
+
 	}
+
 }

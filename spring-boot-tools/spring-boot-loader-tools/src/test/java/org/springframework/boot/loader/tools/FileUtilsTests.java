@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.util.FileSystemUtils;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -33,7 +34,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests fir {@link FileUtils}.
+ * Tests for {@link FileUtils}.
  *
  * @author Dave Syer
  * @author Phillip Webb

@@ -27,8 +27,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.data.solr")
 public class SolrProperties {
 
+	/**
+	 * Solr host. Ignored if "zk-host" is set.
+	 */
 	private String host = "http://127.0.0.1:8983/solr";
 
+	/**
+	 * ZooKeeper host address in the form HOST:PORT.
+	 */
 	private String zkHost;
 
 	public String getHost() {

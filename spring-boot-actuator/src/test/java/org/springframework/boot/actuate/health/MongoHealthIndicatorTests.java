@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,25 @@
 
 package org.springframework.boot.actuate.health;
 
+import com.mongodb.CommandResult;
+import com.mongodb.MongoException;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.Mockito;
+
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.mongodb.core.MongoTemplate;
-
-import com.mongodb.CommandResult;
-import com.mongodb.MongoException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MongoHealthIndicator}.
@@ -64,26 +66,25 @@ public class MongoHealthIndicatorTests {
 
 	@Test
 	public void mongoIsUp() throws Exception {
-		CommandResult commandResult = Mockito.mock(CommandResult.class);
-		Mockito.when(commandResult.getString("version")).thenReturn("2.6.4");
-		MongoTemplate mongoTemplate = Mockito.mock(MongoTemplate.class);
-		Mockito.when(mongoTemplate.executeCommand("{ buildInfo: 1 }")).thenReturn(
-				commandResult);
+		CommandResult commandResult = mock(CommandResult.class);
+		given(commandResult.getString("version")).willReturn("2.6.4");
+		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
+		given(mongoTemplate.executeCommand("{ buildInfo: 1 }")).willReturn(commandResult);
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 
 		Health health = healthIndicator.health();
 		assertEquals(Status.UP, health.getStatus());
 		assertEquals("2.6.4", health.getDetails().get("version"));
 
-		Mockito.verify(commandResult).getString("version");
-		Mockito.verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
+		verify(commandResult).getString("version");
+		verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
 	}
 
 	@Test
 	public void mongoIsDown() throws Exception {
-		MongoTemplate mongoTemplate = Mockito.mock(MongoTemplate.class);
-		Mockito.when(mongoTemplate.executeCommand("{ buildInfo: 1 }")).thenThrow(
-				new MongoException("Connection failed"));
+		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
+		given(mongoTemplate.executeCommand("{ buildInfo: 1 }"))
+				.willThrow(new MongoException("Connection failed"));
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 
 		Health health = healthIndicator.health();
@@ -91,6 +92,6 @@ public class MongoHealthIndicatorTests {
 		assertTrue(((String) health.getDetails().get("error"))
 				.contains("Connection failed"));
 
-		Mockito.verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
+		verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
 	}
 }

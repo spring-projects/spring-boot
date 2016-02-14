@@ -1,4 +1,4 @@
-@SpringApplicationConfiguration(classes=Application)
+@SpringApplicationConfiguration(Application)
 @IntegrationTest('server.port:0')
 @WebAppConfiguration
 @DirtiesContext

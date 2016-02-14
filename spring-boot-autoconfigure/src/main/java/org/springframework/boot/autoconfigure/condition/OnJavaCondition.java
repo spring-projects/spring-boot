@@ -22,16 +22,19 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVe
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * {@link Condition} that checks for a required version of Java
+ * {@link Condition} that checks for a required version of Java.
  *
  * @author Oliver Gierke
  * @author Phillip Webb
  * @see ConditionalOnJava
  * @since 1.1.0
  */
+@Order(Ordered.HIGHEST_PRECEDENCE + 20)
 class OnJavaCondition extends SpringBootCondition {
 
 	private static final JavaVersion JVM_VERSION = JavaVersion.getJavaVersion();
@@ -52,9 +55,10 @@ class OnJavaCondition extends SpringBootCondition {
 		return new ConditionOutcome(match, getMessage(range, runningVersion, version));
 	}
 
-	private String getMessage(Range range, JavaVersion runningVersion, JavaVersion version) {
-		String expected = String.format(range == Range.EQUAL_OR_NEWER ? "%s or newer"
-				: "older than %s", version);
+	private String getMessage(Range range, JavaVersion runningVersion,
+			JavaVersion version) {
+		String expected = String.format(
+				range == Range.EQUAL_OR_NEWER ? "%s or newer" : "older than %s", version);
 		return "Required JVM version " + expected + " found " + runningVersion;
 	}
 }

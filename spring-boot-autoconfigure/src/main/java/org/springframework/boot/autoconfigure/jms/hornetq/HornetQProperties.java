@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,11 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hornetq.core.remoting.impl.invm.TransportConstants;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for HornetQ
+ * Configuration properties for HornetQ.
  *
  * @author Stephane Nicoll
  * @since 1.1.0
@@ -33,10 +34,20 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.hornetq")
 public class HornetQProperties {
 
+	/**
+	 * HornetQ deployment mode, auto-detected by default. Can be explicitly set to
+	 * "native" or "embedded".
+	 */
 	private HornetQMode mode;
 
+	/**
+	 * HornetQ broker host.
+	 */
 	private String host = "localhost";
 
+	/**
+	 * HornetQ broker port.
+	 */
 	private int port = 5445;
 
 	private final Embedded embedded = new Embedded();
@@ -76,18 +87,39 @@ public class HornetQProperties {
 
 		private static final AtomicInteger serverIdCounter = new AtomicInteger();
 
+		/**
+		 * Server id. By default, an auto-incremented counter is used.
+		 */
 		private int serverId = serverIdCounter.getAndIncrement();
 
+		/**
+		 * Enable embedded mode if the HornetQ server APIs are available.
+		 */
 		private boolean enabled = true;
 
+		/**
+		 * Enable persistent store.
+		 */
 		private boolean persistent;
 
+		/**
+		 * Journal file directory. Not necessary if persistence is turned off.
+		 */
 		private String dataDirectory;
 
+		/**
+		 * Comma-separated list of queues to create on startup.
+		 */
 		private String[] queues = new String[0];
 
+		/**
+		 * Comma-separated list of topics to create on startup.
+		 */
 		private String[] topics = new String[0];
 
+		/**
+		 * Cluster password. Randomly generated on startup by default.
+		 */
 		private String clusterPassword = UUID.randomUUID().toString();
 
 		private boolean defaultClusterPassword = true;
@@ -156,6 +188,7 @@ public class HornetQProperties {
 		/**
 		 * Creates the minimal transport parameters for an embedded transport
 		 * configuration.
+		 * @return the transport parameters
 		 * @see TransportConstants#SERVER_ID_PROP_NAME
 		 */
 		public Map<String, Object> generateTransportParameters() {

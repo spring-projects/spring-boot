@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,13 +23,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import sample.data.gemfire.domain.Gemstone;
 import sample.data.gemfire.service.GemstoneService;
 import sample.data.gemfire.service.GemstoneServiceImpl.IllegalGemstoneException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
  * @author John Blum
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleDataGemFireApplication.class)
+@SpringApplicationConfiguration(SampleDataGemFireApplication.class)
 public class SampleDataGemFireApplicationTests {
 
 	@Autowired
@@ -95,8 +95,8 @@ public class SampleDataGemFireApplicationTests {
 		this.gemstoneService.save(createGemstone("Ruby"));
 
 		assertEquals(2, this.gemstoneService.count());
-		assertTrue(asList(this.gemstoneService.list()).containsAll(
-				getGemstones("Diamond", "Ruby")));
+		assertTrue(asList(this.gemstoneService.list())
+				.containsAll(getGemstones("Diamond", "Ruby")));
 
 		try {
 			this.gemstoneService.save(createGemstone("Coal"));
@@ -105,15 +105,15 @@ public class SampleDataGemFireApplicationTests {
 		}
 
 		assertEquals(2, this.gemstoneService.count());
-		assertTrue(asList(this.gemstoneService.list()).containsAll(
-				getGemstones("Diamond", "Ruby")));
+		assertTrue(asList(this.gemstoneService.list())
+				.containsAll(getGemstones("Diamond", "Ruby")));
 
 		this.gemstoneService.save(createGemstone("Pearl"));
 		this.gemstoneService.save(createGemstone("Sapphire"));
 
 		assertEquals(4, this.gemstoneService.count());
-		assertTrue(asList(this.gemstoneService.list()).containsAll(
-				getGemstones("Diamond", "Ruby", "Pearl", "Sapphire")));
+		assertTrue(asList(this.gemstoneService.list())
+				.containsAll(getGemstones("Diamond", "Ruby", "Pearl", "Sapphire")));
 
 		try {
 			this.gemstoneService.save(createGemstone("Quartz"));
@@ -122,8 +122,8 @@ public class SampleDataGemFireApplicationTests {
 		}
 
 		assertEquals(4, this.gemstoneService.count());
-		assertTrue(asList(this.gemstoneService.list()).containsAll(
-				getGemstones("Diamond", "Ruby", "Pearl", "Sapphire")));
+		assertTrue(asList(this.gemstoneService.list())
+				.containsAll(getGemstones("Diamond", "Ruby", "Pearl", "Sapphire")));
 		assertEquals(createGemstone("Diamond"), this.gemstoneService.get("Diamond"));
 		assertEquals(createGemstone("Pearl"), this.gemstoneService.get("Pearl"));
 	}

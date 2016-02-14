@@ -18,6 +18,11 @@ package sample.tomcat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.test.WebIntegrationTest;
+import sample.tomcat.NonAutoConfigurationSampleTomcatApplicationTests.NonAutoConfigurationSampleTomcatApplication;
+import sample.tomcat.service.HelloWorldService;
+import sample.tomcat.web.SampleController;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -26,7 +31,6 @@ import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoCo
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.context.annotation.ComponentScan;
@@ -36,11 +40,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-
-import sample.tomcat.NonAutoConfigurationSampleTomcatApplicationTests.NonAutoConfigurationSampleTomcatApplication;
-import sample.tomcat.service.HelloWorldService;
-import sample.tomcat.web.SampleController;
 
 import static org.junit.Assert.assertEquals;
 
@@ -50,9 +49,8 @@ import static org.junit.Assert.assertEquals;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = NonAutoConfigurationSampleTomcatApplication.class)
-@WebAppConfiguration
-@IntegrationTest("server.port=0")
+@SpringApplicationConfiguration(NonAutoConfigurationSampleTomcatApplication.class)
+@WebIntegrationTest(randomPort = true)
 @DirtiesContext
 public class NonAutoConfigurationSampleTomcatApplicationTests {
 
@@ -65,7 +63,8 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 			ServerPropertiesAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
-	@ComponentScan(basePackageClasses = { SampleController.class, HelloWorldService.class })
+	@ComponentScan(basePackageClasses = { SampleController.class,
+			HelloWorldService.class })
 	public static class NonAutoConfigurationSampleTomcatApplication {
 
 		public static void main(String[] args) throws Exception {
@@ -76,8 +75,8 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("Hello World", entity.getBody());
 	}

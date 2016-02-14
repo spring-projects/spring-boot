@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.metrics.reader;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.actuate.metrics.Metric;
@@ -31,9 +32,7 @@ public class CompositeMetricReader implements MetricReader {
 	private final List<MetricReader> readers = new ArrayList<MetricReader>();
 
 	public CompositeMetricReader(MetricReader... readers) {
-		for (MetricReader reader : readers) {
-			this.readers.add(reader);
-		}
+		Collections.addAll(this.readers, readers);
 	}
 
 	@Override

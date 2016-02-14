@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -25,8 +26,13 @@ import javax.servlet.ServletContext;
 
 import org.apache.tomcat.JarScanner;
 import org.apache.tomcat.JarScannerCallback;
+import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.apache.tomcat.util.scan.StandardJarScanner;
+
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link JarScanner} decorator allowing alternative default jar pattern matching. This
@@ -38,6 +44,8 @@ import org.springframework.util.Assert;
  */
 class SkipPatternJarScanner extends StandardJarScanner {
 
+	private static final String JAR_SCAN_FILTER_CLASS = "org.apache.tomcat.JarScanFilter";
+
 	private final JarScanner jarScanner;
 
 	private final SkipPattern pattern;
@@ -46,13 +54,29 @@ class SkipPatternJarScanner extends StandardJarScanner {
 		Assert.notNull(jarScanner, "JarScanner must not be null");
 		this.jarScanner = jarScanner;
 		this.pattern = (pattern == null ? new SkipPattern() : new SkipPattern(pattern));
+		setPatternToTomcat8SkipFilter(this.pattern);
 	}
 
-	@Override
+	private void setPatternToTomcat8SkipFilter(SkipPattern pattern) {
+		if (ClassUtils.isPresent(JAR_SCAN_FILTER_CLASS, null)) {
+			new Tomcat8TldSkipSetter(this).setSkipPattern(pattern);
+		}
+	}
+
+	// For Tomcat 7 compatibility
 	public void scan(ServletContext context, ClassLoader classloader,
 			JarScannerCallback callback, Set<String> jarsToSkip) {
-		this.jarScanner.scan(context, classloader, callback,
-				(jarsToSkip == null ? this.pattern.asSet() : jarsToSkip));
+		Method scanMethod = ReflectionUtils.findMethod(this.jarScanner.getClass(), "scan",
+				ServletContext.class, ClassLoader.class, JarScannerCallback.class,
+				Set.class);
+		Assert.notNull(scanMethod, "Unable to find scan method");
+		try {
+			scanMethod.invoke(this.jarScanner, context, classloader, callback,
+					(jarsToSkip == null ? this.pattern.asSet() : jarsToSkip));
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Tomcat 7 reflection failed", ex);
+		}
 	}
 
 	/**
@@ -61,16 +85,39 @@ class SkipPatternJarScanner extends StandardJarScanner {
 	 * @param pattern the jar skip pattern or {@code null} for defaults
 	 */
 	public static void apply(TomcatEmbeddedContext context, String pattern) {
-		SkipPatternJarScanner scanner = new SkipPatternJarScanner(
-				context.getJarScanner(), pattern);
+		SkipPatternJarScanner scanner = new SkipPatternJarScanner(context.getJarScanner(),
+				pattern);
 		context.setJarScanner(scanner);
 	}
 
+	/**
+	 * Tomcat 8 specific logic to setup the scanner.
+	 */
+	private static class Tomcat8TldSkipSetter {
+
+		private final StandardJarScanner jarScanner;
+
+		Tomcat8TldSkipSetter(StandardJarScanner jarScanner) {
+			this.jarScanner = jarScanner;
+		}
+
+		public void setSkipPattern(SkipPattern pattern) {
+			StandardJarScanFilter filter = new StandardJarScanFilter();
+			filter.setTldSkip(pattern.asCommaDelimitedString());
+			this.jarScanner.setJarScanFilter(filter);
+		}
+
+	}
+
+	/**
+	 * Skip patterns used by Spring Boot.
+	 */
 	private static class SkipPattern {
 
 		private Set<String> patterns = new LinkedHashSet<String>();
 
 		protected SkipPattern() {
+			// Same as Tomcat
 			add("ant-*.jar");
 			add("aspectj*.jar");
 			add("commons-beanutils*.jar");
@@ -107,9 +154,56 @@ class SkipPatternJarScanner extends StandardJarScanner {
 			add("xercesImpl-*.jar");
 			add("xmlParserAPIs-*.jar");
 			add("xml-apis-*.jar");
+
+			// Additional
+			add("antlr-*.jar");
+			add("aopalliance-*.jar");
+			add("aspectjrt-*.jar");
+			add("aspectjweaver-*.jar");
+			add("classmate-*.jar");
+			add("dom4j-*.jar");
+			add("ecj-*.jar");
+			add("ehcache-core-*.jar");
+			add("hibernate-core-*.jar");
+			add("hibernate-commons-annotations-*.jar");
+			add("hibernate-entitymanager-*.jar");
+			add("hibernate-jpa-2.1-api-*.jar");
+			add("hibernate-validator-*.jar");
+			add("hsqldb-*.jar");
+			add("jackson-annotations-*.jar");
+			add("jackson-core-*.jar");
+			add("jackson-databind-*.jar");
+			add("jandex-*.jar");
+			add("javassist-*.jar");
+			add("jboss-logging-*.jar");
+			add("jboss-transaction-api_*.jar");
+			add("jcl-over-slf4j-*.jar");
+			add("jdom-*.jar");
+			add("jul-to-slf4j-*.jar");
+			add("log4j-over-slf4j-*.jar");
+			add("logback-classic-*.jar");
+			add("logback-core-*.jar");
+			add("rome-*.jar");
+			add("slf4j-api-*.jar");
+			add("spring-aop-*.jar");
+			add("spring-aspects-*.jar");
+			add("spring-beans-*.jar");
+			add("spring-boot-*.jar");
+			add("spring-core-*.jar");
+			add("spring-context-*.jar");
+			add("spring-data-*.jar");
+			add("spring-expression-*.jar");
+			add("spring-jdbc-*.jar,");
+			add("spring-orm-*.jar");
+			add("spring-oxm-*.jar");
+			add("spring-tx-*.jar");
+			add("snakeyaml-*.jar");
+			add("tomcat-embed-el-*.jar");
+			add("validation-api-*.jar");
+			add("xml-apis-*.jar");
 		}
 
-		public SkipPattern(String patterns) {
+		SkipPattern(String patterns) {
 			StringTokenizer tokenizer = new StringTokenizer(patterns, ",");
 			while (tokenizer.hasMoreElements()) {
 				add(tokenizer.nextToken());
@@ -122,6 +216,10 @@ class SkipPatternJarScanner extends StandardJarScanner {
 				this.patterns.add(",");
 			}
 			this.patterns.add(patterns);
+		}
+
+		public String asCommaDelimitedString() {
+			return StringUtils.collectionToCommaDelimitedString(this.patterns);
 		}
 
 		public Set<String> asSet() {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,24 +17,20 @@
 package sample.data.gemfire;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.data.gemfire.repository.config.EnableGemfireRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * The GemstoneAppConfiguration class for allowing Spring Boot to pickup additional
+ * The GemstoneAppConfiguration class for allowing Spring Boot to pick up additional
  * application Spring configuration meta-data for GemFire, which must be specified in
  * Spring Data GemFire's XML namespace.
  *
  * @author John Blum
  */
-@Configuration
+@SpringBootApplication
 @ImportResource("/spring-data-gemfire-cache.xml")
-@ComponentScan
-@EnableAutoConfiguration
 @EnableGemfireRepositories
 @EnableTransactionManagement
 public class SampleDataGemFireApplication {

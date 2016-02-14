@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,10 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContainerInitializer;
@@ -36,16 +39,22 @@ import org.apache.catalina.Host;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Manager;
 import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.loader.WebappLoader;
+import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
+import org.apache.coyote.http11.AbstractHttp11Protocol;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -75,13 +84,22 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Brock Mills
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
+ * @author Eddú Meléndez
  * @see #setPort(int)
  * @see #setContextLifecycleListeners(Collection)
  * @see TomcatEmbeddedServletContainer
  */
-public class TomcatEmbeddedServletContainerFactory extends
-		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+public class TomcatEmbeddedServletContainerFactory
+		extends AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
+	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+
+	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
+
+	/**
+	 * The class name of default protocol used.
+	 */
 	public static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
 
 	private File baseDirectory;
@@ -102,7 +120,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private String tldSkip;
 
-	private String uriEncoding = "UTF-8";
+	private Charset uriEncoding = DEFAULT_CHARSET;
 
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainerFactory} instance.
@@ -143,13 +161,10 @@ public class TomcatEmbeddedServletContainerFactory extends
 		tomcat.setConnector(connector);
 		tomcat.getHost().setAutoDeploy(false);
 		tomcat.getEngine().setBackgroundProcessorDelay(-1);
-
 		for (Connector additionalConnector : this.additionalTomcatConnectors) {
 			tomcat.getService().addConnector(additionalConnector);
 		}
-
 		prepareContext(tomcat.getHost(), initializers);
-		this.logger.info("Server initialized with port: " + getPort());
 		return getTomcatEmbeddedServletContainer(tomcat);
 	}
 
@@ -158,11 +173,20 @@ public class TomcatEmbeddedServletContainerFactory extends
 		docBase = (docBase != null ? docBase : createTempDir("tomcat-docbase"));
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		context.setName(getContextPath());
+		context.setDisplayName(getDisplayName());
 		context.setPath(getContextPath());
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
-		context.setParentClassLoader(this.resourceLoader != null ? this.resourceLoader
-				.getClassLoader() : ClassUtils.getDefaultClassLoader());
+		context.setParentClassLoader(
+				this.resourceLoader != null ? this.resourceLoader.getClassLoader()
+						: ClassUtils.getDefaultClassLoader());
+		try {
+			context.setUseRelativeRedirects(false);
+			context.setMapperContextRootRedirectEnabled(true);
+		}
+		catch (NoSuchMethodError ex) {
+			// Tomcat is < 8.0.30. Continue
+		}
 		SkipPatternJarScanner.apply(context, this.tldSkip);
 		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
@@ -171,9 +195,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		if (isRegisterDefaultServlet()) {
 			addDefaultServlet(context);
 		}
-		if (isRegisterJspServlet()
-				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
-						.getClassLoader())) {
+		if (shouldRegisterJspServlet()) {
 			addJspServlet(context);
 			addJasperInitializer(context);
 			context.addLifecycleListener(new StoreMergedWebXmlListener());
@@ -200,8 +222,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 	private void addJspServlet(Context context) {
 		Wrapper jspServlet = context.createWrapper();
 		jspServlet.setName("jsp");
-		jspServlet.setServletClass(getJspServletClassName());
+		jspServlet.setServletClass(getJspServlet().getClassName());
 		jspServlet.addInitParameter("fork", "false");
+		for (Entry<String, String> initParameter : getJspServlet().getInitParameters()
+				.entrySet()) {
+			jspServlet.addInitParameter(initParameter.getKey(), initParameter.getValue());
+		}
 		jspServlet.setLoadOnStartup(3);
 		context.addChild(jspServlet);
 		context.addServletMapping("*.jsp", "jsp");
@@ -224,33 +250,61 @@ public class TomcatEmbeddedServletContainerFactory extends
 	protected void customizeConnector(Connector connector) {
 		int port = (getPort() >= 0 ? getPort() : 0);
 		connector.setPort(port);
+		if (StringUtils.hasText(this.getServerHeader())) {
+			connector.setAttribute("server", this.getServerHeader());
+		}
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
-			if (getAddress() != null) {
-				((AbstractProtocol<?>) connector.getProtocolHandler())
-						.setAddress(getAddress());
-			}
+			customizeProtocol((AbstractProtocol<?>) connector.getProtocolHandler());
 		}
 		if (getUriEncoding() != null) {
-			connector.setURIEncoding(getUriEncoding());
+			connector.setURIEncoding(getUriEncoding().name());
 		}
 
 		// If ApplicationContext is slow to start we want Tomcat not to bind to the socket
 		// prematurely...
 		connector.setProperty("bindOnInit", "false");
 
-		if (getSsl() != null) {
-			Assert.state(
-					connector.getProtocolHandler() instanceof AbstractHttp11JsseProtocol,
-					"To use SSL, the connector's protocol handler must be an "
-							+ "AbstractHttp11JsseProtocol subclass");
-			configureSsl((AbstractHttp11JsseProtocol<?>) connector.getProtocolHandler(),
-					getSsl());
-			connector.setScheme("https");
-			connector.setSecure(true);
+		if (getSsl() != null && getSsl().isEnabled()) {
+			customizeSsl(connector);
 		}
-
+		if (getCompression() != null && getCompression().getEnabled()) {
+			customizeCompression(connector);
+		}
 		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {
 			customizer.customize(connector);
+		}
+	}
+
+	private void customizeProtocol(AbstractProtocol<?> protocol) {
+		if (getAddress() != null) {
+			protocol.setAddress(getAddress());
+		}
+	}
+
+	private void customizeSsl(Connector connector) {
+		ProtocolHandler handler = connector.getProtocolHandler();
+		Assert.state(handler instanceof AbstractHttp11JsseProtocol,
+				"To use SSL, the connector's protocol handler must be an "
+						+ "AbstractHttp11JsseProtocol subclass");
+		configureSsl((AbstractHttp11JsseProtocol<?>) handler, getSsl());
+		connector.setScheme("https");
+		connector.setSecure(true);
+	}
+
+	private void customizeCompression(Connector connector) {
+		ProtocolHandler handler = connector.getProtocolHandler();
+		if (handler instanceof AbstractHttp11Protocol) {
+			AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) handler;
+			Compression compression = getCompression();
+			protocol.setCompression("on");
+			protocol.setCompressionMinSize(compression.getMinResponseSize());
+			protocol.setCompressableMimeTypes(
+					StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
+			if (getCompression().getExcludedUserAgents() != null) {
+				protocol.setNoCompressionUserAgents(
+						StringUtils.arrayToCommaDelimitedString(
+								getCompression().getExcludedUserAgents()));
+			}
 		}
 	}
 
@@ -283,12 +337,11 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private void configureSslKeyStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		try {
-			File file = ResourceUtils.getFile(ssl.getKeyStore());
-			protocol.setKeystoreFile(file.getAbsolutePath());
+			protocol.setKeystoreFile(ResourceUtils.getURL(ssl.getKeyStore()).toString());
 		}
 		catch (FileNotFoundException ex) {
-			throw new EmbeddedServletContainerException("Could not find key store "
-					+ ssl.getKeyStore(), ex);
+			throw new EmbeddedServletContainerException(
+					"Could not load key store: " + ex.getMessage(), ex);
 		}
 		if (ssl.getKeyStoreType() != null) {
 			protocol.setKeystoreType(ssl.getKeyStoreType());
@@ -301,12 +354,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 	private void configureSslTrustStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		if (ssl.getTrustStore() != null) {
 			try {
-				File file = ResourceUtils.getFile(ssl.getTrustStore());
-				protocol.setTruststoreFile(file.getAbsolutePath());
+				protocol.setTruststoreFile(
+						ResourceUtils.getURL(ssl.getTrustStore()).toString());
 			}
 			catch (FileNotFoundException ex) {
-				throw new EmbeddedServletContainerException("Could not find trust store "
-						+ ssl.getTrustStore(), ex);
+				throw new EmbeddedServletContainerException(
+						"Could not load trust store: " + ex.getMessage(), ex);
 			}
 		}
 		protocol.setTruststorePass(ssl.getTrustStorePassword());
@@ -325,13 +378,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 */
 	protected void configureContext(Context context,
 			ServletContextInitializer[] initializers) {
-		ServletContextInitializerLifecycleListener starter = new ServletContextInitializerLifecycleListener(
-				initializers);
+		TomcatStarter starter = new TomcatStarter(initializers);
 		if (context instanceof TomcatEmbeddedContext) {
 			// Should be true
 			((TomcatEmbeddedContext) context).setStarter(starter);
 		}
-		context.addLifecycleListener(starter);
+		context.addServletContainerInitializer(starter, NO_CLASSES);
 		for (LifecycleListener lifecycleListener : this.contextLifecycleListeners) {
 			context.addLifecycleListener(lifecycleListener);
 		}
@@ -344,15 +396,43 @@ public class TomcatEmbeddedServletContainerFactory extends
 		for (MimeMappings.Mapping mapping : getMimeMappings()) {
 			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 		}
-		long sessionTimeout = getSessionTimeout();
-		if (sessionTimeout > 0) {
-			// Tomcat timeouts are in minutes
-			sessionTimeout = Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);
-		}
-		context.setSessionTimeout((int) sessionTimeout);
+		configureSession(context);
 		for (TomcatContextCustomizer customizer : this.tomcatContextCustomizers) {
 			customizer.customize(context);
 		}
+	}
+
+	private void configureSession(Context context) {
+		long sessionTimeout = getSessionTimeoutInMinutes();
+		context.setSessionTimeout((int) sessionTimeout);
+		if (isPersistSession()) {
+			Manager manager = context.getManager();
+			if (manager == null) {
+				manager = new StandardManager();
+				context.setManager(manager);
+			}
+			configurePersistSession(manager);
+		}
+		else {
+			context.addLifecycleListener(new DisablePersistSessionListener());
+		}
+	}
+
+	private void configurePersistSession(Manager manager) {
+		Assert.state(manager instanceof StandardManager,
+				"Unable to persist HTTP session state using manager type "
+						+ manager.getClass().getName());
+		File dir = getValidSessionStoreDir();
+		File file = new File(dir, "SESSIONS.ser");
+		((StandardManager) manager).setPathname(file.getAbsolutePath());
+	}
+
+	private long getSessionTimeoutInMinutes() {
+		long sessionTimeout = getSessionTimeout();
+		if (sessionTimeout > 0) {
+			sessionTimeout = Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);
+		}
+		return sessionTimeout;
 	}
 
 	/**
@@ -375,20 +455,6 @@ public class TomcatEmbeddedServletContainerFactory extends
 	protected TomcatEmbeddedServletContainer getTomcatEmbeddedServletContainer(
 			Tomcat tomcat) {
 		return new TomcatEmbeddedServletContainer(tomcat, getPort() >= 0);
-	}
-
-	private File createTempDir(String prefix) {
-		try {
-			File tempFolder = File.createTempFile(prefix + ".", "." + getPort());
-			tempFolder.delete();
-			tempFolder.mkdir();
-			tempFolder.deleteOnExit();
-			return tempFolder;
-		}
-		catch (IOException ex) {
-			throw new EmbeddedServletContainerException(
-					"Unable to create Tomcat tempdir", ex);
-		}
 	}
 
 	@Override
@@ -416,6 +482,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	/**
 	 * The Tomcat protocol to use when create the {@link Connector}.
+	 * @param protocol the protocol
 	 * @see Connector#Connector(String)
 	 */
 	public void setProtocol(String protocol) {
@@ -511,7 +578,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 * {@link Context}.
 	 * @param tomcatContextCustomizers the customizers to add
 	 */
-	public void addContextCustomizers(TomcatContextCustomizer... tomcatContextCustomizers) {
+	public void addContextCustomizers(
+			TomcatContextCustomizer... tomcatContextCustomizers) {
 		Assert.notNull(tomcatContextCustomizers,
 				"TomcatContextCustomizers must not be null");
 		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
@@ -562,7 +630,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	/**
 	 * Returns a mutable collection of the {@link Connector}s that will be added to the
-	 * Tomcat
+	 * Tomcat.
 	 * @return the additionalTomcatConnectors
 	 */
 	public List<Connector> getAdditionalTomcatConnectors() {
@@ -574,18 +642,23 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 * be used.
 	 * @param uriEncoding the uri encoding to set
 	 */
-	public void setUriEncoding(String uriEncoding) {
+	public void setUriEncoding(Charset uriEncoding) {
 		this.uriEncoding = uriEncoding;
 	}
 
 	/**
 	 * Returns the character encoding to use for URL decoding.
+	 * @return the URI encoding
 	 */
-	public String getUriEncoding() {
+	public Charset getUriEncoding() {
 		return this.uriEncoding;
 	}
 
 	private static class TomcatErrorPage {
+
+		private static final String ERROR_PAGE_CLASS = "org.apache.tomcat.util.descriptor.web.ErrorPage";
+
+		private static final String LEGACY_ERROR_PAGE_CLASS = "org.apache.catalina.deploy.ErrorPage";
 
 		private final String location;
 
@@ -595,7 +668,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 		private final Object nativePage;
 
-		public TomcatErrorPage(ErrorPage errorPage) {
+		TomcatErrorPage(ErrorPage errorPage) {
 			this.location = errorPage.getPath();
 			this.exceptionType = errorPage.getExceptionName();
 			this.errorCode = errorPage.getStatusCode();
@@ -605,15 +678,13 @@ public class TomcatEmbeddedServletContainerFactory extends
 		private Object createNativePage(ErrorPage errorPage) {
 			Object nativePage = null;
 			try {
-				if (ClassUtils.isPresent("org.apache.catalina.deploy.ErrorPage", null)) {
-					nativePage = new org.apache.catalina.deploy.ErrorPage();
+				if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
+					nativePage = BeanUtils
+							.instantiate(ClassUtils.forName(ERROR_PAGE_CLASS, null));
 				}
-				else {
-					if (ClassUtils.isPresent(
-							"org.apache.tomcat.util.descriptor.web.ErrorPage", null)) {
-						nativePage = BeanUtils.instantiate(ClassUtils.forName(
-								"org.apache.tomcat.util.descriptor.web.ErrorPage", null));
-					}
+				else if (ClassUtils.isPresent(LEGACY_ERROR_PAGE_CLASS, null)) {
+					nativePage = BeanUtils.instantiate(
+							ClassUtils.forName(LEGACY_ERROR_PAGE_CLASS, null));
 				}
 			}
 			catch (ClassNotFoundException ex) {
@@ -628,8 +699,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 		public void addToContext(Context context) {
 			Assert.state(this.nativePage != null,
 					"Neither Tomcat 7 nor 8 detected so no native error page exists");
-			if (ClassUtils.isPresent("org.apache.catalina.deploy.ErrorPage", null)) {
-				org.apache.catalina.deploy.ErrorPage errorPage = (org.apache.catalina.deploy.ErrorPage) this.nativePage;
+			if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
+				org.apache.tomcat.util.descriptor.web.ErrorPage errorPage = (org.apache.tomcat.util.descriptor.web.ErrorPage) this.nativePage;
 				errorPage.setLocation(this.location);
 				errorPage.setErrorCode(this.errorCode);
 				errorPage.setExceptionType(this.exceptionType);
@@ -689,6 +760,26 @@ public class TomcatEmbeddedServletContainerFactory extends
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException(ex);
+			}
+		}
+
+	}
+
+	/**
+	 * {@link LifecycleListener} to disable persistence in the {@link StandardManager}. A
+	 * {@link LifecycleListener} is used so not to interfere with Tomcat's default manager
+	 * creation logic.
+	 */
+	private static class DisablePersistSessionListener implements LifecycleListener {
+
+		@Override
+		public void lifecycleEvent(LifecycleEvent event) {
+			if (event.getType().equals(Lifecycle.START_EVENT)) {
+				Context context = (Context) event.getLifecycle();
+				Manager manager = context.getManager();
+				if (manager != null && manager instanceof StandardManager) {
+					((StandardManager) manager).setPathname(null);
+				}
 			}
 		}
 

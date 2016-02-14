@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -60,7 +61,7 @@ import static org.junit.Assert.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TomcatConfig.class)
+@SpringApplicationConfiguration(TomcatConfig.class)
 @IntegrationTest
 @WebAppConfiguration
 public class ErrorPageFilterIntegrationTests {
@@ -92,8 +93,8 @@ public class ErrorPageFilterIntegrationTests {
 			String resourcePath, HttpStatus status) throws Exception {
 		int port = context.getEmbeddedServletContainer().getPort();
 		TestRestTemplate template = new TestRestTemplate();
-		ResponseEntity<String> entity = template.getForEntity(new URI("http://localhost:"
-				+ port + resourcePath), String.class);
+		ResponseEntity<String> entity = template.getForEntity(
+				new URI("http://localhost:" + port + resourcePath), String.class);
 		assertThat(entity.getBody(), equalTo("Hello World"));
 		assertThat(entity.getStatusCode(), equalTo(status));
 	}

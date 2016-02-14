@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.jar.JarFile;
 import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.boot.dependency.tools.ManagedDependencies;
+
 import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.notNullValue;
@@ -38,8 +38,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class RepackagingTests {
 
-	private static final String BOOT_VERSION = ManagedDependencies.get()
-			.find("spring-boot").getVersion();
+	private static final String BOOT_VERSION = Versions.getBootVersion();
 
 	private static ProjectConnection project;
 
@@ -49,19 +48,24 @@ public class RepackagingTests {
 	}
 
 	@Test
-	public void repackagingEnabled() {
+	public void repackagingEnabled() throws IOException {
 		project.newBuild().forTasks("clean", "build")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true").run();
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true",
+						"-PexcludeDevtools=false")
+				.run();
 		File buildLibs = new File("target/repackage/build/libs");
-		assertTrue(new File(buildLibs, "repackage.jar").exists());
+		File repackageFile = new File(buildLibs, "repackage.jar");
+		assertTrue(repackageFile.exists());
 		assertTrue(new File(buildLibs, "repackage.jar.original").exists());
 		assertFalse(new File(buildLibs, "repackage-sources.jar.original").exists());
+		assertTrue(isDevToolsJarIncluded(repackageFile));
 	}
 
 	@Test
 	public void repackagingDisabled() {
 		project.newBuild().forTasks("clean", "build")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=false")
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=false",
+						"-PexcludeDevtools=false")
 				.run();
 		File buildLibs = new File("target/repackage/build/libs");
 		assertTrue(new File(buildLibs, "repackage.jar").exists());
@@ -72,7 +76,8 @@ public class RepackagingTests {
 	@Test
 	public void repackagingDisabledWithCustomRepackagedJar() {
 		project.newBuild().forTasks("clean", "build", "customRepackagedJar")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=false")
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=false",
+						"-PexcludeDevtools=false")
 				.run();
 		File buildLibs = new File("target/repackage/build/libs");
 		assertTrue(new File(buildLibs, "repackage.jar").exists());
@@ -86,7 +91,8 @@ public class RepackagingTests {
 	public void repackagingDisabledWithCustomRepackagedJarUsingStringJarTaskReference() {
 		project.newBuild()
 				.forTasks("clean", "build", "customRepackagedJarWithStringReference")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=false")
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=false",
+						"-PexcludeDevtools=false")
 				.run();
 		File buildLibs = new File("target/repackage/build/libs");
 		assertTrue(new File(buildLibs, "repackage.jar").exists());
@@ -99,7 +105,9 @@ public class RepackagingTests {
 	@Test
 	public void repackagingEnabledWithCustomRepackagedJar() {
 		project.newBuild().forTasks("clean", "build", "customRepackagedJar")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true").run();
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true",
+						"-PexcludeDevtools=false")
+				.run();
 		File buildLibs = new File("target/repackage/build/libs");
 		assertTrue(new File(buildLibs, "repackage.jar").exists());
 		assertTrue(new File(buildLibs, "repackage.jar.original").exists());
@@ -112,7 +120,9 @@ public class RepackagingTests {
 	public void repackagingEnableWithCustomRepackagedJarUsingStringJarTaskReference() {
 		project.newBuild()
 				.forTasks("clean", "build", "customRepackagedJarWithStringReference")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true").run();
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true",
+						"-PexcludeDevtools=false")
+				.run();
 		File buildLibs = new File("target/repackage/build/libs");
 		assertTrue(new File(buildLibs, "repackage.jar").exists());
 		assertTrue(new File(buildLibs, "repackage.jar.original").exists());
@@ -123,13 +133,41 @@ public class RepackagingTests {
 
 	@Test
 	public void repackageWithFileDependency() throws Exception {
-		FileCopyUtils.copy(new File("src/test/resources/foo.jar"), new File(
-				"target/repackage/foo.jar"));
+		FileCopyUtils.copy(new File("src/test/resources/foo.jar"),
+				new File("target/repackage/foo.jar"));
 		project.newBuild().forTasks("clean", "build")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true").run();
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true",
+						"-PexcludeDevtools=false")
+				.run();
 		File buildLibs = new File("target/repackage/build/libs");
 		JarFile jarFile = new JarFile(new File(buildLibs, "repackage.jar"));
 		assertThat(jarFile.getEntry("lib/foo.jar"), notNullValue());
 		jarFile.close();
 	}
+
+	@Test
+	public void repackagingEnabledExcludeDevtools() throws IOException {
+		project.newBuild().forTasks("clean", "build")
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true",
+						"-PexcludeDevtools=true")
+				.run();
+		File buildLibs = new File("target/repackage/build/libs");
+		File repackageFile = new File(buildLibs, "repackage.jar");
+		assertTrue(repackageFile.exists());
+		assertTrue(new File(buildLibs, "repackage.jar.original").exists());
+		assertFalse(new File(buildLibs, "repackage-sources.jar.original").exists());
+		assertFalse(isDevToolsJarIncluded(repackageFile));
+	}
+
+	private boolean isDevToolsJarIncluded(File repackageFile) throws IOException {
+		JarFile jarFile = new JarFile(repackageFile);
+		try {
+			String name = "lib/spring-boot-devtools-" + BOOT_VERSION + ".jar";
+			return jarFile.getEntry(name) != null;
+		}
+		finally {
+			jarFile.close();
+		}
+	}
+
 }

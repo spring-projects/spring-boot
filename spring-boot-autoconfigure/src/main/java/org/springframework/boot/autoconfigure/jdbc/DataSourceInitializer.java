@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -45,12 +46,11 @@ import org.springframework.util.StringUtils;
  */
 class DataSourceInitializer implements ApplicationListener<DataSourceInitializedEvent> {
 
-	private static Log logger = LogFactory.getLog(DataSourceInitializer.class);
+	private static final Log logger = LogFactory.getLog(DataSourceInitializer.class);
 
 	@Autowired
 	private ConfigurableApplicationContext applicationContext;
 
-	@Autowired(required = false)
 	private DataSource dataSource;
 
 	@Autowired
@@ -59,10 +59,14 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 	private boolean initialized = false;
 
 	@PostConstruct
-	protected void initialize() {
+	public void init() {
 		if (!this.properties.isInitialize()) {
 			logger.debug("Initialization disabled (not running DDL scripts)");
 			return;
+		}
+		if (this.applicationContext.getBeanNamesForType(DataSource.class, false,
+				false).length > 0) {
+			this.dataSource = this.applicationContext.getBean(DataSource.class);
 		}
 		if (this.dataSource == null) {
 			logger.debug("No DataSource found so not initializing");
@@ -76,8 +80,8 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 		if (!scripts.isEmpty()) {
 			runScripts(scripts);
 			try {
-				this.applicationContext.publishEvent(new DataSourceInitializedEvent(
-						this.dataSource));
+				this.applicationContext
+						.publishEvent(new DataSourceInitializedEvent(this.dataSource));
 				// The listener might not be registered yet, so don't rely on it.
 				if (!this.initialized) {
 					runDataScripts();
@@ -130,8 +134,8 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 				}
 			}
 			catch (IOException ex) {
-				throw new IllegalStateException("Unable to load resource from "
-						+ location, ex);
+				throw new IllegalStateException(
+						"Unable to load resource from " + location, ex);
 			}
 		}
 		return resources;
@@ -144,7 +148,9 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 		populator.setContinueOnError(this.properties.isContinueOnError());
 		populator.setSeparator(this.properties.getSeparator());
-		populator.setSqlScriptEncoding(this.properties.getSqlScriptEncoding());
+		if (this.properties.getSqlScriptEncoding() != null) {
+			populator.setSqlScriptEncoding(this.properties.getSqlScriptEncoding().name());
+		}
 		for (Resource resource : resources) {
 			populator.addScript(resource);
 		}

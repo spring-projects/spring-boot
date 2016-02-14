@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.MetricRepository;
 import org.springframework.boot.actuate.metrics.writer.Delta;
@@ -41,11 +40,11 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  */
-public class RedisMetricRepository implements MetricRepository, InitializingBean {
+public class RedisMetricRepository implements MetricRepository {
 
 	private static final String DEFAULT_METRICS_PREFIX = "spring.metrics.";
 
-	private static final String DEFAULT_KEY = "keys." + DEFAULT_METRICS_PREFIX;
+	private static final String DEFAULT_KEY = "keys.spring.metrics";
 
 	private String prefix = DEFAULT_METRICS_PREFIX;
 
@@ -55,44 +54,63 @@ public class RedisMetricRepository implements MetricRepository, InitializingBean
 
 	private final RedisOperations<String, String> redisOperations;
 
+	/**
+	 * Create a RedisMetricRepository with a default prefix to apply to all metric names.
+	 * If multiple repositories share a redis instance they will feed into the same global
+	 * metrics.
+	 *
+	 * @param redisConnectionFactory the redis connection factory
+	 */
 	public RedisMetricRepository(RedisConnectionFactory redisConnectionFactory) {
-		Assert.notNull(redisConnectionFactory, "RedisConnectionFactory must not be null");
-		this.redisOperations = RedisUtils.stringTemplate(redisConnectionFactory);
-		this.zSetOperations = this.redisOperations.boundZSetOps(this.key);
-	}
-
-	@Override
-	public void afterPropertiesSet() {
-		if (!DEFAULT_METRICS_PREFIX.equals(this.prefix)) {
-			if (DEFAULT_KEY.equals(this.key)) {
-				this.key = "keys." + this.prefix;
-			}
-		}
-		if (!DEFAULT_KEY.equals(this.key)) {
-			this.zSetOperations = this.redisOperations.boundZSetOps(this.key);
-		}
+		this(redisConnectionFactory, null);
 	}
 
 	/**
-	 * The prefix for all metrics keys.
+	 * Create a RedisMetricRepository with a prefix to apply to all metric names (ideally
+	 * unique to this repository or to a logical repository contributed to by multiple
+	 * instances, where they all see the same values). Recommended constructor for general
+	 * purpose use.
+	 *
+	 * @param redisConnectionFactory the redis connection factory
 	 * @param prefix the prefix to set for all metrics keys
 	 */
-	public void setPrefix(String prefix) {
+	public RedisMetricRepository(RedisConnectionFactory redisConnectionFactory,
+			String prefix) {
+		this(redisConnectionFactory, prefix, null);
+	}
+
+	/**
+	 * Allows user to set the prefix and key to use to store the index of other keys. The
+	 * redis store will hold a zset under the key just so the metric names can be
+	 * enumerated. Read operations, especially {@link #findAll()} and {@link #count()},
+	 * will only be accurate if the key is unique to the prefix of this repository.
+	 *
+	 * @param redisConnectionFactory the redis connection factory
+	 * @param prefix the prefix to set for all metrics keys
+	 * @param key the key to set
+	 */
+	public RedisMetricRepository(RedisConnectionFactory redisConnectionFactory,
+			String prefix, String key) {
+		if (prefix == null) {
+			prefix = DEFAULT_METRICS_PREFIX;
+			if (key == null) {
+				key = DEFAULT_KEY;
+			}
+		}
+		else if (key == null) {
+			key = "keys." + prefix;
+		}
+		Assert.notNull(redisConnectionFactory, "RedisConnectionFactory must not be null");
+		this.redisOperations = RedisUtils.stringTemplate(redisConnectionFactory);
 		if (!prefix.endsWith(".")) {
 			prefix = prefix + ".";
 		}
 		this.prefix = prefix;
-	}
-
-	/**
-	 * The redis key to use to store the index of other keys. The redis store will hold a
-	 * zset under this key. Defaults to "keys.spring.metrics". Read operations, especially
-	 * {@link #findAll()} and {@link #count()}, will be much more efficient if the key is
-	 * unique to the {@link #setPrefix(String) prefix} of this repository.
-	 * @param key the key to set
-	 */
-	public void setKey(String key) {
+		if (key.endsWith(".")) {
+			key = key.substring(0, key.length() - 1);
+		}
 		this.key = key;
+		this.zSetOperations = this.redisOperations.boundZSetOps(this.key);
 	}
 
 	@Override
@@ -132,8 +150,8 @@ public class RedisMetricRepository implements MetricRepository, InitializingBean
 		String name = delta.getName();
 		String key = keyFor(name);
 		trackMembership(key);
-		double value = this.zSetOperations.incrementScore(key, delta.getValue()
-				.doubleValue());
+		double value = this.zSetOperations.incrementScore(key,
+				delta.getValue().doubleValue());
 		String raw = serialize(new Metric<Double>(name, value, delta.getTimestamp()));
 		this.redisOperations.opsForValue().set(key, raw);
 	}
