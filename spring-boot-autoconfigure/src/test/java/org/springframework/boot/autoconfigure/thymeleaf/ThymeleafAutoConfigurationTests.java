@@ -20,6 +20,8 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Locale;
 
+import nz.net.ultraq.thymeleaf.LayoutDialect;
+import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingStrategy;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,18 +33,24 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -219,6 +227,26 @@ public class ThymeleafAutoConfigurationTests {
 				"spring.resources.chain.enabled:true");
 		this.context.refresh();
 		assertNotNull(this.context.getBean(ResourceUrlEncodingFilter.class));
+	}
+
+	@Test
+	public void layoutDialectCanBeCustomized() throws Exception {
+		this.context.register(LayoutDialectConfiguration.class);
+		this.context.refresh();
+		LayoutDialect layoutDialect = this.context.getBean(LayoutDialect.class);
+		assertThat(ReflectionTestUtils.getField(layoutDialect, "sortingStrategy"),
+				is(instanceOf(GroupingStrategy.class)));
+	}
+
+	@Configuration
+	@ImportAutoConfiguration({ ThymeleafAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
+	static class LayoutDialectConfiguration {
+
+		@Bean
+		public LayoutDialect layoutDialect() {
+			return new LayoutDialect(new GroupingStrategy());
+		}
 	}
 
 }
