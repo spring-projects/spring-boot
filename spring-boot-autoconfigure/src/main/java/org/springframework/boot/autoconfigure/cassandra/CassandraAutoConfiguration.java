@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.HostDistance;
+import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.policies.LoadBalancingPolicy;
@@ -78,6 +80,7 @@ public class CassandraAutoConfiguration {
 		if (properties.isSsl()) {
 			builder.withSSL();
 		}
+		builder.withPoolingOptions(getPoolingOptions());
 		String points = properties.getContactPoints();
 		builder.addContactPoints(StringUtils.commaDelimitedListToStringArray(points));
 		return builder.build();
@@ -104,7 +107,46 @@ public class CassandraAutoConfiguration {
 		SocketOptions options = new SocketOptions();
 		options.setConnectTimeoutMillis(this.properties.getConnectTimeoutMillis());
 		options.setReadTimeoutMillis(this.properties.getReadTimeoutMillis());
+		if (this.properties.isKeepAlive() != null) {
+			options.setKeepAlive(this.properties.isKeepAlive());
+		}
 		return options;
 	}
 
+	private PoolingOptions getPoolingOptions() {
+		PoolingOptions options = new PoolingOptions();
+		if (this.properties.getCorePoolLocal() != null) {
+			options.setCoreConnectionsPerHost(HostDistance.LOCAL,
+					this.properties.getCorePoolLocal());
+		}
+		if (this.properties.getMaxPoolLocal() != null) {
+			options.setMaxConnectionsPerHost(HostDistance.LOCAL,
+					this.properties.getMaxPoolLocal());
+		}
+		if (this.properties.getCorePoolRemote() != null) {
+			options.setCoreConnectionsPerHost(HostDistance.REMOTE,
+					this.properties.getCorePoolRemote());
+		}
+		if (this.properties.getMaxPoolRemote() != null) {
+			options.setMaxConnectionsPerHost(HostDistance.REMOTE,
+					this.properties.getMaxPoolRemote());
+		}
+		if (this.properties.getNewConnectionThresholdLocal() != null) {
+			options.setNewConnectionThreshold(HostDistance.LOCAL,
+					this.properties.getNewConnectionThresholdLocal());
+		}
+		if (this.properties.getNewConnectionThresholdRemote() != null) {
+			options.setNewConnectionThreshold(HostDistance.REMOTE,
+					this.properties.getNewConnectionThresholdRemote());
+		}
+		if (this.properties.getMaxRequestsPerConnectionLocal() != null) {
+			options.setMaxRequestsPerConnection(HostDistance.LOCAL,
+					this.properties.getMaxRequestsPerConnectionLocal());
+		}
+		if (this.properties.getMaxRequestsPerConnectionRemote() != null) {
+			options.setMaxRequestsPerConnection(HostDistance.REMOTE,
+					this.properties.getMaxRequestsPerConnectionRemote());
+		}
+		return options;
+	}
 }
