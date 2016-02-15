@@ -151,6 +151,7 @@ public class ThymeleafAutoConfiguration {
 	protected static class ThymeleafWebLayoutConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
 		public LayoutDialect layoutDialect() {
 			return new LayoutDialect();
 		}
