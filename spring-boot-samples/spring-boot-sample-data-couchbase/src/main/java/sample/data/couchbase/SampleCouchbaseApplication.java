@@ -16,6 +16,8 @@
 
 package sample.data.couchbase;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -40,8 +42,9 @@ public class SampleCouchbaseApplication implements CommandLineRunner {
 
 	private void saveUsers() {
 		User user = new User();
-		user.setFirstname("Alice");
-		user.setLastname("Smith");
+		user.setId(UUID.randomUUID().toString());
+		user.setFirstName("Alice");
+		user.setLastName("Smith");
 
 		this.userRepository.save(user);
 	}

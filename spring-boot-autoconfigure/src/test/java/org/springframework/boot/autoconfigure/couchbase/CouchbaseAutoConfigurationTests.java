@@ -16,15 +16,27 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
+import javax.validation.Validator;
+
+import com.couchbase.client.java.Bucket;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
+import org.springframework.data.couchbase.core.CouchbaseTemplate;
+import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CouchbaseAutoConfiguration}
@@ -46,17 +58,55 @@ public class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void validateProperties() {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.couchbase.hosts=localhost",
-				"spring.data.couchbase.bucket-name=test",
-				"spring.data.couchbase.bucket-password=test");
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+	public void bucketNameIsRequired() {
+		load(null);
+		assertThat(this.context.getBeansOfType(CouchbaseTemplate.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(Bucket.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class)).isEmpty();
+	}
+
+	@Test
+	public void bucketNameIsNotRequiredIfCustomConfigurationIsSpecified() throws Exception {
+		load(CouchbaseTestConfiguration.class);
+
+		assertThat(this.context.getBeansOfType(AbstractCouchbaseConfiguration.class)).hasSize(1);
+		CouchbaseTestConfiguration configuration = this.context.getBean(CouchbaseTestConfiguration.class);
+		assertThat(this.context.getBean(CouchbaseTemplate.class)).isSameAs(configuration.couchbaseTemplate());
+		assertThat(this.context.getBean(Bucket.class)).isSameAs(configuration.couchbaseClient());
+		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class)).isEmpty();
+	}
+
+	@Test
+	public void validatorIsPresent() {
+		load(ValidatorConfiguration.class);
+
+		ValidatingCouchbaseEventListener listener = this.context
+				.getBean(ValidatingCouchbaseEventListener.class);
+		assertThat(new DirectFieldAccessor(listener).getPropertyValue("validator"))
+				.isEqualTo(this.context.getBean(Validator.class));
+	}
+
+	private void load(Class<?> config, String... environment) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, environment);
+		if (config != null) {
+			context.register(config);
+		}
+		context.register(PropertyPlaceholderAutoConfiguration.class,
 				CouchbaseAutoConfiguration.class);
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("Connection refused");
-		this.context.refresh();
+		context.refresh();
+		this.context = context;
+	}
+
+	@Configuration
+	@Import(CouchbaseTestConfiguration.class)
+	static class ValidatorConfiguration {
+
+		@Bean
+		public Validator myValidator() {
+			return mock(Validator.class);
+		}
+
 	}
 
 }

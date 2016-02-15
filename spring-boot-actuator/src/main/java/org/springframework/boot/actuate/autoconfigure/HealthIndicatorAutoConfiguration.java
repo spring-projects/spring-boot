@@ -93,12 +93,13 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  */
 @Configuration
 @AutoConfigureBefore({ EndpointAutoConfiguration.class })
-@AutoConfigureAfter({ CouchbaseAutoConfiguration.class, CassandraAutoConfiguration.class,
-		CassandraDataAutoConfiguration.class, DataSourceAutoConfiguration.class,
-		MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-		RedisAutoConfiguration.class, RabbitAutoConfiguration.class,
-		SolrAutoConfiguration.class, MailSenderAutoConfiguration.class,
-		JmsAutoConfiguration.class, ElasticsearchAutoConfiguration.class })
+@AutoConfigureAfter({ CassandraAutoConfiguration.class,
+		CassandraDataAutoConfiguration.class, CouchbaseAutoConfiguration.class,
+		DataSourceAutoConfiguration.class, MongoAutoConfiguration.class,
+		MongoDataAutoConfiguration.class, RedisAutoConfiguration.class,
+		RabbitAutoConfiguration.class, SolrAutoConfiguration.class,
+		MailSenderAutoConfiguration.class, JmsAutoConfiguration.class,
+		ElasticsearchAutoConfiguration.class })
 @EnableConfigurationProperties({ HealthIndicatorAutoConfigurationProperties.class })
 public class HealthIndicatorAutoConfiguration {
 

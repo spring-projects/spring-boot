@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.validation.Validator;
@@ -24,10 +23,14 @@ import javax.validation.Validator;
 import com.couchbase.client.java.CouchbaseBucket;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
 import org.springframework.data.couchbase.config.CouchbaseBucketFactoryBean;
@@ -38,10 +41,12 @@ import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbase
  * Auto-Configuration} for Couchbase.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({ CouchbaseBucket.class, CouchbaseBucketFactoryBean.class })
+@ConditionalOnClass({CouchbaseBucket.class, CouchbaseBucketFactoryBean.class})
+@Conditional(CouchbaseAutoConfiguration.CouchbaseCondition.class)
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class CouchbaseAutoConfiguration {
 
@@ -52,24 +57,44 @@ public class CouchbaseAutoConfiguration {
 	}
 
 	@Configuration
-	static class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
+	@ConditionalOnMissingBean(AbstractCouchbaseConfiguration.class)
+	public static class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
 
 		@Autowired
 		private CouchbaseProperties properties;
 
 		@Override
 		protected List<String> getBootstrapHosts() {
-			return Arrays.asList(this.properties.getHosts());
+			return this.properties.getBootstrapHosts();
 		}
 
 		@Override
 		protected String getBucketName() {
-			return this.properties.getBucketName();
+			return this.properties.getBucket().getName();
 		}
 
 		@Override
 		protected String getBucketPassword() {
-			return this.properties.getBucketPassword();
+			return this.properties.getBucket().getPassword();
+		}
+	}
+
+	/**
+	 * Determine if Couchbase should be configured. This happens if either the user-configuration
+	 * defines a couchbase configuration or if at least the bucket name is specified.
+	 */
+	static class CouchbaseCondition extends AnyNestedCondition {
+
+		CouchbaseCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnProperty(prefix = "spring.data.couchbase.bucket", name = "name")
+		static class BucketNameProperty {
+		}
+
+		@ConditionalOnBean(AbstractCouchbaseConfiguration.class)
+		static class CouchbaseConfiguration {
 		}
 
 	}

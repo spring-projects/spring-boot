@@ -28,10 +28,10 @@ public class User {
 	private String id;
 
 	@Field
-	private String firstname;
+	private String firstName;
 
 	@Field
-	private String lastname;
+	private String lastName;
 
 	public String getId() {
 		return this.id;
@@ -41,28 +41,28 @@ public class User {
 		this.id = id;
 	}
 
-	public String getFirstname() {
-		return this.firstname;
+	public String getFirstName() {
+		return this.firstName;
 	}
 
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
-	public String getLastname() {
-		return this.lastname;
+	public String getLastName() {
+		return this.lastName;
 	}
 
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	@Override
 	public String toString() {
 		return "User{" +
 				"id='" + this.id + '\'' +
-				", firstname='" + this.firstname + '\'' +
-				", lastname='" + this.lastname + '\'' +
+				", firstName='" + this.firstName + '\'' +
+				", lastName='" + this.lastName + '\'' +
 				'}';
 	}
 }

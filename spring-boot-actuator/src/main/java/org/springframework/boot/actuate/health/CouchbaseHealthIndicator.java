@@ -22,6 +22,7 @@ import com.couchbase.client.java.util.features.Version;
 
 import org.springframework.data.couchbase.core.CouchbaseOperations;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link HealthIndicator} for Couchbase.
@@ -41,7 +42,7 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo().getAllVersions();
-		builder.up().withDetail("version", versions.get(0).toString());
+		builder.up().withDetail("versions", StringUtils.collectionToCommaDelimitedString(versions));
 	}
 
 }

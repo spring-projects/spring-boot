@@ -3122,6 +3122,66 @@ TIP: For complete details of Spring Data Cassandra, refer to their
 http://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
 
 
+[[boot-features-couchbase]]
+=== Couchbase
+http://www.couchbase.com/[Couchbase] is an open-source, distributed multi-model NoSQL
+document-oriented database that is optimized for interactive applications. Spring Boot
+offers auto-configuration for Couchbase and abstractions on top of it provided by
+https://github.com/spring-projects/spring-data-couchbase[Spring Data Couchbase].
+There is a `spring-boot-starter-data-couchbase` '`Starter POM`' for collecting the
+dependencies in a convenient way.
+
+
+
+[[boot-features-connecting-to-couchbase]]
+==== Connecting to Couchbase
+You can inject an auto-configured `CouchbaseTemplate` instance as you would with any
+other Spring Bean. The `spring.data.couchbase.*` properties can be used to customize the
+connection. Generally you will provide the bootstrap hosts, bucket name and password:
+
+[source,properties,indent=0]
+----
+	spring.data.couchbase.bootstrap-hosts=my-host-1,192.168.1.123
+	spring.data.couchbase.bucket.name=my-bucket
+	spring.data.couchbase.bucket.password=secret
+----
+
+[TIP]
+====
+You need to provide _at least_ the bucket name, in which case the bootstrap host is
+localhost and the password is an empty String. Alternatively, you can define your
+own `org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration` `@Bean`
+configuration to take control over the whole configuration.
+====
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyBean {
+
+		private final CouchbaseTemplate template;
+
+		@Autowired
+		public MyBean(CouchbaseTemplate template) {
+			this.template = template;
+		}
+
+		// ...
+
+	}
+----
+
+If you add a `@Bean` of your own of type `CassandraTemplate` it will replace the
+default.
+
+
+
+[[boot-features-spring-data-couchbase-repositories]]
+==== Spring Data Couchbase repositories
+Spring Data includes repository support for Couchbase. For complete details of Spring
+Data Couchbase, refer to their
+http://docs.spring.io/spring-data/couchbase/docs/current/reference/html/[reference documentation].
+
 
 [[boot-features-caching]]
 == Caching

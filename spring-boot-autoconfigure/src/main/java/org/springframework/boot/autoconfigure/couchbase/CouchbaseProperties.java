@@ -16,54 +16,68 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for Couchbase.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "spring.data.couchbase")
 public class CouchbaseProperties {
 
 	/**
-	 * Couchabase server hosts.
+	 * Couchbase nodes (host or IP address) to bootstrap from.
 	 */
-	private String[] hosts;
+	private List<String> bootstrapHosts = new ArrayList<String>(Collections.singletonList("localhost"));
 
-	/**
-	 * Couchbase bucket name.
-	 */
-	private String bucketName;
+	private final Bucket bucket = new Bucket();
 
-	/**
-	 * Couchbase bucket password.
-	 */
-	private String bucketPassword;
-
-	public String[] getHosts() {
-		return this.hosts;
+	public List<String> getBootstrapHosts() {
+		return this.bootstrapHosts;
 	}
 
-	public void setHosts(String[] hosts) {
-		this.hosts = hosts;
+	public void setBootstrapHosts(List<String> bootstrapHosts) {
+		this.bootstrapHosts = bootstrapHosts;
 	}
 
-	public String getBucketName() {
-		return this.bucketName;
+	public Bucket getBucket() {
+		return this.bucket;
 	}
 
-	public void setBucketName(String bucketName) {
-		this.bucketName = bucketName;
-	}
+	static class Bucket {
 
-	public String getBucketPassword() {
-		return this.bucketPassword;
-	}
+		/**
+		 * Name of the bucket to connect to.
+		 */
+		private String name;
 
-	public void setBucketPassword(String bucketPassword) {
-		this.bucketPassword = bucketPassword;
+		/**
+		 * Password of the bucket.
+		 */
+		private String password = "";
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String getPassword() {
+			return this.password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
 	}
 
 }

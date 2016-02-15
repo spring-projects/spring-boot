@@ -28,7 +28,7 @@ public class SampleCouchbaseApplicationTests {
 			}
 		}
 		String output = this.outputCapture.toString();
-		assertThat(output).contains("firstname='Alice', lastname='Smith'");
+		assertThat(output).contains("firstName='Alice', lastName='Smith'");
 	}
 
 	private boolean serverNotRunning(RuntimeException ex) {
