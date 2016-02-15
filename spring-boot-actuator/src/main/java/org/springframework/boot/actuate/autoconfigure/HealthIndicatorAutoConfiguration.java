@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import javax.jms.ConnectionFactory;
 import javax.sql.DataSource;
 
 import com.datastax.driver.core.Cluster;
-import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrClient;
 import org.elasticsearch.client.Client;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -269,18 +269,18 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnBean(SolrServer.class)
+	@ConditionalOnBean(SolrClient.class)
 	@ConditionalOnEnabledHealthIndicator("solr")
 	public static class SolrHealthIndicatorConfiguration extends
-			CompositeHealthIndicatorConfiguration<SolrHealthIndicator, SolrServer> {
+			CompositeHealthIndicatorConfiguration<SolrHealthIndicator, SolrClient> {
 
 		@Autowired
-		private Map<String, SolrServer> solrServers;
+		private Map<String, SolrClient> solrClients;
 
 		@Bean
 		@ConditionalOnMissingBean(name = "solrHealthIndicator")
 		public HealthIndicator solrHealthIndicator() {
-			return createHealthIndicator(this.solrServers);
+			return createHealthIndicator(this.solrClients);
 		}
 
 	}
