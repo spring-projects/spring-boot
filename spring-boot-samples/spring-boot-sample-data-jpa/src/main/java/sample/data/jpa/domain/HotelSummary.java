@@ -16,48 +16,15 @@
 
 package sample.data.jpa.domain;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
+public interface HotelSummary {
 
-public class HotelSummary implements Serializable {
+	City getCity();
 
-	private static final long serialVersionUID = 1L;
+	String getName();
 
-	private static final MathContext MATH_CONTEXT = new MathContext(2,
-			RoundingMode.HALF_UP);
+	Double getAverageRating();
 
-	private final City city;
-
-	private final String name;
-
-	private final Double averageRating;
-
-	private final Integer averageRatingRounded;
-
-	public HotelSummary(City city, String name, Double averageRating) {
-		this.city = city;
-		this.name = name;
-		this.averageRating = averageRating == null ? null
-				: new BigDecimal(averageRating, MATH_CONTEXT).doubleValue();
-		this.averageRatingRounded = averageRating == null ? null
-				: (int) Math.round(averageRating);
-	}
-
-	public City getCity() {
-		return this.city;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public Double getAverageRating() {
-		return this.averageRating;
-	}
-
-	public Integer getAverageRatingRounded() {
-		return this.averageRatingRounded;
+	default Integer getAverageRatingRounded() {
+		return getAverageRating() == null ? null : (int) Math.round(getAverageRating());
 	}
 }

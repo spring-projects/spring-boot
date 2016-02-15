@@ -16,26 +16,9 @@
 
 package sample.data.jpa.domain;
 
-import java.io.Serializable;
+public interface RatingCount {
 
-public class RatingCount implements Serializable {
+	Rating getRating();
 
-	private static final long serialVersionUID = 1L;
-
-	private final Rating rating;
-
-	private final long count;
-
-	public RatingCount(Rating rating, long count) {
-		this.rating = rating;
-		this.count = count;
-	}
-
-	public Rating getRating() {
-		return this.rating;
-	}
-
-	public long getCount() {
-		return this.count;
-	}
+	long getCount();
 }
