@@ -243,7 +243,8 @@ public class SysVinitLaunchScriptIT {
 		BuildImageResultCallback resultCallback = new BuildImageResultCallback();
 		String dockerfile = "src/test/resources/conf/" + this.os + "/" + this.version
 				+ "/Dockerfile";
-		docker.buildImageCmd(new File(dockerfile)).exec(resultCallback);
+		String tag = "spring-boot-it/" + this.os.toLowerCase() + ":" + this.version;
+		docker.buildImageCmd(new File(dockerfile)).withTag(tag).exec(resultCallback);
 		String imageId = resultCallback.awaitImageId();
 		return imageId;
 	}
