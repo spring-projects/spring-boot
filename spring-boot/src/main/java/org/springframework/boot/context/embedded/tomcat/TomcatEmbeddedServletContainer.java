@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.PortInUseException;
 import org.springframework.util.Assert;
 
 /**
@@ -166,13 +167,15 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			if (connector != null && this.autoStart) {
 				startConnector(connector);
 			}
-			// Ensure process isn't left running if it actually failed to start
-			if (connectorsHaveFailedToStart()) {
-				stopSilently();
-				throw new IllegalStateException("Tomcat connector in failed state");
-			}
+
+			checkThatConnectorsHaveStarted();
+
 			TomcatEmbeddedServletContainer.logger
 					.info("Tomcat started on port(s): " + getPortsDescription(true));
+		}
+		catch (PortInUseException ex) {
+			stopSilently();
+			throw ex;
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
@@ -180,13 +183,12 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		}
 	}
 
-	private boolean connectorsHaveFailedToStart() {
+	private void checkThatConnectorsHaveStarted() {
 		for (Connector connector : this.tomcat.getService().findConnectors()) {
 			if (LifecycleState.FAILED.equals(connector.getState())) {
-				return true;
+				throw new PortInUseException(connector.getPort());
 			}
 		}
-		return false;
 	}
 
 	private void stopSilently() {

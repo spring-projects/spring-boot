@@ -30,3 +30,12 @@ org.springframework.boot.logging.LoggingApplicationListener
 org.springframework.boot.env.EnvironmentPostProcessor=\
 org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor,\
 org.springframework.boot.env.SpringApplicationJsonEnvironmentPostProcessor
+
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.context.embedded.PortInUseFailureAnalyzer,\
+org.springframework.boot.diagnostics.BeanCurrentlyInCreationFailureAnalyzer
+
+# FailureAnalysisReporters
+org.springframework.boot.diagnostics.FailureAnalysisReporter=\
+org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter

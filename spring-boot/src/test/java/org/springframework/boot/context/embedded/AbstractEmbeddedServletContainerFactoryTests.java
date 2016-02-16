@@ -23,7 +23,9 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -81,6 +83,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -715,6 +718,64 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		assertThat(response.getHeaders().getFirst("server")).isEqualTo("MyServer");
 	}
 
+	@Test
+	public void portClashOfPrimaryConnectorResultsInPortInUseException()
+			throws IOException {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+
+		final int port = SocketUtils.findAvailableTcpPort(40000);
+
+		factory.setPort(port);
+
+		this.container = factory.getEmbeddedServletContainer();
+
+		doWithBlockedPort(port, new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					AbstractEmbeddedServletContainerFactoryTests.this.container.start();
+					fail();
+				}
+				catch (PortInUseException ex) {
+					assertThat(ex.getPort()).isEqualTo(port);
+				}
+			}
+
+		});
+
+	}
+
+	@Test
+	public void portClashOfSecondaryConnectorResultsInPortInUseException()
+			throws IOException {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setPort(SocketUtils.findAvailableTcpPort(40000));
+
+		final int port = SocketUtils.findAvailableTcpPort(40000);
+
+		addConnector(port, factory);
+		this.container = factory.getEmbeddedServletContainer();
+
+		doWithBlockedPort(port, new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					AbstractEmbeddedServletContainerFactoryTests.this.container.start();
+					fail();
+				}
+				catch (PortInUseException ex) {
+					assertThat(ex.getPort()).isEqualTo(port);
+				}
+			}
+
+		});
+	}
+
+	protected abstract void addConnector(int port,
+			AbstractEmbeddedServletContainerFactory factory);
+
 	private boolean doTestCompression(int contentSize, String[] mimeTypes,
 			String[] excludedUserAgents) throws Exception {
 		String testContent = setUpFactoryForCompression(contentSize, mimeTypes,
@@ -876,6 +937,18 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}, "/session");
 		bean.setName("session");
 		return bean;
+	}
+
+	protected final void doWithBlockedPort(final int port, Runnable action)
+			throws IOException {
+		ServerSocket serverSocket = new ServerSocket();
+		serverSocket.bind(new InetSocketAddress(port));
+		try {
+			action.run();
+		}
+		finally {
+			serverSocket.close();
+		}
 	}
 
 	private class TestGzipInputStreamFactory implements InputStreamFactory {

@@ -16,18 +16,21 @@
 
 package org.springframework.boot.context.embedded.jetty;
 
+import java.net.BindException;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.PortInUseException;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -115,10 +118,22 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			}
 			Connector[] connectors = this.server.getConnectors();
 			for (Connector connector : connectors) {
-				connector.start();
+				try {
+					connector.start();
+				}
+				catch (BindException ex) {
+					if (connector instanceof NetworkConnector) {
+						throw new PortInUseException(
+								((NetworkConnector) connector).getPort());
+					}
+					throw ex;
+				}
 			}
 			JettyEmbeddedServletContainer.logger
 					.info("Jetty started on port(s) " + getActualPortsDescription());
+		}
+		catch (EmbeddedServletContainerException ex) {
+			throw ex;
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(

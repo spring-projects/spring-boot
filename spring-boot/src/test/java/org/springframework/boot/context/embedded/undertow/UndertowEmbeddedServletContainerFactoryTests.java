@@ -189,6 +189,19 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	}
 
 	@Override
+	protected void addConnector(final int port,
+			AbstractEmbeddedServletContainerFactory factory) {
+		((UndertowEmbeddedServletContainerFactory) factory)
+				.addBuilderCustomizers(new UndertowBuilderCustomizer() {
+
+					@Override
+					public void customize(Builder builder) {
+						builder.addHttpListener(port, "0.0.0.0");
+					}
+				});
+	}
+
+	@Override
 	protected Object getJspServlet() {
 		return null; // Undertow does not support JSPs
 	}

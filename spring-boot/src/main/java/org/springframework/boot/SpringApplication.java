@@ -41,6 +41,9 @@ import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.boot.diagnostics.FailureAnalysisReporter;
+import org.springframework.boot.diagnostics.FailureAnalyzer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -812,16 +815,13 @@ public class SpringApplication {
 
 	private void handleRunFailure(ConfigurableApplicationContext context,
 			SpringApplicationRunListeners listeners, Throwable exception) {
-		if (logger.isErrorEnabled()) {
-			logger.error("Application startup failed", exception);
-			registerLoggedException(exception);
-		}
 		try {
 			try {
 				handleExitCode(context, exception);
 				listeners.finished(context, exception);
 			}
 			finally {
+				reportFailure(exception);
 				if (context != null) {
 					context.close();
 				}
@@ -831,6 +831,47 @@ public class SpringApplication {
 			logger.warn("Unable to close ApplicationContext", ex);
 		}
 		ReflectionUtils.rethrowRuntimeException(exception);
+	}
+
+	private void reportFailure(Throwable failure) {
+		try {
+			FailureAnalysis failureAnalysis = analyzeFailure(failure);
+			if (failureAnalysis != null && reportFailureAnalysis(failureAnalysis)) {
+				registerLoggedException(failure);
+				return;
+			}
+		}
+		catch (Throwable ex) {
+			// Continue with normal handling of the original failure
+		}
+		if (logger.isErrorEnabled()) {
+			logger.error("Application startup failed", failure);
+			registerLoggedException(failure);
+		}
+	}
+
+	private FailureAnalysis analyzeFailure(Throwable failure) {
+		List<FailureAnalyzer> analyzers = SpringFactoriesLoader
+				.loadFactories(FailureAnalyzer.class, getClass().getClassLoader());
+		for (FailureAnalyzer analyzer : analyzers) {
+			FailureAnalysis analysis = analyzer.analyze(failure);
+			if (analysis != null) {
+				return analysis;
+			}
+		}
+		return null;
+	}
+
+	private boolean reportFailureAnalysis(FailureAnalysis failureAnalysis) {
+		List<FailureAnalysisReporter> reporters = SpringFactoriesLoader.loadFactories(
+				FailureAnalysisReporter.class, getClass().getClassLoader());
+		if (!reporters.isEmpty()) {
+			for (FailureAnalysisReporter reporter : reporters) {
+				reporter.report(failureAnalysis);
+			}
+			return true;
+		}
+		return false;
 	}
 
 	/**

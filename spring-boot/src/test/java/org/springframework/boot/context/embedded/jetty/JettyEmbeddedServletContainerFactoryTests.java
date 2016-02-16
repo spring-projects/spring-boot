@@ -136,6 +136,22 @@ public class JettyEmbeddedServletContainerFactoryTests
 				.containsExactly("ALPHA", "BRAVO", "CHARLIE");
 	}
 
+	@Override
+	protected void addConnector(final int port,
+			AbstractEmbeddedServletContainerFactory factory) {
+		((JettyEmbeddedServletContainerFactory) factory)
+				.addServerCustomizers(new JettyServerCustomizer() {
+
+					@Override
+					public void customize(Server server) {
+						ServerConnector connector = new ServerConnector(server);
+						connector.setPort(port);
+						server.addConnector(connector);
+					}
+
+				});
+	}
+
 	private void assertTimeout(JettyEmbeddedServletContainerFactory factory,
 			int expected) {
 		this.container = factory.getEmbeddedServletContainer();
