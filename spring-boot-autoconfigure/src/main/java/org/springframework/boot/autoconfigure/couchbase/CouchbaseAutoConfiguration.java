@@ -33,8 +33,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
-import org.springframework.data.couchbase.config.CouchbaseBucketFactoryBean;
+import org.springframework.data.couchbase.core.CouchbaseTemplate;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
+import org.springframework.data.couchbase.repository.support.IndexManager;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -45,7 +46,7 @@ import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbase
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({CouchbaseBucket.class, CouchbaseBucketFactoryBean.class})
+@ConditionalOnClass({CouchbaseBucket.class, AbstractCouchbaseConfiguration.class})
 @Conditional(CouchbaseAutoConfiguration.CouchbaseCondition.class)
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class CouchbaseAutoConfiguration {
@@ -77,6 +78,26 @@ public class CouchbaseAutoConfiguration {
 		protected String getBucketPassword() {
 			return this.properties.getBucket().getPassword();
 		}
+
+		@Override
+		@ConditionalOnMissingBean(name = "couchbaseTemplate")
+		@Bean(name = "couchbaseTemplate")
+		public CouchbaseTemplate couchbaseTemplate() throws Exception {
+			return super.couchbaseTemplate();
+		}
+
+		@Override
+		@ConditionalOnMissingBean(name = "couchbaseIndexManager")
+		@Bean(name = "couchbaseIndexManager")
+		public IndexManager indexManager() {
+			if (this.properties.isAutoIndex()) {
+				return new IndexManager(true, true, true);
+			}
+			else {
+				return new IndexManager(false, false, false);
+			}
+		}
+
 	}
 
 	/**

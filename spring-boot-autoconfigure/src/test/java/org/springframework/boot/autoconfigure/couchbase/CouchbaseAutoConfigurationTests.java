@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
+import org.springframework.data.couchbase.repository.support.IndexManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -86,6 +87,33 @@ public class CouchbaseAutoConfigurationTests {
 				.isEqualTo(this.context.getBean(Validator.class));
 	}
 
+	@Test
+	public void autoIndexIsDisabledByDefault() {
+		load(CouchbaseTestConfiguration.class);
+		CouchbaseTestConfiguration configuration = this.context.getBean(CouchbaseTestConfiguration.class);
+		IndexManager indexManager = configuration.indexManager();
+		assertThat(indexManager.isIgnoreViews()).isTrue();
+		assertThat(indexManager.isIgnoreN1qlPrimary()).isTrue();
+		assertThat(indexManager.isIgnoreN1qlSecondary()).isTrue();
+	}
+
+	@Test
+	public void enableAutoIndex() {
+		load(CouchbaseTestConfiguration.class, "spring.data.couchbase.auto-index=true");
+		CouchbaseTestConfiguration configuration = this.context.getBean(CouchbaseTestConfiguration.class);
+		IndexManager indexManager = configuration.indexManager();
+		assertThat(indexManager.isIgnoreViews()).isFalse();
+		assertThat(indexManager.isIgnoreN1qlPrimary()).isFalse();
+		assertThat(indexManager.isIgnoreN1qlSecondary()).isFalse();
+	}
+
+	@Test
+	public void overrideCouchbaseOperations() {
+		load(CouchbaseTemplateConfiguration.class);
+		CouchbaseTemplateConfiguration configuration = this.context.getBean(CouchbaseTemplateConfiguration.class);
+		assertThat(this.context.getBean(CouchbaseTemplate.class)).isSameAs(configuration.myCouchbaseTemplate());
+	}
+
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(context, environment);
@@ -105,6 +133,18 @@ public class CouchbaseAutoConfigurationTests {
 		@Bean
 		public Validator myValidator() {
 			return mock(Validator.class);
+		}
+
+	}
+
+
+	@Configuration
+	@Import(CouchbaseTestConfiguration.class)
+	static class CouchbaseTemplateConfiguration {
+
+		@Bean(name = "couchbaseTemplate")
+		public CouchbaseTemplate myCouchbaseTemplate() {
+			return mock(CouchbaseTemplate.class);
 		}
 
 	}

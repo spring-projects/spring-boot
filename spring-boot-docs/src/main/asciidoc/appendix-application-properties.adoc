@@ -489,6 +489,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.username= # Login user of the server.
 
 	# COUCHBASE ({sc-spring-boot-autoconfigure}/couchbase/CouchbaseProperties.{sc-ext}[CouchbaseProperties])
+	spring.data.couchbase.auto-index=false # Automatically create views and indexes.
     spring.data.couchbase.bootstrap-hosts=localhost # Couchbase nodes (host or IP address) to bootstrap from.
     spring.data.couchbase.bucket.name= # Name of the bucket to connect to.
     spring.data.couchbase.bucket.password= # Password of the bucket.

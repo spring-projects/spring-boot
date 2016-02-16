@@ -2,13 +2,18 @@
 
 This sample demonstrates how you can store a simple document using Spring Data Couchbase.
 
-The sample expects couchbase to run on your machine with a bucket named `mybucket` and
-`couchbase` for the password. You can customize these settings in `application.properties`.
+The sample expects couchbase to run on your machine with a bucket named `default` and
+no password. You can customize these settings in `application.properties`.
 
-Before you use the sample, you need _at least_ to create an `all` view for the `User`: go
-to the Couchbase server’s admin console and visit the Views screen, then click `Create
-Development View` and name it `all` with `user` as document name. On that view, you need
-to change the code to:
+This sample also configures the `auto-index` property and the `UserRepository` defines
+the `all` view so you should be able to invoke `findAll` for this sample.
+
+== Creating the view manually
+
+If you don't want to rely on `auto-index` and better understand how this works behind the
+scenes, you need to create an `all` view for the `User`. Go to the Couchbase server’s
+admin console and visit the Views screen, then click `Create Development View` and name
+it `all` with `user` as document name. On that view, you need to change the code to:
 
 ```java
 function (doc, meta) {

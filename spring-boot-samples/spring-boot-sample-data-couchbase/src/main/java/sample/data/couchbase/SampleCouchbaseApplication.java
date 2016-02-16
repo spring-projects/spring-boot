@@ -35,18 +35,19 @@ public class SampleCouchbaseApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		saveUsers();
+		this.userRepository.deleteAll();
+		User user = saveUser();
 
-		System.out.println(this.userRepository.findAll());
+		System.out.println(this.userRepository.findOne(user.getId()));
 	}
 
-	private void saveUsers() {
+	private User saveUser() {
 		User user = new User();
 		user.setId(UUID.randomUUID().toString());
 		user.setFirstName("Alice");
 		user.setLastName("Smith");
 
-		this.userRepository.save(user);
+		return this.userRepository.save(user);
 	}
 
 }

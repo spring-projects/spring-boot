@@ -33,11 +33,25 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class CouchbaseProperties {
 
 	/**
+	 * Automatically create views and indexes. Use the meta-data provided by "@ViewIndexed",
+	 * "@N1qlPrimaryIndexed" and "@N1qlSecondaryIndexed".
+	 */
+	private boolean autoIndex;
+
+	/**
 	 * Couchbase nodes (host or IP address) to bootstrap from.
 	 */
 	private List<String> bootstrapHosts = new ArrayList<String>(Collections.singletonList("localhost"));
 
 	private final Bucket bucket = new Bucket();
+
+	public boolean isAutoIndex() {
+		return this.autoIndex;
+	}
+
+	public void setAutoIndex(boolean autoIndex) {
+		this.autoIndex = autoIndex;
+	}
 
 	public List<String> getBootstrapHosts() {
 		return this.bootstrapHosts;

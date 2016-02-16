@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
-import java.util.Collections;
-import java.util.List;
-
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseBucket;
@@ -27,7 +24,6 @@ import com.couchbase.client.java.cluster.ClusterInfo;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
 
 import static org.mockito.Mockito.mock;
 
@@ -37,22 +33,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 @Configuration
-public class CouchbaseTestConfiguration extends AbstractCouchbaseConfiguration {
-
-	@Override
-	protected List<String> getBootstrapHosts() {
-		return Collections.singletonList("localhost");
-	}
-
-	@Override
-	protected String getBucketName() {
-		return "my-bucket";
-	}
-
-	@Override
-	protected String getBucketPassword() {
-		return "my-password";
-	}
+public class CouchbaseTestConfiguration extends CouchbaseAutoConfiguration.CouchbaseConfiguration {
 
 	@Override
 	public Cluster couchbaseCluster() throws Exception {
