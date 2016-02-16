@@ -567,10 +567,26 @@ content into your application; rather pick only the properties that you need.
 	spring.jpa.show-sql=false # Enable logging of SQL statements.
 
 	# JTA ({sc-spring-boot-autoconfigure}/transaction/jta/JtaAutoConfiguration.{sc-ext}[JtaAutoConfiguration])
-	spring.jta.*= # technology specific configuration
 	spring.jta.log-dir= # Transaction logs directory.
 
 	# ATOMIKOS
+	spring.jta.checkpoint-interval=500 # Interval between checkpoints.
+	spring.jta.console-file-count=1 # Number of debug logs files that can be created.
+	spring.jta.console-file-limit=-1 # How many bytes can be stored at most in debug logs files.
+	spring.jta.console-file-name=tm.out # Debug logs file name.
+	spring.jta.console-log-level= # Console log level.
+	spring.jta.default-jta-timeout=10000 # Default timeout for JTA transactions.
+	spring.jta.enable-logging=true # Enable disk logging.
+	spring.jta.force-shutdown-on-vm-exit=false # Specify if a VM shutdown should trigger forced shutdown of the transaction core.
+	spring.jta.log-base-dir= # Directory in which the log files should be stored.
+	spring.jta.log-base-name=tmlog # Transactions log file base name.
+	spring.jta.max-actives=50 # Maximum number of active transactions.
+	spring.jta.max-timeout=300000 # Maximum timeout (in milliseconds) that can be allowed for transactions.
+	spring.jta.output-dir= # Directory in which to store the debug log files.
+	spring.jta.serial-jta-transactions=true # Specify if sub-transactions should be joined when possible.
+	spring.jta.service= # Transaction manager implementation that should be started.
+	spring.jta.threaded-two-phase-commit=true # Use different (and concurrent) threads for two-phase commit on the participating resources.
+	spring.jta.transaction-manager-unique-name= # Transaction manager's unique name.
 	spring.jta.atomikos.connectionfactory.borrow-connection-timeout=30 # Timeout, in seconds, for borrowing connections from the pool.
 	spring.jta.atomikos.connectionfactory.ignore-session-transacted-flag=true # Whether or not to ignore the transacted flag when creating session.
 	spring.jta.atomikos.connectionfactory.local-transaction-mode=false # Whether or not local transactions are desired.
@@ -594,6 +610,28 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.atomikos.datasource.unique-resource-name=dataSource # The unique name used to identify the resource during recovery.
 
 	# BITRONIX
+	spring.jta.allow-multiple-lrc=false # Allow multiple LRC resources to be enlisted into the same transaction.
+	spring.jta.asynchronous2-pc=false # Enable asynchronously execution of two phase commit.
+	spring.jta.background-recovery-interval-seconds=60 # Interval in seconds at which to run the recovery process in the background.
+	spring.jta.current-node-only-recovery=true # Recover only the current node.
+	spring.jta.debug-zero-resource-transaction=false # Log the creation and commit call stacks of transactions executed without a single enlisted resource.
+	spring.jta.default-transaction-timeout=60 # Default transaction timeout in seconds.
+	spring.jta.disable-jmx=false # Enable JMX support.
+	spring.jta.exception-analyzer= # Set the fully qualified name of the exception analyzer implementation to use.
+	spring.jta.filter-log-status=false # Enable filtering of logs so that only mandatory logs are written.
+	spring.jta.force-batching-enabled=true #  Set if disk forces are batched.
+	spring.jta.forced-write-enabled=true # Set if logs are forced to disk.
+	spring.jta.graceful-shutdown-interval=60 # Maximum amount of seconds the TM will wait for transactions to get done before aborting them at shutdown time.
+	spring.jta.jndi-transaction-synchronization-registry-name= # JNDI name of the TransactionSynchronizationRegistry.
+	spring.jta.jndi-user-transaction-name= # JNDI name of the UserTransaction.
+	spring.jta.journal=disk # Name of the journal. Can be 'disk', 'null' or a class name.
+	spring.jta.log-part1-filename=btm1.tlog # Name of the first fragment of the journal.
+	spring.jta.log-part2-filename=btm2.tlog # Name of the second fragment of the journal.
+	spring.jta.max-log-size-in-mb=2 # Maximum size in megabytes of the journal fragments.
+	spring.jta.resource-configuration-filename= # ResourceLoader configuration file name.
+	spring.jta.server-id= # ASCII ID that must uniquely identify this TM instance. Default to the machine's IP address.
+	spring.jta.skip-corrupted-logs=false # Skip corrupted transactions log entries.
+	spring.jta.warn-about-zero-resource-transaction=true # Log a warning for transactions executed without a single enlisted resource.
 	spring.jta.bitronix.connectionfactory.acquire-increment=1 # Number of connections to create when growing the pool.
 	spring.jta.bitronix.connectionfactory.acquisition-interval=1 # Time, in seconds, to wait before trying to acquire a connection again after an invalid connection was acquired.
 	spring.jta.bitronix.connectionfactory.acquisition-timeout=30 # Timeout, in seconds, for acquiring connections from the pool.
