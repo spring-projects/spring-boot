@@ -3080,9 +3080,9 @@ dependencies in a convenient way.
 [[boot-features-connecting-to-cassandra]]
 ==== Connecting to Cassandra
 You can inject an auto-configured `CassandraTemplate` or a Cassandra `Session`
-instance as you would any other Spring Bean. The `spring.data.cassandra.*` properties
-can be used to customize the connection. Generally you will to provide `keyspace-name`
-and `contact-points` properties:
+instance as you would with any other Spring Bean. The `spring.data.cassandra.*`
+properties can be used to customize the connection. Generally you will provide
+`keyspace-name` and `contact-points` properties:
 
 [source,properties,indent=0]
 ----
