@@ -3778,8 +3778,8 @@ startup and shutdown ordering.
 By default Atomikos transaction logs will be written to a `transaction-logs` directory in
 your application home directory (the directory in which your application jar file
 resides). You can customize this directory by setting a `spring.jta.log-dir` property in
-your `application.properties` file. Properties starting `spring.jta.` can also be used to
-customize the Atomikos `UserTransactionServiceImp`. See the
+your `application.properties` file. Properties starting `spring.jta.atomikos.properties`
+can also be used to customize the Atomikos `UserTransactionServiceImp`. See the
 {dc-spring-boot}/jta/atomikos/AtomikosProperties.{dc-ext}[`AtomikosProperties` Javadoc]
 for complete details.
 
@@ -3800,9 +3800,9 @@ correct.
 
 By default Bitronix transaction log files (`part1.btm` and `part2.btm`) will be written to
 a `transaction-logs` directory in your application home directory. You can customize this
-directory by using the `spring.jta.log-dir` property. Properties starting `spring.jta.`
-are also bound to the `bitronix.tm.Configuration` bean, allowing for complete
-customization. See the
+directory by using the `spring.jta.log-dir` property. Properties starting
+`spring.jta.bitronix.properties` are also bound to the `bitronix.tm.Configuration` bean,
+allowing for complete customization. See the
 https://github.com/bitronix/btm/wiki/Transaction-manager-configuration[Bitronix documentation]
 for details.
 

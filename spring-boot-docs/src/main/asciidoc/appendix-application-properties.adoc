@@ -579,8 +579,9 @@ content into your application; rather pick only the properties that you need.
 	spring.jpa.show-sql=false # Enable logging of SQL statements.
 
 	# JTA ({sc-spring-boot-autoconfigure}/transaction/jta/JtaAutoConfiguration.{sc-ext}[JtaAutoConfiguration])
-	spring.jta.*= # technology specific configuration
-	spring.jta.log-dir= # Transaction logs directory.
+	spring.jta.enabled=true # Enable JTA support.
+    spring.jta.log-dir= # Transaction logs directory.
+    spring.jta.transaction-manager-id= # Transaction manager unique identifier.
 
 	# ATOMIKOS
 	spring.jta.atomikos.connectionfactory.borrow-connection-timeout=30 # Timeout, in seconds, for borrowing connections from the pool.
@@ -604,6 +605,23 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.atomikos.datasource.reap-timeout=0 # The reap timeout, in seconds, for borrowed connections. 0 denotes no limit.
 	spring.jta.atomikos.datasource.test-query= # SQL query or statement used to validate a connection before returning it.
 	spring.jta.atomikos.datasource.unique-resource-name=dataSource # The unique name used to identify the resource during recovery.
+	spring.jta.atomikos.properties.checkpoint-interval=500 # Interval between checkpoints.
+	spring.jta.atomikos.properties.console-file-count=1 # Number of debug logs files that can be created.
+	spring.jta.atomikos.properties.console-file-limit=-1 # How many bytes can be stored at most in debug logs files.
+	spring.jta.atomikos.properties.console-file-name=tm.out # Debug logs file name.
+	spring.jta.atomikos.properties.console-log-level= # Console log level.
+	spring.jta.atomikos.properties.default-jta-timeout=10000 # Default timeout for JTA transactions.
+	spring.jta.atomikos.properties.enable-logging=true # Enable disk logging.
+	spring.jta.atomikos.properties.force-shutdown-on-vm-exit=false # Specify if a VM shutdown should trigger forced shutdown of the transaction core.
+	spring.jta.atomikos.properties.log-base-dir= # Directory in which the log files should be stored.
+	spring.jta.atomikos.properties.log-base-name=tmlog # Transactions log file base name.
+	spring.jta.atomikos.properties.max-actives=50 # Maximum number of active transactions.
+	spring.jta.atomikos.properties.max-timeout=300000 # Maximum timeout (in milliseconds) that can be allowed for transactions.
+	spring.jta.atomikos.properties.output-dir= # Directory in which to store the debug log files.
+	spring.jta.atomikos.properties.serial-jta-transactions=true # Specify if sub-transactions should be joined when possible.
+	spring.jta.atomikos.properties.service= # Transaction manager implementation that should be started.
+	spring.jta.atomikos.properties.threaded-two-phase-commit=true # Use different (and concurrent) threads for two-phase commit on the participating resources.
+	spring.jta.atomikos.properties.transaction-manager-unique-name= # Transaction manager's unique name.
 
 	# BITRONIX
 	spring.jta.bitronix.connectionfactory.acquire-increment=1 # Number of connections to create when growing the pool.
@@ -647,6 +665,28 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.bitronix.datasource.two-pc-ordering-position=1 # The position that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE).
 	spring.jta.bitronix.datasource.unique-name=dataSource # The unique name used to identify the resource during recovery.
 	spring.jta.bitronix.datasource.use-tm-join=true Whether or not TMJOIN should be used when starting XAResources.
+	spring.jta.bitronix.properties.allow-multiple-lrc=false # Allow multiple LRC resources to be enlisted into the same transaction.
+    spring.jta.bitronix.properties.asynchronous2-pc=false # Enable asynchronously execution of two phase commit.
+    spring.jta.bitronix.properties.background-recovery-interval-seconds=60 # Interval in seconds at which to run the recovery process in the background.
+    spring.jta.bitronix.properties.current-node-only-recovery=true # Recover only the current node.
+    spring.jta.bitronix.properties.debug-zero-resource-transaction=false # Log the creation and commit call stacks of transactions executed without a single enlisted resource.
+    spring.jta.bitronix.properties.default-transaction-timeout=60 # Default transaction timeout in seconds.
+    spring.jta.bitronix.properties.disable-jmx=false # Enable JMX support.
+    spring.jta.bitronix.properties.exception-analyzer= # Set the fully qualified name of the exception analyzer implementation to use.
+    spring.jta.bitronix.properties.filter-log-status=false # Enable filtering of logs so that only mandatory logs are written.
+    spring.jta.bitronix.properties.force-batching-enabled=true #  Set if disk forces are batched.
+    spring.jta.bitronix.properties.forced-write-enabled=true # Set if logs are forced to disk.
+    spring.jta.bitronix.properties.graceful-shutdown-interval=60 # Maximum amount of seconds the TM will wait for transactions to get done before aborting them at shutdown time.
+    spring.jta.bitronix.properties.jndi-transaction-synchronization-registry-name= # JNDI name of the TransactionSynchronizationRegistry.
+    spring.jta.bitronix.properties.jndi-user-transaction-name= # JNDI name of the UserTransaction.
+    spring.jta.bitronix.properties.journal=disk # Name of the journal. Can be 'disk', 'null' or a class name.
+    spring.jta.bitronix.properties.log-part1-filename=btm1.tlog # Name of the first fragment of the journal.
+    spring.jta.bitronix.properties.log-part2-filename=btm2.tlog # Name of the second fragment of the journal.
+    spring.jta.bitronix.properties.max-log-size-in-mb=2 # Maximum size in megabytes of the journal fragments.
+    spring.jta.bitronix.properties.resource-configuration-filename= # ResourceLoader configuration file name.
+    spring.jta.bitronix.properties.server-id= # ASCII ID that must uniquely identify this TM instance. Default to the machine's IP address.
+    spring.jta.bitronix.properties.skip-corrupted-logs=false # Skip corrupted transactions log entries.
+    spring.jta.bitronix.properties.warn-about-zero-resource-transaction=true # Log a warning for transactions executed without a single enlisted resource.
 
 	# EMBEDDED MONGODB ({sc-spring-boot-autoconfigure}/mongo/embedded/EmbeddedMongoProperties.{sc-ext}[EmbeddedMongoProperties])
 	spring.mongodb.embedded.features=SYNC_DELAY # Comma-separated list of features to enable.
