@@ -3171,8 +3171,8 @@ configuration to take control over the whole configuration.
 	}
 ----
 
-If you add a `@Bean` of your own of type `CassandraTemplate` it will replace the
-default.
+If you add a `@Bean` of your own of type `CouchbaseTemplate` named `couchbaseTemplate` it
+will replace the default.
 
 
 
