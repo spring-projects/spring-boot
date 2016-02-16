@@ -32,6 +32,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Julien Dubois
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.data.cassandra")
@@ -116,6 +117,11 @@ public class CassandraProperties {
 	 * Enable SSL support.
 	 */
 	private boolean ssl = false;
+
+	/**
+	 * Action to take at starup.
+	 */
+	private String schemaAction = "NONE";
 
 	public String getKeyspaceName() {
 		return this.keyspaceName;
@@ -247,4 +253,11 @@ public class CassandraProperties {
 		this.ssl = ssl;
 	}
 
+	public String getSchemaAction() {
+		return this.schemaAction;
+	}
+
+	public void setSchemaAction(String schemaAction) {
+		this.schemaAction = schemaAction;
+	}
 }
