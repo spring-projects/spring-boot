@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.couchbase.core.query.Consistency;
 
 /**
  * Configuration properties for Couchbase.
@@ -45,6 +46,11 @@ public class CouchbaseProperties {
 
 	private final Bucket bucket = new Bucket();
 
+	/**
+	 * Consistency to apply by default on generated queries.
+	 */
+	private Consistency consistency = Consistency.READ_YOUR_OWN_WRITES;
+
 	public boolean isAutoIndex() {
 		return this.autoIndex;
 	}
@@ -63,6 +69,14 @@ public class CouchbaseProperties {
 
 	public Bucket getBucket() {
 		return this.bucket;
+	}
+
+	public Consistency getConsistency() {
+		return this.consistency;
+	}
+
+	public void setConsistency(Consistency consistency) {
+		this.consistency = consistency;
 	}
 
 	static class Bucket {

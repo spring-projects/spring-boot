@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
+import org.springframework.data.couchbase.core.query.Consistency;
 import org.springframework.data.couchbase.repository.support.IndexManager;
 
 /**
@@ -77,6 +78,11 @@ public class CouchbaseAutoConfiguration {
 		@Override
 		protected String getBucketPassword() {
 			return this.properties.getBucket().getPassword();
+		}
+
+		@Override
+		protected Consistency getDefaultConsistency() {
+			return this.properties.getConsistency();
 		}
 
 		@Override

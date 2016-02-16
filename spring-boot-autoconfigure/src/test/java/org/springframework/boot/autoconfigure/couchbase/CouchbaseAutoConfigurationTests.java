@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
+import org.springframework.data.couchbase.core.query.Consistency;
 import org.springframework.data.couchbase.repository.support.IndexManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,6 +44,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link CouchbaseAutoConfiguration}
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 public class CouchbaseAutoConfigurationTests {
 
@@ -105,6 +107,13 @@ public class CouchbaseAutoConfigurationTests {
 		assertThat(indexManager.isIgnoreViews()).isFalse();
 		assertThat(indexManager.isIgnoreN1qlPrimary()).isFalse();
 		assertThat(indexManager.isIgnoreN1qlSecondary()).isFalse();
+	}
+
+	@Test
+	public void changeConsistency() {
+		load(CouchbaseTestConfiguration.class, "spring.data.couchbase.consistency=eventually-consistent");
+		CouchbaseTestConfiguration configuration = this.context.getBean(CouchbaseTestConfiguration.class);
+		assertThat(configuration.getDefaultConsistency()).isEqualTo(Consistency.EVENTUALLY_CONSISTENT);
 	}
 
 	@Test
