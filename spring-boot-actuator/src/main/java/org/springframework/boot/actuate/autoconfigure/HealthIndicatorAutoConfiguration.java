@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.jms.ConnectionFactory;
 import javax.sql.DataSource;
 
+import com.couchbase.client.java.Bucket;
 import com.datastax.driver.core.Cluster;
 import org.apache.solr.client.solrj.SolrClient;
 import org.elasticsearch.client.Client;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.CassandraHealthIndicator;
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
+import org.springframework.boot.actuate.health.CouchbaseHealthIndicator;
 import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicator;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicatorProperties;
@@ -54,6 +56,7 @@ import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfigurati
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
@@ -71,6 +74,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.ResolvableType;
 import org.springframework.data.cassandra.core.CassandraOperations;
+import org.springframework.data.couchbase.core.CouchbaseOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -84,16 +88,18 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Tommy Ludwig
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @Configuration
 @AutoConfigureBefore({ EndpointAutoConfiguration.class })
 @AutoConfigureAfter({ CassandraAutoConfiguration.class,
-		CassandraDataAutoConfiguration.class, DataSourceAutoConfiguration.class,
-		MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-		RedisAutoConfiguration.class, RabbitAutoConfiguration.class,
-		SolrAutoConfiguration.class, MailSenderAutoConfiguration.class,
-		JmsAutoConfiguration.class, ElasticsearchAutoConfiguration.class })
+		CassandraDataAutoConfiguration.class, CouchbaseAutoConfiguration.class,
+		DataSourceAutoConfiguration.class, MongoAutoConfiguration.class,
+		MongoDataAutoConfiguration.class, RedisAutoConfiguration.class,
+		RabbitAutoConfiguration.class, SolrAutoConfiguration.class,
+		MailSenderAutoConfiguration.class, JmsAutoConfiguration.class,
+		ElasticsearchAutoConfiguration.class })
 @EnableConfigurationProperties({ HealthIndicatorAutoConfigurationProperties.class })
 public class HealthIndicatorAutoConfiguration {
 
@@ -172,6 +178,24 @@ public class HealthIndicatorAutoConfiguration {
 		@ConditionalOnMissingBean(name = "cassandraHealthIndicator")
 		public HealthIndicator cassandraHealthIndicator() {
 			return createHealthIndicator(this.cassandraOperations);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass({ CouchbaseOperations.class, Bucket.class})
+	@ConditionalOnBean(CouchbaseOperations.class)
+	@ConditionalOnEnabledHealthIndicator("couchbase")
+	public static class CouchbaseHealthIndicatorConfiguration extends
+			CompositeHealthIndicatorConfiguration<CouchbaseHealthIndicator, CouchbaseOperations> {
+
+		@Autowired
+		private Map<String, CouchbaseOperations> couchbaseOperations;
+
+		@Bean
+		@ConditionalOnMissingBean(name = "couchbaseHealthIndicator")
+		public HealthIndicator couchbaseHealthIndicator() {
+			return createHealthIndicator(this.couchbaseOperations);
 		}
 
 	}

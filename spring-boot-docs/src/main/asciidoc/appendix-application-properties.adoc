@@ -488,6 +488,11 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.ssl=false # Enable SSL support.
 	spring.data.cassandra.username= # Login user of the server.
 
+	# COUCHBASE ({sc-spring-boot-autoconfigure}/couchbase/CouchbaseProperties.{sc-ext}[CouchbaseProperties])
+    spring.data.couchbase.bootstrap-hosts=localhost # Couchbase nodes (host or IP address) to bootstrap from.
+    spring.data.couchbase.bucket.name= # Name of the bucket to connect to.
+    spring.data.couchbase.bucket.password= # Password of the bucket.
+
 	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties])
 	spring.data.elasticsearch.cluster-name=elasticsearch # Elasticsearch cluster name.
 	spring.data.elasticsearch.cluster-nodes= # Comma-separated list of cluster node addresses. If not specified, starts a client node.

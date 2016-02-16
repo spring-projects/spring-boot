@@ -33,6 +33,7 @@
 		<module>spring-boot-sample-batch</module>
 		<module>spring-boot-sample-cache</module>
 		<module>spring-boot-sample-data-cassandra</module>
+		<module>spring-boot-sample-data-couchbase</module>
 		<module>spring-boot-sample-data-elasticsearch</module>
 		<module>spring-boot-sample-data-gemfire</module>
 		<module>spring-boot-sample-data-jpa</module>
