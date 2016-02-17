@@ -169,6 +169,12 @@ public class ResourceProperties implements ResourceLoaderAware {
 		 */
 		private boolean htmlApplicationCache = false;
 
+		/**
+		 * Enable resolution of already gzipped resources. Checks for a resource
+		 * name variant with the *.gz extension.
+		 */
+		private boolean gzipped = false;
+
 		@NestedConfigurationProperty
 		private final Strategy strategy = new Strategy();
 
@@ -208,6 +214,13 @@ public class ResourceProperties implements ResourceLoaderAware {
 			this.htmlApplicationCache = htmlApplicationCache;
 		}
 
+		public boolean isGzipped() {
+			return this.gzipped;
+		}
+
+		public void setGzipped(boolean gzipped) {
+			this.gzipped = gzipped;
+		}
 	}
 
 	/**
