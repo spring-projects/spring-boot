@@ -71,6 +71,7 @@ import org.springframework.web.servlet.resource.CachingResourceTransformer;
 import org.springframework.web.servlet.resource.ContentVersionStrategy;
 import org.springframework.web.servlet.resource.CssLinkResourceTransformer;
 import org.springframework.web.servlet.resource.FixedVersionStrategy;
+import org.springframework.web.servlet.resource.GzipResourceResolver;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.resource.ResourceResolver;
@@ -228,11 +229,13 @@ public class WebMvcAutoConfigurationTests {
 				"spring.resources.chain.strategy.fixed.enabled:true",
 				"spring.resources.chain.strategy.fixed.version:test",
 				"spring.resources.chain.strategy.fixed.paths:/**/*.js",
-				"spring.resources.chain.html-application-cache:true");
-		assertThat(getResourceResolvers("/webjars/**")).hasSize(2);
+				"spring.resources.chain.html-application-cache:true",
+				"spring.resources.chain.gzipped:true");
+		assertThat(getResourceResolvers("/webjars/**")).hasSize(3);
 		assertThat(getResourceTransformers("/webjars/**")).hasSize(2);
 		assertThat(getResourceResolvers("/**")).extractingResultOf("getClass")
-				.containsOnly(VersionResourceResolver.class, PathResourceResolver.class);
+				.containsOnly(VersionResourceResolver.class, GzipResourceResolver.class,
+						PathResourceResolver.class);
 		assertThat(getResourceTransformers("/**")).extractingResultOf("getClass")
 				.containsOnly(CssLinkResourceTransformer.class,
 						AppCacheManifestTransformer.class);
