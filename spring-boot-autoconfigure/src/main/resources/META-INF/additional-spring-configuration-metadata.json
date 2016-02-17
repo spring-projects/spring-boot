@@ -67,6 +67,12 @@
     "defaultValue": false
   },
   {
+    "name": "spring.data.couchbase.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Couchbase repositories.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.data.elasticsearch.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Elasticsearch repositories.",

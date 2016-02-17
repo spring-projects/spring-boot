@@ -494,6 +494,7 @@ content into your application; rather pick only the properties that you need.
     spring.data.couchbase.bucket.name= # Name of the bucket to connect to.
     spring.data.couchbase.bucket.password= # Password of the bucket.
     spring.data.couchbase.consistency=read-your-own-writes # Consistency to apply by default on generated queries.
+    spring.data.couchbase.repositories.enabled=true # Enable Couchbase repositories.
 
 	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties])
 	spring.data.elasticsearch.cluster-name=elasticsearch # Elasticsearch cluster name.
