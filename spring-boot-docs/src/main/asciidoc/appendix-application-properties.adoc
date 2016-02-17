@@ -539,26 +539,16 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.initialize=true # Populate the database using 'data.sql'.
 	spring.datasource.jmx-enabled=false # Enable JMX support (if provided by the underlying pool).
 	spring.datasource.jndi-name= # JNDI location of the datasource. Class, url, username & password are ignored when set.
-	spring.datasource.max-active= # For instance 100
-	spring.datasource.max-idle= # For instance 8
-	spring.datasource.max-wait=
-	spring.datasource.min-evictable-idle-time-millis=
-	spring.datasource.min-idle=8
 	spring.datasource.name=testdb # Name of the datasource.
 	spring.datasource.password= # Login password of the database.
 	spring.datasource.platform=all # Platform to use in the schema resource (schema-${platform}.sql).
 	spring.datasource.schema= # Schema (DDL) script resource reference.
 	spring.datasource.separator=; # Statement separator in SQL initialization scripts.
 	spring.datasource.sql-script-encoding= # SQL scripts encoding.
-	spring.datasource.test-on-borrow= # For instance `false`
-	spring.datasource.test-on-return= # For instance `false`
-	spring.datasource.test-while-idle= #
-	spring.datasource.time-between-eviction-runs-millis= 1
 	spring.datasource.tomcat.*= # Tomcat datasource specific settings
 	spring.datasource.type= # Fully qualified name of the connection pool implementation to use. By default, it is auto-detected from the classpath.
 	spring.datasource.url= # JDBC url of the database.
 	spring.datasource.username=
-	spring.datasource.validation-query=
 
 	# H2 Web Console ({sc-spring-boot-autoconfigure}/h2/H2ConsoleProperties.{sc-ext}[H2ConsoleProperties])
 	spring.h2.console.enabled=false # Enable the console.
