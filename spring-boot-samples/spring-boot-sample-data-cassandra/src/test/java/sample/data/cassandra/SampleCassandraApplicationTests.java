@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 @SpringApplicationConfiguration(SampleCassandraApplication.class)
 @IntegrationTest("spring.data.cassandra.port=9142")
 @CassandraDataSet(keyspace = "mykeyspace", value = "setup.cql")
-@EmbeddedCassandra
+@EmbeddedCassandra(timeout = 60000)
 public class SampleCassandraApplicationTests {
 
 	@ClassRule
