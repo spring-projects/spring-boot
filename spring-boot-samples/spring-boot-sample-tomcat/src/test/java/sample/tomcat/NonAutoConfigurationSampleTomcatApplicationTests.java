@@ -18,7 +18,6 @@ package sample.tomcat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import sample.tomcat.NonAutoConfigurationSampleTomcatApplicationTests.NonAutoConfigurationSampleTomcatApplication;
 import sample.tomcat.service.HelloWorldService;
 import sample.tomcat.web.SampleController;
 
@@ -30,7 +29,6 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfi
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.web.WebIntegrationTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.ComponentScan;
@@ -49,7 +47,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(NonAutoConfigurationSampleTomcatApplication.class)
 @WebIntegrationTest(randomPort = true)
 @DirtiesContext
 public class NonAutoConfigurationSampleTomcatApplicationTests {

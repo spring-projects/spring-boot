@@ -39,7 +39,6 @@ import org.springframework.boot.devtools.tunnel.server.PortProvider;
 import org.springframework.boot.devtools.tunnel.server.SocketTargetServerConnection;
 import org.springframework.boot.devtools.tunnel.server.StaticPortProvider;
 import org.springframework.boot.devtools.tunnel.server.TargetServerConnection;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.web.WebIntegrationTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
@@ -62,7 +61,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(HttpTunnelIntegrationTests.Config.class)
 @WebIntegrationTest
 public class HttpTunnelIntegrationTests {
 

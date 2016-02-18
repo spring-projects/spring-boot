@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.web.WebIntegrationTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpHeaders;
@@ -36,7 +35,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SampleHateoasApplication.class)
 @WebIntegrationTest(randomPort = true)
 public class SampleHateoasApplicationTests {
 

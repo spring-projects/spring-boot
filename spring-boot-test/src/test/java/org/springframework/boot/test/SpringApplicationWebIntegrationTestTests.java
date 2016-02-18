@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.SpringApplicationWebIntegrationTestTests.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -49,7 +48,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringApplicationConfiguration(Config.class)
 @WebIntegrationTest({ "server.port=0", "value=123" })
 @Deprecated
 public class SpringApplicationWebIntegrationTestTests {

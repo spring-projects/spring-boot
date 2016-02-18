@@ -19,7 +19,6 @@ package sample.metrics.redis;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.web.WebIntegrationTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -30,8 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SampleRedisExportApplication.class)
-@WebIntegrationTest(value = { "spring.jmx.enabled=true" }, randomPort = true)
+@WebIntegrationTest(value = "spring.jmx.enabled=true", randomPort = true)
 @DirtiesContext
 public class SampleRedisExportApplicationTests {
 

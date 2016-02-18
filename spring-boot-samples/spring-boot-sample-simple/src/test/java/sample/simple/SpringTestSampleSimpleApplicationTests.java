@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.IntegrationTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SampleSimpleApplication.class)
+@IntegrationTest
 public class SpringTestSampleSimpleApplicationTests {
 
 	@Autowired

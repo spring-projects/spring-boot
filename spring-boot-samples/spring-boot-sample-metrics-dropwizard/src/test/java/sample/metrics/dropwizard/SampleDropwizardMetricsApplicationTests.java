@@ -22,7 +22,6 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.GaugeService;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.web.WebIntegrationTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -35,7 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SampleDropwizardMetricsApplication.class)
 @WebIntegrationTest(randomPort = true)
 @DirtiesContext
 public class SampleDropwizardMetricsApplicationTests {

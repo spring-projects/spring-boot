@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.test.context.IntegrationTest;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -34,7 +33,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SampleMongoApplication.class)
 @IntegrationTest
 public class SampleMongoApplicationTests {
 

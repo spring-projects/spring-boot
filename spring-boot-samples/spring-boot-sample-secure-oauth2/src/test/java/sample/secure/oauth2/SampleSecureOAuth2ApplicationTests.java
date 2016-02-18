@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.web.WebIntegrationTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,7 +49,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
  * @author Greg Turnquist
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SampleSecureOAuth2Application.class)
 @WebIntegrationTest(randomPort = true)
 public class SampleSecureOAuth2ApplicationTests {
 

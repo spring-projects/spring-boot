@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.web.WebIntegrationTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
@@ -46,7 +45,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SampleJetty8Application.class)
 @WebIntegrationTest(randomPort = true)
 @DirtiesContext
 public class SampleJetty8ApplicationTests {

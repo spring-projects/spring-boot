@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.web.WebIntegrationTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
@@ -36,7 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SampleActuatorApplication.class)
 @WebIntegrationTest(value = { "endpoints.health.sensitive=false" }, randomPort = true)
 @DirtiesContext
 public class NonSensitiveHealthTests {

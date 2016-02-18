@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.test.context.IntegrationTest;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestExecutionListeners.MergeMode;
@@ -37,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @TestExecutionListeners(mergeMode = MergeMode.MERGE_WITH_DEFAULTS, listeners = {
 		OrderedCassandraTestExecutionListener.class })
-@SpringApplicationConfiguration(SampleCassandraApplication.class)
 @IntegrationTest("spring.data.cassandra.port=9142")
 @CassandraDataSet(keyspace = "mykeyspace", value = "setup.cql")
 @EmbeddedCassandra(timeout = 60000)
