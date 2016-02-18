@@ -221,6 +221,7 @@ public class ResourceProperties implements ResourceLoaderAware {
 		public void setGzipped(boolean gzipped) {
 			this.gzipped = gzipped;
 		}
+
 	}
 
 	/**
