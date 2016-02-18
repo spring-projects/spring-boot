@@ -685,6 +685,8 @@ content into your application; rather pick only the properties that you need.
 	spring.mongodb.embedded.version=2.6.10 # Version of Mongo to use.
 
 	# REDIS ({sc-spring-boot-autoconfigure}/redis/RedisProperties.{sc-ext}[RedisProperties])
+	spring.redis.cluster.max-redirects= # Maximum number of redirects to follow when executing commands across the cluster.
+	spring.redis.cluster.nodes= # Comma-separated list of "host:port" pairs to bootstrap from.
 	spring.redis.database=0 # Database index used by the connection factory.
 	spring.redis.host=localhost # Redis server host.
 	spring.redis.password= # Login password of the redis server.
