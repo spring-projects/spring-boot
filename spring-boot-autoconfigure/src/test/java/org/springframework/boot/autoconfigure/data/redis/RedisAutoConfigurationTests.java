@@ -106,7 +106,6 @@ public class RedisAutoConfigurationTests {
 
 	@Test
 	public void testRedisConfigurationWithCluster() throws Exception {
-
 		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
 		if (isAtLeastOneNodeAvailable(clusterNodes)) {
 			load("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),

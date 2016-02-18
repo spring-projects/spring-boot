@@ -118,7 +118,7 @@ public class RedisProperties {
 	}
 
 	public Cluster getCluster() {
-		return cluster;
+		return this.cluster;
 	}
 
 	public void setCluster(Cluster cluster) {
@@ -186,29 +186,28 @@ public class RedisProperties {
 		public void setMaxWait(int maxWait) {
 			this.maxWait = maxWait;
 		}
+
 	}
 
 	/**
 	 * Cluster properties.
-	 * 
 	 */
 	public static class Cluster {
 
 		/**
-		 * List of host:port pairs. This setting points to an "initial" list of cluster
-		 * nodes and is required to have at least one entry.
+		 * Comma-separated list of "host:port" pairs to bootstrap from. This represents
+		 * an "initial" list of cluster nodes and is required to have at least one entry.
 		 */
 		private List<String> nodes;
 
 		/**
-		 * Maximum number of "redirects". Limits the number of redirects to follow when
-		 * executing commands across the cluster. Leave empty to use driver specific
-		 * settings.
+		 * Maximum number of redirects to follow when executing commands across the
+		 * cluster.
 		 */
 		private Integer maxRedirects;
 
 		public List<String> getNodes() {
-			return nodes;
+			return this.nodes;
 		}
 
 		public void setNodes(List<String> nodes) {
@@ -216,12 +215,13 @@ public class RedisProperties {
 		}
 
 		public Integer getMaxRedirects() {
-			return maxRedirects;
+			return this.maxRedirects;
 		}
 
 		public void setMaxRedirects(Integer maxRedirects) {
 			this.maxRedirects = maxRedirects;
 		}
+
 	}
 
 	/**
@@ -254,5 +254,6 @@ public class RedisProperties {
 		public void setNodes(String nodes) {
 			this.nodes = nodes;
 		}
+
 	}
 }

@@ -110,48 +110,40 @@ public class RedisAutoConfiguration {
 		}
 
 		/**
-		 * Create {@link RedisClusterConfiguration} from {@link RedisProperties.Cluster}.
-		 * 
-		 * 
-		 * @return {@literal null} if no {@link RedisProperties.Cluster} set.
-		 * 
+		 * Create a {@link RedisClusterConfiguration} if necessary.
+		 * @return {@literal null} if no cluster settings are set.
 		 */
 		protected final RedisClusterConfiguration getClusterConfiguration() {
-
 			if (this.clusterConfiguration != null) {
 				return this.clusterConfiguration;
 			}
-
 			if (this.properties.getCluster() == null) {
 				return null;
 			}
-
 			Cluster clusterProperties = this.properties.getCluster();
 			RedisClusterConfiguration config = new RedisClusterConfiguration(
 					clusterProperties.getNodes());
 
 			if (clusterProperties.getMaxRedirects() != null) {
-				config.setMaxRedirects(config.getMaxRedirects().intValue());
+				config.setMaxRedirects(config.getMaxRedirects());
 			}
-
 			return config;
 		}
 
 		private List<RedisNode> createSentinels(Sentinel sentinel) {
-			List<RedisNode> sentinels = new ArrayList<RedisNode>();
-			String nodes = sentinel.getNodes();
-			for (String node : StringUtils.commaDelimitedListToStringArray(nodes)) {
+			List<RedisNode> nodes = new ArrayList<RedisNode>();
+			for (String node : StringUtils.commaDelimitedListToStringArray(sentinel.getNodes())) {
 				try {
 					String[] parts = StringUtils.split(node, ":");
 					Assert.state(parts.length == 2, "Must be defined as 'host:port'");
-					sentinels.add(new RedisNode(parts[0], Integer.valueOf(parts[1])));
+					nodes.add(new RedisNode(parts[0], Integer.valueOf(parts[1])));
 				}
 				catch (RuntimeException ex) {
 					throw new IllegalStateException(
 							"Invalid redis sentinel " + "property '" + node + "'", ex);
 				}
 			}
-			return sentinels;
+			return nodes;
 		}
 
 	}
@@ -172,15 +164,12 @@ public class RedisAutoConfiguration {
 		}
 
 		private JedisConnectionFactory createJedisConnectionFactory() {
-
 			if (getSentinelConfig() != null) {
 				return new JedisConnectionFactory(getSentinelConfig());
 			}
-
 			if (getClusterConfiguration() != null) {
 				return new JedisConnectionFactory(getClusterConfiguration());
 			}
-
 			return new JedisConnectionFactory();
 		}
 	}
@@ -201,7 +190,6 @@ public class RedisAutoConfiguration {
 		}
 
 		private JedisConnectionFactory createJedisConnectionFactory() {
-
 			JedisPoolConfig poolConfig = this.properties.getPool() != null ? jedisPoolConfig()
 					: new JedisPoolConfig();
 
@@ -211,7 +199,6 @@ public class RedisAutoConfiguration {
 			if (getClusterConfiguration() != null) {
 				return new JedisConnectionFactory(getClusterConfiguration(), poolConfig);
 			}
-
 			return new JedisConnectionFactory(poolConfig);
 		}
 
