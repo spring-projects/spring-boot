@@ -20,7 +20,7 @@ public class SampleCouchbaseApplicationTests {
 	public void testDefaultSettings() throws Exception {
 		try {
 			new SpringApplicationBuilder(SampleCouchbaseApplication.class)
-					.run();
+					.run("--server.port=0");
 		}
 		catch (RuntimeException ex) {
 			if (serverNotRunning(ex)) {
