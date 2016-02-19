@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.MessageSourceAutoConfigurationProf
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -39,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringApplicationConfiguration({ Config.class, MessageSourceAutoConfiguration.class,
 		PropertyPlaceholderAutoConfiguration.class })
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 @ActiveProfiles("switch-messages")
 public class MessageSourceAutoConfigurationProfileTests {
 
