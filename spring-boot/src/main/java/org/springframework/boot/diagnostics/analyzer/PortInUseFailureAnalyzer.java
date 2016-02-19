@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.embedded;
+package org.springframework.boot.diagnostics.analyzer;
 
+import org.springframework.boot.context.embedded.PortInUseException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
@@ -24,24 +25,18 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
  * {@code PortInUseException}.
  *
  * @author Andy Wilkinson
- * @since 1.4.0
  */
-public class PortInUseFailureAnalyzer extends AbstractFailureAnalyzer {
+class PortInUseFailureAnalyzer extends AbstractFailureAnalyzer<PortInUseException> {
 
 	@Override
-	public FailureAnalysis analyze(Throwable failure) {
-		PortInUseException portInUseException = findFailure(failure,
-				PortInUseException.class);
-		if (portInUseException != null) {
-			return new FailureAnalysis(
-					"Embedded servlet container failed to start. Port "
-							+ portInUseException.getPort() + " was already in use.",
-					"Identify and stop the process that's listening on port "
-							+ portInUseException.getPort() + " or configure this "
-							+ "application to listen on another port.",
-					portInUseException);
-		}
-		return null;
+	protected FailureAnalysis analyze(Throwable rootFailure, PortInUseException cause) {
+		return new FailureAnalysis(
+				"Embedded servlet container failed to start. Port " + cause.getPort()
+						+ " was already in use.",
+				"Identify and stop the process that's listening on port "
+						+ cause.getPort() + " or configure this "
+						+ "application to listen on another port.",
+				cause);
 	}
 
 }

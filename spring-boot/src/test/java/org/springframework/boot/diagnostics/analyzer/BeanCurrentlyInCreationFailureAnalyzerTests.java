@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.diagnostics;
+package org.springframework.boot.diagnostics.analyzer;
 
 import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.boot.diagnostics.FailureAnalyzer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;

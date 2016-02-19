@@ -14,62 +14,59 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.diagnostics;
+package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
+import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
+import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link FailureAnalyzer} the performs analysis of failures caused by a
+ * A {@link AbstractFailureAnalyzer} the performs analysis of failures caused by a
  * {@link BeanCurrentlyInCreationException}.
  *
  * @author Andy Wilkinson
- * @since 1.4.0
  */
-public class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer {
+class BeanCurrentlyInCreationFailureAnalyzer
+		extends AbstractFailureAnalyzer<BeanCurrentlyInCreationException> {
 
 	private static final String FIELD_AUTOWIRING_FAILURE_MESSAGE_PREFIX = "Could not autowire field: ";
 
 	@Override
-	public FailureAnalysis analyze(Throwable failure) {
-		BeanCurrentlyInCreationException inCreationEx = findFailure(failure,
-				BeanCurrentlyInCreationException.class);
-		if (inCreationEx != null) {
-			List<String> beansInCycle = new ArrayList<String>();
-			Throwable candidate = failure;
-			while (candidate != null) {
-				if (candidate instanceof BeanCreationException) {
-					BeanCreationException creationEx = (BeanCreationException) candidate;
-					if (StringUtils.hasText(creationEx.getBeanName())) {
-						beansInCycle.add(
-								creationEx.getBeanName() + getDescription(creationEx));
-					}
+	protected FailureAnalysis analyze(Throwable rootFailure,
+			BeanCurrentlyInCreationException cause) {
+		List<String> beansInCycle = new ArrayList<String>();
+		Throwable candidate = rootFailure;
+		while (candidate != null) {
+			if (candidate instanceof BeanCreationException) {
+				BeanCreationException creationEx = (BeanCreationException) candidate;
+				if (StringUtils.hasText(creationEx.getBeanName())) {
+					beansInCycle
+							.add(creationEx.getBeanName() + getDescription(creationEx));
 				}
-				candidate = candidate.getCause();
 			}
-			StringBuilder message = new StringBuilder();
-			int uniqueBeans = beansInCycle.size() - 1;
-			message.append(String
-					.format("There is a circular dependency between %s beans in the "
-							+ "application context:%n", uniqueBeans));
-			for (String bean : beansInCycle) {
-				message.append(String.format("\t- %s%n", bean));
-			}
-
-			return new FailureAnalysis(message.toString(), null, failure);
+			candidate = candidate.getCause();
 		}
-		return null;
+		StringBuilder message = new StringBuilder();
+		int uniqueBeans = beansInCycle.size() - 1;
+		message.append(
+				String.format("There is a circular dependency between %s beans in the "
+						+ "application context:%n", uniqueBeans));
+		for (String bean : beansInCycle) {
+			message.append(String.format("\t- %s%n", bean));
+		}
+		return new FailureAnalysis(message.toString(), null, cause);
 	}
 
 	private String getDescription(BeanCreationException ex) {
 		if (StringUtils.hasText(ex.getResourceDescription())) {
 			return String.format(" defined in %s", ex.getResourceDescription());
 		}
-		else if (causedByFieldAutowiringFailure(ex)) {
+		if (causedByFieldAutowiringFailure(ex)) {
 			return String.format(" (field %s)",
 					ex.getCause().getMessage().substring(
 							FIELD_AUTOWIRING_FAILURE_MESSAGE_PREFIX.length(),

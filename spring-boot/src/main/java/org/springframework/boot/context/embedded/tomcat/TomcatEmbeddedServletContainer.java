@@ -167,9 +167,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			if (connector != null && this.autoStart) {
 				startConnector(connector);
 			}
-
 			checkThatConnectorsHaveStarted();
-
 			TomcatEmbeddedServletContainer.logger
 					.info("Tomcat started on port(s): " + getPortsDescription(true));
 		}

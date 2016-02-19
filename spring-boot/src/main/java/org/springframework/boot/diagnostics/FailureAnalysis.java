@@ -34,7 +34,6 @@ public class FailureAnalysis {
 	 * Creates a new {@code FailureAnalysis} with the given {@code description} and
 	 * {@code action}, if any, that the user should take to address the problem. The
 	 * failure had the given underlying {@code cause}.
-	 *
 	 * @param description the description
 	 * @param action the action
 	 * @param cause the cause
@@ -47,7 +46,6 @@ public class FailureAnalysis {
 
 	/**
 	 * Returns a description of the failure.
-	 *
 	 * @return the description
 	 */
 	public String getDescription() {
@@ -56,7 +54,6 @@ public class FailureAnalysis {
 
 	/**
 	 * Returns the action, if any, to be taken to address the failure.
-	 *
 	 * @return the action or {@code null}
 	 */
 	public String getAction() {
@@ -65,7 +62,6 @@ public class FailureAnalysis {
 
 	/**
 	 * Returns the cause of the failure.
-	 *
 	 * @return the cause
 	 */
 	public Throwable getCause() {

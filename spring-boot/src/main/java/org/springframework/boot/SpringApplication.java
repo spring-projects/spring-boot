@@ -41,9 +41,7 @@ import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.boot.diagnostics.FailureAnalysisReporter;
-import org.springframework.boot.diagnostics.FailureAnalyzer;
+import org.springframework.boot.diagnostics.FailureAnalyzers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -835,8 +833,7 @@ public class SpringApplication {
 
 	private void reportFailure(Throwable failure) {
 		try {
-			FailureAnalysis failureAnalysis = analyzeFailure(failure);
-			if (failureAnalysis != null && reportFailureAnalysis(failureAnalysis)) {
+			if (FailureAnalyzers.analyzeAndReport(failure, getClass().getClassLoader())) {
 				registerLoggedException(failure);
 				return;
 			}
@@ -848,30 +845,6 @@ public class SpringApplication {
 			logger.error("Application startup failed", failure);
 			registerLoggedException(failure);
 		}
-	}
-
-	private FailureAnalysis analyzeFailure(Throwable failure) {
-		List<FailureAnalyzer> analyzers = SpringFactoriesLoader
-				.loadFactories(FailureAnalyzer.class, getClass().getClassLoader());
-		for (FailureAnalyzer analyzer : analyzers) {
-			FailureAnalysis analysis = analyzer.analyze(failure);
-			if (analysis != null) {
-				return analysis;
-			}
-		}
-		return null;
-	}
-
-	private boolean reportFailureAnalysis(FailureAnalysis failureAnalysis) {
-		List<FailureAnalysisReporter> reporters = SpringFactoriesLoader.loadFactories(
-				FailureAnalysisReporter.class, getClass().getClassLoader());
-		if (!reporters.isEmpty()) {
-			for (FailureAnalysisReporter reporter : reporters) {
-				reporter.report(failureAnalysis);
-			}
-			return true;
-		}
-		return false;
 	}
 
 	/**
