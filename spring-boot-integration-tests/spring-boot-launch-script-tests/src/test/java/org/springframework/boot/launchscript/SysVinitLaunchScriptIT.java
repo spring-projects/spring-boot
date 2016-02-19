@@ -48,7 +48,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import org.springframework.boot.ansi.AnsiColor;
-import org.springframework.boot.test.assertj.Matched;
+import org.springframework.boot.testutil.Matched;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;

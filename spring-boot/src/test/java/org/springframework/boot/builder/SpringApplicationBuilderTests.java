@@ -24,7 +24,6 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.test.ApplicationContextTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -52,7 +51,16 @@ public class SpringApplicationBuilderTests {
 
 	@After
 	public void close() {
-		ApplicationContextTestUtils.closeAll(this.context);
+		close(this.context);
+	}
+
+	private void close(ApplicationContext context) {
+		if (context != null) {
+			if (context instanceof ConfigurableApplicationContext) {
+				((ConfigurableApplicationContext) context).close();
+			}
+			close(context.getParent());
+		}
 	}
 
 	@Test

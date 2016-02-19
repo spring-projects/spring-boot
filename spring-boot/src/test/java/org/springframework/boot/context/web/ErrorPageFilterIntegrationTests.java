@@ -26,26 +26,29 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.xnio.channels.UnsupportedOptionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.web.ErrorPageFilterIntegrationTests.EmbeddedWebContextLoader;
 import org.springframework.boot.context.web.ErrorPageFilterIntegrationTests.TomcatConfig;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.support.AbstractContextLoader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -59,12 +62,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link ErrorPageFilter}.
  *
  * @author Dave Syer
+ * @author Phillip Webb
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@SpringApplicationConfiguration(TomcatConfig.class)
-@IntegrationTest
-@WebAppConfiguration
+@ContextConfiguration(classes = TomcatConfig.class, loader = EmbeddedWebContextLoader.class)
 public class ErrorPageFilterIntegrationTests {
 
 	@Autowired
@@ -93,7 +95,7 @@ public class ErrorPageFilterIntegrationTests {
 	private void doTest(AnnotationConfigEmbeddedWebApplicationContext context,
 			String resourcePath, HttpStatus status) throws Exception {
 		int port = context.getEmbeddedServletContainer().getPort();
-		TestRestTemplate template = new TestRestTemplate();
+		RestTemplate template = new RestTemplate();
 		ResponseEntity<String> entity = template.getForEntity(
 				new URI("http://localhost:" + port + resourcePath), String.class);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
@@ -172,6 +174,36 @@ public class ErrorPageFilterIntegrationTests {
 		@ResponseStatus(HttpStatus.CREATED)
 		public String created() {
 			return "Hello World";
+		}
+
+	}
+
+	static class EmbeddedWebContextLoader extends AbstractContextLoader {
+
+		private static final String[] EMPTY_RESOURCE_SUFFIXES = {};
+
+		@Override
+		public ApplicationContext loadContext(MergedContextConfiguration config)
+				throws Exception {
+			AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext(
+					config.getClasses());
+			context.registerShutdownHook();
+			return context;
+		}
+
+		@Override
+		public ApplicationContext loadContext(String... locations) throws Exception {
+			throw new UnsupportedOptionException();
+		}
+
+		@Override
+		protected String[] getResourceSuffixes() {
+			return EMPTY_RESOURCE_SUFFIXES;
+		}
+
+		@Override
+		protected String getResourceSuffix() {
+			throw new UnsupportedOptionException();
 		}
 
 	}
