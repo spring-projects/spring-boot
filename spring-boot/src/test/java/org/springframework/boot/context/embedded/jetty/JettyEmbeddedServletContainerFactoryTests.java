@@ -159,7 +159,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		ssl.setKeyStorePassword("secret");
 		ssl.setKeyPassword("password");
 		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
-		ssl.setProtocols(new String[]{ "TLSv1.1", "TLSv1.2" });
+		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
 
 		JettyEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSsl(ssl);
@@ -184,7 +184,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		ssl.setKeyStorePassword("secret");
 		ssl.setKeyPassword("password");
 		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
-		ssl.setProtocols(new String[]{ "TLSv1.1" });
+		ssl.setEnabledProtocols(new String[] { "TLSv1.1" });
 
 		JettyEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSsl(ssl);

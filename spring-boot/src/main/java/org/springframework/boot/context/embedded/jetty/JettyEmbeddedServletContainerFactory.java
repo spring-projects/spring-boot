@@ -207,19 +207,16 @@ public class JettyEmbeddedServletContainerFactory
 	 * @param ssl the ssl details.
 	 */
 	protected void configureSsl(SslContextFactory factory, Ssl ssl) {
-		//Set the default TLS protocol
 		factory.setProtocol(ssl.getProtocol());
-
-		//Assign the supported protocols, if provided
-		if (ssl.getProtocols() != null) {
-			factory.setIncludeProtocols(ssl.getProtocols());
-		}
 		configureSslClientAuth(factory, ssl);
 		configureSslPasswords(factory, ssl);
 		factory.setCertAlias(ssl.getKeyAlias());
 		configureSslKeyStore(factory, ssl);
 		if (ssl.getCiphers() != null) {
 			factory.setIncludeCipherSuites(ssl.getCiphers());
+		}
+		if (ssl.getEnabledProtocols() != null) {
+			factory.setIncludeProtocols(ssl.getEnabledProtocols());
 		}
 		configureSslTrustStore(factory, ssl);
 	}

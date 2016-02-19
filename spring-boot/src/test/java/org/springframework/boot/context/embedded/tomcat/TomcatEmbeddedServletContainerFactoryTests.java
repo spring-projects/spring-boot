@@ -268,7 +268,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore("test.jks");
 		ssl.setKeyStorePassword("secret");
-		ssl.setProtocols(new String[]{ "TLSv1.1", "TLSv1.2" });
+		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
 		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
 
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
@@ -291,7 +291,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore("test.jks");
 		ssl.setKeyStorePassword("secret");
-		ssl.setProtocols(new String[]{"TLSv1.2"});
+		ssl.setEnabledProtocols(new String[] { "TLSv1.2" });
 		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
 
 		TomcatEmbeddedServletContainerFactory factory = getFactory();

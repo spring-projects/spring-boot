@@ -530,7 +530,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore,
-			String trustStore, String[] protocols, String[] ciphers) {
+			String trustStore, String[] supportedProtocols, String[] ciphers) {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(clientAuth);
 		if (keyPassword != null) {
@@ -549,17 +549,12 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		if (ciphers != null) {
 			ssl.setCiphers(ciphers);
 		}
-		if (protocols != null) {
-			ssl.setProtocols(protocols);
+		if (supportedProtocols != null) {
+			ssl.setEnabledProtocols(supportedProtocols);
 		}
 		return ssl;
 	}
 
-	/**
-	 * @see <a
-	 * href="http://docs.oracle.com/javase/7/docs/technotes/guides/security/SunProviders.html#SunJSSEProvider">
-	 * SunJSSE supported Cipher Suites</a>
-	 */
 	protected void testRestrictedSSLProtocolsAndCipherSuites(String[] protocols,
 			String[] ciphers) throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();

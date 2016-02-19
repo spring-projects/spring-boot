@@ -315,22 +315,17 @@ public class TomcatEmbeddedServletContainerFactory
 	 */
 	protected void configureSsl(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		protocol.setSSLEnabled(true);
-		//Set the default TLS protocol
 		protocol.setSslProtocol(ssl.getProtocol());
-
-		//Assign the supported protocols, if provided
-		if (ssl.getProtocols() != null) {
-			String protocols = StringUtils.arrayToCommaDelimitedString(ssl.getProtocols());
-			protocol.setProperty("sslEnabledProtocols", protocols);
-		}
-
 		configureSslClientAuth(protocol, ssl);
 		protocol.setKeystorePass(ssl.getKeyStorePassword());
 		protocol.setKeyPass(ssl.getKeyPassword());
 		protocol.setKeyAlias(ssl.getKeyAlias());
 		configureSslKeyStore(protocol, ssl);
-		String ciphers = StringUtils.arrayToCommaDelimitedString(ssl.getCiphers());
-		protocol.setCiphers(ciphers);
+		protocol.setCiphers(StringUtils.arrayToCommaDelimitedString(ssl.getCiphers()));
+		if (ssl.getEnabledProtocols() != null) {
+			protocol.setProperty("sslEnabledProtocols",
+					StringUtils.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
+		}
 		configureSslTrustStore(protocol, ssl);
 	}
 
