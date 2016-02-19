@@ -371,6 +371,33 @@ public class RepackagerTests {
 	}
 
 	@Test
+	public void executableJarLayoutAttributes() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(file);
+		repackager.repackage(NO_LIBRARIES);
+		Manifest actualManifest = getManifest(file);
+		assertThat(actualManifest.getMainAttributes())
+				.containsEntry(new Attributes.Name("Spring-Boot-Lib"), "BOOT-INF/lib/");
+		assertThat(actualManifest.getMainAttributes()).containsEntry(
+				new Attributes.Name("Spring-Boot-Classes"), "BOOT-INF/classes/");
+	}
+
+	@Test
+	public void executableWarLayoutAttributes() throws Exception {
+		this.testJarFile.addClass("WEB-INF/classes/a/b/C.class",
+				ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile("war");
+		Repackager repackager = new Repackager(file);
+		repackager.repackage(NO_LIBRARIES);
+		Manifest actualManifest = getManifest(file);
+		assertThat(actualManifest.getMainAttributes())
+				.containsEntry(new Attributes.Name("Spring-Boot-Lib"), "WEB-INF/lib/");
+		assertThat(actualManifest.getMainAttributes()).containsEntry(
+				new Attributes.Name("Spring-Boot-Classes"), "WEB-INF/classes/");
+	}
+
+	@Test
 	public void nullCustomLayout() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		Repackager repackager = new Repackager(this.testJarFile.getFile());

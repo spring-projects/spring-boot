@@ -45,6 +45,10 @@ public class Repackager {
 
 	private static final String BOOT_VERSION_ATTRIBUTE = "Spring-Boot-Version";
 
+	private static final String BOOT_LIB_ATTRIBUTE = "Spring-Boot-Lib";
+
+	private static final String BOOT_CLASSES_ATTRIBUTE = "Spring-Boot-Classes";
+
 	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
 	private String mainClass;
@@ -282,6 +286,12 @@ public class Repackager {
 		}
 		String bootVersion = getClass().getPackage().getImplementationVersion();
 		manifest.getMainAttributes().putValue(BOOT_VERSION_ATTRIBUTE, bootVersion);
+		manifest.getMainAttributes().putValue(BOOT_CLASSES_ATTRIBUTE,
+				(this.layout instanceof RepackagingLayout)
+						? ((RepackagingLayout) this.layout).getRepackagedClassesLocation()
+						: this.layout.getClassesLocation());
+		manifest.getMainAttributes().putValue(BOOT_LIB_ATTRIBUTE,
+				this.layout.getLibraryDestination("", LibraryScope.COMPILE));
 		return manifest;
 	}
 

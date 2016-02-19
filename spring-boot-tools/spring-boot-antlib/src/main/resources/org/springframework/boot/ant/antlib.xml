@@ -74,6 +74,8 @@
 					<attribute name="Main-Class"
 						value="org.springframework.boot.loader.JarLauncher" />
 					<attribute name="Start-Class" value="${start-class}" />
+					<attribute name="Spring-Boot-Classes" value="BOOT-INF/classes/" />
+					<attribute name="Spring-Boot-Lib" value="BOOT-INF/lib/" />
 				</manifest>
 			</jar>
 		</sequential>
