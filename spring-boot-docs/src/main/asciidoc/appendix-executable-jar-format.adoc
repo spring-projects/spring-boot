@@ -42,16 +42,18 @@ Spring Boot Loader compatible jar files should be structured in the following wa
 	 |     +-boot
 	 |        +-loader
 	 |           +-<spring boot loader classes>
-	 +-com
-	 |  +-mycompany
-	 |     + project
-	 |        +-YouClasses.class
-	 +-lib
-	    +-dependency1.jar
-	    +-dependency2.jar
+	 +-BOOT-INF
+	    +-classes
+	    |  +-mycompany
+	    |     +-project
+	    |        +-YouClasses.class
+	    +-lib
+	       +-dependency1.jar
+	       +-dependency2.jar
 ----
 
-Dependencies should be placed in a nested `lib` directory.
+Application classes should be placed in a nested `BOOT-INF/classes` directory.
+Dependencies should be placed in a nested `BOOT-INF/lib` directory.
 
 
 
