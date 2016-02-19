@@ -47,7 +47,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.session.ExpiringSession;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 
@@ -237,17 +236,10 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void sessionRedisTemplateIsConfiguredWithCustomDeserializers10()
+	public void sessionRedisTemplateIsConfiguredWithCustomDeserializers()
 			throws Exception {
 		sessionRedisTemplateIsConfiguredWithCustomDeserializers(
-				Session10RedisTemplateConfig.class);
-	}
-
-	@Test
-	public void sessionRedisTemplateIsConfiguredWithCustomDeserializers11()
-			throws Exception {
-		sessionRedisTemplateIsConfiguredWithCustomDeserializers(
-				Session11RedisTemplateConfig.class);
+				SessionRedisTemplateConfig.class);
 	}
 
 	private void sessionRedisTemplateIsConfiguredWithCustomDeserializers(
@@ -316,19 +308,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Configuration
-	public static class Session10RedisTemplateConfig {
-
-		@Bean
-		public RedisTemplate<String, ExpiringSession> sessionRedisTemplate() {
-			RedisTemplate<String, ExpiringSession> redisTemplate = new RedisTemplate<String, ExpiringSession>();
-			redisTemplate.setConnectionFactory(mock(RedisConnectionFactory.class));
-			return redisTemplate;
-		}
-
-	}
-
-	@Configuration
-	public static class Session11RedisTemplateConfig {
+	public static class SessionRedisTemplateConfig {
 
 		@Bean
 		public RedisTemplate<Object, Object> sessionRedisTemplate() {
