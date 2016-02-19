@@ -389,6 +389,7 @@ public class JarWriter {
 	interface EntryTransformer {
 
 		JarEntry transform(JarEntry jarEntry);
+
 	}
 
 	/**

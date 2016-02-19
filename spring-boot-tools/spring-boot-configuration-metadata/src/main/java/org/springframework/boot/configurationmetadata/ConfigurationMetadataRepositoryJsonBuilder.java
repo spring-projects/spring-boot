@@ -127,25 +127,34 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 		for (ConfigurationMetadataHint hint : metadata.getHints()) {
 			ConfigurationMetadataProperty property = allProperties.get(hint.getId());
 			if (property != null) {
-				property.getHints().getValueHints().addAll(hint.getValueHints());
-				property.getHints().getValueProviders().addAll(hint.getValueProviders());
+				addValueHints(property, hint);
 			}
 			else {
 				String id = hint.resolveId();
 				property = allProperties.get(id);
 				if (property != null) {
 					if (hint.isMapKeyHints()) {
-						property.getHints().getKeyHints().addAll(hint.getValueHints());
-						property.getHints().getKeyProviders().addAll(hint.getValueProviders());
+						addMapHints(property, hint);
 					}
 					else {
-						property.getHints().getValueHints().addAll(hint.getValueHints());
-						property.getHints().getValueProviders().addAll(hint.getValueProviders());
+						addValueHints(property, hint);
 					}
 				}
 			}
 		}
 		return repository;
+	}
+
+	private void addValueHints(ConfigurationMetadataProperty property,
+			ConfigurationMetadataHint hint) {
+		property.getHints().getValueHints().addAll(hint.getValueHints());
+		property.getHints().getValueProviders().addAll(hint.getValueProviders());
+	}
+
+	private void addMapHints(ConfigurationMetadataProperty property,
+			ConfigurationMetadataHint hint) {
+		property.getHints().getKeyHints().addAll(hint.getValueHints());
+		property.getHints().getKeyProviders().addAll(hint.getValueProviders());
 	}
 
 	private ConfigurationMetadataSource getSource(RawConfigurationMetadata metadata,

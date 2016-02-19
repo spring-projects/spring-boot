@@ -21,8 +21,8 @@ import java.util.List;
 
 /**
  * Hints of an item to provide the list of values and/or the name of the provider
- * responsible to identify suitable values. If the type of the related item is
- * a {@link java.util.Map} it can have both key and value hints.
+ * responsible to identify suitable values. If the type of the related item is a
+ * {@link java.util.Map} it can have both key and value hints.
  *
  * @author Stephane Nicoll
  * @since 1.4.0
@@ -39,9 +39,9 @@ public class Hints {
 
 	/**
 	 * The list of well-defined keys, if any. Only applicable if the type of the related
-	 * item is a {@link java.util.Map}. If no extra {@link ValueProvider provider}
-	 * is specified, these values are to be considered a closed-set of the available
-	 * keys for the map.
+	 * item is a {@link java.util.Map}. If no extra {@link ValueProvider provider} is
+	 * specified, these values are to be considered a closed-set of the available keys for
+	 * the map.
 	 * @return the key hints
 	 */
 	public List<ValueHint> getKeyHints() {
@@ -51,8 +51,8 @@ public class Hints {
 	/**
 	 * The value providers that are applicable to the keys of this item. Only applicable
 	 * if the type of the related item is a {@link java.util.Map}. Only one
-	 * {@link ValueProvider} is enabled for a key: the first in the list that is
-	 * supported should be used.
+	 * {@link ValueProvider} is enabled for a key: the first in the list that is supported
+	 * should be used.
 	 * @return the key providers
 	 */
 	public List<ValueProvider> getKeyProviders() {

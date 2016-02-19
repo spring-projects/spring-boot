@@ -76,8 +76,8 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			List<Class<?>> types = collectClasses(attributes.get("value"));
 			for (Class<?> type : types) {
 				String prefix = extractPrefix(type);
-				String name = (StringUtils.hasText(prefix)
-						? prefix + "-" + type.getName() : type.getName());
+				String name = (StringUtils.hasText(prefix) ? prefix + "-" + type.getName()
+						: type.getName());
 				if (!registry.containsBeanDefinition(name)) {
 					registerBeanDefinition(registry, type, name);
 				}

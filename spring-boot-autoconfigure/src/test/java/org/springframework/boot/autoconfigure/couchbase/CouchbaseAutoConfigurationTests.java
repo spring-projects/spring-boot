@@ -65,18 +65,24 @@ public class CouchbaseAutoConfigurationTests {
 		load(null);
 		assertThat(this.context.getBeansOfType(CouchbaseTemplate.class)).isEmpty();
 		assertThat(this.context.getBeansOfType(Bucket.class)).isEmpty();
-		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class))
+				.isEmpty();
 	}
 
 	@Test
-	public void bucketNameIsNotRequiredIfCustomConfigurationIsSpecified() throws Exception {
+	public void bucketNameIsNotRequiredIfCustomConfigurationIsSpecified()
+			throws Exception {
 		load(CouchbaseTestConfiguration.class);
-
-		assertThat(this.context.getBeansOfType(AbstractCouchbaseConfiguration.class)).hasSize(1);
-		CouchbaseTestConfiguration configuration = this.context.getBean(CouchbaseTestConfiguration.class);
-		assertThat(this.context.getBean(CouchbaseTemplate.class)).isSameAs(configuration.couchbaseTemplate());
-		assertThat(this.context.getBean(Bucket.class)).isSameAs(configuration.couchbaseClient());
-		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(AbstractCouchbaseConfiguration.class))
+				.hasSize(1);
+		CouchbaseTestConfiguration configuration = this.context
+				.getBean(CouchbaseTestConfiguration.class);
+		assertThat(this.context.getBean(CouchbaseTemplate.class))
+				.isSameAs(configuration.couchbaseTemplate());
+		assertThat(this.context.getBean(Bucket.class))
+				.isSameAs(configuration.couchbaseClient());
+		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class))
+				.isEmpty();
 	}
 
 	@Test
@@ -92,7 +98,8 @@ public class CouchbaseAutoConfigurationTests {
 	@Test
 	public void autoIndexIsDisabledByDefault() {
 		load(CouchbaseTestConfiguration.class);
-		CouchbaseTestConfiguration configuration = this.context.getBean(CouchbaseTestConfiguration.class);
+		CouchbaseTestConfiguration configuration = this.context
+				.getBean(CouchbaseTestConfiguration.class);
 		IndexManager indexManager = configuration.indexManager();
 		assertThat(indexManager.isIgnoreViews()).isTrue();
 		assertThat(indexManager.isIgnoreN1qlPrimary()).isTrue();
@@ -102,7 +109,8 @@ public class CouchbaseAutoConfigurationTests {
 	@Test
 	public void enableAutoIndex() {
 		load(CouchbaseTestConfiguration.class, "spring.data.couchbase.auto-index=true");
-		CouchbaseTestConfiguration configuration = this.context.getBean(CouchbaseTestConfiguration.class);
+		CouchbaseTestConfiguration configuration = this.context
+				.getBean(CouchbaseTestConfiguration.class);
 		IndexManager indexManager = configuration.indexManager();
 		assertThat(indexManager.isIgnoreViews()).isFalse();
 		assertThat(indexManager.isIgnoreN1qlPrimary()).isFalse();
@@ -111,16 +119,21 @@ public class CouchbaseAutoConfigurationTests {
 
 	@Test
 	public void changeConsistency() {
-		load(CouchbaseTestConfiguration.class, "spring.data.couchbase.consistency=eventually-consistent");
-		CouchbaseTestConfiguration configuration = this.context.getBean(CouchbaseTestConfiguration.class);
-		assertThat(configuration.getDefaultConsistency()).isEqualTo(Consistency.EVENTUALLY_CONSISTENT);
+		load(CouchbaseTestConfiguration.class,
+				"spring.data.couchbase.consistency=eventually-consistent");
+		CouchbaseTestConfiguration configuration = this.context
+				.getBean(CouchbaseTestConfiguration.class);
+		assertThat(configuration.getDefaultConsistency())
+				.isEqualTo(Consistency.EVENTUALLY_CONSISTENT);
 	}
 
 	@Test
 	public void overrideCouchbaseOperations() {
 		load(CouchbaseTemplateConfiguration.class);
-		CouchbaseTemplateConfiguration configuration = this.context.getBean(CouchbaseTemplateConfiguration.class);
-		assertThat(this.context.getBean(CouchbaseTemplate.class)).isSameAs(configuration.myCouchbaseTemplate());
+		CouchbaseTemplateConfiguration configuration = this.context
+				.getBean(CouchbaseTemplateConfiguration.class);
+		assertThat(this.context.getBean(CouchbaseTemplate.class))
+				.isSameAs(configuration.myCouchbaseTemplate());
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -145,7 +158,6 @@ public class CouchbaseAutoConfigurationTests {
 		}
 
 	}
-
 
 	@Configuration
 	@Import(CouchbaseTestConfiguration.class)

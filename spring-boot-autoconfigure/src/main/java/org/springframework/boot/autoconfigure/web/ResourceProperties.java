@@ -170,8 +170,8 @@ public class ResourceProperties implements ResourceLoaderAware {
 		private boolean htmlApplicationCache = false;
 
 		/**
-		 * Enable resolution of already gzipped resources. Checks for a resource
-		 * name variant with the *.gz extension.
+		 * Enable resolution of already gzipped resources. Checks for a resource name
+		 * variant with the {@code *.gz} extension.
 		 */
 		private boolean gzipped = false;
 

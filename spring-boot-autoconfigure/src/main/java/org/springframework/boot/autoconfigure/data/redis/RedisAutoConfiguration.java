@@ -132,7 +132,8 @@ public class RedisAutoConfiguration {
 
 		private List<RedisNode> createSentinels(Sentinel sentinel) {
 			List<RedisNode> nodes = new ArrayList<RedisNode>();
-			for (String node : StringUtils.commaDelimitedListToStringArray(sentinel.getNodes())) {
+			for (String node : StringUtils
+					.commaDelimitedListToStringArray(sentinel.getNodes())) {
 				try {
 					String[] parts = StringUtils.split(node, ":");
 					Assert.state(parts.length == 2, "Must be defined as 'host:port'");
@@ -190,8 +191,8 @@ public class RedisAutoConfiguration {
 		}
 
 		private JedisConnectionFactory createJedisConnectionFactory() {
-			JedisPoolConfig poolConfig = this.properties.getPool() != null ? jedisPoolConfig()
-					: new JedisPoolConfig();
+			JedisPoolConfig poolConfig = this.properties.getPool() != null
+					? jedisPoolConfig() : new JedisPoolConfig();
 
 			if (getSentinelConfig() != null) {
 				return new JedisConnectionFactory(getSentinelConfig(), poolConfig);

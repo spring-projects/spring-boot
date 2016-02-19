@@ -23,6 +23,7 @@ import javax.validation.Validator;
 import com.couchbase.client.java.CouchbaseBucket;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -39,15 +40,14 @@ import org.springframework.data.couchbase.core.query.Consistency;
 import org.springframework.data.couchbase.repository.support.IndexManager;
 
 /**
- * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
- * Auto-Configuration} for Couchbase.
+ * {@link EnableAutoConfiguration Auto-Configuration} for Couchbase.
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({CouchbaseBucket.class, AbstractCouchbaseConfiguration.class})
+@ConditionalOnClass({ CouchbaseBucket.class, AbstractCouchbaseConfiguration.class })
 @Conditional(CouchbaseAutoConfiguration.CouchbaseCondition.class)
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class CouchbaseAutoConfiguration {
@@ -107,8 +107,9 @@ public class CouchbaseAutoConfiguration {
 	}
 
 	/**
-	 * Determine if Couchbase should be configured. This happens if either the user-configuration
-	 * defines a couchbase configuration or if at least the bucket name is specified.
+	 * Determine if Couchbase should be configured. This happens if either the
+	 * user-configuration defines a couchbase configuration or if at least the bucket name
+	 * is specified.
 	 */
 	static class CouchbaseCondition extends AnyNestedCondition {
 

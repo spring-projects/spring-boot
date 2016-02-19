@@ -92,8 +92,8 @@ public class AtomikosProperties {
 	private String logBaseDir;
 
 	/**
-	 * Interval between checkpoints. A checkpoint reduces the log file size at the
-	 * expense of adding some overhead in the runtime.
+	 * Interval between checkpoints. A checkpoint reduces the log file size at the expense
+	 * of adding some overhead in the runtime.
 	 */
 	private long checkpointInterval = 500;
 

@@ -254,6 +254,7 @@ public class ThymeleafAutoConfigurationTests {
 		public LayoutDialect layoutDialect() {
 			return new LayoutDialect(new GroupingStrategy());
 		}
+
 	}
 
 }

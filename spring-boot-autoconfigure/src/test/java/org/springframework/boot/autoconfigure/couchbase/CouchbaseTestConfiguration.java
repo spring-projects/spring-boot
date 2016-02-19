@@ -33,13 +33,15 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 @Configuration
-public class CouchbaseTestConfiguration extends CouchbaseAutoConfiguration.CouchbaseConfiguration {
+public class CouchbaseTestConfiguration
+		extends CouchbaseAutoConfiguration.CouchbaseConfiguration {
 
 	@Override
 	public Cluster couchbaseCluster() throws Exception {
 		return mock(CouchbaseCluster.class);
 	}
 
+	@Override
 	@Bean
 	public ClusterInfo couchbaseClusterInfo() {
 		return mock(ClusterInfo.class);

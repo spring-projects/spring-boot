@@ -183,7 +183,7 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({ CouchbaseOperations.class, Bucket.class})
+	@ConditionalOnClass({ CouchbaseOperations.class, Bucket.class })
 	@ConditionalOnBean(CouchbaseOperations.class)
 	@ConditionalOnEnabledHealthIndicator("couchbase")
 	public static class CouchbaseHealthIndicatorConfiguration extends

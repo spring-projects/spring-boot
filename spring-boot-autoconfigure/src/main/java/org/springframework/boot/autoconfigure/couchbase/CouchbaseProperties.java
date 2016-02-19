@@ -34,15 +34,16 @@ import org.springframework.data.couchbase.core.query.Consistency;
 public class CouchbaseProperties {
 
 	/**
-	 * Automatically create views and indexes. Use the meta-data provided by "@ViewIndexed",
-	 * "@N1qlPrimaryIndexed" and "@N1qlSecondaryIndexed".
+	 * Automatically create views and indexes. Use the meta-data provided by
+	 * "@ViewIndexed", "@N1qlPrimaryIndexed" and "@N1qlSecondaryIndexed".
 	 */
 	private boolean autoIndex;
 
 	/**
 	 * Couchbase nodes (host or IP address) to bootstrap from.
 	 */
-	private List<String> bootstrapHosts = new ArrayList<String>(Collections.singletonList("localhost"));
+	private List<String> bootstrapHosts = new ArrayList<String>(
+			Collections.singletonList("localhost"));
 
 	private final Bucket bucket = new Bucket();
 
@@ -106,6 +107,7 @@ public class CouchbaseProperties {
 		public void setPassword(String password) {
 			this.password = password;
 		}
+
 	}
 
 }

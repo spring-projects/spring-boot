@@ -41,8 +41,10 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo().getAllVersions();
-		builder.up().withDetail("versions", StringUtils.collectionToCommaDelimitedString(versions));
+		List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo()
+				.getAllVersions();
+		builder.up().withDetail("versions",
+				StringUtils.collectionToCommaDelimitedString(versions));
 	}
 
 }

@@ -37,7 +37,6 @@ public class SampleCouchbaseApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		this.userRepository.deleteAll();
 		User user = saveUser();
-
 		System.out.println(this.userRepository.findOne(user.getId()));
 	}
 
@@ -46,7 +45,6 @@ public class SampleCouchbaseApplication implements CommandLineRunner {
 		user.setId(UUID.randomUUID().toString());
 		user.setFirstName("Alice");
 		user.setLastName("Smith");
-
 		return this.userRepository.save(user);
 	}
 

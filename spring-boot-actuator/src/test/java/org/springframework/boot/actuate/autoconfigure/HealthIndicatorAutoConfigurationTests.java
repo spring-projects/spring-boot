@@ -449,7 +449,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans.size()).isEqualTo(1);
-		assertThat(beans.values().iterator().next().getClass()).isEqualTo(CouchbaseHealthIndicator.class);
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(CouchbaseHealthIndicator.class);
 	}
 
 	@Configuration

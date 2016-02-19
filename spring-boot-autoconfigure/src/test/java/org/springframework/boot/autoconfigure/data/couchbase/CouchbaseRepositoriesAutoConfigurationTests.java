@@ -35,6 +35,8 @@ import org.springframework.context.annotation.Import;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Tests for {@link CouchbaseRepositoriesAutoConfiguration}.
+ *
  * @author Eddú Meléndez
  */
 public class CouchbaseRepositoriesAutoConfigurationTests {

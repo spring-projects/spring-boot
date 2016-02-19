@@ -16,9 +16,9 @@
 
 package sample.data.couchbase;
 
-
 import com.couchbase.client.java.repository.annotation.Field;
 import com.couchbase.client.java.repository.annotation.Id;
+
 import org.springframework.data.couchbase.core.mapping.Document;
 
 @Document
@@ -59,10 +59,8 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User{" +
-				"id='" + this.id + '\'' +
-				", firstName='" + this.firstName + '\'' +
-				", lastName='" + this.lastName + '\'' +
-				'}';
+		return "User{" + "id='" + this.id + '\'' + ", firstName='" + this.firstName + '\''
+				+ ", lastName='" + this.lastName + '\'' + '}';
 	}
+
 }
