@@ -404,7 +404,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
 		factory.setSsl(getSsl(ClientAuth.NEED, null, "classpath:test.p12",
-				"classpath:test.p12"));
+				"classpath:test.p12", null, null));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		KeyStore keyStore = KeyStore.getInstance("pkcs12");
@@ -428,7 +428,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
 		factory.setSsl(getSsl(ClientAuth.NEED, "password", "classpath:test.jks",
-				"classpath:test.jks"));
+				"classpath:test.jks", null, null));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -526,11 +526,11 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore) {
-		return getSsl(clientAuth, keyPassword, keyStore, null);
+		return getSsl(clientAuth, keyPassword, keyStore, null, null, null);
 	}
 
 	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore,
-			String trustStore) {
+			String trustStore, String[] supportedProtocols, String[] ciphers) {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(clientAuth);
 		if (keyPassword != null) {
@@ -546,7 +546,35 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			ssl.setTrustStorePassword("secret");
 			ssl.setTrustStoreType(getStoreType(trustStore));
 		}
+		if (ciphers != null) {
+			ssl.setCiphers(ciphers);
+		}
+		if (supportedProtocols != null) {
+			ssl.setEnabledProtocols(supportedProtocols);
+		}
 		return ssl;
+	}
+
+	protected void testRestrictedSSLProtocolsAndCipherSuites(String[] protocols,
+			String[] ciphers) throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks", null,
+				protocols, ciphers));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container.start();
+
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder()
+						.loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
+
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
+				httpClient);
+
+		assertThat(getResponse(getLocalUrl("https", "/hello"), requestFactory))
+				.contains("scheme=https");
 	}
 
 	private String getStoreType(String keyStore) {

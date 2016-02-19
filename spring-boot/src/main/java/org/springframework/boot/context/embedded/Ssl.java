@@ -42,6 +42,11 @@ public class Ssl {
 	private String[] ciphers;
 
 	/**
+	 * Enabled SSL protocols.
+	 */
+	private String[] enabledProtocols;
+
+	/**
 	 * Alias that identifies the key in the key store.
 	 */
 	private String keyAlias;
@@ -166,6 +171,14 @@ public class Ssl {
 
 	public void setKeyStoreProvider(String keyStoreProvider) {
 		this.keyStoreProvider = keyStoreProvider;
+	}
+
+	public String[] getEnabledProtocols() {
+		return this.enabledProtocols;
+	}
+
+	public void setEnabledProtocols(String[] enabledProtocols) {
+		this.enabledProtocols = enabledProtocols;
 	}
 
 	public String getTrustStore() {

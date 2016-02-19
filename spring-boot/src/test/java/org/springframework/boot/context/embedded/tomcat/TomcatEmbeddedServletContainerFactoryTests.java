@@ -17,6 +17,7 @@
 package org.springframework.boot.context.embedded.tomcat;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,11 +42,13 @@ import org.mockito.InOrder;
 
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
@@ -258,6 +261,78 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector
 				.getProtocolHandler();
 		assertThat(jsseProtocol.getCiphers()).isEqualTo("ALPHA,BRAVO,CHARLIE");
+	}
+
+	@Test
+	public void sslEnabledMultipleProtocolsConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
+		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
+
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+		Connector connector = tomcat.getConnector();
+
+		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector
+				.getProtocolHandler();
+		assertThat(jsseProtocol.getSslProtocol()).isEqualTo("TLS");
+		assertThat(jsseProtocol.getProperty("sslEnabledProtocols"))
+				.isEqualTo("TLSv1.1,TLSv1.2");
+	}
+
+	@Test
+	public void sslEnabledProtocolsConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setEnabledProtocols(new String[] { "TLSv1.2" });
+		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
+
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+		Connector connector = tomcat.getConnector();
+
+		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector
+				.getProtocolHandler();
+		assertThat(jsseProtocol.getSslProtocol()).isEqualTo("TLS");
+		assertThat(jsseProtocol.getProperty("sslEnabledProtocols")).isEqualTo("TLSv1.2");
+	}
+
+	@Test
+	public void primaryConnectorPortClashThrowsIllegalStateException()
+			throws InterruptedException, IOException {
+		final int port = SocketUtils.findAvailableTcpPort(40000);
+
+		doWithBlockedPort(port, new Runnable() {
+
+			@Override
+			public void run() {
+				TomcatEmbeddedServletContainerFactory factory = getFactory();
+				factory.setPort(port);
+
+				try {
+					TomcatEmbeddedServletContainerFactoryTests.this.container = factory
+							.getEmbeddedServletContainer();
+					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
+					fail();
+				}
+				catch (EmbeddedServletContainerException ex) {
+					// Ignore
+				}
+			}
+
+		});
+
 	}
 
 	@Override
