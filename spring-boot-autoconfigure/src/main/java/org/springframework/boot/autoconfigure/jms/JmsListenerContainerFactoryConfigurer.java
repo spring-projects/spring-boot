@@ -50,8 +50,8 @@ public final class JmsListenerContainerFactoryConfigurer {
 	}
 
 	/**
-	 * Set the {@link JtaTransactionManager} to use or {@code null} if the JTA
-	 * support should not be used.
+	 * Set the {@link JtaTransactionManager} to use or {@code null} if the JTA support
+	 * should not be used.
 	 * @param transactionManager the {@link JtaTransactionManager}
 	 */
 	@Autowired(required = false)

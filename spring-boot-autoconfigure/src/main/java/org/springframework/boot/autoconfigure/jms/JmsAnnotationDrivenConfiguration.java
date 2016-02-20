@@ -49,7 +49,8 @@ class JmsAnnotationDrivenConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
 	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
-			JmsListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
+			JmsListenerContainerFactoryConfigurer configurer,
+			ConnectionFactory connectionFactory) {
 		return configurer.createJmsListenerContainerFactory(connectionFactory);
 	}
 
