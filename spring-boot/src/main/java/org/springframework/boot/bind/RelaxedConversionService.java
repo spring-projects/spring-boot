@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.util.Assert;
 
@@ -32,6 +33,7 @@ import org.springframework.util.Assert;
  * additional relaxed conversion.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 1.1.0
  */
 class RelaxedConversionService implements ConversionService {
@@ -44,9 +46,10 @@ class RelaxedConversionService implements ConversionService {
 	 * Create a new {@link RelaxedConversionService} instance.
 	 * @param conversionService and option root conversion service
 	 */
-	public RelaxedConversionService(ConversionService conversionService) {
+	RelaxedConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
 		this.additionalConverters = new GenericConversionService();
+		DefaultConversionService.addCollectionConverters(this.additionalConverters);
 		this.additionalConverters
 				.addConverterFactory(new StringToEnumIgnoringCaseConverterFactory());
 		this.additionalConverters.addConverter(new StringToCharArrayConverter());
@@ -54,15 +57,15 @@ class RelaxedConversionService implements ConversionService {
 
 	@Override
 	public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
-		return (this.conversionService != null && this.conversionService.canConvert(
-				sourceType, targetType))
+		return (this.conversionService != null
+				&& this.conversionService.canConvert(sourceType, targetType))
 				|| this.additionalConverters.canConvert(sourceType, targetType);
 	}
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return (this.conversionService != null && this.conversionService.canConvert(
-				sourceType, targetType))
+		return (this.conversionService != null
+				&& this.conversionService.canConvert(sourceType, targetType))
 				|| this.additionalConverters.canConvert(sourceType, targetType);
 	}
 
@@ -93,8 +96,8 @@ class RelaxedConversionService implements ConversionService {
 	 * case of the source.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static class StringToEnumIgnoringCaseConverterFactory implements
-			ConverterFactory<String, Enum> {
+	private static class StringToEnumIgnoringCaseConverterFactory
+			implements ConverterFactory<String, Enum> {
 
 		@Override
 		public <T extends Enum> Converter<String, T> getConverter(Class<T> targetType) {
@@ -111,7 +114,7 @@ class RelaxedConversionService implements ConversionService {
 
 			private final Class<T> enumType;
 
-			public StringToEnum(Class<T> enumType) {
+			StringToEnum(Class<T> enumType) {
 				this.enumType = enumType;
 			}
 
@@ -123,8 +126,8 @@ class RelaxedConversionService implements ConversionService {
 				}
 				source = source.trim();
 				for (T candidate : (Set<T>) EnumSet.allOf(this.enumType)) {
-					RelaxedNames names = new RelaxedNames(candidate.name()
-							.replace("_", "-").toLowerCase());
+					RelaxedNames names = new RelaxedNames(
+							candidate.name().replace("_", "-").toLowerCase());
 					for (String name : names) {
 						if (name.equals(source)) {
 							return candidate;
@@ -137,7 +140,9 @@ class RelaxedConversionService implements ConversionService {
 				throw new IllegalArgumentException("No enum constant "
 						+ this.enumType.getCanonicalName() + "." + source);
 			}
+
 		}
 
 	}
+
 }

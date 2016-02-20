@@ -40,7 +40,8 @@ public class AuditApplicationEvent extends ApplicationEvent {
 	 * @param data the event data
 	 * @see AuditEvent#AuditEvent(String, String, Map)
 	 */
-	public AuditApplicationEvent(String principal, String type, Map<String, Object> data) {
+	public AuditApplicationEvent(String principal, String type,
+			Map<String, Object> data) {
 		this(new AuditEvent(principal, type, data));
 	}
 
@@ -82,6 +83,7 @@ public class AuditApplicationEvent extends ApplicationEvent {
 	}
 
 	/**
+	 * Get the audit event.
 	 * @return the audit event
 	 */
 	public AuditEvent getAuditEvent() {

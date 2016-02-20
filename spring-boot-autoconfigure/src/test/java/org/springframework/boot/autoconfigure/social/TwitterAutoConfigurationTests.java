@@ -17,11 +17,12 @@
 package org.springframework.boot.autoconfigure.social;
 
 import org.junit.Test;
+
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link TwitterAutoConfiguration}.
@@ -41,7 +42,7 @@ public class TwitterAutoConfigurationTests extends AbstractSocialAutoConfigurati
 		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertConnectionFrameworkBeans();
-		assertNotNull(this.context.getBean(Twitter.class));
+		assertThat(this.context.getBean(Twitter.class)).isNotNull();
 	}
 
 	@Test

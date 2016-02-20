@@ -30,7 +30,7 @@ final class Dependency {
 
 	private final String description;
 
-	public Dependency(String id, String name, String description) {
+	Dependency(String id, String name, String description) {
 		this.id = id;
 		this.name = name;
 		this.description = description;

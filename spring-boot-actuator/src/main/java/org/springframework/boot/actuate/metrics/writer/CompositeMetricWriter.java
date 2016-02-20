@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.metrics.writer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.boot.actuate.metrics.Metric;
@@ -28,7 +29,7 @@ import org.springframework.boot.actuate.metrics.Metric;
  *
  * @author Dave Syer
  */
-public class CompositeMetricWriter implements MetricWriter {
+public class CompositeMetricWriter implements MetricWriter, Iterable<MetricWriter> {
 
 	private final List<MetricWriter> writers = new ArrayList<MetricWriter>();
 
@@ -38,6 +39,11 @@ public class CompositeMetricWriter implements MetricWriter {
 
 	public CompositeMetricWriter(List<MetricWriter> writers) {
 		this.writers.addAll(writers);
+	}
+
+	@Override
+	public Iterator<MetricWriter> iterator() {
+		return this.writers.iterator();
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -27,6 +29,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 /**
@@ -42,20 +45,23 @@ class TypeElementMembers {
 
 	private final ProcessingEnvironment env;
 
+	private final TypeUtils typeUtils;
+
 	private final Map<String, VariableElement> fields = new LinkedHashMap<String, VariableElement>();
 
 	private final Map<String, ExecutableElement> publicGetters = new LinkedHashMap<String, ExecutableElement>();
 
-	private final Map<String, ExecutableElement> publicSetters = new LinkedHashMap<String, ExecutableElement>();
+	private final Map<String, List<ExecutableElement>> publicSetters = new LinkedHashMap<String, List<ExecutableElement>>();
 
-	public TypeElementMembers(ProcessingEnvironment env, TypeElement element) {
+	TypeElementMembers(ProcessingEnvironment env, TypeElement element) {
 		this.env = env;
+		this.typeUtils = new TypeUtils(this.env);
 		process(element);
 	}
 
 	private void process(TypeElement element) {
-		for (ExecutableElement method : ElementFilter.methodsIn(element
-				.getEnclosedElements())) {
+		for (ExecutableElement method : ElementFilter
+				.methodsIn(element.getEnclosedElements())) {
 			processMethod(method);
 		}
 		for (VariableElement field : ElementFilter
@@ -75,10 +81,31 @@ class TypeElementMembers {
 			if (isGetter(method) && !this.publicGetters.containsKey(name)) {
 				this.publicGetters.put(getAccessorName(name), method);
 			}
-			else if (isSetter(method) && !this.publicSetters.containsKey(name)) {
-				this.publicSetters.put(getAccessorName(name), method);
+			else if (isSetter(method)) {
+				String propertyName = getAccessorName(name);
+				List<ExecutableElement> matchingSetters = this.publicSetters
+						.get(propertyName);
+				if (matchingSetters == null) {
+					matchingSetters = new ArrayList<ExecutableElement>();
+					this.publicSetters.put(propertyName, matchingSetters);
+				}
+				TypeMirror paramType = method.getParameters().get(0).asType();
+				if (getMatchingSetter(matchingSetters, paramType) == null) {
+					matchingSetters.add(method);
+				}
 			}
 		}
+	}
+
+	private ExecutableElement getMatchingSetter(List<ExecutableElement> candidates,
+			TypeMirror type) {
+		for (ExecutableElement candidate : candidates) {
+			TypeMirror paramType = candidate.getParameters().get(0).asType();
+			if (this.env.getTypeUtils().isSameType(paramType, type)) {
+				return candidate;
+			}
+		}
+		return null;
 	}
 
 	private boolean isGetter(ExecutableElement method) {
@@ -95,14 +122,14 @@ class TypeElementMembers {
 	}
 
 	private boolean isSetterReturnType(ExecutableElement method) {
-		return (TypeKind.VOID == method.getReturnType().getKind() || this.env
-				.getTypeUtils().isSameType(method.getEnclosingElement().asType(),
-						method.getReturnType()));
+		return (TypeKind.VOID == method.getReturnType().getKind()
+				|| this.env.getTypeUtils().isSameType(
+						method.getEnclosingElement().asType(), method.getReturnType()));
 	}
 
 	private String getAccessorName(String methodName) {
-		String name = methodName.startsWith("is") ? methodName.substring(2) : methodName
-				.substring(3);
+		String name = methodName.startsWith("is") ? methodName.substring(2)
+				: methodName.substring(3);
 		name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
 		return name;
 	}
@@ -122,8 +149,19 @@ class TypeElementMembers {
 		return Collections.unmodifiableMap(this.publicGetters);
 	}
 
-	public Map<String, ExecutableElement> getPublicSetters() {
-		return Collections.unmodifiableMap(this.publicSetters);
+	public ExecutableElement getPublicSetter(String name, TypeMirror type) {
+		List<ExecutableElement> candidates = this.publicSetters.get(name);
+		if (candidates != null) {
+			ExecutableElement matching = getMatchingSetter(candidates, type);
+			if (matching != null) {
+				return matching;
+			}
+			TypeMirror alternative = this.typeUtils.getWrapperOrPrimitiveFor(type);
+			if (alternative != null) {
+				return getMatchingSetter(candidates, alternative);
+			}
+		}
+		return null;
 	}
 
 }

@@ -61,7 +61,7 @@ public class AuditEvent implements Serializable {
 
 	/**
 	 * Create a new audit event for the current time from data provided as name-value
-	 * pairs
+	 * pairs.
 	 * @param principal The user principal responsible
 	 * @param type the event type
 	 * @param data The event data in the form 'key=value' or simply 'key'
@@ -135,8 +135,8 @@ public class AuditEvent implements Serializable {
 
 	@Override
 	public String toString() {
-		return "AuditEvent [timestamp=" + this.timestamp + ", principal="
-				+ this.principal + ", type=" + this.type + ", data=" + this.data + "]";
+		return "AuditEvent [timestamp=" + this.timestamp + ", principal=" + this.principal
+				+ ", type=" + this.type + ", data=" + this.data + "]";
 	}
 
 }

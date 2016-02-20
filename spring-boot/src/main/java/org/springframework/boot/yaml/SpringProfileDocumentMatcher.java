@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.springframework.core.env.Environment;
  */
 public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
-	private static final String[] DEFAULT_PROFILES = new String[] { "default" };
+	private static final String[] DEFAULT_PROFILES = new String[] { "^\\s*$" };
 
 	private String[] activeProfiles = new String[0];
 

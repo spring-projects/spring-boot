@@ -22,6 +22,7 @@ import javax.persistence.PersistenceException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -30,8 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -109,10 +109,18 @@ public class EntityScanTests {
 		assertSetPackagesToScan("com.mycorp.entity");
 	}
 
+	@Test
+	public void considersMultipleEntityScanAnnotations() {
+		this.context = new AnnotationConfigApplicationContext(MultiScanFirst.class,
+				MultiScanSecond.class);
+		assertSetPackagesToScan("foo", "bar");
+	}
+
 	private void assertSetPackagesToScan(String... expected) {
-		String[] actual = this.context.getBean(
-				TestLocalContainerEntityManagerFactoryBean.class).getPackagesToScan();
-		assertThat(actual, equalTo(expected));
+		String[] actual = this.context
+				.getBean(TestLocalContainerEntityManagerFactoryBean.class)
+				.getPackagesToScan();
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Configuration
@@ -163,15 +171,15 @@ public class EntityScanTests {
 	static class BeanPostProcessorConfiguration {
 
 		@Autowired
-		private EntityManagerFactory entityManagerFactory;
+		protected EntityManagerFactory entityManagerFactory;
 
 		@Bean
 		public BeanPostProcessor beanPostProcessor() {
 			return new BeanPostProcessor() {
 
 				@Override
-				public Object postProcessBeforeInitialization(Object bean, String beanName)
-						throws BeansException {
+				public Object postProcessBeforeInitialization(Object bean,
+						String beanName) throws BeansException {
 					return bean;
 				}
 
@@ -185,8 +193,18 @@ public class EntityScanTests {
 		}
 	}
 
-	private static class TestLocalContainerEntityManagerFactoryBean extends
-			LocalContainerEntityManagerFactoryBean {
+	@EntityScan(basePackages = "foo")
+	static class MultiScanFirst extends BaseConfig {
+
+	}
+
+	@EntityScan(basePackages = "bar")
+	static class MultiScanSecond extends BaseConfig {
+
+	}
+
+	private static class TestLocalContainerEntityManagerFactoryBean
+			extends LocalContainerEntityManagerFactoryBean {
 
 		private String[] packagesToScan;
 

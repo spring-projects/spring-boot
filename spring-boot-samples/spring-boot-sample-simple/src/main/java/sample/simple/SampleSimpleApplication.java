@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package sample.simple;
 
+import sample.simple.service.HelloWorldService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import sample.simple.service.HelloWorldService;
 
 @SpringBootApplication
 public class SampleSimpleApplication implements CommandLineRunner {
@@ -36,9 +36,13 @@ public class SampleSimpleApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) {
 		System.out.println(this.helloWorldService.getHelloMessage());
+		if (args.length > 0 && args[0].equals("exitcode")) {
+			throw new ExitException();
+		}
 	}
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleSimpleApplication.class, args);
 	}
+
 }

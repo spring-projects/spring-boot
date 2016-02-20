@@ -17,18 +17,16 @@ package sample.data.jpa.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import sample.data.jpa.SampleDataJpaApplication;
+import sample.data.jpa.domain.City;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import sample.data.jpa.SampleDataJpaApplication;
-import sample.data.jpa.domain.City;
-
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link CityRepository}.
@@ -36,7 +34,7 @@ import static org.junit.Assert.assertThat;
  * @author Oliver Gierke
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
+@SpringApplicationConfiguration(SampleDataJpaApplication.class)
 public class CityRepositoryIntegrationTests {
 
 	@Autowired
@@ -46,6 +44,6 @@ public class CityRepositoryIntegrationTests {
 	public void findsFirstPageOfCities() {
 
 		Page<City> cities = this.repository.findAll(new PageRequest(0, 10));
-		assertThat(cities.getTotalElements(), is(greaterThan(20L)));
+		assertThat(cities.getTotalElements()).isGreaterThan(20L);
 	}
 }

@@ -32,6 +32,8 @@ public abstract class AnsiOutput {
 
 	private static Boolean consoleAvailable;
 
+	private static Boolean ansiCapable;
+
 	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name")
 			.toLowerCase();
 
@@ -39,7 +41,7 @@ public abstract class AnsiOutput {
 
 	private static final String ENCODE_END = "m";
 
-	private static final String RESET = "0;" + AnsiElement.DEFAULT;
+	private static final String RESET = "0;" + AnsiColor.DEFAULT;
 
 	/**
 	 * Sets if ANSI output is enabled.
@@ -51,7 +53,7 @@ public abstract class AnsiOutput {
 	}
 
 	/**
-	 * Sets if the System.console() is know to be available.
+	 * Sets if the System.console() is known to be available.
 	 * @param consoleAvailable if the console is known to be available or {@code null} to
 	 * use standard detection logic.
 	 */
@@ -61,6 +63,18 @@ public abstract class AnsiOutput {
 
 	static Enabled getEnabled() {
 		return AnsiOutput.enabled;
+	}
+
+	/**
+	 * Encode a single {@link AnsiElement} if output is enabled.
+	 * @param element the element to encode
+	 * @return the encoded element or an empty string
+	 */
+	public static String encode(AnsiElement element) {
+		if (isEnabled()) {
+			return ENCODE_START + element + ENCODE_END;
+		}
+		return "";
 	}
 
 	/**
@@ -119,12 +133,15 @@ public abstract class AnsiOutput {
 
 	private static boolean isEnabled() {
 		if (enabled == Enabled.DETECT) {
-			return detectIfEnabled();
+			if (ansiCapable == null) {
+				ansiCapable = detectIfAnsiCapable();
+			}
+			return ansiCapable;
 		}
 		return enabled == Enabled.ALWAYS;
 	}
 
-	private static boolean detectIfEnabled() {
+	private static boolean detectIfAnsiCapable() {
 		try {
 			if (Boolean.FALSE.equals(consoleAvailable)) {
 				return false;
@@ -143,7 +160,7 @@ public abstract class AnsiOutput {
 	 * Possible values to pass to {@link AnsiOutput#setEnabled}. Determines when to output
 	 * ANSI escape sequences for coloring application output.
 	 */
-	public static enum Enabled {
+	public enum Enabled {
 
 		/**
 		 * Try to detect whether ANSI coloring capabilities are available. The default
@@ -152,12 +169,12 @@ public abstract class AnsiOutput {
 		DETECT,
 
 		/**
-		 * Enable ANSI-colored output
+		 * Enable ANSI-colored output.
 		 */
 		ALWAYS,
 
 		/**
-		 * Disable ANSI-colored output
+		 * Disable ANSI-colored output.
 		 */
 		NEVER
 

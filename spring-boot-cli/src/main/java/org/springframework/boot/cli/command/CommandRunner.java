@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.boot.cli.command.status.ExitStatus;
-import org.springframework.boot.cli.command.test.TestFailedException;
 import org.springframework.boot.cli.util.Log;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -33,9 +32,9 @@ import org.springframework.util.StringUtils;
 /**
  * Main class used to run {@link Command}s.
  *
+ * @author Phillip Webb
  * @see #addCommand(Command)
  * @see CommandRunner#runAndHandleErrors(String[])
- * @author Phillip Webb
  */
 public class CommandRunner implements Iterable<Command> {
 
@@ -149,8 +148,8 @@ public class CommandRunner implements Iterable<Command> {
 	public Command findCommand(String name) {
 		for (Command candidate : this.commands) {
 			String candidateName = candidate.getName();
-			if (candidateName.equals(name)
-					|| (isOptionCommand(candidate) && ("--" + candidateName).equals(name))) {
+			if (candidateName.equals(name) || (isOptionCommand(candidate)
+					&& ("--" + candidateName).equals(name))) {
 				return candidate;
 			}
 		}
@@ -180,9 +179,6 @@ public class CommandRunner implements Iterable<Command> {
 			showUsage();
 			return 1;
 		}
-		catch (TestFailedException e) {
-			return 1;
-		}
 		catch (Exception ex) {
 			return handleError(debug, ex);
 		}
@@ -205,8 +201,8 @@ public class CommandRunner implements Iterable<Command> {
 	/**
 	 * Parse the arguments and run a suitable command.
 	 * @param args the arguments
-	 * @throws Exception if the command fails
 	 * @return the outcome of the command
+	 * @throws Exception if the command fails
 	 */
 	protected ExitStatus run(String... args) throws Exception {
 		if (args.length == 0) {
@@ -283,14 +279,14 @@ public class CommandRunner implements Iterable<Command> {
 			if (!isOptionCommand(command) && !isHiddenCommand(command)) {
 				String usageHelp = command.getUsageHelp();
 				String description = command.getDescription();
-				Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", command.getName(),
-						(usageHelp == null ? "" : usageHelp), (description == null ? ""
-								: description)));
+				Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", command.getName(),
+						(usageHelp == null ? "" : usageHelp),
+						(description == null ? "" : description)));
 			}
 		}
 		Log.info("");
 		Log.info("Common options:");
-		Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", "-d, --debug",
+		Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", "-d, --debug",
 				"Verbose mode",
 				"Print additional status information for the command you are running"));
 		Log.info("");

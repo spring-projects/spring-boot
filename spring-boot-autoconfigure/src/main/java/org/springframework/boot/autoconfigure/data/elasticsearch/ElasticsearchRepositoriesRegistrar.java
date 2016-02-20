@@ -32,8 +32,8 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Mohsin Husen
  * @since 1.1.0
  */
-class ElasticsearchRepositoriesRegistrar extends
-		AbstractRepositoryConfigurationSourceSupport {
+class ElasticsearchRepositoriesRegistrar
+		extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {

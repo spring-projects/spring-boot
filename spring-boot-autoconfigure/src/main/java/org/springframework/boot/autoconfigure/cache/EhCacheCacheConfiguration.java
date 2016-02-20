@@ -17,11 +17,12 @@
 package org.springframework.boot.autoconfigure.cache;
 
 import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.cache.CacheManager;
+import org.springframework.boot.autoconfigure.condition.ResourceCondition;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerUtils;
 import org.springframework.context.annotation.Bean;
@@ -34,26 +35,33 @@ import org.springframework.core.io.Resource;
  * a default configuration file exists.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass({ Cache.class, EhCacheCacheManager.class })
-@ConditionalOnMissingBean(CacheManager.class)
+@ConditionalOnMissingBean(org.springframework.cache.CacheManager.class)
 @Conditional({ CacheCondition.class,
 		EhCacheCacheConfiguration.ConfigAvailableCondition.class })
 class EhCacheCacheConfiguration {
 
 	@Autowired
-	private CacheProperties properties;
+	private CacheProperties cacheProperties;
 
 	@Bean
-	public EhCacheCacheManager cacheManager() {
-		Resource location = this.properties.resolveConfigLocation();
+	public EhCacheCacheManager cacheManager(CacheManager ehCacheCacheManager) {
+		return new EhCacheCacheManager(ehCacheCacheManager);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public CacheManager ehCacheCacheManager() {
+		Resource location = this.cacheProperties
+				.resolveConfigLocation(this.cacheProperties.getEhcache().getConfig());
 		if (location != null) {
-			return new EhCacheCacheManager(
-					EhCacheManagerUtils.buildCacheManager(location));
+			return EhCacheManagerUtils.buildCacheManager(location);
 		}
-		return new EhCacheCacheManager(EhCacheManagerUtils.buildCacheManager());
+		return EhCacheManagerUtils.buildCacheManager();
 	}
 
 	/**
@@ -61,10 +69,10 @@ class EhCacheCacheConfiguration {
 	 * default configuration has been found or if property referring to the file to use
 	 * has been set.
 	 */
-	static class ConfigAvailableCondition extends CacheConfigFileCondition {
+	static class ConfigAvailableCondition extends ResourceCondition {
 
-		public ConfigAvailableCondition() {
-			super("EhCache", "classpath:/ehcache.xml");
+		ConfigAvailableCondition() {
+			super("EhCache", "spring.cache.ehcache", "config", "classpath:/ehcache.xml");
 		}
 
 	}

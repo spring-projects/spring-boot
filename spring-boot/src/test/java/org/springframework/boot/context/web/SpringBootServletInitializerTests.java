@@ -16,29 +16,26 @@
 
 package org.springframework.boot.context.web;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import javax.servlet.ServletContext;
 
-import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootServletInitializerTests}.
+ * Tests for {@link SpringBootServletInitializer}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class SpringBootServletInitializerTests {
 
@@ -61,21 +58,40 @@ public class SpringBootServletInitializerTests {
 	public void withConfigurationAnnotation() throws Exception {
 		new WithConfigurationAnnotation()
 				.createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getSources(),
-				equalToSet(WithConfigurationAnnotation.class, ErrorPageFilter.class));
+		assertThat(this.application.getSources())
+				.containsOnly(WithConfigurationAnnotation.class, ErrorPageFilter.class);
 	}
 
 	@Test
 	public void withConfiguredSource() throws Exception {
 		new WithConfiguredSource().createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getSources(),
-				equalToSet(Config.class, ErrorPageFilter.class));
+		assertThat(this.application.getSources()).containsOnly(Config.class,
+				ErrorPageFilter.class);
 	}
 
-	private Matcher<? super Set<Object>> equalToSet(Object... items) {
-		Set<Object> set = new LinkedHashSet<Object>();
-		Collections.addAll(set, items);
-		return equalTo(set);
+	@Test
+	public void applicationBuilderCanBeCustomized() throws Exception {
+		CustomSpringBootServletInitializer servletInitializer = new CustomSpringBootServletInitializer();
+		servletInitializer.createRootApplicationContext(this.servletContext);
+		assertThat(servletInitializer.applicationBuilder.built).isTrue();
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void mainClassHasSensibleDefault() throws Exception {
+		new WithConfigurationAnnotation()
+				.createRootApplicationContext(this.servletContext);
+		Class mainApplicationClass = (Class<?>) new DirectFieldAccessor(this.application)
+				.getPropertyValue("mainApplicationClass");
+		assertThat(mainApplicationClass).isEqualTo(WithConfigurationAnnotation.class);
+	}
+
+	@Test
+	public void withErrorPageFilterNotRegistered() throws Exception {
+		new WithErrorPageFilterNotRegistered()
+				.createRootApplicationContext(this.servletContext);
+		assertThat(this.application.getSources())
+				.containsOnly(WithErrorPageFilterNotRegistered.class);
 	}
 
 	private class MockSpringBootServletInitializer extends SpringBootServletInitializer {
@@ -88,6 +104,23 @@ public class SpringBootServletInitializerTests {
 
 	}
 
+	private class CustomSpringBootServletInitializer
+			extends MockSpringBootServletInitializer {
+
+		private final CustomSpringApplicationBuilder applicationBuilder = new CustomSpringApplicationBuilder();
+
+		@Override
+		protected SpringApplicationBuilder createSpringApplicationBuilder() {
+			return this.applicationBuilder;
+		}
+
+		@Override
+		protected SpringApplicationBuilder configure(
+				SpringApplicationBuilder application) {
+			return application.sources(Config.class);
+		}
+	}
+
 	@Configuration
 	public class WithConfigurationAnnotation extends MockSpringBootServletInitializer {
 	}
@@ -95,14 +128,37 @@ public class SpringBootServletInitializerTests {
 	public class WithConfiguredSource extends MockSpringBootServletInitializer {
 
 		@Override
-		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		protected SpringApplicationBuilder configure(
+				SpringApplicationBuilder application) {
 			return application.sources(Config.class);
 		}
 
 	}
 
 	@Configuration
+	public class WithErrorPageFilterNotRegistered
+			extends MockSpringBootServletInitializer {
+
+		public WithErrorPageFilterNotRegistered() {
+			setRegisterErrorPageFilter(false);
+		}
+
+	}
+
+	@Configuration
 	public static class Config {
+
+	}
+
+	private static class CustomSpringApplicationBuilder extends SpringApplicationBuilder {
+
+		private boolean built;
+
+		@Override
+		public SpringApplication build() {
+			this.built = true;
+			return super.build();
+		}
 
 	}
 

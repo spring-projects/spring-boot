@@ -16,9 +16,15 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Collection;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
+
+import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -30,8 +36,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JolokiaAutoConfiguration}.
@@ -64,7 +74,25 @@ public class JolokiaAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
+		assertThat(this.context.getBeanNamesForType(JolokiaMvcEndpoint.class)).hasSize(1);
+	}
+
+	@Test
+	public void agentServletWithCustomPath() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"endpoints.jolokia.path=/foo/bar");
+		this.context.register(EndpointsConfig.class, WebMvcAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				JolokiaAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanNamesForType(JolokiaMvcEndpoint.class)).hasSize(1);
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/foo/bar"))
+				.andExpect(MockMvcResultMatchers.content()
+						.string(Matchers.containsString("\"request\":{\"type\"")));
 	}
 
 	@Test
@@ -79,7 +107,8 @@ public class JolokiaAutoConfigurationTests {
 
 	@Test
 	public void endpointEnabledAsOverride() throws Exception {
-		assertEndpointEnabled("endpoints.enabled:false", "endpoints.jolokia.enabled:true");
+		assertEndpointEnabled("endpoints.enabled:false",
+				"endpoints.jolokia.enabled:true");
 	}
 
 	private void assertEndpointDisabled(String... pairs) {
@@ -91,7 +120,7 @@ public class JolokiaAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(0, this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
+		assertThat(this.context.getBeanNamesForType(JolokiaMvcEndpoint.class)).isEmpty();
 	}
 
 	private void assertEndpointEnabled(String... pairs) {
@@ -103,7 +132,18 @@ public class JolokiaAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
+		assertThat(this.context.getBeanNamesForType(JolokiaMvcEndpoint.class)).hasSize(1);
+	}
+
+	@Configuration
+	protected static class EndpointsConfig extends Config {
+
+		@Bean
+		public EndpointHandlerMapping endpointHandlerMapping(
+				Collection<? extends MvcEndpoint> endpoints) {
+			return new EndpointHandlerMapping(endpoints);
+		}
+
 	}
 
 	@Configuration

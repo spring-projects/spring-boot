@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -37,9 +38,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.ClassUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -72,7 +71,8 @@ public class DataSourceInitializerTests {
 		this.context.register(DataSourceInitializer.class,
 				PropertyPlaceholderAutoConfiguration.class, DataSourceProperties.class);
 		this.context.refresh();
-		assertEquals(0, this.context.getBeanNamesForType(DataSource.class).length);
+		assertThat(this.context.getBeanNamesForType(DataSource.class).length)
+				.isEqualTo(0);
 	}
 
 	@Test
@@ -85,7 +85,8 @@ public class DataSourceInitializerTests {
 		this.context.register(TwoDataSources.class, DataSourceInitializer.class,
 				PropertyPlaceholderAutoConfiguration.class, DataSourceProperties.class);
 		this.context.refresh();
-		assertEquals(2, this.context.getBeanNamesForType(DataSource.class).length);
+		assertThat(this.context.getBeanNamesForType(DataSource.class).length)
+				.isEqualTo(2);
 	}
 
 	@Test
@@ -96,89 +97,82 @@ public class DataSourceInitializerTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
+		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(1),
-				template.queryForObject("SELECT COUNT(*) from BAR", Integer.class));
+		assertThat(template.queryForObject("SELECT COUNT(*) from BAR", Integer.class))
+				.isEqualTo(1);
 	}
 
 	@Test
 	public void testDataSourceInitializedWithExplicitScript() throws Exception {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils
-				.addEnvironment(
-						this.context,
-						"spring.datasource.initialize:true",
-						"spring.datasource.schema:"
-								+ ClassUtils.addResourcePathToPackagePath(getClass(),
-										"schema.sql"),
-						"spring.datasource.data:"
-								+ ClassUtils.addResourcePathToPackagePath(getClass(),
-										"data.sql"));
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.schema:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "schema.sql"),
+				"spring.datasource.data:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "data.sql"));
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
+		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(1),
-				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
+		assertThat(template.queryForObject("SELECT COUNT(*) from FOO", Integer.class))
+				.isEqualTo(1);
 	}
 
 	@Test
 	public void testDataSourceInitializedWithMultipleScripts() throws Exception {
-		EnvironmentTestUtils
-				.addEnvironment(
-						this.context,
-						"spring.datasource.initialize:true",
-						"spring.datasource.schema:"
-								+ ClassUtils.addResourcePathToPackagePath(getClass(),
-										"schema.sql")
-								+ ","
-								+ ClassUtils.addResourcePathToPackagePath(getClass(),
-										"another.sql"),
-						"spring.datasource.data:"
-								+ ClassUtils.addResourcePathToPackagePath(getClass(),
-										"data.sql"));
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.schema:"
+						+ ClassUtils.addResourcePathToPackagePath(getClass(),
+								"schema.sql")
+						+ ","
+						+ ClassUtils.addResourcePathToPackagePath(getClass(),
+								"another.sql"),
+				"spring.datasource.data:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "data.sql"));
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
+		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(1),
-				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
-		assertEquals(new Integer(0),
-				template.queryForObject("SELECT COUNT(*) from SPAM", Integer.class));
+		assertThat(template.queryForObject("SELECT COUNT(*) from FOO", Integer.class))
+				.isEqualTo(1);
+		assertThat(template.queryForObject("SELECT COUNT(*) from SPAM", Integer.class))
+				.isEqualTo(0);
 	}
 
 	@Test
-	public void testDataSourceInitializedWithExplicitSqlScriptEncoding() throws Exception {
+	public void testDataSourceInitializedWithExplicitSqlScriptEncoding()
+			throws Exception {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(
-				this.context,
+		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.initialize:true",
 				"spring.datasource.sqlScriptEncoding:UTF-8",
-				"spring.datasource.schema:"
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-								"encoding-schema.sql"),
-				"spring.datasource.data:"
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-								"encoding-data.sql"));
+				"spring.datasource.schema:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "encoding-schema.sql"),
+				"spring.datasource.data:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "encoding-data.sql"));
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
+		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(2),
-				template.queryForObject("SELECT COUNT(*) from BAR", Integer.class));
-		assertEquals("bar",
-				template.queryForObject("SELECT name from BAR WHERE id=1", String.class));
-		assertEquals("ばー",
-				template.queryForObject("SELECT name from BAR WHERE id=2", String.class));
+		assertThat(template.queryForObject("SELECT COUNT(*) from BAR", Integer.class))
+				.isEqualTo(2);
+		assertThat(
+				template.queryForObject("SELECT name from BAR WHERE id=1", String.class))
+						.isEqualTo("bar");
+		assertThat(
+				template.queryForObject("SELECT name from BAR WHERE id=2", String.class))
+						.isEqualTo("ばー");
 	}
 
 	@Test
@@ -191,8 +185,8 @@ public class DataSourceInitializerTests {
 
 		this.context.publishEvent(new DataSourceInitializedEvent(dataSource));
 
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
+		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 
 		try {
@@ -202,7 +196,7 @@ public class DataSourceInitializerTests {
 		catch (BadSqlGrammarException ex) {
 			SQLException sqlException = ex.getSQLException();
 			int expectedCode = -5501; // user lacks privilege or object not found
-			assertEquals(expectedCode, sqlException.getErrorCode());
+			assertThat(sqlException.getErrorCode()).isEqualTo(expectedCode);
 		}
 	}
 

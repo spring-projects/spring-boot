@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.cli.compiler.autoconfigure;
 
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+
 import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
@@ -44,10 +45,10 @@ public class ReactorCompilerAutoConfiguration extends CompilerAutoConfiguration 
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("reactor.bus.Bus", "reactor.bus.Event",
-				"reactor.bus.EventBus", "reactor.fn.Function", "reactor.fn.Functions",
-				"reactor.fn.Predicate", "reactor.fn.Predicates", "reactor.fn.Supplier",
-				"reactor.fn.Suppliers", "reactor.spring.context.annotation.Consumer",
+		imports.addImports("reactor.bus.Bus", "reactor.bus.Event", "reactor.bus.EventBus",
+				"reactor.fn.Function", "reactor.fn.Functions", "reactor.fn.Predicate",
+				"reactor.fn.Predicates", "reactor.fn.Supplier", "reactor.fn.Suppliers",
+				"reactor.spring.context.annotation.Consumer",
 				"reactor.spring.context.annotation.ReplyTo",
 				"reactor.spring.context.annotation.Selector",
 				"reactor.spring.context.annotation.SelectorType",

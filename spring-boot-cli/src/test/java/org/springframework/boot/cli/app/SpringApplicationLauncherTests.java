@@ -16,18 +16,15 @@
 
 package org.springframework.boot.cli.app;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringApplicationLauncher}
@@ -45,21 +42,21 @@ public class SpringApplicationLauncherTests {
 
 	@Test
 	public void defaultLaunch() throws Exception {
-		assertThat(launch(), contains("org.springframework.boot.SpringApplication"));
+		assertThat(launch()).contains("org.springframework.boot.SpringApplication");
 	}
 
 	@Test
 	public void launchWithClassConfiguredBySystemProperty() {
 		System.setProperty("spring.application.class.name",
 				"system.property.SpringApplication");
-		assertThat(launch(), contains("system.property.SpringApplication"));
+		assertThat(launch()).contains("system.property.SpringApplication");
 	}
 
 	@Test
 	public void launchWithClassConfiguredByEnvironmentVariable() {
 		this.env.put("SPRING_APPLICATION_CLASS_NAME",
 				"environment.variable.SpringApplication");
-		assertThat(launch(), contains("environment.variable.SpringApplication"));
+		assertThat(launch()).contains("environment.variable.SpringApplication");
 	}
 
 	@Test
@@ -68,7 +65,7 @@ public class SpringApplicationLauncherTests {
 				"system.property.SpringApplication");
 		this.env.put("SPRING_APPLICATION_CLASS_NAME",
 				"environment.variable.SpringApplication");
-		assertThat(launch(), contains("system.property.SpringApplication"));
+		assertThat(launch()).contains("system.property.SpringApplication");
 
 	}
 
@@ -76,40 +73,44 @@ public class SpringApplicationLauncherTests {
 	public void sourcesDefaultPropertiesAndArgsAreUsedToLaunch() throws Exception {
 		System.setProperty("spring.application.class.name",
 				TestSpringApplication.class.getName());
-
 		Object[] sources = new Object[0];
 		String[] args = new String[0];
 		new SpringApplicationLauncher(getClass().getClassLoader()).launch(sources, args);
 
-		assertTrue(sources == TestSpringApplication.sources);
-		assertTrue(args == TestSpringApplication.args);
+		assertThat(sources == TestSpringApplication.sources).isTrue();
+		assertThat(args == TestSpringApplication.args).isTrue();
 
 		Map<String, String> defaultProperties = TestSpringApplication.defaultProperties;
-		assertThat(defaultProperties.size(), equalTo(1));
-		assertThat(
-				defaultProperties.get("spring.groovy.template.check-template-location"),
-				equalTo("false"));
+		assertThat(defaultProperties).hasSize(1)
+				.containsEntry("spring.groovy.template.check-template-location", "false");
 	}
 
-	private List<String> launch() {
+	private Set<String> launch() {
 		TestClassLoader classLoader = new TestClassLoader(getClass().getClassLoader());
 		try {
 			new TestSpringApplicationLauncher(classLoader).launch(new Object[0],
 					new String[0]);
 		}
-		catch (Exception e) {
-			// SpringApplication isn't on the classpath, but we can still check that
-			// the launcher tried to use the right class
+		catch (Exception ex) {
+			// Launch will fail, but we can still check that the launcher tried to use
+			// the right class
 		}
 		return classLoader.classes;
 	}
 
 	private static class TestClassLoader extends ClassLoader {
 
-		private List<String> classes = new ArrayList<String>();
+		private Set<String> classes = new HashSet<String>();
 
-		public TestClassLoader(ClassLoader parent) {
+		TestClassLoader(ClassLoader parent) {
 			super(parent);
+		}
+
+		@Override
+		protected Class<?> loadClass(String name, boolean resolve)
+				throws ClassNotFoundException {
+			this.classes.add(name);
+			return super.loadClass(name, resolve);
 		}
 
 		@Override
@@ -120,8 +121,7 @@ public class SpringApplicationLauncherTests {
 
 	}
 
-	@SuppressWarnings("unused")
-	private static class TestSpringApplication {
+	public static class TestSpringApplication {
 
 		private static Object[] sources;
 
@@ -144,7 +144,7 @@ public class SpringApplicationLauncherTests {
 
 	private class TestSpringApplicationLauncher extends SpringApplicationLauncher {
 
-		public TestSpringApplicationLauncher(ClassLoader classLoader) {
+		TestSpringApplicationLauncher(ClassLoader classLoader) {
 			super(classLoader);
 		}
 

@@ -10,10 +10,12 @@
 .settings
 .metadata
 .factorypath
+.recommenders
 bin
 build
 lib/
 target
+.factorypath
 .springBeans
 interpolated*.xml
 dependency-reduced-pom.xml

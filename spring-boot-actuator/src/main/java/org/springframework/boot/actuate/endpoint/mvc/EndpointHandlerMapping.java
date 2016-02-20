@@ -25,9 +25,9 @@ import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -48,10 +48,11 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @author Christian Dupuis
  * @author Dave Syer
  */
-public class EndpointHandlerMapping extends RequestMappingHandlerMapping implements
-		ApplicationContextAware {
+public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 
 	private final Set<MvcEndpoint> endpoints;
+
+	private final CorsConfiguration corsConfiguration;
 
 	private String prefix = "";
 
@@ -59,14 +60,30 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 
 	/**
 	 * Create a new {@link EndpointHandlerMapping} instance. All {@link Endpoint}s will be
-	 * detected from the {@link ApplicationContext}.
+	 * detected from the {@link ApplicationContext}. The endpoints will not accept CORS
+	 * requests.
 	 * @param endpoints the endpoints
 	 */
 	public EndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints) {
+		this(endpoints, null);
+	}
+
+	/**
+	 * Create a new {@link EndpointHandlerMapping} instance. All {@link Endpoint}s will be
+	 * detected from the {@link ApplicationContext}. The endpoints will accepts CORS
+	 * requests based on the given {@code corsConfiguration}.
+	 * @param endpoints the endpoints
+	 * @param corsConfiguration the CORS configuration for the endpoints
+	 * @since 1.3.0
+	 */
+	public EndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints,
+			CorsConfiguration corsConfiguration) {
 		this.endpoints = new HashSet<MvcEndpoint>(endpoints);
+		this.corsConfiguration = corsConfiguration;
 		// By default the static resource handler mapping is LOWEST_PRECEDENCE - 1
 		// and the RequestMappingHandlerMapping is 0 (we ideally want to be before both)
 		setOrder(-100);
+		setUseSuffixPatternMatch(false);
 	}
 
 	@Override
@@ -81,7 +98,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 
 	/**
 	 * Since all handler beans are passed into the constructor there is no need to detect
-	 * anything here
+	 * anything here.
 	 */
 	@Override
 	protected boolean isHandler(Class<?> beanType) {
@@ -89,6 +106,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	}
 
 	@Override
+	@Deprecated
 	protected void registerHandlerMethod(Object handler, Method method,
 			RequestMappingInfo mapping) {
 		if (mapping == null) {
@@ -103,7 +121,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 		String prefix = StringUtils.hasText(this.prefix) ? this.prefix + path : path;
 		Set<String> defaultPatterns = mapping.getPatternsCondition().getPatterns();
 		if (defaultPatterns.isEmpty()) {
-			return new String[] { prefix };
+			return new String[] { prefix, prefix + ".json" };
 		}
 		List<String> patterns = new ArrayList<String>(defaultPatterns);
 		for (int i = 0; i < patterns.size(); i++) {
@@ -124,7 +142,8 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 
 	private RequestMappingInfo withNewPatterns(RequestMappingInfo mapping,
 			String[] patternStrings) {
-		PatternsRequestCondition patterns = new PatternsRequestCondition(patternStrings);
+		PatternsRequestCondition patterns = new PatternsRequestCondition(patternStrings,
+				null, null, useSuffixPatternMatch(), useTrailingSlashMatch(), null);
 		return new RequestMappingInfo(patterns, mapping.getMethodsCondition(),
 				mapping.getParamsCondition(), mapping.getHeadersCondition(),
 				mapping.getConsumesCondition(), mapping.getProducesCondition(),
@@ -132,7 +151,8 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	}
 
 	/**
-	 * @param prefix the prefix to set
+	 * Set the prefix used in mappings.
+	 * @param prefix the prefix
 	 */
 	public void setPrefix(String prefix) {
 		Assert.isTrue("".equals(prefix) || StringUtils.startsWithIgnoreCase(prefix, "/"),
@@ -141,13 +161,15 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	}
 
 	/**
-	 * @return the prefix used in mappings
+	 * Get the prefix used in mappings.
+	 * @return the prefix
 	 */
 	public String getPrefix() {
 		return this.prefix;
 	}
 
 	/**
+	 * Get the path of the endpoint.
 	 * @param endpoint the endpoint
 	 * @return the path used in mappings
 	 */
@@ -172,11 +194,17 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	}
 
 	/**
-	 * Return the endpoints
+	 * Return the endpoints.
 	 * @return the endpoints
 	 */
 	public Set<? extends MvcEndpoint> getEndpoints() {
 		return new HashSet<MvcEndpoint>(this.endpoints);
+	}
+
+	@Override
+	protected CorsConfiguration initCorsConfiguration(Object handler, Method method,
+			RequestMappingInfo mappingInfo) {
+		return this.corsConfiguration;
 	}
 
 }

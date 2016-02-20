@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
 import org.hornetq.core.remoting.impl.netty.NettyConnectorFactory;
 import org.hornetq.core.remoting.impl.netty.TransportConstants;
 import org.hornetq.jms.client.HornetQConnectionFactory;
+
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -47,7 +48,7 @@ class HornetQConnectionFactoryFactory {
 
 	private final ListableBeanFactory beanFactory;
 
-	public HornetQConnectionFactoryFactory(ListableBeanFactory beanFactory,
+	HornetQConnectionFactoryFactory(ListableBeanFactory beanFactory,
 			HornetQProperties properties) {
 		Assert.notNull(beanFactory, "BeanFactory must not be null");
 		Assert.notNull(properties, "Properties must not be null");
@@ -58,16 +59,16 @@ class HornetQConnectionFactoryFactory {
 	public <T extends HornetQConnectionFactory> T createConnectionFactory(
 			Class<T> factoryClass) {
 		try {
-			startEmbededJms();
+			startEmbeddedJms();
 			return doCreateConnectionFactory(factoryClass);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create "
-					+ "HornetQConnectionFactory", ex);
+			throw new IllegalStateException(
+					"Unable to create " + "HornetQConnectionFactory", ex);
 		}
 	}
 
-	private void startEmbededJms() {
+	private void startEmbeddedJms() {
 		if (ClassUtils.isPresent(EMBEDDED_JMS_CLASS, null)) {
 			try {
 				this.beanFactory.getBeansOfType(Class.forName(EMBEDDED_JMS_CLASS));
@@ -92,6 +93,7 @@ class HornetQConnectionFactoryFactory {
 
 	/**
 	 * Deduce the {@link HornetQMode} to use if none has been set.
+	 * @return the mode
 	 */
 	private HornetQMode deduceMode() {
 		if (this.properties.getEmbedded().isEnabled()
@@ -105,12 +107,12 @@ class HornetQConnectionFactoryFactory {
 			Class<T> factoryClass) throws Exception {
 		try {
 			TransportConfiguration transportConfiguration = new TransportConfiguration(
-					InVMConnectorFactory.class.getName(), this.properties.getEmbedded()
-							.generateTransportParameters());
+					InVMConnectorFactory.class.getName(),
+					this.properties.getEmbedded().generateTransportParameters());
 			ServerLocator serviceLocator = HornetQClient
 					.createServerLocatorWithoutHA(transportConfiguration);
-			return factoryClass.getConstructor(ServerLocator.class).newInstance(
-					serviceLocator);
+			return factoryClass.getConstructor(ServerLocator.class)
+					.newInstance(serviceLocator);
 		}
 		catch (NoClassDefFoundError ex) {
 			throw new IllegalStateException("Unable to create InVM "

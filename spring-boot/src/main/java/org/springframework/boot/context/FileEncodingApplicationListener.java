@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.context;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
@@ -26,26 +27,27 @@ import org.springframework.core.Ordered;
 /**
  * An {@link ApplicationListener} that halts application startup if the system file
  * encoding does not match an expected value set in the environment. By default has no
- * effect, but if you set <code>spring.mandatory_file_encoding</code> (or some camelCase
- * or UPPERCASE variant of that) to the name of a character encoding (e.g. "UTF-8") then
- * this initializer throws an exception when the <code>file.encoding</code> System
- * property does not equal it.
+ * effect, but if you set {@code spring.mandatory_file_encoding} (or some camelCase or
+ * UPPERCASE variant of that) to the name of a character encoding (e.g. "UTF-8") then this
+ * initializer throws an exception when the {@code file.encoding} System property does not
+ * equal it.
  *
  * <p>
- * The System property <code>file.encoding</code> is normally set by the JVM in response
- * to the <code>LANG</code> or <code>LC_ALL</code> environment variables. It is used
- * (along with other platform-dependent variables keyed off those environment variables)
- * to encode JVM arguments as well as file names and paths. In most cases you can override
- * the file encoding System property on the command line (with standard JVM features), but
- * also consider setting the <code>LANG</code> environment variable to an explicit
+ * The System property {@code file.encoding} is normally set by the JVM in response to the
+ * {@code LANG} or {@code LC_ALL} environment variables. It is used (along with other
+ * platform-dependent variables keyed off those environment variables) to encode JVM
+ * arguments as well as file names and paths. In most cases you can override the file
+ * encoding System property on the command line (with standard JVM features), but also
+ * consider setting the {@code LANG} environment variable to an explicit
  * character-encoding value (e.g. "en_GB.UTF-8").
  *
  * @author Dave Syer
  */
-public class FileEncodingApplicationListener implements
-		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
+public class FileEncodingApplicationListener
+		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
-	private static Log logger = LogFactory.getLog(FileEncodingApplicationListener.class);
+	private static final Log logger = LogFactory
+			.getLog(FileEncodingApplicationListener.class);
 
 	@Override
 	public int getOrder() {
@@ -71,7 +73,8 @@ public class FileEncodingApplicationListener implements
 						+ desired + "'.");
 				throw new IllegalStateException(
 						"The Java Virtual Machine has not been configured to use the "
-								+ "desired default character encoding (" + desired + ").");
+								+ "desired default character encoding (" + desired
+								+ ").");
 			}
 		}
 	}

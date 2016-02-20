@@ -20,9 +20,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.springframework.boot.test.OutputCapture;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SampleProfileApplicationTests {
 
@@ -50,7 +51,7 @@ public class SampleProfileApplicationTests {
 	public void testDefaultProfile() throws Exception {
 		SampleProfileApplication.main(new String[0]);
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output, output.contains("Hello Phil"));
+		assertThat(output).contains("Hello Phil");
 	}
 
 	@Test
@@ -58,7 +59,7 @@ public class SampleProfileApplicationTests {
 		System.setProperty("spring.profiles.active", "goodbye");
 		SampleProfileApplication.main(new String[0]);
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output, output.contains("Goodbye Everyone"));
+		assertThat(output).contains("Goodbye Everyone");
 	}
 
 	@Test
@@ -72,7 +73,7 @@ public class SampleProfileApplicationTests {
 		System.setProperty("spring.profiles.active", "generic");
 		SampleProfileApplication.main(new String[0]);
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output, output.contains("Bonjour Phil"));
+		assertThat(output).contains("Bonjour Phil");
 	}
 
 	@Test
@@ -80,7 +81,7 @@ public class SampleProfileApplicationTests {
 		SampleProfileApplication
 				.main(new String[] { "--spring.profiles.active=goodbye" });
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output, output.contains("Goodbye Everyone"));
+		assertThat(output).contains("Goodbye Everyone");
 	}
 
 }

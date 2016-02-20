@@ -30,7 +30,8 @@ import org.springframework.boot.jta.XADataSourceWrapper;
 public class BitronixXADataSourceWrapper implements XADataSourceWrapper {
 
 	@Override
-	public PoolingDataSourceBean wrapDataSource(XADataSource dataSource) throws Exception {
+	public PoolingDataSourceBean wrapDataSource(XADataSource dataSource)
+			throws Exception {
 		PoolingDataSourceBean pool = new PoolingDataSourceBean();
 		pool.setDataSource(dataSource);
 		return pool;

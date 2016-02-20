@@ -31,7 +31,7 @@ public interface GroovyCompilerConfiguration {
 	/**
 	 * Constant to be used when there is no {@link #getClasspath() classpath}.
 	 */
-	public static final String[] DEFAULT_CLASSPATH = { "." };
+	String[] DEFAULT_CLASSPATH = { "." };
 
 	/**
 	 * Returns the scope in which the compiler operates.
@@ -59,7 +59,7 @@ public interface GroovyCompilerConfiguration {
 	boolean isAutoconfigure();
 
 	/**
-	 * Returns the classpath for local resources
+	 * Returns the classpath for local resources.
 	 * @return a path for local resources
 	 */
 	String[] getClasspath();

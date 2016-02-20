@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded.tomcat;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardContext;
+
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -34,9 +35,10 @@ class TomcatEmbeddedContext extends StandardContext {
 
 	private final boolean overrideLoadOnStart;
 
-	public TomcatEmbeddedContext() {
-		this.overrideLoadOnStart = ReflectionUtils.findMethod(StandardContext.class,
-				"loadOnStartup", Container[].class).getReturnType() == boolean.class;
+	TomcatEmbeddedContext() {
+		this.overrideLoadOnStart = ReflectionUtils
+				.findMethod(StandardContext.class, "loadOnStartup", Container[].class)
+				.getReturnType() == boolean.class;
 	}
 
 	@Override

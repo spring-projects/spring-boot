@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
@@ -55,8 +56,8 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class AutoConfigurationReportLoggingInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class AutoConfigurationReportLoggingInitializer
+		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -70,20 +71,22 @@ public class AutoConfigurationReportLoggingInitializer implements
 		applicationContext.addApplicationListener(new AutoConfigurationReportListener());
 		if (applicationContext instanceof GenericApplicationContext) {
 			// Get the report early in case the context fails to load
-			this.report = ConditionEvaluationReport.get(this.applicationContext
-					.getBeanFactory());
+			this.report = ConditionEvaluationReport
+					.get(this.applicationContext.getBeanFactory());
 		}
 	}
 
 	protected void onApplicationEvent(ApplicationEvent event) {
 		ConfigurableApplicationContext initializerApplicationContext = AutoConfigurationReportLoggingInitializer.this.applicationContext;
 		if (event instanceof ContextRefreshedEvent) {
-			if (((ApplicationContextEvent) event).getApplicationContext() == initializerApplicationContext) {
+			if (((ApplicationContextEvent) event)
+					.getApplicationContext() == initializerApplicationContext) {
 				logAutoConfigurationReport();
 			}
 		}
 		else if (event instanceof ApplicationFailedEvent) {
-			if (((ApplicationFailedEvent) event).getApplicationContext() == initializerApplicationContext) {
+			if (((ApplicationFailedEvent) event)
+					.getApplicationContext() == initializerApplicationContext) {
 				logAutoConfigurationReport(true);
 			}
 		}
@@ -100,15 +103,15 @@ public class AutoConfigurationReportLoggingInitializer implements
 						+ "due to missing ApplicationContext");
 				return;
 			}
-			this.report = ConditionEvaluationReport.get(this.applicationContext
-					.getBeanFactory());
+			this.report = ConditionEvaluationReport
+					.get(this.applicationContext.getBeanFactory());
 		}
-		if (this.report.getConditionAndOutcomesBySource().size() > 0) {
+		if (!this.report.getConditionAndOutcomesBySource().isEmpty()) {
 			if (isCrashReport && this.logger.isInfoEnabled()
 					&& !this.logger.isDebugEnabled()) {
-				this.logger.info("\n\nError starting ApplicationContext. "
+				this.logger.info(String.format("%n%nError starting ApplicationContext. "
 						+ "To display the auto-configuration report enable "
-						+ "debug logging (start with --debug)\n\n");
+						+ "debug logging (start with --debug)%n%n"));
 			}
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug(getLogMessage(this.report));
@@ -118,39 +121,50 @@ public class AutoConfigurationReportLoggingInitializer implements
 
 	private StringBuilder getLogMessage(ConditionEvaluationReport report) {
 		StringBuilder message = new StringBuilder();
-		message.append("\n\n\n");
-		message.append("=========================\n");
-		message.append("AUTO-CONFIGURATION REPORT\n");
-		message.append("=========================\n\n\n");
-		message.append("Positive matches:\n");
-		message.append("-----------------\n");
-		Map<String, ConditionAndOutcomes> shortOutcomes = orderByName(report
-				.getConditionAndOutcomesBySource());
+		message.append(String.format("%n%n%n"));
+		message.append(String.format("=========================%n"));
+		message.append(String.format("AUTO-CONFIGURATION REPORT%n"));
+		message.append(String.format("=========================%n%n%n"));
+		message.append(String.format("Positive matches:%n"));
+		message.append(String.format("-----------------%n"));
+		Map<String, ConditionAndOutcomes> shortOutcomes = orderByName(
+				report.getConditionAndOutcomesBySource());
 		for (Map.Entry<String, ConditionAndOutcomes> entry : shortOutcomes.entrySet()) {
 			if (entry.getValue().isFullMatch()) {
 				addLogMessage(message, entry.getKey(), entry.getValue());
 			}
 		}
-		message.append("\n\n");
-		message.append("Negative matches:\n");
-		message.append("-----------------\n");
+		message.append(String.format("%n%n"));
+		message.append(String.format("Negative matches:%n"));
+		message.append(String.format("-----------------%n"));
 		for (Map.Entry<String, ConditionAndOutcomes> entry : shortOutcomes.entrySet()) {
 			if (!entry.getValue().isFullMatch()) {
 				addLogMessage(message, entry.getKey(), entry.getValue());
 			}
 		}
-		message.append("\n\n");
-		message.append("Exclusions:\n");
-		message.append("-----------\n");
+		message.append(String.format("%n%n"));
+		message.append(String.format("Exclusions:%n"));
+		message.append(String.format("-----------%n"));
 		if (report.getExclusions().isEmpty()) {
-			message.append("\n    None\n");
+			message.append(String.format("%n    None%n"));
 		}
 		else {
 			for (String exclusion : report.getExclusions()) {
-				message.append("\n   " + exclusion + "\n");
+				message.append(String.format("%n    %s%n", exclusion));
 			}
 		}
-		message.append("\n\n");
+		message.append(String.format("%n%n"));
+		message.append(String.format("Unconditional classes:%n"));
+		message.append(String.format("----------------------%n"));
+		if (report.getUnconditionalClasses().isEmpty()) {
+			message.append(String.format("%n    None%n"));
+		}
+		else {
+			for (String unconditionalClass : report.getUnconditionalClasses()) {
+				message.append(String.format("%n    %s%n", unconditionalClass));
+			}
+		}
+		message.append(String.format("%n%n"));
 		return message;
 	}
 
@@ -173,7 +187,9 @@ public class AutoConfigurationReportLoggingInitializer implements
 
 	private void addLogMessage(StringBuilder message, String source,
 			ConditionAndOutcomes conditionAndOutcomes) {
-		message.append("\n   " + source + "\n");
+		message.append(String.format("%n   %s", source));
+		message.append(conditionAndOutcomes.isFullMatch() ? " matched" : " did not match")
+				.append(String.format("%n"));
 		for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
 			message.append("      - ");
 			if (StringUtils.hasLength(conditionAndOutcome.getOutcome().getMessage())) {
@@ -184,9 +200,9 @@ public class AutoConfigurationReportLoggingInitializer implements
 						: "did not match");
 			}
 			message.append(" (");
-			message.append(ClassUtils.getShortName(conditionAndOutcome.getCondition()
-					.getClass()));
-			message.append(")\n");
+			message.append(ClassUtils
+					.getShortName(conditionAndOutcome.getCondition().getClass()));
+			message.append(String.format(")%n"));
 		}
 
 	}

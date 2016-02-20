@@ -16,14 +16,14 @@
 
 package org.springframework.boot.autoconfigure.gson;
 
+import com.google.gson.Gson;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.google.gson.Gson;
-
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link GsonAutoConfiguration}.
@@ -51,7 +51,7 @@ public class GsonAutoConfigurationTests {
 		this.context.register(GsonAutoConfiguration.class);
 		this.context.refresh();
 		Gson gson = this.context.getBean(Gson.class);
-		assertEquals("{\"data\":\"hello\"}", gson.toJson(new DataObject()));
+		assertThat(gson.toJson(new DataObject())).isEqualTo("{\"data\":\"hello\"}");
 	}
 
 	public class DataObject {

@@ -49,7 +49,7 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${project.build.directory}/assembly/lib</outputDirectory>
+							<outputDirectory>${project.build.directory}/assembly/BOOT-INF/lib</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>

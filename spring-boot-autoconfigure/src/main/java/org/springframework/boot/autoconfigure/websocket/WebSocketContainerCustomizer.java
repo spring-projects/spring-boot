@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.websocket;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -29,7 +30,7 @@ import org.springframework.core.ResolvableType;
  * {@link EmbeddedServletContainerCustomizer} to configure websockets for a given
  * {@link EmbeddedServletContainerFactory}.
  *
- * @param <T> the embded servlet container factory
+ * @param <T> the embedded servlet container factory
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson

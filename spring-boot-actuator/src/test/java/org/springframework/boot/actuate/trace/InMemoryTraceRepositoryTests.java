@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link InMemoryTraceRepository}.
@@ -35,26 +35,26 @@ public class InMemoryTraceRepositoryTests {
 	@Test
 	public void capacityLimited() {
 		this.repository.setCapacity(2);
-		this.repository.add(Collections.<String, Object> singletonMap("foo", "bar"));
-		this.repository.add(Collections.<String, Object> singletonMap("bar", "foo"));
-		this.repository.add(Collections.<String, Object> singletonMap("bar", "bar"));
+		this.repository.add(Collections.<String, Object>singletonMap("foo", "bar"));
+		this.repository.add(Collections.<String, Object>singletonMap("bar", "foo"));
+		this.repository.add(Collections.<String, Object>singletonMap("bar", "bar"));
 		List<Trace> traces = this.repository.findAll();
-		assertEquals(2, traces.size());
-		assertEquals("bar", traces.get(0).getInfo().get("bar"));
-		assertEquals("foo", traces.get(1).getInfo().get("bar"));
+		assertThat(traces).hasSize(2);
+		assertThat(traces.get(0).getInfo().get("bar")).isEqualTo("bar");
+		assertThat(traces.get(1).getInfo().get("bar")).isEqualTo("foo");
 	}
 
 	@Test
 	public void reverseFalse() {
 		this.repository.setReverse(false);
 		this.repository.setCapacity(2);
-		this.repository.add(Collections.<String, Object> singletonMap("foo", "bar"));
-		this.repository.add(Collections.<String, Object> singletonMap("bar", "foo"));
-		this.repository.add(Collections.<String, Object> singletonMap("bar", "bar"));
+		this.repository.add(Collections.<String, Object>singletonMap("foo", "bar"));
+		this.repository.add(Collections.<String, Object>singletonMap("bar", "foo"));
+		this.repository.add(Collections.<String, Object>singletonMap("bar", "bar"));
 		List<Trace> traces = this.repository.findAll();
-		assertEquals(2, traces.size());
-		assertEquals("bar", traces.get(1).getInfo().get("bar"));
-		assertEquals("foo", traces.get(0).getInfo().get("bar"));
+		assertThat(traces).hasSize(2);
+		assertThat(traces.get(1).getInfo().get("bar")).isEqualTo("bar");
+		assertThat(traces.get(0).getInfo().get("bar")).isEqualTo("foo");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.boot.actuate.metrics.writer.PrefixMetricWriter;
  * all metrics whose name starts with a prefix (or all metrics if the prefix is empty).
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 
@@ -45,7 +46,8 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 	 * @param reader a reader as the source of metrics
 	 * @param writer the writer to send the metrics to
 	 */
-	public PrefixMetricGroupExporter(PrefixMetricReader reader, PrefixMetricWriter writer) {
+	public PrefixMetricGroupExporter(PrefixMetricReader reader,
+			PrefixMetricWriter writer) {
 		this(reader, writer, "");
 	}
 
@@ -56,14 +58,15 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 	 * @param writer the writer to send the metrics to
 	 * @param prefix the prefix for metrics to export
 	 */
-	public PrefixMetricGroupExporter(PrefixMetricReader reader,
-			PrefixMetricWriter writer, String prefix) {
+	public PrefixMetricGroupExporter(PrefixMetricReader reader, PrefixMetricWriter writer,
+			String prefix) {
 		super(prefix);
 		this.reader = reader;
 		this.writer = writer;
 	}
 
 	/**
+	 * The groups to export.
 	 * @param groups the groups to set
 	 */
 	public void setGroups(Set<String> groups) {

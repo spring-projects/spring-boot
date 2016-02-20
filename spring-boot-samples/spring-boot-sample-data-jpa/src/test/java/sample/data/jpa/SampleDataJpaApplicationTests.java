@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@ import javax.management.ObjectName;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,7 +34,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
+@SpringApplicationConfiguration(SampleDataJpaApplication.class)
 @WebAppConfiguration
 // Enable JMX so we can test the MBeans (you can't do this in a properties file)
 @TestPropertySource(properties = { "spring.jmx.enabled:true",
@@ -73,12 +74,9 @@ public class SampleDataJpaApplicationTests {
 
 	@Test
 	public void testJmx() throws Exception {
-		assertEquals(
-				1,
-				ManagementFactory
-						.getPlatformMBeanServer()
-						.queryMBeans(new ObjectName("jpa.sample:type=ConnectionPool,*"),
-								null).size());
+		assertThat(ManagementFactory.getPlatformMBeanServer()
+				.queryMBeans(new ObjectName("jpa.sample:type=ConnectionPool,*"), null))
+						.hasSize(1);
 	}
 
 }

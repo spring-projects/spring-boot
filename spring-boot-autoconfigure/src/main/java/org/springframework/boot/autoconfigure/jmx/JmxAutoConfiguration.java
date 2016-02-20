@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.context.annotation.MBeanExportConfiguration.SpecificPlatform;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
@@ -45,7 +46,7 @@ import org.springframework.util.StringUtils;
  * {@link EnableAutoConfiguration Auto-configuration} to enable/disable Spring's
  * {@link EnableMBeanExport} mechanism based on configuration properties.
  * <p>
- * To disable auto export of annotation beans set <code>spring.jmx.enabled: false</code>.
+ * To disable auto export of annotation beans set {@code spring.jmx.enabled: false}.
  *
  * @author Christian Dupuis
  */
@@ -69,6 +70,7 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 	}
 
 	@Bean
+	@Primary
 	@ConditionalOnMissingBean(value = MBeanExporter.class, search = SearchStrategy.CURRENT)
 	public AnnotationMBeanExporter mbeanExporter(ObjectNamingStrategy namingStrategy) {
 		AnnotationMBeanExporter exporter = new AnnotationMBeanExporter();

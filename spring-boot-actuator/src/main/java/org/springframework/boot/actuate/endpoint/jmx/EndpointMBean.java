@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,13 @@ package org.springframework.boot.actuate.endpoint.jmx;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Simple wrapper around {@link Endpoint} implementations to enable JMX export.
@@ -44,21 +44,10 @@ public class EndpointMBean {
 	 * Create a new {@link EndpointMBean} instance.
 	 * @param beanName the bean name
 	 * @param endpoint the endpoint to wrap
-	 * @deprecated since 1.3 in favor of
-	 * {@link #EndpointMBean(String, Endpoint, ObjectMapper)}
-	 */
-	@Deprecated
-	public EndpointMBean(String beanName, Endpoint<?> endpoint) {
-		this(beanName, endpoint, new ObjectMapper());
-	}
-
-	/**
-	 * Create a new {@link EndpointMBean} instance.
-	 * @param beanName the bean name
-	 * @param endpoint the endpoint to wrap
 	 * @param objectMapper the {@link ObjectMapper} used to convert the payload
 	 */
-	public EndpointMBean(String beanName, Endpoint<?> endpoint, ObjectMapper objectMapper) {
+	public EndpointMBean(String beanName, Endpoint<?> endpoint,
+			ObjectMapper objectMapper) {
 		Assert.notNull(beanName, "BeanName must not be null");
 		Assert.notNull(endpoint, "Endpoint must not be null");
 		Assert.notNull(objectMapper, "ObjectMapper must not be null");

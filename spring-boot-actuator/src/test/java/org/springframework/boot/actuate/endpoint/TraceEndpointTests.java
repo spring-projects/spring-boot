@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.Collections;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.Trace;
 import org.springframework.boot.actuate.trace.TraceRepository;
@@ -26,8 +27,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link TraceEndpoint}.
@@ -43,7 +43,7 @@ public class TraceEndpointTests extends AbstractEndpointTests<TraceEndpoint> {
 	@Test
 	public void invoke() throws Exception {
 		Trace trace = getEndpointBean().invoke().get(0);
-		assertThat(trace.getInfo().get("a"), equalTo((Object) "b"));
+		assertThat(trace.getInfo().get("a")).isEqualTo("b");
 	}
 
 	@Configuration
@@ -53,7 +53,7 @@ public class TraceEndpointTests extends AbstractEndpointTests<TraceEndpoint> {
 		@Bean
 		public TraceEndpoint endpoint() {
 			TraceRepository repository = new InMemoryTraceRepository();
-			repository.add(Collections.<String, Object> singletonMap("a", "b"));
+			repository.add(Collections.<String, Object>singletonMap("a", "b"));
 			return new TraceEndpoint(repository);
 		}
 	}

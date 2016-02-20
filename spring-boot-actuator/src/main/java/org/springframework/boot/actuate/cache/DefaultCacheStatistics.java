@@ -86,4 +86,5 @@ public class DefaultCacheStatistics implements CacheStatistics {
 			metrics.add(new Metric<T>(name, value));
 		}
 	}
+
 }

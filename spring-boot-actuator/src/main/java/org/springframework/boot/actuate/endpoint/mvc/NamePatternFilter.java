@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -26,24 +27,28 @@ import java.util.regex.Pattern;
  * must provide implementations of {@link #getValue(Object, String)} and
  * {@link #getNames(Object, NameCallback)}.
  *
+ * @param <T> The source data type
  * @author Phillip Webb
  * @author Sergei Egorov
- * @param <T> The source data type
+ * @author Andy Wilkinson
  * @since 1.3.0
  */
 abstract class NamePatternFilter<T> {
 
-	private static final String[] REGEX_PARTS = { "*", "$", "^", "+" };
+	private static final String[] REGEX_PARTS = { "*", "$", "^", "+", "[" };
 
 	private final T source;
 
-	public NamePatternFilter(T source) {
+	NamePatternFilter(T source) {
 		this.source = source;
 	}
 
-	public Object getResults(String name) {
+	public Map<String, Object> getResults(String name) {
 		if (!isRegex(name)) {
-			return getValue(this.source, name);
+			Object value = getValue(this.source, name);
+			Map<String, Object> result = new HashMap<String, Object>();
+			result.put(name, value);
+			return result;
 		}
 		Pattern pattern = Pattern.compile(name);
 		ResultCollectingNameCallback resultCollector = new ResultCollectingNameCallback(
@@ -66,26 +71,37 @@ abstract class NamePatternFilter<T> {
 
 	protected abstract Object getValue(T source, String name);
 
-	protected static interface NameCallback {
+	protected abstract Object getOptionalValue(T source, String name);
+
+	/**
+	 * Callback used to add a name.
+	 */
+	protected interface NameCallback {
 
 		void addName(String name);
 
 	}
 
+	/**
+	 * {@link NameCallback} implementation to collect results.
+	 */
 	private class ResultCollectingNameCallback implements NameCallback {
 
 		private final Pattern pattern;
 
 		private final Map<String, Object> results = new LinkedHashMap<String, Object>();
 
-		public ResultCollectingNameCallback(Pattern pattern) {
+		ResultCollectingNameCallback(Pattern pattern) {
 			this.pattern = pattern;
 		}
 
 		@Override
 		public void addName(String name) {
 			if (this.pattern.matcher(name).matches()) {
-				this.results.put(name, getValue(NamePatternFilter.this.source, name));
+				Object value = getOptionalValue(NamePatternFilter.this.source, name);
+				if (value != null) {
+					this.results.put(name, value);
+				}
 			}
 		}
 

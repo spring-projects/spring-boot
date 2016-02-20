@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,12 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.IncorrectResultSetColumnCountException;
@@ -46,20 +44,11 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Arthur Kalimullin
  * @since 1.1.0
  */
-public class DataSourceHealthIndicator extends AbstractHealthIndicator implements
-		InitializingBean {
-
-	private static final Map<String, String> PRODUCT_SPECIFIC_QUERIES;
-	static {
-		Map<String, String> queries = new HashMap<String, String>();
-		queries.put("HSQL Database Engine", "SELECT COUNT(*) FROM "
-				+ "INFORMATION_SCHEMA.SYSTEM_USERS");
-		queries.put("Oracle", "SELECT 'Hello' from DUAL");
-		queries.put("Apache Derby", "SELECT 1 FROM SYSIBM.SYSDUMMY1");
-		PRODUCT_SPECIFIC_QUERIES = Collections.unmodifiableMap(queries);
-	}
+public class DataSourceHealthIndicator extends AbstractHealthIndicator
+		implements InitializingBean {
 
 	private static final String DEFAULT_QUERY = "SELECT 1";
 
@@ -133,8 +122,8 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	private String getProduct() {
 		return this.jdbcTemplate.execute(new ConnectionCallback<String>() {
 			@Override
-			public String doInConnection(Connection connection) throws SQLException,
-					DataAccessException {
+			public String doInConnection(Connection connection)
+					throws SQLException, DataAccessException {
 				return connection.getMetaData().getDatabaseProductName();
 			}
 		});
@@ -143,7 +132,8 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	protected String getValidationQuery(String product) {
 		String query = this.query;
 		if (!StringUtils.hasText(query)) {
-			query = PRODUCT_SPECIFIC_QUERIES.get(product);
+			DatabaseDriver specific = DatabaseDriver.fromProductName(product);
+			query = specific.getValidationQuery();
 		}
 		if (!StringUtils.hasText(query)) {
 			query = DEFAULT_QUERY;

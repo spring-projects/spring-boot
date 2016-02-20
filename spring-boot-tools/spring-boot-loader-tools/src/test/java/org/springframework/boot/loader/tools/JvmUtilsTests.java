@@ -21,9 +21,7 @@ import java.net.URL;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JvmUtils}.
@@ -36,8 +34,8 @@ public class JvmUtilsTests {
 	public void getToolsJar() throws Exception {
 		URL jarUrl = JvmUtils.getToolsJarUrl();
 		// System.out.println(jarUrl);
-		assertThat(jarUrl.toString(), endsWith(".jar"));
-		assertThat(new File(jarUrl.toURI()).exists(), equalTo(true));
+		assertThat(jarUrl.toString()).endsWith(".jar");
+		assertThat(new File(jarUrl.toURI()).exists()).isTrue();
 	}
 
 }

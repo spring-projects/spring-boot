@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,8 +47,8 @@ import static org.mockito.Mockito.spy;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class MockEmbeddedServletContainerFactory extends
-		AbstractEmbeddedServletContainerFactory {
+public class MockEmbeddedServletContainerFactory
+		extends AbstractEmbeddedServletContainerFactory {
 
 	private MockEmbeddedServletContainer container;
 
@@ -69,13 +69,13 @@ public class MockEmbeddedServletContainerFactory extends
 	}
 
 	public RegisteredServlet getRegisteredServlet(int index) {
-		return getContainer() == null ? null : getContainer().getRegisteredServlets()
-				.get(index);
+		return getContainer() == null ? null
+				: getContainer().getRegisteredServlets().get(index);
 	}
 
 	public RegisteredFilter getRegisteredFilter(int index) {
-		return getContainer() == null ? null : getContainer().getRegisteredFilters().get(
-				index);
+		return getContainer() == null ? null
+				: getContainer().getRegisteredFilters().get(index);
 	}
 
 	public static class MockEmbeddedServletContainer implements EmbeddedServletContainer {
@@ -137,21 +137,21 @@ public class MockEmbeddedServletContainerFactory extends
 							}
 
 						});
-				given(this.servletContext.getInitParameterNames()).willReturn(
-						Collections.enumeration(initParameters.keySet()));
-				given(this.servletContext.getInitParameter(anyString())).willAnswer(
-						new Answer<String>() {
+				given(this.servletContext.getInitParameterNames())
+						.willReturn(Collections.enumeration(initParameters.keySet()));
+				given(this.servletContext.getInitParameter(anyString()))
+						.willAnswer(new Answer<String>() {
 							@Override
 							public String answer(InvocationOnMock invocation)
 									throws Throwable {
-								return initParameters.get(invocation.getArgumentAt(0,
-										String.class));
+								return initParameters
+										.get(invocation.getArgumentAt(0, String.class));
 							}
 						});
 				given(this.servletContext.getAttributeNames()).willReturn(
-						MockEmbeddedServletContainer.<String> emptyEnumeration());
-				given(this.servletContext.getNamedDispatcher("default")).willReturn(
-						mock(RequestDispatcher.class));
+						MockEmbeddedServletContainer.<String>emptyEnumeration());
+				given(this.servletContext.getNamedDispatcher("default"))
+						.willReturn(mock(RequestDispatcher.class));
 				for (ServletContextInitializer initializer : this.initializers) {
 					initializer.onStartup(this.servletContext);
 				}
@@ -164,20 +164,6 @@ public class MockEmbeddedServletContainerFactory extends
 		@SuppressWarnings("unchecked")
 		public static <T> Enumeration<T> emptyEnumeration() {
 			return (Enumeration<T>) EmptyEnumeration.EMPTY_ENUMERATION;
-		}
-
-		private static class EmptyEnumeration<E> implements Enumeration<E> {
-			static final EmptyEnumeration<Object> EMPTY_ENUMERATION = new EmptyEnumeration<Object>();
-
-			@Override
-			public boolean hasMoreElements() {
-				return false;
-			}
-
-			@Override
-			public E nextElement() {
-				throw new NoSuchElementException();
-			}
 		}
 
 		@Override
@@ -210,6 +196,21 @@ public class MockEmbeddedServletContainerFactory extends
 		public int getPort() {
 			return this.port;
 		}
+
+		private static class EmptyEnumeration<E> implements Enumeration<E> {
+			static final EmptyEnumeration<Object> EMPTY_ENUMERATION = new EmptyEnumeration<Object>();
+
+			@Override
+			public boolean hasMoreElements() {
+				return false;
+			}
+
+			@Override
+			public E nextElement() {
+				throw new NoSuchElementException();
+			}
+		}
+
 	}
 
 	public static class RegisteredServlet {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,22 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -32,12 +39,28 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Maciej Walkowiak
+ * @author Stephane Nicoll
+ * @author Benedikt Ritter
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
-public class DataSourceProperties implements BeanClassLoaderAware, InitializingBean {
+@ConfigurationProperties(prefix = "spring.datasource")
+public class DataSourceProperties
+		implements BeanClassLoaderAware, EnvironmentAware, InitializingBean {
 
-	public static final String PREFIX = "spring.datasource";
+	private ClassLoader classLoader;
+
+	private Environment environment;
+
+	/**
+	 * Name of the datasource.
+	 */
+	private String name = "testdb";
+
+	/**
+	 * Fully qualified name of the connection pool implementation to use. By default, it
+	 * is auto-detected from the classpath.
+	 */
+	private Class<? extends DataSource> type;
 
 	/**
 	 * Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
@@ -58,8 +81,6 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * Login password of the database.
 	 */
 	private String password;
-
-	private ClassLoader classLoader;
 
 	/**
 	 * JNDI location of the datasource. Class, url, username & password are ignored when
@@ -100,7 +121,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	/**
 	 * SQL scripts encoding.
 	 */
-	private String sqlScriptEncoding;
+	private Charset sqlScriptEncoding;
 
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
 
@@ -112,14 +133,53 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
+
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.embeddedDatabaseConnection = EmbeddedDatabaseConnection
 				.get(this.classLoader);
 	}
 
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Class<? extends DataSource> getType() {
+		return this.type;
+	}
+
+	public void setType(Class<? extends DataSource> type) {
+		this.type = type;
+	}
+
+	/**
+	 * Return the configured driver or {@code null} if none was configured.
+	 * @return the configured driver
+	 * @see #determineDriverClassName()
+	 */
 	public String getDriverClassName() {
+		return this.driverClassName;
+	}
+
+	public void setDriverClassName(String driverClassName) {
+		this.driverClassName = driverClassName;
+	}
+
+	/**
+	 * Determine the driver to use based on this configuration and the environment.
+	 * @return the driver to use
+	 * @since 1.4.0
+	 */
+	public String determineDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
-			Assert.state(ClassUtils.isPresent(this.driverClassName, null),
+			Assert.state(driverClassIsLoadable(),
 					"Cannot load driver class: " + this.driverClassName);
 			return this.driverClassName;
 		}
@@ -134,64 +194,110 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		}
 
 		if (!StringUtils.hasText(driverClassName)) {
-			throw new BeanCreationException(
-					"Cannot determine embedded database driver class for database type "
-							+ this.embeddedDatabaseConnection
-							+ ". If you want an embedded "
-							+ "database please put a supported one on the classpath.");
+			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
+					this.environment, "driver class");
 		}
 		return driverClassName;
 	}
 
+	private boolean driverClassIsLoadable() {
+		try {
+			ClassUtils.forName(this.driverClassName, null);
+			return true;
+		}
+		catch (UnsupportedClassVersionError ex) {
+			// Driver library has been compiled with a later JDK, propagate error
+			throw ex;
+		}
+		catch (Throwable ex) {
+			return false;
+		}
+	}
+
+	/**
+	 * Return the configured url or {@code null} if none was configured.
+	 * @return the configured url
+	 * @see #determineUrl()
+	 */
 	public String getUrl() {
-		if (StringUtils.hasText(this.url)) {
-			return this.url;
-		}
-		String url = this.embeddedDatabaseConnection.getUrl();
-		if (!StringUtils.hasText(url)) {
-			throw new BeanCreationException(
-					"Cannot determine embedded database url for database type "
-							+ this.embeddedDatabaseConnection
-							+ ". If you want an embedded "
-							+ "database please put a supported one on the classpath.");
-		}
-		return url;
-	}
-
-	public String getUsername() {
-		if (StringUtils.hasText(this.username)) {
-			return this.username;
-		}
-		if (EmbeddedDatabaseConnection.isEmbedded(getDriverClassName())) {
-			return "sa";
-		}
-		return null;
-	}
-
-	public String getPassword() {
-		if (StringUtils.hasText(this.password)) {
-			return this.password;
-		}
-		if (EmbeddedDatabaseConnection.isEmbedded(getDriverClassName())) {
-			return "";
-		}
-		return null;
-	}
-
-	public void setDriverClassName(String driverClassName) {
-		this.driverClassName = driverClassName;
+		return this.url;
 	}
 
 	public void setUrl(String url) {
 		this.url = url;
 	}
 
+	/**
+	 * Determine the url to use based on this configuration and the environment.
+	 * @return the url to use
+	 * @since 1.4.0
+	 */
+	public String determineUrl() {
+		if (StringUtils.hasText(this.url)) {
+			return this.url;
+		}
+		String url = this.embeddedDatabaseConnection.getUrl(this.name);
+		if (!StringUtils.hasText(url)) {
+			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
+					this.environment, "url");
+		}
+		return url;
+	}
+
+	/**
+	 * Return the configured username or {@code null} if none was configured.
+	 * @return the configured username
+	 * @see #determineUsername()
+	 */
+	public String getUsername() {
+		return this.username;
+	}
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
+	/**
+	 * Determine the username to use based on this configuration and the environment.
+	 * @return the username to use
+	 * @since 1.4.0
+	 */
+	public String determineUsername() {
+		if (StringUtils.hasText(this.username)) {
+			return this.username;
+		}
+		if (EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName())) {
+			return "sa";
+		}
+		return null;
+	}
+
+	/**
+	 * Return the configured password or {@code null} if none was configured.
+	 * @return the configured password
+	 * @see #determinePassword()
+	 */
+	public String getPassword() {
+		return this.password;
+	}
+
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	/**
+	 * Determine the password to use based on this configuration and the environment.
+	 * @return the password to use
+	 * @since 1.4.0
+	 */
+	public String determinePassword() {
+		if (StringUtils.hasText(this.password)) {
+			return this.password;
+		}
+		if (EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName())) {
+			return "";
+		}
+		return null;
 	}
 
 	public String getJndiName() {
@@ -256,11 +362,11 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		this.separator = separator;
 	}
 
-	public String getSqlScriptEncoding() {
+	public Charset getSqlScriptEncoding() {
 		return this.sqlScriptEncoding;
 	}
 
-	public void setSqlScriptEncoding(String sqlScriptEncoding) {
+	public void setSqlScriptEncoding(Charset sqlScriptEncoding) {
 		this.sqlScriptEncoding = sqlScriptEncoding;
 	}
 
@@ -305,6 +411,41 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 		public void setProperties(Map<String, String> properties) {
 			this.properties = properties;
+		}
+
+	}
+
+	private static class DataSourceBeanCreationException extends BeanCreationException {
+
+		DataSourceBeanCreationException(EmbeddedDatabaseConnection connection,
+				Environment environment, String property) {
+			super(getMessage(connection, environment, property));
+		}
+
+		private static String getMessage(EmbeddedDatabaseConnection connection,
+				Environment environment, String property) {
+			StringBuilder message = new StringBuilder();
+			message.append("Cannot determine embedded database " + property
+					+ " for database type " + connection + ". ");
+			message.append("If you want an embedded database please put a supported "
+					+ "one on the classpath. ");
+			message.append("If you have database settings to be loaded from a "
+					+ "particular profile you may need to active it");
+			if (environment != null) {
+				String[] profiles = environment.getActiveProfiles();
+				if (ObjectUtils.isEmpty(profiles)) {
+					message.append(" (no profiles are currently active)");
+				}
+				else {
+					message.append(" (the profiles \""
+							+ StringUtils.arrayToCommaDelimitedString(
+									environment.getActiveProfiles())
+							+ "\" are currently active)");
+
+				}
+			}
+			message.append(".");
+			return message.toString();
 		}
 
 	}

@@ -21,9 +21,7 @@ import javax.sql.XADataSource;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -38,9 +36,9 @@ public class BitronixXADataSourceWrapperTests {
 		XADataSource dataSource = mock(XADataSource.class);
 		BitronixXADataSourceWrapper wrapper = new BitronixXADataSourceWrapper();
 		DataSource wrapped = wrapper.wrapDataSource(dataSource);
-		assertThat(wrapped, instanceOf(PoolingDataSourceBean.class));
-		assertThat(((PoolingDataSourceBean) wrapped).getDataSource(),
-				sameInstance(dataSource));
+		assertThat(wrapped).isInstanceOf(PoolingDataSourceBean.class);
+		assertThat(((PoolingDataSourceBean) wrapped).getDataSource())
+				.isSameAs(dataSource);
 	}
 
 }

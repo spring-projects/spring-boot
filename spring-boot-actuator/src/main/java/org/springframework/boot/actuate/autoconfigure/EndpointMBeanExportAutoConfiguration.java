@@ -18,20 +18,26 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import javax.management.MBeanServer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.EndpointMBeanExportAutoConfiguration.JmxEnabledCondition;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanExporter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.StringUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to enable JMX export for
@@ -41,7 +47,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnExpression("${endpoints.jmx.enabled:true} && ${spring.jmx.enabled:true}")
+@Conditional(JmxEnabledCondition.class)
 @AutoConfigureAfter({ EndpointAutoConfiguration.class, JmxAutoConfiguration.class })
 @EnableConfigurationProperties(EndpointMBeanExportProperties.class)
 public class EndpointMBeanExportAutoConfiguration {
@@ -54,7 +60,8 @@ public class EndpointMBeanExportAutoConfiguration {
 
 	@Bean
 	public EndpointMBeanExporter endpointMBeanExporter(MBeanServer server) {
-		EndpointMBeanExporter mbeanExporter = new EndpointMBeanExporter(this.objectMapper);
+		EndpointMBeanExporter mbeanExporter = new EndpointMBeanExporter(
+				this.objectMapper);
 		String domain = this.properties.getDomain();
 		if (StringUtils.hasText(domain)) {
 			mbeanExporter.setDomain(domain);
@@ -69,6 +76,28 @@ public class EndpointMBeanExportAutoConfiguration {
 	@ConditionalOnMissingBean(MBeanServer.class)
 	public MBeanServer mbeanServer() {
 		return new JmxAutoConfiguration().mbeanServer();
+	}
+
+	/**
+	 * Condition to check that spring.jmx and endpoints.jmx are enabled.
+	 */
+	static class JmxEnabledCondition extends SpringBootCondition {
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			boolean jmxEnabled = isEnabled(context, "spring.jmx.");
+			boolean jmxEndpointsEnabled = isEnabled(context, "endpoints.jmx.");
+			return new ConditionOutcome(jmxEnabled && jmxEndpointsEnabled,
+					"JMX Endpoints");
+		}
+
+		private boolean isEnabled(ConditionContext context, String prefix) {
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
+					context.getEnvironment(), prefix);
+			return resolver.getProperty("enabled", Boolean.class, true);
+		}
+
 	}
 
 }

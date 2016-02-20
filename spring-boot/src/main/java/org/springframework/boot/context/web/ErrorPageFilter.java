@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ErrorPage;
@@ -39,6 +40,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.NestedServletException;
 
 /**
  * A special {@link AbstractConfigurableEmbeddedServletContainer} for non-embedded
@@ -59,7 +61,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer
 		implements Filter, NonEmbeddedServletContainerFactory {
 
-	private static Log logger = LogFactory.getLog(ErrorPageFilter.class);
+	private static final Log logger = LogFactory.getLog(ErrorPageFilter.class);
 
 	// From RequestDispatcher but not referenced to remain compatible with Servlet 2.5
 
@@ -68,6 +70,11 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 	private static final String ERROR_EXCEPTION_TYPE = "javax.servlet.error.exception_type";
 
 	private static final String ERROR_MESSAGE = "javax.servlet.error.message";
+
+	/**
+	 * The name of the servlet attribute containing request URI.
+	 */
+	public static final String ERROR_REQUEST_URI = "javax.servlet.error.request_uri";
 
 	private static final String ERROR_STATUS_CODE = "javax.servlet.error.status_code";
 
@@ -83,8 +90,8 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
-				HttpServletResponse response, FilterChain chain) throws ServletException,
-				IOException {
+				HttpServletResponse response, FilterChain chain)
+						throws ServletException, IOException {
 			ErrorPageFilter.this.doFilter(request, response, chain);
 		}
 
@@ -111,9 +118,9 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 		ErrorWrapperResponse wrapped = new ErrorWrapperResponse(response);
 		try {
 			chain.doFilter(request, wrapped);
-			int status = wrapped.getStatus();
-			if (status >= 400) {
-				handleErrorStatus(request, response, status, wrapped.getMessage());
+			if (wrapped.hasErrorToSend()) {
+				handleErrorStatus(request, response, wrapped.getStatus(),
+						wrapped.getMessage());
 				response.flushBuffer();
 			}
 			else if (!request.isAsyncStarted() && !response.isCommitted()) {
@@ -121,19 +128,22 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 			}
 		}
 		catch (Throwable ex) {
-			handleException(request, response, wrapped, ex);
+			Throwable exceptionToHandle = ex;
+			if (ex instanceof NestedServletException) {
+				exceptionToHandle = ((NestedServletException) ex).getRootCause();
+			}
+			handleException(request, response, wrapped, exceptionToHandle);
 			response.flushBuffer();
 		}
 	}
 
 	private void handleErrorStatus(HttpServletRequest request,
 			HttpServletResponse response, int status, String message)
-			throws ServletException, IOException {
+					throws ServletException, IOException {
 		if (response.isCommitted()) {
 			handleCommittedResponse(request, null);
 			return;
 		}
-
 		String errorPath = getErrorPath(this.statuses, status);
 		if (errorPath == null) {
 			response.sendError(status, message);
@@ -144,9 +154,9 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 		request.getRequestDispatcher(errorPath).forward(request, response);
 	}
 
-	private void handleException(HttpServletRequest request,
-			HttpServletResponse response, ErrorWrapperResponse wrapped, Throwable ex)
-			throws IOException, ServletException {
+	private void handleException(HttpServletRequest request, HttpServletResponse response,
+			ErrorWrapperResponse wrapped, Throwable ex)
+					throws IOException, ServletException {
 		Class<?> type = ex.getClass();
 		String errorPath = getErrorPath(type);
 		if (errorPath == null) {
@@ -162,8 +172,8 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 	}
 
 	private void forwardToErrorPage(String path, HttpServletRequest request,
-			HttpServletResponse response, Throwable ex) throws ServletException,
-			IOException {
+			HttpServletResponse response, Throwable ex)
+					throws ServletException, IOException {
 		if (logger.isErrorEnabled()) {
 			String message = "Forwarding to error page from request "
 					+ getDescription(request) + " due to exception [" + ex.getMessage()
@@ -225,9 +235,11 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 		return this.global;
 	}
 
-	private void setErrorAttributes(ServletRequest request, int status, String message) {
+	private void setErrorAttributes(HttpServletRequest request, int status,
+			String message) {
 		request.setAttribute(ERROR_STATUS_CODE, status);
 		request.setAttribute(ERROR_MESSAGE, message);
+		request.setAttribute(ERROR_REQUEST_URI, request.getRequestURI());
 	}
 
 	private void rethrow(Throwable ex) throws IOException, ServletException {
@@ -273,7 +285,7 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 
 		private boolean hasErrorToSend = false;
 
-		public ErrorWrapperResponse(HttpServletResponse response) {
+		ErrorWrapperResponse(HttpServletResponse response) {
 			super(response);
 		}
 
@@ -303,14 +315,18 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 		@Override
 		public void flushBuffer() throws IOException {
 			if (this.hasErrorToSend && !isCommitted()) {
-				((HttpServletResponse) getResponse())
-						.sendError(this.status, this.message);
+				((HttpServletResponse) getResponse()).sendError(this.status,
+						this.message);
 			}
 			super.flushBuffer();
 		}
 
 		public String getMessage() {
 			return this.message;
+		}
+
+		public boolean hasErrorToSend() {
+			return this.hasErrorToSend;
 		}
 
 	}

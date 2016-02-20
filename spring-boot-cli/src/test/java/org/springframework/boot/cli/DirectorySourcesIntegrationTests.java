@@ -19,8 +19,7 @@ package org.springframework.boot.cli;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for code in directories.
@@ -35,18 +34,19 @@ public class DirectorySourcesIntegrationTests {
 	@Test
 	public void runDirectory() throws Exception {
 		this.cli.run("code");
-		assertThat(this.cli.getOutput(), containsString("Hello World"));
+		assertThat(this.cli.getOutput()).contains("Hello World");
 	}
 
 	@Test
 	public void runDirectoryRecursive() throws Exception {
 		this.cli.run("");
-		assertThat(this.cli.getOutput(), containsString("Hello World"));
+		assertThat(this.cli.getOutput()).contains("Hello World");
 	}
 
 	@Test
 	public void runPathPattern() throws Exception {
 		this.cli.run("**/*.groovy");
-		assertThat(this.cli.getOutput(), containsString("Hello World"));
+		assertThat(this.cli.getOutput()).contains("Hello World");
 	}
+
 }

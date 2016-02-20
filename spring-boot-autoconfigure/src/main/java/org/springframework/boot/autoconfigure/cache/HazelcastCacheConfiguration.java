@@ -16,79 +16,115 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import java.io.Closeable;
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.cache.CacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
-import org.springframework.core.type.AnnotatedTypeMetadata;
-
-import com.hazelcast.config.Config;
-import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.autoconfigure.hazelcast.HazelcastConfigResourceCondition;
+import org.springframework.boot.autoconfigure.hazelcast.HazelcastInstanceFactory;
+import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+
 /**
- * Hazelcast cache configuration. Only kick in if a configuration file location is set or
- * if a default configuration file exists (either placed in the default location or set
- * via the {@value #CONFIG_SYSTEM_PROPERTY} system property).
+ * Hazelcast cache configuration. Can either reuse the {@link HazelcastInstance} that has
+ * been configured by the general {@link HazelcastAutoConfiguration} or create a separate
+ * one if the {@code spring.cache.hazelcast.config} property has been set.
+ * <p>
+ * If the {@link HazelcastAutoConfiguration} has been disabled, an attempt to configure a
+ * default {@link HazelcastInstance} is still made, using the same defaults.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
+ * @see HazelcastConfigResourceCondition
  */
 @Configuration
 @ConditionalOnClass({ HazelcastInstance.class, HazelcastCacheManager.class })
 @ConditionalOnMissingBean(CacheManager.class)
-@Conditional({ CacheCondition.class,
-		HazelcastCacheConfiguration.ConfigAvailableCondition.class })
+@Conditional(CacheCondition.class)
 class HazelcastCacheConfiguration {
 
-	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.config";
+	@Configuration
+	@ConditionalOnSingleCandidate(HazelcastInstance.class)
+	static class ExistingHazelcastInstanceConfiguration {
 
-	@Autowired
-	private CacheProperties cacheProperties;
+		@Autowired
+		private CacheProperties cacheProperties;
 
-	@Bean
-	public HazelcastCacheManager cacheManager() throws IOException {
-		return new HazelcastCacheManager(createHazelcastInstance());
+		@Bean
+		public HazelcastCacheManager cacheManager(
+				HazelcastInstance existingHazelcastInstance) throws IOException {
+			Resource config = this.cacheProperties.getHazelcast().getConfig();
+			Resource location = this.cacheProperties.resolveConfigLocation(config);
+			if (location != null) {
+				HazelcastInstance cacheHazelcastInstance = new HazelcastInstanceFactory(
+						location).getHazelcastInstance();
+				return new CloseableHazelcastCacheManager(cacheHazelcastInstance);
+			}
+			return new HazelcastCacheManager(existingHazelcastInstance);
+		}
 	}
 
-	private HazelcastInstance createHazelcastInstance() throws IOException {
-		Resource location = this.cacheProperties.resolveConfigLocation();
-		if (location != null) {
-			Config cfg = new XmlConfigBuilder(location.getURL()).build();
-			return Hazelcast.newHazelcastInstance(cfg);
+	@Configuration
+	@ConditionalOnMissingBean(HazelcastInstance.class)
+	@Conditional(ConfigAvailableCondition.class)
+	static class DefaultHazelcastInstanceConfiguration {
+
+		@Autowired
+		private CacheProperties cacheProperties;
+
+		@Bean
+		public HazelcastInstance hazelcastInstance() throws IOException {
+			Resource config = this.cacheProperties.getHazelcast().getConfig();
+			Resource location = this.cacheProperties.resolveConfigLocation(config);
+			if (location != null) {
+				new HazelcastInstanceFactory(location).getHazelcastInstance();
+			}
+			return Hazelcast.newHazelcastInstance();
 		}
-		return Hazelcast.newHazelcastInstance();
+
+		@Bean
+		public HazelcastCacheManager cacheManager() throws IOException {
+			return new HazelcastCacheManager(hazelcastInstance());
+		}
+
 	}
 
 	/**
-	 * Determines if the Hazelcast configuration is available. This either kick in if a
-	 * default configuration has been found or if property referring to the file to use
-	 * has been set.
+	 * {@link HazelcastConfigResourceCondition} that checks if the
+	 * {@code spring.cache.hazelcast.config} configuration key is defined.
 	 */
-	static class ConfigAvailableCondition extends CacheConfigFileCondition {
+	static class ConfigAvailableCondition extends HazelcastConfigResourceCondition {
 
-		public ConfigAvailableCondition() {
-			super("Hazelcast", "file:./hazelcast.xml", "classpath:/hazelcast.xml");
+		ConfigAvailableCondition() {
+			super("spring.cache.hazelcast", "config");
+		}
+
+	}
+
+	private static class CloseableHazelcastCacheManager extends HazelcastCacheManager
+			implements Closeable {
+
+		private final HazelcastInstance hazelcastInstance;
+
+		CloseableHazelcastCacheManager(HazelcastInstance hazelcastInstance) {
+			super(hazelcastInstance);
+			this.hazelcastInstance = hazelcastInstance;
 		}
 
 		@Override
-		protected ConditionOutcome getResourceOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			if (System.getProperty(CONFIG_SYSTEM_PROPERTY) != null) {
-				return ConditionOutcome.match("System property '"
-						+ CONFIG_SYSTEM_PROPERTY + "' is set.");
-			}
-			return super.getResourceOutcome(context, metadata);
+		public void close() throws IOException {
+			this.hazelcastInstance.shutdown();
 		}
 
 	}

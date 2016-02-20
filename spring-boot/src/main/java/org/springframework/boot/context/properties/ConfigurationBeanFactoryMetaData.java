@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.MethodCallback;
 
 /**
- * Utility class to memorize <code>@Bean</code> definition meta data during initialization
- * of the bean factory.
+ * Utility class to memorize {@code @Bean} definition meta data during initialization of
+ * the bean factory.
  *
  * @author Dave Syer
  * @since 1.1.0
@@ -68,7 +68,8 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 		return result;
 	}
 
-	public <A extends Annotation> A findFactoryAnnotation(String beanName, Class<A> type) {
+	public <A extends Annotation> A findFactoryAnnotation(String beanName,
+			Class<A> type) {
 		Method method = findFactoryMethod(beanName);
 		return (method == null ? null : AnnotationUtils.findAnnotation(method, type));
 	}
@@ -83,8 +84,8 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 		Class<?> type = this.beanFactory.getType(meta.getBean());
 		ReflectionUtils.doWithMethods(type, new MethodCallback() {
 			@Override
-			public void doWith(Method method) throws IllegalArgumentException,
-					IllegalAccessException {
+			public void doWith(Method method)
+					throws IllegalArgumentException, IllegalAccessException {
 				if (method.getName().equals(factory)) {
 					found.compareAndSet(null, method);
 				}
@@ -99,7 +100,7 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 
 		private String method;
 
-		public MetaData(String bean, String method) {
+		MetaData(String bean, String method) {
 			this.bean = bean;
 			this.method = method;
 		}

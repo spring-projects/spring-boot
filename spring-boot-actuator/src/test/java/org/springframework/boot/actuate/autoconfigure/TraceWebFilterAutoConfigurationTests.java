@@ -17,11 +17,12 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link TraceWebFilterAutoConfiguration}.
@@ -36,7 +37,7 @@ public class TraceWebFilterAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				TraceRepositoryAutoConfiguration.class,
 				TraceWebFilterAutoConfiguration.class);
-		assertNotNull(context.getBean(WebRequestTraceFilter.class));
+		assertThat(context.getBean(WebRequestTraceFilter.class)).isNotNull();
 		context.close();
 	}
 

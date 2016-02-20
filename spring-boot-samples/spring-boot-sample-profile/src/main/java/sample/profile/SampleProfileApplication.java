@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package sample.profile;
 
+import sample.profile.service.MessageService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import sample.profile.service.MessageService;
 
 @SpringBootApplication
 public class SampleProfileApplication implements CommandLineRunner {
@@ -41,4 +41,5 @@ public class SampleProfileApplication implements CommandLineRunner {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleProfileApplication.class, args);
 	}
+
 }

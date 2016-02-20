@@ -16,8 +16,6 @@
 
 package org.springframework.boot.json;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,38 +26,32 @@ import org.json.simple.parser.ParseException;
  * Thin wrapper to adapt {@link org.json.simple.JSONObject} to a {@link JsonParser}.
  *
  * @author Dave Syer
+ * @author Jean de Klerk
  * @since 1.2.0
  * @see JsonParserFactory
  */
 public class JsonSimpleJsonParser implements JsonParser {
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> parseMap(String json) {
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
 		try {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> value = (Map<String, Object>) new JSONParser()
-					.parse(json);
-			map.putAll(value);
+			return (Map<String, Object>) new JSONParser().parse(json);
 		}
 		catch (ParseException ex) {
 			throw new IllegalArgumentException("Cannot parse JSON", ex);
 		}
-		return map;
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<Object> parseList(String json) {
-		List<Object> nested = new ArrayList<Object>();
 		try {
-			@SuppressWarnings("unchecked")
-			List<Object> value = (List<Object>) new JSONParser().parse(json);
-			nested.addAll(value);
+			return (List<Object>) new JSONParser().parse(json);
 		}
 		catch (ParseException ex) {
 			throw new IllegalArgumentException("Cannot parse JSON", ex);
 		}
-		return nested;
 	}
 
 }

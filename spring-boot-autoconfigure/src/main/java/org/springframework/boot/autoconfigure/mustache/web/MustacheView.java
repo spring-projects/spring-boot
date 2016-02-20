@@ -21,29 +21,53 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.samskivert.mustache.Template;
+
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractTemplateView;
-
-import com.samskivert.mustache.Template;
 
 /**
  * Spring MVC {@link View} using the Mustache template engine.
  *
  * @author Dave Syer
+ * @author Phillip Webb
  * @since 1.2.2
  */
 public class MustacheView extends AbstractTemplateView {
 
-	private final Template template;
+	private Template template;
 
+	/**
+	 * Create a new {@link MustacheView} instance.
+	 * @since 1.2.5
+	 * @see #setTemplate(Template)
+	 */
+	public MustacheView() {
+	}
+
+	/**
+	 * Create a new {@link MustacheView} with the specified template.
+	 * @param template the source template
+	 */
 	public MustacheView(Template template) {
+		this.template = template;
+	}
+
+	/**
+	 * Set the Mustache template that should actually be rendered.
+	 * @param template the mustache template
+	 * @since 1.2.5
+	 */
+	public void setTemplate(Template template) {
 		this.template = template;
 	}
 
 	@Override
 	protected void renderMergedTemplateModel(Map<String, Object> model,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		this.template.execute(model, response.getWriter());
+		if (this.template != null) {
+			this.template.execute(model, response.getWriter());
+		}
 	}
 
 }

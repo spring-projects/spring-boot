@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.condition;
 
 import java.lang.annotation.Documented;
@@ -22,8 +23,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Conditional;
-import org.springframework.core.JdkVersion;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link Conditional} that matches based on the JVM version the application is running
@@ -31,6 +32,7 @@ import org.springframework.util.Assert;
  *
  * @author Oliver Gierke
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
@@ -57,7 +59,7 @@ public @interface ConditionalOnJava {
 	/**
 	 * Range options.
 	 */
-	public enum Range {
+	enum Range {
 
 		/**
 		 * Equal to, or newer than the specified {@link JavaVersion}.
@@ -74,35 +76,38 @@ public @interface ConditionalOnJava {
 	/**
 	 * Java versions.
 	 */
-	public enum JavaVersion {
-
-		/**
-		 * Java 1.6.
-		 */
-		SIX(JdkVersion.JAVA_16, "1.6"),
-
-		/**
-		 * Java 1.7.
-		 */
-		SEVEN(JdkVersion.JAVA_17, "1.7"),
-
-		/**
-		 * Java 1.8.
-		 */
-		EIGHT(JdkVersion.JAVA_18, "1.8"),
+	enum JavaVersion {
 
 		/**
 		 * Java 1.9.
 		 */
-		NINE(JdkVersion.JAVA_19, "1.9");
+		NINE(9, "1.9", "java.security.cert.URICertStoreParameters"),
+
+		/**
+		 * Java 1.8.
+		 */
+		EIGHT(8, "1.8", "java.util.function.Function"),
+
+		/**
+		 * Java 1.7.
+		 */
+		SEVEN(7, "1.7", "java.nio.file.Files"),
+
+		/**
+		 * Java 1.6.
+		 */
+		SIX(6, "1.6", "java.util.ServiceLoader");
 
 		private final int value;
 
 		private final String name;
 
-		private JavaVersion(int value, String name) {
+		private final boolean available;
+
+		JavaVersion(int value, String name, String className) {
 			this.value = value;
 			this.name = name;
+			this.available = ClassUtils.isPresent(className, getClass().getClassLoader());
 		}
 
 		/**
@@ -133,9 +138,8 @@ public @interface ConditionalOnJava {
 		 * @return the {@link JavaVersion}
 		 */
 		public static JavaVersion getJavaVersion() {
-			int version = JdkVersion.getMajorJavaVersion();
 			for (JavaVersion candidate : JavaVersion.values()) {
-				if (candidate.value == version) {
+				if (candidate.available) {
 					return candidate;
 				}
 			}

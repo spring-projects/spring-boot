@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,12 +16,9 @@
 
 package org.springframework.boot.liquibase;
 
-import liquibase.configuration.LiquibaseConfiguration;
 import liquibase.logging.LogLevel;
 import liquibase.logging.Logger;
 import liquibase.logging.core.AbstractLogger;
-import liquibase.logging.core.DefaultLoggerConfiguration;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,10 +27,14 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Michael Cramer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.2.0
  */
 public class CommonsLoggingLiquibaseLogger extends AbstractLogger {
 
+	/**
+	 * The priority for the {@link CommonsLoggingLiquibaseLogger}.
+	 */
 	public static final int PRIORITY = 10;
 
 	private Log logger;
@@ -119,7 +120,7 @@ public class CommonsLoggingLiquibaseLogger extends AbstractLogger {
 	}
 
 	private boolean isEnabled(LogLevel level) {
-		if (this.logger != null && getLogLevel().compareTo(level) <= 0) {
+		if (this.logger != null) {
 			switch (level) {
 			case DEBUG:
 				return this.logger.isDebugEnabled();
@@ -132,16 +133,6 @@ public class CommonsLoggingLiquibaseLogger extends AbstractLogger {
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public LogLevel getLogLevel() {
-		LogLevel logLevel = super.getLogLevel();
-		if (logLevel == null) {
-			return toLogLevel(LiquibaseConfiguration.getInstance()
-					.getConfiguration(DefaultLoggerConfiguration.class).getLogLevel());
-		}
-		return logLevel;
 	}
 
 }

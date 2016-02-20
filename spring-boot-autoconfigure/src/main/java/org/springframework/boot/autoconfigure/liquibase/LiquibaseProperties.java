@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.liquibase;
+
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
@@ -77,6 +79,16 @@ public class LiquibaseProperties {
 	 * is used.
 	 */
 	private String url;
+
+	/**
+	 * Comma-separated list of runtime labels to use.
+	 */
+	private String labels;
+
+	/**
+	 * Change log parameters.
+	 */
+	private Map<String, String> parameters;
 
 	public String getChangeLog() {
 		return this.changeLog;
@@ -148,6 +160,22 @@ public class LiquibaseProperties {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getLabels() {
+		return this.labels;
+	}
+
+	public void setLabels(String labels) {
+		this.labels = labels;
+	}
+
+	public Map<String, String> getParameters() {
+		return this.parameters;
+	}
+
+	public void setParameters(Map<String, String> parameters) {
+		this.parameters = parameters;
 	}
 
 }

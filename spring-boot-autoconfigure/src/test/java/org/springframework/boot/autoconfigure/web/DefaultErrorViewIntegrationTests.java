@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -41,14 +42,14 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author Dave Syer
  */
-@SpringApplicationConfiguration(classes = TestConfiguration.class)
+@SpringApplicationConfiguration(TestConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @DirtiesContext
@@ -68,26 +69,43 @@ public class DefaultErrorViewIntegrationTests {
 	public void testErrorForBrowserClient() throws Exception {
 		MvcResult response = this.mockMvc
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("<html>"));
-		assertTrue("Wrong content: " + content, content.contains("999"));
+		assertThat(content).contains("<html>");
+		assertThat(content).contains("999");
 	}
 
 	@Test
-	public void testErrorWithEscape() throws Exception {
+	public void testErrorWithHtmlEscape() throws Exception {
+		MvcResult response = this.mockMvc
+				.perform(get("/error")
+						.requestAttr("javax.servlet.error.exception",
+								new RuntimeException(
+										"<script>alert('Hello World')</script>"))
+						.accept(MediaType.TEXT_HTML))
+				.andExpect(status().is5xxServerError()).andReturn();
+		String content = response.getResponse().getContentAsString();
+		assertThat(content).contains("&lt;script&gt;");
+		assertThat(content).contains("Hello World");
+		assertThat(content).contains("999");
+	}
+
+	@Test
+	public void testErrorWithSpelEscape() throws Exception {
+		String spel = "${T(" + getClass().getName() + ").injectCall()}";
 		MvcResult response = this.mockMvc
 				.perform(
-						get("/error").requestAttr(
-								"javax.servlet.error.exception",
-								new RuntimeException(
-										"<script>alert('Hello World')</script>")).accept(
-								MediaType.TEXT_HTML)).andExpect(status().isOk())
-				.andReturn();
+						get("/error")
+								.requestAttr("javax.servlet.error.exception",
+										new RuntimeException(spel))
+								.accept(MediaType.TEXT_HTML))
+				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("&lt;script&gt;"));
-		assertTrue("Wrong content: " + content, content.contains("Hello World"));
-		assertTrue("Wrong content: " + content, content.contains("999"));
+		assertThat(content).doesNotContain("injection");
+	}
+
+	public static String injectCall() {
+		return "injection";
 	}
 
 	@Target(ElementType.TYPE)
@@ -96,9 +114,9 @@ public class DefaultErrorViewIntegrationTests {
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
-	protected static @interface MinimalWebConfiguration {
+			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
+	protected @interface MinimalWebConfiguration {
 	}
 
 	@Configuration

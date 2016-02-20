@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,13 @@ import java.util.Set;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class Layouts {
+public final class Layouts {
+
+	private Layouts() {
+	}
 
 	/**
-	 * Return the a layout for the given source file.
+	 * Return a layout for the given source file.
 	 * @param file the source file
 	 * @return a {@link Layout}
 	 */
@@ -57,7 +60,7 @@ public class Layouts {
 	/**
 	 * Executable JAR layout.
 	 */
-	public static class Jar implements Layout {
+	public static class Jar implements RepackagingLayout {
 
 		@Override
 		public String getLauncherClassName() {
@@ -66,12 +69,17 @@ public class Layouts {
 
 		@Override
 		public String getLibraryDestination(String libraryName, LibraryScope scope) {
-			return "lib/";
+			return "BOOT-INF/lib/";
 		}
 
 		@Override
 		public String getClassesLocation() {
 			return "";
+		}
+
+		@Override
+		public String getRepackagedClassesLocation() {
+			return "BOOT-INF/classes/";
 		}
 
 		@Override
@@ -116,6 +124,7 @@ public class Layouts {
 	public static class War implements Layout {
 
 		private static final Map<LibraryScope, String> SCOPE_DESTINATIONS;
+
 		static {
 			Map<LibraryScope, String> map = new HashMap<LibraryScope, String>();
 			map.put(LibraryScope.COMPILE, "WEB-INF/lib/");
@@ -148,7 +157,7 @@ public class Layouts {
 	}
 
 	/**
-	 * Module layout (designed to be used as a "plug-in")
+	 * Module layout (designed to be used as a "plug-in").
 	 */
 	public static class Module implements Layout {
 

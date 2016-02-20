@@ -17,13 +17,13 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
+
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConditionalOnResource}.
@@ -38,15 +38,24 @@ public class ConditionalOnResourceTests {
 	public void testResourceExists() {
 		this.context.register(BasicConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("foo"));
-		assertEquals("foo", this.context.getBean("foo"));
+		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(this.context.getBean("foo")).isEqualTo("foo");
+	}
+
+	@Test
+	public void testResourceExistsWithPlaceholder() {
+		EnvironmentTestUtils.addEnvironment(this.context, "schema=schema.sql");
+		this.context.register(PlaceholderConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(this.context.getBean("foo")).isEqualTo("foo");
 	}
 
 	@Test
 	public void testResourceNotExists() {
 		this.context.register(MissingConfiguration.class);
 		this.context.refresh();
-		assertFalse(this.context.containsBean("foo"));
+		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Configuration
@@ -61,6 +70,15 @@ public class ConditionalOnResourceTests {
 	@Configuration
 	@ConditionalOnResource(resources = "schema.sql")
 	protected static class BasicConfiguration {
+		@Bean
+		public String foo() {
+			return "foo";
+		}
+	}
+
+	@Configuration
+	@ConditionalOnResource(resources = "${schema}")
+	protected static class PlaceholderConfiguration {
 		@Bean
 		public String foo() {
 			return "foo";

@@ -24,6 +24,15 @@ package org.springframework.boot.bind;
  */
 interface PropertyNamePatternsMatcher {
 
+	PropertyNamePatternsMatcher ALL = new PropertyNamePatternsMatcher() {
+
+		@Override
+		public boolean matches(String propertyName) {
+			return true;
+		}
+
+	};
+
 	PropertyNamePatternsMatcher NONE = new PropertyNamePatternsMatcher() {
 
 		@Override

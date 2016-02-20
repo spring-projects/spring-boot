@@ -17,12 +17,13 @@
 package org.springframework.boot.load.it.props;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * Spring configuration.
@@ -37,7 +38,9 @@ public class SpringConfiguration {
 
 	@PostConstruct
 	public void init() throws IOException {
-		String value = PropertiesLoaderUtils.loadAllProperties("application.properties").getProperty("message");
+		Properties props = new Properties();
+		props.load(new ClassPathResource("application.properties").getInputStream());
+		String value = props.getProperty("message");
 		if (value!=null) {
 			this.message = value;
 		}

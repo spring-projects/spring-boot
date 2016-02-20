@@ -19,12 +19,10 @@ package org.springframework.boot.liquibase;
 import java.util.Set;
 
 import liquibase.logging.Logger;
-
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for SpringPackageScanClassResolver.
@@ -40,7 +38,7 @@ public class SpringPackageScanClassResolverTests {
 		resolver.addClassLoader(getClass().getClassLoader());
 		Set<Class<?>> implementations = resolver.findImplementations(Logger.class,
 				"liquibase.logging.core");
-		assertThat(implementations.size(), greaterThan(0));
+		assertThat(implementations).isNotEmpty();
 	}
 
 }

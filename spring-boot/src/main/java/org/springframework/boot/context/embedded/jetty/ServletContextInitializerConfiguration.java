@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,11 +18,11 @@ package org.springframework.boot.context.embedded.jetty;
 
 import javax.servlet.ServletException;
 
-import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
+
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.util.Assert;
 
@@ -35,19 +35,6 @@ import org.springframework.util.Assert;
 public class ServletContextInitializerConfiguration extends AbstractConfiguration {
 
 	private final ServletContextInitializer[] initializers;
-
-	/**
-	 * Create a new {@link ServletContextInitializerConfiguration}.
-	 * @param contextHandler the Jetty ContextHandler
-	 * @param initializers the initializers that should be invoked
-	 * @deprecated since 1.2.1 in favor of
-	 * {@link #ServletContextInitializerConfiguration(ServletContextInitializer...)}
-	 */
-	@Deprecated
-	public ServletContextInitializerConfiguration(ContextHandler contextHandler,
-			ServletContextInitializer... initializers) {
-		this(initializers);
-	}
 
 	/**
 	 * Create a new {@link ServletContextInitializerConfiguration}.
@@ -73,7 +60,7 @@ public class ServletContextInitializerConfiguration extends AbstractConfiguratio
 
 		private final WebAppContext context;
 
-		public Initializer(WebAppContext context) {
+		Initializer(WebAppContext context) {
 			this.context = context;
 		}
 

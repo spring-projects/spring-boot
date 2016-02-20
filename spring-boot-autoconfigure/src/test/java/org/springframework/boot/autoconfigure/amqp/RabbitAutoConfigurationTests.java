@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,15 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocketFactory;
+
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
@@ -31,15 +36,14 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -47,6 +51,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link RabbitAutoConfiguration}.
  *
  * @author Greg Turnquist
+ * @author Stephane Nicoll
  */
 public class RabbitAutoConfigurationTests {
 
@@ -71,12 +76,12 @@ public class RabbitAutoConfigurationTests {
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
 		RabbitAdmin amqpAdmin = this.context.getBean(RabbitAdmin.class);
-		assertEquals(connectionFactory, rabbitTemplate.getConnectionFactory());
-		assertEquals(rabbitTemplate, messagingTemplate.getRabbitTemplate());
-		assertNotNull(amqpAdmin);
-		assertEquals("localhost", connectionFactory.getHost());
-		assertTrue("Listener container factory should be created by default",
-				this.context.containsBean("rabbitListenerContainerFactory"));
+		assertThat(rabbitTemplate.getConnectionFactory()).isEqualTo(connectionFactory);
+		assertThat(messagingTemplate.getRabbitTemplate()).isEqualTo(rabbitTemplate);
+		assertThat(amqpAdmin).isNotNull();
+		assertThat(connectionFactory.getHost()).isEqualTo("localhost");
+		assertThat(this.context.containsBean("rabbitListenerContainerFactory"))
+				.as("Listener container factory should be created by default").isTrue();
 	}
 
 	@Test
@@ -86,9 +91,9 @@ public class RabbitAutoConfigurationTests {
 				"spring.rabbitmq.password:secret", "spring.rabbitmq.virtual_host:/vhost");
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
-		assertEquals("remote-server", connectionFactory.getHost());
-		assertEquals(9000, connectionFactory.getPort());
-		assertEquals("/vhost", connectionFactory.getVirtualHost());
+		assertThat(connectionFactory.getHost()).isEqualTo("remote-server");
+		assertThat(connectionFactory.getPort()).isEqualTo(9000);
+		assertThat(connectionFactory.getVirtualHost()).isEqualTo("/vhost");
 	}
 
 	@Test
@@ -96,7 +101,7 @@ public class RabbitAutoConfigurationTests {
 		load(TestConfiguration.class, "spring.rabbitmq.virtual_host:");
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
-		assertEquals("/", connectionFactory.getVirtualHost());
+		assertThat(connectionFactory.getVirtualHost()).isEqualTo("/");
 	}
 
 	@Test
@@ -104,7 +109,7 @@ public class RabbitAutoConfigurationTests {
 		load(TestConfiguration.class, "spring.rabbitmq.virtual_host:foo");
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
-		assertEquals("foo", connectionFactory.getVirtualHost());
+		assertThat(connectionFactory.getVirtualHost()).isEqualTo("foo");
 	}
 
 	@Test
@@ -112,7 +117,7 @@ public class RabbitAutoConfigurationTests {
 		load(TestConfiguration.class, "spring.rabbitmq.virtual_host:///foo");
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
-		assertEquals("///foo", connectionFactory.getVirtualHost());
+		assertThat(connectionFactory.getVirtualHost()).isEqualTo("///foo");
 	}
 
 	@Test
@@ -120,7 +125,7 @@ public class RabbitAutoConfigurationTests {
 		load(TestConfiguration.class, "spring.rabbitmq.virtual_host:/");
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
-		assertEquals("/", connectionFactory.getVirtualHost());
+		assertThat(connectionFactory.getVirtualHost()).isEqualTo("/");
 	}
 
 	@Test
@@ -129,17 +134,17 @@ public class RabbitAutoConfigurationTests {
 		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
-		assertEquals(rabbitTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals("otherserver", connectionFactory.getHost());
-		assertEquals(8001, connectionFactory.getPort());
+		assertThat(connectionFactory).isEqualTo(rabbitTemplate.getConnectionFactory());
+		assertThat(connectionFactory.getHost()).isEqualTo("otherserver");
+		assertThat(connectionFactory.getPort()).isEqualTo(8001);
 	}
 
 	@Test
 	public void testRabbitTemplateBackOff() {
 		load(TestConfiguration3.class);
 		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
-		assertEquals(this.context.getBean("testMessageConverter"),
-				rabbitTemplate.getMessageConverter());
+		assertThat(rabbitTemplate.getMessageConverter())
+				.isEqualTo(this.context.getBean("testMessageConverter"));
 	}
 
 	@Test
@@ -147,7 +152,7 @@ public class RabbitAutoConfigurationTests {
 		load(TestConfiguration4.class);
 		RabbitMessagingTemplate messagingTemplate = this.context
 				.getBean(RabbitMessagingTemplate.class);
-		assertEquals("fooBar", messagingTemplate.getDefaultDestination());
+		assertThat(messagingTemplate.getDefaultDestination()).isEqualTo("fooBar");
 	}
 
 	@Test
@@ -166,8 +171,8 @@ public class RabbitAutoConfigurationTests {
 		RabbitListenerContainerFactory<?> rabbitListenerContainerFactory = this.context
 				.getBean("rabbitListenerContainerFactory",
 						RabbitListenerContainerFactory.class);
-		assertEquals(SimpleRabbitListenerContainerFactory.class,
-				rabbitListenerContainerFactory.getClass());
+		assertThat(rabbitListenerContainerFactory.getClass())
+				.isEqualTo(SimpleRabbitListenerContainerFactory.class);
 	}
 
 	@Test
@@ -181,11 +186,77 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	public void testRabbitListenerContainerFactoryWithCustomSettings() {
+		load(TestConfiguration.class, "spring.rabbitmq.listener.autoStartup:false",
+				"spring.rabbitmq.listener.acknowledgeMode:manual",
+				"spring.rabbitmq.listener.concurrency:5",
+				"spring.rabbitmq.listener.maxConcurrency:10",
+				"spring.rabbitmq.listener.prefetch=40",
+				"spring.rabbitmq.listener.transactionSize:20");
+		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
+				.getBean("rabbitListenerContainerFactory",
+						SimpleRabbitListenerContainerFactory.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
+		assertThat(dfa.getPropertyValue("autoStartup")).isEqualTo(Boolean.FALSE);
+		assertThat(dfa.getPropertyValue("acknowledgeMode"))
+				.isEqualTo(AcknowledgeMode.MANUAL);
+		assertThat(dfa.getPropertyValue("concurrentConsumers")).isEqualTo(5);
+		assertThat(dfa.getPropertyValue("maxConcurrentConsumers")).isEqualTo(10);
+		assertThat(dfa.getPropertyValue("prefetchCount")).isEqualTo(40);
+		assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
+	}
+
+	@Test
 	public void enableRabbitAutomatically() throws Exception {
 		load(NoEnableRabbitConfiguration.class);
 		AnnotationConfigApplicationContext ctx = this.context;
-		ctx.getBean(RabbitListenerConfigUtils.RABBIT_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME);
-		ctx.getBean(RabbitListenerConfigUtils.RABBIT_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME);
+		ctx.getBean(
+				RabbitListenerConfigUtils.RABBIT_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME);
+		ctx.getBean(
+				RabbitListenerConfigUtils.RABBIT_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME);
+	}
+
+	@Test
+	public void customizeRequestedHeartBeat() {
+		load(TestConfiguration.class, "spring.rabbitmq.requestedHeartbeat:20");
+		com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory();
+		assertThat(rabbitConnectionFactory.getRequestedHeartbeat()).isEqualTo(20);
+	}
+
+	@Test
+	public void noSslByDefault() {
+		load(TestConfiguration.class);
+		com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory();
+		assertThat(rabbitConnectionFactory.getSocketFactory())
+				.as("Must use default SocketFactory")
+				.isEqualTo(SocketFactory.getDefault());
+	}
+
+	@Test
+	public void enableSsl() {
+		load(TestConfiguration.class, "spring.rabbitmq.ssl.enabled:true");
+		com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory();
+		assertThat(rabbitConnectionFactory.getSocketFactory())
+				.as("SocketFactory must use SSL").isInstanceOf(SSLSocketFactory.class);
+	}
+
+	@Test
+	// Make sure that we at least attempt to load the store
+	public void enableSslWithExtraConfig() {
+		this.thrown.expectMessage("foo");
+		this.thrown.expectMessage("does not exist");
+		load(TestConfiguration.class, "spring.rabbitmq.ssl.enabled:true",
+				"spring.rabbitmq.ssl.keyStore=foo",
+				"spring.rabbitmq.ssl.keyStorePassword=secret",
+				"spring.rabbitmq.ssl.trustStore=bar",
+				"spring.rabbitmq.ssl.trustStorePassword=secret");
+	}
+
+	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory() {
+		CachingConnectionFactory connectionFactory = this.context
+				.getBean(CachingConnectionFactory.class);
+		return (com.rabbitmq.client.ConnectionFactory) new DirectFieldAccessor(
+				connectionFactory).getPropertyValue("rabbitConnectionFactory");
 	}
 
 	private void load(Class<?> config, String... environment) {

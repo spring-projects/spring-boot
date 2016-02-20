@@ -95,11 +95,13 @@ public class MetadataCollector {
 
 	private boolean shouldBeMerged(ItemMetadata itemMetadata) {
 		String sourceType = itemMetadata.getSourceType();
-		return (sourceType != null && !deletedInCurrentBuild(sourceType) && !processedInCurrentBuild(sourceType));
+		return (sourceType != null && !deletedInCurrentBuild(sourceType)
+				&& !processedInCurrentBuild(sourceType));
 	}
 
 	private boolean deletedInCurrentBuild(String sourceType) {
-		return this.processingEnvironment.getElementUtils().getTypeElement(sourceType) == null;
+		return this.processingEnvironment.getElementUtils()
+				.getTypeElement(sourceType) == null;
 	}
 
 	private boolean processedInCurrentBuild(String sourceType) {

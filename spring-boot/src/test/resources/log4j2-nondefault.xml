@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration status="WARN" monitorInterval="30">
 	<Properties>
 		<Property name="PID">????</Property>
 		<Property name="LOG_PATTERN">${sys:LOG_FILE} %d{yyyy-MM-dd HH:mm:ss.SSS}] service%X{context} - ${sys:PID} %5p [%t] --- %c{1}: %m%n</Property>

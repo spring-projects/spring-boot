@@ -21,41 +21,38 @@ import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.context.event.SmartApplicationListener;
-import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
 
 /**
  * A {@link SmartApplicationListener} that reacts to {@link ApplicationStartedEvent start
- * events} by logging the classpath of the thread context class loader (TCCL) at
- * {@code DEBUG} level and to {@link ApplicationFailedEvent error events} by logging the
- * TCCL's classpath at {@code INFO} level.
+ * events} and to {@link ApplicationFailedEvent failed events} by logging the classpath of
+ * the thread context class loader (TCCL) at {@code DEBUG} level.
  *
  * @author Andy Wilkinson
  */
-public final class ClasspathLoggingApplicationListener implements
-		GenericApplicationListener {
+public final class ClasspathLoggingApplicationListener
+		implements GenericApplicationListener {
 
-	private static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 12;
+	private static final int ORDER = LoggingApplicationListener.DEFAULT_ORDER + 1;
 
 	private final Log logger = LogFactory.getLog(getClass());
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationStartedEvent) {
-			if (this.logger.isDebugEnabled()) {
+		if (this.logger.isDebugEnabled()) {
+			if (event instanceof ApplicationStartedEvent) {
 				this.logger
 						.debug("Application started with classpath: " + getClasspath());
 			}
-		}
-		else if (event instanceof ApplicationFailedEvent) {
-			if (this.logger.isInfoEnabled()) {
-				this.logger.info("Application failed to start with classpath: "
-						+ getClasspath());
+			else if (event instanceof ApplicationFailedEvent) {
+				this.logger.debug(
+						"Application failed to start with classpath: " + getClasspath());
 			}
 		}
 	}

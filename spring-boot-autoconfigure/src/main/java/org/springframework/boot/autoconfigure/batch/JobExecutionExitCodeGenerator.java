@@ -28,8 +28,8 @@ import org.springframework.context.ApplicationListener;
  *
  * @author Dave Syer
  */
-public class JobExecutionExitCodeGenerator implements
-		ApplicationListener<JobExecutionEvent>, ExitCodeGenerator {
+public class JobExecutionExitCodeGenerator
+		implements ApplicationListener<JobExecutionEvent>, ExitCodeGenerator {
 
 	private final List<JobExecution> executions = new ArrayList<JobExecution>();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public interface Libraries {
 	/**
 	 * Represents no libraries.
 	 */
-	public static Libraries NONE = new Libraries() {
+	Libraries NONE = new Libraries() {
 		@Override
 		public void doWithLibraries(LibraryCallback callback) throws IOException {
 		}
@@ -37,7 +37,7 @@ public interface Libraries {
 	/**
 	 * Iterate all relevant libraries.
 	 * @param callback a callback for each relevant library.
-	 * @throws IOException
+	 * @throws IOException if the operation fails
 	 */
 	void doWithLibraries(LibraryCallback callback) throws IOException;
 

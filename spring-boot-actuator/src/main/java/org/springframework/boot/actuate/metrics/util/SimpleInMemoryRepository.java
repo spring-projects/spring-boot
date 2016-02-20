@@ -36,10 +36,6 @@ public class SimpleInMemoryRepository<T> {
 
 	private final ConcurrentMap<String, Object> locks = new ConcurrentReferenceHashMap<String, Object>();
 
-	public static interface Callback<T> {
-		T modify(T current);
-	}
-
 	public T update(String name, Callback<T> callback) {
 		Object lock = this.locks.putIfAbsent(name, new Object());
 		if (lock == null) {
@@ -48,13 +44,8 @@ public class SimpleInMemoryRepository<T> {
 		synchronized (lock) {
 			T current = this.values.get(name);
 			T value = callback.modify(current);
-			if (current != null) {
-				this.values.replace(name, current, value);
-			}
-			else {
-				this.values.putIfAbsent(name, value);
-			}
-			return this.values.get(name);
+			this.values.put(name, value);
+			return value;
 		}
 	}
 
@@ -94,8 +85,8 @@ public class SimpleInMemoryRepository<T> {
 		if (!prefix.endsWith(".")) {
 			prefix = prefix + ".";
 		}
-		return new ArrayList<T>(this.values.subMap(prefix, false, prefix + "~", true)
-				.values());
+		return new ArrayList<T>(
+				this.values.subMap(prefix, false, prefix + "~", true).values());
 	}
 
 	public void setValues(ConcurrentNavigableMap<String, T> values) {
@@ -104,6 +95,21 @@ public class SimpleInMemoryRepository<T> {
 
 	protected NavigableMap<String, T> getValues() {
 		return this.values;
+	}
+
+	/**
+	 * Callback used to update a value.
+	 * @param <T> the value type
+	 */
+	public interface Callback<T> {
+
+		/**
+		 * Modify an existing value.
+		 * @param current the value to modify
+		 * @return the updated value
+		 */
+		T modify(T current);
+
 	}
 
 }

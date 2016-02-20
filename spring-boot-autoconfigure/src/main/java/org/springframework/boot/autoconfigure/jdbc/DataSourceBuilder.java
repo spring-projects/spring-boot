@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -33,7 +34,7 @@ import org.springframework.util.ClassUtils;
  * and so that there can be a fallback to an embedded database if one can be detected on
  * the classpath, only a small set of common configuration properties are supported. To
  * inject additional properties into the result you can downcast it, or use
- * <code>@ConfigurationProperties</code>.
+ * {@code @ConfigurationProperties}.
  *
  * @author Dave Syer
  * @since 1.1.0

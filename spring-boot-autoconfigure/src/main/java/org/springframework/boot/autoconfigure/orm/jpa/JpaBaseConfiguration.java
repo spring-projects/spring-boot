@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.springframework.beans.BeansException;
@@ -33,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -98,14 +100,16 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(
 			JpaVendorAdapter jpaVendorAdapter) {
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
-				jpaVendorAdapter, this.jpaProperties, this.persistenceUnitManager);
+				jpaVendorAdapter, this.jpaProperties.getProperties(),
+				this.persistenceUnitManager);
 		builder.setCallback(getVendorCallback());
 		return builder;
 	}
 
 	@Bean
 	@Primary
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ LocalContainerEntityManagerFactoryBean.class,
+			EntityManagerFactory.class })
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(
 			EntityManagerFactoryBuilder factoryBuilder) {
 		Map<String, Object> vendorProperties = getVendorProperties();
@@ -139,7 +143,8 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	}
 
 	/**
-	 * @return the jtaTransactionManager or {@code null}
+	 * Return the JTA transaction manager.
+	 * @return the transaction manager or {@code null}
 	 */
 	protected JtaTransactionManager getJtaTransactionManager() {
 		return this.jtaTransactionManager;

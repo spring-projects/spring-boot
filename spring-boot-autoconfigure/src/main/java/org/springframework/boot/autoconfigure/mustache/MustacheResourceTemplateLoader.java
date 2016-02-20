@@ -19,27 +19,27 @@ package org.springframework.boot.autoconfigure.mustache;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Mustache.TemplateLoader;
+
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Mustache.TemplateLoader;
-
 /**
  * Mustache TemplateLoader implementation that uses a prefix, suffix and the Spring
  * Resource abstraction to load a template from a file, classpath, URL etc. A
  * TemplateLoader is needed in the Compiler when you want to render partials (i.e.
- * tiles-like fetaures).
+ * tiles-like features).
  *
  * @author Dave Syer
  * @since 1.2.2
  * @see Mustache
  * @see Resource
  */
-public class MustacheResourceTemplateLoader implements TemplateLoader,
-		ResourceLoaderAware {
+public class MustacheResourceTemplateLoader
+		implements TemplateLoader, ResourceLoaderAware {
 
 	private String prefix = "";
 
@@ -59,14 +59,16 @@ public class MustacheResourceTemplateLoader implements TemplateLoader,
 	}
 
 	/**
-	 * @param charSet the charSet to set
+	 * Set the charset.
+	 * @param charSet the charset
 	 */
 	public void setCharset(String charSet) {
 		this.charSet = charSet;
 	}
 
 	/**
-	 * @param resourceLoader the resourceLoader to set
+	 * Set the resource loader.
+	 * @param resourceLoader the resource loader
 	 */
 	@Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {
@@ -75,8 +77,9 @@ public class MustacheResourceTemplateLoader implements TemplateLoader,
 
 	@Override
 	public Reader getTemplate(String name) throws Exception {
-		return new InputStreamReader(this.resourceLoader.getResource(
-				this.prefix + name + this.suffix).getInputStream(), this.charSet);
+		return new InputStreamReader(this.resourceLoader
+				.getResource(this.prefix + name + this.suffix).getInputStream(),
+				this.charSet);
 	}
 
 }

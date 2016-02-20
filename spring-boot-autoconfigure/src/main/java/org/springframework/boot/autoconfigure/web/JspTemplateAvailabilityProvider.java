@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,18 @@
 package org.springframework.boot.autoconfigure.web;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
 
 /**
  * {@link TemplateAvailabilityProvider} that provides availability information for JSP
- * view templates
+ * view templates.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 1.1.0
  */
 public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
@@ -34,13 +37,20 @@ public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProv
 	public boolean isTemplateAvailable(String view, Environment environment,
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.apache.jasper.compiler.JspConfig", classLoader)) {
-			String prefix = environment.getProperty("spring.view.prefix",
-					WebMvcAutoConfiguration.DEFAULT_PREFIX);
-			String suffix = environment.getProperty("spring.view.suffix",
-					WebMvcAutoConfiguration.DEFAULT_SUFFIX);
-			return resourceLoader.getResource(prefix + view + suffix).exists();
+			String resourceName = getResourceName(view, environment);
+			return resourceLoader.getResource(resourceName).exists();
 		}
 		return false;
+	}
+
+	private String getResourceName(String view, Environment environment) {
+		PropertyResolver resolver = new RelaxedPropertyResolver(environment,
+				"spring.mvc.view.");
+		String prefix = resolver.getProperty("prefix",
+				WebMvcAutoConfiguration.DEFAULT_PREFIX);
+		String suffix = resolver.getProperty("suffix",
+				WebMvcAutoConfiguration.DEFAULT_SUFFIX);
+		return prefix + view + suffix;
 	}
 
 }

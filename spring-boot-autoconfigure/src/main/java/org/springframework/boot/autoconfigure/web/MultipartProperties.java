@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,11 @@ import org.springframework.util.StringUtils;
  * be obtained.</li>
  * <li>{@literal multipart.maxFileSize} specifies the maximum size permitted for uploaded
  * files. The default is 1Mb.</li>
- * <li>
- * {@literal multipart.maxRequestSize} specifies the maximum size allowed for
+ * <li>{@literal multipart.maxRequestSize} specifies the maximum size allowed for
  * {@literal multipart/form-data} requests. The default is 10Mb</li>
- * <li>
- * {@literal multipart.fileSizeThreshold} specifies the size threshold after which files
- * will be written to disk. Default is 0, which means that the file will be written to
- * disk immediately.</li>
+ * <li>{@literal multipart.fileSizeThreshold} specifies the size threshold after which
+ * files will be written to disk. Default is 0, which means that the file will be written
+ * to disk immediately.</li>
  * </ul>
  * <p>
  * These properties are ultimately passed through
@@ -49,6 +47,11 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties(prefix = "multipart", ignoreUnknownFields = false)
 public class MultipartProperties {
+
+	/**
+	 * Enable multipart upload handling.
+	 */
+	private boolean enabled;
 
 	/**
 	 * Intermediate location of uploaded files.
@@ -73,32 +76,40 @@ public class MultipartProperties {
 	 */
 	private String fileSizeThreshold = "0";
 
-	public String getMaxFileSize() {
-		return this.maxFileSize;
+	public boolean getEnabled() {
+		return this.enabled;
 	}
 
-	public String getMaxRequestSize() {
-		return this.maxRequestSize;
-	}
-
-	public String getFileSizeThreshold() {
-		return this.fileSizeThreshold;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public String getLocation() {
 		return this.location;
 	}
 
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public String getMaxFileSize() {
+		return this.maxFileSize;
+	}
+
 	public void setMaxFileSize(String maxFileSize) {
 		this.maxFileSize = maxFileSize;
+	}
+
+	public String getMaxRequestSize() {
+		return this.maxRequestSize;
 	}
 
 	public void setMaxRequestSize(String maxRequestSize) {
 		this.maxRequestSize = maxRequestSize;
 	}
 
-	public void setLocation(String location) {
-		this.location = location;
+	public String getFileSizeThreshold() {
+		return this.fileSizeThreshold;
 	}
 
 	public void setFileSizeThreshold(String fileSizeThreshold) {
@@ -106,7 +117,7 @@ public class MultipartProperties {
 	}
 
 	/**
-	 * Create a new {@link MultipartConfigElement} using the
+	 * Create a new {@link MultipartConfigElement} using the properties.
 	 * @return a new {@link MultipartConfigElement} configured using there properties
 	 */
 	public MultipartConfigElement createMultipartConfig() {

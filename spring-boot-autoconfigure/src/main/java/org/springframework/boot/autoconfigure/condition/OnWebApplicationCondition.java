@@ -27,7 +27,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
- * {@link Condition} that checks for a the presence or absence of
+ * {@link Condition} that checks for the presence or absence of
  * {@link WebApplicationContext}.
  *
  * @author Dave Syer

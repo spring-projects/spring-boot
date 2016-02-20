@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.security.jpa;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -40,7 +41,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = JpaUserDetailsTests.Main.class)
+@SpringApplicationConfiguration(JpaUserDetailsTests.Main.class)
 @DirtiesContext
 public class JpaUserDetailsTests {
 

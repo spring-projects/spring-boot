@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,13 @@ package org.springframework.boot.env;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
@@ -39,7 +40,7 @@ import org.springframework.util.StringUtils;
  */
 public class PropertySourcesLoader {
 
-	private static Log logger = LogFactory.getLog(PropertySourcesLoader.class);
+	private static final Log logger = LogFactory.getLog(PropertySourcesLoader.class);
 
 	private final MutablePropertySources propertySources;
 
@@ -62,14 +63,14 @@ public class PropertySourcesLoader {
 		Assert.notNull(propertySources, "PropertySources must not be null");
 		this.propertySources = propertySources;
 		this.loaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
-				null);
+				getClass().getClassLoader());
 	}
 
 	/**
 	 * Load the specified resource (if possible) and add it as the first source.
 	 * @param resource the source resource (may be {@code null}).
 	 * @return the loaded property source or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the source cannot be loaded
 	 */
 	public PropertySource<?> load(Resource resource) throws IOException {
 		return load(resource, null);
@@ -81,7 +82,7 @@ public class PropertySourcesLoader {
 	 * @param resource the source resource (may be {@code null}).
 	 * @param profile a specific profile to load or {@code null} to load the default.
 	 * @return the loaded property source or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the source cannot be loaded
 	 */
 	public PropertySource<?> load(Resource resource, String profile) throws IOException {
 		return load(resource, resource.getDescription(), profile);
@@ -94,7 +95,7 @@ public class PropertySourcesLoader {
 	 * @param name the root property name (may be {@code null}).
 	 * @param profile a specific profile to load or {@code null} to load the default.
 	 * @return the loaded property source or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the source cannot be loaded
 	 */
 	public PropertySource<?> load(Resource resource, String name, String profile)
 			throws IOException {
@@ -115,7 +116,7 @@ public class PropertySourcesLoader {
 	 * @param name the root property name (may be {@code null}).
 	 * @param profile a specific profile to load or {@code null} to load the default.
 	 * @return the loaded property source or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the source cannot be loaded
 	 */
 	public PropertySource<?> load(Resource resource, String group, String name,
 			String profile) throws IOException {
@@ -134,10 +135,8 @@ public class PropertySourcesLoader {
 	}
 
 	private boolean isFile(Resource resource) {
-		return resource != null
-				&& resource.exists()
-				&& StringUtils.hasText(StringUtils.getFilenameExtension(resource
-						.getFilename()));
+		return resource != null && resource.exists() && StringUtils
+				.hasText(StringUtils.getFilenameExtension(resource.getFilename()));
 	}
 
 	private String generatePropertySourceName(String name, String profile) {
@@ -201,7 +200,7 @@ public class PropertySourcesLoader {
 	 * @return the file extensions
 	 */
 	public Set<String> getAllFileExtensions() {
-		Set<String> fileExtensions = new HashSet<String>();
+		Set<String> fileExtensions = new LinkedHashSet<String>();
 		for (PropertySourceLoader loader : this.loaders) {
 			fileExtensions.addAll(Arrays.asList(loader.getFileExtensions()));
 		}

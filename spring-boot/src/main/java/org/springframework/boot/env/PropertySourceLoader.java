@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public interface PropertySourceLoader {
 	 * used to load multi-document files (such as YAML). Simple property formats should
 	 * {@code null} when asked to load a profile.
 	 * @return a property source or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the source cannot be loaded
 	 */
 	PropertySource<?> load(String name, Resource resource, String profile)
 			throws IOException;

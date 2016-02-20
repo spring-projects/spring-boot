@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,25 +15,6 @@
  */
 
 package org.springframework.boot.context.embedded.undertow;
-
-import io.undertow.Undertow;
-import io.undertow.Undertow.Builder;
-import io.undertow.UndertowMessages;
-import io.undertow.server.handlers.resource.ClassPathResourceManager;
-import io.undertow.server.handlers.resource.FileResourceManager;
-import io.undertow.server.handlers.resource.Resource;
-import io.undertow.server.handlers.resource.ResourceChangeListener;
-import io.undertow.server.handlers.resource.ResourceManager;
-import io.undertow.server.handlers.resource.URLResource;
-import io.undertow.server.session.SessionManager;
-import io.undertow.servlet.Servlets;
-import io.undertow.servlet.api.DeploymentInfo;
-import io.undertow.servlet.api.DeploymentManager;
-import io.undertow.servlet.api.MimeMapping;
-import io.undertow.servlet.api.ServletContainerInitializerInfo;
-import io.undertow.servlet.api.ServletStackTraces;
-import io.undertow.servlet.handlers.DefaultServlet;
-import io.undertow.servlet.util.ImmediateInstanceFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +38,35 @@ import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import io.undertow.Undertow;
+import io.undertow.Undertow.Builder;
+import io.undertow.UndertowMessages;
+import io.undertow.server.HandlerWrapper;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.accesslog.AccessLogHandler;
+import io.undertow.server.handlers.accesslog.AccessLogReceiver;
+import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
+import io.undertow.server.handlers.resource.FileResourceManager;
+import io.undertow.server.handlers.resource.Resource;
+import io.undertow.server.handlers.resource.ResourceChangeListener;
+import io.undertow.server.handlers.resource.ResourceManager;
+import io.undertow.server.handlers.resource.URLResource;
+import io.undertow.server.session.SessionManager;
+import io.undertow.servlet.Servlets;
+import io.undertow.servlet.api.DeploymentInfo;
+import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.api.MimeMapping;
+import io.undertow.servlet.api.ServletContainerInitializerInfo;
+import io.undertow.servlet.api.ServletStackTraces;
+import io.undertow.servlet.handlers.DefaultServlet;
+import io.undertow.servlet.util.ImmediateInstanceFactory;
+import org.xnio.OptionMap;
+import org.xnio.Options;
+import org.xnio.Sequence;
+import org.xnio.SslClientAuthMode;
+import org.xnio.Xnio;
+import org.xnio.XnioWorker;
+
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -69,8 +79,6 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
-import org.xnio.Options;
-import org.xnio.SslClientAuthMode;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create
@@ -81,11 +89,13 @@ import org.xnio.SslClientAuthMode;
  *
  * @author Ivan Sopov
  * @author Andy Wilkinson
+ * @author Marcos Barbero
+ * @author Eddú Meléndez
  * @since 1.2.0
  * @see UndertowEmbeddedServletContainer
  */
-public class UndertowEmbeddedServletContainerFactory extends
-		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+public class UndertowEmbeddedServletContainerFactory
+		extends AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
@@ -105,12 +115,20 @@ public class UndertowEmbeddedServletContainerFactory extends
 
 	private Boolean directBuffers;
 
+	private File accessLogDirectory;
+
+	private String accessLogPattern;
+
+	private boolean accessLogEnabled = false;
+
+	private boolean useForwardHeaders;
+
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainerFactory} instance.
 	 */
 	public UndertowEmbeddedServletContainerFactory() {
 		super();
-		setRegisterJspServlet(false);
+		getJspServlet().setRegistered(false);
 	}
 
 	/**
@@ -120,7 +138,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	 */
 	public UndertowEmbeddedServletContainerFactory(int port) {
 		super(port);
-		setRegisterJspServlet(false);
+		getJspServlet().setRegistered(false);
 	}
 
 	/**
@@ -131,7 +149,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	 */
 	public UndertowEmbeddedServletContainerFactory(String contextPath, int port) {
 		super(contextPath, port);
-		setRegisterJspServlet(false);
+		getJspServlet().setRegistered(false);
 	}
 
 	/**
@@ -203,8 +221,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 		DeploymentManager manager = createDeploymentManager(initializers);
 		int port = getPort();
 		Builder builder = createBuilder(port);
-		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, port >= 0);
+		return getUndertowEmbeddedServletContainer(builder, manager, port);
 	}
 
 	private Builder createBuilder(int port) {
@@ -243,6 +260,14 @@ public class UndertowEmbeddedServletContainerFactory extends
 			builder.addHttpsListener(port, getListenAddress(), sslContext);
 			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE,
 					getSslClientAuthMode(ssl));
+			if (ssl.getEnabledProtocols() != null) {
+				builder.setSocketOption(Options.SSL_ENABLED_PROTOCOLS,
+						Sequence.of(ssl.getEnabledProtocols()));
+			}
+			if (ssl.getCiphers() != null) {
+				builder.setSocketOption(Options.SSL_ENABLED_CIPHER_SUITES,
+						Sequence.of(ssl.getCiphers()));
+			}
 		}
 		catch (NoSuchAlgorithmException ex) {
 			throw new IllegalStateException(ex);
@@ -283,8 +308,9 @@ public class UndertowEmbeddedServletContainerFactory extends
 			// Get key manager to provide client credentials.
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
 					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			char[] keyPassword = ssl.getKeyPassword() != null ? ssl.getKeyPassword()
-					.toCharArray() : ssl.getKeyStorePassword().toCharArray();
+			char[] keyPassword = ssl.getKeyPassword() != null
+					? ssl.getKeyPassword().toCharArray()
+					: ssl.getKeyStorePassword().toCharArray();
 			keyManagerFactory.init(keyStore, keyPassword);
 			return keyManagerFactory.getKeyManagers();
 		}
@@ -306,8 +332,8 @@ public class UndertowEmbeddedServletContainerFactory extends
 			}
 			KeyStore trustedKeyStore = KeyStore.getInstance(trustStoreType);
 			URL url = ResourceUtils.getURL(trustStore);
-			trustedKeyStore.load(url.openStream(), ssl.getTrustStorePassword()
-					.toCharArray());
+			trustedKeyStore.load(url.openStream(),
+					ssl.getTrustStorePassword().toCharArray());
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory
 					.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 			trustManagerFactory.init(trustedKeyStore);
@@ -325,6 +351,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 				initializers);
 		deployment.setClassLoader(getServletClassLoader());
 		deployment.setContextPath(getContextPath());
+		deployment.setDisplayName(getDisplayName());
 		deployment.setDeploymentName("spring-boot");
 		if (isRegisterDefaultServlet()) {
 			deployment.addServlet(Servlets.servlet("default", DefaultServlet.class));
@@ -336,12 +363,59 @@ public class UndertowEmbeddedServletContainerFactory extends
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
 			customizer.customize(deployment);
 		}
-		DeploymentManager manager = Servlets.defaultContainer().addDeployment(deployment);
+		if (isAccessLogEnabled()) {
+			configureAccessLog(deployment);
+		}
+		if (isPersistSession()) {
+			File dir = getValidSessionStoreDir();
+			deployment.setSessionPersistenceManager(new FileSessionPersistence(dir));
+		}
+		DeploymentManager manager = Servlets.newContainer().addDeployment(deployment);
 		manager.deploy();
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
 		int sessionTimeout = (getSessionTimeout() > 0 ? getSessionTimeout() : -1);
 		sessionManager.setDefaultSessionTimeout(sessionTimeout);
 		return manager;
+	}
+
+	private void configureAccessLog(DeploymentInfo deploymentInfo) {
+		deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
+
+			@Override
+			public HttpHandler wrap(HttpHandler handler) {
+				return createAccessLogHandler(handler);
+			}
+
+		});
+	}
+
+	private AccessLogHandler createAccessLogHandler(HttpHandler handler) {
+		try {
+			createAccessLogDirectoryIfNecessary();
+			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
+					createWorker(), this.accessLogDirectory, "access_log.");
+			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
+					: "common";
+			return new AccessLogHandler(handler, accessLogReceiver, formatString,
+					Undertow.class.getClassLoader());
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Failed to create AccessLogHandler", ex);
+		}
+	}
+
+	private void createAccessLogDirectoryIfNecessary() {
+		Assert.state(this.accessLogDirectory != null, "Access log directory is not set");
+		if (!this.accessLogDirectory.isDirectory() && !this.accessLogDirectory.mkdirs()) {
+			throw new IllegalStateException("Failed to create access log directory '"
+					+ this.accessLogDirectory + "'");
+		}
+	}
+
+	private XnioWorker createWorker() throws IOException {
+		Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
+		return xnio.createWorker(
+				OptionMap.builder().set(Options.THREAD_DAEMON, true).getMap());
 	}
 
 	private void registerServletContainerInitializerToDriveServletContextInitializers(
@@ -362,17 +436,31 @@ public class UndertowEmbeddedServletContainerFactory extends
 	}
 
 	private ResourceManager getDocumentRootResourceManager() {
-		File root = getValidDocumentRoot();
-		if (root != null && root.isDirectory()) {
+		File root = getCanonicalDocumentRoot();
+		if (root.isDirectory()) {
 			return new FileResourceManager(root, 0);
 		}
-		if (root != null && root.isFile()) {
-			return new JarResourcemanager(root);
+		if (root.isFile()) {
+			return new JarResourceManager(root);
 		}
-		if (this.resourceLoader != null) {
-			return new ClassPathResourceManager(this.resourceLoader.getClassLoader(), "");
+		return ResourceManager.EMPTY_RESOURCE_MANAGER;
+	}
+
+	/**
+	 * Return the document root in canonical form. Undertow uses File#getCanonicalFile()
+	 * to determine whether a resource has been requested using the proper case but on
+	 * Windows {@code java.io.tmpdir} may be set as a tilde-compressed pathname.
+	 * @return the canonical document root
+	 */
+	private File getCanonicalDocumentRoot() {
+		try {
+			File root = getValidDocumentRoot();
+			root = (root != null ? root : createTempDir("undertow-docbase"));
+			return root.getCanonicalFile();
 		}
-		return new ClassPathResourceManager(getClass().getClassLoader(), "");
+		catch (IOException e) {
+			throw new IllegalStateException("Cannot get canonical document root", e);
+		}
 	}
 
 	private void configureErrorPages(DeploymentInfo servletBuilder) {
@@ -413,7 +501,8 @@ public class UndertowEmbeddedServletContainerFactory extends
 	protected UndertowEmbeddedServletContainer getUndertowEmbeddedServletContainer(
 			Builder builder, DeploymentManager manager, int port) {
 		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, port >= 0);
+				port, isUseForwardHeaders(), port >= 0, getCompression(),
+				getServerHeader());
 	}
 
 	@Override
@@ -441,24 +530,47 @@ public class UndertowEmbeddedServletContainerFactory extends
 		this.directBuffers = directBuffers;
 	}
 
-	@Override
-	public void setRegisterJspServlet(boolean registerJspServlet) {
-		Assert.isTrue(!registerJspServlet, "Undertow does not support JSPs");
-		super.setRegisterJspServlet(registerJspServlet);
+	public void setAccessLogDirectory(File accessLogDirectory) {
+		this.accessLogDirectory = accessLogDirectory;
+	}
+
+	public void setAccessLogPattern(String accessLogPattern) {
+		this.accessLogPattern = accessLogPattern;
+	}
+
+	public void setAccessLogEnabled(boolean accessLogEnabled) {
+		this.accessLogEnabled = accessLogEnabled;
+	}
+
+	public boolean isAccessLogEnabled() {
+		return this.accessLogEnabled;
+	}
+
+	protected final boolean isUseForwardHeaders() {
+		return this.useForwardHeaders;
+	}
+
+	/**
+	 * Set if x-forward-* headers should be processed.
+	 * @param useForwardHeaders if x-forward headers should be used
+	 * @since 1.3.0
+	 */
+	public void setUseForwardHeaders(boolean useForwardHeaders) {
+		this.useForwardHeaders = useForwardHeaders;
 	}
 
 	/**
 	 * Undertow {@link ResourceManager} for JAR resources.
 	 */
-	private static class JarResourcemanager implements ResourceManager {
+	private static class JarResourceManager implements ResourceManager {
 
 		private final String jarPath;
 
-		public JarResourcemanager(File jarFile) {
+		JarResourceManager(File jarFile) {
 			this(jarFile.getAbsolutePath());
 		}
 
-		public JarResourcemanager(String jarPath) {
+		JarResourceManager(String jarPath) {
 			this.jarPath = jarPath;
 		}
 
@@ -502,7 +614,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 
 		private final ServletContextInitializer[] initializers;
 
-		public Initializer(ServletContextInitializer[] initializers) {
+		Initializer(ServletContextInitializer[] initializers) {
 			this.initializers = initializers;
 		}
 

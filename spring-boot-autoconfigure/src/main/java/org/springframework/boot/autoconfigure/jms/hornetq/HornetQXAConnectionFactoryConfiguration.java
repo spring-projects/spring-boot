@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import javax.transaction.TransactionManager;
 
 import org.hornetq.jms.client.HornetQConnectionFactory;
 import org.hornetq.jms.client.HornetQXAConnectionFactory;
+
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -46,15 +47,15 @@ class HornetQXAConnectionFactoryConfiguration {
 	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
 	public ConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory,
 			HornetQProperties properties, XAConnectionFactoryWrapper wrapper)
-			throws Exception {
-		return wrapper.wrapConnectionFactory(new HornetQConnectionFactoryFactory(
-				beanFactory, properties)
-				.createConnectionFactory(HornetQXAConnectionFactory.class));
+					throws Exception {
+		return wrapper.wrapConnectionFactory(
+				new HornetQConnectionFactoryFactory(beanFactory, properties)
+						.createConnectionFactory(HornetQXAConnectionFactory.class));
 	}
 
 	@Bean
-	public ConnectionFactory nonXaJmsConnectionFactory(ListableBeanFactory beanFactory,
-			HornetQProperties properties) {
+	public HornetQConnectionFactory nonXaJmsConnectionFactory(
+			ListableBeanFactory beanFactory, HornetQProperties properties) {
 		return new HornetQConnectionFactoryFactory(beanFactory, properties)
 				.createConnectionFactory(HornetQConnectionFactory.class);
 	}

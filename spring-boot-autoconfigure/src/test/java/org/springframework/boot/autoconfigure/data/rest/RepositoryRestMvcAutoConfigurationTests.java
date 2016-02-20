@@ -18,15 +18,21 @@ package org.springframework.boot.autoconfigure.data.rest;
 
 import java.net.URI;
 import java.util.Date;
+import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.city.City;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,16 +40,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.BaseUri;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RepositoryRestMvcAutoConfiguration}.
@@ -65,41 +68,60 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		load(TestConfiguration.class);
-		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class))
+				.isNotNull();
 	}
 
 	@Test
 	public void testWithCustomBasePath() throws Exception {
 		load(TestConfiguration.class, "spring.data.rest.base-path:foo");
-		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class))
+				.isNotNull();
 		RepositoryRestConfiguration bean = this.context
 				.getBean(RepositoryRestConfiguration.class);
 		URI expectedUri = URI.create("/foo");
-		assertEquals("Custom basePath not set", expectedUri, bean.getBaseUri());
+		assertThat(bean.getBaseUri()).as("Custom basePath not set")
+				.isEqualTo(expectedUri);
 		BaseUri baseUri = this.context.getBean(BaseUri.class);
-		assertEquals("Custom basePath has not been applied to BaseUri bean", expectedUri,
-				baseUri.getUri());
+		assertThat(expectedUri).as("Custom basePath has not been applied to BaseUri bean")
+				.isEqualTo(baseUri.getUri());
+	}
+
+	@Test
+	public void testWithCustomSettings() throws Exception {
+		load(TestConfiguration.class, "spring.data.rest.default-page-size:42",
+				"spring.data.rest.max-page-size:78",
+				"spring.data.rest.page-param-name:_page",
+				"spring.data.rest.limit-param-name:_limit",
+				"spring.data.rest.sort-param-name:_sort",
+				"spring.data.rest.default-media-type:application/my-json",
+				"spring.data.rest.return-body-on-create:false",
+				"spring.data.rest.return-body-on-update:false",
+				"spring.data.rest.enable-enum-translation:true");
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class))
+				.isNotNull();
+		RepositoryRestConfiguration bean = this.context
+				.getBean(RepositoryRestConfiguration.class);
+		assertThat(bean.getDefaultPageSize()).isEqualTo(42);
+		assertThat(bean.getMaxPageSize()).isEqualTo(78);
+		assertThat(bean.getPageParamName()).isEqualTo("_page");
+		assertThat(bean.getLimitParamName()).isEqualTo("_limit");
+		assertThat(bean.getSortParamName()).isEqualTo("_sort");
+		assertThat(bean.getDefaultMediaType())
+				.isEqualTo(MediaType.parseMediaType("application/my-json"));
+		assertThat(bean.returnBodyOnCreate(null)).isFalse();
+		assertThat(bean.returnBodyOnUpdate(null)).isFalse();
+		assertThat(bean.isEnableEnumTranslation()).isTrue();
 	}
 
 	@Test
 	public void backOffWithCustomConfiguration() {
 		load(TestConfigurationWithRestMvcConfig.class, "spring.data.rest.base-path:foo");
-		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class))
+				.isNotNull();
 		RepositoryRestConfiguration bean = this.context
 				.getBean(RepositoryRestConfiguration.class);
-		assertEquals("Custom base URI should not have been set", URI.create(""),
-				bean.getBaseUri());
-	}
-
-	@Test
-	public void propertiesStillAppliedWithCustomBootConfig() {
-		load(TestConfigurationWithRestMvcBootConfig.class,
-				"spring.data.rest.base-path:foo");
-		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
-		RepositoryRestConfiguration bean = this.context
-				.getBean(RepositoryRestConfiguration.class);
-		assertEquals("Custom base URI should have been set", URI.create("/foo"),
-				bean.getBaseUri());
+		assertThat(bean.getBaseUri()).isEqualTo(URI.create(""));
 	}
 
 	@Test
@@ -111,25 +133,39 @@ public class RepositoryRestMvcAutoConfigurationTests {
 		assertThatDateIsFormattedCorrectly("objectMapper");
 	}
 
+	@Test
+	public void primaryObjectMapperIsAvailable() {
+		load(TestConfiguration.class);
+		Map<String, ObjectMapper> objectMappers = this.context
+				.getBeansOfType(ObjectMapper.class);
+		assertThat(objectMappers.size()).isGreaterThan(1);
+		this.context.getBean(ObjectMapper.class);
+	}
+
 	public void assertThatDateIsFormattedCorrectly(String beanName)
 			throws JsonProcessingException {
 		ObjectMapper objectMapper = this.context.getBean(beanName, ObjectMapper.class);
-
-		assertEquals("\"2014-10\"",
-				objectMapper.writeValueAsString(new Date(1413387983267L)));
+		assertThat(objectMapper.writeValueAsString(new Date(1413387983267L)))
+				.isEqualTo("\"2014-10\"");
 	}
 
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 		applicationContext.setServletContext(new MockServletContext());
-		applicationContext.register(config, EmbeddedDataSourceConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
-				JpaRepositoriesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				RepositoryRestMvcAutoConfiguration.class);
+		applicationContext.register(config, BaseConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.refresh();
 		this.context = applicationContext;
+	}
+
+	@Configuration
+	@Import(EmbeddedDataSourceConfiguration.class)
+	@ImportAutoConfiguration({ HibernateJpaAutoConfiguration.class,
+			JpaRepositoriesAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class,
+			RepositoryRestMvcAutoConfiguration.class, JacksonAutoConfiguration.class })
+	protected static class BaseConfiguration {
+
 	}
 
 	@Configuration
@@ -141,11 +177,6 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	@Import({ TestConfiguration.class, RepositoryRestMvcConfiguration.class })
 	protected static class TestConfigurationWithRestMvcConfig {
-
-	}
-
-	@Import({ TestConfiguration.class, SpringBootRepositoryRestMvcConfiguration.class })
-	protected static class TestConfigurationWithRestMvcBootConfig {
 
 	}
 

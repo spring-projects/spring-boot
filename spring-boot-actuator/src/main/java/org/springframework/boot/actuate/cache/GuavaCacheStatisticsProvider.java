@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.cache;
 
+import com.google.common.cache.CacheStats;
+
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.guava.GuavaCache;
-
-import com.google.common.cache.CacheStats;
 
 /**
  * {@link CacheStatisticsProvider} implementation for Guava.
@@ -30,7 +30,8 @@ import com.google.common.cache.CacheStats;
 public class GuavaCacheStatisticsProvider implements CacheStatisticsProvider<GuavaCache> {
 
 	@Override
-	public CacheStatistics getCacheStatistics(CacheManager cacheManager, GuavaCache cache) {
+	public CacheStatistics getCacheStatistics(CacheManager cacheManager,
+			GuavaCache cache) {
 		DefaultCacheStatistics statistics = new DefaultCacheStatistics();
 		statistics.setSize(cache.getNativeCache().size());
 		CacheStats guavaStats = cache.getNativeCache().stats();

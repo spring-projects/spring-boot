@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  * {@link MultiMetricRepository} implementation backed by a redis store. Metric values are
  * stored as zset values and the timestamps as regular values, both against a key composed
  * of the group name prefixed with a constant prefix (default "spring.groups."). The group
- * names are stored as a zset under "keys." + <code>[prefix]</code>.
+ * names are stored as a zset under "keys." + {@code [prefix]}.
  *
  * @author Dave Syer
  */
@@ -108,8 +108,8 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 				.boundZSetOps(groupKey);
 		String key = keyFor(delta.getName());
 		double value = zSetOperations.incrementScore(key, delta.getValue().doubleValue());
-		String raw = serialize(new Metric<Double>(delta.getName(), value,
-				delta.getTimestamp()));
+		String raw = serialize(
+				new Metric<Double>(delta.getName(), value, delta.getTimestamp()));
 		this.redisOperations.opsForValue().set(key, raw);
 	}
 

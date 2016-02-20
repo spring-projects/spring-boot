@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "endpoints.metrics", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "endpoints.metrics")
 public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private final List<PublicMetrics> publicMetrics;
@@ -58,12 +58,27 @@ public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		AnnotationAwareOrderComparator.sort(this.publicMetrics);
 	}
 
+	public void registerPublicMetrics(PublicMetrics metrics) {
+		this.publicMetrics.add(metrics);
+		AnnotationAwareOrderComparator.sort(this.publicMetrics);
+	}
+
+	public void unregisterPublicMetrics(PublicMetrics metrics) {
+		this.publicMetrics.remove(metrics);
+	}
+
 	@Override
 	public Map<String, Object> invoke() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		for (PublicMetrics publicMetric : this.publicMetrics) {
-			for (Metric<?> metric : publicMetric.metrics()) {
-				result.put(metric.getName(), metric.getValue());
+		List<PublicMetrics> metrics = new ArrayList<PublicMetrics>(this.publicMetrics);
+		for (PublicMetrics publicMetric : metrics) {
+			try {
+				for (Metric<?> metric : publicMetric.metrics()) {
+					result.put(metric.getName(), metric.getValue());
+				}
+			}
+			catch (Exception ex) {
+				// Could not evaluate metrics
 			}
 		}
 		return result;

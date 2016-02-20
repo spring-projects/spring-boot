@@ -27,62 +27,48 @@ package org.springframework.boot.autoconfigure.cache;
 public enum CacheType {
 
 	/**
-	 * Generic caching using 'Cache 'beans from the context.
+	 * Generic caching using 'Cache' beans from the context.
 	 */
-	GENERIC(GenericCacheConfiguration.class),
-
-	/**
-	 * EhCache backed caching.
-	 */
-	EHCACHE(EhCacheCacheConfiguration.class),
-
-	/**
-	 * Haezelcast backed caching
-	 */
-	HAZELCAST(HazelcastCacheConfiguration.class),
+	GENERIC,
 
 	/**
 	 * JCache (JSR-107) backed caching.
 	 */
-	JCACHE(JCacheCacheConfiguration.class),
+	JCACHE,
+
+	/**
+	 * EhCache backed caching.
+	 */
+	EHCACHE,
+
+	/**
+	 * Hazelcast backed caching.
+	 */
+	HAZELCAST,
+
+	/**
+	 * Infinispan backed caching.
+	 */
+	INFINISPAN,
 
 	/**
 	 * Redis backed caching.
 	 */
-	REDIS(RedisCacheConfiguration.class),
+	REDIS,
 
 	/**
 	 * Guava backed caching.
 	 */
-	GUAVA(GuavaCacheConfiguration.class),
+	GUAVA,
 
 	/**
 	 * Simple in-memory caching.
 	 */
-	SIMPLE(SimpleCacheConfiguration.class),
+	SIMPLE,
 
 	/**
 	 * No caching.
 	 */
-	NONE(NoOpCacheConfiguration.class);
-
-	private final Class<?> configurationClass;
-
-	CacheType(Class<?> configurationClass) {
-		this.configurationClass = configurationClass;
-	}
-
-	Class<?> getConfigurationClass() {
-		return this.configurationClass;
-	}
-
-	static CacheType forConfigurationClass(String configurationClass) {
-		for (CacheType type : values()) {
-			if (type.getConfigurationClass().getName().equals(configurationClass)) {
-				return type;
-			}
-		}
-		throw new IllegalArgumentException("Unsupported class " + configurationClass);
-	}
+	NONE;
 
 }

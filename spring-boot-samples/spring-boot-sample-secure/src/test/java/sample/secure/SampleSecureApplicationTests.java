@@ -20,6 +20,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import sample.secure.SampleSecureApplicationTests.TestConfiguration;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -33,9 +35,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import sample.secure.SampleSecureApplicationTests.TestConfiguration;
-
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for demo application.
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertEquals;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { SampleSecureApplication.class,
+@SpringApplicationConfiguration({ SampleSecureApplication.class,
 		TestConfiguration.class })
 public class SampleSecureApplicationTests {
 
@@ -59,8 +59,8 @@ public class SampleSecureApplicationTests {
 	public void init() {
 		AuthenticationManager authenticationManager = this.context
 				.getBean(AuthenticationManager.class);
-		this.authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken("user", "password"));
+		this.authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken("user", "password"));
 	}
 
 	@After
@@ -70,25 +70,25 @@ public class SampleSecureApplicationTests {
 
 	@Test(expected = AuthenticationException.class)
 	public void secure() throws Exception {
-		assertEquals(this.service.secure(), "Hello Security");
+		assertThat("Hello Security").isEqualTo(this.service.secure());
 	}
 
 	@Test
 	public void authenticated() throws Exception {
 		SecurityContextHolder.getContext().setAuthentication(this.authentication);
-		assertEquals(this.service.secure(), "Hello Security");
+		assertThat("Hello Security").isEqualTo(this.service.secure());
 	}
 
 	@Test
 	public void preauth() throws Exception {
 		SecurityContextHolder.getContext().setAuthentication(this.authentication);
-		assertEquals(this.service.authorized(), "Hello World");
+		assertThat("Hello World").isEqualTo(this.service.authorized());
 	}
 
 	@Test(expected = AccessDeniedException.class)
 	public void denied() throws Exception {
 		SecurityContextHolder.getContext().setAuthentication(this.authentication);
-		assertEquals(this.service.denied(), "Goodbye World");
+		assertThat("Goodbye World").isEqualTo(this.service.denied());
 	}
 
 	@PropertySource("classpath:test.properties")

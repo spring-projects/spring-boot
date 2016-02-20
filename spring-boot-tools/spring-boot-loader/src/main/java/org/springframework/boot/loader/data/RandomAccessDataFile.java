@@ -74,6 +74,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 	/**
 	 * Private constructor used to create a {@link #getSubsection(long, long) subsection}.
+	 * @param file the underlying file
 	 * @param pool the underlying pool
 	 * @param offset the offset of the section
 	 * @param length the length of the section
@@ -86,7 +87,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	/**
-	 * Returns the underling File.
+	 * Returns the underlying File.
 	 * @return the underlying file
 	 */
 	public File getFile() {
@@ -126,7 +127,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 		private int position;
 
-		public DataInputStream(ResourceAccess access) throws IOException {
+		DataInputStream(ResourceAccess access) throws IOException {
 			if (access == ResourceAccess.ONCE) {
 				this.file = new RandomAccessFile(RandomAccessDataFile.this.file, "r");
 				this.file.seek(RandomAccessDataFile.this.offset);
@@ -158,7 +159,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 		 * @param len the length of data to read
 		 * @return the number of bytes read into {@code b} or the actual read byte if
 		 * {@code b} is {@code null}. Returns -1 when the end of the stream is reached
-		 * @throws IOException
+		 * @throws IOException in case of I/O errors
 		 */
 		public int doRead(byte[] b, int off, int len) throws IOException {
 			if (len == 0) {
@@ -213,7 +214,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 		}
 
 		/**
-		 * Move the stream position forwards the specified amount
+		 * Move the stream position forwards the specified amount.
 		 * @param amount the amount to move
 		 * @return the amount moved
 		 */
@@ -236,19 +237,19 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 		private final Queue<RandomAccessFile> files;
 
-		public FilePool(int size) {
+		FilePool(int size) {
 			this.size = size;
 			this.available = new Semaphore(size);
 			this.files = new ConcurrentLinkedQueue<RandomAccessFile>();
 		}
 
-		@SuppressWarnings("resource")
 		public RandomAccessFile acquire() throws IOException {
 			try {
 				this.available.acquire();
 				RandomAccessFile file = this.files.poll();
-				return (file == null ? new RandomAccessFile(
-						RandomAccessDataFile.this.file, "r") : file);
+				return (file == null
+						? new RandomAccessFile(RandomAccessDataFile.this.file, "r")
+						: file);
 			}
 			catch (InterruptedException ex) {
 				throw new IOException(ex);

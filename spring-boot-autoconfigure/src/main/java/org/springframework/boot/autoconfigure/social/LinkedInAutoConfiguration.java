@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.web.GenericConnectionStatusView;
 import org.springframework.social.linkedin.api.LinkedIn;
 import org.springframework.social.linkedin.connect.LinkedInConnectionFactory;
-import org.springframework.web.servlet.View;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
@@ -74,7 +73,7 @@ public class LinkedInAutoConfiguration {
 
 		@Bean(name = { "connect/linkedinConnect", "connect/linkedinConnected" })
 		@ConditionalOnProperty(prefix = "spring.social", name = "auto-connection-views")
-		public View linkedInConnectView() {
+		public GenericConnectionStatusView linkedInConnectView() {
 			return new GenericConnectionStatusView("linkedin", "LinkedIn");
 		}
 

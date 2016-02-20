@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -59,12 +60,14 @@ import org.springframework.util.StringUtils;
  * by providing a jobName
  *
  * @author Dave Syer
+ * @author Jean-Pierre Bergamin
  */
 @Component
-public class JobLauncherCommandLineRunner implements CommandLineRunner,
-		ApplicationEventPublisherAware {
+public class JobLauncherCommandLineRunner
+		implements CommandLineRunner, ApplicationEventPublisherAware {
 
-	private static Log logger = LogFactory.getLog(JobLauncherCommandLineRunner.class);
+	private static final Log logger = LogFactory
+			.getLog(JobLauncherCommandLineRunner.class);
 
 	private JobParametersConverter converter = new DefaultJobParametersConverter();
 
@@ -80,7 +83,8 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 
 	private ApplicationEventPublisher publisher;
 
-	public JobLauncherCommandLineRunner(JobLauncher jobLauncher, JobExplorer jobExplorer) {
+	public JobLauncherCommandLineRunner(JobLauncher jobLauncher,
+			JobExplorer jobExplorer) {
 		this.jobLauncher = jobLauncher;
 		this.jobExplorer = jobExplorer;
 	}
@@ -122,7 +126,8 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 		executeRegisteredJobs(jobParameters);
 	}
 
-	private JobParameters getNextJobParameters(Job job, JobParameters additionalParameters) {
+	private JobParameters getNextJobParameters(Job job,
+			JobParameters additionalParameters) {
 		String name = job.getName();
 		JobParameters parameters = new JobParameters();
 		List<JobInstance> lastInstances = this.jobExplorer.getJobInstances(name, 0, 1);
@@ -144,10 +149,10 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 					parameters = incrementer.getNext(new JobParameters());
 				}
 			}
-			else if (isStoppedOrFailed(previousExecution)) {
+			else if (isStoppedOrFailed(previousExecution) && job.isRestartable()) {
 				// Retry a failed or stopped execution
 				parameters = previousExecution.getJobParameters();
-				// Non-identifying additional parameters can be added to a retry
+				// Non-identifying additional parameters can be removed to a retry
 				removeNonIdentifying(additionals);
 			}
 			else if (incrementer != null) {
@@ -164,7 +169,8 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 	}
 
 	private void removeNonIdentifying(Map<String, JobParameter> parameters) {
-		HashMap<String, JobParameter> copy = new HashMap<String, JobParameter>(parameters);
+		HashMap<String, JobParameter> copy = new HashMap<String, JobParameter>(
+				parameters);
 		for (Map.Entry<String, JobParameter> parameter : copy.entrySet()) {
 			if (!parameter.getValue().isIdentifying()) {
 				parameters.remove(parameter.getKey());
@@ -193,7 +199,7 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 					}
 					execute(job, jobParameters);
 				}
-				catch (NoSuchJobException nsje) {
+				catch (NoSuchJobException ex) {
 					logger.debug("No job found in registry for job name: " + jobName);
 					continue;
 				}

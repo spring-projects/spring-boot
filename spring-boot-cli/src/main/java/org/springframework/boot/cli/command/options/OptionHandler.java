@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.cli.command.options;
-
-import groovy.lang.Closure;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -52,8 +50,6 @@ public class OptionHandler {
 
 	private OptionParser parser;
 
-	private Closure<?> closure;
-
 	private String help;
 
 	private Collection<OptionHelp> optionHelp;
@@ -77,10 +73,6 @@ public class OptionHandler {
 	protected void options() {
 	}
 
-	public void setClosure(Closure<?> closure) {
-		this.closure = closure;
-	}
-
 	public final ExitStatus run(String... args) throws Exception {
 		String[] argsToUse = args.clone();
 		for (int i = 0; i < argsToUse.length; i++) {
@@ -88,7 +80,7 @@ public class OptionHandler {
 				argsToUse[i] = "--cp";
 			}
 		}
-		OptionSet options = getParser().parse(args);
+		OptionSet options = getParser().parse(argsToUse);
 		return run(options);
 	}
 
@@ -96,21 +88,9 @@ public class OptionHandler {
 	 * Run the command using the specified parsed {@link OptionSet}.
 	 * @param options the parsed option set
 	 * @return an ExitStatus
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	protected ExitStatus run(OptionSet options) throws Exception {
-		if (this.closure != null) {
-			Object result = this.closure.call(options);
-			if (result instanceof ExitStatus) {
-				return (ExitStatus) result;
-			}
-			if (result instanceof Boolean) {
-				return (Boolean) result ? ExitStatus.OK : ExitStatus.ERROR;
-			}
-			if (result instanceof Integer) {
-				return new ExitStatus((Integer) result, "Finished");
-			}
-		}
 		return ExitStatus.OK;
 	}
 
@@ -181,7 +161,7 @@ public class OptionHandler {
 
 		private final String description;
 
-		public OptionHelpAdapter(OptionDescriptor descriptor) {
+		OptionHelpAdapter(OptionDescriptor descriptor) {
 			this.options = new LinkedHashSet<String>();
 			for (String option : descriptor.options()) {
 				this.options.add((option.length() == 1 ? "-" : "--") + option);

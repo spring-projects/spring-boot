@@ -19,14 +19,15 @@ package org.springframework.boot.liquibase;
 import java.lang.reflect.Field;
 
 import liquibase.servicelocator.ServiceLocator;
-
+import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link LiquibaseServiceLocatorApplicationListener}.
@@ -35,16 +36,25 @@ import static org.junit.Assert.assertThat;
  */
 public class LiquibaseServiceLocatorApplicationListenerTests {
 
+	private ConfigurableApplicationContext context;
+
+	@After
+	public void cleanUp() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
 	public void replacesServiceLocator() throws Exception {
 		SpringApplication application = new SpringApplication(Conf.class);
 		application.setWebEnvironment(false);
-		application.run();
+		this.context = application.run();
 		ServiceLocator instance = ServiceLocator.getInstance();
 		Field field = ReflectionUtils.findField(ServiceLocator.class, "classResolver");
 		field.setAccessible(true);
 		Object resolver = field.get(instance);
-		assertThat(resolver, instanceOf(SpringPackageScanClassResolver.class));
+		assertThat(resolver).isInstanceOf(SpringPackageScanClassResolver.class);
 	}
 
 	@Configuration

@@ -22,12 +22,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DefaultCounterService}.
+ *
+ * @author Dave Syer
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultCounterServiceTests {
@@ -41,19 +43,35 @@ public class DefaultCounterServiceTests {
 	private ArgumentCaptor<Delta<Number>> captor;
 
 	@Test
+	public void incrementWithExistingCounter() {
+		this.service.increment("counter.foo");
+		verify(this.repository).increment(this.captor.capture());
+		assertThat(this.captor.getValue().getName()).isEqualTo("counter.foo");
+		assertThat(this.captor.getValue().getValue()).isEqualTo(1L);
+	}
+
+	@Test
+	public void incrementWithExistingNearCounter() {
+		this.service.increment("counter-foo");
+		verify(this.repository).increment(this.captor.capture());
+		assertThat(this.captor.getValue().getName()).isEqualTo("counter.counter-foo");
+		assertThat(this.captor.getValue().getValue()).isEqualTo(1L);
+	}
+
+	@Test
 	public void incrementPrependsCounter() {
 		this.service.increment("foo");
 		verify(this.repository).increment(this.captor.capture());
-		assertEquals("counter.foo", this.captor.getValue().getName());
-		assertEquals(1L, this.captor.getValue().getValue());
+		assertThat(this.captor.getValue().getName()).isEqualTo("counter.foo");
+		assertThat(this.captor.getValue().getValue()).isEqualTo(1L);
 	}
 
 	@Test
 	public void decrementPrependsCounter() {
 		this.service.decrement("foo");
 		verify(this.repository).increment(this.captor.capture());
-		assertEquals("counter.foo", this.captor.getValue().getName());
-		assertEquals(-1L, this.captor.getValue().getValue());
+		assertThat(this.captor.getValue().getName()).isEqualTo("counter.foo");
+		assertThat(this.captor.getValue().getValue()).isEqualTo(-1L);
 	}
 
 	@Test
@@ -61,4 +79,5 @@ public class DefaultCounterServiceTests {
 		this.service.reset("foo");
 		verify(this.repository).reset("counter.foo");
 	}
+
 }

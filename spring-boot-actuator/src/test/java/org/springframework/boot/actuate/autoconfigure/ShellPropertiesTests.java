@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.crsh.plugin.PluginLifeCycle;
 import org.junit.Assert;
 import org.junit.Test;
+
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.CrshShellProperties;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.JaasAuthenticationProperties;
@@ -39,11 +40,7 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ShellProperties}.
@@ -56,19 +53,20 @@ public class ShellPropertiesTests {
 	public void testBindingAuth() {
 		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap("shell.auth",
-				"spring")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals("spring", props.getAuth());
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("shell.auth", "spring")));
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		assertThat(props.getAuth()).isEqualTo("spring");
 	}
 
 	@Test
 	public void testBindingAuthIfEmpty() {
 		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap("shell.auth", "")));
-		assertTrue(binder.getBindingResult().hasErrors());
-		assertEquals("simple", props.getAuth());
+		binder.bind(
+				new MutablePropertyValues(Collections.singletonMap("shell.auth", "")));
+		assertThat(binder.getBindingResult().hasErrors()).isTrue();
+		assertThat(props.getAuth()).isEqualTo("simple");
 	}
 
 	@Test
@@ -76,10 +74,10 @@ public class ShellPropertiesTests {
 		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.setConversionService(new DefaultConversionService());
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"shell.command_refresh_interval", "1")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals(1, props.getCommandRefreshInterval());
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("shell.command_refresh_interval", "1")));
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		assertThat(props.getCommandRefreshInterval()).isEqualTo(1);
 	}
 
 	@Test
@@ -87,10 +85,10 @@ public class ShellPropertiesTests {
 		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.setConversionService(new DefaultConversionService());
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"shell.command_path_patterns", "pattern1, pattern2")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals(2, props.getCommandPathPatterns().length);
+		binder.bind(new MutablePropertyValues(Collections
+				.singletonMap("shell.command_path_patterns", "pattern1, pattern2")));
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		assertThat(props.getCommandPathPatterns().length).isEqualTo(2);
 		Assert.assertArrayEquals(new String[] { "pattern1", "pattern2" },
 				props.getCommandPathPatterns());
 	}
@@ -100,10 +98,10 @@ public class ShellPropertiesTests {
 		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.setConversionService(new DefaultConversionService());
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"shell.config_path_patterns", "pattern1, pattern2")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals(2, props.getConfigPathPatterns().length);
+		binder.bind(new MutablePropertyValues(Collections
+				.singletonMap("shell.config_path_patterns", "pattern1, pattern2")));
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		assertThat(props.getConfigPathPatterns().length).isEqualTo(2);
 		Assert.assertArrayEquals(new String[] { "pattern1", "pattern2" },
 				props.getConfigPathPatterns());
 	}
@@ -113,12 +111,11 @@ public class ShellPropertiesTests {
 		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.setConversionService(new DefaultConversionService());
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"shell.disabled_plugins", "pattern1, pattern2")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals(2, props.getDisabledPlugins().length);
-		assertArrayEquals(new String[] { "pattern1", "pattern2" },
-				props.getDisabledPlugins());
+		binder.bind(new MutablePropertyValues(Collections
+				.singletonMap("shell.disabled_plugins", "pattern1, pattern2")));
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		assertThat(props.getDisabledPlugins().length).isEqualTo(2);
+		assertThat(props.getDisabledPlugins()).containsExactly("pattern1", "pattern2");
 	}
 
 	@Test
@@ -126,12 +123,10 @@ public class ShellPropertiesTests {
 		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.setConversionService(new DefaultConversionService());
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"shell.disabled_commands", "pattern1, pattern2")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals(2, props.getDisabledCommands().length);
-		assertArrayEquals(new String[] { "pattern1", "pattern2" },
-				props.getDisabledCommands());
+		binder.bind(new MutablePropertyValues(Collections
+				.singletonMap("shell.disabled_commands", "pattern1, pattern2")));
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		assertThat(props.getDisabledCommands()).containsExactly("pattern1", "pattern2");
 	}
 
 	@Test
@@ -144,12 +139,12 @@ public class ShellPropertiesTests {
 		map.put("shell.ssh.port", "2222");
 		map.put("shell.ssh.key_path", "~/.ssh/test.pem");
 		binder.bind(new MutablePropertyValues(map));
-		assertFalse(binder.getBindingResult().hasErrors());
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 
 		Properties p = props.asCrshShellConfig();
 
-		assertEquals("2222", p.get("crash.ssh.port"));
-		assertEquals("~/.ssh/test.pem", p.get("crash.ssh.keypath"));
+		assertThat(p.get("crash.ssh.port")).isEqualTo("2222");
+		assertThat(p.get("crash.ssh.keypath")).isEqualTo("~/.ssh/test.pem");
 	}
 
 	@Test
@@ -162,12 +157,12 @@ public class ShellPropertiesTests {
 		map.put("shell.ssh.port", "2222");
 		map.put("shell.ssh.key_path", "~/.ssh/test.pem");
 		binder.bind(new MutablePropertyValues(map));
-		assertFalse(binder.getBindingResult().hasErrors());
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 
 		Properties p = props.asCrshShellConfig();
 
-		assertNull(p.get("crash.ssh.port"));
-		assertNull(p.get("crash.ssh.keypath"));
+		assertThat(p.get("crash.ssh.port")).isNull();
+		assertThat(p.get("crash.ssh.keypath")).isNull();
 	}
 
 	@Test
@@ -179,11 +174,11 @@ public class ShellPropertiesTests {
 		map.put("shell.telnet.enabled", "true");
 		map.put("shell.telnet.port", "2222");
 		binder.bind(new MutablePropertyValues(map));
-		assertFalse(binder.getBindingResult().hasErrors());
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 
 		Properties p = props.asCrshShellConfig();
 
-		assertEquals("2222", p.get("crash.telnet.port"));
+		assertThat(p.get("crash.telnet.port")).isEqualTo("2222");
 	}
 
 	@Test
@@ -195,11 +190,11 @@ public class ShellPropertiesTests {
 		map.put("shell.telnet.enabled", "false");
 		map.put("shell.telnet.port", "2222");
 		binder.bind(new MutablePropertyValues(map));
-		assertFalse(binder.getBindingResult().hasErrors());
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 
 		Properties p = props.asCrshShellConfig();
 
-		assertNull(p.get("crash.telnet.port"));
+		assertThat(p.get("crash.telnet.port")).isNull();
 	}
 
 	@Test
@@ -210,12 +205,12 @@ public class ShellPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("shell.auth.jaas.domain", "my-test-domain");
 		binder.bind(new MutablePropertyValues(map));
-		assertFalse(binder.getBindingResult().hasErrors());
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 
 		Properties p = new Properties();
 		props.applyToCrshShellConfig(p);
 
-		assertEquals("my-test-domain", p.get("crash.auth.jaas.domain"));
+		assertThat(p.get("crash.auth.jaas.domain")).isEqualTo("my-test-domain");
 	}
 
 	@Test
@@ -226,12 +221,12 @@ public class ShellPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("shell.auth.key.path", "~/.ssh/test.pem");
 		binder.bind(new MutablePropertyValues(map));
-		assertFalse(binder.getBindingResult().hasErrors());
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 
 		Properties p = new Properties();
 		props.applyToCrshShellConfig(p);
 
-		assertEquals("~/.ssh/test.pem", p.get("crash.auth.key.path"));
+		assertThat(p.get("crash.auth.key.path")).isEqualTo("~/.ssh/test.pem");
 	}
 
 	@Test
@@ -241,12 +236,12 @@ public class ShellPropertiesTests {
 		binder.setConversionService(new DefaultConversionService());
 		Map<String, String> map = new HashMap<String, String>();
 		binder.bind(new MutablePropertyValues(map));
-		assertFalse(binder.getBindingResult().hasErrors());
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 
 		Properties p = new Properties();
 		props.applyToCrshShellConfig(p);
 
-		assertNull(p.get("crash.auth.key.path"));
+		assertThat(p.get("crash.auth.key.path")).isNull();
 	}
 
 	@Test
@@ -258,47 +253,47 @@ public class ShellPropertiesTests {
 		map.put("shell.auth.simple.user.name", "username123");
 		map.put("shell.auth.simple.user.password", "password123");
 		binder.bind(new MutablePropertyValues(map));
-		assertFalse(binder.getBindingResult().hasErrors());
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 
 		Properties p = new Properties();
 		props.applyToCrshShellConfig(p);
 
-		assertEquals("username123", p.get("crash.auth.simple.username"));
-		assertEquals("password123", p.get("crash.auth.simple.password"));
+		assertThat(p.get("crash.auth.simple.username")).isEqualTo("username123");
+		assertThat(p.get("crash.auth.simple.password")).isEqualTo("password123");
 	}
 
 	@Test
-	public void testDefaultPasswordAutogeneratedIfUnresolovedPlaceholder() {
+	public void testDefaultPasswordAutogeneratedIfUnresolvedPlaceholder() {
 		SimpleAuthenticationProperties security = new SimpleAuthenticationProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"shell.auth.simple.user.password", "${ADMIN_PASSWORD}")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertTrue(security.getUser().isDefaultPassword());
+		binder.bind(new MutablePropertyValues(Collections
+				.singletonMap("shell.auth.simple.user.password", "${ADMIN_PASSWORD}")));
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		assertThat(security.getUser().isDefaultPassword()).isTrue();
 	}
 
 	@Test
 	public void testDefaultPasswordAutogeneratedIfEmpty() {
 		SimpleAuthenticationProperties security = new SimpleAuthenticationProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"shell.auth.simple.user.password", "")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertTrue(security.getUser().isDefaultPassword());
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("shell.auth.simple.user.password", "")));
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		assertThat(security.getUser().isDefaultPassword()).isTrue();
 	}
 
 	@Test
 	public void testBindingSpring() {
 		SpringAuthenticationProperties props = new SpringAuthenticationProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell.auth.spring");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"shell.auth.spring.roles", "role1, role2")));
-		assertFalse(binder.getBindingResult().hasErrors());
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("shell.auth.spring.roles", "role1, role2")));
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 
 		Properties p = new Properties();
 		props.applyToCrshShellConfig(p);
 
-		assertEquals("role1, role2", p.get("crash.auth.spring.roles"));
+		assertThat(p.get("crash.auth.spring.roles")).isEqualTo("role1,role2");
 	}
 
 	@Test
@@ -314,7 +309,7 @@ public class ShellPropertiesTests {
 
 		PluginLifeCycle lifeCycle = context.getBean(PluginLifeCycle.class);
 		String uuid = lifeCycle.getConfig().getProperty("test.uuid");
-		assertEquals(TestShellConfiguration.uuid, uuid);
+		assertThat(uuid).isEqualTo(TestShellConfiguration.uuid);
 		context.close();
 	}
 

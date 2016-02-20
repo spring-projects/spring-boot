@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,29 +18,18 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
+import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
 import nz.net.ultraq.thymeleaf.LayoutDialect;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.template.TemplateLocation;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.util.Assert;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.conditionalcomments.dialect.ConditionalCommentsDialect;
+import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.resourceresolver.SpringResourceResourceResolver;
@@ -48,7 +37,24 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
-import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.template.TemplateLocation;
+import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.util.MimeType;
+import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Thymeleaf.
@@ -56,12 +62,16 @@ import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDiale
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Brian Clozel
+ * @author Eddú Meléndez
  */
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)
 @ConditionalOnClass(SpringTemplateEngine.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class ThymeleafAutoConfiguration {
+
+	private static final Log logger = LogFactory.getLog(ThymeleafAutoConfiguration.class);
 
 	@Configuration
 	@ConditionalOnMissingBean(name = "defaultTemplateResolver")
@@ -79,22 +89,29 @@ public class ThymeleafAutoConfiguration {
 			if (checkTemplateLocation) {
 				TemplateLocation location = new TemplateLocation(
 						this.properties.getPrefix());
-				Assert.state(location.exists(this.applicationContext),
-						"Cannot find template location: " + location
-								+ " (please add some templates or check "
-								+ "your Thymeleaf configuration)");
+				if (!location.exists(this.applicationContext)) {
+					logger.warn("Cannot find template location: " + location
+							+ " (please add some templates or check "
+							+ "your Thymeleaf configuration)");
+				}
 			}
 		}
 
 		@Bean
-		public ITemplateResolver defaultTemplateResolver() {
+		public TemplateResolver defaultTemplateResolver() {
 			TemplateResolver resolver = new TemplateResolver();
 			resolver.setResourceResolver(thymeleafResourceResolver());
 			resolver.setPrefix(this.properties.getPrefix());
 			resolver.setSuffix(this.properties.getSuffix());
 			resolver.setTemplateMode(this.properties.getMode());
-			resolver.setCharacterEncoding(this.properties.getEncoding());
+			if (this.properties.getEncoding() != null) {
+				resolver.setCharacterEncoding(this.properties.getEncoding().name());
+			}
 			resolver.setCacheable(this.properties.isCache());
+			Integer order = this.properties.getTemplateResolverOrder();
+			if (order != null) {
+				resolver.setOrder(order);
+			}
 			return resolver;
 		}
 
@@ -134,6 +151,7 @@ public class ThymeleafAutoConfiguration {
 	protected static class ThymeleafWebLayoutConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
 		public LayoutDialect layoutDialect() {
 			return new LayoutDialect();
 		}
@@ -177,6 +195,19 @@ public class ThymeleafAutoConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnJava(ConditionalOnJava.JavaVersion.EIGHT)
+	@ConditionalOnClass(Java8TimeDialect.class)
+	protected static class ThymeleafJava8TimeDialect {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public Java8TimeDialect java8TimeDialect() {
+			return new Java8TimeDialect();
+		}
+
+	}
+
+	@Configuration
 	@ConditionalOnClass({ Servlet.class })
 	@ConditionalOnWebApplication
 	protected static class ThymeleafViewResolverConfiguration {
@@ -193,7 +224,7 @@ public class ThymeleafAutoConfiguration {
 		public ThymeleafViewResolver thymeleafViewResolver() {
 			ThymeleafViewResolver resolver = new ThymeleafViewResolver();
 			resolver.setTemplateEngine(this.templateEngine);
-			resolver.setCharacterEncoding(this.properties.getEncoding());
+			resolver.setCharacterEncoding(this.properties.getEncoding().name());
 			resolver.setContentType(appendCharset(this.properties.getContentType(),
 					resolver.getCharacterEncoding()));
 			resolver.setExcludedViewNames(this.properties.getExcludedViewNames());
@@ -204,11 +235,27 @@ public class ThymeleafAutoConfiguration {
 			return resolver;
 		}
 
-		private String appendCharset(String type, String charset) {
-			if (type.contains("charset=")) {
-				return type;
+		private String appendCharset(MimeType type, String charset) {
+			if (type.getCharSet() != null) {
+				return type.toString();
 			}
-			return type + ";charset=" + charset;
+			LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
+			parameters.put("charset", charset);
+			parameters.putAll(type.getParameters());
+			return new MimeType(type, parameters).toString();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnWebApplication
+	protected static class ThymeleafResourceHandlingConfig {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnEnabledResourceChain
+		public ResourceUrlEncodingFilter resourceUrlEncodingFilter() {
+			return new ResourceUrlEncodingFilter();
 		}
 
 	}

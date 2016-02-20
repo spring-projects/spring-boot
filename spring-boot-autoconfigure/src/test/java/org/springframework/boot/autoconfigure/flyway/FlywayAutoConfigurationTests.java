@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,42 +17,53 @@
 package org.springframework.boot.autoconfigure.flyway;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.MigrationVersion;
+import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link FlywayAutoConfiguration}.
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 public class FlywayAutoConfigurationTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();;
+	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Before
 	public void init() {
@@ -71,7 +82,7 @@ public class FlywayAutoConfigurationTests {
 	public void noDataSource() throws Exception {
 		registerAndRefresh(FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		assertEquals(0, this.context.getBeanNamesForType(Flyway.class).length);
+		assertThat(this.context.getBeanNamesForType(Flyway.class).length).isEqualTo(0);
 	}
 
 	@Test
@@ -79,9 +90,10 @@ public class FlywayAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"flyway.url:jdbc:hsqldb:mem:flywaytest", "flyway.user:sa");
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertNotNull(flyway.getDataSource());
+		assertThat(flyway.getDataSource()).isNotNull();
 	}
 
 	@Test
@@ -90,16 +102,16 @@ public class FlywayAutoConfigurationTests {
 				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertNotNull(flyway.getDataSource());
+		assertThat(flyway.getDataSource()).isNotNull();
 	}
 
 	@Test
 	public void defaultFlyway() throws Exception {
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertEquals("[classpath:db/migration]", Arrays.asList(flyway.getLocations())
-				.toString());
+		assertThat(flyway.getLocations()).containsExactly("classpath:db/migration");
 	}
 
 	@Test
@@ -107,19 +119,34 @@ public class FlywayAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"flyway.locations:classpath:db/changelog,classpath:db/migration");
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertEquals("[classpath:db/changelog, classpath:db/migration]",
-				Arrays.asList(flyway.getLocations()).toString());
+		assertThat(flyway.getLocations()).containsExactly("classpath:db/changelog",
+				"classpath:db/migration");
+	}
+
+	@Test
+	public void overrideLocationsList() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"flyway.locations[0]:classpath:db/changelog",
+				"flyway.locations[1]:classpath:db/migration");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertThat(flyway.getLocations()).containsExactly("classpath:db/changelog",
+				"classpath:db/migration");
 	}
 
 	@Test
 	public void overrideSchemas() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context, "flyway.schemas:public");
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertEquals("[public]", Arrays.asList(flyway.getSchemas()).toString());
+		assertThat(Arrays.asList(flyway.getSchemas()).toString()).isEqualTo("[public]");
 	}
 
 	@Test
@@ -128,7 +155,8 @@ public class FlywayAutoConfigurationTests {
 				"flyway.locations:file:no-such-dir");
 		this.thrown.expect(BeanCreationException.class);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 	}
 
 	@Test
@@ -139,7 +167,8 @@ public class FlywayAutoConfigurationTests {
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("Cannot find migrations location in");
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 	}
 
 	@Test
@@ -148,17 +177,60 @@ public class FlywayAutoConfigurationTests {
 				"flyway.locations:classpath:db/changelog,classpath:db/migration",
 				"flyway.check-location:true");
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 	}
 
 	@Test
 	public void customFlywayMigrationStrategy() throws Exception {
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
+				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 				MockFlywayMigrationStrategy.class);
-		assertNotNull(this.context.getBean(Flyway.class));
+		assertThat(this.context.getBean(Flyway.class)).isNotNull();
 		this.context.getBean(MockFlywayMigrationStrategy.class).assertCalled();
+	}
+
+	@Test
+	public void customFlywayMigrationInitializer() throws Exception {
+		registerAndRefresh(CustomFlywayMigrationInitializer.class,
+				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		assertThat(this.context.getBean(Flyway.class)).isNotNull();
+		FlywayMigrationInitializer initializer = this.context
+				.getBean(FlywayMigrationInitializer.class);
+		assertThat(initializer.getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE);
+	}
+
+	@Test
+	public void customFlywayWithJpa() throws Exception {
+		registerAndRefresh(CustomFlywayWithJpaConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+	}
+
+	@Test
+	public void overrideBaselineVersionString() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context, "flyway.baseline-version=0");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertThat(flyway.getBaselineVersion())
+				.isEqualTo(MigrationVersion.fromVersion("0"));
+	}
+
+	@Test
+	public void overrideBaselineVersionNumber() throws Exception {
+		Map<String, Object> source = Collections
+				.<String, Object>singletonMap("flyway.baseline-version", 1);
+		this.context.getEnvironment().getPropertySources()
+				.addLast(new MapPropertySource("flyway", source));
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertThat(flyway.getBaselineVersion())
+				.isEqualTo(MigrationVersion.fromVersion("1"));
 	}
 
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
@@ -179,8 +251,43 @@ public class FlywayAutoConfigurationTests {
 
 	}
 
+	@Configuration
+	protected static class CustomFlywayMigrationInitializer {
+
+		@Bean
+		public FlywayMigrationInitializer flywayMigrationInitializer(Flyway flyway) {
+			FlywayMigrationInitializer initializer = new FlywayMigrationInitializer(
+					flyway);
+			initializer.setOrder(Ordered.HIGHEST_PRECEDENCE);
+			return initializer;
+		}
+	}
+
+	@Configuration
+	protected static class CustomFlywayWithJpaConfiguration {
+
+		@Autowired
+		private DataSource dataSource;
+
+		@Bean
+		public Flyway flyway() {
+			return new Flyway();
+		}
+
+		@Bean
+		public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
+			Map<String, Object> properties = new HashMap<String, Object>();
+			properties.put("configured", "manually");
+			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
+			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(),
+					properties, null).dataSource(this.dataSource).build();
+		}
+
+	}
+
 	@Component
-	protected static class MockFlywayMigrationStrategy extends FlywayMigrationStrategy {
+	protected static class MockFlywayMigrationStrategy
+			implements FlywayMigrationStrategy {
 
 		private boolean called = false;
 
@@ -190,7 +297,7 @@ public class FlywayAutoConfigurationTests {
 		}
 
 		public void assertCalled() {
-			assertThat(this.called, equalTo(true));
+			assertThat(this.called).isTrue();
 		}
 	}
 

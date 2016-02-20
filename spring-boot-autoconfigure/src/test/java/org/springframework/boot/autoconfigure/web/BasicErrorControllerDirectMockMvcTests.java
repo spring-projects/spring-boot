@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,21 @@ import java.lang.annotation.Target;
 
 import javax.servlet.ServletException;
 
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.ApplicationContextTestUtils;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -42,7 +48,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -75,13 +81,13 @@ public class BasicErrorControllerDirectMockMvcTests {
 	@Test
 	public void errorPageAvailableWithParentContext() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplicationBuilder(
-				ParentConfiguration.class).child(ChildConfiguration.class).run(
-				"--server.port=0"));
+				ParentConfiguration.class).child(ChildConfiguration.class)
+						.run("--server.port=0"));
 		MvcResult response = this.mockMvc
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("status=999"));
+		assertThat(content).contains("status=999");
 	}
 
 	@Test
@@ -90,19 +96,29 @@ public class BasicErrorControllerDirectMockMvcTests {
 				WebMvcIncludedConfiguration.class).run("--server.port=0"));
 		MvcResult response = this.mockMvc
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("status=999"));
+		assertThat(content).contains("status=999");
 	}
 
 	@Test
 	public void errorPageNotAvailableWithWhitelabelDisabled() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(
 				WebMvcIncludedConfiguration.class).run("--server.port=0",
-				"--error.whitelabel.enabled=false"));
-
-		thrown.expect(ServletException.class);
+						"--server.error.whitelabel.enabled=false"));
+		this.thrown.expect(ServletException.class);
 		this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML));
+	}
+
+	@Test
+	public void errorControllerWithAop() throws Exception {
+		setup((ConfigurableWebApplicationContext) new SpringApplication(
+				WithAopConfiguration.class).run("--server.port=0"));
+		MvcResult response = this.mockMvc
+				.perform(get("/error").accept(MediaType.TEXT_HTML))
+				.andExpect(status().is5xxServerError()).andReturn();
+		String content = response.getResponse().getContentAsString();
+		assertThat(content).contains("status=999");
 	}
 
 	@Target(ElementType.TYPE)
@@ -111,9 +127,9 @@ public class BasicErrorControllerDirectMockMvcTests {
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
-	protected static @interface MinimalWebConfiguration {
+			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
+	protected @interface MinimalWebConfiguration {
 	}
 
 	@Configuration
@@ -126,6 +142,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 	@MinimalWebConfiguration
 	@EnableWebMvc
 	protected static class WebMvcIncludedConfiguration {
+
 		// For manual testing
 		public static void main(String[] args) {
 			SpringApplication.run(WebMvcIncludedConfiguration.class, args);
@@ -136,6 +153,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 	@Configuration
 	@MinimalWebConfiguration
 	protected static class VanillaConfiguration {
+
 		// For manual testing
 		public static void main(String[] args) {
 			SpringApplication.run(VanillaConfiguration.class, args);
@@ -146,11 +164,30 @@ public class BasicErrorControllerDirectMockMvcTests {
 	@Configuration
 	@MinimalWebConfiguration
 	protected static class ChildConfiguration {
+
 		// For manual testing
 		public static void main(String[] args) {
-			new SpringApplicationBuilder(ParentConfiguration.class).child(
-					ChildConfiguration.class).run(args);
+			new SpringApplicationBuilder(ParentConfiguration.class)
+					.child(ChildConfiguration.class).run(args);
 		}
+
+	}
+
+	@Configuration
+	@EnableAspectJAutoProxy(proxyTargetClass = false)
+	@MinimalWebConfiguration
+	@Aspect
+	protected static class WithAopConfiguration {
+
+		@Pointcut("within(@org.springframework.stereotype.Controller *)")
+		private void controllerPointCut() {
+		};
+
+		@Around("controllerPointCut()")
+		public Object mvcAdvice(ProceedingJoinPoint pjp) throws Throwable {
+			return pjp.proceed();
+		}
+
 	}
 
 }

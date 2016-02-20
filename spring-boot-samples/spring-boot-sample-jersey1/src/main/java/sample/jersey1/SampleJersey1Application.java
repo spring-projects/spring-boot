@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import com.sun.jersey.spi.container.servlet.ServletContainer;
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
-
-import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 @SpringBootApplication
 @Path("/")
@@ -39,7 +39,7 @@ public class SampleJersey1Application {
 	}
 
 	@Bean
-	// Not needed if Spring Web MVC is also present on claspath
+	// Not needed if Spring Web MVC is also present on classpath
 	public TomcatEmbeddedServletContainerFactory tomcatEmbeddedServletContainerFactory() {
 		return new TomcatEmbeddedServletContainerFactory();
 	}

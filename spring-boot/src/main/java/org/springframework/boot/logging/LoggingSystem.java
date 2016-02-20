@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,13 @@ public abstract class LoggingSystem {
 	public static final String SYSTEM_PROPERTY = LoggingSystem.class.getName();
 
 	private static final Map<String, String> SYSTEMS;
+
 	static {
 		Map<String, String> systems = new LinkedHashMap<String, String>();
 		systems.put("ch.qos.logback.core.Appender",
 				"org.springframework.boot.logging.logback.LogbackLoggingSystem");
-		systems.put("org.apache.logging.log4j.LogManager",
+		systems.put("org.apache.logging.log4j.core.impl.Log4jContextFactory",
 				"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem");
-		systems.put("org.apache.log4j.PropertyConfigurator",
-				"org.springframework.boot.logging.log4j.Log4JLoggingSystem");
 		systems.put("java.util.logging.LogManager",
 				"org.springframework.boot.logging.java.JavaLoggingSystem");
 		SYSTEMS = Collections.unmodifiableMap(systems);
@@ -53,25 +52,38 @@ public abstract class LoggingSystem {
 
 	/**
 	 * Reset the logging system to be limit output. This method may be called before
-	 * {@link #initialize(String, LogFile)} to reduce logging noise until the system has
-	 * been fully Initialized.
+	 * {@link #initialize(LoggingInitializationContext, String, LogFile)} to reduce
+	 * logging noise until the system has been fully initialized.
 	 */
 	public abstract void beforeInitialize();
 
 	/**
 	 * Fully initialize the logging system.
+	 * @param initializationContext the logging initialization context
 	 * @param configLocation a log configuration location or {@code null} if default
 	 * initialization is required
 	 * @param logFile the log output file that should be written or {@code null} for
 	 * console only output
 	 */
-	public abstract void initialize(String configLocation, LogFile logFile);
+	public void initialize(LoggingInitializationContext initializationContext,
+			String configLocation, LogFile logFile) {
+	}
 
 	/**
 	 * Clean up the logging system. The default implementation does nothing. Subclasses
 	 * should override this method to perform any logging system-specific cleanup.
 	 */
 	public void cleanUp() {
+	}
+
+	/**
+	 * Returns a {@link Runnable} that can handle shutdown of this logging system when the
+	 * JVM exits. The default implementation returns {@code null}, indicating that no
+	 * shutdown is required.
+	 * @return the shutdown handler, or {@code null}
+	 */
+	public Runnable getShutdownHandler() {
+		return null;
 	}
 
 	/**
@@ -82,8 +94,7 @@ public abstract class LoggingSystem {
 	public abstract void setLogLevel(String loggerName, LogLevel level);
 
 	/**
-	 * Detect and return the logging system in use. Supports Logback, Log4J, Log4J2 and
-	 * Java Logging.
+	 * Detect and return the logging system in use. Supports Logback and Java Logging.
 	 * @param classLoader the classloader
 	 * @return The logging system
 	 */

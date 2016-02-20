@@ -24,12 +24,16 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.CacheConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -41,6 +45,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
 
 /**
@@ -58,7 +64,8 @@ import org.springframework.util.Assert;
 @ConditionalOnBean(CacheAspectSupport.class)
 @ConditionalOnMissingBean({ CacheManager.class, CacheResolver.class })
 @EnableConfigurationProperties(CacheProperties.class)
-@AutoConfigureAfter(RedisAutoConfiguration.class)
+@AutoConfigureBefore(HibernateJpaAutoConfiguration.class)
+@AutoConfigureAfter({ HazelcastAutoConfiguration.class, RedisAutoConfiguration.class })
 @Import(CacheConfigurationImportSelector.class)
 public class CacheAutoConfiguration {
 
@@ -66,13 +73,25 @@ public class CacheAutoConfiguration {
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	public static BeanFactoryPostProcessor cacheAutoConfigurationValidatorPostProcessor() {
+	public static CacheManagerValidatorPostProcessor cacheAutoConfigurationValidatorPostProcessor() {
 		return new CacheManagerValidatorPostProcessor();
 	}
 
 	@Bean(name = VALIDATOR_BEAN_NAME)
 	public CacheManagerValidator cacheAutoConfigurationValidator() {
 		return new CacheManagerValidator();
+	}
+
+	@Configuration
+	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
+	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
+	protected static class CacheManagerJpaDependencyConfiguration
+			extends EntityManagerFactoryDependsOnPostProcessor {
+
+		public CacheManagerJpaDependencyConfiguration() {
+			super("cacheManager");
+		}
+
 	}
 
 	/**
@@ -84,10 +103,11 @@ public class CacheAutoConfiguration {
 		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
 				throws BeansException {
-			for (String name : beanFactory.getBeanNamesForType(CacheAspectSupport.class)) {
+			for (String name : beanFactory.getBeanNamesForType(CacheAspectSupport.class,
+					false, false)) {
 				BeanDefinition definition = beanFactory.getBeanDefinition(name);
-				definition.setDependsOn(append(definition.getDependsOn(),
-						VALIDATOR_BEAN_NAME));
+				definition.setDependsOn(
+						append(definition.getDependsOn(), VALIDATOR_BEAN_NAME));
 			}
 		}
 
@@ -115,9 +135,10 @@ public class CacheAutoConfiguration {
 
 		@PostConstruct
 		public void checkHasCacheManager() {
-			Assert.notNull(this.cacheManager, "No cache manager could "
-					+ "be auto-configured, check your configuration (caching "
-					+ "type is '" + this.cacheProperties.getType() + "')");
+			Assert.notNull(this.cacheManager,
+					"No cache manager could "
+							+ "be auto-configured, check your configuration (caching "
+							+ "type is '" + this.cacheProperties.getType() + "')");
 		}
 	}
 
@@ -131,7 +152,7 @@ public class CacheAutoConfiguration {
 			CacheType[] types = CacheType.values();
 			String[] imports = new String[types.length];
 			for (int i = 0; i < types.length; i++) {
-				imports[i] = types[i].getConfigurationClass().getName();
+				imports[i] = CacheConfigurations.getConfigurationClass(types[i]);
 			}
 			return imports;
 		}

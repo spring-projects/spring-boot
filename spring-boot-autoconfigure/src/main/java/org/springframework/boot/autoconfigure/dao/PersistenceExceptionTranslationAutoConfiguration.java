@@ -25,7 +25,7 @@ import org.springframework.dao.annotation.PersistenceExceptionTranslationPostPro
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring's persistence exception
- * translation
+ * translation.
  *
  * @author Andy Wilkinson
  * @since 1.2.0

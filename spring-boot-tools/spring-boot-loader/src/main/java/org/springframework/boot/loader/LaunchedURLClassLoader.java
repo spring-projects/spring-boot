@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +17,25 @@
 package org.springframework.boot.loader;
 
 import java.io.IOException;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLConnection;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Enumeration;
 
 import org.springframework.boot.loader.jar.Handler;
 import org.springframework.boot.loader.jar.JarFile;
-import org.springframework.lang.UsesJava7;
 
 /**
  * {@link ClassLoader} used by the {@link Launcher}.
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
-
-	private static LockProvider LOCK_PROVIDER = setupLockProvider();
-
-	private final ClassLoader rootClassLoader;
 
 	/**
 	 * Create a new {@link LaunchedURLClassLoader} instance.
@@ -48,168 +44,75 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	 */
 	public LaunchedURLClassLoader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
-		this.rootClassLoader = findRootClassLoader(parent);
-	}
-
-	private ClassLoader findRootClassLoader(ClassLoader classLoader) {
-		while (classLoader != null) {
-			if (classLoader.getParent() == null) {
-				return classLoader;
-			}
-			classLoader = classLoader.getParent();
-		}
-		return null;
-	}
-
-	@Override
-	public URL getResource(String name) {
-		URL url = null;
-		if (this.rootClassLoader != null) {
-			url = this.rootClassLoader.getResource(name);
-		}
-		return (url == null ? findResource(name) : url);
 	}
 
 	@Override
 	public URL findResource(String name) {
+		Handler.setUseFastConnectionExceptions(true);
 		try {
-			if (name.equals("") && hasURLs()) {
-				return getURLs()[0];
-			}
 			return super.findResource(name);
 		}
-		catch (IllegalArgumentException ex) {
-			return null;
+		finally {
+			Handler.setUseFastConnectionExceptions(false);
 		}
 	}
 
 	@Override
 	public Enumeration<URL> findResources(String name) throws IOException {
-		if (name.equals("") && hasURLs()) {
-			return Collections.enumeration(Arrays.asList(getURLs()));
+		Handler.setUseFastConnectionExceptions(true);
+		try {
+			return super.findResources(name);
 		}
-		return super.findResources(name);
-	}
-
-	private boolean hasURLs() {
-		return getURLs().length > 0;
-	}
-
-	@Override
-	public Enumeration<URL> getResources(String name) throws IOException {
-		if (this.rootClassLoader == null) {
-			return findResources(name);
+		finally {
+			Handler.setUseFastConnectionExceptions(false);
 		}
-
-		final Enumeration<URL> rootResources = this.rootClassLoader.getResources(name);
-		final Enumeration<URL> localResources = findResources(name);
-
-		return new Enumeration<URL>() {
-
-			@Override
-			public boolean hasMoreElements() {
-				return rootResources.hasMoreElements()
-						|| localResources.hasMoreElements();
-			}
-
-			@Override
-			public URL nextElement() {
-				if (rootResources.hasMoreElements()) {
-					return rootResources.nextElement();
-				}
-				return localResources.nextElement();
-			}
-
-		};
 	}
 
-	/**
-	 * Attempt to load classes from the URLs before delegating to the parent loader.
-	 */
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
-		synchronized (LaunchedURLClassLoader.LOCK_PROVIDER.getLock(this, name)) {
-			Class<?> loadedClass = findLoadedClass(name);
-			if (loadedClass == null) {
-				Handler.setUseFastConnectionExceptions(true);
-				try {
-					loadedClass = doLoadClass(name);
-				}
-				finally {
-					Handler.setUseFastConnectionExceptions(false);
-				}
-			}
-			if (resolve) {
-				resolveClass(loadedClass);
-			}
-			return loadedClass;
-		}
-	}
-
-	private Class<?> doLoadClass(String name) throws ClassNotFoundException {
-
-		// 1) Try the root class loader
+		Handler.setUseFastConnectionExceptions(true);
 		try {
-			if (this.rootClassLoader != null) {
-				return this.rootClassLoader.loadClass(name);
-			}
+			definePackageIfNecessary(name);
+			return super.loadClass(name, resolve);
 		}
-		catch (Exception ex) {
-		}
-
-		// 2) Try to find locally
-		try {
-			findPackage(name);
-			Class<?> cls = findClass(name);
-			return cls;
-		}
-		catch (Exception ex) {
-		}
-
-		// 3) Use standard loading
-		return super.loadClass(name, false);
-	}
-
-	private void findPackage(final String name) throws ClassNotFoundException {
-		int lastDot = name.lastIndexOf('.');
-		if (lastDot != -1) {
-			String packageName = name.substring(0, lastDot);
-			if (getPackage(packageName) == null) {
-				try {
-					definePackageForFindClass(name, packageName);
-				}
-				catch (Exception ex) {
-					// Swallow and continue
-				}
-			}
+		finally {
+			Handler.setUseFastConnectionExceptions(false);
 		}
 	}
 
 	/**
 	 * Define a package before a {@code findClass} call is made. This is necessary to
-	 * ensure that the appropriate manifest for nested JARs associated with the package.
-	 * @param name the class name being found
-	 * @param packageName the package
+	 * ensure that the appropriate manifest for nested JARs is associated with the
+	 * package.
+	 * @param className the class name being found
 	 */
-	private void definePackageForFindClass(final String name, final String packageName) {
+	private void definePackageIfNecessary(String className) {
+		int lastDot = className.lastIndexOf('.');
+		if (lastDot >= 0) {
+			String packageName = className.substring(0, lastDot);
+			if (getPackage(packageName) == null) {
+				definePackage(packageName);
+			}
+		}
+	}
+
+	private void definePackage(final String packageName) {
 		try {
 			AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
 				@Override
 				public Object run() throws ClassNotFoundException {
-					String path = name.replace('.', '/').concat(".class");
+					String packageEntryName = packageName.replace(".", "/") + "/";
 					for (URL url : getURLs()) {
 						try {
 							if (url.getContent() instanceof JarFile) {
 								JarFile jarFile = (JarFile) url.getContent();
-								// Check the jar entry data before needlessly creating the
-								// manifest
-								if (jarFile.getJarEntryData(path) != null
+								if (jarFile.getEntry(packageEntryName) != null
 										&& jarFile.getManifest() != null) {
-									definePackage(packageName, jarFile.getManifest(), url);
+									definePackage(packageName, jarFile.getManifest(),
+											url);
 									return null;
 								}
-
 							}
 						}
 						catch (IOException ex) {
@@ -225,39 +128,29 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	@UsesJava7
-	private static LockProvider setupLockProvider() {
-		try {
-			ClassLoader.registerAsParallelCapable();
-			return new Java7LockProvider();
-		}
-		catch (NoSuchMethodError ex) {
-			return new LockProvider();
-		}
-	}
-
 	/**
-	 * Strategy used to provide the synchronize lock object to use when loading classes.
+	 * Clear URL caches.
 	 */
-	private static class LockProvider {
-
-		public Object getLock(LaunchedURLClassLoader classLoader, String className) {
-			return classLoader;
+	public void clearCache() {
+		for (URL url : getURLs()) {
+			try {
+				URLConnection connection = url.openConnection();
+				if (connection instanceof JarURLConnection) {
+					clearCache(connection);
+				}
+			}
+			catch (IOException ex) {
+				// Ignore
+			}
 		}
 
 	}
 
-	/**
-	 * Java 7 specific {@link LockProvider}.
-	 */
-	@UsesJava7
-	private static class Java7LockProvider extends LockProvider {
-
-		@Override
-		public Object getLock(LaunchedURLClassLoader classLoader, String className) {
-			return classLoader.getClassLoadingLock(className);
+	private void clearCache(URLConnection connection) throws IOException {
+		Object jarFile = ((JarURLConnection) connection).getJarFile();
+		if (jarFile instanceof JarFile) {
+			((JarFile) jarFile).clearCache();
 		}
-
 	}
 
 }

@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -39,7 +40,8 @@ public abstract class SpringBootCondition implements Condition {
 	private final Log logger = LogFactory.getLog(getClass());
 
 	@Override
-	public final boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+	public final boolean matches(ConditionContext context,
+			AnnotatedTypeMetadata metadata) {
 		String classOrMethodName = getClassOrMethodName(metadata);
 		try {
 			ConditionOutcome outcome = getMatchOutcome(context, metadata);
@@ -48,15 +50,18 @@ public abstract class SpringBootCondition implements Condition {
 			return outcome.isMatch();
 		}
 		catch (NoClassDefFoundError ex) {
-			throw new IllegalStateException("Could not evaluate condition on "
-					+ classOrMethodName + " due to internal class not found. "
-					+ "This can happen if you are @ComponentScanning a "
-					+ "springframework package (e.g. if you put a @ComponentScan "
-					+ "in the default package by mistake)", ex);
+			throw new IllegalStateException(
+					"Could not evaluate condition on " + classOrMethodName + " due to "
+							+ ex.getMessage() + " not "
+							+ "found. Make sure your own configuration does not rely on "
+							+ "that class. This can also happen if you are "
+							+ "@ComponentScanning a springframework package (e.g. if you "
+							+ "put a @ComponentScan in the default package by mistake)",
+					ex);
 		}
 		catch (RuntimeException ex) {
-			throw new IllegalStateException("Error processing condition on "
-					+ getName(metadata), ex);
+			throw new IllegalStateException(
+					"Error processing condition on " + getName(metadata), ex);
 		}
 	}
 
@@ -88,7 +93,8 @@ public abstract class SpringBootCondition implements Condition {
 		}
 	}
 
-	private StringBuilder getLogMessage(String classOrMethodName, ConditionOutcome outcome) {
+	private StringBuilder getLogMessage(String classOrMethodName,
+			ConditionOutcome outcome) {
 		StringBuilder message = new StringBuilder();
 		message.append("Condition ");
 		message.append(ClassUtils.getShortName(getClass()));

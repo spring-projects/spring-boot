@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,12 @@
 package org.springframework.boot.context;
 
 import org.junit.Test;
-import org.springframework.boot.test.EnvironmentTestUtils;
+
+import org.springframework.boot.testutil.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ContextIdApplicationContextInitializer}.
@@ -36,7 +37,7 @@ public class ContextIdApplicationContextInitializerTests {
 	public void testDefaults() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
-		assertEquals("application", context.getId());
+		assertThat(context.getId()).isEqualTo("application");
 	}
 
 	@Test
@@ -45,7 +46,7 @@ public class ContextIdApplicationContextInitializerTests {
 		EnvironmentTestUtils.addEnvironment(context, "spring.application.name:foo",
 				"PORT:8080");
 		this.initializer.initialize(context);
-		assertEquals("foo:8080", context.getId());
+		assertThat(context.getId()).isEqualTo("foo:8080");
 	}
 
 	@Test
@@ -54,7 +55,7 @@ public class ContextIdApplicationContextInitializerTests {
 		EnvironmentTestUtils.addEnvironment(context, "spring.application.name:foo",
 				"spring.profiles.active: spam,bar", "spring.application.index:12");
 		this.initializer.initialize(context);
-		assertEquals("foo:spam,bar:12", context.getId());
+		assertThat(context.getId()).isEqualTo("foo:spam,bar:12");
 	}
 
 	@Test
@@ -64,17 +65,17 @@ public class ContextIdApplicationContextInitializerTests {
 				"PORT:8080", "vcap.application.name:bar",
 				"vcap.application.instance_index:2");
 		this.initializer.initialize(context);
-		assertEquals("bar:2", context.getId());
+		assertThat(context.getId()).isEqualTo("bar:2");
 	}
 
 	@Test
-	public void testExplicitName() {
+	public void testExplicitNameIsChosenInFavorOfCloudFoundry() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(context, "spring.application.name:spam",
 				"spring.config.name:foo", "PORT:8080", "vcap.application.name:bar",
 				"vcap.application.instance_index:2");
 		this.initializer.initialize(context);
-		assertEquals("bar:2", context.getId());
+		assertThat(context.getId()).isEqualTo("spam:2");
 	}
 
 }

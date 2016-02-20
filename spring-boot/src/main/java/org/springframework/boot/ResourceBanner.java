@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,15 @@ package org.springframework.boot;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.boot.ansi.AnsiPropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -38,11 +41,12 @@ import org.springframework.util.StreamUtils;
  * Banner implementation that prints from a source {@link Resource}.
  *
  * @author Phillip Webb
+ * @author Vedran Pavic
  * @since 1.2.0
  */
 public class ResourceBanner implements Banner {
 
-	private static final Log log = LogFactory.getLog(ResourceBanner.class);
+	private static final Log logger = LogFactory.getLog(ResourceBanner.class);
 
 	private Resource resource;
 
@@ -53,10 +57,10 @@ public class ResourceBanner implements Banner {
 	}
 
 	@Override
-	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
+	public void printBanner(Environment environment, Class<?> sourceClass,
+			PrintStream out) {
 		try {
-			String banner = StreamUtils.copyToString(
-					this.resource.getInputStream(),
+			String banner = StreamUtils.copyToString(this.resource.getInputStream(),
 					environment.getProperty("banner.charset", Charset.class,
 							Charset.forName("UTF-8")));
 
@@ -67,7 +71,7 @@ public class ResourceBanner implements Banner {
 			out.println(banner);
 		}
 		catch (Exception ex) {
-			log.warn("Banner not printable: " + this.resource + " (" + ex.getClass()
+			logger.warn("Banner not printable: " + this.resource + " (" + ex.getClass()
 					+ ": '" + ex.getMessage() + "')", ex);
 		}
 	}
@@ -77,13 +81,15 @@ public class ResourceBanner implements Banner {
 		List<PropertyResolver> resolvers = new ArrayList<PropertyResolver>();
 		resolvers.add(environment);
 		resolvers.add(getVersionResolver(sourceClass));
+		resolvers.add(getAnsiResolver());
+		resolvers.add(getTitleResolver(sourceClass));
 		return resolvers;
 	}
 
 	private PropertyResolver getVersionResolver(Class<?> sourceClass) {
 		MutablePropertySources propertySources = new MutablePropertySources();
-		propertySources.addLast(new MapPropertySource("version",
-				getVersionsMap(sourceClass)));
+		propertySources
+				.addLast(new MapPropertySource("version", getVersionsMap(sourceClass)));
 		return new PropertySourcesPropertyResolver(propertySources);
 	}
 
@@ -94,7 +100,8 @@ public class ResourceBanner implements Banner {
 		versions.put("application.version", getVersionString(appVersion, false));
 		versions.put("spring-boot.version", getVersionString(bootVersion, false));
 		versions.put("application.formatted-version", getVersionString(appVersion, true));
-		versions.put("spring-boot.formatted-version", getVersionString(bootVersion, true));
+		versions.put("spring-boot.formatted-version",
+				getVersionString(bootVersion, true));
 		return versions;
 	}
 
@@ -104,7 +111,7 @@ public class ResourceBanner implements Banner {
 	}
 
 	protected String getBootVersion() {
-		return Banner.class.getPackage().getImplementationVersion();
+		return SpringBootVersion.getVersion();
 	}
 
 	private String getVersionString(String version, boolean format) {
@@ -112,6 +119,26 @@ public class ResourceBanner implements Banner {
 			return "";
 		}
 		return (format ? " (v" + version + ")" : version);
+	}
+
+	private PropertyResolver getAnsiResolver() {
+		MutablePropertySources sources = new MutablePropertySources();
+		sources.addFirst(new AnsiPropertySource("ansi", true));
+		return new PropertySourcesPropertyResolver(sources);
+	}
+
+	private PropertyResolver getTitleResolver(Class<?> sourceClass) {
+		MutablePropertySources sources = new MutablePropertySources();
+		String applicationTitle = getApplicationTitle(sourceClass);
+		Map<String, Object> titleMap = Collections.<String, Object>singletonMap(
+				"application.title", (applicationTitle == null ? "" : applicationTitle));
+		sources.addFirst(new MapPropertySource("title", titleMap));
+		return new PropertySourcesPropertyResolver(sources);
+	}
+
+	protected String getApplicationTitle(Class<?> sourceClass) {
+		Package sourcePackage = (sourceClass == null ? null : sourceClass.getPackage());
+		return (sourcePackage == null ? null : sourcePackage.getImplementationTitle());
 	}
 
 }

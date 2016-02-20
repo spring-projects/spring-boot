@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@
 
 package org.springframework.boot.configurationsample.fieldvalues;
 
+import java.nio.charset.Charset;
+
 import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.util.MimeType;
 
 /**
  * Sample object containing fields with initial values.
@@ -37,6 +40,10 @@ public class FieldValues {
 	private static final int INTEGER_CONST = 2;
 
 	private static final Integer INTEGER_OBJ_CONST = 4;
+
+	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+
+	private static final MimeType DEFAULT_MIME_TYPE = MimeType.valueOf("text/plain");
 
 	private static final String[] STRING_ARRAY_CONST = new String[] { "OK", "KO" };
 
@@ -69,6 +76,14 @@ public class FieldValues {
 	private Integer integerObjectNone;
 
 	private Integer integerObjectConst = INTEGER_OBJ_CONST;
+
+	private Charset charset = Charset.forName("US-ASCII");
+
+	private Charset charsetConst = DEFAULT_CHARSET;
+
+	private MimeType mimeType = MimeType.valueOf("text/html");
+
+	private MimeType mimeTypeConst = DEFAULT_MIME_TYPE;
 
 	private Object object = 123;
 

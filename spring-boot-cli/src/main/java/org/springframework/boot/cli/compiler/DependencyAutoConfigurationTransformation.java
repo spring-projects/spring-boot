@@ -17,12 +17,12 @@
 package org.springframework.boot.cli.compiler;
 
 import groovy.lang.GroovyClassLoader;
-
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
+
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.core.annotation.Order;
 
@@ -38,6 +38,9 @@ import org.springframework.core.annotation.Order;
 @Order(DependencyAutoConfigurationTransformation.ORDER)
 public class DependencyAutoConfigurationTransformation implements ASTTransformation {
 
+	/**
+	 * The order of the transformation.
+	 */
 	public static final int ORDER = DependencyManagementBomTransformation.ORDER + 100;
 
 	private final GroovyClassLoader loader;
