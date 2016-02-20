@@ -214,8 +214,9 @@ public class JmsAutoConfigurationTests {
 
 	@Test
 	public void testCustomContainerFactoryWithConfigurer() {
-		this.context = doLoad(new Class<?>[]{TestConfiguration9.class,
-				EnableJmsConfiguration.class}, "spring.jms.listener.autoStartup=false");
+		this.context = doLoad(
+				new Class<?>[] { TestConfiguration9.class, EnableJmsConfiguration.class },
+				"spring.jms.listener.autoStartup=false");
 		assertTrue(this.context.containsBean("jmsListenerContainerFactory"));
 		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context.getBean(
 				"customListenerContainerFactory", JmsListenerContainerFactory.class);
@@ -223,7 +224,8 @@ public class JmsAutoConfigurationTests {
 				jmsListenerContainerFactory.getClass());
 		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
 				.createListenerContainer(mock(JmsListenerEndpoint.class));
-		assertEquals(DefaultMessageListenerContainer.CACHE_CONSUMER, listenerContainer.getCacheLevel());
+		assertEquals(DefaultMessageListenerContainer.CACHE_CONSUMER,
+				listenerContainer.getCacheLevel());
 		assertFalse(listenerContainer.isAutoStartup());
 	}
 

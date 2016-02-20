@@ -42,8 +42,8 @@ public final class RabbitListenerContainerFactoryConfigurer {
 	}
 
 	/**
-	 * Create a new and pre-configured {@link SimpleRabbitListenerContainerFactory} instance
-	 * for the specified {@link ConnectionFactory}.
+	 * Create a new and pre-configured {@link SimpleRabbitListenerContainerFactory}
+	 * instance for the specified {@link ConnectionFactory}.
 	 * @param connectionFactory the {@link ConnectionFactory} to use.
 	 * @return a pre-configured {@link SimpleRabbitListenerContainerFactory}
 	 */
@@ -57,7 +57,8 @@ public final class RabbitListenerContainerFactoryConfigurer {
 	/**
 	 * Apply the default settings for the specified jms listener container factory. The
 	 * factory can be further tuned and default settings can be overridden.
-	 * @param factory the {@link SimpleRabbitListenerContainerFactory} instance to configure
+	 * @param factory the {@link SimpleRabbitListenerContainerFactory} instance to
+	 * configure
 	 * @param connectionFactory the {@link ConnectionFactory} to use
 	 */
 	public void configure(SimpleRabbitListenerContainerFactory factory,
