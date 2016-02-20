@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-package sample.ui;
-
-import java.net.URI;
+package sample.web.staticcontent;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import sample.web.ui.SampleWebUiApplication;
+import sample.web.staticcontent.SampleWebStaticApplication;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,39 +38,33 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(SampleWebUiApplication.class)
+@SpringApplicationConfiguration(SampleWebStaticApplication.class)
 @WebIntegrationTest(randomPort = true)
 @DirtiesContext
-public class SampleWebUiApplicationTests {
+public class SampleWebStaticApplicationTests {
 
 	@Value("${local.server.port}")
-	private int port;
+	private int port = 0;
 
 	@Test
 	public void testHome() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("<title>Messages");
-		assertThat(entity.getBody()).doesNotContain("layout:fragment");
-	}
-
-	@Test
-	public void testCreate() throws Exception {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		map.set("text", "FOO text");
-		map.set("summary", "FOO");
-		URI location = new TestRestTemplate()
-				.postForLocation("http://localhost:" + this.port, map);
-		assertThat(location.toString()).contains("localhost:" + this.port);
+		assertThat(entity.getBody()).contains("<title>Static");
 	}
 
 	@Test
 	public void testCss() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity(
+						"http://localhost:" + this.port
+								+ "/webjars/bootstrap/3.0.3/css/bootstrap.min.css",
+						String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("body");
+		assertThat(entity.getHeaders().getContentType())
+				.isEqualTo(MediaType.valueOf("text/css;charset=UTF-8"));
 	}
 
 }
