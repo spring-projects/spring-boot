@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
@@ -344,16 +345,21 @@ public class CacheAutoConfigurationTests {
 		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("defaultCache"));
 		assertThat(cacheManager.getCacheNames(), hasSize(1));
 		assertThat(this.context.getBean(HazelcastInstance.class),
-				equalTo(new DirectFieldAccessor(cacheManager)
-						.getPropertyValue("hazelcastInstance")));
+				equalTo(getHazelcastInstance(cacheManager)));
 	}
 
 	@Test
-	public void hazelcastCacheWithConfig() {
+	public void hazelcastCacheWithConfig() throws IOException {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast",
 				"spring.cache.hazelcast.config=org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml");
+		HazelcastInstance hazelcastInstance = this.context
+				.getBean(HazelcastInstance.class);
 		HazelcastCacheManager cacheManager = validateCacheManager(
 				HazelcastCacheManager.class);
+		HazelcastInstance actual = getHazelcastInstance(cacheManager);
+		assertThat(actual, sameInstance(hazelcastInstance));
+		assertThat(actual.getConfig().getConfigurationUrl(), equalTo(new ClassPathResource(
+				"org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml").getURL()));
 		cacheManager.getCache("foobar");
 		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foobar"));
 		assertThat(cacheManager.getCacheNames(), hasSize(1));
@@ -372,9 +378,7 @@ public class CacheAutoConfigurationTests {
 		load(HazelcastCustomHazelcastInstance.class, "spring.cache.type=hazelcast");
 		HazelcastCacheManager cacheManager = validateCacheManager(
 				HazelcastCacheManager.class);
-		assertThat(
-				new DirectFieldAccessor(cacheManager)
-						.getPropertyValue("hazelcastInstance"),
+		assertThat(getHazelcastInstance(cacheManager),
 				equalTo(this.context.getBean("customHazelcastInstance")));
 	}
 
@@ -392,8 +396,7 @@ public class CacheAutoConfigurationTests {
 				HazelcastCacheManager.class);
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
-		assertThat(new DirectFieldAccessor(cacheManager).getPropertyValue(
-				"hazelcastInstance"), equalTo((Object) hazelcastInstance));
+		assertThat(getHazelcastInstance(cacheManager), equalTo((Object) hazelcastInstance));
 		assertThat(hazelcastInstance.getConfig().getConfigurationFile(),
 				equalTo(new ClassPathResource(mainConfig).getFile()));
 	}
@@ -416,8 +419,7 @@ public class CacheAutoConfigurationTests {
 				.getBean(HazelcastInstance.class);
 		HazelcastCacheManager cacheManager = validateCacheManager(
 				HazelcastCacheManager.class);
-		HazelcastInstance cacheHazelcastInstance = (HazelcastInstance) new DirectFieldAccessor(
-				cacheManager).getPropertyValue("hazelcastInstance");
+		HazelcastInstance cacheHazelcastInstance = getHazelcastInstance(cacheManager);
 		assertThat(cacheHazelcastInstance, not(hazelcastInstance)); // Our custom
 		assertThat(hazelcastInstance.getConfig().getConfigurationFile(),
 				equalTo(new ClassPathResource(mainConfig).getFile()));
@@ -568,6 +570,11 @@ public class CacheAutoConfigurationTests {
 		applicationContext.register(CacheAutoConfiguration.class);
 		applicationContext.refresh();
 		this.context = applicationContext;
+	}
+
+	private static HazelcastInstance getHazelcastInstance(HazelcastCacheManager cacheManager) {
+		return (HazelcastInstance) new DirectFieldAccessor(cacheManager)
+				.getPropertyValue("hazelcastInstance");
 	}
 
 	@Configuration
