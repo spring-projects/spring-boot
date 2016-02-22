@@ -24,9 +24,11 @@ public interface CityRepository extends GraphRepository<City> {
 
 	Page<City> findAll(Pageable pageable);
 
-	Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(String name, String country,
-														   Pageable pageable);
-
-	City findByNameAndCountryAllIgnoringCase(String name, String country);
+// TODO: cannot resolve queries like this at the moment.
+//
+//	Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(String name, String country,
+//														   Pageable pageable);
+//
+//	City findByNameAndCountry(String name, String country);
 
 }

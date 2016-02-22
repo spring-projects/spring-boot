@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.neo4j;
 
 import org.neo4j.ogm.session.Neo4jSession;
-import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -33,13 +31,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
-import org.springframework.data.neo4j.server.Neo4jServer;
+import org.springframework.data.neo4j.template.Neo4jOperations;
 import org.springframework.data.neo4j.template.Neo4jTemplate;
 
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -51,16 +46,14 @@ import java.util.Collections;
  *
  * @author Michael Hunger
  * @author Josh Long
+ * @author Vince Bickers
  * @since 1.3.0
  */
 @Configuration
 @EnableConfigurationProperties(Neo4jProperties.class)
-@ConditionalOnMissingBean(type = "org.springframework.data.neo4j.template.Neo4jTemplate")
-@ConditionalOnClass({ Neo4jSession.class, Neo4jTemplate.class })
+@ConditionalOnMissingBean(type = "org.springframework.data.neo4j.template.Neo4jOperations")
+@ConditionalOnClass({ Neo4jSession.class, Neo4jOperations.class })
 public abstract class Neo4jDataAutoConfiguration extends Neo4jConfiguration implements BeanClassLoaderAware, BeanFactoryAware {
-
-	@Autowired
-	private ResourceLoader resourceLoader;
 
 	@Autowired
 	private Neo4jProperties properties;
@@ -72,18 +65,10 @@ public abstract class Neo4jDataAutoConfiguration extends Neo4jConfiguration impl
 	private BeanFactory beanFactory;
 
 	@Bean
-	@Override
-	@ConditionalOnMissingBean(Neo4jServer.class)
-	public Neo4jServer neo4jServer()  {
-		try {
-			return this.properties.createNeo4jServer(this.environment);
-		} catch (UnknownHostException e) {
-			throw new RuntimeException(e);
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
+	@ConditionalOnMissingBean(org.neo4j.ogm.config.Configuration.class)
+	public org.neo4j.ogm.config.Configuration configuration() {
+		return this.properties.configure();
 	}
-
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -101,66 +86,6 @@ public abstract class Neo4jDataAutoConfiguration extends Neo4jConfiguration impl
 		Collection<String> packages = getMappingBasePackages(beanFactory);
 		return new SessionFactory(packages.toArray(new String[packages.size()]));
 	}
-
-	@Bean
-	@ConditionalOnMissingBean(Neo4jTemplate.class)
-	public Neo4jTemplate neo4jTemplate() throws Exception {
-		return new Neo4jTemplate(getSession()); // todo converters
-	}
-/*
-	@ConditionalOnMissingBean(Session.class)
-	public Session neo4jDbFactory(Neo4jServer neo4j) throws Exception {
-		return new Neo4jSession(neo4j);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(Neo4jConverter.class)
-	public MappingNeo4jConverter mappingNeo4jConverter(Neo4jFactory factory,
-			Neo4jMappingContext context, BeanFactory beanFactory) {
-		DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
-		MappingNeo4jConverter mappingConverter = new MappingNeo4jConverter(dbRefResolver,
-				context);
-		try {
-			mappingConverter.setCustomConversions(beanFactory
-					.getBean(CustomConversions.class));
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			// Ignore
-		}
-		return mappingConverter;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public Neo4jMappingContext neo4jMappingContext(BeanFactory beanFactory)
-			throws ClassNotFoundException {
-		Neo4jMappingContext context = new Neo4jMappingContext();
-		context.setInitialEntitySet(getInitialEntitySet(beanFactory));
-		return context;
-	}
-
-	private Set<Class<?>> getInitialEntitySet(BeanFactory beanFactory)
-			throws ClassNotFoundException {
-		Set<Class<?>> entitySet = new HashSet<Class<?>>();
-		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(
-				false);
-		scanner.setEnvironment(this.environment);
-		scanner.setResourceLoader(this.resourceLoader);
-		scanner.addIncludeFilter(new AnnotationTypeFilter(NodeEntity.class));
-		scanner.addIncludeFilter(new AnnotationTypeFilter(RelationshipEntity.class));
-		scanner.addIncludeFilter(new AnnotationTypeFilter(Persistent.class));
-		for (String basePackage : getMappingBasePackages(beanFactory)) {
-			if (StringUtils.hasText(basePackage)) {
-				for (BeanDefinition candidate : scanner
-						.findCandidateComponents(basePackage)) {
-					entitySet.add(ClassUtils.forName(candidate.getBeanClassName(),
-							this.classLoader));
-				}
-			}
-		}
-		return entitySet;
-	}
-*/
 
 	private static Collection<String> getMappingBasePackages(BeanFactory beanFactory) {
 		try {

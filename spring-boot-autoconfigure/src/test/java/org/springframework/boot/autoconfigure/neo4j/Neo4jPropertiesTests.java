@@ -21,88 +21,62 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.neo4j.server.Neo4jServer;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
+import static org.junit.Assert.assertEquals;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link org.springframework.boot.autoconfigure.neo4j.Neo4jProperties}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Vince Bickers
  */
+
 public class Neo4jPropertiesTests {
-
-	@Test
-	public void canBindCharArrayPassword() {
-		// gh-1572
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.data.neo4j.password:word");
-		context.register(Conf.class);
-		context.refresh();
-		Neo4jProperties properties = context.getBean(Neo4jProperties.class);
-		assertThat(properties.getPassword(), equalTo("word".toCharArray()));
-	}
-
-	@Test
-	public void portCanBeCustomized() throws UnknownHostException, MalformedURLException {
-		Neo4jProperties properties = new Neo4jProperties();
-		properties.setPort(12345);
-		Neo4jServer server = properties.createNeo4jServer(null);
-		assertServerAddress(server, "localhost", 12345);
-	}
-
-	@Test
-	public void hostCanBeCustomized() throws UnknownHostException, MalformedURLException {
-		Neo4jProperties properties = new Neo4jProperties();
-		properties.setHost("neo4j.example.com");
-		Neo4jServer server = properties.createNeo4jServer(null);
-		assertServerAddress(server, "neo4j.example.com", 7474);
-	}
-
-	@Test
-	public void credentialsCanBeCustomized() throws UnknownHostException, MalformedURLException {
-		Neo4jProperties properties = new Neo4jProperties();
-		properties.setUsername("user");
-		properties.setPassword("secret".toCharArray());
-		Neo4jServer server = properties.createNeo4jServer(null);
-		assertNeo4jCredential(server, "user", "secret");
-	}
-
-	@Test
-	public void uriCanBeCustomized() throws UnknownHostException, MalformedURLException {
-		Neo4jProperties properties = new Neo4jProperties();
-		properties.setUrl("https://user:secret@neo4j1.example.com:12345");
-		Neo4jServer server = properties.createNeo4jServer(null);
-		assertServerAddress(server, "neo4j1.example.com", 12345);
-		assertNeo4jCredential(server, "user", "secret");
-	}
-
-	private void assertServerAddress(Neo4jServer server, String expectedHost, int expectedPort) {
-		try {
-			URL url = new URL(server.url());
-			assertThat(url.getHost(), equalTo(expectedHost));
-			assertThat(url.getPort(), equalTo(expectedPort));
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private void assertNeo4jCredential(Neo4jServer server,
-									   String expectedUsername, String expectedPassword) {
-		assertThat(server.username(), equalTo(expectedUsername));
-		assertThat(server.password(), equalTo(expectedPassword));
-	}
 
 	@Configuration
 	@EnableConfigurationProperties(Neo4jProperties.class)
 	static class Conf {
-
 	}
 
+    @Test
+    public void shouldHaveCorrectDefaultDriver() {
+
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.register( Conf.class );
+        context.refresh();
+
+        Neo4jProperties neo4jProperties = context.getBean(Neo4jProperties.class);
+
+        assertEquals("org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver", neo4jProperties.getDriver());
+    }
+
+    @Test
+    public void shouldConfigureFromDefaults()  {
+
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.register( Conf.class );
+        context.refresh();
+
+        Neo4jProperties neo4jProperties = context.getBean(Neo4jProperties.class);
+
+        org.neo4j.ogm.config.Configuration configuration = neo4jProperties.configure();
+        assertEquals( "org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver", configuration.driverConfiguration().getDriverClassName());
+
+    }
+
+    @Test
+    public void shouldBeCustomisable() {
+
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        EnvironmentTestUtils.addEnvironment( context, "spring.data.neo4j.driver:CustomDriver" );
+        context.register( Conf.class );
+        context.refresh();
+
+        Neo4jProperties neo4jProperties = context.getBean(Neo4jProperties.class);
+
+        assertEquals("CustomDriver", neo4jProperties.getDriver());
+
+    }
 }

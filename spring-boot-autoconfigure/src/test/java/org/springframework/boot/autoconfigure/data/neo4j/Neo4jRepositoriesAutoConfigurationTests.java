@@ -18,9 +18,7 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.junit.After;
 import org.junit.Test;
-import org.neo4j.ogm.mapper.MappingContext;
-import org.neo4j.ogm.metadata.MetaData;
-import org.neo4j.ogm.session.Session;
+import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -33,16 +31,10 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-import org.springframework.data.neo4j.server.Neo4jServer;
-import org.springframework.data.neo4j.server.RemoteServer;
-import org.springframework.data.neo4j.template.Neo4jTemplate;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Set;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration}.
@@ -61,22 +53,20 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
+
 		prepareApplicationContext(TestConfiguration.class);
 
 		assertNotNull(this.context.getBean(CityRepository.class));
-		Neo4jServer neo4j = this.context.getBean(Neo4jServer.class);
-		assertThat(neo4j, is(instanceOf(RemoteServer.class)));
-		@SuppressWarnings("unchecked")
+
 		Neo4jMappingContext mappingContext = this.context.getBean(Neo4jMappingContext.class);
 		assertThat(mappingContext.getPersistentEntity(City.class), is(notNullValue()));
+
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
 		prepareApplicationContext(EmptyConfiguration.class);
-
-		Neo4jServer neo4j = this.context.getBean(Neo4jServer.class);
-		assertThat(neo4j, is(instanceOf(RemoteServer.class)));
+		assertNotNull( this.context.getBean( SessionFactory.class ) );
 	}
 
 	@Test

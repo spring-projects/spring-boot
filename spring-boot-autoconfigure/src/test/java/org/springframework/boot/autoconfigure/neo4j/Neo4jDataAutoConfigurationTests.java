@@ -16,47 +16,29 @@
 
 package org.springframework.boot.autoconfigure.neo4j;
 
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.neo4j.ogm.session.Neo4jSession;
 import org.neo4j.ogm.session.SessionFactory;
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
-import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.data.mapping.model.CamelCaseAbbreviatingFieldNamingStrategy;
-import org.springframework.data.mapping.model.FieldNamingStrategy;
-import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
-import org.springframework.data.mongodb.core.convert.CustomConversions;
-import org.springframework.data.neo4j.conversion.MetaDataDrivenConversionService;
 import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
-import org.springframework.data.neo4j.server.Neo4jServer;
-import org.springframework.data.neo4j.template.Neo4jTemplate;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.data.neo4j.template.Neo4jOperations;
 
-import java.util.Arrays;
-import java.util.Set;
-
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link org.springframework.boot.autoconfigure.neo4j.Neo4jDataAutoConfiguration}.
  *
  * @author Josh Long
  * @author Oliver Gierke
+ * @author Vince Bickers
  */
 public class Neo4jDataAutoConfigurationTests {
 
@@ -74,9 +56,10 @@ public class Neo4jDataAutoConfigurationTests {
 
 	@Test
 	public void templateExists() {
-		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class, Neo4jDataAutoConfiguration.class);
-		assertEquals(1, this.context.getBeansOfType(Neo4jTemplate.class).size());
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(PropertyPlaceholderAutoConfiguration.class, Neo4jDataAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(1, this.context.getBeanNamesForType(Neo4jOperations.class).length);
 	}
 
 	@Test
@@ -88,21 +71,7 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void customConversions() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(PropertyPlaceholderAutoConfiguration.class, Neo4jDataAutoConfiguration.class);
-		this.context.register(CustomConversionsConfig.class);
-		this.context.refresh();
-		Neo4jSession template = this.context.getBean(Neo4jSession.class);
-		// TODO
-/*
-		assertTrue(template.context().getConversionService()
-				.canConvert(Neo4jServer.class, Boolean.class));
-*/
-	}
-
-	@Test
-	public void usesAutoConfigurationPackageToPickUpDocumentTypes() {
+	public void usesAutoConfigurationPackageToPickUpDomainTypes() {
 		this.context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(this.context, cityPackage);
@@ -119,29 +88,6 @@ public class Neo4jDataAutoConfigurationTests {
 		for (Class<?> type : types) {
 			assertThat(mappingContext.getPersistentEntity(type), is(notNullValue()));
 		}
-	}
-
-	@Configuration
-	static class CustomConversionsConfig {
-
-		@Bean
-		public ConversionService conversionService(SessionFactory factory) {
-			return new MetaDataDrivenConversionService(factory.metaData());
-		}
-
-		@Bean
-		public CustomConversions customConversions() {
-			return new CustomConversions(Arrays.asList(new MyConverter()));
-		}
-	}
-
-	private static class MyConverter implements Converter<Neo4jServer, Boolean> {
-
-		@Override
-		public Boolean convert(Neo4jServer source) {
-			return null;
-		}
-
 	}
 
 }
