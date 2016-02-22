@@ -1884,6 +1884,11 @@
 				<version>${spring-restdocs.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework.restdocs</groupId>
+				<artifactId>spring-restdocs-restassured</artifactId>
+				<version>${spring-restdocs.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.retry</groupId>
 				<artifactId>spring-retry</artifactId>
 				<version>${spring-retry.version}</version>
