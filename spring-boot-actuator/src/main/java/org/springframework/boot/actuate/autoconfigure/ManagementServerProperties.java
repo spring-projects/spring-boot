@@ -45,7 +45,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	 * authentication for management endpoints. If you want to add your own authentication
 	 * for all or some of those endpoints the best thing to do is add your own
 	 * WebSecurityConfigurerAdapter with lower order, for instance by using
-	 * ACCESS_OVERRIDE_ORDER.
+	 * {@code ACCESS_OVERRIDE_ORDER}.
 	 */
 	public static final int BASIC_AUTH_ORDER = SecurityProperties.BASIC_AUTH_ORDER - 5;
 
@@ -55,7 +55,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	 * you want to override the default access rules for the management endpoints. If you
 	 * want to keep the default rules for management endpoints but want to override the
 	 * security for the rest of the application, use
-	 * SecurityProperties.ACCESS_OVERRIDE_ORDER instead.
+	 * {@code SecurityProperties.ACCESS_OVERRIDE_ORDER} instead.
 	 */
 	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER
 			- 1;
