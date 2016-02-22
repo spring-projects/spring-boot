@@ -18,10 +18,9 @@ package org.springframework.boot.autoconfigure.neo4j;
 
 import org.junit.After;
 import org.junit.Test;
+import org.neo4j.ogm.config.Configuration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.data.neo4j.server.Neo4jServer;
 
 import static org.junit.Assert.assertEquals;
 
@@ -42,30 +41,10 @@ public class Neo4jAutoConfigurationTests {
 	}
 
 	@Test
-	public void clientExists() {
+	public void configurationExists() {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, Neo4jDataAutoConfiguration.class);
-		assertEquals(1, this.context.getBeanNamesForType(Neo4jServer.class).length);
-	}
-
-	@SuppressWarnings("deprecation")
-	@Test
-	public void optionsAdded() {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.neo4j.host:localhost");
-		this.context.refresh();
-		assertEquals("http://localhost:7474", this.context.getBean(Neo4jServer.class).url());
-	}
-
-	@SuppressWarnings("deprecation")
-	@Test
-	public void optionsAddedButNoHost() {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.neo4j.url:https://localhost:7473");
-		this.context.refresh();
-		assertEquals("https://localhost:7473", this.context.getBean(Neo4jServer.class).url());
+		assertEquals(1, this.context.getBeanNamesForType(Configuration.class).length);
 	}
 
 }

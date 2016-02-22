@@ -62,8 +62,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(TestConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(CountryRepository.class));
@@ -72,8 +71,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@Test
 	public void testMixedRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(MixedConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(CountryRepository.class));
@@ -83,8 +81,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@Test
 	public void testJpaRepositoryConfigurationWithNeo4jTemplate() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(JpaConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(CityRepository.class));
@@ -94,8 +91,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@Ignore
 	public void testJpaRepositoryConfigurationWithNeo4jOverlap() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(CityRepository.class));

@@ -16,14 +16,9 @@
 
 package org.springframework.boot.autoconfigure.neo4j;
 
+import org.neo4j.ogm.config.Configuration;
+import org.neo4j.ogm.service.Components;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.env.Environment;
-import org.springframework.data.neo4j.server.Neo4jServer;
-import org.springframework.data.neo4j.server.RemoteServer;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
 
 /**
  * Configuration properties for Neo4j.
@@ -34,160 +29,27 @@ import java.net.UnknownHostException;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Michael Hunger
+ * @author Vince Bickers
  */
 @ConfigurationProperties(prefix = "spring.data.neo4j")
 public class Neo4jProperties {
 
-	/**
-	 * Default port used when the configured port is {@code null}.
-	 */
-	public static final int DEFAULT_PORT = 7474;
-	public static final String DEFAULT_HOST = "localhost";
-	public static final String DEFAULT_URL = "http://"+DEFAULT_HOST+":"+DEFAULT_PORT;
+    // if you don't set this up somewhere, this is what we'll use by default
+    private String driver = "org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver";
 
-	/**
-	 * Neo4j server protocol.
-	 */
-	private String protocol = "http";
+    public String getDriver() {
+        return driver;
+    }
 
-	/**
-	 * Neo4j server host.
-	 */
-	private String host;
+    public void setDriver(String driver) {
+        this.driver = driver;
+    }
 
-	/**
-	 * Neo4j server port.
-	 */
-	private Integer port = null;
-
-	/**
-	 * Neo4j database URI. When set, host and port are ignored.
-	 */
-	private String url;
-
-	/**
-	 * Login user of the neo4j server.
-	 */
-	private String username;
-
-	/**
-	 * Login password of the neo4j server.
-	 */
-	private char[] password;
-
-	public String getHost() {
-		return this.host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	public String getUsername() {
-		return this.username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public char[] getPassword() {
-		return this.password;
-	}
-
-	public void setPassword(char[] password) {
-		this.password = password;
-	}
-
-	public void clearPassword() {
-		if (this.password == null) {
-			return;
-		}
-		for (int i = 0; i < this.password.length; i++) {
-			this.password[i] = 0;
-		}
-	}
-
-	public String getUrl() {
-		return this.url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public Integer getPort() {
-		return this.port;
-	}
-
-	public void setPort(Integer port) {
-		this.port = port;
-	}
-
-	/**
-	 * Creates a {@link Neo4jServer} representation using the given
-	 * {@code environment}. If the configured port is zero, the value of the
-	 * {@code local.neo4j.port} property retrieved from the {@code environment} is used
-	 * to configure the server.
-	 *
-	 * @param environment the environment
-	 * @return the Neo4j server representation
-	 * @throws UnknownHostException if the configured host is unknown
-	 */
-	public Neo4jServer createNeo4jServer(Environment environment) throws UnknownHostException, MalformedURLException {
-		try {
-			String url = hasCustomAddress() ? new URL(this.protocol,determineHost(environment),determinePort(environment),"").toString() :
-					     hasCustomUrl() ? this.url : DEFAULT_URL;
-			if (hasCustomCredentials()) {
-				return new RemoteServer(url,this.username,String.valueOf(this.password));
-			} else {
-				return new RemoteServer(url);
-			}
-		}
-		finally {
-			clearPassword();
-		}
-	}
-
-	private boolean hasCustomAddress() {
-		return this.host != null || this.port != null;
-	}
-	private boolean hasCustomUrl() {
-		return this.url != null;
-	}
-
-	private boolean hasCustomCredentials() {
-		return this.username != null && this.password != null;
-	}
-
-	private int determinePort(Environment environment) {
-		if (this.port == null) {
-			return DEFAULT_PORT;
-		}
-		if (this.port != 0) {
-			return this.port;
-		}
-		if (environment != null) {
-            String localPort = environment.getProperty("local.neo4j.port");
-            if (localPort != null) {
-                return Integer.valueOf(localPort);
-            }
-        }
-		throw new IllegalStateException(
-                "spring.data.neo4j.port=0 and no local neo4j port configuration "
-                        + "is available");
-	}
-	private String determineHost(Environment environment) {
-		if (this.host != null) {
-			return this.host;
-		}
-
-		if (environment != null) {
-            String localHost = environment.getProperty("local.neo4j.host");
-            if (localHost != null) {
-                return localHost;
-            }
-        }
-		return DEFAULT_HOST;
-	}
+    public Configuration configure() {
+        Configuration configuration = new Configuration();
+        configuration.driverConfiguration()
+                .setDriverClassName( getDriver() );
+        Components.configure( configuration );
+        return configuration;
+    }
 }
