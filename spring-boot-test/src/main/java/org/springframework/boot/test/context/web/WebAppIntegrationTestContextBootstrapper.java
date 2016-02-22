@@ -17,34 +17,23 @@
 package org.springframework.boot.test.context.web;
 
 import org.springframework.boot.test.context.MergedContextConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
-import org.springframework.test.context.support.DefaultTestContextBootstrapper;
-import org.springframework.test.context.web.WebDelegatingSmartContextLoader;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 
 /**
  * {@link TestContextBootstrapper} for Spring Boot web integration tests.
  *
  * @author Phillip Webb
- * @since 1.2.1
  */
-class WebAppIntegrationTestContextBootstrapper extends DefaultTestContextBootstrapper {
-
-	@Override
-	protected Class<? extends ContextLoader> getDefaultContextLoaderClass(
-			Class<?> testClass) {
-		if (AnnotatedElementUtils.isAnnotated(testClass, WebIntegrationTest.class)) {
-			return WebDelegatingSmartContextLoader.class;
-		}
-		return super.getDefaultContextLoaderClass(testClass);
-	}
+class WebAppIntegrationTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected MergedContextConfiguration processMergedContextConfiguration(
 			MergedContextConfiguration mergedConfig) {
+		mergedConfig = super.processMergedContextConfiguration(mergedConfig);
 		WebIntegrationTest annotation = AnnotatedElementUtils.findMergedAnnotation(
 				mergedConfig.getTestClass(), WebIntegrationTest.class);
 		if (annotation != null) {
