@@ -2031,8 +2031,7 @@ The basic features you get out of the box in a web application are:
 
 All of the above can be switched on and off or modified using external properties
 (`+security.*+`). To override the access rules without changing any other auto-configured
-features add a `@Bean` of type `WebSecurityConfigurerAdapter` with
-`@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)`.
+features add a `@Bean` of type `WebSecurityConfigurerAdapter`.
 
 
 
@@ -2227,17 +2226,15 @@ to the home page at "/" and keep the default for everything else:
 
 [source,java,indent=0]
 ----
-	@Configuration
+	@EnableWebSecurity
 	public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 		@Override
-		public void init(WebSecurity web) {
-			web.ignore("/");
-		}
-
-		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
+			http
+				.authorizeRequests()
+					.antMatcher("/").permitAll()
+					.anyRequest().authenticated();
 		}
 
 	}
@@ -2255,7 +2252,7 @@ If the Actuator is also in use, you will find:
 
 The Actuator security features can be modified using external properties
 (`+management.security.*+`). To override the application access rules
-add a `@Bean` of type `WebSecurityConfigurerAdapter` and use
+add a `@Bean` of type `GlobalAuthenticationConfigurerAdapter` and use
 `@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)` if you _don't_ want to override
 the actuator access rules, or `@Order(ManagementServerProperties.ACCESS_OVERRIDE_ORDER)`
 if you _do_ want to override the actuator access rules.

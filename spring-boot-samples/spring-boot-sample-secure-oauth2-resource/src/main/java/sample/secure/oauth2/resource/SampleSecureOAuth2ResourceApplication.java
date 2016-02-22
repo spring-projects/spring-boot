@@ -29,7 +29,12 @@ public class SampleSecureOAuth2ResourceApplication
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.antMatcher("/flights/**").authorizeRequests().anyRequest().authenticated();
+		// @formatter:off
+		http
+			.antMatcher("/flights/**")
+				.authorizeRequests()
+					.anyRequest().authenticated();
+		// @formatter:on
 	}
 
 	public static void main(String[] args) {

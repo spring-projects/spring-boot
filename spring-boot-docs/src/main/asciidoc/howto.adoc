@@ -1885,13 +1885,16 @@ use this in a webapp is to inject it into a void method in a
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Configuration
+	@EnableWebSecurity
 	public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 		@Autowired
 		public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-				auth.inMemoryAuthentication()
+			// @formatter:off
+			auth
+				.inMemoryAuthentication()
 					.withUser("barry").password("password").roles("USER"); // ... etc.
+			// @formatter:on
 		}
 
 		// ... other stuff for application security
@@ -1905,19 +1908,20 @@ order of instantiation). The {github-code}/spring-boot-samples/spring-boot-sampl
 is a useful template to follow.
 
 If you experience instantiation issues (e.g. using JDBC or JPA for the user detail store)
-it might be worth extracting the `AuthenticationManagerBuilder` callback into a
-`GlobalAuthenticationConfigurerAdapter` (in the `init()` method so it happens before the
-authentication manager is needed elsewhere), e.g.
+it might be worth extracting the `AuthenticationManagerBuilder` callback into its own
+class and annotated with `@EnableGlobalAuthentication`, e.g.
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Configuration
-	public class AuthenticationManagerConfiguration extends
-			GlobalAuthenticationConfigurerAdapter {
+	@EnableGlobalAuthentication
+	public class AuthenticationManagerConfiguration {
 
-		@Override
-		public void init(AuthenticationManagerBuilder auth) {
-			auth.inMemoryAuthentication() // ... etc.
+		@Autowired
+		public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+			// @formatter:off
+			auth
+				.inMemoryAuthentication() // ... etc.
+			// @formatter:on
 		}
 
 	}

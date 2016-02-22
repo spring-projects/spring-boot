@@ -22,23 +22,19 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-@EnableAutoConfiguration
-@ComponentScan
 @Controller
+@SpringBootApplication
 public class SampleWebSecureCustomApplication extends WebMvcConfigurerAdapter {
 
 	@RequestMapping("/")
@@ -59,31 +55,38 @@ public class SampleWebSecureCustomApplication extends WebMvcConfigurerAdapter {
 		registry.addViewController("/login").setViewName("login");
 	}
 
-	@Bean
-	public ApplicationSecurity applicationSecurity() {
-		return new ApplicationSecurity();
-	}
-
 	public static void main(String[] args) throws Exception {
 		new SpringApplicationBuilder(SampleWebSecureCustomApplication.class).run(args);
 	}
 
-	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
-	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
-
-		@Autowired
-		private DataSource dataSource;
+	@EnableWebSecurity
+	static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().antMatchers("/css/**").permitAll().anyRequest()
-					.fullyAuthenticated().and().formLogin().loginPage("/login")
-					.failureUrl("/login?error").permitAll().and().logout().permitAll();
+			// @formatter:off
+			http
+				.authorizeRequests()
+					.antMatchers("/css/**").permitAll()
+					.anyRequest().fullyAuthenticated()
+					.and()
+				.formLogin()
+					.loginPage("/login")
+					.permitAll()
+					.and()
+				.logout()
+					.permitAll();
+			// @formatter:on
 		}
 
-		@Override
-		public void configure(AuthenticationManagerBuilder auth) throws Exception {
-			auth.jdbcAuthentication().dataSource(this.dataSource);
+		@Autowired
+		public void configureGlobal(AuthenticationManagerBuilder auth,
+				DataSource dataSource) throws Exception {
+			// @formatter:off
+			auth
+				.jdbcAuthentication()
+					.dataSource(dataSource);
+			// @formatter:on
 		}
 
 	}
