@@ -1,3 +1,9 @@
 # Spring Test ContextCustomizerFactories
 org.springframework.test.context.ContextCustomizerFactory=\
-org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizerFactory
+org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizerFactory,\
+org.springframework.boot.test.mock.mockito.MockitoContextCustomizerFactory
+
+# Test Execution Listeners
+org.springframework.test.context.TestExecutionListener=\
+org.springframework.boot.test.mock.mockito.MockitoInitializeTestExecutionListener,\
+org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener
