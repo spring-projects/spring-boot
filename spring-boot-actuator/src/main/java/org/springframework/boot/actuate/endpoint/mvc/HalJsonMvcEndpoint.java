@@ -49,7 +49,7 @@ public class HalJsonMvcEndpoint extends WebMvcConfigurerAdapter
 	 * Endpoint URL path.
 	 */
 	@NotNull
-	@Pattern(regexp = "^$|/[^/]*", message = "Path must be empty or start with /")
+	@Pattern(regexp = "^$|/.*", message = "Path must be empty or start with /")
 	private String path;
 
 	/**

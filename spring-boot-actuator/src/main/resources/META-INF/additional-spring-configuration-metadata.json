@@ -1,9 +1,29 @@
 {"properties": [
   {
+    "name": "endpoints.autoconfig.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path."
+  },
+  {
+    "name": "endpoints.beans.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path."
+  },
+  {
     "name": "endpoints.configprops.keys-to-sanitize",
     "type": "java.lang.String[]",
     "sourceType": "org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint",
     "description": "Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions."
+  },
+  {
+    "name": "endpoints.configprops.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path."
+  },
+  {
+    "name": "endpoints.dump.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path."
   },
   {
     "name": "endpoints.env.keys-to-sanitize",
@@ -12,16 +32,31 @@
     "description": "Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions."
   },
   {
+    "name": "endpoints.info.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path."
+  },
+  {
     "name": "endpoints.jmx.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable JMX export of all endpoints.",
     "defaultValue": true
   },
   {
+    "name": "endpoints.mappings.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path."
+  },
+  {
     "name": "endpoints.metrics.filter.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable the metrics servlet filter.",
     "defaultValue": true
+  },
+  {
+    "name": "endpoints.trace.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path."
   },
   {
     "name": "info",
