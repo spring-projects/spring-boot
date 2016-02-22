@@ -134,7 +134,7 @@
 		<spring-batch.version>3.0.6.RELEASE</spring-batch.version>
 		<spring-data-releasetrain.version>Gosling-SR2A</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.19.0.RELEASE</spring-hateoas.version>
-		<spring-integration.version>4.2.4.RELEASE</spring-integration.version>
+		<spring-integration.version>4.2.5.RELEASE</spring-integration.version>
 		<spring-loaded.version>1.2.5.RELEASE</spring-loaded.version>
 		<spring-mobile.version>1.1.5.RELEASE</spring-mobile.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
