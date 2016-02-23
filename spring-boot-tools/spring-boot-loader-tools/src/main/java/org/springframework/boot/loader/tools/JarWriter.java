@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,6 +120,11 @@ public class JarWriter {
 	 * @throws IOException if the entries cannot be written
 	 */
 	public void writeEntries(JarFile jarFile) throws IOException {
+		this.writeEntries(jarFile, new IdentityEntryTransformer());
+	}
+
+	void writeEntries(JarFile jarFile, EntryTransformer entryTransformer)
+			throws IOException {
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry entry = entries.nextElement();
@@ -133,7 +138,7 @@ public class JarWriter {
 							jarFile.getInputStream(entry));
 				}
 				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream, true);
-				writeEntry(entry, entryWriter);
+				writeEntry(entryTransformer.transform(entry), entryWriter);
 			}
 			finally {
 				inputStream.close();
@@ -375,6 +380,28 @@ public class JarWriter {
 			entry.setCrc(this.crc.getValue());
 			entry.setMethod(ZipEntry.STORED);
 		}
+	}
+
+	/**
+	 * An {@code EntryTransformer} enables the transformation of {@link JarEntry jar
+	 * entries} during the writing process.
+	 */
+	interface EntryTransformer {
+
+		JarEntry transform(JarEntry jarEntry);
+
+	}
+
+	/**
+	 * An {@code EntryTransformer} that returns the entry unchanged.
+	 */
+	private static final class IdentityEntryTransformer implements EntryTransformer {
+
+		@Override
+		public JarEntry transform(JarEntry jarEntry) {
+			return jarEntry;
+		}
+
 	}
 
 }

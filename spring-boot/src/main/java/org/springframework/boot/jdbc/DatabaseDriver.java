@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
  * @author Maciej Walkowiak
  * @author Marten Deinum
  * @author Stephane Nicoll
- * @since 1.2.0
+ * @since 1.4.0
  */
 public enum DatabaseDriver {
 
@@ -88,8 +88,8 @@ public enum DatabaseDriver {
 			"SELECT 1"),
 
 	/**
-	 * jTDS. As it can be used for several databases, there isn't a single product name
-	 * we could rely on.
+	 * jTDS. As it can be used for several databases, there isn't a single product name we
+	 * could rely on.
 	 */
 	JTDS(null, "net.sourceforge.jtds.jdbc.Driver"),
 

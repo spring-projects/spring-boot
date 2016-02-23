@@ -3080,9 +3080,9 @@ dependencies in a convenient way.
 [[boot-features-connecting-to-cassandra]]
 ==== Connecting to Cassandra
 You can inject an auto-configured `CassandraTemplate` or a Cassandra `Session`
-instance as you would any other Spring Bean. The `spring.data.cassandra.*` properties
-can be used to customize the connection. Generally you will to provide `keyspace-name`
-and `contact-points` properties:
+instance as you would with any other Spring Bean. The `spring.data.cassandra.*`
+properties can be used to customize the connection. Generally you will provide
+`keyspace-name` and `contact-points` properties:
 
 [source,properties,indent=0]
 ----
@@ -3121,6 +3121,66 @@ methods with `@Query`.
 TIP: For complete details of Spring Data Cassandra, refer to their
 http://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
 
+
+[[boot-features-couchbase]]
+=== Couchbase
+http://www.couchbase.com/[Couchbase] is an open-source, distributed multi-model NoSQL
+document-oriented database that is optimized for interactive applications. Spring Boot
+offers auto-configuration for Couchbase and abstractions on top of it provided by
+https://github.com/spring-projects/spring-data-couchbase[Spring Data Couchbase].
+There is a `spring-boot-starter-data-couchbase` '`Starter POM`' for collecting the
+dependencies in a convenient way.
+
+
+
+[[boot-features-connecting-to-couchbase]]
+==== Connecting to Couchbase
+You can inject an auto-configured `CouchbaseTemplate` instance as you would with any
+other Spring Bean. The `spring.data.couchbase.*` properties can be used to customize the
+connection. Generally you will provide the bootstrap hosts, bucket name and password:
+
+[source,properties,indent=0]
+----
+	spring.data.couchbase.bootstrap-hosts=my-host-1,192.168.1.123
+	spring.data.couchbase.bucket.name=my-bucket
+	spring.data.couchbase.bucket.password=secret
+----
+
+[TIP]
+====
+You need to provide _at least_ the bucket name, in which case the bootstrap host is
+localhost and the password is an empty String. Alternatively, you can define your
+own `org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration` `@Bean`
+configuration to take control over the whole configuration.
+====
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyBean {
+
+		private final CouchbaseTemplate template;
+
+		@Autowired
+		public MyBean(CouchbaseTemplate template) {
+			this.template = template;
+		}
+
+		// ...
+
+	}
+----
+
+If you add a `@Bean` of your own of type `CouchbaseTemplate` named `couchbaseTemplate` it
+will replace the default.
+
+
+
+[[boot-features-spring-data-couchbase-repositories]]
+==== Spring Data Couchbase repositories
+Spring Data includes repository support for Couchbase. For complete details of Spring
+Data Couchbase, refer to their
+http://docs.spring.io/spring-data/couchbase/docs/current/reference/html/[reference documentation].
 
 
 [[boot-features-caching]]
@@ -3501,9 +3561,9 @@ TIP: Check {spring-javadoc}/jms/annotation/EnableJms.{dc-ext}[the Javadoc of `@E
 more details.
 
 If you need to create more `JmsListenerContainerFactory` instances or if you want to override
-the default, Spring Boot provides a `JmsListenerContainerFactoryConfigurer` that you can use
-to initialize a `DefaultJmsListenerContainerFactory` with the same settings as the one that
-is auto-configured.
+the default, Spring Boot provides a `DefaultJmsListenerContainerFactoryConfigurer` that you
+can use to initialize a `DefaultJmsListenerContainerFactory` with the same settings as the one
+that is auto-configured.
 
 For instance, the following exposes another factory that uses a specific `MessageConverter`:
 
@@ -3514,9 +3574,10 @@ For instance, the following exposes another factory that uses a specific `Messag
 
 		@Bean
 		public DefaultJmsListenerContainerFactory myFactory(
-				JmsListenerContainerFactoryConfigurer configurer) {
-			DefaultJmsListenerContainerFactory factory = configurer
-					.createJmsListenerContainerFactory(connectionFactory());
+				DefaultJmsListenerContainerFactoryConfigurer configurer) {
+			DefaultJmsListenerContainerFactory factory =
+					new DefaultJmsListenerContainerFactory();
+			configurer.configure(factory, connectionFactory());
 			factory.setMessageConverter(myMessageConverter());
 			return factory;
 		}
@@ -3635,8 +3696,8 @@ TIP: Check {spring-amqp-javadoc}/rabbit/annotation/EnableRabbit.{dc-ext}[the Jav
 for more details.
 
 If you need to create more `RabbitListenerContainerFactory` instances or if you want to override
-the default, Spring Boot provides a `RabbitListenerContainerFactoryConfigurer` that you can use
-to initialize a `SimpleRabbitListenerContainerFactory` with the same settings as the one that
+the default, Spring Boot provides a `SimpleRabbitListenerContainerFactoryConfigurer` that you can
+use to initialize a `SimpleRabbitListenerContainerFactory` with the same settings as the one that
 is auto-configured.
 
 For instance, the following exposes another factory that uses a specific `MessageConverter`:
@@ -3648,9 +3709,10 @@ For instance, the following exposes another factory that uses a specific `Messag
 
 		@Bean
 		public SimpleRabbitListenerContainerFactory myFactory(
-				RabbitListenerContainerFactoryConfigurer configurer) {
-			SimpleRabbitListenerContainerFactory factory = configurer
-					.createRabbitListenerContainerFactory(connectionFactory());
+				SimpleRabbitListenerContainerFactoryConfigurer configurer) {
+			SimpleRabbitListenerContainerFactory factory =
+					new SimpleRabbitListenerContainerFactory();
+			configurer.configure(factory, connectionFactory);
 			factory.setMessageConverter(myMessageConverter());
 			return factory;
 		}
@@ -3718,8 +3780,8 @@ startup and shutdown ordering.
 By default Atomikos transaction logs will be written to a `transaction-logs` directory in
 your application home directory (the directory in which your application jar file
 resides). You can customize this directory by setting a `spring.jta.log-dir` property in
-your `application.properties` file. Properties starting `spring.jta.` can also be used to
-customize the Atomikos `UserTransactionServiceImp`. See the
+your `application.properties` file. Properties starting `spring.jta.atomikos.properties`
+can also be used to customize the Atomikos `UserTransactionServiceImp`. See the
 {dc-spring-boot}/jta/atomikos/AtomikosProperties.{dc-ext}[`AtomikosProperties` Javadoc]
 for complete details.
 
@@ -3740,9 +3802,9 @@ correct.
 
 By default Bitronix transaction log files (`part1.btm` and `part2.btm`) will be written to
 a `transaction-logs` directory in your application home directory. You can customize this
-directory by using the `spring.jta.log-dir` property. Properties starting `spring.jta.`
-are also bound to the `bitronix.tm.Configuration` bean, allowing for complete
-customization. See the
+directory by using the `spring.jta.log-dir` property. Properties starting
+`spring.jta.bitronix.properties` are also bound to the `bitronix.tm.Configuration` bean,
+allowing for complete customization. See the
 https://github.com/bitronix/btm/wiki/Transaction-manager-configuration[Bitronix documentation]
 for details.
 

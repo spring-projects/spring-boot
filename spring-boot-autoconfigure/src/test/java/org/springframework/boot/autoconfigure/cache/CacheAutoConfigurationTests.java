@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -326,16 +326,21 @@ public class CacheAutoConfigurationTests {
 		cacheManager.getCache("defaultCache");
 		assertThat(cacheManager.getCacheNames()).containsOnly("defaultCache");
 		assertThat(this.context.getBean(HazelcastInstance.class))
-				.isEqualTo(new DirectFieldAccessor(cacheManager)
-						.getPropertyValue("hazelcastInstance"));
+				.isEqualTo(getHazelcastInstance(cacheManager));
 	}
 
 	@Test
-	public void hazelcastCacheWithConfig() {
+	public void hazelcastCacheWithConfig() throws IOException {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast",
 				"spring.cache.hazelcast.config=org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml");
+		HazelcastInstance hazelcastInstance = this.context
+				.getBean(HazelcastInstance.class);
 		HazelcastCacheManager cacheManager = validateCacheManager(
 				HazelcastCacheManager.class);
+		HazelcastInstance actual = getHazelcastInstance(cacheManager);
+		assertThat(actual).isSameAs(hazelcastInstance);
+		assertThat(actual.getConfig().getConfigurationUrl()).isEqualTo(new ClassPathResource(
+				"org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml").getURL());
 		cacheManager.getCache("foobar");
 		assertThat(cacheManager.getCacheNames()).containsOnly("foobar");
 	}
@@ -353,9 +358,8 @@ public class CacheAutoConfigurationTests {
 		load(HazelcastCustomHazelcastInstance.class, "spring.cache.type=hazelcast");
 		HazelcastCacheManager cacheManager = validateCacheManager(
 				HazelcastCacheManager.class);
-		assertThat(new DirectFieldAccessor(cacheManager)
-				.getPropertyValue("hazelcastInstance"))
-						.isEqualTo(this.context.getBean("customHazelcastInstance"));
+		assertThat(getHazelcastInstance(cacheManager))
+				.isEqualTo(this.context.getBean("customHazelcastInstance"));
 	}
 
 	@Test
@@ -372,8 +376,7 @@ public class CacheAutoConfigurationTests {
 				HazelcastCacheManager.class);
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
-		assertThat(new DirectFieldAccessor(cacheManager)
-				.getPropertyValue("hazelcastInstance")).isEqualTo(hazelcastInstance);
+		assertThat(getHazelcastInstance(cacheManager)).isEqualTo(hazelcastInstance);
 		assertThat(hazelcastInstance.getConfig().getConfigurationFile())
 				.isEqualTo(new ClassPathResource(mainConfig).getFile());
 	}
@@ -541,6 +544,11 @@ public class CacheAutoConfigurationTests {
 		applicationContext.register(CacheAutoConfiguration.class);
 		applicationContext.refresh();
 		this.context = applicationContext;
+	}
+
+	private static HazelcastInstance getHazelcastInstance(HazelcastCacheManager cacheManager) {
+		return (HazelcastInstance) new DirectFieldAccessor(cacheManager)
+				.getPropertyValue("hazelcastInstance");
 	}
 
 	@Configuration

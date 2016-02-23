@@ -41,6 +41,7 @@ import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.boot.diagnostics.FailureAnalyzers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -812,16 +813,13 @@ public class SpringApplication {
 
 	private void handleRunFailure(ConfigurableApplicationContext context,
 			SpringApplicationRunListeners listeners, Throwable exception) {
-		if (logger.isErrorEnabled()) {
-			logger.error("Application startup failed", exception);
-			registerLoggedException(exception);
-		}
 		try {
 			try {
 				handleExitCode(context, exception);
 				listeners.finished(context, exception);
 			}
 			finally {
+				reportFailure(exception);
 				if (context != null) {
 					context.close();
 				}
@@ -831,6 +829,22 @@ public class SpringApplication {
 			logger.warn("Unable to close ApplicationContext", ex);
 		}
 		ReflectionUtils.rethrowRuntimeException(exception);
+	}
+
+	private void reportFailure(Throwable failure) {
+		try {
+			if (FailureAnalyzers.analyzeAndReport(failure, getClass().getClassLoader())) {
+				registerLoggedException(failure);
+				return;
+			}
+		}
+		catch (Throwable ex) {
+			// Continue with normal handling of the original failure
+		}
+		if (logger.isErrorEnabled()) {
+			logger.error("Application startup failed", failure);
+			registerLoggedException(failure);
+		}
 	}
 
 	/**

@@ -215,6 +215,9 @@ public class JettyEmbeddedServletContainerFactory
 		if (ssl.getCiphers() != null) {
 			factory.setIncludeCipherSuites(ssl.getCiphers());
 		}
+		if (ssl.getEnabledProtocols() != null) {
+			factory.setIncludeProtocols(ssl.getEnabledProtocols());
+		}
 		configureSslTrustStore(factory, ssl);
 	}
 

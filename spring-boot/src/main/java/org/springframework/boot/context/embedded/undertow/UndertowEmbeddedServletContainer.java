@@ -17,6 +17,7 @@
 package org.springframework.boot.context.embedded.undertow;
 
 import java.lang.reflect.Field;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ import org.xnio.channels.BoundChannel;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.PortInUseException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
@@ -123,10 +125,30 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 			UndertowEmbeddedServletContainer.logger
 					.info("Undertow started on port(s) " + getPortsDescription());
 		}
-		catch (ServletException ex) {
+		catch (Exception ex) {
+			if (findBindException(ex) != null) {
+				List<Port> failedPorts = getConfiguredPorts();
+				List<Port> actualPorts = getActualPorts();
+				failedPorts.removeAll(actualPorts);
+				if (failedPorts.size() == 1) {
+					throw new PortInUseException(
+							failedPorts.iterator().next().getNumber());
+				}
+			}
 			throw new EmbeddedServletContainerException(
 					"Unable to start embedded Undertow", ex);
 		}
+	}
+
+	private BindException findBindException(Exception ex) {
+		Throwable candidate = ex;
+		while (candidate != null) {
+			if (candidate instanceof BindException) {
+				return (BindException) candidate;
+			}
+			candidate = candidate.getCause();
+		}
+		return null;
 	}
 
 	private Undertow createUndertowServer() throws ServletException {
@@ -175,14 +197,14 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	}
 
 	private String getPortsDescription() {
-		List<Port> ports = getPorts();
+		List<Port> ports = getActualPorts();
 		if (!ports.isEmpty()) {
 			return StringUtils.collectionToDelimitedString(ports, " ");
 		}
 		return "unknown";
 	}
 
-	private List<Port> getPorts() {
+	private List<Port> getActualPorts() {
 		List<Port> ports = new ArrayList<Port>();
 		try {
 			if (!this.autoStart) {
@@ -218,6 +240,36 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		return null;
 	}
 
+	private List<Port> getConfiguredPorts() {
+		List<Port> ports = new ArrayList<Port>();
+		for (Object listener : extractListeners()) {
+			try {
+				ports.add(getPortFromListener(listener));
+			}
+			catch (Exception ex) {
+				// Continue
+			}
+		}
+		return ports;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Object> extractListeners() {
+		Field listenersField = ReflectionUtils.findField(Undertow.class, "listeners");
+		ReflectionUtils.makeAccessible(listenersField);
+		return (List<Object>) ReflectionUtils.getField(listenersField, this.undertow);
+	}
+
+	private Port getPortFromListener(Object listener) {
+		Field typeField = ReflectionUtils.findField(listener.getClass(), "type");
+		ReflectionUtils.makeAccessible(typeField);
+		String protocol = ReflectionUtils.getField(typeField, listener).toString();
+		Field portField = ReflectionUtils.findField(listener.getClass(), "port");
+		ReflectionUtils.makeAccessible(portField);
+		int port = (Integer) ReflectionUtils.getField(portField, listener);
+		return new Port(port, protocol);
+	}
+
 	@Override
 	public synchronized void stop() throws EmbeddedServletContainerException {
 		if (this.started) {
@@ -235,7 +287,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	@Override
 	public int getPort() {
-		List<Port> ports = getPorts();
+		List<Port> ports = getActualPorts();
 		if (ports.isEmpty()) {
 			return 0;
 		}
@@ -243,7 +295,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	}
 
 	/**
-	 * An active undertow port.
+	 * An active Undertow port.
 	 */
 	private final static class Port {
 
@@ -263,6 +315,29 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		@Override
 		public String toString() {
 			return this.number + " (" + this.protocol + ")";
+		}
+
+		@Override
+		public int hashCode() {
+			return this.number;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			Port other = (Port) obj;
+			if (this.number != other.number) {
+				return false;
+			}
+			return true;
 		}
 
 	}

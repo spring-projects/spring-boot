@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.catalina.Container;
+import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
@@ -32,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.PortInUseException;
 import org.springframework.util.Assert;
 
 /**
@@ -91,6 +93,9 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			// We can re-throw failure exception directly in the main thread
 			rethrowDeferredStartupExceptions();
 
+			ClassLoader classLoader = findContext().getLoader().getClassLoader();
+			Thread.currentThread().setContextClassLoader(classLoader);
+
 			// Unlike Jetty, all Tomcat threads are daemon threads. We create a
 			// blocking non-daemon to stop immediate shutdown
 			startDaemonAwaitThread();
@@ -99,6 +104,15 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			throw new EmbeddedServletContainerException("Unable to start embedded Tomcat",
 					ex);
 		}
+	}
+
+	private Context findContext() {
+		for (Container child : this.tomcat.getHost().findChildren()) {
+			if (child instanceof Context) {
+				return (Context) child;
+			}
+		}
+		throw new IllegalStateException("The host does not contain a Context");
 	}
 
 	private void addInstanceIdToEngineName() {
@@ -153,13 +167,13 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			if (connector != null && this.autoStart) {
 				startConnector(connector);
 			}
-			// Ensure process isn't left running if it actually failed to start
-			if (connectorsHaveFailedToStart()) {
-				stopSilently();
-				throw new IllegalStateException("Tomcat connector in failed state");
-			}
+			checkThatConnectorsHaveStarted();
 			TomcatEmbeddedServletContainer.logger
 					.info("Tomcat started on port(s): " + getPortsDescription(true));
+		}
+		catch (PortInUseException ex) {
+			stopSilently();
+			throw ex;
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
@@ -167,13 +181,12 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		}
 	}
 
-	private boolean connectorsHaveFailedToStart() {
+	private void checkThatConnectorsHaveStarted() {
 		for (Connector connector : this.tomcat.getService().findConnectors()) {
 			if (LifecycleState.FAILED.equals(connector.getState())) {
-				return true;
+				throw new PortInUseException(connector.getPort());
 			}
 		}
-		return false;
 	}
 
 	private void stopSilently() {
@@ -245,6 +258,10 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 					ex);
 		}
 		finally {
+			if (Thread.currentThread()
+					.getContextClassLoader() instanceof TomcatEmbeddedWebappClassLoader) {
+				Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+			}
 			containerCounter.decrementAndGet();
 		}
 	}

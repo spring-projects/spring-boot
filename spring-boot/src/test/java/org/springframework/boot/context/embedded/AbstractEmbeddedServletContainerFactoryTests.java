@@ -23,7 +23,9 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -81,6 +83,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -401,7 +404,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
 		factory.setSsl(getSsl(ClientAuth.NEED, null, "classpath:test.p12",
-				"classpath:test.p12"));
+				"classpath:test.p12", null, null));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		KeyStore keyStore = KeyStore.getInstance("pkcs12");
@@ -425,7 +428,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
 		factory.setSsl(getSsl(ClientAuth.NEED, "password", "classpath:test.jks",
-				"classpath:test.jks"));
+				"classpath:test.jks", null, null));
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -523,11 +526,11 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore) {
-		return getSsl(clientAuth, keyPassword, keyStore, null);
+		return getSsl(clientAuth, keyPassword, keyStore, null, null, null);
 	}
 
 	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore,
-			String trustStore) {
+			String trustStore, String[] supportedProtocols, String[] ciphers) {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(clientAuth);
 		if (keyPassword != null) {
@@ -543,7 +546,35 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			ssl.setTrustStorePassword("secret");
 			ssl.setTrustStoreType(getStoreType(trustStore));
 		}
+		if (ciphers != null) {
+			ssl.setCiphers(ciphers);
+		}
+		if (supportedProtocols != null) {
+			ssl.setEnabledProtocols(supportedProtocols);
+		}
 		return ssl;
+	}
+
+	protected void testRestrictedSSLProtocolsAndCipherSuites(String[] protocols,
+			String[] ciphers) throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks", null,
+				protocols, ciphers));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container.start();
+
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder()
+						.loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
+
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
+				httpClient);
+
+		assertThat(getResponse(getLocalUrl("https", "/hello"), requestFactory))
+				.contains("scheme=https");
 	}
 
 	private String getStoreType(String keyStore) {
@@ -715,6 +746,64 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		assertThat(response.getHeaders().getFirst("server")).isEqualTo("MyServer");
 	}
 
+	@Test
+	public void portClashOfPrimaryConnectorResultsInPortInUseException()
+			throws IOException {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+
+		final int port = SocketUtils.findAvailableTcpPort(40000);
+
+		factory.setPort(port);
+
+		this.container = factory.getEmbeddedServletContainer();
+
+		doWithBlockedPort(port, new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					AbstractEmbeddedServletContainerFactoryTests.this.container.start();
+					fail();
+				}
+				catch (PortInUseException ex) {
+					assertThat(ex.getPort()).isEqualTo(port);
+				}
+			}
+
+		});
+
+	}
+
+	@Test
+	public void portClashOfSecondaryConnectorResultsInPortInUseException()
+			throws IOException {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setPort(SocketUtils.findAvailableTcpPort(40000));
+
+		final int port = SocketUtils.findAvailableTcpPort(40000);
+
+		addConnector(port, factory);
+		this.container = factory.getEmbeddedServletContainer();
+
+		doWithBlockedPort(port, new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					AbstractEmbeddedServletContainerFactoryTests.this.container.start();
+					fail();
+				}
+				catch (PortInUseException ex) {
+					assertThat(ex.getPort()).isEqualTo(port);
+				}
+			}
+
+		});
+	}
+
+	protected abstract void addConnector(int port,
+			AbstractEmbeddedServletContainerFactory factory);
+
 	private boolean doTestCompression(int contentSize, String[] mimeTypes,
 			String[] excludedUserAgents) throws Exception {
 		String testContent = setUpFactoryForCompression(contentSize, mimeTypes,
@@ -876,6 +965,18 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}, "/session");
 		bean.setName("session");
 		return bean;
+	}
+
+	protected final void doWithBlockedPort(final int port, Runnable action)
+			throws IOException {
+		ServerSocket serverSocket = new ServerSocket();
+		serverSocket.bind(new InetSocketAddress(port));
+		try {
+			action.run();
+		}
+		finally {
+			serverSocket.close();
+		}
 	}
 
 	private class TestGzipInputStreamFactory implements InputStreamFactory {

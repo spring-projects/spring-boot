@@ -134,7 +134,8 @@ public class DataSourceAutoConfigurationTests {
 	public void hikariValidatesConnectionByDefault() throws Exception {
 		HikariDataSource dataSource = autoConfigureDataSource(HikariDataSource.class,
 				"org.apache.tomcat");
-		assertThat(dataSource.getConnectionTestQuery()).isNull(); // Use Connection#isValid()
+		assertThat(dataSource.getConnectionTestQuery()).isNull(); // Use
+																	// Connection#isValid()
 	}
 
 	@Test
@@ -160,7 +161,6 @@ public class DataSourceAutoConfigurationTests {
 				"com.zaxxer.hikari", "org.apache.commons.dbcp.");
 		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
 	}
-
 
 	@Test
 	public void commonsDbcp2ValidatesConnectionByDefault() throws Exception {

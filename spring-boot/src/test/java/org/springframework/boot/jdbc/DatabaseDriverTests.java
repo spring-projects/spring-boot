@@ -68,18 +68,27 @@ public class DatabaseDriverTests {
 
 	@Test
 	public void databaseProductNameLookups() throws Exception {
-		assertThat(DatabaseDriver.fromProductName("newone")).isEqualTo(DatabaseDriver.UNKNOWN);
-		assertThat(DatabaseDriver.fromProductName("HSQL Database Engine")).isEqualTo(DatabaseDriver.HSQLDB);
-		assertThat(DatabaseDriver.fromProductName("Oracle")).isEqualTo(DatabaseDriver.ORACLE);
-		assertThat(DatabaseDriver.fromProductName("Apache Derby")).isEqualTo(DatabaseDriver.DERBY);
+		assertThat(DatabaseDriver.fromProductName("newone"))
+				.isEqualTo(DatabaseDriver.UNKNOWN);
+		assertThat(DatabaseDriver.fromProductName("HSQL Database Engine"))
+				.isEqualTo(DatabaseDriver.HSQLDB);
+		assertThat(DatabaseDriver.fromProductName("Oracle"))
+				.isEqualTo(DatabaseDriver.ORACLE);
+		assertThat(DatabaseDriver.fromProductName("Apache Derby"))
+				.isEqualTo(DatabaseDriver.DERBY);
 		assertThat(DatabaseDriver.fromProductName("DB2")).isEqualTo(DatabaseDriver.DB2);
-		assertThat(DatabaseDriver.fromProductName("DB2/LINUXX8664")).isEqualTo(DatabaseDriver.DB2);
-		assertThat(DatabaseDriver.fromProductName("DB2 UDB for AS/400")).isEqualTo(DatabaseDriver.DB2_AS400);
-		assertThat(DatabaseDriver.fromProductName("DB3 XDB for AS/400")).isEqualTo(DatabaseDriver.DB2_AS400);
+		assertThat(DatabaseDriver.fromProductName("DB2/LINUXX8664"))
+				.isEqualTo(DatabaseDriver.DB2);
+		assertThat(DatabaseDriver.fromProductName("DB2 UDB for AS/400"))
+				.isEqualTo(DatabaseDriver.DB2_AS400);
+		assertThat(DatabaseDriver.fromProductName("DB3 XDB for AS/400"))
+				.isEqualTo(DatabaseDriver.DB2_AS400);
 		assertThat(DatabaseDriver.fromProductName("Informix Dynamic Server"))
 				.isEqualTo(DatabaseDriver.INFORMIX);
-		assertThat(DatabaseDriver.fromProductName("Firebird 2.5.WI")).isEqualTo(DatabaseDriver.FIREBIRD);
-		assertThat(DatabaseDriver.fromProductName("Firebird 2.1.LI")).isEqualTo(DatabaseDriver.FIREBIRD);
+		assertThat(DatabaseDriver.fromProductName("Firebird 2.5.WI"))
+				.isEqualTo(DatabaseDriver.FIREBIRD);
+		assertThat(DatabaseDriver.fromProductName("Firebird 2.1.LI"))
+				.isEqualTo(DatabaseDriver.FIREBIRD);
 	}
 
 }

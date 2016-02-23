@@ -52,9 +52,10 @@ abstract class DataSourceConfiguration {
 		@ConfigurationProperties("spring.datasource.tomcat")
 		public org.apache.tomcat.jdbc.pool.DataSource dataSource(
 				DataSourceProperties properties) {
-			org.apache.tomcat.jdbc.pool.DataSource dataSource = createDataSource(properties,
-					org.apache.tomcat.jdbc.pool.DataSource.class);
-			DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(properties.determineUrl());
+			org.apache.tomcat.jdbc.pool.DataSource dataSource = createDataSource(
+					properties, org.apache.tomcat.jdbc.pool.DataSource.class);
+			DatabaseDriver databaseDriver = DatabaseDriver
+					.fromJdbcUrl(properties.determineUrl());
 			String validationQuery = databaseDriver.getValidationQuery();
 			if (validationQuery != null) {
 				dataSource.setTestOnBorrow(true);
@@ -84,9 +85,10 @@ abstract class DataSourceConfiguration {
 		@ConfigurationProperties("spring.datasource.dbcp")
 		public org.apache.commons.dbcp.BasicDataSource dataSource(
 				DataSourceProperties properties) {
-			org.apache.commons.dbcp.BasicDataSource dataSource = createDataSource(properties,
-					org.apache.commons.dbcp.BasicDataSource.class);
-			DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(properties.determineUrl());
+			org.apache.commons.dbcp.BasicDataSource dataSource = createDataSource(
+					properties, org.apache.commons.dbcp.BasicDataSource.class);
+			DatabaseDriver databaseDriver = DatabaseDriver
+					.fromJdbcUrl(properties.determineUrl());
 			String validationQuery = databaseDriver.getValidationQuery();
 			if (validationQuery != null) {
 				dataSource.setTestOnBorrow(true);

@@ -127,7 +127,7 @@ public class MvcEndpointCorsIntegrationTests {
 				"endpoints.cors.allowed-origins:foo.example.com");
 		createMockMvc()
 				.perform(options("/health").header(HttpHeaders.ORIGIN, "foo.example.com")
-						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD"))
+						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PATCH"))
 				.andExpect(status().isForbidden());
 	}
 

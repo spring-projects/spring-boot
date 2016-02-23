@@ -36,8 +36,8 @@ import org.junit.Test;
 
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
-import org.springframework.boot.test.OutputCapture;
-import org.springframework.boot.test.assertj.Matched;
+import org.springframework.boot.testutil.Matched;
+import org.springframework.boot.testutil.OutputCapture;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 

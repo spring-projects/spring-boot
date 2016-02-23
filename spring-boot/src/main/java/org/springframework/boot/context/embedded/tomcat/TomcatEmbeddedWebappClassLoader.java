@@ -59,7 +59,7 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 		checkPackageAccess(name);
 
 		// Perform the actual load
-		boolean delegateLoad = (this.delegate || filter(name));
+		boolean delegateLoad = (this.delegate || filter(name, true));
 
 		if (delegateLoad) {
 			resultClass = (resultClass == null ? loadFromParent(name) : resultClass);

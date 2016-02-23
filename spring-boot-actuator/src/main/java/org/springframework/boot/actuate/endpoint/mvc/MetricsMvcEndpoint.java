@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Andy Wilkinson
  * @author Sergei Egorov
  */
+@ConfigurationProperties(prefix = "endpoints.metrics")
 public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 
 	private final MetricsEndpoint delegate;

@@ -257,6 +257,7 @@ methods can be removed from your public API, the automatic deprecation hint in t
 meta-data will go away as well.
 
 
+
 [[configuration-metadata-hints-attributes]]
 ==== Hint Attributes
 The JSON object contained in the `hints` array can contain the following attributes:

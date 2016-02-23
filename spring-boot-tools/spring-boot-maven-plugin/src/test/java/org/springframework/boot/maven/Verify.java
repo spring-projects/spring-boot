@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -218,14 +218,15 @@ public final class Verify {
 		@Override
 		protected void verifyZipEntries(ArchiveVerifier verifier) throws Exception {
 			super.verifyZipEntries(verifier);
-			verifier.assertHasEntryNameStartingWith("lib/spring-context");
-			verifier.assertHasEntryNameStartingWith("lib/spring-core");
-			verifier.assertHasEntryNameStartingWith("lib/javax.servlet-api-3");
+			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/spring-context");
+			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/spring-core");
+			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/javax.servlet-api-3");
 			assertThat(verifier
-					.hasEntry("org/" + "springframework/boot/loader/JarLauncher.class"))
+					.hasEntry("org/springframework/boot/loader/JarLauncher.class"))
 							.as("Unpacked launcher classes").isTrue();
-			assertThat(verifier.hasEntry("org/" + "test/SampleApplication.class"))
-					.as("Own classes").isTrue();
+			assertThat(verifier
+					.hasEntry("BOOT-INF/classes/org/test/SampleApplication.class"))
+							.as("Own classes").isTrue();
 		}
 
 		@Override

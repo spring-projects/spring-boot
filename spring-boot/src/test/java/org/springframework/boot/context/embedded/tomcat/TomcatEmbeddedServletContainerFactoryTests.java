@@ -18,8 +18,6 @@ package org.springframework.boot.context.embedded.tomcat;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,9 +36,11 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
+import org.junit.After;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.Ssl;
@@ -70,6 +70,11 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	@Override
 	protected TomcatEmbeddedServletContainerFactory getFactory() {
 		return new TomcatEmbeddedServletContainerFactory(0);
+	}
+
+	@After
+	public void restoreTccl() {
+		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 	}
 
 	// JMX MBean names clash if you get more than one Engine with the same name...
@@ -259,6 +264,51 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	}
 
 	@Test
+	public void sslEnabledMultipleProtocolsConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
+		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
+
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+		Connector connector = tomcat.getConnector();
+
+		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector
+				.getProtocolHandler();
+		assertThat(jsseProtocol.getSslProtocol()).isEqualTo("TLS");
+		assertThat(jsseProtocol.getProperty("sslEnabledProtocols"))
+				.isEqualTo("TLSv1.1,TLSv1.2");
+	}
+
+	@Test
+	public void sslEnabledProtocolsConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setEnabledProtocols(new String[] { "TLSv1.2" });
+		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
+
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+		Connector connector = tomcat.getConnector();
+
+		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector
+				.getProtocolHandler();
+		assertThat(jsseProtocol.getSslProtocol()).isEqualTo("TLS");
+		assertThat(jsseProtocol.getProperty("sslEnabledProtocols")).isEqualTo("TLSv1.2");
+	}
+
+	@Test
 	public void primaryConnectorPortClashThrowsIllegalStateException()
 			throws InterruptedException, IOException {
 		final int port = SocketUtils.findAvailableTcpPort(40000);
@@ -285,34 +335,13 @@ public class TomcatEmbeddedServletContainerFactoryTests
 
 	}
 
-	@Test
-	public void additionalConnectorPortClashThrowsIllegalStateException()
-			throws InterruptedException, IOException {
-		final int port = SocketUtils.findAvailableTcpPort(40000);
-
-		doWithBlockedPort(port, new Runnable() {
-
-			@Override
-			public void run() {
-				TomcatEmbeddedServletContainerFactory factory = getFactory();
-				Connector connector = new Connector(
-						"org.apache.coyote.http11.Http11NioProtocol");
-				connector.setPort(port);
-				factory.addAdditionalTomcatConnectors(connector);
-
-				try {
-					TomcatEmbeddedServletContainerFactoryTests.this.container = factory
-							.getEmbeddedServletContainer();
-					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
-					fail();
-				}
-				catch (EmbeddedServletContainerException ex) {
-					// Ignore
-				}
-			}
-
-		});
-
+	@Override
+	protected void addConnector(int port,
+			AbstractEmbeddedServletContainerFactory factory) {
+		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+		connector.setPort(port);
+		((TomcatEmbeddedServletContainerFactory) factory)
+				.addAdditionalTomcatConnectors(connector);
 	}
 
 	@Test
@@ -358,6 +387,17 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		assertThat(s3.split(":")[0]).as(message).isNotEqualTo(s2.split(":")[1]);
 	}
 
+	@Test
+	public void tcclOfMainThreadIsTomcatWebAppClassLoader() {
+		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+		assertThat(Thread.currentThread().getContextClassLoader())
+				.isInstanceOf(TomcatEmbeddedWebappClassLoader.class);
+		this.container.stop();
+	}
+
 	@Override
 	protected Wrapper getJspServlet() {
 		Container context = ((TomcatEmbeddedServletContainer) this.container).getTomcat()
@@ -384,17 +424,6 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	private Tomcat getTomcat(TomcatEmbeddedServletContainerFactory factory) {
 		this.container = factory.getEmbeddedServletContainer();
 		return ((TomcatEmbeddedServletContainer) this.container).getTomcat();
-	}
-
-	private void doWithBlockedPort(final int port, Runnable action) throws IOException {
-		ServerSocket serverSocket = new ServerSocket();
-		serverSocket.bind(new InetSocketAddress(port));
-		try {
-			action.run();
-		}
-		finally {
-			serverSocket.close();
-		}
 	}
 
 }
