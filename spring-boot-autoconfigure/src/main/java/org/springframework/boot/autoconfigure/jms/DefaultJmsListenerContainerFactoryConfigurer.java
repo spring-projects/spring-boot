@@ -18,20 +18,18 @@ package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.Assert;
 
 /**
- * Configure {@link JmsListenerContainerFactory} with sensible defaults.
+ * Configure {@link DefaultJmsListenerContainerFactory} with sensible defaults.
  *
  * @author Stephane Nicoll
  * @since 1.3.3
  */
-public final class JmsListenerContainerFactoryConfigurer {
+public final class DefaultJmsListenerContainerFactoryConfigurer {
 
 	private DestinationResolver destinationResolver;
 
@@ -44,8 +42,7 @@ public final class JmsListenerContainerFactoryConfigurer {
 	 * resolver should be associated with the factory by default.
 	 * @param destinationResolver the {@link DestinationResolver}
 	 */
-	@Autowired(required = false)
-	public void setDestinationResolver(DestinationResolver destinationResolver) {
+	void setDestinationResolver(DestinationResolver destinationResolver) {
 		this.destinationResolver = destinationResolver;
 	}
 
@@ -54,8 +51,7 @@ public final class JmsListenerContainerFactoryConfigurer {
 	 * should not be used.
 	 * @param transactionManager the {@link JtaTransactionManager}
 	 */
-	@Autowired(required = false)
-	public void setTransactionManager(JtaTransactionManager transactionManager) {
+	void setTransactionManager(JtaTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
@@ -63,27 +59,14 @@ public final class JmsListenerContainerFactoryConfigurer {
 	 * Set the {@link JmsProperties to use}.
 	 * @param jmsProperties the {@link JmsProperties}
 	 */
-	@Autowired
-	public void setJmsProperties(JmsProperties jmsProperties) {
+	void setJmsProperties(JmsProperties jmsProperties) {
 		this.jmsProperties = jmsProperties;
 	}
 
-	/**
-	 * Create a new and pre-configured {@link DefaultJmsListenerContainerFactory} instance
-	 * for the specified {@link ConnectionFactory}.
-	 * @param connectionFactory the {@link ConnectionFactory} to use.
-	 * @return a pre-configured {@link DefaultJmsListenerContainerFactory}
-	 */
-	public DefaultJmsListenerContainerFactory createJmsListenerContainerFactory(
-			ConnectionFactory connectionFactory) {
-		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-		configure(factory, connectionFactory);
-		return factory;
-	}
 
 	/**
-	 * Apply the default settings for the specified jms listener container factory. The
-	 * factory can be further tuned and default settings can be overridden.
+	 * Configure the specified jms listener container factory. The factory can be further
+	 * tuned and default settings can be overridden.
 	 * @param factory the {@link DefaultJmsListenerContainerFactory} instance to configure
 	 * @param connectionFactory the {@link ConnectionFactory} to use
 	 */

@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.amqp;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
@@ -28,7 +27,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @since 1.3.3
  */
-public final class RabbitListenerContainerFactoryConfigurer {
+public final class SimpleRabbitListenerContainerFactoryConfigurer {
 
 	private RabbitProperties rabbitProperties;
 
@@ -36,27 +35,13 @@ public final class RabbitListenerContainerFactoryConfigurer {
 	 * Set the {@link RabbitProperties} to use.
 	 * @param rabbitProperties the {@link RabbitProperties}
 	 */
-	@Autowired
-	public void setRabbitProperties(RabbitProperties rabbitProperties) {
+	void setRabbitProperties(RabbitProperties rabbitProperties) {
 		this.rabbitProperties = rabbitProperties;
 	}
 
 	/**
-	 * Create a new and pre-configured {@link SimpleRabbitListenerContainerFactory}
-	 * instance for the specified {@link ConnectionFactory}.
-	 * @param connectionFactory the {@link ConnectionFactory} to use.
-	 * @return a pre-configured {@link SimpleRabbitListenerContainerFactory}
-	 */
-	public SimpleRabbitListenerContainerFactory createRabbitListenerContainerFactory(
-			ConnectionFactory connectionFactory) {
-		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-		configure(factory, connectionFactory);
-		return factory;
-	}
-
-	/**
-	 * Apply the default settings for the specified jms listener container factory. The
-	 * factory can be further tuned and default settings can be overridden.
+	 * Configure the specified rabbit listener container factory. The factory can be
+	 * further tuned and default settings can be overridden.
 	 * @param factory the {@link SimpleRabbitListenerContainerFactory} instance to
 	 * configure
 	 * @param connectionFactory the {@link ConnectionFactory} to use

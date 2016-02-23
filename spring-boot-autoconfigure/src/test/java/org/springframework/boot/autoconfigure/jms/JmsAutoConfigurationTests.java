@@ -457,10 +457,11 @@ public class JmsAutoConfigurationTests {
 
 		@Bean
 		JmsListenerContainerFactory<?> customListenerContainerFactory(
-				JmsListenerContainerFactoryConfigurer configurer,
+				DefaultJmsListenerContainerFactoryConfigurer configurer,
 				ConnectionFactory connectionFactory) {
-			DefaultJmsListenerContainerFactory factory = configurer
-					.createJmsListenerContainerFactory(connectionFactory);
+			DefaultJmsListenerContainerFactory factory =
+					new DefaultJmsListenerContainerFactory();
+			configurer.configure(factory, connectionFactory);
 			factory.setCacheLevel(DefaultMessageListenerContainer.CACHE_CONSUMER);
 			return factory;
 

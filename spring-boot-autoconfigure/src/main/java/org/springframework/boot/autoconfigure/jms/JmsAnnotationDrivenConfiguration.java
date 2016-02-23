@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,6 +29,7 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerConfigUtils;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.JndiDestinationResolver;
+import org.springframework.transaction.jta.JtaTransactionManager;
 
 /**
  * Configuration for Spring 4.1 annotation driven JMS.
@@ -40,18 +42,34 @@ import org.springframework.jms.support.destination.JndiDestinationResolver;
 @ConditionalOnClass(EnableJms.class)
 class JmsAnnotationDrivenConfiguration {
 
+	@Autowired(required = false)
+	private DestinationResolver destinationResolver;
+
+	@Autowired(required = false)
+	private JtaTransactionManager transactionManager;
+
+	@Autowired
+	private JmsProperties properties;
+
 	@Bean
 	@ConditionalOnMissingBean
-	public JmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
-		return new JmsListenerContainerFactoryConfigurer();
+	public DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
+		DefaultJmsListenerContainerFactoryConfigurer configurer =
+				new DefaultJmsListenerContainerFactoryConfigurer();
+		configurer.setDestinationResolver(this.destinationResolver);
+		configurer.setTransactionManager(this.transactionManager);
+		configurer.setJmsProperties(this.properties);
+		return configurer;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
 	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
-			JmsListenerContainerFactoryConfigurer configurer,
+			DefaultJmsListenerContainerFactoryConfigurer configurer,
 			ConnectionFactory connectionFactory) {
-		return configurer.createJmsListenerContainerFactory(connectionFactory);
+		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+		configurer.configure(factory, connectionFactory);
+		return factory;
 	}
 
 	@EnableJms
