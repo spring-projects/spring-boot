@@ -571,6 +571,9 @@ the default behavior in a script or on the command line:
 |`LOG_FOLDER`
 |The name of the folder to put log files in (`/var/log` by default).
 
+|`CONF_FOLDER`
+|The name of the folder to read .conf files from (same folder as jar-file by default).
+
 |`LOG_FILENAME`
 |The name of the log file in the `LOG_FOLDER` (`<appname>.log` by default).
 
