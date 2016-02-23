@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.net.URLStreamHandler;
 
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class JarURLConnection extends java.net.JarURLConnection {
 
@@ -204,7 +207,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 	/**
 	 * A JarEntryName parsed from a URL String.
 	 */
-	private static class JarEntryName {
+	static class JarEntryName {
 
 		private final String name;
 
@@ -219,21 +222,39 @@ class JarURLConnection extends java.net.JarURLConnection {
 			if ((length == 0) || (source.indexOf('%') < 0)) {
 				return new AsciiBytes(source).toString();
 			}
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream(length);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream(length);
+			write(source, bos);
+			// AsciiBytes is what is used to store the JarEntries so make it symmetric
+			return new AsciiBytes(bos.toByteArray()).toString();
+		}
+
+		private void write(String source, ByteArrayOutputStream outputStream) {
+			int length = source.length();
 			for (int i = 0; i < length; i++) {
 				int c = source.charAt(i);
-				if (c == '%') {
-					if ((i + 2) >= length) {
-						throw new IllegalArgumentException("Invalid encoded sequence \""
-								+ source.substring(i) + "\"");
+				if (c > 127) {
+					try {
+						String encoded = URLEncoder.encode(String.valueOf((char) c),
+								"UTF-8");
+						write(encoded, outputStream);
 					}
-					c = decodeEscapeSequence(source, i);
-					i += 2;
+					catch (UnsupportedEncodingException ex) {
+						throw new IllegalStateException(ex);
+					}
 				}
-				outputStream.write(c);
+				else {
+					if (c == '%') {
+						if ((i + 2) >= length) {
+							throw new IllegalArgumentException(
+									"Invalid encoded sequence \"" + source.substring(i)
+											+ "\"");
+						}
+						c = decodeEscapeSequence(source, i);
+						i += 2;
+					}
+					outputStream.write(c);
+				}
 			}
-			// AsciiBytes is what is used to store the JarEntries so make it symmetric
-			return new AsciiBytes(outputStream.toByteArray()).toString();
 		}
 
 		private char decodeEscapeSequence(String source, int i) {
@@ -248,7 +269,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 		@Override
 		public String toString() {
-			return this.name.toString();
+			return this.name;
 		}
 
 		public boolean isEmpty() {
