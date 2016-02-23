@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
+@ConfigurationProperties(prefix = "endpoints.env")
 public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
 		implements EnvironmentAware {
 
