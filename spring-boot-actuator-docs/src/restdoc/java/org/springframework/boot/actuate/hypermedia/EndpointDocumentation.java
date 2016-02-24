@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.test.annotation.DirtiesContext;
@@ -102,6 +103,15 @@ public class EndpointDocumentation {
 	public void logfile() throws Exception {
 		this.mockMvc.perform(get("/logfile").accept(MediaType.TEXT_PLAIN))
 				.andExpect(status().isOk()).andDo(document("logfile"));
+	}
+
+	@Test
+	public void partialLogfile() throws Exception {
+		this.mockMvc
+				.perform(get("/logfile").accept(MediaType.TEXT_PLAIN)
+						.header(HttpHeaders.RANGE, "bytes=0-1024"))
+				.andExpect(status().isPartialContent())
+				.andDo(document("partial-logfile"));
 	}
 
 	@Test
