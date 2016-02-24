@@ -48,9 +48,14 @@ class EhCacheCacheConfiguration {
 	@Autowired
 	private CacheProperties cacheProperties;
 
+	@Autowired
+	CacheManagerCustomizerInvoker customizerInvoker;
+
 	@Bean
 	public EhCacheCacheManager cacheManager(CacheManager ehCacheCacheManager) {
-		return new EhCacheCacheManager(ehCacheCacheManager);
+		EhCacheCacheManager cacheManager = new EhCacheCacheManager(ehCacheCacheManager);
+		this.customizerInvoker.customize(cacheManager);
+		return cacheManager;
 	}
 
 	@Bean

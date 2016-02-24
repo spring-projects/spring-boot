@@ -3255,6 +3255,29 @@ Spring Boot tries to detect the following providers (in this order):
 It is also possible to _force_ the cache provider to use via the `spring.cache.type`
 property.
 
+If the `CacheManager` is auto-configured by Spring Boot, you can further tune its
+configuration before it is fully initialized by exposing a bean implementing  the
+`CacheManagerCustomizer` interface. The following set the cache names to use.
+
+[source,java,indent=0]
+----
+	@Bean
+	public CacheManagerCustomizer<ConcurrentMapCacheManager> cacheManagerCustomizer() {
+		return new CacheManagerCustomizer<ConcurrentMapCacheManager>() {
+			@Override
+			public void customize(ConcurrentMapCacheManager cacheManager) {
+				cacheManager.setCacheNames(Arrays.asList("one", "two"));
+			}
+		};
+	}
+----
+
+[NOTE]
+===
+In the example above, a `ConcurrentMapCacheManager` is expected to be configured. If that
+is not the case, the customizer won't be invoked at all. You can have as many customizers
+as you want and you can also order them as usual using `@Order` or `Ordered`.
+===
 
 
 [[boot-features-caching-provider-generic]]
