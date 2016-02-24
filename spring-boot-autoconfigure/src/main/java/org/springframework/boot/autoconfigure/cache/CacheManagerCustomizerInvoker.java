@@ -41,28 +41,30 @@ class CacheManagerCustomizerInvoker implements ApplicationContextAware {
 	private ConfigurableApplicationContext applicationContext;
 
 	/**
-	 * Customize the specified {@link CacheManager}. Locates all {@link CacheManagerCustomizer}
-	 * beans able to handle the specified instance and invoke
-	 * {@link CacheManagerCustomizer#customize(CacheManager)} on them.
+	 * Customize the specified {@link CacheManager}. Locates all
+	 * {@link CacheManagerCustomizer} beans able to handle the specified instance and
+	 * invoke {@link CacheManagerCustomizer#customize(CacheManager)} on them.
 	 * @param cacheManager the cache manager to customize
 	 */
 	public void customize(CacheManager cacheManager) {
-		List<CacheManagerCustomizer<CacheManager>> customizers = findCustomizers(cacheManager);
+		List<CacheManagerCustomizer<CacheManager>> customizers = findCustomizers(
+				cacheManager);
 		AnnotationAwareOrderComparator.sort(customizers);
 		for (CacheManagerCustomizer<CacheManager> customizer : customizers) {
 			customizer.customize(cacheManager);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<CacheManagerCustomizer<CacheManager>> findCustomizers(CacheManager cacheManager) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private List<CacheManagerCustomizer<CacheManager>> findCustomizers(
+			CacheManager cacheManager) {
 		if (this.applicationContext == null) {
 			return Collections.emptyList();
 		}
 		Map<String, CacheManagerCustomizer> map = BeanFactoryUtils
-				.beansOfTypeIncludingAncestors(this.applicationContext.getBeanFactory(), CacheManagerCustomizer.class);
-		List<CacheManagerCustomizer<CacheManager>> customizers
-				= new ArrayList<CacheManagerCustomizer<CacheManager>>();
+				.beansOfTypeIncludingAncestors(this.applicationContext.getBeanFactory(),
+						CacheManagerCustomizer.class);
+		List<CacheManagerCustomizer<CacheManager>> customizers = new ArrayList<CacheManagerCustomizer<CacheManager>>();
 		for (CacheManagerCustomizer customizer : map.values()) {
 			Class<?> target = GenericTypeResolver.resolveTypeArgument(
 					customizer.getClass(), CacheManagerCustomizer.class);
@@ -73,9 +75,9 @@ class CacheManagerCustomizerInvoker implements ApplicationContextAware {
 		return customizers;
 	}
 
-
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
 		if (applicationContext instanceof ConfigurableApplicationContext) {
 			this.applicationContext = (ConfigurableApplicationContext) applicationContext;
 		}

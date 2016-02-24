@@ -113,7 +113,7 @@ public class EmbeddedMongoAutoConfiguration {
 	private ArtifactStoreBuilder getArtifactStore(Logger logger) {
 		return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD)
 				.download(new DownloadConfigBuilder().defaultsForCommand(Command.MongoD)
-						.progressListener(new Slf4jProgressListener(logger)));
+						.progressListener(new Slf4jProgressListener(logger)).build());
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")

@@ -43,8 +43,7 @@ class RabbitAnnotationDrivenConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public SimpleRabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactoryConfigurer() {
-		SimpleRabbitListenerContainerFactoryConfigurer configurer =
-				new SimpleRabbitListenerContainerFactoryConfigurer();
+		SimpleRabbitListenerContainerFactoryConfigurer configurer = new SimpleRabbitListenerContainerFactoryConfigurer();
 		configurer.setRabbitProperties(this.properties);
 		return configurer;
 	}
@@ -54,8 +53,7 @@ class RabbitAnnotationDrivenConfiguration {
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
 			SimpleRabbitListenerContainerFactoryConfigurer configurer,
 			ConnectionFactory connectionFactory) {
-		SimpleRabbitListenerContainerFactory factory =
-				new SimpleRabbitListenerContainerFactory();
+		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		configurer.configure(factory, connectionFactory);
 		return factory;
 	}

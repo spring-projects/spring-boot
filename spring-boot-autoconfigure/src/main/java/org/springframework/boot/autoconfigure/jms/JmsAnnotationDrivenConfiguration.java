@@ -54,8 +54,7 @@ class JmsAnnotationDrivenConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
-		DefaultJmsListenerContainerFactoryConfigurer configurer =
-				new DefaultJmsListenerContainerFactoryConfigurer();
+		DefaultJmsListenerContainerFactoryConfigurer configurer = new DefaultJmsListenerContainerFactoryConfigurer();
 		configurer.setDestinationResolver(this.destinationResolver);
 		configurer.setTransactionManager(this.transactionManager);
 		configurer.setJmsProperties(this.properties);

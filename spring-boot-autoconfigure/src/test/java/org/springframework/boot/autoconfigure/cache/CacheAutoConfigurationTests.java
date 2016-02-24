@@ -393,8 +393,10 @@ public class CacheAutoConfigurationTests {
 				HazelcastCacheManager.class);
 		HazelcastInstance actual = getHazelcastInstance(cacheManager);
 		assertThat(actual, sameInstance(hazelcastInstance));
-		assertThat(actual.getConfig().getConfigurationUrl(), equalTo(new ClassPathResource(
-				"org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml").getURL()));
+		assertThat(actual.getConfig().getConfigurationUrl(),
+				equalTo(new ClassPathResource(
+						"org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml")
+								.getURL()));
 		cacheManager.getCache("foobar");
 		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foobar"));
 		assertThat(cacheManager.getCacheNames(), hasSize(1));
@@ -431,7 +433,8 @@ public class CacheAutoConfigurationTests {
 				HazelcastCacheManager.class);
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
-		assertThat(getHazelcastInstance(cacheManager), equalTo((Object) hazelcastInstance));
+		assertThat(getHazelcastInstance(cacheManager),
+				equalTo((Object) hazelcastInstance));
 		assertThat(hazelcastInstance.getConfig().getConfigurationFile(),
 				equalTo(new ClassPathResource(mainConfig).getFile()));
 	}
@@ -610,22 +613,27 @@ public class CacheAutoConfigurationTests {
 		return type.cast(cacheManager);
 	}
 
-	private void testCustomizers(Class<?> config, String cacheType, String... expectedCustomizerNames) {
+	@SuppressWarnings("rawtypes")
+	private void testCustomizers(Class<?> config, String cacheType,
+			String... expectedCustomizerNames) {
 		load(config, "spring.cache.type=" + cacheType);
 		CacheManager cacheManager = validateCacheManager(CacheManager.class);
 		List<String> expected = new ArrayList<String>();
 		expected.addAll(Arrays.asList(expectedCustomizerNames));
-		Map<String, CacheManagerTestCustomizer> map =
-				this.context.getBeansOfType(CacheManagerTestCustomizer.class);
+		Map<String, CacheManagerTestCustomizer> map = this.context
+				.getBeansOfType(CacheManagerTestCustomizer.class);
 		for (Map.Entry<String, CacheManagerTestCustomizer> entry : map.entrySet()) {
 			if (expected.contains(entry.getKey())) {
 				expected.remove(entry.getKey());
-				assertThat("Customizer with name " + entry.getKey() + " should have been " +
-						"invoked", entry.getValue().cacheManager, sameInstance(cacheManager));
+				assertThat(
+						"Customizer with name " + entry.getKey() + " should have been "
+								+ "invoked",
+						entry.getValue().cacheManager, sameInstance(cacheManager));
 			}
 			else {
-				assertThat("Customizer with name " + entry.getKey() + " should not have been" +
-						"invoked", entry.getValue().cacheManager, nullValue());
+				assertThat("Customizer with name " + entry.getKey()
+						+ " should not have been" + "invoked",
+						entry.getValue().cacheManager, nullValue());
 			}
 		}
 		assertThat("The following customizers should have been invoked: " + expected,
@@ -641,7 +649,8 @@ public class CacheAutoConfigurationTests {
 		this.context = applicationContext;
 	}
 
-	private static HazelcastInstance getHazelcastInstance(HazelcastCacheManager cacheManager) {
+	private static HazelcastInstance getHazelcastInstance(
+			HazelcastCacheManager cacheManager) {
 		return (HazelcastInstance) new DirectFieldAccessor(cacheManager)
 				.getPropertyValue("hazelcastInstance");
 	}
@@ -681,7 +690,8 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({GenericCacheConfiguration.class, CacheManagerCustomizersConfiguration.class})
+	@Import({ GenericCacheConfiguration.class,
+			CacheManagerCustomizersConfiguration.class })
 	static class GenericCacheAndCustomizersConfiguration {
 	}
 
@@ -697,7 +707,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({RedisCacheConfiguration.class, CacheManagerCustomizersConfiguration.class})
+	@Import({ RedisCacheConfiguration.class, CacheManagerCustomizersConfiguration.class })
 	static class RedisCacheAndCustomizersConfiguration {
 
 	}
@@ -775,8 +785,8 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Configuration
-	@ImportAutoConfiguration({CacheAutoConfiguration.class,
-			HazelcastAutoConfiguration.class})
+	@ImportAutoConfiguration({ CacheAutoConfiguration.class,
+			HazelcastAutoConfiguration.class })
 	static class HazelcastAndCacheConfiguration {
 
 	}
@@ -795,7 +805,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({GenericCacheConfiguration.class, RedisCacheConfiguration.class})
+	@Import({ GenericCacheConfiguration.class, RedisCacheConfiguration.class })
 	static class CustomCacheManagerConfiguration {
 
 		@Bean
@@ -806,7 +816,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({GenericCacheConfiguration.class, RedisCacheConfiguration.class})
+	@Import({ GenericCacheConfiguration.class, RedisCacheConfiguration.class })
 	static class CustomCacheManagerFromSupportConfiguration
 			extends CachingConfigurerSupport {
 
@@ -831,7 +841,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({GenericCacheConfiguration.class, RedisCacheConfiguration.class})
+	@Import({ GenericCacheConfiguration.class, RedisCacheConfiguration.class })
 	static class CustomCacheResolverConfiguration extends CachingConfigurerSupport {
 
 		@Override
@@ -869,37 +879,44 @@ public class CacheAutoConfigurationTests {
 
 		@Bean
 		public CacheManagerCustomizer<SimpleCacheManager> genericCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<SimpleCacheManager>() { };
+			return new CacheManagerTestCustomizer<SimpleCacheManager>() {
+			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<RedisCacheManager> redisCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<RedisCacheManager>() { };
+			return new CacheManagerTestCustomizer<RedisCacheManager>() {
+			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<EhCacheCacheManager> ehCacheCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<EhCacheCacheManager>() { };
+			return new CacheManagerTestCustomizer<EhCacheCacheManager>() {
+			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<HazelcastCacheManager> hazelcastCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<HazelcastCacheManager>() { };
+			return new CacheManagerTestCustomizer<HazelcastCacheManager>() {
+			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<SpringEmbeddedCacheManager> infinispanCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<SpringEmbeddedCacheManager>() { };
+			return new CacheManagerTestCustomizer<SpringEmbeddedCacheManager>() {
+			};
 		}
 
 		@Bean
 		public CacheManagerCustomizer<GuavaCacheManager> guavaCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<GuavaCacheManager>() { };
+			return new CacheManagerTestCustomizer<GuavaCacheManager>() {
+			};
 		}
 
 	}
 
-	static abstract class CacheManagerTestCustomizer<C extends CacheManager> implements CacheManagerCustomizer<C> {
+	static abstract class CacheManagerTestCustomizer<C extends CacheManager>
+			implements CacheManagerCustomizer<C> {
 
 		private C cacheManager;
 

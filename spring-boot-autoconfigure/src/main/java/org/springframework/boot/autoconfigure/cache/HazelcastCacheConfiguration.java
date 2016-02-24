@@ -41,10 +41,11 @@ import org.springframework.context.annotation.Import;
  * @see HazelcastConfigResourceCondition
  */
 @Configuration
-@ConditionalOnClass({HazelcastInstance.class, HazelcastCacheManager.class})
+@ConditionalOnClass({ HazelcastInstance.class, HazelcastCacheManager.class })
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)
-@Import({HazelcastInstanceConfiguration.Existing.class, HazelcastInstanceConfiguration.Specific.class})
+@Import({ HazelcastInstanceConfiguration.Existing.class,
+		HazelcastInstanceConfiguration.Specific.class })
 class HazelcastCacheConfiguration {
 
 }
