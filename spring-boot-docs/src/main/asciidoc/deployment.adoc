@@ -401,6 +401,9 @@ NOTE: Fully executable jars work by embedding an extra script at the front of th
 Not all tools currently accept this format so you may not always be able to use this
 technique.
 
+NOTE: When a fully executable jar is run, it uses the jar's directory as the working
+directory.
+
 
 
 [[deployment-service]]
