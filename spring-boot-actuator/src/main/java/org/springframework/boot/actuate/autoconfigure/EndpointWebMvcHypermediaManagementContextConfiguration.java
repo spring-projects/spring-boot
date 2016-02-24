@@ -32,6 +32,8 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcHypermediaManagementContextConfiguration.EndpointHypermediaEnabledCondition;
+import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.DocsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HalBrowserMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
@@ -39,6 +41,7 @@ import org.springframework.boot.actuate.endpoint.mvc.HypermediaDisabled;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -50,6 +53,7 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.ResourceLoader;
@@ -85,7 +89,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @ConditionalOnClass(Link.class)
 @ConditionalOnWebApplication
 @ConditionalOnBean(HttpMessageConverters.class)
-@ConditionalOnProperty(value = "endpoints.enabled", matchIfMissing = true)
+@Conditional(EndpointHypermediaEnabledCondition.class)
 @EnableConfigurationProperties(ResourceProperties.class)
 public class EndpointWebMvcHypermediaManagementContextConfiguration {
 
@@ -102,7 +106,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		};
 	}
 
-	@ConditionalOnProperty(prefix = "endpoints.actuator", name = "enabled", matchIfMissing = true)
+	@ConditionalOnEnabledEndpoint("actuator")
 	@Bean
 	public HalJsonMvcEndpoint halJsonMvcEndpoint(
 			ManagementServletContext managementServletContext,
@@ -114,7 +118,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "endpoints.docs", name = "enabled", matchIfMissing = true)
+	@ConditionalOnEnabledEndpoint("docs")
 	@ConditionalOnResource(resources = "classpath:/META-INF/resources/spring-boot-actuator/docs/index.html")
 	public DocsMvcEndpoint docsMvcEndpoint(
 			ManagementServletContext managementServletContext) {
@@ -329,6 +333,24 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		@JsonAnyGetter
 		public Map<String, Object> getEmbedded() {
 			return this.embedded;
+		}
+
+	}
+
+	static class EndpointHypermediaEnabledCondition extends AnyNestedCondition {
+
+		public EndpointHypermediaEnabledCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnEnabledEndpoint("actuator")
+		static class ActuatorEndpointEnabled {
+
+		}
+
+		@ConditionalOnEnabledEndpoint("docs")
+		static class DocsEndpointEnabled {
+
 		}
 
 	}
