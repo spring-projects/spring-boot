@@ -122,6 +122,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 						"${logging.pattern.level:${LOG_LEVEL_PATTERN:%5p}}"));
 		new DefaultLogbackConfiguration(initializationContext, logFile)
 				.apply(configurator);
+		context.setPackagingDataEnabled(true);
 	}
 
 	@Override
