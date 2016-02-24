@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,13 +51,18 @@ public class InfinispanCacheConfiguration {
 	@Autowired
 	private CacheProperties cacheProperties;
 
+	@Autowired
+	CacheManagerCustomizerInvoker customizerInvoker;
+
 	@Autowired(required = false)
 	private ConfigurationBuilder defaultConfigurationBuilder;
 
 	@Bean
 	public SpringEmbeddedCacheManager cacheManager(
 			EmbeddedCacheManager embeddedCacheManager) {
-		return new SpringEmbeddedCacheManager(embeddedCacheManager);
+		SpringEmbeddedCacheManager cacheManager = new SpringEmbeddedCacheManager(embeddedCacheManager);
+		this.customizerInvoker.customize(cacheManager);
+		return cacheManager;
 	}
 
 	@Bean(destroyMethod = "stop")

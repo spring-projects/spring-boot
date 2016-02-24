@@ -48,6 +48,9 @@ abstract class HazelcastInstanceConfiguration {
 		@Autowired
 		private CacheProperties cacheProperties;
 
+		@Autowired
+		CacheManagerCustomizerInvoker customizerInvoker;
+
 		@Bean
 		public HazelcastCacheManager cacheManager(
 				HazelcastInstance existingHazelcastInstance) throws IOException {
@@ -58,7 +61,9 @@ abstract class HazelcastInstanceConfiguration {
 						location).getHazelcastInstance();
 				return new CloseableHazelcastCacheManager(cacheHazelcastInstance);
 			}
-			return new HazelcastCacheManager(existingHazelcastInstance);
+			HazelcastCacheManager cacheManager = new HazelcastCacheManager(existingHazelcastInstance);
+			this.customizerInvoker.customize(cacheManager);
+			return cacheManager;
 		}
 	}
 
@@ -69,6 +74,9 @@ abstract class HazelcastInstanceConfiguration {
 
 		@Autowired
 		private CacheProperties cacheProperties;
+
+		@Autowired
+		CacheManagerCustomizerInvoker customizerInvoker;
 
 		@Bean
 		public HazelcastInstance hazelcastInstance() throws IOException {
@@ -82,7 +90,9 @@ abstract class HazelcastInstanceConfiguration {
 
 		@Bean
 		public HazelcastCacheManager cacheManager() throws IOException {
-			return new HazelcastCacheManager(hazelcastInstance());
+			HazelcastCacheManager cacheManager = new HazelcastCacheManager(hazelcastInstance());
+			this.customizerInvoker.customize(cacheManager);
+			return cacheManager;
 		}
 
 	}

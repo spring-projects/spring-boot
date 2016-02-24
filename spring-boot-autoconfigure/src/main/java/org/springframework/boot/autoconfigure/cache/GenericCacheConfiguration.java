@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.cache;
 
 import java.util.Collection;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.Cache;
@@ -40,10 +41,14 @@ import org.springframework.context.annotation.Configuration;
 @Conditional(CacheCondition.class)
 class GenericCacheConfiguration {
 
+	@Autowired
+	CacheManagerCustomizerInvoker customizerInvoker;
+
 	@Bean
 	public SimpleCacheManager cacheManager(Collection<Cache> caches) {
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
 		cacheManager.setCaches(caches);
+		this.customizerInvoker.customize(cacheManager);
 		return cacheManager;
 	}
 
