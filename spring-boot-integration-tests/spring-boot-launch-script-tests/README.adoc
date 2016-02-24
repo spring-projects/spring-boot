@@ -65,11 +65,12 @@ $ mvn -Pdocker clean verify
 The first time the tests are run, Docker will create the container images that are used to
 run the tests. This can take several minutes, particularly if you have a slow network
 connection. Subsequent runs will be faster as the images are cached locally. You can run
-`docker images` to see a list of the cached images.
+`docker images` to see a list of the cached images. Images created by these tests will be
+tagged with `spring-boot-it` prefix to easily distinguish them.
 
 == Cleaning up
 
 If you want to reclaim the disk space used by the cached images (at the expense of having
 to wait for them to be downloaded and rebuilt the next time you run the tests), you can
-use `docker images` to list the images and `docker rmi <image>` to delete them. See
-`docker rmi --help` for further details.
+use `docker images` to list the images and `docker rmi <image>` to delete them (look for
+`spring-boot-it` tag). See `docker rmi --help` for further details.
