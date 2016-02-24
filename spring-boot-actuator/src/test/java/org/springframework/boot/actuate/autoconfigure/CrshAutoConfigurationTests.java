@@ -86,11 +86,14 @@ public class CrshAutoConfigurationTests {
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 		assertThat(lifeCycle).isNotNull();
 		assertThat(lifeCycle.getContext().getPlugins(TermIOHandler.class))
-				.filteredOn(Matched.when(isA(ProcessorIOHandler.class))).isEmpty();
+				.filteredOn(Matched.<TermIOHandler>when(isA(ProcessorIOHandler.class)))
+				.isEmpty();
 		assertThat(lifeCycle.getContext().getPlugins(AuthenticationPlugin.class))
-				.filteredOn(Matched.when(isA(JaasAuthenticationPlugin.class))).isEmpty();
+				.filteredOn(Matched
+						.<AuthenticationPlugin>when(isA(JaasAuthenticationPlugin.class)))
+				.isEmpty();
 		assertThat(lifeCycle.getContext().getPlugins(Language.class))
-				.filteredOn(Matched.when(isA(JavaLanguage.class))).isEmpty();
+				.filteredOn(Matched.<Language>when(isA(JavaLanguage.class))).isEmpty();
 	}
 
 	@Test
