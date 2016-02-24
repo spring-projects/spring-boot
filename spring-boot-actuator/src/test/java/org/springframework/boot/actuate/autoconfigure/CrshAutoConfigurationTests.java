@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,13 @@ import java.util.UUID;
 
 import org.crsh.auth.AuthenticationPlugin;
 import org.crsh.auth.JaasAuthenticationPlugin;
-import org.crsh.lang.impl.groovy.GroovyRepl;
+import org.crsh.lang.impl.java.JavaLanguage;
+import org.crsh.lang.spi.Language;
 import org.crsh.plugin.PluginContext;
 import org.crsh.plugin.PluginLifeCycle;
 import org.crsh.plugin.ResourceKind;
 import org.crsh.telnet.term.processor.ProcessorIOHandler;
+import org.crsh.telnet.term.spi.TermIOHandler;
 import org.crsh.vfs.Resource;
 import org.junit.After;
 import org.junit.Test;
@@ -52,6 +54,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.isA;
+import static org.springframework.boot.testutil.Matched.when;
 
 /**
  * Tests for {@link CrshAutoConfiguration}.
@@ -59,6 +63,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Christian Dupuis
  * @author Andreas Ahlenstorf
  * @author Eddú Meléndez
+ * @author Matt Benson
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CrshAutoConfigurationTests {
@@ -76,14 +81,16 @@ public class CrshAutoConfigurationTests {
 	public void testDisabledPlugins() throws Exception {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("shell.disabled_plugins",
-				"GroovyREPL, termIOHandler, org.crsh.auth.AuthenticationPlugin");
+				"termIOHandler, org.crsh.auth.AuthenticationPlugin, javaLanguage");
 		load(env);
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 		assertThat(lifeCycle).isNotNull();
-		assertThat(lifeCycle.getContext().getPlugin(GroovyRepl.class)).isNull();
-		assertThat(lifeCycle.getContext().getPlugin(ProcessorIOHandler.class)).isNull();
-		assertThat(lifeCycle.getContext().getPlugin(JaasAuthenticationPlugin.class))
-				.isNull();
+		assertThat(lifeCycle.getContext().getPlugins(TermIOHandler.class))
+				.filteredOn(when(isA(ProcessorIOHandler.class))).isEmpty();
+		assertThat(lifeCycle.getContext().getPlugins(AuthenticationPlugin.class))
+				.filteredOn(when(isA(JaasAuthenticationPlugin.class))).isEmpty();
+		assertThat(lifeCycle.getContext().getPlugins(Language.class))
+				.filteredOn(when(isA(JavaLanguage.class))).isEmpty();
 	}
 
 	@Test
