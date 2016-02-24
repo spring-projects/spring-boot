@@ -37,6 +37,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.testutil.Matched;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.env.MockEnvironment;
@@ -55,7 +56,6 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.isA;
-import static org.springframework.boot.testutil.Matched.when;
 
 /**
  * Tests for {@link CrshAutoConfiguration}.
@@ -86,11 +86,11 @@ public class CrshAutoConfigurationTests {
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 		assertThat(lifeCycle).isNotNull();
 		assertThat(lifeCycle.getContext().getPlugins(TermIOHandler.class))
-				.filteredOn(when(isA(ProcessorIOHandler.class))).isEmpty();
+				.filteredOn(Matched.when(isA(ProcessorIOHandler.class))).isEmpty();
 		assertThat(lifeCycle.getContext().getPlugins(AuthenticationPlugin.class))
-				.filteredOn(when(isA(JaasAuthenticationPlugin.class))).isEmpty();
+				.filteredOn(Matched.when(isA(JaasAuthenticationPlugin.class))).isEmpty();
 		assertThat(lifeCycle.getContext().getPlugins(Language.class))
-				.filteredOn(when(isA(JavaLanguage.class))).isEmpty();
+				.filteredOn(Matched.when(isA(JavaLanguage.class))).isEmpty();
 	}
 
 	@Test
