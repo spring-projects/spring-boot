@@ -118,7 +118,8 @@ unauthenticated connection or full message details when authenticated).
 
 |`logfile`
 |Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
-been set). Only available via MVC.
+been set). Only available via MVC. Supports the use of the HTTP `Range` header to retrieve
+part of the log file's content.
 |true
 
 |`metrics`
