@@ -339,7 +339,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 
 	static class EndpointHypermediaEnabledCondition extends AnyNestedCondition {
 
-		public EndpointHypermediaEnabledCondition() {
+		EndpointHypermediaEnabledCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
