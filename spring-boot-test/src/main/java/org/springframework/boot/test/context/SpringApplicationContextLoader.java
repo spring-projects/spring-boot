@@ -38,11 +38,13 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.SpringVersion;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfigurationAttributes;
+import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.support.AbstractContextLoader;
@@ -99,8 +101,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 			application.setWebEnvironment(false);
 		}
 		application.setInitializers(initializers);
-		ConfigurableApplicationContext applicationContext = application.run();
-		return applicationContext;
+		ConfigurableApplicationContext context = application.run();
+		return context;
 	}
 
 	private void assertValidAnnotations(Class<?> testClass) {
@@ -168,12 +170,15 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	}
 
 	private List<ApplicationContextInitializer<?>> getInitializers(
-			MergedContextConfiguration mergedConfig, SpringApplication application) {
+			MergedContextConfiguration config, SpringApplication application) {
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		for (ContextCustomizer contextCustomizer : config.getContextCustomizers()) {
+			initializers.add(new ContextCustomizerAdapter(contextCustomizer, config));
+		}
 		initializers.add(new PropertySourceLocationsInitializer(
-				mergedConfig.getPropertySourceLocations()));
+				config.getPropertySourceLocations()));
 		initializers.addAll(application.getInitializers());
-		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : mergedConfig
+		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : config
 				.getContextInitializerClasses()) {
 			initializers.add(BeanUtils.instantiate(initializerClass));
 		}
@@ -279,8 +284,32 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 
 		private static boolean hasAnnotation(MergedContextConfiguration configuration,
 				Class<? extends Annotation> annotation) {
-			return AnnotatedElementUtils.isAnnotated(configuration.getTestClass(),
-					annotation);
+			return (AnnotationUtils.findAnnotation(configuration.getTestClass(),
+					annotation) != null);
+		}
+
+	}
+
+	/**
+	 * Adapts a {@link ContextCustomizer} to a {@link ApplicationContextInitializer} so
+	 * that it can be triggered via {@link SpringApplication}.
+	 */
+	private static class ContextCustomizerAdapter
+			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+		private final ContextCustomizer contextCustomizer;
+
+		private final MergedContextConfiguration config;
+
+		ContextCustomizerAdapter(ContextCustomizer contextCustomizer,
+				MergedContextConfiguration config) {
+			this.contextCustomizer = contextCustomizer;
+			this.config = config;
+		}
+
+		@Override
+		public void initialize(ConfigurableApplicationContext applicationContext) {
+			this.contextCustomizer.customizeContext(applicationContext, this.config);
 		}
 
 	}
