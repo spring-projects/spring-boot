@@ -43,7 +43,7 @@
 		</developer>
 	</developers>
 	<properties>
-		<activemq.version>5.12.2</activemq.version>
+		<activemq.version>5.12.3</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
 		<appengine.version>1.9.31</appengine.version>
 		<artemis.version>1.1.0</artemis.version>
@@ -72,13 +72,13 @@
 		<gradle.version>1.12</gradle.version>
 		<groovy.version>2.4.6</groovy.version>
 		<gson.version>2.5</gson.version>
-		<h2.version>1.4.190</h2.version>
+		<h2.version>1.4.191</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
-		<hazelcast.version>3.5.4</hazelcast.version>
+		<hazelcast.version>3.5.5</hazelcast.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
-		<hibernate-validator.version>5.2.2.Final</hibernate-validator.version>
+		<hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
 		<hikaricp.version>2.4.3</hikaricp.version>
-		<hikaricp-java6.version>2.3.12</hikaricp-java6.version>
+		<hikaricp-java6.version>2.3.13</hikaricp-java6.version>
 		<hornetq.version>2.4.7.Final</hornetq.version>
 		<hsqldb.version>2.3.3</hsqldb.version>
 		<httpasyncclient.version>4.1.1</httpasyncclient.version>
@@ -96,12 +96,12 @@
 		<jboss-logging.version>3.3.0.Final</jboss-logging.version>
 		<jdom2.version>2.0.6</jdom2.version>
 		<jedis.version>2.7.3</jedis.version>
-		<jersey.version>2.22.1</jersey.version>
+		<jersey.version>2.22.2</jersey.version>
 		<jetty.version>9.2.14.v20151106</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jmustache.version>1.11</jmustache.version>
 		<joda-time.version>2.9.1</joda-time.version>
-		<jolokia.version>1.3.2</jolokia.version>
+		<jolokia.version>1.3.3</jolokia.version>
 		<jooq.version>3.7.2</jooq.version>
 		<json.version>20140107</json.version>
 		<jsonassert.version>1.2.3</jsonassert.version>
@@ -118,13 +118,13 @@
 		<mongodb.version>2.13.3</mongodb.version>
 		<mysql.version>5.1.38</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
-		<postgresql.version>9.4.1207.jre7</postgresql.version>
+		<postgresql.version>9.4.1208.jre7</postgresql.version>
 		<reactor.version>2.0.7.RELEASE</reactor.version>
 		<reactor-spring.version>2.0.7.RELEASE</reactor-spring.version>
 		<sendgrid.version>2.2.2</sendgrid.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
 		<simple-json.version>1.1.1</simple-json.version>
-		<slf4j.version>1.7.15</slf4j.version>
+		<slf4j.version>1.7.16</slf4j.version>
 		<snakeyaml.version>1.16</snakeyaml.version>
 		<solr.version>5.3.1</solr.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
@@ -155,7 +155,7 @@
 		<thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity4.version>2.1.2.RELEASE</thymeleaf-extras-springsecurity4.version>
 		<thymeleaf-extras-conditionalcomments.version>2.1.1.RELEASE</thymeleaf-extras-conditionalcomments.version>
-		<thymeleaf-layout-dialect.version>1.3.1</thymeleaf-layout-dialect.version>
+		<thymeleaf-layout-dialect.version>1.3.3</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>1.3</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>2.1.0.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>8.0.32</tomcat.version>
