@@ -125,7 +125,7 @@
 		<servlet-api.version>3.1.0</servlet-api.version>
 		<simple-json.version>1.1.1</simple-json.version>
 		<slf4j.version>1.7.16</slf4j.version>
-		<snakeyaml.version>1.16</snakeyaml.version>
+		<snakeyaml.version>1.17</snakeyaml.version>
 		<solr.version>5.3.2</solr.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
 		<spring.version>4.2.5.RELEASE</spring.version>
