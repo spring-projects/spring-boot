@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.cache.Caching;
 import javax.cache.configuration.CompleteConfiguration;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.CreatedExpiryPolicy;
@@ -468,12 +469,17 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void hazelcastAsJCacheWithCaches() {
 		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
-		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
-		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
-		assertThat(cacheManager.getCacheNames(), hasSize(2));
+		try {
+			load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
+					"spring.cache.jcache.provider=" + cachingProviderFqn,
+					"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
+			JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
+			assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
+			assertThat(cacheManager.getCacheNames(), hasSize(2));
+		}
+		finally {
+			Caching.getCachingProvider(cachingProviderFqn).close();
+		}
 	}
 
 	@Test
