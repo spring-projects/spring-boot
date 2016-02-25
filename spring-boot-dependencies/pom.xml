@@ -84,7 +84,7 @@
 		<httpasyncclient.version>4.1.1</httpasyncclient.version>
 		<httpclient.version>4.5.1</httpclient.version>
 		<httpcore.version>4.4.4</httpcore.version>
-		<infinispan.version>8.0.2.Final</infinispan.version>
+		<infinispan.version>8.1.2.Final</infinispan.version>
 		<jackson.version>2.6.5</jackson.version>
 		<janino.version>2.7.8</janino.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
@@ -1604,7 +1604,30 @@
 			</dependency>
 			<dependency>
 				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-spring4</artifactId>
+				<artifactId>infinispan-spring4-common</artifactId>
+				<version>${infinispan.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.logging.log4j</groupId>
+						<artifactId>log4j-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.logging.log4j</groupId>
+						<artifactId>log4j-slf4j-impl</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.logging.log4j</groupId>
+						<artifactId>log4j-jcl</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.infinispan</groupId>
+				<artifactId>infinispan-spring4-embedded</artifactId>
 				<version>${infinispan.version}</version>
 				<exclusions>
 					<exclusion>
