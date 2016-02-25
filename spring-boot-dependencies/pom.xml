@@ -95,7 +95,7 @@
 		<jaybird.version>2.2.9</jaybird.version>
 		<jboss-logging.version>3.3.0.Final</jboss-logging.version>
 		<jdom2.version>2.0.6</jdom2.version>
-		<jedis.version>2.7.3</jedis.version>
+		<jedis.version>2.8.0</jedis.version>
 		<jersey.version>2.22.2</jersey.version>
 		<jetty.version>9.2.15.v20160210</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
