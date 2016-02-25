@@ -459,8 +459,7 @@ public class JmsAutoConfigurationTests {
 		JmsListenerContainerFactory<?> customListenerContainerFactory(
 				DefaultJmsListenerContainerFactoryConfigurer configurer,
 				ConnectionFactory connectionFactory) {
-			DefaultJmsListenerContainerFactory factory =
-					new DefaultJmsListenerContainerFactory();
+			DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 			configurer.configure(factory, connectionFactory);
 			factory.setCacheLevel(DefaultMessageListenerContainer.CACHE_CONSUMER);
 			return factory;

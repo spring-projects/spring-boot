@@ -63,7 +63,6 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		this.jmsProperties = jmsProperties;
 	}
 
-
 	/**
 	 * Configure the specified jms listener container factory. The factory can be further
 	 * tuned and default settings can be overridden.

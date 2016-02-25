@@ -52,7 +52,8 @@ public class CacheManagerCustomizerInvokerTests {
 	@Test
 	public void customizeSimpleCacheManager() {
 		load(SimpleConfiguration.class, "spring.cache.type=simple");
-		ConcurrentMapCacheManager cacheManager = this.context.getBean(ConcurrentMapCacheManager.class);
+		ConcurrentMapCacheManager cacheManager = this.context
+				.getBean(ConcurrentMapCacheManager.class);
 		assertThat(cacheManager.getCacheNames()).containsOnly("one", "two");
 	}
 
@@ -65,7 +66,6 @@ public class CacheManagerCustomizerInvokerTests {
 		verifyZeroInteractions(context);
 	}
 
-
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
@@ -74,7 +74,6 @@ public class CacheManagerCustomizerInvokerTests {
 		applicationContext.refresh();
 		this.context = applicationContext;
 	}
-
 
 	@Configuration
 	@EnableCaching

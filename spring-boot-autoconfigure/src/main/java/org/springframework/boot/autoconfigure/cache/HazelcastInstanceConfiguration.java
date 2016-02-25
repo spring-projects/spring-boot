@@ -61,7 +61,8 @@ abstract class HazelcastInstanceConfiguration {
 						location).getHazelcastInstance();
 				return new CloseableHazelcastCacheManager(cacheHazelcastInstance);
 			}
-			HazelcastCacheManager cacheManager = new HazelcastCacheManager(existingHazelcastInstance);
+			HazelcastCacheManager cacheManager = new HazelcastCacheManager(
+					existingHazelcastInstance);
 			this.customizerInvoker.customize(cacheManager);
 			return cacheManager;
 		}
@@ -90,13 +91,13 @@ abstract class HazelcastInstanceConfiguration {
 
 		@Bean
 		public HazelcastCacheManager cacheManager() throws IOException {
-			HazelcastCacheManager cacheManager = new HazelcastCacheManager(hazelcastInstance());
+			HazelcastCacheManager cacheManager = new HazelcastCacheManager(
+					hazelcastInstance());
 			this.customizerInvoker.customize(cacheManager);
 			return cacheManager;
 		}
 
 	}
-
 
 	/**
 	 * {@link HazelcastConfigResourceCondition} that checks if the

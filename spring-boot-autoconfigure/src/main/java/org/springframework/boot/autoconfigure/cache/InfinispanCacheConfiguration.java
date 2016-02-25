@@ -60,7 +60,8 @@ public class InfinispanCacheConfiguration {
 	@Bean
 	public SpringEmbeddedCacheManager cacheManager(
 			EmbeddedCacheManager embeddedCacheManager) {
-		SpringEmbeddedCacheManager cacheManager = new SpringEmbeddedCacheManager(embeddedCacheManager);
+		SpringEmbeddedCacheManager cacheManager = new SpringEmbeddedCacheManager(
+				embeddedCacheManager);
 		this.customizerInvoker.customize(cacheManager);
 		return cacheManager;
 	}
