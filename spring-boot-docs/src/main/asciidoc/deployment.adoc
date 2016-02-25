@@ -629,6 +629,12 @@ for Gradle and to `${project.name}` for Maven.
 |`initInfoChkconfig`
 |The `chkconfig` section of "`INIT INFO`". Defaults to `2345 99 01`.
 
+|`logFolder`
+|The default value for `LOG_FOLDER`. Only valid for an `init.d` service.
+
+|`pidFolder`
+|The default value for `PID_FOLDER`. Only valid for an `init.d` service.
+
 |`useStartStopDaemon`
 |If the `start-stop-daemon` command, when it's available, should be used to control the
  process. Defaults to `true`.
