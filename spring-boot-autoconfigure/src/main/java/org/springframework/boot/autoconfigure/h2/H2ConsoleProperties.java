@@ -16,8 +16,13 @@
 
 package org.springframework.boot.autoconfigure.h2;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+
+import org.h2.server.web.WebServer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -42,6 +47,11 @@ public class H2ConsoleProperties {
 	 */
 	private boolean enabled = false;
 
+	/**
+	 * {@link WebServer#init(String...)} parameters. See <a href="http://www.h2database.com/html/tutorial.html#console_settings">Settings of the H2 Console</a> for valid values
+	 */
+	private List<String> settings;
+
 	public String getPath() {
 		return this.path;
 	}
@@ -56,6 +66,17 @@ public class H2ConsoleProperties {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public List<String> getSettings() {
+		if (this.settings == null) {
+			this.settings = new ArrayList<String>(0);
+		}
+		return this.settings;
+	}
+
+	public void setSettings(List<String> settings) {
+		this.settings = settings;
 	}
 
 }

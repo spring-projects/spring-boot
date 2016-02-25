@@ -58,7 +58,11 @@ public class H2ConsoleAutoConfiguration {
 	public ServletRegistrationBean h2Console() {
 		String path = this.properties.getPath();
 		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
-		return new ServletRegistrationBean(new WebServlet(), urlMapping);
+		ServletRegistrationBean bean = new ServletRegistrationBean(new WebServlet(), urlMapping);
+		for (String setting : this.properties.getSettings()) {
+			bean.addInitParameter(setting, "");
+		}
+		return bean;
 	}
 
 	@Configuration
