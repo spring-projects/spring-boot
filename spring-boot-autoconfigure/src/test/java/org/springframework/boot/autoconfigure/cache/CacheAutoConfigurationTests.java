@@ -455,8 +455,7 @@ public class CacheAutoConfigurationTests {
 					"spring.cache.jcache.provider=" + cachingProviderFqn,
 					"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
 			JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
-			assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
-			assertThat(cacheManager.getCacheNames(), hasSize(2));
+			assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
 		}
 		finally {
 			Caching.getCachingProvider(cachingProviderFqn).close();
