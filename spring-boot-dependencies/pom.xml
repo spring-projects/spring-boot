@@ -66,7 +66,7 @@
 		<embedded-mongo.version>1.50.2</embedded-mongo.version>
 		<flyway.version>3.2.1</flyway.version>
 		<freemarker.version>2.3.23</freemarker.version>
-		<elasticsearch.version>1.5.2</elasticsearch.version>
+		<elasticsearch.version>1.7.5</elasticsearch.version>
 		<gemfire.version>8.2.0</gemfire.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<gradle.version>1.12</gradle.version>
