@@ -70,6 +70,9 @@ do as they were designed before this was clarified.
 | http://www.grpc.io/[gRPC]
 | https://github.com/LogNet/grpc-spring-boot-starter
 
+| https://github.com/facebook/nifty[Nifty] (Thrift on Netty)
+| https://github.com/bigdullrock/nifty-spring-boot-starter
+
 | http://www.couchbase.com/[Couchbase] HTTP session
 | https://github.com/mkopylec/session-couchbase-spring-boot-starter
 
