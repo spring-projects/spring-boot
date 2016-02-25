@@ -68,6 +68,7 @@
 		<freemarker.version>2.3.23</freemarker.version>
 		<elasticsearch.version>1.5.2</elasticsearch.version>
 		<gemfire.version>8.2.0</gemfire.version>
+		<github-api.version>1.72</github-api.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<gradle.version>1.12</gradle.version>
 		<groovy.version>2.4.6</groovy.version>
@@ -1664,6 +1665,11 @@
 				<groupId>org.jooq</groupId>
 				<artifactId>jooq-codegen</artifactId>
 				<version>${jooq.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.kohsuke</groupId>
+				<artifactId>github-api</artifactId>
+				<version>${github-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>
