@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import samples.websocket.undertow.SampleUndertowWebSocketsApplication;
@@ -62,6 +63,7 @@ public class CustomContainerWebSocketsApplicationTests {
 	private static int PORT = SocketUtils.findAvailableTcpPort();
 
 	@Test
+	@Ignore("UNDERTOW-639")
 	public void echoEndpoint() throws Exception {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
