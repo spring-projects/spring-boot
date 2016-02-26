@@ -17,9 +17,9 @@
 package org.springframework.boot.autoconfigure.cache;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -31,12 +31,12 @@ import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 /**
- * Invoke the available {@link CacheManagerCustomizer} instances in the context for a
+ * Invokes the available {@link CacheManagerCustomizer} instances in the context for a
  * given {@link CacheManager}.
  *
  * @author Stephane Nicoll
  */
-class CacheManagerCustomizerInvoker implements ApplicationContextAware {
+class CacheManagerCustomizers implements ApplicationContextAware {
 
 	private ConfigurableApplicationContext applicationContext;
 
@@ -45,14 +45,16 @@ class CacheManagerCustomizerInvoker implements ApplicationContextAware {
 	 * {@link CacheManagerCustomizer} beans able to handle the specified instance and
 	 * invoke {@link CacheManagerCustomizer#customize(CacheManager)} on them.
 	 * @param cacheManager the cache manager to customize
+	 * @return the cache manager
 	 */
-	public void customize(CacheManager cacheManager) {
+	public <T extends CacheManager> T customize(T cacheManager) {
 		List<CacheManagerCustomizer<CacheManager>> customizers = findCustomizers(
 				cacheManager);
 		AnnotationAwareOrderComparator.sort(customizers);
 		for (CacheManagerCustomizer<CacheManager> customizer : customizers) {
 			customizer.customize(cacheManager);
 		}
+		return cacheManager;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -61,18 +63,26 @@ class CacheManagerCustomizerInvoker implements ApplicationContextAware {
 		if (this.applicationContext == null) {
 			return Collections.emptyList();
 		}
-		Map<String, CacheManagerCustomizer> map = BeanFactoryUtils
-				.beansOfTypeIncludingAncestors(this.applicationContext.getBeanFactory(),
-						CacheManagerCustomizer.class);
+		Class<?> cacheManagerClass = cacheManager.getClass();
 		List<CacheManagerCustomizer<CacheManager>> customizers = new ArrayList<CacheManagerCustomizer<CacheManager>>();
-		for (CacheManagerCustomizer customizer : map.values()) {
-			Class<?> target = GenericTypeResolver.resolveTypeArgument(
-					customizer.getClass(), CacheManagerCustomizer.class);
-			if (target == null || target.isAssignableFrom(cacheManager.getClass())) {
+		for (CacheManagerCustomizer customizer : getBeans(CacheManagerCustomizer.class)) {
+			if (canCustomize(customizer, cacheManagerClass)) {
 				customizers.add(customizer);
 			}
 		}
 		return customizers;
+	}
+
+	private <T> Collection<T> getBeans(Class<T> type) {
+		return BeanFactoryUtils.beansOfTypeIncludingAncestors(
+				this.applicationContext.getBeanFactory(), type).values();
+	}
+
+	private boolean canCustomize(CacheManagerCustomizer<?> customizer,
+			Class<?> cacheManagerClass) {
+		Class<?> target = GenericTypeResolver.resolveTypeArgument(customizer.getClass(),
+				CacheManagerCustomizer.class);
+		return (target == null || target.isAssignableFrom(cacheManagerClass));
 	}
 
 	@Override

@@ -41,7 +41,7 @@ class SimpleCacheConfiguration {
 	private CacheProperties cacheProperties;
 
 	@Autowired
-	CacheManagerCustomizerInvoker customizerInvoker;
+	private CacheManagerCustomizers customizerInvoker;
 
 	@Bean
 	public ConcurrentMapCacheManager cacheManager() {
@@ -50,8 +50,7 @@ class SimpleCacheConfiguration {
 		if (!cacheNames.isEmpty()) {
 			cacheManager.setCacheNames(cacheNames);
 		}
-		this.customizerInvoker.customize(cacheManager);
-		return cacheManager;
+		return this.customizerInvoker.customize(cacheManager);
 	}
 
 }

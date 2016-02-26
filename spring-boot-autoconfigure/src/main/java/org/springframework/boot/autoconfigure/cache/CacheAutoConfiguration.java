@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ import org.springframework.util.Assert;
 @EnableConfigurationProperties(CacheProperties.class)
 @AutoConfigureBefore(HibernateJpaAutoConfiguration.class)
 @AutoConfigureAfter({ HazelcastAutoConfiguration.class, RedisAutoConfiguration.class })
-@Import({ CacheManagerCustomizerInvoker.class, CacheConfigurationImportSelector.class })
+@Import({ CacheManagerCustomizers.class, CacheConfigurationImportSelector.class })
 public class CacheAutoConfiguration {
 
 	static final String VALIDATOR_BEAN_NAME = "cacheAutoConfigurationValidator";

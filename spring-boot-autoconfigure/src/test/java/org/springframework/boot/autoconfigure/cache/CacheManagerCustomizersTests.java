@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  *
  * @author Stephane Nicoll
  */
-public class CacheManagerCustomizerInvokerTests {
+public class CacheManagerCustomizersTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -62,7 +62,7 @@ public class CacheManagerCustomizerInvokerTests {
 
 	@Test
 	public void customizeNoConfigurableApplicationContext() {
-		CacheManagerCustomizerInvoker invoker = new CacheManagerCustomizerInvoker();
+		CacheManagerCustomizers invoker = new CacheManagerCustomizers();
 		ApplicationContext context = mock(ApplicationContext.class);
 		invoker.setApplicationContext(context);
 		invoker.customize(mock(CacheManager.class));
@@ -85,11 +85,14 @@ public class CacheManagerCustomizerInvokerTests {
 		@Bean
 		public CacheManagerCustomizer<ConcurrentMapCacheManager> cacheManagerCustomizer() {
 			return new CacheManagerCustomizer<ConcurrentMapCacheManager>() {
+
 				@Override
 				public void customize(ConcurrentMapCacheManager cacheManager) {
 					cacheManager.setCacheNames(Arrays.asList("one", "two"));
 				}
+
 			};
 		}
+
 	}
 }

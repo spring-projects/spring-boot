@@ -64,7 +64,7 @@ class JCacheCacheConfiguration {
 	private CacheProperties cacheProperties;
 
 	@Autowired
-	CacheManagerCustomizerInvoker customizerInvoker;
+	private CacheManagerCustomizers customizers;
 
 	@Autowired(required = false)
 	private javax.cache.configuration.Configuration<?, ?> defaultCacheConfiguration;
@@ -75,8 +75,7 @@ class JCacheCacheConfiguration {
 	@Bean
 	public JCacheCacheManager cacheManager(CacheManager jCacheCacheManager) {
 		JCacheCacheManager cacheManager = new JCacheCacheManager(jCacheCacheManager);
-		this.customizerInvoker.customize(cacheManager);
-		return cacheManager;
+		return this.customizers.customize(cacheManager);
 	}
 
 	@Bean

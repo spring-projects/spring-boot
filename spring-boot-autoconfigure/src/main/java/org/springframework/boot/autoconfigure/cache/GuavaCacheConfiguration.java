@@ -49,7 +49,7 @@ class GuavaCacheConfiguration {
 	private CacheProperties cacheProperties;
 
 	@Autowired
-	CacheManagerCustomizerInvoker customizerInvoker;
+	private CacheManagerCustomizers customizers;
 
 	@Autowired(required = false)
 	private CacheBuilder<Object, Object> cacheBuilder;
@@ -67,8 +67,7 @@ class GuavaCacheConfiguration {
 		if (!CollectionUtils.isEmpty(cacheNames)) {
 			cacheManager.setCacheNames(cacheNames);
 		}
-		this.customizerInvoker.customize(cacheManager);
-		return cacheManager;
+		return this.customizers.customize(cacheManager);
 	}
 
 	private GuavaCacheManager createCacheManager() {

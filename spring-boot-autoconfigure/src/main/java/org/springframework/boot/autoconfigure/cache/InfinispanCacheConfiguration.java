@@ -52,7 +52,7 @@ public class InfinispanCacheConfiguration {
 	private CacheProperties cacheProperties;
 
 	@Autowired
-	CacheManagerCustomizerInvoker customizerInvoker;
+	private CacheManagerCustomizers customizers;
 
 	@Autowired(required = false)
 	private ConfigurationBuilder defaultConfigurationBuilder;
@@ -62,8 +62,7 @@ public class InfinispanCacheConfiguration {
 			EmbeddedCacheManager embeddedCacheManager) {
 		SpringEmbeddedCacheManager cacheManager = new SpringEmbeddedCacheManager(
 				embeddedCacheManager);
-		this.customizerInvoker.customize(cacheManager);
-		return cacheManager;
+		return this.customizers.customize(cacheManager);
 	}
 
 	@Bean(destroyMethod = "stop")
