@@ -42,14 +42,13 @@ import org.springframework.context.annotation.Configuration;
 class GenericCacheConfiguration {
 
 	@Autowired
-	CacheManagerCustomizerInvoker customizerInvoker;
+	private CacheManagerCustomizers customizers;
 
 	@Bean
 	public SimpleCacheManager cacheManager(Collection<Cache> caches) {
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
 		cacheManager.setCaches(caches);
-		this.customizerInvoker.customize(cacheManager);
-		return cacheManager;
+		return this.customizers.customize(cacheManager);
 	}
 
 }

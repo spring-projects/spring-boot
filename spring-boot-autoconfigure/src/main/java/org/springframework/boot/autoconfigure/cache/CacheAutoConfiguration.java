@@ -66,7 +66,7 @@ import org.springframework.util.Assert;
 @EnableConfigurationProperties(CacheProperties.class)
 @AutoConfigureBefore(HibernateJpaAutoConfiguration.class)
 @AutoConfigureAfter({ HazelcastAutoConfiguration.class, RedisAutoConfiguration.class })
-@Import({ CacheManagerCustomizerInvoker.class, CacheConfigurationImportSelector.class })
+@Import({ CacheManagerCustomizers.class, CacheConfigurationImportSelector.class })
 public class CacheAutoConfiguration {
 
 	static final String VALIDATOR_BEAN_NAME = "cacheAutoConfigurationValidator";

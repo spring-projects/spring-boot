@@ -3280,6 +3280,7 @@ as you want and you can also order them as usual using `@Order` or `Ordered`.
 ===
 
 
+
 [[boot-features-caching-provider-generic]]
 ==== Generic
 Generic caching is used if the context defines _at least_ one

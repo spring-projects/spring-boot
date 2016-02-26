@@ -454,8 +454,10 @@ public class CacheAutoConfigurationTests {
 			load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
 					"spring.cache.jcache.provider=" + cachingProviderFqn,
 					"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-			JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
+			JCacheCacheManager cacheManager = validateCacheManager(
+					JCacheCacheManager.class);
 			assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+			assertThat(cacheManager.getCacheNames()).hasSize(2);
 		}
 		finally {
 			Caching.getCachingProvider(cachingProviderFqn).close();
@@ -889,18 +891,19 @@ public class CacheAutoConfigurationTests {
 
 	}
 
-	static abstract class CacheManagerTestCustomizer<C extends CacheManager>
-			implements CacheManagerCustomizer<C> {
+	static abstract class CacheManagerTestCustomizer<T extends CacheManager>
+			implements CacheManagerCustomizer<T> {
 
-		private C cacheManager;
+		private T cacheManager;
 
 		@Override
-		public void customize(C cacheManager) {
+		public void customize(T cacheManager) {
 			if (this.cacheManager != null) {
 				throw new IllegalStateException("Customized invoked twice");
 			}
 			this.cacheManager = cacheManager;
 		}
+
 	}
 
 }

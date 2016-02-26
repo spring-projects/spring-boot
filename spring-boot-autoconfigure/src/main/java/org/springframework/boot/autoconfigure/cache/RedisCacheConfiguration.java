@@ -47,7 +47,7 @@ class RedisCacheConfiguration {
 	private CacheProperties cacheProperties;
 
 	@Autowired
-	CacheManagerCustomizerInvoker customizerInvoker;
+	private CacheManagerCustomizers customizerInvoker;
 
 	@Bean
 	public RedisCacheManager cacheManager(RedisTemplate<Object, Object> redisTemplate) {
@@ -57,8 +57,7 @@ class RedisCacheConfiguration {
 		if (!cacheNames.isEmpty()) {
 			cacheManager.setCacheNames(cacheNames);
 		}
-		this.customizerInvoker.customize(cacheManager);
-		return cacheManager;
+		return this.customizerInvoker.customize(cacheManager);
 	}
 
 }
