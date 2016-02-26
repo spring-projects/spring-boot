@@ -109,8 +109,10 @@ class SsoSecurityConfigurer {
 	private SimpleUrlAuthenticationFailureHandler failureHandler(OAuth2SsoProperties sso) {
 		SimpleUrlAuthenticationFailureHandler handler = new SimpleUrlAuthenticationFailureHandler();
 		handler.setAllowSessionCreation(sso.isFailureAllowSessionCreation());
-		handler.setDefaultFailureUrl(sso.getFailureDefaultTargetUrl());
 		handler.setUseForward(sso.isFailureForwardToDestination());
+		if (sso.getFailureDefaultTargetUrl() != null) {
+			handler.setDefaultFailureUrl(sso.getFailureDefaultTargetUrl());
+		}
 
 		DefaultRedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 		redirectStrategy.setContextRelative(sso.isFailureRedirectContextRelative());
