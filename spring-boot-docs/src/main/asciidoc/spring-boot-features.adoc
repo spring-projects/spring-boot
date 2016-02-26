@@ -3383,6 +3383,7 @@ recommend to keep this setting enabled if you create your own `RedisCacheManager
 ====
 
 
+
 [[boot-features-caching-provider-guava]]
 ==== Guava
 If Guava is present, a `GuavaCacheManager` is auto-configured. Caches can be created

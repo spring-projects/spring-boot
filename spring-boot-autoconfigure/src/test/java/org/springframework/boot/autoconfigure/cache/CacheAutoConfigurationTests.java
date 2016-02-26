@@ -457,7 +457,6 @@ public class CacheAutoConfigurationTests {
 			JCacheCacheManager cacheManager = validateCacheManager(
 					JCacheCacheManager.class);
 			assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
-			assertThat(cacheManager.getCacheNames()).hasSize(2);
 		}
 		finally {
 			Caching.getCachingProvider(cachingProviderFqn).close();
