@@ -45,84 +45,59 @@ public class OAuth2SsoProperties {
 	private Integer filterOrder;
 
 	/**
-	 * If <code>true</code>, will always redirect to the value of {@link #succesDefaultTargetUrl}
-	 * (defaults to <code>false</code>).
-	 *
-	 * @see SavedRequestAwareAuthenticationSuccessHandler#setAlwaysUseDefaultTargetUrl(boolean)
+	 * If true, will always redirect to the value of succesDefaultTargetUrl. Defaults to false.
 	 */
 	private boolean successAlwaysUseDefaultTargetUrl = false;
 
 	/**
-	 * Supplies the default target Url that will be used if no saved request is found in
-	 * the session, or the {@link successAlwaysUseDefaultTargetUrl} property is set to true. If
-	 * not set, defaults to {@code /}. It will be treated as relative to the web-app's
-	 * context path, and should include the leading <code>/</code>. Alternatively,
+	 * Supplies the default target URL that will be used if no saved request is found in
+	 * the session, or the successAlwaysUseDefaultTargetUrl property is set to true.
+	 * It will be treated as relative to the web-app's
+	 * context path, and should include the leading '/'. Alternatively,
 	 * inclusion of a scheme name (such as "http://" or "https://") as the prefix will
-	 * denote a fully-qualified URL and this is also supported.
-	 *
-	 * @see SavedRequestAwareAuthenticationSuccessHandler#setDefaultTargetUrl(String)
+	 * denote a fully-qualified URL and this is also supported. Defaults to '/'.
 	 */
 	private String succesDefaultTargetUrl = "/";
 
 	/**
-	 * If this property is set, the current request will be checked for this a parameter
+	 * If this property is set, the current request will be checked for a parameter
 	 * with this name and the value used as the target URL if present.
-	 *
-	 * @see SavedRequestAwareAuthenticationSuccessHandler#setTargetUrlParameter(String)
 	 */
 	private String successTargetUrlParameter;
 
 	/**
-	 * If set to {@code true} the {@code Referer} header will be used (if available).
-	 * Defaults to {@code false}.
-	 *
-	 * @see SavedRequestAwareAuthenticationSuccessHandler#setUseReferer(boolean)
+	 * If set to true the Referer header will be used (if available).
+	 * Defaults to false.
 	 */
 	private boolean successUseReferer = false;
 
 	/**
-	 * If <tt>true</tt>, causes any redirection URLs to be calculated minus the protocol
-	 * and context path (defaults to <tt>false</tt>).
-	 *
-	 * @see DefaultRedirectStrategy#setContextRelative(boolean)
+	 * If true, causes any redirection URLs to be calculated minus the protocol
+	 * and context path. Defaults to false.
 	 */
 	private boolean successRedirectContextRelative = false;
 
 	/**
 	 * The URL which will be used as the failure destination.
-	 *
-	 * @see SimpleUrlAuthenticationFailureHandler#setDefaultFailureUrl(String)
 	 */
 	private String failureDefaultTargetUrl;
 
 	/**
-	 * Caches the {@code AuthenticationException} for use in view rendering.
-	 * <p>
-	 * If {@code forwardToDestination} is set to true, request scope will be used,
-	 * otherwise it will attempt to store the exception in the session. If there is no
-	 * session and {@code allowSessionCreation} is {@code true} a session will be created.
-	 * Otherwise the exception will not be stored.
-	 *
-	 * If set to {@code true} and {@link #setFailureForwardToDestination(boolean) forwardToDestination} is
-	 * set to {@code false} a session can be created to cache the {@code AuthenticationException}. Defaults to {@code true}.
-	 *
-	 * @see SimpleUrlAuthenticationFailureHandler#setAllowSessionCreation(boolean)
+	 * If set to true and failureForwardToDestination is set to false a session can be
+	 * created to cache the AuthenticationException. Otherwise the exception will not be stored.
+	 * Defaults to true.
 	 */
 	private boolean failureAllowSessionCreation = true;
 
 	/**
-	 * If set to <tt>true</tt>, performs a forward to the failure destination URL instead
-	 * of a redirect. Defaults to <tt>false</tt>.
-	 *
-	 * @see SimpleUrlAuthenticationFailureHandler#setUseForward(boolean)
+	 * If set to true, performs a forward to the failure destination URL instead
+	 * of a redirect. Defaults to false.
 	 */
 	private boolean failureForwardToDestination = false;
 
 	/**
-	 * If <tt>true</tt>, causes any redirection URLs to be calculated minus the protocol
-	 * and context path (defaults to <tt>false</tt>).
-	 *
-	 * @see DefaultRedirectStrategy#setContextRelative(boolean)
+	 * If true, causes any redirection URLs to be calculated minus the protocol
+	 * and context path (defaults to false).
 	 */
 	private boolean failureRedirectContextRelative = false;
 
@@ -146,6 +121,13 @@ public class OAuth2SsoProperties {
 		return this.successAlwaysUseDefaultTargetUrl;
 	}
 
+	/**
+	 * Set {@link #successAlwaysUseDefaultTargetUrl}.
+	 *
+	 * @param successAlwaysUseDefaultTargetUrl true if default should be used
+	 *
+ 	 * @see SavedRequestAwareAuthenticationSuccessHandler#setAlwaysUseDefaultTargetUrl(boolean)
+	 */
 	public void setSuccessAlwaysUseDefaultTargetUrl(boolean successAlwaysUseDefaultTargetUrl) {
 		this.successAlwaysUseDefaultTargetUrl = successAlwaysUseDefaultTargetUrl;
 	}
@@ -154,6 +136,13 @@ public class OAuth2SsoProperties {
 		return this.succesDefaultTargetUrl;
 	}
 
+	/**
+	 * Set {@link #succesDefaultTargetUrl}.
+	 *
+	 * @param succesDefaultTargetUrl the default redirect target URL
+	 *
+	 * @see SavedRequestAwareAuthenticationSuccessHandler#setDefaultTargetUrl(String)
+	 */
 	public void setSuccesDefaultTargetUrl(String succesDefaultTargetUrl) {
 		this.succesDefaultTargetUrl = succesDefaultTargetUrl;
 	}
@@ -162,6 +151,13 @@ public class OAuth2SsoProperties {
 		return this.successTargetUrlParameter;
 	}
 
+	/**
+	 * Set {@link #successTargetUrlParameter}.
+	 *
+	 * @param successTargetUrlParameter the name of the redirect target URL parameter
+	 *
+	 * @see SavedRequestAwareAuthenticationSuccessHandler#setTargetUrlParameter(String)
+	 */
 	public void setSuccessTargetUrlParameter(String successTargetUrlParameter) {
 		this.successTargetUrlParameter = successTargetUrlParameter;
 	}
@@ -170,6 +166,13 @@ public class OAuth2SsoProperties {
 		return this.successUseReferer;
 	}
 
+	/**
+	 * Set {@link #successUseReferer}.
+	 *
+	 * @param successUseReferer true if Referer header should be used
+	 *
+	 * @see SavedRequestAwareAuthenticationSuccessHandler#setUseReferer(boolean)
+	 */
 	public void setSuccessUseReferer(boolean successUseReferer) {
 		this.successUseReferer = successUseReferer;
 	}
@@ -178,6 +181,13 @@ public class OAuth2SsoProperties {
 		return this.successRedirectContextRelative;
 	}
 
+	/**
+	 * Set {@link #successRedirectContextRelative}.
+	 *
+	 * @param successRedirectContextRelative true if redirects should be context relative
+	 *
+	 * @see DefaultRedirectStrategy#setContextRelative(boolean)
+	 */
 	public void setSuccessRedirectContextRelative(boolean successRedirectContextRelative) {
 		this.successRedirectContextRelative = successRedirectContextRelative;
 	}
@@ -186,6 +196,13 @@ public class OAuth2SsoProperties {
 		return this.failureDefaultTargetUrl;
 	}
 
+	/**
+	 * Set {@link #failureDefaultTargetUrl}.
+	 *
+	 * @param failureDefaultTargetUrl the default failure target redirect URL
+	 *
+	 * @see SimpleUrlAuthenticationFailureHandler#setDefaultFailureUrl(String)
+	 */
 	public void setFailureDefaultTargetUrl(String failureDefaultTargetUrl) {
 		this.failureDefaultTargetUrl = failureDefaultTargetUrl;
 	}
@@ -194,6 +211,13 @@ public class OAuth2SsoProperties {
 		return this.failureAllowSessionCreation;
 	}
 
+	/**
+	 * Set {@link #failureAllowSessionCreation}.
+	 *
+	 * @param failureAllowSessionCreation true if session creation should be allowed
+	 *
+	 * @see SimpleUrlAuthenticationFailureHandler#setAllowSessionCreation(boolean)
+	 */
 	public void setFailureAllowSessionCreation(boolean failureAllowSessionCreation) {
 		this.failureAllowSessionCreation = failureAllowSessionCreation;
 	}
@@ -202,6 +226,13 @@ public class OAuth2SsoProperties {
 		return this.failureForwardToDestination;
 	}
 
+	/**
+	 * Set {@link #failureForwardToDestination}.
+	 *
+	 * @param failureForwardToDestination true if forward should be used
+	 *
+	 * @see SimpleUrlAuthenticationFailureHandler#setUseForward(boolean)
+	 */
 	public void setFailureForwardToDestination(boolean failureForwardToDestination) {
 		this.failureForwardToDestination = failureForwardToDestination;
 	}
@@ -210,6 +241,13 @@ public class OAuth2SsoProperties {
 		return this.failureRedirectContextRelative;
 	}
 
+	/**
+	 * Set {@link #failureRedirectContextRelative}.
+	 *
+	 * @param failureRedirectContextRelative true if redirects should be context relative
+	 *
+	 * @see DefaultRedirectStrategy#setContextRelative(boolean)
+	 */
 	public void setFailureRedirectContextRelative(boolean failureRedirectContextRelative) {
 		this.failureRedirectContextRelative = failureRedirectContextRelative;
 	}
