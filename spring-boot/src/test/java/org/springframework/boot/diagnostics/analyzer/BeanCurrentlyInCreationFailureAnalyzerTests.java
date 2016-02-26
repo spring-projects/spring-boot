@@ -57,7 +57,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(analysis.getDescription()).startsWith(
 				"There is a circular dependency between 3 beans in the application context:");
 		assertThat(analysis.getDescription()).contains("three defined in "
-				+ CycleWithAutowiredFields.BeanThreeConfiguration.class);
+				+ CycleWithAutowiredFields.BeanThreeConfiguration.class.getName());
 		assertThat(analysis.getDescription())
 				.contains("one defined in " + CycleWithAutowiredFields.class.getName());
 		assertThat(analysis.getDescription())
