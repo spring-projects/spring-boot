@@ -182,8 +182,23 @@ public class JettyEmbeddedServletContainerFactory
 	}
 
 	private Server createServer(InetSocketAddress address) {
-		Server server = new Server(getThreadPool());
-		server.setConnectors(new Connector[] { createConnector(address, server) });
+		Server server;
+		try {
+			server = new Server(getThreadPool());
+			server.setConnectors(new Connector[] { createConnector(address, server) });
+		}
+		catch (NoSuchMethodError e) {
+			// Jetty 8 has different API
+			server = new Server(address);
+			try {
+				ReflectionUtils.findMethod(Server.class, "setThreadPool", ThreadPool.class)
+						.invoke(server, getThreadPool());
+			}
+			catch (Exception e1) {
+				throw new RuntimeException("Failed to configure Jetty 8 ThreadPool", e);
+			}
+		}
+
 		return server;
 	}
 
