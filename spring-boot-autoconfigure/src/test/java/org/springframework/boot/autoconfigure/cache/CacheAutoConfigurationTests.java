@@ -127,10 +127,17 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void cacheResolverBackOff() throws Exception {
-		load(CustomCacheResolverConfiguration.class);
+	public void cacheResolverFromSupportBackOff() throws Exception {
+		load(CustomCacheResolverFromSupportConfiguration.class);
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(CacheManager.class);
+	}
+
+	@Test
+	public void customCacheResolverCanBeDefined() throws Exception {
+		load(SpecificCacheResolverConfiguration.class, "spring.cache.type=simple");
+		validateCacheManager(ConcurrentMapCacheManager.class);
+		assertThat(this.context.getBeansOfType(CacheResolver.class)).hasSize(1);
 	}
 
 	@Test
@@ -833,7 +840,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ GenericCacheConfiguration.class, RedisCacheConfiguration.class })
+	@EnableCaching
 	static class CustomCacheManagerConfiguration {
 
 		@Bean
@@ -844,7 +851,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ GenericCacheConfiguration.class, RedisCacheConfiguration.class })
+	@EnableCaching
 	static class CustomCacheManagerFromSupportConfiguration
 			extends CachingConfigurerSupport {
 
@@ -859,18 +866,7 @@ public class CacheAutoConfigurationTests {
 
 	@Configuration
 	@EnableCaching
-	static class GuavaCacheBuilderConfiguration {
-
-		@Bean
-		CacheBuilder<Object, Object> cacheBuilder() {
-			return CacheBuilder.newBuilder().recordStats();
-		}
-
-	}
-
-	@Configuration
-	@Import({ GenericCacheConfiguration.class, RedisCacheConfiguration.class })
-	static class CustomCacheResolverConfiguration extends CachingConfigurerSupport {
+	static class CustomCacheResolverFromSupportConfiguration extends CachingConfigurerSupport {
 
 		@Override
 		@Bean
@@ -886,6 +882,28 @@ public class CacheAutoConfigurationTests {
 
 			};
 
+		}
+
+	}
+
+	@Configuration
+	@EnableCaching
+	static class SpecificCacheResolverConfiguration {
+
+		@Bean
+		public CacheResolver myCacheResolver() {
+			return mock(CacheResolver.class);
+		}
+
+	}
+
+	@Configuration
+	@EnableCaching
+	static class GuavaCacheBuilderConfiguration {
+
+		@Bean
+		CacheBuilder<Object, Object> cacheBuilder() {
+			return CacheBuilder.newBuilder().recordStats();
 		}
 
 	}

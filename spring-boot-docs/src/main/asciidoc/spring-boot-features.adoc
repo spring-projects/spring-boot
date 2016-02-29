@@ -3241,7 +3241,9 @@ TIP: Use the `spring-boot-starter-cache` "`Starter POM`" to quickly add required
 dependencies. If you are adding dependencies manually you should note that certain
 implementations are only provided by the `spring-context-support` jar.
 
-Spring Boot tries to detect the following providers (in this order):
+If you haven't defined a bean of type `CacheManager` or a `CacheResolver` named
+`cacheResolver` (see `CachingConfigurer`), Spring Boot tries to detect the following
+providers (in this order):
 
 * <<boot-features-caching-provider-generic,Generic>>
 * <<boot-features-caching-provider-jcache,JCache (JSR-107)>>

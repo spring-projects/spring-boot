@@ -38,7 +38,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.CacheAspectSupport;
-import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -62,7 +61,7 @@ import org.springframework.util.Assert;
 @Configuration
 @ConditionalOnClass(CacheManager.class)
 @ConditionalOnBean(CacheAspectSupport.class)
-@ConditionalOnMissingBean({ CacheManager.class, CacheResolver.class })
+@ConditionalOnMissingBean(value = CacheManager.class, name = "cacheResolver")
 @EnableConfigurationProperties(CacheProperties.class)
 @AutoConfigureBefore(HibernateJpaAutoConfiguration.class)
 @AutoConfigureAfter({ HazelcastAutoConfiguration.class, RedisAutoConfiguration.class })
