@@ -135,6 +135,7 @@
 					<annotations>
 						<annotation>org.springframework.boot.loader.tools.UsesUnsafeJava</annotation>
 						<annotation>org.springframework.lang.UsesJava7</annotation>
+						<annotation>org.springframework.lang.UsesJava8</annotation>
 					</annotations>
 				</configuration>
 			</plugin>
