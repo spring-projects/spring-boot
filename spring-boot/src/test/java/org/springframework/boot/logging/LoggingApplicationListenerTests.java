@@ -35,6 +35,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
@@ -428,6 +429,16 @@ public class LoggingApplicationListenerTests {
 		assertThat(System.getProperty("LOG_LEVEL_PATTERN")).isEqualTo("level");
 		assertThat(System.getProperty("LOG_PATH")).isEqualTo("path");
 		assertThat(System.getProperty("PID")).isNotNull();
+	}
+
+	@Test
+	public void logFilePropertiesCanReferenceSystemProperties() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.file=target/${PID}.log");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertThat(System.getProperty("LOG_FILE"))
+				.isEqualTo("target/" + new ApplicationPid().toString() + ".log");
 	}
 
 	private boolean bridgeHandlerInstalled() {
