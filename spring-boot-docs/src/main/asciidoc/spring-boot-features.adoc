@@ -2051,7 +2051,8 @@ packaged as an executable archive), there are some limitations in the JSP suppor
   and will also be deployable to a standard container (not limited to, but including
   Tomcat). An executable jar will not work because of a hard coded file pattern in Tomcat.
 
-* Jetty does not currently work as an embedded container with JSPs.
+* With Jetty it should work if you use war packaging, i.e. an executable war will work,
+  and will also be deployable to any standard container.
 
 * Undertow does not support JSPs.
 
