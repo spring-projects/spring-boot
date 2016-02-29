@@ -33,6 +33,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -76,6 +78,15 @@ public class DevToolsDataSourceAutoConfigurationTests {
 		verify(statement).execute("SHUTDOWN");
 	}
 
+	@Test
+	public void configurationBacksOffWithoutDataSourceProperties() throws SQLException {
+		ConfigurableApplicationContext context = createContext("org.h2.Driver",
+				NoDataSourcePropertiesConfiguration.class);
+		assertThat(
+				context.getBeansOfType(DevToolsDataSourceAutoConfiguration.class).size(),
+				is(0));
+	}
+
 	private ConfigurableApplicationContext createContext(String driver,
 			Class<?>... classes) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
@@ -100,6 +111,16 @@ public class DevToolsDataSourceAutoConfigurationTests {
 	@Configuration
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	static class DataSourceConfiguration {
+
+		@Bean
+		public DataSource in() {
+			return mock(DataSource.class);
+		}
+
+	}
+
+	@Configuration
+	static class NoDataSourcePropertiesConfiguration {
 
 		@Bean
 		public DataSource in() {
