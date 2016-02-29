@@ -63,11 +63,13 @@ public class JmsAutoConfiguration {
 	public JmsTemplate jmsTemplate() {
 		JmsTemplate jmsTemplate = new JmsTemplate(this.connectionFactory);
 		jmsTemplate.setPubSubDomain(this.properties.isPubSubDomain());
-		if (this.destinationResolver != null) {
-			jmsTemplate.setDestinationResolver(this.destinationResolver.getIfUnique());
+		DestinationResolver destinationResolver = this.destinationResolver.getIfUnique();
+		if (destinationResolver != null) {
+			jmsTemplate.setDestinationResolver(destinationResolver);
 		}
-		if (this.messageConverter != null) {
-			jmsTemplate.setMessageConverter(this.messageConverter.getIfUnique());
+		MessageConverter messageConverter = this.messageConverter.getIfUnique();
+		if (messageConverter != null) {
+			jmsTemplate.setMessageConverter(messageConverter);
 		}
 		return jmsTemplate;
 	}
