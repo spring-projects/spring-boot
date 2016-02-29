@@ -20,6 +20,8 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -38,12 +40,16 @@ import org.springframework.context.annotation.Configuration;
 class RabbitAnnotationDrivenConfiguration {
 
 	@Autowired
+	private ObjectProvider<MessageConverter> messageConverter;
+
+	@Autowired
 	private RabbitProperties properties;
 
 	@Bean
 	@ConditionalOnMissingBean
 	public SimpleRabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactoryConfigurer() {
 		SimpleRabbitListenerContainerFactoryConfigurer configurer = new SimpleRabbitListenerContainerFactoryConfigurer();
+		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setRabbitProperties(this.properties);
 		return configurer;
 	}

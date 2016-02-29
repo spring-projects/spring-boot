@@ -42,6 +42,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -129,6 +130,15 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	public void testRabbitTemplateMessageConverters() {
+		load(MessageConvertersConfiguration.class);
+		RabbitTemplate rabbitTemplate = this.context
+				.getBean(RabbitTemplate.class);
+		assertThat(rabbitTemplate.getMessageConverter()).isSameAs(
+				this.context.getBean("myMessageConverter"));
+	}
+
+	@Test
 	public void testConnectionFactoryBackOff() {
 		load(TestConfiguration2.class);
 		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
@@ -187,7 +197,8 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	public void testRabbitListenerContainerFactoryWithCustomSettings() {
-		load(TestConfiguration.class, "spring.rabbitmq.listener.autoStartup:false",
+		load(MessageConvertersConfiguration.class,
+				"spring.rabbitmq.listener.autoStartup:false",
 				"spring.rabbitmq.listener.acknowledgeMode:manual",
 				"spring.rabbitmq.listener.concurrency:5",
 				"spring.rabbitmq.listener.maxConcurrency:10",
@@ -204,6 +215,8 @@ public class RabbitAutoConfigurationTests {
 		assertThat(dfa.getPropertyValue("maxConcurrentConsumers")).isEqualTo(10);
 		assertThat(dfa.getPropertyValue("prefetchCount")).isEqualTo(40);
 		assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
+		assertThat(dfa.getPropertyValue("messageConverter")).isSameAs(
+				this.context.getBean("myMessageConverter"));
 	}
 
 	@Test
@@ -321,6 +334,22 @@ public class RabbitAutoConfigurationTests {
 		@Bean
 		RabbitListenerContainerFactory<?> rabbitListenerContainerFactory() {
 			return mock(SimpleRabbitListenerContainerFactory.class);
+		}
+
+	}
+
+	@Configuration
+	protected static class MessageConvertersConfiguration {
+
+		@Bean
+		@Primary
+		public MessageConverter myMessageConverter() {
+			return mock(MessageConverter.class);
+		}
+
+		@Bean
+		public MessageConverter anotherMessageConverter() {
+			return mock(MessageConverter.class);
 		}
 
 	}

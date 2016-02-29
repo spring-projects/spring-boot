@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -86,10 +88,18 @@ public class RabbitAutoConfiguration {
 	@Autowired
 	private ConnectionFactory connectionFactory;
 
+	@Autowired
+	private ObjectProvider<MessageConverter> messageConverter;
+
 	@Bean
 	@ConditionalOnMissingBean(RabbitTemplate.class)
 	public RabbitTemplate rabbitTemplate() {
-		return new RabbitTemplate(this.connectionFactory);
+		RabbitTemplate rabbitTemplate = new RabbitTemplate(this.connectionFactory);
+		MessageConverter messageConverter = this.messageConverter.getIfUnique();
+		if (messageConverter != null) {
+			rabbitTemplate.setMessageConverter(messageConverter);
+		}
+		return rabbitTemplate;
 	}
 
 	@Configuration

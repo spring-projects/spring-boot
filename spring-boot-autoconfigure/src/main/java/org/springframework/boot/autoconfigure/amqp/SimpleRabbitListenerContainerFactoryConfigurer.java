@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.amqp;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.util.Assert;
 
 /**
@@ -29,7 +30,18 @@ import org.springframework.util.Assert;
  */
 public final class SimpleRabbitListenerContainerFactoryConfigurer {
 
+	private MessageConverter messageConverter;
+
 	private RabbitProperties rabbitProperties;
+
+	/**
+	 * Set the {@link MessageConverter} to use or {@code null} if the out-of-the-box
+	 * converter should be used.
+	 * @param messageConverter the {@link MessageConverter}
+	 */
+	void setMessageConverter(MessageConverter messageConverter) {
+		this.messageConverter = messageConverter;
+	}
 
 	/**
 	 * Set the {@link RabbitProperties} to use.
@@ -51,6 +63,9 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer {
 		Assert.notNull(factory, "Factory must not be null");
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		factory.setConnectionFactory(connectionFactory);
+		if (this.messageConverter != null) {
+			factory.setMessageConverter(this.messageConverter);
+		}
 		RabbitProperties.Listener listenerConfig = this.rabbitProperties.getListener();
 		factory.setAutoStartup(listenerConfig.isAutoStartup());
 		if (listenerConfig.getAcknowledgeMode() != null) {

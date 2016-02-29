@@ -3734,7 +3734,8 @@ directly into your own beans:
 ----
 
 NOTE: {spring-amqp-javadoc}/rabbit/core/RabbitMessagingTemplate.{dc-ext}[`RabbitMessagingTemplate`]
-can be injected in a similar manner.
+can be injected in a similar manner. If a `MessageConverter` bean is defined, it is associated
+automatically to the auto-configured `AmqpTemplate`.
 
 Any `org.springframework.amqp.core.Queue` that is defined as a bean will be automatically
 used to declare a corresponding queue on the RabbitMQ instance if necessary.
@@ -3745,7 +3746,8 @@ used to declare a corresponding queue on the RabbitMQ instance if necessary.
 ==== Receiving a message
 When the Rabbit infrastructure is present, any bean can be annotated with
 `@RabbitListener` to create a listener endpoint. If no `RabbitListenerContainerFactory`
-has been defined, a default one is configured automatically.
+has been defined, a default one is configured automatically.  If a `MessageConverter`
+beans is defined, is is associated automatically to the default factory.
 
 The following component creates a listener endpoint on the `someQueue` queue:
 
