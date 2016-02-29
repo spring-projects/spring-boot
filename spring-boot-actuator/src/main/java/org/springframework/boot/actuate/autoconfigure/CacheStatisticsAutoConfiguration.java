@@ -77,17 +77,6 @@ public class CacheStatisticsAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({ Caffeine.class, CaffeineCacheManager.class })
-	static class CaffeineCacheStatisticsProviderConfiguration {
-
-		@Bean
-		public CaffeineCacheStatisticsProvider caffeineCacheStatisticsProvider() {
-			return new CaffeineCacheStatisticsProvider();
-		}
-
-	}
-
-	@Configuration
 	@ConditionalOnClass({ EhCacheCache.class, Ehcache.class, StatisticsGateway.class })
 	static class EhCacheCacheStatisticsProviderConfiguration {
 
@@ -115,6 +104,17 @@ public class CacheStatisticsAutoConfiguration {
 		@Bean
 		public InfinispanCacheStatisticsProvider infinispanCacheStatisticsProvider() {
 			return new InfinispanCacheStatisticsProvider();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass({ Caffeine.class, CaffeineCacheManager.class })
+	static class CaffeineCacheStatisticsProviderConfiguration {
+
+		@Bean
+		public CaffeineCacheStatisticsProvider caffeineCacheStatisticsProvider() {
+			return new CaffeineCacheStatisticsProvider();
 		}
 
 	}

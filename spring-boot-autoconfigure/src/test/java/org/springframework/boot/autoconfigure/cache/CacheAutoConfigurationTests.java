@@ -584,45 +584,52 @@ public class CacheAutoConfigurationTests {
 		validateGuavaCacheWithStats();
 	}
 
-	@Test
-	public void caffeineCacheWithCaches() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=caffeine",
-				"spring.cache.cacheNames[0]=spring", "spring.cache.cacheNames[1]=boot");
-		CaffeineCacheManager cacheManager = validateCacheManager(
-				CaffeineCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("spring", "boot");
+	private void validateGuavaCacheWithStats() {
+		GuavaCacheManager cacheManager = validateCacheManager(GuavaCacheManager.class);
+		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+		Cache foo = cacheManager.getCache("foo");
+		foo.get("1");
+		assertThat(((GuavaCache) foo).getNativeCache().stats().missCount()).isEqualTo(1L);
 	}
 
 	@Test
-	public void caffeineCacheNotAllowNullValues() {
+	public void caffeineCacheWithExplicitCaches() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=caffeine",
-				"spring.cache.caffeine.allow-null-values=false");
+				"spring.cache.cacheNames=foo");
 		CaffeineCacheManager cacheManager = validateCacheManager(
 				CaffeineCacheManager.class);
-		assertThat(cacheManager.isAllowNullValues()).isFalse();
+		assertThat(cacheManager.getCacheNames()).containsOnly("foo");
+		Cache foo = cacheManager.getCache("foo");
+		foo.get("1");
+		// See next tests: no spec given so stats should be disabled
+		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount()).isEqualTo(0L);
 	}
 
 	@Test
-	public void caffeineCacheWithNullCaches() {
+	public void caffeineCacheWithCustomizers() {
+		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "caffeine",
+				"allCacheManagerCustomizer", "caffeineCacheManagerCustomizer");
+	}
+
+	@Test
+	public void caffeineCacheWithExplicitCacheBuilder() {
 		load(CaffeineCacheBuilderConfiguration.class, "spring.cache.type=caffeine",
-				"spring.cache.cacheNames[0]=caffeine", "spring.cache.cacheNames[1]=cache");
-		CaffeineCacheManager cacheManager = validateCacheManager(
-				CaffeineCacheManager.class);
-		assertThat(cacheManager.isAllowNullValues()).isTrue();
-	}
-
-	@Test
-	public void caffeineCacheExplicitWithSpec() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=caffeine",
-				"spring.cache.caffeine.spec=recordStats", "spring.cache.cacheNames[0]=foo",
-				"spring.cache.cacheNames[1]=bar");
+				"spring.cache.cacheNames=foo,bar");
 		validateCaffeineCacheWithStats();
 	}
 
 	@Test
-	public void caffeineCacheExplicitWithCacheBuilder() {
-		load(CaffeineCacheBuilderConfiguration2.class, "spring.cache.type=caffeine",
+	public void caffeineCacheExplicitWithSpec() {
+		load(CaffeineCacheSpecConfiguration.class, "spring.cache.type=caffeine",
 				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
+		validateCaffeineCacheWithStats();
+	}
+
+	@Test
+	public void caffeineCacheExplicitWithSpecString() {
+		load(DefaultCacheConfiguration.class, "spring.cache.type=caffeine",
+				"spring.cache.caffeine.spec=recordStats", "spring.cache.cacheNames[0]=foo",
+				"spring.cache.cacheNames[1]=bar");
 		validateCaffeineCacheWithStats();
 	}
 
@@ -632,14 +639,6 @@ public class CacheAutoConfigurationTests {
 		Cache foo = cacheManager.getCache("foo");
 		foo.get("1");
 		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount()).isEqualTo(1L);
-	}
-
-	private void validateGuavaCacheWithStats() {
-		GuavaCacheManager cacheManager = validateCacheManager(GuavaCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
-		Cache foo = cacheManager.getCache("foo");
-		foo.get("1");
-		assertThat(((GuavaCache) foo).getNativeCache().stats().missCount()).isEqualTo(1L);
 	}
 
 	private <T extends CacheManager> T validateCacheManager(Class<T> type) {
@@ -897,14 +896,14 @@ public class CacheAutoConfigurationTests {
 
 		@Bean
 		Caffeine<Object, Object> cacheBuilder() {
-			return Caffeine.newBuilder().maximumSize(10);
+			return Caffeine.newBuilder().recordStats();
 		}
 
 	}
 
 	@Configuration
 	@EnableCaching
-	static class CaffeineCacheBuilderConfiguration2 {
+	static class CaffeineCacheSpecConfiguration {
 
 		@Bean
 		CaffeineSpec caffeineSpec() {
@@ -961,6 +960,12 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public CacheManagerCustomizer<GuavaCacheManager> guavaCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<GuavaCacheManager>() {
+			};
+		}
+
+		@Bean
+		public CacheManagerCustomizer<CaffeineCacheManager> caffeineCacheManagerCustomizer() {
+			return new CacheManagerTestCustomizer<CaffeineCacheManager>() {
 			};
 		}
 

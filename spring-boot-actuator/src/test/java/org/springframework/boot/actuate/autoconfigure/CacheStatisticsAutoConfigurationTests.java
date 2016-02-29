@@ -119,6 +119,14 @@ public class CacheStatisticsAutoConfigurationTests {
 	}
 
 	@Test
+	public void baseCaffeineCacheStatistics() {
+		load(CaffeineCacheConfig.class);
+		CacheStatisticsProvider provider = this.context
+				.getBean("caffeineCacheStatisticsProvider", CacheStatisticsProvider.class);
+		doTestCoreStatistics(provider, true);
+	}
+
+	@Test
 	public void concurrentMapCacheStatistics() {
 		load(ConcurrentMapConfig.class);
 		CacheStatisticsProvider provider = this.context.getBean(
@@ -146,14 +154,6 @@ public class CacheStatisticsAutoConfigurationTests {
 		CacheStatistics updatedCacheStatistics = provider
 				.getCacheStatistics(this.cacheManager, books);
 		assertCoreStatistics(updatedCacheStatistics, null, null, null);
-	}
-
-	@Test
-	public void caffeineCacheStatistics() {
-		load(CaffeineCacheConfig.class);
-		CacheStatisticsProvider provider = this.context
-				.getBean("caffeineCacheStatisticsProvider", CacheStatisticsProvider.class);
-		doTestCoreStatistics(provider, true);
 	}
 
 	private void doTestCoreStatistics(CacheStatisticsProvider provider,

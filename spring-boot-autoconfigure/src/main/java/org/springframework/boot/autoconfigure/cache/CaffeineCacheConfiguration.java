@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import java.util.List;
+
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
@@ -23,10 +25,12 @@ import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -37,12 +41,15 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @ConditionalOnClass({ Caffeine.class, CaffeineCacheManager.class })
-@ConditionalOnMissingBean(org.springframework.cache.CacheManager.class)
+@ConditionalOnMissingBean(CacheManager.class)
 @Conditional({ CacheCondition.class })
 class CaffeineCacheConfiguration {
 
 	@Autowired
 	private CacheProperties cacheProperties;
+
+	@Autowired
+	private CacheManagerCustomizers customizers;
 
 	@Autowired(required = false)
 	private Caffeine<Object, Object> caffeine;
@@ -54,27 +61,34 @@ class CaffeineCacheConfiguration {
 	private CacheLoader<Object, Object> cacheLoader;
 
 	@Bean
-	@ConditionalOnMissingBean
 	public CaffeineCacheManager caffeineCacheManager() {
-		CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
-		setCacheBuilder(caffeineCacheManager);
-		if (this.cacheLoader != null) {
-			caffeineCacheManager.setCacheLoader(this.cacheLoader);
+		CaffeineCacheManager cacheManager = createCacheManager();
+		List<String> cacheNames = this.cacheProperties.getCacheNames();
+		if (!CollectionUtils.isEmpty(cacheNames)) {
+			cacheManager.setCacheNames(cacheNames);
 		}
-		caffeineCacheManager.setCacheNames(this.cacheProperties.getCacheNames());
-		return caffeineCacheManager;
+		return this.customizers.customize(cacheManager);
 	}
 
-	private void setCacheBuilder(CaffeineCacheManager caffeineCacheManager) {
+	private CaffeineCacheManager createCacheManager() {
+		CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+		setCacheBuilder(cacheManager);
+		if (this.cacheLoader != null) {
+			cacheManager.setCacheLoader(this.cacheLoader);
+		}
+		return cacheManager;
+	}
+
+	private void setCacheBuilder(CaffeineCacheManager cacheManager) {
 		String specification = this.cacheProperties.getCaffeine().getSpec();
 		if (StringUtils.hasText(specification)) {
-			caffeineCacheManager.setCaffeine(Caffeine.from(specification));
+			cacheManager.setCacheSpecification(specification);
 		}
 		else if (this.caffeineSpec != null) {
-			caffeineCacheManager.setCaffeine(Caffeine.from(this.caffeineSpec));
+			cacheManager.setCaffeineSpec(this.caffeineSpec);
 		}
 		else if (this.caffeine != null) {
-			caffeineCacheManager.setCaffeine(this.caffeine);
+			cacheManager.setCaffeine(this.caffeine);
 		}
 	}
 
