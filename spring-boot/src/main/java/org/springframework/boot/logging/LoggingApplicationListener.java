@@ -247,16 +247,18 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 */
 	protected void initialize(ConfigurableEnvironment environment,
 			ClassLoader classLoader) {
+		setSystemProperties(environment);
 		LogFile logFile = LogFile.get(environment);
-		setSystemProperties(environment, logFile);
+		if (logFile != null) {
+			logFile.applyToSystemProperties();
+		}
 		initializeEarlyLoggingLevel(environment);
 		initializeSystem(environment, this.loggingSystem, logFile);
 		initializeFinalLoggingLevels(environment, this.loggingSystem);
 		registerShutdownHookIfNecessary(environment, this.loggingSystem);
 	}
 
-	private void setSystemProperties(ConfigurableEnvironment environment,
-			LogFile logFile) {
+	private void setSystemProperties(ConfigurableEnvironment environment) {
 		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(
 				environment, "logging.");
 		setSystemProperty(propertyResolver, EXCEPTION_CONVERSION_WORD,
@@ -265,9 +267,6 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		setSystemProperty(propertyResolver, FILE_LOG_PATTERN, "pattern.file");
 		setSystemProperty(propertyResolver, LOG_LEVEL_PATTERN, "pattern.level");
 		setSystemProperty(PID_KEY, new ApplicationPid().toString());
-		if (logFile != null) {
-			logFile.applyToSystemProperties();
-		}
 	}
 
 	private void setSystemProperty(RelaxedPropertyResolver propertyResolver,
