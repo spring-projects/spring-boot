@@ -55,11 +55,14 @@ import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
  * @author Andy Wilkinson
  * @author Brian Clozel
  * @since 1.1.0
+ * @deprecated In 1.4.0 following the deprecation of Velocity support in Spring Framework
+ * 4.3
  */
 @Configuration
 @ConditionalOnClass({ VelocityEngine.class, VelocityEngineFactory.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(VelocityProperties.class)
+@Deprecated
 public class VelocityAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(VelocityAutoConfiguration.class);
@@ -88,6 +91,7 @@ public class VelocityAutoConfiguration {
 		}
 	}
 
+	@Deprecated
 	protected static class VelocityConfiguration {
 
 		@Autowired
@@ -107,6 +111,7 @@ public class VelocityAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnNotWebApplication
+	@Deprecated
 	public static class VelocityNonWebConfiguration extends VelocityConfiguration {
 
 		@Bean
@@ -122,6 +127,7 @@ public class VelocityAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(Servlet.class)
 	@ConditionalOnWebApplication
+	@Deprecated
 	public static class VelocityWebConfiguration extends VelocityConfiguration {
 
 		@Bean

@@ -54,6 +54,7 @@ import static org.hamcrest.Matchers.containsString;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
+@SuppressWarnings("deprecation")
 public class VelocityAutoConfigurationTests {
 
 	@Rule

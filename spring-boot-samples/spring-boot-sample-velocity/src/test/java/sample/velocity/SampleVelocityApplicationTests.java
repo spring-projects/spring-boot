@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleVelocityApplication.class)
+@SuppressWarnings("deprecation")
 public class SampleVelocityApplicationTests {
 
 	@ClassRule

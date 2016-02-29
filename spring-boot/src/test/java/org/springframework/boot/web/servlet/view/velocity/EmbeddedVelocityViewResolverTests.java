@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@SuppressWarnings("deprecation")
 public class EmbeddedVelocityViewResolverTests {
 
 	@Test

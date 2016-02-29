@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 @SpringBootApplication
+@Deprecated
 public class SampleVelocityApplication implements CommandLineRunner {
 
 	@Value("${application.message}")

@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@SuppressWarnings("deprecation")
 public class VelocityTemplateAvailabilityProviderTests {
 
 	private final TemplateAvailabilityProvider provider = new VelocityTemplateAvailabilityProvider();

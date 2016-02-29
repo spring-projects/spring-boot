@@ -45,7 +45,9 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ *
  */
+@SuppressWarnings("deprecation")
 @RunWith(MockitoJUnitRunner.class)
 public class EnableAutoConfigurationImportSelectorTests {
 

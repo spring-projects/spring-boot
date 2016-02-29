@@ -482,7 +482,7 @@ and Hibernate.
 |Support for the Thymeleaf templating engine, including integration with Spring.
 
 |`spring-boot-starter-velocity`
-|Support for the Velocity templating engine.
+|Support for the Velocity templating engine. Deprecated in 1.4.
 
 |`spring-boot-starter-web`
 |Support for full-stack web development, including Tomcat and `spring-webmvc`.

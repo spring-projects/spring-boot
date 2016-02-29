@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@SuppressWarnings("deprecation")
 public class EmbeddedVelocityToolboxViewTests {
 
 	private static final String PATH = EmbeddedVelocityToolboxViewTests.class.getPackage()
