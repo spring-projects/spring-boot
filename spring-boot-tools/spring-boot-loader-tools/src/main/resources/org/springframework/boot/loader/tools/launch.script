@@ -42,8 +42,12 @@ cd "$WORKING_DIR" || exit 1
 
 # Source any config file
 configfile="$(basename "${jarfile%.*}.conf")"
+
+# Initialize CONF_FOLDER location defaulting to jarfolder
+[[ -z "$CONF_FOLDER" ]] && CONF_FOLDER="${jarfolder}"
+
 # shellcheck source=/dev/null
-[[ -r "${jarfolder}/${configfile}" ]] && source "${jarfolder}/${configfile}"
+[[ -r "${CONF_FOLDER}/${configfile}" ]] && source "${CONF_FOLDER}/${configfile}"
 
 # Initialize PID/LOG locations if they weren't provided by the config file
 [[ -z "$PID_FOLDER" ]] && PID_FOLDER="{{pidFolder:/var/run}}"

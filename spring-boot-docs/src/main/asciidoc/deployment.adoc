@@ -571,6 +571,9 @@ the default behavior in a script or on the command line:
 |`LOG_FOLDER`
 |The name of the folder to put log files in (`/var/log` by default).
 
+|`CONF_FOLDER`
+|The name of the folder to read .conf files from (same folder as jar-file by default).
+
 |`LOG_FILENAME`
 |The name of the log file in the `LOG_FOLDER` (`<appname>.log` by default).
 
@@ -654,9 +657,10 @@ a `.conf` file,
 	LOG_FOLDER=/custom/log/folder
 ----
 
-The file should be situated next to the jar file and have the same name but suffixed with
+The file is expected next to the jar file and have the same name but suffixed with
 `.conf` rather than `.jar`. For example, a jar named `/var/myapp/myapp.jar` will use the
-configuration file named `/var/myapp/myapp.conf` if it exists.
+configuration file named `/var/myapp/myapp.conf` if it exists. You can also use the
+`CONF_FOLDER` property to customize the location of that file.
 
 To learn about securing this file appropriately, please refer to
 <<deployment-initd-service-securing,the guidelines for securing an init.d service>>.
