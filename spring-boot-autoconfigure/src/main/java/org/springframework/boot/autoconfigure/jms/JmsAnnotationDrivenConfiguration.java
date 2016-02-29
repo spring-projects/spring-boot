@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerConfigUtils;
+import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.JndiDestinationResolver;
 import org.springframework.transaction.jta.JtaTransactionManager;
@@ -42,11 +44,14 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 @ConditionalOnClass(EnableJms.class)
 class JmsAnnotationDrivenConfiguration {
 
-	@Autowired(required = false)
-	private DestinationResolver destinationResolver;
+	@Autowired
+	private ObjectProvider<DestinationResolver> destinationResolver;
 
-	@Autowired(required = false)
-	private JtaTransactionManager transactionManager;
+	@Autowired
+	private ObjectProvider<JtaTransactionManager> transactionManager;
+
+	@Autowired
+	private ObjectProvider<MessageConverter> messageConverter;
 
 	@Autowired
 	private JmsProperties properties;
@@ -55,8 +60,9 @@ class JmsAnnotationDrivenConfiguration {
 	@ConditionalOnMissingBean
 	public DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
 		DefaultJmsListenerContainerFactoryConfigurer configurer = new DefaultJmsListenerContainerFactoryConfigurer();
-		configurer.setDestinationResolver(this.destinationResolver);
-		configurer.setTransactionManager(this.transactionManager);
+		configurer.setDestinationResolver(this.destinationResolver.getIfUnique());
+		configurer.setTransactionManager(this.transactionManager.getIfUnique());
+		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setJmsProperties(this.properties);
 		return configurer;
 	}

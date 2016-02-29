@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jms;
 import javax.jms.ConnectionFactory;
 
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.Assert;
@@ -33,6 +34,8 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 
 	private DestinationResolver destinationResolver;
 
+	private MessageConverter messageConverter;
+
 	private JtaTransactionManager transactionManager;
 
 	private JmsProperties jmsProperties;
@@ -44,6 +47,16 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	 */
 	void setDestinationResolver(DestinationResolver destinationResolver) {
 		this.destinationResolver = destinationResolver;
+	}
+
+	/**
+	 * Set the {@link MessageConverter} to use or {@code null} if the out-of-the-box
+	 * converter should be used.
+	 * @param messageConverter the {@link MessageConverter}
+	 * @since 1.4.0
+	 */
+	public void setMessageConverter(MessageConverter messageConverter) {
+		this.messageConverter = messageConverter;
 	}
 
 	/**
@@ -83,6 +96,9 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		}
 		if (this.destinationResolver != null) {
 			factory.setDestinationResolver(this.destinationResolver);
+		}
+		if (this.messageConverter != null) {
+			factory.setMessageConverter(this.messageConverter);
 		}
 		JmsProperties.Listener listener = this.jmsProperties.getListener();
 		factory.setAutoStartup(listener.isAutoStartup());

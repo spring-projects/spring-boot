@@ -32,6 +32,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
@@ -42,6 +43,7 @@ import org.springframework.jms.config.SimpleJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -203,6 +205,20 @@ public class JmsAutoConfigurationTests {
 	}
 
 	@Test
+	public void testDefaultContainerFactoryWithMessageConverters() {
+		this.context = createContext(MessageConvertersConfiguration.class,
+				EnableJmsConfiguration.class);
+		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context.getBean(
+				"jmsListenerContainerFactory", JmsListenerContainerFactory.class);
+		assertThat(jmsListenerContainerFactory.getClass())
+				.isEqualTo(DefaultJmsListenerContainerFactory.class);
+		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
+				.createListenerContainer(mock(JmsListenerEndpoint.class));
+		assertThat(listenerContainer.getMessageConverter())
+				.isSameAs(this.context.getBean("myMessageConverter"));
+	}
+
+	@Test
 	public void testCustomContainerFactoryWithConfigurer() {
 		this.context = doLoad(
 				new Class<?>[] { TestConfiguration9.class, EnableJmsConfiguration.class },
@@ -217,6 +233,15 @@ public class JmsAutoConfigurationTests {
 		assertThat(listenerContainer.getCacheLevel())
 				.isEqualTo(DefaultMessageListenerContainer.CACHE_CONSUMER);
 		assertThat(listenerContainer.isAutoStartup()).isFalse();
+	}
+
+
+	@Test
+	public void testJmsTemplateWithMessageConverters() {
+		load(MessageConvertersConfiguration.class);
+		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
+		assertThat(jmsTemplate.getMessageConverter()).isSameAs(
+				this.context.getBean("myMessageConverter"));
 	}
 
 	@Test
@@ -448,6 +473,22 @@ public class JmsAutoConfigurationTests {
 		@Bean
 		DataSourceTransactionManager transactionManager() {
 			return mock(DataSourceTransactionManager.class);
+		}
+
+	}
+
+	@Configuration
+	protected static class MessageConvertersConfiguration {
+
+		@Bean
+		@Primary
+		public MessageConverter myMessageConverter() {
+			return mock(MessageConverter.class);
+		}
+
+		@Bean
+		public MessageConverter anotherMessageConverter() {
+			return mock(MessageConverter.class);
 		}
 
 	}

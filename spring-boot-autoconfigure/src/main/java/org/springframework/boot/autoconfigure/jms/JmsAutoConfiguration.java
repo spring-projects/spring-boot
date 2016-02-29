@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -29,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
 
 /**
@@ -50,8 +52,11 @@ public class JmsAutoConfiguration {
 	@Autowired
 	private ConnectionFactory connectionFactory;
 
-	@Autowired(required = false)
-	private DestinationResolver destinationResolver;
+	@Autowired
+	private ObjectProvider<DestinationResolver> destinationResolver;
+
+	@Autowired
+	private ObjectProvider<MessageConverter> messageConverter;
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -59,7 +64,10 @@ public class JmsAutoConfiguration {
 		JmsTemplate jmsTemplate = new JmsTemplate(this.connectionFactory);
 		jmsTemplate.setPubSubDomain(this.properties.isPubSubDomain());
 		if (this.destinationResolver != null) {
-			jmsTemplate.setDestinationResolver(this.destinationResolver);
+			jmsTemplate.setDestinationResolver(this.destinationResolver.getIfUnique());
+		}
+		if (this.messageConverter != null) {
+			jmsTemplate.setMessageConverter(this.messageConverter.getIfUnique());
 		}
 		return jmsTemplate;
 	}

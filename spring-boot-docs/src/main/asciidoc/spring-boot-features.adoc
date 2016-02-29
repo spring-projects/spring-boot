@@ -3590,7 +3590,9 @@ beans:
 ----
 
 NOTE: {spring-javadoc}/jms/core/JmsMessagingTemplate.{dc-ext}[`JmsMessagingTemplate`]
-can be injected in a similar manner.
+can be injected in a similar manner. If a `DestinationResolver` or `MessageConverter`
+beans are defined, they are associated automatically to the auto-configured
+`JmsTemplate`.
 
 
 
@@ -3599,7 +3601,8 @@ can be injected in a similar manner.
 
 When the JMS infrastructure is present, any bean can be annotated with `@JmsListener` to
 create a listener endpoint. If no `JmsListenerContainerFactory` has been defined, a
-default one is configured automatically.
+default one is configured automatically. If a `DestinationResolver` or `MessageConverter`
+beans are defined, they are associated automatically to the default factory.
 
 The default factory is transactional by default. If you are running in an infrastructure
 where a `JtaTransactionManager` is present, it will be associated to the listener container
