@@ -17,30 +17,18 @@
 package org.springframework.boot.launchscript;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-
 import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.DockerCmd;
 import com.github.dockerjava.api.model.Frame;
-import com.github.dockerjava.core.CompressArchiveUtil;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.command.AttachContainerResultCallback;
 import com.github.dockerjava.core.command.BuildImageResultCallback;
-import com.github.dockerjava.jaxrs.AbstrSyncDockerCmdExec;
-import com.github.dockerjava.jaxrs.DockerCmdExecFactoryImpl;
+import com.github.dockerjava.core.command.WaitContainerResultCallback;
 import org.assertj.core.api.Condition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,8 +50,6 @@ import static org.junit.Assume.assumeThat;
  */
 @RunWith(Parameterized.class)
 public class SysVinitLaunchScriptIT {
-
-	private final SpringBootDockerCmdExecFactory commandExecFactory = new SpringBootDockerCmdExecFactory();
 
 	private static final char ESC = 27;
 
@@ -223,7 +209,8 @@ public class SysVinitLaunchScriptIT {
 
 					});
 			resultCallback.awaitCompletion(60, TimeUnit.SECONDS).close();
-			docker.waitContainerCmd(container).exec();
+			docker.waitContainerCmd(container).exec(new WaitContainerResultCallback())
+					.awaitCompletion(60, TimeUnit.SECONDS);
 			return output.toString();
 		}
 		finally {
@@ -234,8 +221,7 @@ public class SysVinitLaunchScriptIT {
 	private DockerClient createClient() {
 		DockerClientConfig config = DockerClientConfig.createDefaultConfigBuilder()
 				.build();
-		DockerClient docker = DockerClientBuilder.getInstance(config)
-				.withDockerCmdExecFactory(this.commandExecFactory).build();
+		DockerClient docker = DockerClientBuilder.getInstance(config).build();
 		return docker;
 	}
 
@@ -264,10 +250,9 @@ public class SysVinitLaunchScriptIT {
 				new File("src/test/resources/scripts/" + script));
 	}
 
-	private void copyToContainer(DockerClient docker, final String container,
-			final File file) {
-		this.commandExecFactory.createCopyToContainerCmdExec()
-				.exec(new CopyToContainerCmd(container, file));
+	private void copyToContainer(DockerClient docker, String container, File file) {
+		docker.copyArchiveToContainerCmd(container)
+				.withHostResource(file.getAbsolutePath()).exec();
 	}
 
 	private File findApplication() {
@@ -307,83 +292,6 @@ public class SysVinitLaunchScriptIT {
 		}
 		throw new IllegalArgumentException(
 				"Failed to extract " + label + " from output: " + output);
-	}
-
-	private static final class CopyToContainerCmdExec
-			extends AbstrSyncDockerCmdExec<CopyToContainerCmd, Void> {
-
-		private CopyToContainerCmdExec(WebTarget baseResource,
-				DockerClientConfig dockerClientConfig) {
-			super(baseResource, dockerClientConfig);
-		}
-
-		@Override
-		protected Void execute(CopyToContainerCmd command) {
-			try {
-				InputStream streamToUpload = new FileInputStream(CompressArchiveUtil
-						.archiveTARFiles(command.getFile().getParentFile(),
-								Arrays.asList(command.getFile()),
-								command.getFile().getName()));
-				WebTarget webResource = getBaseResource().path("/containers/{id}/archive")
-						.resolveTemplate("id", command.getContainer());
-				webResource.queryParam("path", ".")
-						.queryParam("noOverwriteDirNonDir", false).request()
-						.put(Entity.entity(streamToUpload, "application/x-tar")).close();
-				return null;
-			}
-			catch (Exception ex) {
-				throw new RuntimeException(ex);
-			}
-		}
-
-	}
-
-	private static final class CopyToContainerCmd implements DockerCmd<Void> {
-
-		private final String container;
-
-		private final File file;
-
-		private CopyToContainerCmd(String container, File file) {
-			this.container = container;
-			this.file = file;
-		}
-
-		public String getContainer() {
-			return this.container;
-		}
-
-		public File getFile() {
-			return this.file;
-		}
-
-		@Override
-		public void close() {
-
-		}
-
-	}
-
-	private static final class SpringBootDockerCmdExecFactory
-			extends DockerCmdExecFactoryImpl {
-
-		private SpringBootDockerCmdExecFactory() {
-			withClientRequestFilters(new ClientRequestFilter() {
-
-				@Override
-				public void filter(ClientRequestContext requestContext)
-						throws IOException {
-					// Workaround for https://go-review.googlesource.com/#/c/3821/
-					requestContext.getHeaders().add("Connection", "close");
-				}
-
-			});
-		}
-
-		private CopyToContainerCmdExec createCopyToContainerCmdExec() {
-			return new CopyToContainerCmdExec(getBaseResource(), getDockerClientConfig());
-		}
-
 	}
 
 }
