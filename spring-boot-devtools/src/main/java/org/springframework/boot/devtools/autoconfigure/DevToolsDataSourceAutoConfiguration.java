@@ -25,10 +25,13 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.devtools.autoconfigure.DevToolsDataSourceAutoConfiguration.DevToolsDataSourceCondition;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 
@@ -40,7 +43,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
  * @since 1.3.3
  */
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
-@ConditionalOnBean({ DataSource.class, DataSourceProperties.class })
+@Conditional(DevToolsDataSourceCondition.class)
 @Configuration
 public class DevToolsDataSourceAutoConfiguration {
 
@@ -81,6 +84,24 @@ public class DevToolsDataSourceAutoConfiguration {
 			return IN_MEMORY_DRIVER_CLASS_NAMES
 					.contains(this.dataSourceProperties.getDriverClassName())
 					&& (!(this.dataSource instanceof EmbeddedDatabase));
+		}
+
+	}
+
+	static class DevToolsDataSourceCondition extends AllNestedConditions {
+
+		DevToolsDataSourceCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnBean(DataSource.class)
+		static final class DataSourceBean {
+
+		}
+
+		@ConditionalOnBean(DataSourceProperties.class)
+		static final class DataSourcePropertiesBean {
+
 		}
 
 	}
