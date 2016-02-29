@@ -30,6 +30,8 @@ import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import com.google.common.cache.CacheBuilder;
 import com.hazelcast.cache.HazelcastCachingProvider;
 import com.hazelcast.core.HazelcastInstance;
@@ -54,6 +56,8 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
@@ -588,6 +592,55 @@ public class CacheAutoConfigurationTests {
 		assertThat(((GuavaCache) foo).getNativeCache().stats().missCount()).isEqualTo(1L);
 	}
 
+	@Test
+	public void caffeineCacheWithExplicitCaches() {
+		load(DefaultCacheConfiguration.class, "spring.cache.type=caffeine",
+				"spring.cache.cacheNames=foo");
+		CaffeineCacheManager cacheManager = validateCacheManager(
+				CaffeineCacheManager.class);
+		assertThat(cacheManager.getCacheNames()).containsOnly("foo");
+		Cache foo = cacheManager.getCache("foo");
+		foo.get("1");
+		// See next tests: no spec given so stats should be disabled
+		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount()).isEqualTo(0L);
+	}
+
+	@Test
+	public void caffeineCacheWithCustomizers() {
+		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "caffeine",
+				"allCacheManagerCustomizer", "caffeineCacheManagerCustomizer");
+	}
+
+	@Test
+	public void caffeineCacheWithExplicitCacheBuilder() {
+		load(CaffeineCacheBuilderConfiguration.class, "spring.cache.type=caffeine",
+				"spring.cache.cacheNames=foo,bar");
+		validateCaffeineCacheWithStats();
+	}
+
+	@Test
+	public void caffeineCacheExplicitWithSpec() {
+		load(CaffeineCacheSpecConfiguration.class, "spring.cache.type=caffeine",
+				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
+		validateCaffeineCacheWithStats();
+	}
+
+	@Test
+	public void caffeineCacheExplicitWithSpecString() {
+		load(DefaultCacheConfiguration.class, "spring.cache.type=caffeine",
+				"spring.cache.caffeine.spec=recordStats", "spring.cache.cacheNames[0]=foo",
+				"spring.cache.cacheNames[1]=bar");
+		validateCaffeineCacheWithStats();
+	}
+
+	private void validateCaffeineCacheWithStats() {
+		CaffeineCacheManager cacheManager = validateCacheManager(CaffeineCacheManager.class);
+		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+		Cache foo = cacheManager.getCache("foo");
+		foo.get("1");
+		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount()).isEqualTo(1L);
+	}
+
 	private <T extends CacheManager> T validateCacheManager(Class<T> type) {
 		CacheManager cacheManager = this.context.getBean(CacheManager.class);
 		assertThat(cacheManager).as("Wrong cache manager type").isInstanceOf(type);
@@ -838,6 +891,28 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Configuration
+	@EnableCaching
+	static class CaffeineCacheBuilderConfiguration {
+
+		@Bean
+		Caffeine<Object, Object> cacheBuilder() {
+			return Caffeine.newBuilder().recordStats();
+		}
+
+	}
+
+	@Configuration
+	@EnableCaching
+	static class CaffeineCacheSpecConfiguration {
+
+		@Bean
+		CaffeineSpec caffeineSpec() {
+			return CaffeineSpec.parse("recordStats");
+		}
+
+	}
+
+	@Configuration
 	static class CacheManagerCustomizersConfiguration {
 
 		@Bean
@@ -885,6 +960,12 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public CacheManagerCustomizer<GuavaCacheManager> guavaCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<GuavaCacheManager>() {
+			};
+		}
+
+		@Bean
+		public CacheManagerCustomizer<CaffeineCacheManager> caffeineCacheManagerCustomizer() {
+			return new CacheManagerTestCustomizer<CaffeineCacheManager>() {
 			};
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,8 @@ public class CacheProperties {
 	 */
 	private List<String> cacheNames = new ArrayList<String>();
 
+	private final Caffeine caffeine = new Caffeine();
+
 	private final EhCache ehcache = new EhCache();
 
 	private final Hazelcast hazelcast = new Hazelcast();
@@ -68,6 +70,10 @@ public class CacheProperties {
 
 	public void setCacheNames(List<String> cacheNames) {
 		this.cacheNames = cacheNames;
+	}
+
+	public Caffeine getCaffeine() {
+		return this.caffeine;
 	}
 
 	public EhCache getEhcache() {
@@ -104,6 +110,27 @@ public class CacheProperties {
 			return config;
 		}
 		return null;
+	}
+
+	/**
+	 * Caffeine specific cache properties.
+	 */
+	public static class Caffeine {
+
+		/**
+		 * The spec to use to create caches. Check CaffeineSpec for more details on
+		 * the spec format.
+		 */
+		private String spec;
+
+		public String getSpec() {
+			return this.spec;
+		}
+
+		public void setSpec(String spec) {
+			this.spec = spec;
+		}
+
 	}
 
 	/**

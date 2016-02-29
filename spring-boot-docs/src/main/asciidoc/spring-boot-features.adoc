@@ -3249,6 +3249,7 @@ Spring Boot tries to detect the following providers (in this order):
 * <<boot-features-caching-provider-hazelcast,Hazelcast>>
 * <<boot-features-caching-provider-infinispan,Infinispan>>
 * <<boot-features-caching-provider-redis,Redis>>
+* <<boot-features-caching-provider-caffeine,Caffeine>>
 * <<boot-features-caching-provider-guava,Guava>>
 * <<boot-features-caching-provider-simple,Simple>>
 
@@ -3381,6 +3382,31 @@ By default, a key prefix is added to prevent that if two separate caches use the
 key, Redis would have overlapping keys and be likely to return invalid values. We strongly
 recommend to keep this setting enabled if you create your own `RedisCacheManager`.
 ====
+
+
+
+[[boot-features-caching-provider-caffeine]]
+==== Caffeine
+Caffeine is a Java 8 rewrite of Guava’s cache and will supersede the Guava support in
+Spring Boot 2.0. If Caffeine is present, a `CaffeineCacheManager` is auto-configured.
+Caches can be created on startup using the `spring.cache.cache-names` property and
+customized by one of the following (in this order):
+
+1. A cache spec defined by `spring.cache.caffeine.spec`
+2. A `com.github.benmanes.caffeine.cache.CaffeineSpec` bean is defined
+3. A `com.github.benmanes.caffeine.cache.Caffeine` bean is defined
+
+For instance, the following configuration creates a `foo` and `bar` caches with a maximum
+size of 500 and a _time to live_ of 10 minutes
+
+[source,properties,indent=0]
+----
+    spring.cache.cache-names=foo,bar
+	spring.cache.caffeine.spec=maximumSize=500,expireAfterAccess=600s
+----
+
+Besides, if a `com.github.benmanes.caffeine.cache.CacheLoader` bean is defined, it is
+automatically associated to the `CaffeineCacheManager`.
 
 
 

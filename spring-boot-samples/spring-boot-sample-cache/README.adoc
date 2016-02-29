@@ -84,6 +84,13 @@ a redis instance with the default settings is expected on your local box).
 
 
 
+=== Caffeine
+Simply add the `com.github.ben-manes.caffeine:caffeine` dependency to enable support
+for Caffeine. You can customize how caches are created in different ways, see
+`application.properties` for an example and the documentation for more details.
+
+
+
 === Guava
 Spring Boot does not provide any dependency management for _Guava_ so you'll have to add
 the `com.google.guava:guava` dependency with a version. You can customize how caches are
