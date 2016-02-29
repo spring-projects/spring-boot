@@ -111,6 +111,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-jetty-ssl[spring-boot-sample-jetty-ssl]
 | Embedded Jetty configured to use SSL
 
+| link:spring-boot-sample-jetty-jsp[spring-boot-sample-jetty-jsp]
+| Web application that uses JSP templates with Jetty
+
 | link:spring-boot-sample-jetty8[spring-boot-sample-jetty8]
 | Embedded Jetty 8
 
