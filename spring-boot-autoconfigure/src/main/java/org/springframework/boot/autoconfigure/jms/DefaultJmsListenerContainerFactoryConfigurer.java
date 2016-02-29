@@ -53,9 +53,8 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	 * Set the {@link MessageConverter} to use or {@code null} if the out-of-the-box
 	 * converter should be used.
 	 * @param messageConverter the {@link MessageConverter}
-	 * @since 1.4.0
 	 */
-	public void setMessageConverter(MessageConverter messageConverter) {
+	void setMessageConverter(MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
 	}
 
