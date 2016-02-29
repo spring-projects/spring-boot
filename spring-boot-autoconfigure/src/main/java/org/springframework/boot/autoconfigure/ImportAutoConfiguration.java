@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.test;
+package org.springframework.boot.autoconfigure;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -23,32 +23,32 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.core.annotation.AliasFor;
+import org.springframework.context.annotation.Import;
 
 /**
- * Import and apply the selected auto-configuration classes for testing purposes. Applies
- * the same ordering rules as {@code @EnableAutoConfiguration} but restricts the
- * auto-configuration classes to the specified set, rather than consulting
- * {@code spring.factories}.
+ * Import and apply the selected auto-configuration classes. Applies the same ordering
+ * rules as {@code @EnableAutoConfiguration} but restricts the auto-configuration classes
+ * to the specified set, rather than consulting {@code spring.factories}.
+ * <p>
+ * Generally, {@code @EnableAutoConfiguration} should used in preference to this
+ * annotation, however, {@code @ImportAutoConfiguration} can be useful in some situations
+ * and especially when writing tests.
  *
  * @author Phillip Webb
  * @since 1.3.0
- * @deprecated since 1.4.0 in favor of
- * {@link org.springframework.boot.autoconfigure.ImportAutoConfiguration}
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@org.springframework.boot.autoconfigure.ImportAutoConfiguration({})
-@Deprecated
+@AutoConfigurationPackage
+@Import(ImportAutoConfigurationImportSelector.class)
 public @interface ImportAutoConfiguration {
 
 	/**
 	 * The auto-configuration classes that should be imported.
 	 * @return the classes to import
 	 */
-	@AliasFor(annotation = org.springframework.boot.autoconfigure.ImportAutoConfiguration.class, attribute = "value")
 	Class<?>[] value();
 
 }

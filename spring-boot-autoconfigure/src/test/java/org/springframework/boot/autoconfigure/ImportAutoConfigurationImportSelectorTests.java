@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.test;
+package org.springframework.boot.autoconfigure;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,13 +28,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
-import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
@@ -49,12 +52,6 @@ public class ImportAutoConfigurationImportSelectorTests {
 	@Mock
 	private Environment environment;
 
-	@Mock
-	private AnnotationMetadata annotationMetadata;
-
-	@Mock
-	private AnnotationAttributes annotationAttributes;
-
 	@Before
 	public void configureImportSelector() {
 		this.importSelector.setBeanFactory(this.beanFactory);
@@ -63,25 +60,54 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void importsAreSelected() {
-		String[] value = new String[] { FreeMarkerAutoConfiguration.class.getName() };
-		configureValue(value);
-		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
-		assertThat(imports).isEqualTo(value);
+	public void importsAreSelected() throws Exception {
+		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
+				.getMetadataReader(ImportFreemarker.class.getName())
+				.getAnnotationMetadata();
+		String[] imports = this.importSelector.selectImports(annotationMetadata);
+		assertThat(imports).containsExactly(FreeMarkerAutoConfiguration.class.getName());
 	}
 
 	@Test
-	public void propertyExclusionsAreNotApplied() {
-		configureValue(new String[] { FreeMarkerAutoConfiguration.class.getName() });
-		this.importSelector.selectImports(this.annotationMetadata);
+	public void propertyExclusionsAreNotApplied() throws Exception {
+		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
+				.getMetadataReader(ImportFreemarker.class.getName())
+				.getAnnotationMetadata();
+		this.importSelector.selectImports(annotationMetadata);
 		verifyZeroInteractions(this.environment);
 	}
 
-	private void configureValue(String... value) {
-		String name = ImportAutoConfiguration.class.getName();
-		given(this.annotationMetadata.getAnnotationAttributes(name, true))
-				.willReturn(this.annotationAttributes);
-		given(this.annotationAttributes.getStringArray("value")).willReturn(value);
+	@Test
+	public void multipleImportsAreFound() throws Exception {
+		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
+				.getMetadataReader(MultipleImports.class.getName())
+				.getAnnotationMetadata();
+		String[] imports = this.importSelector.selectImports(annotationMetadata);
+		assertThat(imports).containsOnly(FreeMarkerAutoConfiguration.class.getName(),
+				ThymeleafAutoConfiguration.class.getName());
+	}
+
+	@ImportAutoConfiguration(FreeMarkerAutoConfiguration.class)
+	static class ImportFreemarker {
+
+	}
+
+	@ImportOne
+	@ImportTwo
+	static class MultipleImports {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@ImportAutoConfiguration(FreeMarkerAutoConfiguration.class)
+	static @interface ImportOne {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@ImportAutoConfiguration(ThymeleafAutoConfiguration.class)
+	static @interface ImportTwo {
+
 	}
 
 }
