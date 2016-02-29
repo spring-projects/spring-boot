@@ -42,6 +42,8 @@ import java.util.jar.Manifest;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
+import org.springframework.lang.UsesJava7;
+
 /**
  * Writes JAR content, ensuring valid directory entries are always create and duplicate
  * items are ignored.
@@ -86,6 +88,7 @@ public class JarWriter {
 		this.jarOutput = new JarOutputStream(fileOutputStream);
 	}
 
+	@UsesJava7
 	private void setExecutableFilePermission(File file) {
 		try {
 			Path path = file.toPath();
