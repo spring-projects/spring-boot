@@ -328,6 +328,23 @@ public class JarFileTests {
 	}
 
 	@Test
+	public void createNonNestedUrlFromStringCreatedUsingPath() throws Exception {
+		// gh-5287
+		JarFile.registerUrlProtocolHandler();
+		String spec = "jar:" + this.rootJarFile.toPath().toUri() + "!/2.dat";
+		URL url = new URL(spec);
+		assertThat(url.toString()).isEqualTo(spec);
+		InputStream inputStream = url.openStream();
+		assertThat(inputStream).isNotNull();
+		assertThat(inputStream.read()).isEqualTo(2);
+		JarURLConnection connection = (JarURLConnection) url.openConnection();
+		assertThat(connection.getURL().toString()).isEqualTo(spec);
+		assertThat(connection.getJarFileURL().toURI())
+				.isEqualTo(this.rootJarFile.toURI());
+		assertThat(connection.getEntryName()).isEqualTo("2.dat");
+	}
+
+	@Test
 	public void getDirectoryInputStream() throws Exception {
 		InputStream inputStream = this.jarFile
 				.getInputStream(this.jarFile.getEntry("d/"));
