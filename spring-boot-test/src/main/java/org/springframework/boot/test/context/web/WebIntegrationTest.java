@@ -23,10 +23,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.boot.test.context.IntegrationTest;
 import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.SpringApplicationContextLoader;
 import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
@@ -49,6 +52,10 @@ import org.springframework.test.web.servlet.MockMvc;
  * application and want to mock the servlet environment (for example so that you can use
  * {@link MockMvc}) you should switch to the
  * {@link SpringApplicationTest @SpringApplicationTest} annotation.
+ * <p>
+ * Tests that need to make REST calls to the started server can additionally
+ * {@link Autowire @Autowire} a {@link TestRestTemplate} which will be pre-configured with
+ * a {@link LocalHostUriTemplateHandler}.
  *
  * @author Phillip Webb
  * @since 1.4.0
