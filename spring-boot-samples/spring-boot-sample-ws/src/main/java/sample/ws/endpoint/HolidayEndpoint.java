@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 import sample.ws.service.HumanResourceService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -46,7 +45,6 @@ public class HolidayEndpoint {
 
 	private HumanResourceService humanResourceService;
 
-	@Autowired
 	public HolidayEndpoint(HumanResourceService humanResourceService)
 			throws JDOMException, XPathFactoryConfigurationException,
 			XPathExpressionException {

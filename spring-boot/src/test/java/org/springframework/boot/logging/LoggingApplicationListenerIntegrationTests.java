@@ -18,7 +18,6 @@ package org.springframework.boot.logging;
 
 import org.junit.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
@@ -50,7 +49,6 @@ public class LoggingApplicationListenerIntegrationTests {
 
 		private final LoggingSystem loggingSystem;
 
-		@Autowired
 		SampleService(LoggingSystem loggingSystem) {
 			this.loggingSystem = loggingSystem;
 		}
