@@ -71,6 +71,7 @@ import org.springframework.context.annotation.Import;
  * @author Greg Turnquist
  * @author Josh Long
  * @author Stephane Nicoll
+ * @author Gary Russell
  */
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
@@ -138,6 +139,18 @@ public class RabbitAutoConfiguration {
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
 					factory.getObject());
 			connectionFactory.setAddresses(config.getAddresses());
+			if (config.getChannelCacheSize() != null) {
+				connectionFactory.setChannelCacheSize(config.getChannelCacheSize());
+			}
+			if (config.getCacheMode() != null) {
+				connectionFactory.setCacheMode(config.getCacheMode());
+			}
+			if (config.getConnectionCacheSize() != null) {
+				connectionFactory.setConnectionCacheSize(config.getConnectionCacheSize());
+			}
+			if (config.getChannelCheckoutTimeout() != null) {
+				connectionFactory.setChannelCheckoutTimeout(config.getChannelCheckoutTimeout());
+			}
 			return connectionFactory;
 		}
 

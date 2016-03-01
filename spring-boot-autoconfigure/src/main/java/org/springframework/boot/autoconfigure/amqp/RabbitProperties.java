@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
@@ -31,6 +32,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Josh Thornhill
+ * @author Gary Russell
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
@@ -66,7 +68,7 @@ public class RabbitProperties {
 	private String virtualHost;
 
 	/**
-	 * Comma-separated list of addresses to which the client should connect to.
+	 * Comma-separated list of addresses to which the client should connect.
 	 */
 	private String addresses;
 
@@ -74,6 +76,28 @@ public class RabbitProperties {
 	 * Requested heartbeat timeout, in seconds; zero for none.
 	 */
 	private Integer requestedHeartbeat;
+
+	/**
+	 * The number of channels to retain in the cache, or max channels per connection
+	 * when channelCheckoutTimeout is > 0.
+	 */
+	private Integer channelCacheSize;
+
+	/**
+	 * The connection factory cache mode; CHANNEL (default) or CONNECTION.
+	 */
+	private CacheMode cacheMode;
+
+	/**
+	 * The number of connections to cache (only applies when cacheMode is CONNECTION).
+	 */
+	private Integer connectionCacheSize;
+
+	/**
+	 * The number of milliseconds to wait to obtain a channel if the channelCacheSize
+	 * has been reached; if 0, always create a new channel.
+	 */
+	private Long channelCheckoutTimeout;
 
 	/**
 	 * Listener container configuration.
@@ -184,6 +208,38 @@ public class RabbitProperties {
 
 	public void setRequestedHeartbeat(Integer requestedHeartbeat) {
 		this.requestedHeartbeat = requestedHeartbeat;
+	}
+
+	public Integer getChannelCacheSize() {
+		return this.channelCacheSize;
+	}
+
+	public void setChannelCacheSize(Integer channelCacheSize) {
+		this.channelCacheSize = channelCacheSize;
+	}
+
+	public CacheMode getCacheMode() {
+		return this.cacheMode;
+	}
+
+	public void setCacheMode(CacheMode cacheMode) {
+		this.cacheMode = cacheMode;
+	}
+
+	public Integer getConnectionCacheSize() {
+		return this.connectionCacheSize;
+	}
+
+	public void setConnectionCacheSize(Integer connectionCacheSize) {
+		this.connectionCacheSize = connectionCacheSize;
+	}
+
+	public Long getChannelCheckoutTimeout() {
+		return this.channelCheckoutTimeout;
+	}
+
+	public void setChannelCheckoutTimeout(Long channelCheckoutTimeout) {
+		this.channelCheckoutTimeout = channelCheckoutTimeout;
 	}
 
 	public Listener getListener() {
