@@ -58,14 +58,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
-
-import liquibase.integration.spring.SpringLiquibase;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for common management
@@ -81,7 +78,7 @@ import liquibase.integration.spring.SpringLiquibase;
  *
  */
 @Configuration
-@AutoConfigureAfter({ FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class })
+@AutoConfigureAfter({FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class})
 @EnableConfigurationProperties(EndpointProperties.class)
 public class EndpointAutoConfiguration {
 

@@ -16,12 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -45,15 +43,8 @@ public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
 
 	@Test
 	public void invoke() throws Exception {
-		Info actual = ((Info) getEndpointBean().invoke().get("environment"));
-		assertThat(actual.get("key1"), equalTo((Object) "value1"));
-	}
-
-	@Test
-	public void invoke_HasProvider_GetProviderInfo() throws Exception {
-		@SuppressWarnings("unchecked")
-		Map<String, Object> actual = ((Map<String, Object>) getEndpointBean().invoke().get("infoProvider"));
-		assertThat(actual.get("key1"), equalTo((Object) "value1"));
+		Info actual = getEndpointBean().invoke().get("environment");
+		assertThat(actual.get("key1")).isEqualTo("value1");
 	}
 
 	@Configuration

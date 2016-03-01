@@ -24,17 +24,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * Carries information from a specific info provider
- *
- * @see org.springframework.boot.actuate.endpoint.InfoEndpoint
+ * Carries information from a specific info provider.
  *
  * @author Meang Akira Tanaka
  * @since 1.3.0
+ * @see org.springframework.boot.actuate.endpoint.InfoEndpoint
  */
 @JsonInclude(Include.NON_EMPTY)
 public final class Info {
 
-	private final Map<String, Object> details = new HashMap<String, Object>(); 
+	private final Map<String, Object> details = new HashMap<String, Object>();
 
 	public Info() {
 	}
@@ -44,6 +43,7 @@ public final class Info {
 	}
 
 	/**
+	 * Return the content.
 	 * @return the details of the info or an empty map.
 	 */
 	@JsonAnyGetter
@@ -54,12 +54,12 @@ public final class Info {
 	public void put(String infoId, Object value) {
 		this.details.put(infoId, value);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <T> T get(String infoId) {
 		return (T) this.details.get(infoId);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {

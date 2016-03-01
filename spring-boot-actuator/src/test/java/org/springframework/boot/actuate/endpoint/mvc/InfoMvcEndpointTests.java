@@ -1,9 +1,20 @@
-package org.springframework.boot.actuate.endpoint.mvc;
+/*
+ * Copyright 2012-2016 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Map;
 
@@ -11,6 +22,7 @@ import org.elasticsearch.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
@@ -32,13 +44,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 /**
  * Tests for {@link InfoMvcEndpointTests}
  *
  * @author Meang Akira Tanaka
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { TestConfiguration.class })
+@SpringApplicationConfiguration(classes = {TestConfiguration.class})
 @WebAppConfiguration
 @TestPropertySource(properties = {"info.app.name=MyService"})
 public class InfoMvcEndpointTests {
@@ -57,14 +74,16 @@ public class InfoMvcEndpointTests {
 	@Test
 	public void home() throws Exception {
 		this.mvc.perform(get("/info")).andExpect(status().isOk())
-		.andExpect(content().string(containsString("\"beanName2\":{\"key22\":\"value22\",\"key21\":\"value21\"},\"beanName1\":{\"key12\":\"value12\",\"key11\":\"value11\"}")));
+				.andExpect(content().string(
+						containsString("\"beanName2\":{\"key22\":\"value22\",\"key21\":\"value21\"}," +
+								"\"beanName1\":{\"key12\":\"value12\",\"key11\":\"value11\"}")));
 	}
-	
-	@Import({ JacksonAutoConfiguration.class,
-		HttpMessageConvertersAutoConfiguration.class,
-		EndpointWebMvcAutoConfiguration.class,
-		WebMvcAutoConfiguration.class,
-		ManagementServerPropertiesAutoConfiguration.class })
+
+	@Import({JacksonAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class,
+			WebMvcAutoConfiguration.class,
+			ManagementServerPropertiesAutoConfiguration.class})
 	@Configuration
 	public static class TestConfiguration {
 
@@ -72,7 +91,7 @@ public class InfoMvcEndpointTests {
 
 		public TestConfiguration() {
 			InfoProvider infoProvider1 = new InfoProvider() {
-				
+
 				@Override
 				public Info provide() {
 					Info result = new Info();
@@ -86,10 +105,10 @@ public class InfoMvcEndpointTests {
 					return "beanName1";
 				}
 			};
-			infoProviders.put("beanName1", infoProvider1);
-			
+			this.infoProviders.put("beanName1", infoProvider1);
+
 			InfoProvider infoProvider2 = new InfoProvider() {
-				
+
 				@Override
 				public Info provide() {
 					Info result = new Info();
@@ -103,13 +122,13 @@ public class InfoMvcEndpointTests {
 					return "beanName2";
 				}
 			};
-			infoProviders.put("beanName2", infoProvider2);
+			this.infoProviders.put("beanName2", infoProvider2);
 		}
-		
+
 		@Bean
 		public InfoEndpoint endpoint() {
-			return new InfoEndpoint(infoProviders);
+			return new InfoEndpoint(this.infoProviders);
 		}
 	}
-	
+
 }

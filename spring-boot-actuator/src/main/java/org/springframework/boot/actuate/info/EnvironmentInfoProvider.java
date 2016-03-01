@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.info;
 
 import java.util.LinkedHashMap;
@@ -22,9 +23,8 @@ import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
- * A {@link InfoProvider} that provides all environment entries prefixed with info
- * 
- * See something
+ * A {@link InfoProvider} that provides all environment entries prefixed with
+ * info.
  *
  * @author Meang Akira Tanaka
  * @since 1.3.0
@@ -32,13 +32,12 @@ import org.springframework.core.env.ConfigurableEnvironment;
 public class EnvironmentInfoProvider implements InfoProvider {
 
 	private final ConfigurableEnvironment environment;
-	private final Map<String, Object> infoMap;
+
 	private final Info info;
 
 	public EnvironmentInfoProvider(ConfigurableEnvironment environment) throws Exception {
 		this.environment = environment;
-		infoMap = extractInfoFromEnvironment();
-		this.info = new Info(infoMap);
+		this.info = new Info(extractInfoFromEnvironment());
 	}
 
 	@Override
@@ -48,7 +47,7 @@ public class EnvironmentInfoProvider implements InfoProvider {
 
 	@Override
 	public Info provide() {
-		return info;
+		return this.info;
 	}
 
 	private Map<String, Object> extractInfoFromEnvironment() throws Exception {

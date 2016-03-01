@@ -37,7 +37,7 @@ import org.springframework.core.io.Resource;
  * @since 1.3.0
  */
 @Configuration
-@AutoConfigureBefore({ EndpointAutoConfiguration.class })
+@AutoConfigureBefore({EndpointAutoConfiguration.class})
 public class InfoProviderAutoConfiguration {
 
 	@Autowired
@@ -49,14 +49,13 @@ public class InfoProviderAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(name = "environmentInfoProvider")
 	public InfoProvider environmentInfoProvider() throws Exception {
-		return new EnvironmentInfoProvider(environment);
+		return new EnvironmentInfoProvider(this.environment);
 	}
-	
+
 	@Bean
 	@ConditionalOnMissingBean(name = "scmInfoProvider")
 	public InfoProvider scmInfoProvider() throws Exception {
-		return new ScmGitPropertiesInfoProvider(gitProperties);
+		return new ScmGitPropertiesInfoProvider(this.gitProperties);
 	}
-
 
 }

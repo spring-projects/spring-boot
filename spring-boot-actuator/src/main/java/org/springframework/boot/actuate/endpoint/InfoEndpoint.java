@@ -25,16 +25,19 @@ import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose arbitrary application information.
- * 
- * The information, which the {@link InfoEndpoint} can provide can be customized to display any informations,
- * however initially the info endpoint will provide git version information (if available) and environment information,
- * whose entries are prefixed with info.
  *
- * In order to add additional information to the endpoint, one has to implement a class, which implements the {@link org.springframework.boot.actuate.info.InfoProvider}
- * interface and register it in the application context. The InfoEndpoint will automatically pick it up, when it is being instantiated.
+ * The information, which the {@link InfoEndpoint} can provide can be customized to
+ * display any information, however initially the info endpoint will provide git version
+ * information (if available) and environment information,whose entries are prefixed with
+ * info.
  *
- * The standard InfoProvider for GIT is registered as the scmInfoProvider, and the registration can be changed
- * in case standard provider does not meet ones requirements.
+ * In order to add additional information to the endpoint, one has to implement a class,
+ * which implements the {@link org.springframework.boot.actuate.info.InfoProvider}
+ * interface and register it in the application context. The InfoEndpoint will
+ * automatically pick it up, when it is being instantiated.
+ *
+ * The standard InfoProvider for GIT is registered as the scmInfoProvider, and the
+ * registration can be changed in case standard provider does not meet ones requirements.
  *
  * @see org.springframework.boot.actuate.info.ScmGitPropertiesInfoProvider
  * @see org.springframework.boot.actuate.info.EnvironmentInfoProvider
@@ -61,9 +64,9 @@ public class InfoEndpoint extends AbstractEndpoint<Info> {
 	@Override
 	public Info invoke() {
 		Info result = new Info();
-		for (InfoProvider provider : infoProviders.values()) {
+		for (InfoProvider provider : this.infoProviders.values()) {
 			Info info = provider.provide();
-			if(info != null) {
+			if (info != null) {
 				result.put(provider.name(), info);
 			}
 		}
