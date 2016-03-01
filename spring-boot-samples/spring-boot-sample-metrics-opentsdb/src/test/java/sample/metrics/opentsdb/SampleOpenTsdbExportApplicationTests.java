@@ -22,14 +22,14 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.web.WebIntegrationTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * Basic integration tests for {@link SampleOpenTsdbExportApplication}.
  *
  * @author Dave Syer
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
 @SpringApplicationConfiguration(SampleOpenTsdbExportApplication.class)
 @WebIntegrationTest(randomPort = true)
 @DirtiesContext

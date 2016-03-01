@@ -27,14 +27,14 @@ import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestExecutionListeners.MergeMode;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SampleCassandraApplication}.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
 @TestExecutionListeners(mergeMode = MergeMode.MERGE_WITH_DEFAULTS, listeners = {
 		OrderedCassandraTestExecutionListener.class })
 @SpringApplicationConfiguration(SampleCassandraApplication.class)

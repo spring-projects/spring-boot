@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public class SpringTestCompilerAutoConfiguration extends CompilerAutoConfigurati
 		if (!AstUtils.hasAtLeastOneAnnotation(classNode, "RunWith")) {
 			AnnotationNode runWith = new AnnotationNode(ClassHelper.make("RunWith"));
 			runWith.addMember("value",
-					new ClassExpression(ClassHelper.make("SpringJUnit4ClassRunner")));
+					new ClassExpression(ClassHelper.make("SpringRunner")));
 			classNode.addAnnotation(runWith);
 		}
 	}
