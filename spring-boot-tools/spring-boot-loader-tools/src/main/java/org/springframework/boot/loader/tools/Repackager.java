@@ -37,6 +37,7 @@ import org.springframework.lang.UsesJava8;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class Repackager {
 
@@ -140,8 +141,7 @@ public class Repackager {
 		destination = destination.getAbsoluteFile();
 		File workingSource = this.source;
 		if (this.source.equals(destination)) {
-			workingSource = new File(this.source.getParentFile(),
-					this.source.getName() + ".original");
+			workingSource = getBackupFile();
 			workingSource.delete();
 			renameFile(this.source, workingSource);
 		}
@@ -160,6 +160,15 @@ public class Repackager {
 				deleteFile(workingSource);
 			}
 		}
+	}
+
+	/**
+	 * Return the {@link File} to use to backup the original source.
+	 * @return the file to use to backup the original source
+	 */
+	public File getBackupFile() {
+		return new File(this.source.getParentFile(),
+			this.source.getName() + ".original");
 	}
 
 	private boolean alreadyRepackaged() throws IOException {
