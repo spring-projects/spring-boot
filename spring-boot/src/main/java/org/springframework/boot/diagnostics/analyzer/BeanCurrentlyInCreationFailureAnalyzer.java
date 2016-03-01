@@ -28,7 +28,7 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link AbstractFailureAnalyzer} the performs analysis of failures caused by a
+ * An {@link AbstractFailureAnalyzer} the performs analysis of failures caused by a
  * {@link BeanCurrentlyInCreationException}.
  *
  * @author Andy Wilkinson

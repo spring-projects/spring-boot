@@ -819,7 +819,7 @@ public class SpringApplication {
 				listeners.finished(context, exception);
 			}
 			finally {
-				reportFailure(exception);
+				reportFailure(exception, context);
 				if (context != null) {
 					context.close();
 				}
@@ -831,9 +831,11 @@ public class SpringApplication {
 		ReflectionUtils.rethrowRuntimeException(exception);
 	}
 
-	private void reportFailure(Throwable failure) {
+	private void reportFailure(Throwable failure,
+			ConfigurableApplicationContext context) {
 		try {
-			if (FailureAnalyzers.analyzeAndReport(failure, getClass().getClassLoader())) {
+			if (FailureAnalyzers.analyzeAndReport(failure, getClass().getClassLoader(),
+					context)) {
 				registerLoggedException(failure);
 				return;
 			}
