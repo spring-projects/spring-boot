@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.callback.BaseFlywayCallback;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.After;
 import org.junit.Before;
@@ -57,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Vedran Pavic
+ * @author Eddú Meléndez
  */
 public class FlywayAutoConfigurationTests {
 
@@ -203,6 +205,16 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	public void customFlywayCallback() throws Exception {
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				MockOneFlywayCallback.class, MockTwoFlywayCallback.class);
+		assertThat(this.context.getBean(Flyway.class)).isNotNull();
+		this.context.getBean(MockOneFlywayCallback.class).assertCalled();
+		this.context.getBean(MockTwoFlywayCallback.class).assertCalled();
+	}
+
+	@Test
 	public void customFlywayWithJpa() throws Exception {
 		registerAndRefresh(CustomFlywayWithJpaConfiguration.class,
 				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
@@ -323,6 +335,36 @@ public class FlywayAutoConfigurationTests {
 			assertThat(this.called).isTrue();
 		}
 
+	}
+
+	@Component
+	protected static class MockOneFlywayCallback
+			extends BaseFlywayCallback {
+
+		private boolean called = false;
+
+		public MockOneFlywayCallback() {
+			this.called = true;
+		}
+
+		public void assertCalled() {
+			assertThat(this.called).isTrue();
+		}
+	}
+
+	@Component
+	protected static class MockTwoFlywayCallback
+			extends BaseFlywayCallback {
+
+		private boolean called = false;
+
+		public MockTwoFlywayCallback() {
+			this.called = true;
+		}
+
+		public void assertCalled() {
+			assertThat(this.called).isTrue();
+		}
 	}
 
 }
