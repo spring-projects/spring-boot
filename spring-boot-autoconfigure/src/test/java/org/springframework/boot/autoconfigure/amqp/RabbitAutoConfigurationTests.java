@@ -30,6 +30,7 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
@@ -53,6 +54,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Greg Turnquist
  * @author Stephane Nicoll
+ * @author Gary Russell
  */
 public class RabbitAutoConfigurationTests {
 
@@ -147,6 +149,22 @@ public class RabbitAutoConfigurationTests {
 		assertThat(connectionFactory).isEqualTo(rabbitTemplate.getConnectionFactory());
 		assertThat(connectionFactory.getHost()).isEqualTo("otherserver");
 		assertThat(connectionFactory.getPort()).isEqualTo(8001);
+	}
+
+	@Test
+	public void testConnectionFactoryCacheSettings() {
+		load(TestConfiguration.class,
+				"spring.rabbitmq.channelCacheSize=23",
+				"spring.rabbitmq.cacheMode=CONNECTION",
+				"spring.rabbitmq.connectionCacheSize=2",
+				"spring.rabbitmq.channelCheckoutTimeout=1000");
+		CachingConnectionFactory connectionFactory = this.context
+				.getBean(CachingConnectionFactory.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
+		assertThat(dfa.getPropertyValue("channelCacheSize")).isEqualTo(23);
+		assertThat(dfa.getPropertyValue("cacheMode")).isEqualTo(CacheMode.CONNECTION);
+		assertThat(dfa.getPropertyValue("connectionCacheSize")).isEqualTo(2);
+		assertThat(dfa.getPropertyValue("channelCheckoutTimeout")).isEqualTo(1000L);
 	}
 
 	@Test
