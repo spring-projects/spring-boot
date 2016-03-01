@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
-public class LocalServerPortTest {
+public class LocalServerPortTests {
 
 	private ConfigurableApplicationContext context;
 
@@ -50,7 +50,7 @@ public class LocalServerPortTest {
 
 	@Test
 	public void testLocalServerPortAnnotation() {
-		SpringApplication application = new SpringApplication(LocalServerPortTest.class);
+		SpringApplication application = new SpringApplication(LocalServerPortTests.class);
 		application.setWebEnvironment(true);
 
 		this.context = application.run();
