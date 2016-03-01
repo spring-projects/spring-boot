@@ -23,9 +23,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.exception.DockerClientException;
 import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
+import com.github.dockerjava.core.DockerClientConfig.DockerClientConfigBuilder;
 import com.github.dockerjava.core.command.AttachContainerResultCallback;
 import com.github.dockerjava.core.command.BuildImageResultCallback;
 import com.github.dockerjava.core.command.WaitContainerResultCallback;
@@ -219,10 +221,16 @@ public class SysVinitLaunchScriptIT {
 	}
 
 	private DockerClient createClient() {
-		DockerClientConfig config = DockerClientConfig.createDefaultConfigBuilder()
-				.build();
-		DockerClient docker = DockerClientBuilder.getInstance(config).build();
-		return docker;
+		DockerClientConfigBuilder builder = DockerClientConfig
+				.createDefaultConfigBuilder();
+		DockerClientConfig config;
+		try {
+			config = builder.build();
+		}
+		catch (DockerClientException ex) {
+			config = builder.withDockerTlsVerify(false).build();
+		}
+		return DockerClientBuilder.getInstance(config).build();
 	}
 
 	private String buildImage(DockerClient docker) {
