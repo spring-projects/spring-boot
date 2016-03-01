@@ -884,6 +884,11 @@ content into your application; rather pick only the properties that you need.
 	management.health.solr.enabled=true # Enable Solr health check.
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP # Comma-separated list of health statuses in order of severity.
 
+	# INFO CONTRIBUTORS
+	management.info.defaults.enabled=true # Enable default health indicators.
+	management.info.env.enabled=true # Enable environment info.
+	management.info.git.enabled=true # Enable git info.
+
 	# TRACING (({sc-spring-boot-actuator}/trace/TraceProperties.{sc-ext}[TraceProperties])
 	management.trace.include=request-headers,response-headers,errors # Items to be included in the trace.
 

@@ -16,9 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.elasticsearch.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,7 @@ import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.InfoMvcEndpointTests.TestConfiguration;
 import org.springframework.boot.actuate.info.Info;
-import org.springframework.boot.actuate.info.InfoProvider;
+import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -53,6 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests for {@link InfoMvcEndpointTests}
  *
  * @author Meang Akira Tanaka
+ * @author Stephane Nicoll
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {TestConfiguration.class})
@@ -75,8 +77,10 @@ public class InfoMvcEndpointTests {
 	public void home() throws Exception {
 		this.mvc.perform(get("/info")).andExpect(status().isOk())
 				.andExpect(content().string(
-						containsString("\"beanName2\":{\"key22\":\"value22\",\"key21\":\"value21\"}," +
-								"\"beanName1\":{\"key12\":\"value12\",\"key11\":\"value11\"}")));
+						containsString("\"beanName1\":{\"key11\":\"value11\",\"key12\":\"value12\"}")
+				))
+				.andExpect(content().string(
+						containsString("\"beanName2\":{\"key21\":\"value21\",\"key22\":\"value22\"}")));
 	}
 
 	@Import({JacksonAutoConfiguration.class,
@@ -87,47 +91,36 @@ public class InfoMvcEndpointTests {
 	@Configuration
 	public static class TestConfiguration {
 
-		private Map<String, InfoProvider> infoProviders = Maps.newHashMap();
-
-		public TestConfiguration() {
-			InfoProvider infoProvider1 = new InfoProvider() {
-
-				@Override
-				public Info provide() {
-					Info result = new Info();
-					result.put("key11", "value11");
-					result.put("key12", "value12");
-					return result;
-				}
-
-				@Override
-				public String name() {
-					return "beanName1";
-				}
-			};
-			this.infoProviders.put("beanName1", infoProvider1);
-
-			InfoProvider infoProvider2 = new InfoProvider() {
-
-				@Override
-				public Info provide() {
-					Info result = new Info();
-					result.put("key21", "value21");
-					result.put("key22", "value22");
-					return result;
-				}
-
-				@Override
-				public String name() {
-					return "beanName2";
-				}
-			};
-			this.infoProviders.put("beanName2", infoProvider2);
+		@Bean
+		public InfoEndpoint endpoint() {
+			return new InfoEndpoint(Arrays.asList(beanName1(), beanName2()));
 		}
 
 		@Bean
-		public InfoEndpoint endpoint() {
-			return new InfoEndpoint(this.infoProviders);
+		public InfoContributor beanName1() {
+			return new InfoContributor() {
+
+				@Override
+				public void contribute(Info.Builder builder) {
+					Map<String, Object> content = new LinkedHashMap<String, Object>();
+					content.put("key11", "value11");
+					content.put("key12", "value12");
+					builder.withDetail("beanName1", content);
+				}
+			};
+		}
+
+		@Bean
+		public InfoContributor beanName2() {
+			return new InfoContributor() {
+				@Override
+				public void contribute(Info.Builder builder) {
+					Map<String, Object> content = new LinkedHashMap<String, Object>();
+					content.put("key21", "value21");
+					content.put("key22", "value22");
+					builder.withDetail("beanName2", content);
+				}
+			};
 		}
 	}
 

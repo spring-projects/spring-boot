@@ -45,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Basic integration tests for service demo application.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleActuatorApplication.class)
@@ -145,6 +146,8 @@ public class SampleActuatorApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody())
 				.contains("\"artifact\":\"spring-boot-sample-actuator\"");
+		assertThat(entity.getBody())
+				.contains("\"someKey\":\"someValue\"");
 	}
 
 	@Test

@@ -16,9 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.util.Map;
+import java.util.Collections;
 
-import org.elasticsearch.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +27,7 @@ import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfigur
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.InfoMvcEndpointWithoutAnyInfoProvidersTests.TestConfiguration;
-import org.springframework.boot.actuate.info.InfoProvider;
+import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -79,11 +78,9 @@ public class InfoMvcEndpointWithoutAnyInfoProvidersTests {
 	@Configuration
 	public static class TestConfiguration {
 
-		private Map<String, InfoProvider> infoProviders = Maps.newHashMap();
-
 		@Bean
 		public InfoEndpoint endpoint() {
-			return new InfoEndpoint(this.infoProviders);
+			return new InfoEndpoint(Collections.<InfoContributor>emptyList());
 		}
 
 	}

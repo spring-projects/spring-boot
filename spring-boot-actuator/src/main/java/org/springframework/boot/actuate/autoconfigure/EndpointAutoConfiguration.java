@@ -46,7 +46,7 @@ import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
-import org.springframework.boot.actuate.info.InfoProvider;
+import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -89,7 +89,7 @@ public class EndpointAutoConfiguration {
 	private Map<String, HealthIndicator> healthIndicators = new HashMap<String, HealthIndicator>();
 
 	@Autowired(required = false)
-	private Map<String, InfoProvider> infoProviders = new HashMap<String, InfoProvider>();
+	private List<InfoContributor> infoContributors = new ArrayList<InfoContributor>();
 
 	@Autowired(required = false)
 	private Collection<PublicMetrics> publicMetrics;
@@ -118,7 +118,7 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public InfoEndpoint infoEndpoint() throws Exception {
-		return new InfoEndpoint(this.infoProviders);
+		return new InfoEndpoint(this.infoContributors);
 	}
 
 	@Bean
