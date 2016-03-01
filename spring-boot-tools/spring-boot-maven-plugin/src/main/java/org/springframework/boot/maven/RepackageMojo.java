@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,8 +95,10 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Classifier to add to the artifact generated. If given, the artifact will be
-	 * attached. If this is not given, it will merely be written to the output directory
-	 * according to the finalName. Attaching the artifact allows to deploy it alongside to
+	 * attached with that classifier and the main artifact will be deployed as the
+	 * main artifact. If this is not given (default), it will replace the
+	 * main artifact and only the repackaged artifact will be deployed. Attaching
+	 * the artifact allows to deploy it alongside to
 	 * the original one, see <a href=
 	 * "http://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
 	 * > the maven documentation for more details</a>.
