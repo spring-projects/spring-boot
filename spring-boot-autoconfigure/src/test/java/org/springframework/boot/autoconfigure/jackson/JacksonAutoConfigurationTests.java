@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.introspect.Annotated;
@@ -167,22 +167,22 @@ public class JacksonAutoConfigurationTests {
 	public void customPropertyNamingStrategyField() throws Exception {
 		this.context.register(JacksonAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jackson.property-naming-strategy:CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES");
+				"spring.jackson.property-naming-strategy:SNAKE_CASE");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
 		assertThat(mapper.getPropertyNamingStrategy())
-				.isInstanceOf(LowerCaseWithUnderscoresStrategy.class);
+				.isInstanceOf(SnakeCaseStrategy.class);
 	}
 
 	@Test
 	public void customPropertyNamingStrategyClass() throws Exception {
 		this.context.register(JacksonAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jackson.property-naming-strategy:com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy");
+				"spring.jackson.property-naming-strategy:com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
 		assertThat(mapper.getPropertyNamingStrategy())
-				.isInstanceOf(LowerCaseWithUnderscoresStrategy.class);
+				.isInstanceOf(SnakeCaseStrategy.class);
 	}
 
 	@Test
@@ -355,8 +355,8 @@ public class JacksonAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context
 				.getBean(Jackson2ObjectMapperBuilder.class).build();
-		assertThat(objectMapper.getSerializationConfig().getSerializationInclusion())
-				.isEqualTo(JsonInclude.Include.ALWAYS);
+		assertThat(objectMapper.getSerializationConfig().getDefaultPropertyInclusion()
+				.getValueInclusion()).isEqualTo(JsonInclude.Include.USE_DEFAULTS);
 	}
 
 	@Test
@@ -367,8 +367,8 @@ public class JacksonAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context
 				.getBean(Jackson2ObjectMapperBuilder.class).build();
-		assertThat(objectMapper.getSerializationConfig().getSerializationInclusion())
-				.isEqualTo(JsonInclude.Include.NON_NULL);
+		assertThat(objectMapper.getSerializationConfig().getDefaultPropertyInclusion()
+				.getValueInclusion()).isEqualTo(JsonInclude.Include.NON_NULL);
 	}
 
 	@Test

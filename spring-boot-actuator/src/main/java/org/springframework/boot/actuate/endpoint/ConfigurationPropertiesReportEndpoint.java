@@ -310,7 +310,7 @@ public class ConfigurationPropertiesReportEndpoint
 
 		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
 			String parentType = beanDesc.getType().getRawClass().getName();
-			String type = writer.getPropertyType().getName();
+			String type = writer.getType().getTypeName();
 			AnnotatedMethod setter = findSetter(beanDesc, writer);
 			// If there's a setter, we assume it's OK to report on the value,
 			// similarly, if there's no setter but the package names match, we assume
@@ -324,7 +324,7 @@ public class ConfigurationPropertiesReportEndpoint
 		private AnnotatedMethod findSetter(BeanDescription beanDesc,
 				BeanPropertyWriter writer) {
 			String name = "set" + StringUtils.capitalize(writer.getName());
-			Class<?> type = writer.getPropertyType();
+			Class<?> type = writer.getType().getRawClass();
 			AnnotatedMethod setter = beanDesc.findMethod(name, new Class<?>[] { type });
 			// The enabled property of endpoints returns a boolean primitive but is set
 			// using a Boolean class

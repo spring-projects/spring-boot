@@ -112,9 +112,9 @@ public class DataSourceJsonSerializationTests {
 			for (BeanPropertyWriter writer : beanProperties) {
 				AnnotatedMethod setter = beanDesc.findMethod(
 						"set" + StringUtils.capitalize(writer.getName()),
-						new Class<?>[] { writer.getPropertyType() });
+						new Class<?>[] { writer.getType().getRawClass() });
 				if (setter != null && this.conversionService.canConvert(String.class,
-						writer.getPropertyType())) {
+						writer.getType().getRawClass())) {
 					result.add(writer);
 				}
 			}

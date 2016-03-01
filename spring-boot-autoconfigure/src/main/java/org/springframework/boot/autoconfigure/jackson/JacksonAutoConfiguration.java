@@ -166,9 +166,9 @@ public class JacksonAutoConfiguration {
 		public Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder() {
 			Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
 			builder.applicationContext(this.applicationContext);
-			if (this.jacksonProperties.getSerializationInclusion() != null) {
+			if (this.jacksonProperties.getDefaultPropertyInclusion() != null) {
 				builder.serializationInclusion(
-						this.jacksonProperties.getSerializationInclusion());
+						this.jacksonProperties.getDefaultPropertyInclusion());
 			}
 			if (this.jacksonProperties.getTimeZone() != null) {
 				builder.timeZone(this.jacksonProperties.getTimeZone());

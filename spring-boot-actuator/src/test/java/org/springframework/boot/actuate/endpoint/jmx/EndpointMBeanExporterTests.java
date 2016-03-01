@@ -17,10 +17,12 @@
 package org.springframework.boot.actuate.endpoint.jmx;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -199,12 +201,12 @@ public class EndpointMBeanExporterTests {
 	}
 
 	@Test
-	public void jsonConversionWithDefaultObjectMapper() throws Exception {
+	public void jsonMapConversionWithDefaultObjectMapper() throws Exception {
 		this.context = new GenericApplicationContext();
 		this.context.registerBeanDefinition("endpointMbeanExporter",
 				new RootBeanDefinition(EndpointMBeanExporter.class));
 		this.context.registerBeanDefinition("endpoint1",
-				new RootBeanDefinition(JsonConversionEndpoint.class));
+				new RootBeanDefinition(JsonMapConversionEndpoint.class));
 		this.context.refresh();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 		Object response = mbeanExporter.getServer().invoke(
@@ -215,7 +217,7 @@ public class EndpointMBeanExporterTests {
 	}
 
 	@Test
-	public void jsonConversionWithCustomObjectMapper() throws Exception {
+	public void jsonMapConversionWithCustomObjectMapper() throws Exception {
 		this.context = new GenericApplicationContext();
 		ConstructorArgumentValues constructorArgs = new ConstructorArgumentValues();
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -225,7 +227,7 @@ public class EndpointMBeanExporterTests {
 				new RootBeanDefinition(EndpointMBeanExporter.class, constructorArgs,
 						null));
 		this.context.registerBeanDefinition("endpoint1",
-				new RootBeanDefinition(JsonConversionEndpoint.class));
+				new RootBeanDefinition(JsonMapConversionEndpoint.class));
 		this.context.refresh();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 		Object response = mbeanExporter.getServer().invoke(
@@ -233,6 +235,22 @@ public class EndpointMBeanExporterTests {
 				new String[0]);
 		assertThat(response).isInstanceOf(Map.class);
 		assertThat(((Map<?, ?>) response).get("date")).isInstanceOf(String.class);
+	}
+
+	@Test
+	public void jsonListConversion() throws Exception {
+		this.context = new GenericApplicationContext();
+		this.context.registerBeanDefinition("endpointMbeanExporter",
+				new RootBeanDefinition(EndpointMBeanExporter.class));
+		this.context.registerBeanDefinition("endpoint1",
+				new RootBeanDefinition(JsonListConversionEndpoint.class));
+		this.context.refresh();
+		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
+		Object response = mbeanExporter.getServer().invoke(
+				getObjectName("endpoint1", this.context), "getData", new Object[0],
+				new String[0]);
+		assertThat(response).isInstanceOf(List.class);
+		assertThat(((List<?>) response).get(0)).isInstanceOf(Long.class);
 	}
 
 	private ObjectName getObjectName(String beanKey, GenericApplicationContext context)
@@ -265,11 +283,11 @@ public class EndpointMBeanExporterTests {
 
 	}
 
-	public static class JsonConversionEndpoint
+	public static class JsonMapConversionEndpoint
 			extends AbstractEndpoint<Map<String, Object>> {
 
-		public JsonConversionEndpoint() {
-			super("json-conversion");
+		public JsonMapConversionEndpoint() {
+			super("json-map-conversion");
 		}
 
 		@Override
@@ -277,6 +295,20 @@ public class EndpointMBeanExporterTests {
 			Map<String, Object> result = new LinkedHashMap<String, Object>();
 			result.put("date", new Date());
 			return result;
+		}
+
+	}
+
+	public static class JsonListConversionEndpoint
+			extends AbstractEndpoint<List<Object>> {
+
+		public JsonListConversionEndpoint() {
+			super("json-list-conversion");
+		}
+
+		@Override
+		public List<Object> invoke() {
+			return Arrays.<Object>asList(new Date());
 		}
 
 	}
