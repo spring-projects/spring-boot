@@ -1437,6 +1437,21 @@ See _<<spring-boot-features.adoc#boot-features-configure-datasource>>_ in the
 {sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[`DataSourceAutoConfiguration`]
 class for more details.
 
+[TIP]
+====
+You could also do that if you want to configure a JNDI data-source.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean(destroyMethod="")
+	@ConfigurationProperties(prefix="datasource.mine")
+	public DataSource dataSource() throws Exception {
+		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
+		return dataSourceLookup.getDataSource("java:comp/env/jdbc/YourDS");
+	}
+----
+====
+
 
 
 [[howto-two-datasources]]
