@@ -24,9 +24,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.core.annotation.AliasFor;
 
 /**
@@ -46,7 +49,7 @@ import org.springframework.core.annotation.AliasFor;
 @Inherited
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@ComponentScan
+@ComponentScan(excludeFilters = @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class))
 public @interface SpringBootApplication {
 
 	/**
