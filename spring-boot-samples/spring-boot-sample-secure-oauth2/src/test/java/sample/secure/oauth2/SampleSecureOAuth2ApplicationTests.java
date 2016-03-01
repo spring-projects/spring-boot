@@ -108,7 +108,7 @@ public class SampleSecureOAuth2ApplicationTests {
 				.perform(get("/flights/1").accept(MediaTypes.HAL_JSON)
 						.header("Authorization", "Bearer " + accessToken))
 				.andExpect(
-						header().string("Content-Type", MediaTypes.HAL_JSON.toString()))
+						header().string("Content-Type", MediaTypes.HAL_JSON.toString() + ";charset=UTF-8"))
 				.andExpect(status().isOk()).andDo(print()).andReturn();
 
 		Flight flight = this.objectMapper.readValue(
