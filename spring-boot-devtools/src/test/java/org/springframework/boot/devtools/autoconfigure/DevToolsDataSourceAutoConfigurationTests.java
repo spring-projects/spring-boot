@@ -20,9 +20,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -35,6 +37,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -48,7 +51,7 @@ public class DevToolsDataSourceAutoConfigurationTests {
 
 	@Test
 	public void embeddedDatabaseIsNotShutDown() throws SQLException {
-		ConfigurableApplicationContext context = createContext("org.h2.Driver",
+		ConfigurableApplicationContext context = createContextWithDriver("org.h2.Driver",
 				EmbeddedDatabaseConfiguration.class);
 		DataSource dataSource = context.getBean(DataSource.class);
 		context.close();
@@ -57,8 +60,8 @@ public class DevToolsDataSourceAutoConfigurationTests {
 
 	@Test
 	public void externalDatabaseIsNotShutDown() throws SQLException {
-		ConfigurableApplicationContext context = createContext("org.postgresql.Driver",
-				DataSourceConfiguration.class);
+		ConfigurableApplicationContext context = createContextWithDriver(
+				"org.postgresql.Driver", DataSourceConfiguration.class);
 		DataSource dataSource = context.getBean(DataSource.class);
 		context.close();
 		verify(dataSource, times(0)).getConnection();
@@ -66,7 +69,35 @@ public class DevToolsDataSourceAutoConfigurationTests {
 
 	@Test
 	public void nonEmbeddedInMemoryDatabaseIsShutDown() throws SQLException {
-		ConfigurableApplicationContext context = createContext("org.h2.Driver",
+		ConfigurableApplicationContext context = createContextWithDriver("org.h2.Driver",
+				DataSourceConfiguration.class);
+		DataSource dataSource = context.getBean(DataSource.class);
+		Connection connection = mock(Connection.class);
+		given(dataSource.getConnection()).willReturn(connection);
+		Statement statement = mock(Statement.class);
+		given(connection.createStatement()).willReturn(statement);
+		context.close();
+		verify(statement).execute("SHUTDOWN");
+	}
+
+	@Test
+	public void nonEmbeddedInMemoryDatabaseConfiguredWithDriverIsShutDown()
+			throws SQLException {
+		ConfigurableApplicationContext context = createContextWithDriver("org.h2.Driver",
+				DataSourceConfiguration.class);
+		DataSource dataSource = context.getBean(DataSource.class);
+		Connection connection = mock(Connection.class);
+		given(dataSource.getConnection()).willReturn(connection);
+		Statement statement = mock(Statement.class);
+		given(connection.createStatement()).willReturn(statement);
+		context.close();
+		verify(statement).execute("SHUTDOWN");
+	}
+
+	@Test
+	public void nonEmbeddedInMemoryDatabaseConfiguredWithUrlIsShutDown()
+			throws SQLException {
+		ConfigurableApplicationContext context = createContextWithUrl("jdbc:h2:mem:test",
 				DataSourceConfiguration.class);
 		DataSource dataSource = context.getBean(DataSource.class);
 		Connection connection = mock(Connection.class);
@@ -85,13 +116,40 @@ public class DevToolsDataSourceAutoConfigurationTests {
 				.isEmpty();
 	}
 
-	private ConfigurableApplicationContext createContext(String driver,
+	@Test
+	public void entityManagerFactoryIsClosedBeforeDatabaseIsShutDown()
+			throws SQLException {
+		ConfigurableApplicationContext context = createContextWithUrl("jdbc:h2:mem:test",
+				DataSourceConfiguration.class, EntityManagerFactoryConfiguration.class);
+		DataSource dataSource = context.getBean(DataSource.class);
+		Connection connection = mock(Connection.class);
+		given(dataSource.getConnection()).willReturn(connection);
+		Statement statement = mock(Statement.class);
+		given(connection.createStatement()).willReturn(statement);
+		EntityManagerFactory entityManagerFactory = context
+				.getBean(EntityManagerFactory.class);
+		context.close();
+		InOrder inOrder = inOrder(statement, entityManagerFactory);
+		inOrder.verify(statement).execute("SHUTDOWN");
+		inOrder.verify(entityManagerFactory).close();
+	}
+
+	private ConfigurableApplicationContext createContextWithDriver(String driver,
+			Class<?>... classes) {
+		return createContext("spring.datasource.driver-class-name:" + driver, classes);
+	}
+
+	private ConfigurableApplicationContext createContextWithUrl(String url,
+			Class<?>... classes) {
+		return createContext("spring.datasource.url:" + url, classes);
+	}
+
+	private ConfigurableApplicationContext createContext(String property,
 			Class<?>... classes) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(classes);
 		context.register(DevToolsDataSourceAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(context,
-				"spring.datasource.driver-class-name:" + driver);
+		EnvironmentTestUtils.addEnvironment(context, property);
 		context.refresh();
 		return context;
 	}
@@ -111,7 +169,7 @@ public class DevToolsDataSourceAutoConfigurationTests {
 	static class DataSourceConfiguration {
 
 		@Bean
-		public DataSource in() {
+		public DataSource dataSource() {
 			return mock(DataSource.class);
 		}
 
@@ -121,10 +179,19 @@ public class DevToolsDataSourceAutoConfigurationTests {
 	static class NoDataSourcePropertiesConfiguration {
 
 		@Bean
-		public DataSource in() {
+		public DataSource dataSource() {
 			return mock(DataSource.class);
 		}
 
+	}
+
+	@Configuration
+	static class EntityManagerFactoryConfiguration {
+
+		@Bean
+		public EntityManagerFactory entityManagerFactory() {
+			return mock(EntityManagerFactory.class);
+		}
 	}
 
 }
