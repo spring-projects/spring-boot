@@ -64,6 +64,8 @@ public class EnableAutoConfigurationImportSelector
 		implements DeferredImportSelector, BeanClassLoaderAware, ResourceLoaderAware,
 		BeanFactoryAware, EnvironmentAware, Ordered {
 
+	private static final String[] NO_IMPORTS = {};
+
 	private ConfigurableListableBeanFactory beanFactory;
 
 	private Environment environment;
@@ -74,6 +76,9 @@ public class EnableAutoConfigurationImportSelector
 
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
+		if (!isEnabled(metadata)) {
+			return NO_IMPORTS;
+		}
 		try {
 			AnnotationAttributes attributes = getAttributes(metadata);
 			List<String> configurations = getCandidateConfigurations(metadata,
@@ -88,6 +93,15 @@ public class EnableAutoConfigurationImportSelector
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	protected boolean isEnabled(AnnotationMetadata metadata) {
+		if (getClass().equals(EnableAutoConfigurationImportSelector.class)) {
+			return this.environment.getProperty(
+					EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, Boolean.class,
+					true);
+		}
+		return true;
 	}
 
 	/**
