@@ -852,20 +852,35 @@ content into your application; rather pick only the properties that you need.
 	spring.redis.host=localhost # Redis server host.
 	spring.redis.password= # Login password of the redis server.
 	spring.redis.ssl=false # Enable SSL support.
-	spring.redis.pool.max-active=8 # Max number of connections that can be allocated by the pool at a given time. Use a negative value for no limit.
-	spring.redis.pool.max-idle=8 # Max number of "idle" connections in the pool. Use a negative value to indicate an unlimited number of idle connections.
-	spring.redis.pool.max-wait=-1 # Maximum amount of time (in milliseconds) a connection allocation should block before throwing an exception when the pool is exhausted. Use a negative value to block indefinitely.
-	spring.redis.pool.min-idle=0 # Target for the minimum number of idle connections to maintain in the pool. This setting only has an effect if it is positive.
+	spring.redis.jedis.pool.max-active=8 # Max number of connections that can be allocated by the pool at a given time. Use a negative value for no limit.
+	spring.redis.jedis.pool.max-idle=8 # Max number of "idle" connections in the pool. Use a negative value to indicate an unlimited number of idle connections.
+	spring.redis.jedis.pool.max-wait=-1 # Maximum amount of time (in milliseconds) a connection allocation should block before throwing an exception when the pool is exhausted. Use a negative value to block indefinitely.
+	spring.redis.jedis.pool.min-idle=0 # Target for the minimum number of idle connections to maintain in the pool. This setting only has an effect if it is positive.
 	spring.redis.port=6379 # Redis server port.
 	spring.redis.sentinel.master= # Name of Redis server.
 	spring.redis.sentinel.nodes= # Comma-separated list of host:port pairs.
 	spring.redis.timeout=0 # Connection timeout in milliseconds.
+	spring.redis.ssl.enabled=false # Enable SSL support.
+	spring.redis.ssl.verify-peer=true # Enable SSL peer verification.
+	spring.redis.ssl.start-tls=false # Enable StartTLS support.
+
+	# REDIS JEDIS DRIVER
+	spring.redis.jedis.pool.max-active=8 # Max number of connections that can be allocated by the pool at a given time. Use a negative value for no limit.
+	spring.redis.jedis.pool.max-idle=8 # Max number of "idle" connections in the pool. Use a negative value to indicate an unlimited number of idle connections.
+	spring.redis.jedis.pool.max-wait=-1 # Maximum amount of time (in milliseconds) a connection allocation should block before throwing an exception when the pool is exhausted. Use a negative value to block indefinitely.
+	spring.redis.jedis.pool.min-idle=0 # Target for the minimum number of idle connections to maintain in the pool. This setting only has an effect if it is positive.
+
+	# REDIS LETTUCE DRIVER
+	spring.redis.lettuce.pool.max-active=8 # Max number of connections that can be allocated by the pool at a given time. Use a negative value for no limit.
+	spring.redis.lettuce.pool.max-idle=8 # Max number of "idle" connections in the pool. Use a negative value to indicate an unlimited number of idle connections.
+	spring.redis.lettuce.pool.max-wait=-1 # Maximum amount of time (in milliseconds) a connection allocation should block before throwing an exception when the pool is exhausted. Use a negative value to block indefinitely.
+	spring.redis.lettuce.pool.min-idle=0 # Target for the minimum number of idle connections to maintain in the pool. This setting only has an effect if it is positive.
+	spring.redis.lettuce.shutdown-timeout=2000 # Shutdown timeout in milliseconds.
+
 
 	# TRANSACTION ({sc-spring-boot-autoconfigure}/transaction/TransactionProperties.{sc-ext}[TransactionProperties])
 	spring.transaction.default-timeout= # Default transaction timeout in seconds.
 	spring.transaction.rollback-on-commit-failure= # Perform the rollback on commit failures.
-
-
 
 	# ----------------------------------------
 	# INTEGRATION PROPERTIES

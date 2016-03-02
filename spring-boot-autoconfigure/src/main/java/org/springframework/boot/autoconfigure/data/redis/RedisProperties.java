@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.redis;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for Redis.
@@ -27,6 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Christoph Strobl
  * @author Eddú Meléndez
  * @author Marco Aust
+ * @author Mark Paluch
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
@@ -71,6 +73,16 @@ public class RedisProperties {
 	private Sentinel sentinel;
 
 	private Cluster cluster;
+
+	/**
+	 * Jedis client properties.
+	 */
+	private Jedis jedis;
+
+	/**
+	 * Lettuce client properties.
+	 */
+	private Lettuce lettuce;
 
 	public int getDatabase() {
 		return this.database;
@@ -136,6 +148,7 @@ public class RedisProperties {
 		this.sentinel = sentinel;
 	}
 
+	@DeprecatedConfigurationProperty(reason = "Moved to client-specific properties", replacement = "spring.redis.jedis.pool")
 	public Pool getPool() {
 		return this.pool;
 	}
@@ -150,6 +163,22 @@ public class RedisProperties {
 
 	public void setCluster(Cluster cluster) {
 		this.cluster = cluster;
+	}
+
+	public Jedis getJedis() {
+		return jedis;
+	}
+
+	public void setJedis(Jedis jedis) {
+		this.jedis = jedis;
+	}
+
+	public Lettuce getLettuce() {
+		return lettuce;
+	}
+
+	public void setLettuce(Lettuce lettuce) {
+		this.lettuce = lettuce;
 	}
 
 	/**
@@ -280,6 +309,59 @@ public class RedisProperties {
 
 		public void setNodes(String nodes) {
 			this.nodes = nodes;
+		}
+
+	}
+
+	/**
+	 * Jedis client properties.
+	 */
+	public static class Jedis {
+
+		/**
+		 * Jedis pool configuration.
+		 */
+		private Pool pool;
+
+		public Pool getPool() {
+			return this.pool;
+		}
+
+		public void setPool(Pool pool) {
+			this.pool = pool;
+		}
+
+	}
+
+	/**
+	 * Lettuce client properties.
+	 */
+	public static class Lettuce {
+
+		/**
+		 * Shutdown timeout in milliseconds for lettuce.
+		 */
+		private int shutdownTimeout = 2000;
+
+		/**
+		 * Lettuce pool configuration.
+		 */
+		private Pool pool;
+
+		public int getShutdownTimeout() {
+			return this.shutdownTimeout;
+		}
+
+		public void setShutdownTimeout(int shutdownTimeout) {
+			this.shutdownTimeout = shutdownTimeout;
+		}
+
+		public Pool getPool() {
+			return this.pool;
+		}
+
+		public void setPool(Pool pool) {
+			this.pool = pool;
 		}
 
 	}

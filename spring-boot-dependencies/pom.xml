@@ -125,6 +125,7 @@
 		<junit.version>4.12</junit.version>
 		<lettuce.version>5.0.0.BUILD-SNAPSHOT</lettuce.version>
 		<liquibase.version>3.5.3</liquibase.version>
+		<lettuce.version>5.0.0.BUILD-SNAPSHOT</lettuce.version>
 		<log4j2.version>2.8.2</log4j2.version>
 		<logback.version>1.2.3</logback.version>
 		<lombok.version>1.16.16</lombok.version>
@@ -2336,6 +2337,11 @@
 				<groupId>redis.clients</groupId>
 				<artifactId>jedis</artifactId>
 				<version>${jedis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.lettuce</groupId>
+				<artifactId>lettuce-core</artifactId>
+				<version>${lettuce.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>wsdl4j</groupId>
