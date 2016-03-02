@@ -27,6 +27,8 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.devtools.autoconfigure.DevToolsDataSourceAutoConfiguration.DevToolsDataSourceCondition;
@@ -34,6 +36,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for DevTools-specific
@@ -52,6 +56,23 @@ public class DevToolsDataSourceAutoConfiguration {
 			DataSource dataSource, DataSourceProperties dataSourceProperties) {
 		return new NonEmbeddedInMemoryDatabaseShutdownExecutor(dataSource,
 				dataSourceProperties);
+	}
+
+	/**
+	 * Additional configuration to ensure that
+	 * {@link javax.persistence.EntityManagerFactory} beans depend on the
+	 * {@code inMemoryDatabaseShutdownExecutor} bean.
+	 */
+	@Configuration
+	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
+	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
+	static class DatabaseShutdownExecutorJpaDependencyConfiguration
+			extends EntityManagerFactoryDependsOnPostProcessor {
+
+		DatabaseShutdownExecutorJpaDependencyConfiguration() {
+			super("inMemoryDatabaseShutdownExecutor");
+		}
+
 	}
 
 	static final class NonEmbeddedInMemoryDatabaseShutdownExecutor
