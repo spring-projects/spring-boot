@@ -80,13 +80,13 @@ class NoUniqueBeanDefinitionExceptionFailureAnalyzer
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				message.append(String.format(
-						"\t- %s: a programtically registered singleton", beanName));
+						"\t- %s: a programmatically registered singleton", beanName));
 			}
 
 		}
 		return new FailureAnalysis(message.toString(),
 				"Consider marking one of the beans as @Primary, updating the consumer to"
-						+ " accept multiple beans, or using @Qualifer to identify the"
+						+ " accept multiple beans, or using @Qualifier to identify the"
 						+ " bean that should be consumed",
 				cause);
 	}

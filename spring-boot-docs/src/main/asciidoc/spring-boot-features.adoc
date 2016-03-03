@@ -772,7 +772,7 @@ definitions by simply listing the properties classes directly in the
 
 [NOTE]
 ====
-When `@ConfigurationProperties` bean are registered that way, the bean will have a
+When `@ConfigurationProperties` bean is registered that way, the bean will have a
 conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix
 specified in the `@ConfigurationProperties` annotation and <fqn> the fully qualified
 name of the bean. If the annotation does not provide any prefix, only the fully qualified
@@ -2002,7 +2002,7 @@ password, printed at INFO level when the application starts up)
 	Using default security password: 78fa095d-3f4c-48b1-ad50-e24c31d5cf35
 ----
 
-NOTE: If you fine tune your logging configuration, ensure that the
+NOTE: If you fine-tune your logging configuration, ensure that the
 `org.springframework.boot.autoconfigure.security` category is set to log `INFO` messages,
 otherwise the default password will not be printed.
 
@@ -2372,7 +2372,7 @@ loadable.
 
 See {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[`DataSourceProperties`]
 for more of the supported options. These are the standard options that work regardless of
-the actual implementation. It is also possible to fine tune implementation-specific
+the actual implementation. It is also possible to fine-tune implementation-specific
 settings using their respective prefix (`+spring.datasource.tomcat*+`,
 `+spring.datasource.hikari+`, `+spring.datasource.dbcp*+` and
 `+spring.datasource.dbcp2*+`), refer to the documentation of the connection pool

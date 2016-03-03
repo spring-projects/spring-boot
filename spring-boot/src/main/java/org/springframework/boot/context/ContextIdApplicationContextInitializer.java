@@ -71,7 +71,7 @@ public class ContextIdApplicationContextInitializer implements
 	 * <li>{@code server.port}</li>
 	 * <li>{@code PORT}</li>
 	 * </ul>
-	 * This order allows favors a platform defined index over any user defined value.
+	 * This order favors a platform defined index over any user defined value.
 	 */
 	private static final String INDEX_PATTERN = "${vcap.application.instance_index:${spring.application.index:${server.port:${PORT:null}}}}";
 
