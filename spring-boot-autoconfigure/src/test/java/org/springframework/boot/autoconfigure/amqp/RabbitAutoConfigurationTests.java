@@ -154,10 +154,10 @@ public class RabbitAutoConfigurationTests {
 	@Test
 	public void testConnectionFactoryCacheSettings() {
 		load(TestConfiguration.class,
-				"spring.rabbitmq.channelCacheSize=23",
-				"spring.rabbitmq.cacheMode=CONNECTION",
-				"spring.rabbitmq.connectionCacheSize=2",
-				"spring.rabbitmq.channelCheckoutTimeout=1000");
+				"spring.rabbitmq.cache.channel.size=23",
+				"spring.rabbitmq.cache.channel.checkoutTimeout=1000",
+				"spring.rabbitmq.cache.connection.mode=CONNECTION",
+				"spring.rabbitmq.cache.connection.size=2");
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
 		DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);

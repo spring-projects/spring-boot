@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,26 +78,9 @@ public class RabbitProperties {
 	private Integer requestedHeartbeat;
 
 	/**
-	 * The number of channels to retain in the cache, or max channels per connection
-	 * when channelCheckoutTimeout is > 0.
+	 * Cache configuration.
 	 */
-	private Integer channelCacheSize;
-
-	/**
-	 * The connection factory cache mode; CHANNEL (default) or CONNECTION.
-	 */
-	private CacheMode cacheMode;
-
-	/**
-	 * The number of connections to cache (only applies when cacheMode is CONNECTION).
-	 */
-	private Integer connectionCacheSize;
-
-	/**
-	 * The number of milliseconds to wait to obtain a channel if the channelCacheSize
-	 * has been reached; if 0, always create a new channel.
-	 */
-	private Long channelCheckoutTimeout;
+	private final Cache cache = new Cache();
 
 	/**
 	 * Listener container configuration.
@@ -210,36 +193,8 @@ public class RabbitProperties {
 		this.requestedHeartbeat = requestedHeartbeat;
 	}
 
-	public Integer getChannelCacheSize() {
-		return this.channelCacheSize;
-	}
-
-	public void setChannelCacheSize(Integer channelCacheSize) {
-		this.channelCacheSize = channelCacheSize;
-	}
-
-	public CacheMode getCacheMode() {
-		return this.cacheMode;
-	}
-
-	public void setCacheMode(CacheMode cacheMode) {
-		this.cacheMode = cacheMode;
-	}
-
-	public Integer getConnectionCacheSize() {
-		return this.connectionCacheSize;
-	}
-
-	public void setConnectionCacheSize(Integer connectionCacheSize) {
-		this.connectionCacheSize = connectionCacheSize;
-	}
-
-	public Long getChannelCheckoutTimeout() {
-		return this.channelCheckoutTimeout;
-	}
-
-	public void setChannelCheckoutTimeout(Long channelCheckoutTimeout) {
-		this.channelCheckoutTimeout = channelCheckoutTimeout;
+	public Cache getCache() {
+		return this.cache;
 	}
 
 	public Listener getListener() {
@@ -311,6 +266,84 @@ public class RabbitProperties {
 
 		public void setTrustStorePassword(String trustStorePassword) {
 			this.trustStorePassword = trustStorePassword;
+		}
+
+	}
+
+	public static class Cache {
+
+		private final Channel channel = new Channel();
+
+		private final Connection connection = new Connection();
+
+		public Channel getChannel() {
+			return this.channel;
+		}
+
+		public Connection getConnection() {
+			return this.connection;
+		}
+
+		public static class Channel {
+
+			/**
+			 * Number of channels to retain in the cache. When "check-timeout" > 0,  max
+			 * channels per connection.
+			 */
+			private Integer size;
+
+			/**
+			 * Number of milliseconds to wait to obtain a channel if the cache size
+			 * has been reached. If 0, always create a new channel.
+			 */
+			private Long checkoutTimeout;
+
+			public Integer getSize() {
+				return this.size;
+			}
+
+			public void setSize(Integer size) {
+				this.size = size;
+			}
+
+			public Long getCheckoutTimeout() {
+				return this.checkoutTimeout;
+			}
+
+			public void setCheckoutTimeout(Long checkoutTimeout) {
+				this.checkoutTimeout = checkoutTimeout;
+			}
+
+		}
+
+		public static class Connection {
+
+			/**
+			 * Connection factory cache mode.
+			 */
+			private CacheMode mode = CacheMode.CHANNEL;
+
+			/**
+			 * Number of connections to cache. Only applies when mode is CONNECTION.
+			 */
+			private Integer size;
+
+			public CacheMode getMode() {
+				return this.mode;
+			}
+
+			public void setMode(CacheMode mode) {
+				this.mode = mode;
+			}
+
+			public Integer getSize() {
+				return this.size;
+			}
+
+			public void setSize(Integer size) {
+				this.size = size;
+			}
+
 		}
 
 	}

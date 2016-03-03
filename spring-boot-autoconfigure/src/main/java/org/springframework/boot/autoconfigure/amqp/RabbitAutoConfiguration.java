@@ -139,17 +139,17 @@ public class RabbitAutoConfiguration {
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
 					factory.getObject());
 			connectionFactory.setAddresses(config.getAddresses());
-			if (config.getChannelCacheSize() != null) {
-				connectionFactory.setChannelCacheSize(config.getChannelCacheSize());
+			if (config.getCache().getChannel().getSize() != null) {
+				connectionFactory.setChannelCacheSize(config.getCache().getChannel().getSize());
 			}
-			if (config.getCacheMode() != null) {
-				connectionFactory.setCacheMode(config.getCacheMode());
+			if (config.getCache().getConnection().getMode() != null) {
+				connectionFactory.setCacheMode(config.getCache().getConnection().getMode());
 			}
-			if (config.getConnectionCacheSize() != null) {
-				connectionFactory.setConnectionCacheSize(config.getConnectionCacheSize());
+			if (config.getCache().getConnection().getSize() != null) {
+				connectionFactory.setConnectionCacheSize(config.getCache().getConnection().getSize());
 			}
-			if (config.getChannelCheckoutTimeout() != null) {
-				connectionFactory.setChannelCheckoutTimeout(config.getChannelCheckoutTimeout());
+			if (config.getCache().getChannel().getCheckoutTimeout() != null) {
+				connectionFactory.setChannelCheckoutTimeout(config.getCache().getChannel().getCheckoutTimeout());
 			}
 			return connectionFactory;
 		}

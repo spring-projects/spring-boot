@@ -756,6 +756,10 @@ content into your application; rather pick only the properties that you need.
 
 	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
 	spring.rabbitmq.addresses= # Comma-separated list of addresses to which the client should connect.
+	spring.rabbitmq.cache.channel.checkout-timeout= # Number of milliseconds to wait to obtain a channel if the cache size has been reached.
+	spring.rabbitmq.cache.channel.size= # Number of channels to retain in the cache.
+	spring.rabbitmq.cache.connection.mode= # Connection factory cache mode.
+	spring.rabbitmq.cache.connection.size= # Number of connections to cache.
 	spring.rabbitmq.dynamic=true # Create an AmqpAdmin bean.
 	spring.rabbitmq.host=localhost # RabbitMQ host.
 	spring.rabbitmq.listener.acknowledge-mode= # Acknowledge mode of container.
@@ -774,10 +778,6 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.ssl.trust-store-password= # Password used to access the trust store.
 	spring.rabbitmq.username= # Login user to authenticate to the broker.
 	spring.rabbitmq.virtual-host= # Virtual host to use when connecting to the broker.
-	spring.rabbitmq.cacheMode= # The connection factory cache mode; CHANNEL (default) or CONNECTION.
-	spring.rabbitmq.channelCacheSize= # The number of channels to retain in the cache, or max channels per connection when `channelCheckoutTimeout` is > 0.
-	spring.rabbitmq.connectionCacheSize= # The number of connections to cache (only applies when cacheMode is CONNECTION).
-	spring.rabbitmq.channelCheckoutTimeout= # The number of milliseconds to wait to obtain a channel if the channelCacheSize has been reached; if 0, always create a new channel.
 
 	# ----------------------------------------
 	# ACTUATOR PROPERTIES
