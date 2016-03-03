@@ -235,13 +235,12 @@ public class JmsAutoConfigurationTests {
 		assertThat(listenerContainer.isAutoStartup()).isFalse();
 	}
 
-
 	@Test
 	public void testJmsTemplateWithMessageConverters() {
 		load(MessageConvertersConfiguration.class);
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
-		assertThat(jmsTemplate.getMessageConverter()).isSameAs(
-				this.context.getBean("myMessageConverter"));
+		assertThat(jmsTemplate.getMessageConverter())
+				.isSameAs(this.context.getBean("myMessageConverter"));
 	}
 
 	@Test

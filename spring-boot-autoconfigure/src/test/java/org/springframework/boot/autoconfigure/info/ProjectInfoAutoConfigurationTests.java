@@ -36,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ProjectInfoAutoConfigurationTests {
 
-
 	private AnnotationConfigApplicationContext context;
 
 	@After
@@ -49,8 +48,7 @@ public class ProjectInfoAutoConfigurationTests {
 	@Test
 	public void gitInfoUnavailableIfResourceNotAvailable() {
 		load();
-		Map<String, GitInfo> beans = this.context
-				.getBeansOfType(GitInfo.class);
+		Map<String, GitInfo> beans = this.context.getBeansOfType(GitInfo.class);
 		assertThat(beans).hasSize(0);
 	}
 
@@ -113,5 +111,7 @@ public class ProjectInfoAutoConfigurationTests {
 		public GitInfo customGitInfo() {
 			return new GitInfo();
 		}
+
 	}
+
 }

@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringApplicationConfiguration(SampleActuatorLog4J2Application.class)
 @WebIntegrationTest(randomPort = true)
 @DirtiesContext
-public class SampleActuatorApplicationTests {
+public class SampleActuatorLog4J2ApplicationTests {
 
 	@Value("${local.server.port}")
 	private int port;

@@ -42,11 +42,11 @@ public abstract class AbstractEnvironmentInfoContributor implements InfoContribu
 		return this.environment;
 	}
 
-
 	/**
 	 * Extract the keys from the environment using the specified {@code prefix}. The
 	 * prefix won't be included.
-	 * <p>Any key that starts with the {@code prefix} will be included
+	 * <p>
+	 * Any key that starts with the {@code prefix} will be included
 	 * @param prefix the prefix to use
 	 * @return the keys from the environment matching the prefix
 	 */
@@ -58,13 +58,14 @@ public abstract class AbstractEnvironmentInfoContributor implements InfoContribu
 
 	/**
 	 * Bind the specified {@code target} from the environment using the {@code prefix}.
-	 * <p>Any key that starts with the {@code prefix} will be bound to the {@code target}.
+	 * <p>
+	 * Any key that starts with the {@code prefix} will be bound to the {@code target}.
 	 * @param prefix the prefix to use
 	 * @param target the object to bind to
 	 */
 	protected void bindEnvironmentTo(String prefix, Object target) {
-		PropertiesConfigurationFactory<Object> factory =
-				new PropertiesConfigurationFactory<Object>(target);
+		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
+				target);
 		factory.setTargetName(prefix);
 		factory.setPropertySources(this.environment.getPropertySources());
 		try {

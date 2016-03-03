@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for standard {@link InfoContributor}s.
+ * {@link EnableAutoConfiguration Auto-configuration} for standard
+ * {@link InfoContributor}s.
  *
  * @author Meang Akira Tanaka
  * @author Stephane Nicoll
@@ -53,7 +54,8 @@ public class InfoContributorAutoConfiguration {
 	@Bean
 	@ConditionalOnEnabledInfoContributor("env")
 	@Order(DEFAULT_ORDER)
-	public EnvironmentInfoContributor envInfoContributor(ConfigurableEnvironment environment) {
+	public EnvironmentInfoContributor envInfoContributor(
+			ConfigurableEnvironment environment) {
 		return new EnvironmentInfoContributor(environment);
 	}
 

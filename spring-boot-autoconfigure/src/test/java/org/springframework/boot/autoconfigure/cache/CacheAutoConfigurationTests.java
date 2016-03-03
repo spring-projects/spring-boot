@@ -609,7 +609,8 @@ public class CacheAutoConfigurationTests {
 		Cache foo = cacheManager.getCache("foo");
 		foo.get("1");
 		// See next tests: no spec given so stats should be disabled
-		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount()).isEqualTo(0L);
+		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount())
+				.isEqualTo(0L);
 	}
 
 	@Test
@@ -635,17 +636,19 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void caffeineCacheExplicitWithSpecString() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=caffeine",
-				"spring.cache.caffeine.spec=recordStats", "spring.cache.cacheNames[0]=foo",
-				"spring.cache.cacheNames[1]=bar");
+				"spring.cache.caffeine.spec=recordStats",
+				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
 		validateCaffeineCacheWithStats();
 	}
 
 	private void validateCaffeineCacheWithStats() {
-		CaffeineCacheManager cacheManager = validateCacheManager(CaffeineCacheManager.class);
+		CaffeineCacheManager cacheManager = validateCacheManager(
+				CaffeineCacheManager.class);
 		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
 		Cache foo = cacheManager.getCache("foo");
 		foo.get("1");
-		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount()).isEqualTo(1L);
+		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount())
+				.isEqualTo(1L);
 	}
 
 	private <T extends CacheManager> T validateCacheManager(Class<T> type) {
@@ -866,7 +869,8 @@ public class CacheAutoConfigurationTests {
 
 	@Configuration
 	@EnableCaching
-	static class CustomCacheResolverFromSupportConfiguration extends CachingConfigurerSupport {
+	static class CustomCacheResolverFromSupportConfiguration
+			extends CachingConfigurerSupport {
 
 		@Override
 		@Bean

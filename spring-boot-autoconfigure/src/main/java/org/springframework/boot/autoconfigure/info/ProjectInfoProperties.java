@@ -36,16 +36,15 @@ public class ProjectInfoProperties {
 		return this.git;
 	}
 
-
 	/**
 	 * Make sure that the "spring.git.properties" legacy key is used by default.
 	 * @param defaultGitLocation the default git location to use
 	 */
 	@Autowired
-	void setDefaultGitLocation(@Value("${spring.git.properties:classpath:git.properties}") Resource defaultGitLocation) {
+	void setDefaultGitLocation(
+			@Value("${spring.git.properties:classpath:git.properties}") Resource defaultGitLocation) {
 		getGit().setLocation(defaultGitLocation);
 	}
-
 
 	/**
 	 * Git specific info properties.

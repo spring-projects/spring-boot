@@ -107,6 +107,7 @@ public class InfoContributorAutoConfigurationTests {
 			gitInfo.getCommit().setId("abcdefg");
 			return gitInfo;
 		}
+
 	}
 
 	@Configuration
@@ -120,6 +121,7 @@ public class InfoContributorAutoConfigurationTests {
 				}
 			};
 		}
+
 	}
 
 }

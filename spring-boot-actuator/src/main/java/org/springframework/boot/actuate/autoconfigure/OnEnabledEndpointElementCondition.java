@@ -24,8 +24,8 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Base endpoint element condition. An element can be disabled globally via the
- * `defaults` name or individually via the name of the element.
+ * Base endpoint element condition. An element can be disabled globally via the `defaults`
+ * name or individually via the name of the element.
  *
  * @author Stephane Nicoll
  */
@@ -78,7 +78,8 @@ abstract class OnEnabledEndpointElementCondition extends SpringBootCondition {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 				context.getEnvironment(), this.prefix + "defaults.");
 		boolean match = Boolean.valueOf(resolver.getProperty("enabled", "true"));
-		return new ConditionOutcome(match, getDefaultEndpointElementOutcomeMessage(match));
+		return new ConditionOutcome(match,
+				getDefaultEndpointElementOutcomeMessage(match));
 	}
 
 }

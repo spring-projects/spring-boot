@@ -168,7 +168,8 @@ public class EndpointAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.info.git.location:classpath:nonexistent");
-		this.context.register(InfoContributorAutoConfiguration.class, EndpointAutoConfiguration.class);
+		this.context.register(InfoContributorAutoConfiguration.class,
+				EndpointAutoConfiguration.class);
 		this.context.refresh();
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
 		assertThat(endpoint).isNotNull();
@@ -179,7 +180,8 @@ public class EndpointAutoConfigurationTests {
 	public void testInfoEndpointOrdering() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, "info.name:foo");
-		this.context.register(CustomInfoContributorsConfig.class, ProjectInfoAutoConfiguration.class,
+		this.context.register(CustomInfoContributorsConfig.class,
+				ProjectInfoAutoConfiguration.class,
 				InfoContributorAutoConfiguration.class, EndpointAutoConfiguration.class);
 		this.context.refresh();
 
@@ -265,8 +267,8 @@ public class EndpointAutoConfigurationTests {
 			GitFullInfoContributor(Resource location) throws BindException, IOException {
 				this.content = new LinkedHashMap<String, Object>();
 				if (location.exists()) {
-					PropertiesConfigurationFactory<Map<String, Object>> factory
-							= new PropertiesConfigurationFactory<Map<String, Object>>(this.content);
+					PropertiesConfigurationFactory<Map<String, Object>> factory = new PropertiesConfigurationFactory<Map<String, Object>>(
+							this.content);
 					factory.setTargetName("git");
 					Properties gitInfoProperties = PropertiesLoaderUtils
 							.loadProperties(location);
@@ -281,7 +283,9 @@ public class EndpointAutoConfigurationTests {
 					builder.withDetail("git", this.content);
 				}
 			}
+
 		}
 
 	}
+
 }

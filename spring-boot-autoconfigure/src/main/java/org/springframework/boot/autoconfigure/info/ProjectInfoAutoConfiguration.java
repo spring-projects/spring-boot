@@ -63,17 +63,18 @@ public class ProjectInfoAutoConfiguration {
 
 	}
 
-
 	static class GitResourceAvailableCondition extends SpringBootCondition {
 
 		private final ResourceLoader defaultResourceLoader = new DefaultResourceLoader();
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
 			ResourceLoader loader = context.getResourceLoader() == null
 					? this.defaultResourceLoader : context.getResourceLoader();
 			PropertyResolver propertyResolver = context.getEnvironment();
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(propertyResolver, "spring.info.git.");
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
+					propertyResolver, "spring.info.git.");
 			String location = resolver.getProperty("location");
 			if (location == null) {
 				resolver = new RelaxedPropertyResolver(propertyResolver, "spring.git.");
@@ -83,8 +84,10 @@ public class ProjectInfoAutoConfiguration {
 				}
 			}
 			boolean match = loader.getResource(location).exists();
-			return new ConditionOutcome(match, "Git info " + (match ? "found" : "not found") + " at " + location);
+			return new ConditionOutcome(match,
+					"Git info " + (match ? "found" : "not found") + " at " + location);
 		}
+
 	}
 
 }

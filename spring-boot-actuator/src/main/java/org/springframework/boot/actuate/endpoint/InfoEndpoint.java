@@ -47,7 +47,6 @@ public class InfoEndpoint extends AbstractEndpoint<Info> {
 		this.infoContributors = infoContributors;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public Info invoke() {
 		Info.Builder builder = new Info.Builder();

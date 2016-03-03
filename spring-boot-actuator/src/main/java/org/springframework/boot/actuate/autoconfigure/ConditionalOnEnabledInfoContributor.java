@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Conditional;
  * @since 1.4.0
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
 @Conditional(OnEnabledInfoContributorCondition.class)
 public @interface ConditionalOnEnabledInfoContributor {

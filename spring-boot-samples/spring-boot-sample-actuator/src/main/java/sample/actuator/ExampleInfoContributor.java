@@ -27,8 +27,7 @@ public class ExampleInfoContributor implements InfoContributor {
 
 	@Override
 	public void contribute(Info.Builder builder) {
-		builder.withDetail("example",
-				Collections.singletonMap("someKey", "someValue"));
+		builder.withDetail("example", Collections.singletonMap("someKey", "someValue"));
 	}
 
 }

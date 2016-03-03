@@ -45,7 +45,6 @@ public class SimpleInfoContributorTests {
 		assertThat(info.get("test")).isSameAs(o);
 	}
 
-
 	private static Info contributeFrom(String prefix, Object detail) {
 		SimpleInfoContributor contributor = new SimpleInfoContributor(prefix, detail);
 		Info.Builder builder = new Info.Builder();

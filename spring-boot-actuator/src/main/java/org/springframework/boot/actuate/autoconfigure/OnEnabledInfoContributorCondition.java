@@ -39,4 +39,5 @@ class OnEnabledInfoContributorCondition extends OnEnabledEndpointElementConditio
 		return "All default info contributors are " + (match ? "enabled" : "disabled")
 				+ " by default";
 	}
+
 }

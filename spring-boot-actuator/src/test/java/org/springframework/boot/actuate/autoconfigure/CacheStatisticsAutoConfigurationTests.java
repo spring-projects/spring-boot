@@ -121,8 +121,8 @@ public class CacheStatisticsAutoConfigurationTests {
 	@Test
 	public void baseCaffeineCacheStatistics() {
 		load(CaffeineCacheConfig.class);
-		CacheStatisticsProvider provider = this.context
-				.getBean("caffeineCacheStatisticsProvider", CacheStatisticsProvider.class);
+		CacheStatisticsProvider provider = this.context.getBean(
+				"caffeineCacheStatisticsProvider", CacheStatisticsProvider.class);
 		doTestCoreStatistics(provider, true);
 	}
 

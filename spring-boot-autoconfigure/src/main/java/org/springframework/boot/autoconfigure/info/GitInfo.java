@@ -48,8 +48,11 @@ public class GitInfo {
 		private String time;
 
 		public String getId() {
-			return this.id == null ? ""
-					: (this.id.length() > 7 ? this.id.substring(0, 7) : this.id);
+			return (this.id == null ? "" : getShortId(this.id));
+		}
+
+		private String getShortId(String string) {
+			return string.substring(0, Math.min(this.id.length(), 7));
 		}
 
 		public void setId(String id) {

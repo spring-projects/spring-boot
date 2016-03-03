@@ -78,7 +78,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
  *
  */
 @Configuration
-@AutoConfigureAfter({FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class})
+@AutoConfigureAfter({ FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class })
 @EnableConfigurationProperties(EndpointProperties.class)
 public class EndpointAutoConfiguration {
 

@@ -50,9 +50,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Meang Akira Tanaka
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {TestConfiguration.class})
+@SpringApplicationConfiguration(classes = { TestConfiguration.class })
 @WebAppConfiguration
 public class InfoMvcEndpointWithoutAnyInfoProvidersTests {
+
 	@Autowired
 	private WebApplicationContext context;
 
@@ -70,11 +71,10 @@ public class InfoMvcEndpointWithoutAnyInfoProvidersTests {
 		this.mvc.perform(get("/info")).andExpect(status().isOk());
 	}
 
-	@Import({JacksonAutoConfiguration.class,
+	@Import({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class,
-			WebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class})
+			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			ManagementServerPropertiesAutoConfiguration.class })
 	@Configuration
 	public static class TestConfiguration {
 

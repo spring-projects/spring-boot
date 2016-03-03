@@ -287,14 +287,14 @@ public class RabbitProperties {
 		public static class Channel {
 
 			/**
-			 * Number of channels to retain in the cache. When "check-timeout" > 0,  max
+			 * Number of channels to retain in the cache. When "check-timeout" > 0, max
 			 * channels per connection.
 			 */
 			private Integer size;
 
 			/**
-			 * Number of milliseconds to wait to obtain a channel if the cache size
-			 * has been reached. If 0, always create a new channel.
+			 * Number of milliseconds to wait to obtain a channel if the cache size has
+			 * been reached. If 0, always create a new channel.
 			 */
 			private Long checkoutTimeout;
 

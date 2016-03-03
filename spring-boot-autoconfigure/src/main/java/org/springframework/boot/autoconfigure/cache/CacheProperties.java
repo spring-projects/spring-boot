@@ -118,8 +118,8 @@ public class CacheProperties {
 	public static class Caffeine {
 
 		/**
-		 * The spec to use to create caches. Check CaffeineSpec for more details on
-		 * the spec format.
+		 * The spec to use to create caches. Check CaffeineSpec for more details on the
+		 * spec format.
 		 */
 		private String spec;
 

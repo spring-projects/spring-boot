@@ -57,10 +57,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Stephane Nicoll
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {TestConfiguration.class})
+@SpringApplicationConfiguration(classes = { TestConfiguration.class })
 @WebAppConfiguration
-@TestPropertySource(properties = {"info.app.name=MyService"})
+@TestPropertySource(properties = { "info.app.name=MyService" })
 public class InfoMvcEndpointTests {
+
 	@Autowired
 	private WebApplicationContext context;
 
@@ -68,7 +69,6 @@ public class InfoMvcEndpointTests {
 
 	@Before
 	public void setUp() {
-
 		this.context.getBean(InfoEndpoint.class).setEnabled(true);
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 	}
@@ -76,18 +76,16 @@ public class InfoMvcEndpointTests {
 	@Test
 	public void home() throws Exception {
 		this.mvc.perform(get("/info")).andExpect(status().isOk())
-				.andExpect(content().string(
-						containsString("\"beanName1\":{\"key11\":\"value11\",\"key12\":\"value12\"}")
-				))
-				.andExpect(content().string(
-						containsString("\"beanName2\":{\"key21\":\"value21\",\"key22\":\"value22\"}")));
+				.andExpect(content().string(containsString(
+						"\"beanName1\":{\"key11\":\"value11\",\"key12\":\"value12\"}")))
+				.andExpect(content().string(containsString(
+						"\"beanName2\":{\"key21\":\"value21\",\"key22\":\"value22\"}")));
 	}
 
-	@Import({JacksonAutoConfiguration.class,
+	@Import({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class,
-			WebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class})
+			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			ManagementServerPropertiesAutoConfiguration.class })
 	@Configuration
 	public static class TestConfiguration {
 
@@ -122,6 +120,7 @@ public class InfoMvcEndpointTests {
 				}
 			};
 		}
+
 	}
 
 }

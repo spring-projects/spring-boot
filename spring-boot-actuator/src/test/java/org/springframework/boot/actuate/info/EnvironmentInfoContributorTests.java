@@ -33,9 +33,8 @@ public class EnvironmentInfoContributorTests {
 
 	@Test
 	public void extractOnlyInfoProperty() {
-		EnvironmentTestUtils.addEnvironment(this.environment,
-				"info.app=my app", "info.version=1.0.0", "foo=bar");
-
+		EnvironmentTestUtils.addEnvironment(this.environment, "info.app=my app",
+				"info.version=1.0.0", "foo=bar");
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.get("app", String.class)).isEqualTo("my app");
 		assertThat(actual.get("version", String.class)).isEqualTo("1.0.0");
@@ -45,13 +44,13 @@ public class EnvironmentInfoContributorTests {
 	@Test
 	public void extractNoEntry() {
 		EnvironmentTestUtils.addEnvironment(this.environment, "foo=bar");
-
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.getDetails().size()).isEqualTo(0);
 	}
 
 	private static Info contributeFrom(ConfigurableEnvironment environment) {
-		EnvironmentInfoContributor contributor = new EnvironmentInfoContributor(environment);
+		EnvironmentInfoContributor contributor = new EnvironmentInfoContributor(
+				environment);
 		Info.Builder builder = new Info.Builder();
 		contributor.contribute(builder);
 		return builder.build();

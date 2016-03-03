@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,8 @@ public final class Info {
 	public <T> T get(String id, Class<T> type) {
 		Object value = get(id);
 		if (value != null && type != null && !type.isInstance(value)) {
-			throw new IllegalStateException("Info entry is not of required type [" + type.getName() + "]: " + value);
+			throw new IllegalStateException("Info entry is not of required type ["
+					+ type.getName() + "]: " + value);
 		}
 		return (T) value;
 	}
@@ -129,4 +130,5 @@ public final class Info {
 		}
 
 	}
+
 }

@@ -28,6 +28,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -95,11 +96,10 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Classifier to add to the artifact generated. If given, the artifact will be
-	 * attached with that classifier and the main artifact will be deployed as the
-	 * main artifact. If this is not given (default), it will replace the
-	 * main artifact and only the repackaged artifact will be deployed. Attaching
-	 * the artifact allows to deploy it alongside to
-	 * the original one, see <a href=
+	 * attached with that classifier and the main artifact will be deployed as the main
+	 * artifact. If this is not given (default), it will replace the main artifact and
+	 * only the repackaged artifact will be deployed. Attaching the artifact allows to
+	 * deploy it alongside to the original one, see <a href=
 	 * "http://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
 	 * > the maven documentation for more details</a>.
 	 * @since 1.0
@@ -181,35 +181,15 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			getLog().debug("skipping repackaging as per configuration.");
 			return;
 		}
+		repackage();
+	}
 
+	private void repackage() throws MojoExecutionException {
 		File source = this.project.getArtifact().getFile();
 		File target = getTargetFile();
-		Repackager repackager = new Repackager(source) {
-			@Override
-			protected String findMainMethod(JarFile source) throws IOException {
-				long startTime = System.currentTimeMillis();
-				try {
-					return super.findMainMethod(source);
-				}
-				finally {
-					long duration = System.currentTimeMillis() - startTime;
-					if (duration > FIND_WARNING_TIMEOUT) {
-						getLog().warn("Searching for the main-class is taking some time, "
-								+ "consider using the mainClass configuration "
-								+ "parameter");
-					}
-				}
-			}
-		};
-		repackager.setMainClass(this.mainClass);
-		if (this.layout != null) {
-			getLog().info("Layout: " + this.layout);
-			repackager.setLayout(this.layout.layout());
-		}
-
+		Repackager repackager = getRepackager(source);
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
 				getFilters(getAdditionalFilters()));
-
 		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack,
 				getLog());
 		try {
@@ -219,35 +199,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		catch (IOException ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
-
-		if (this.attach) {
-			if (this.classifier != null) {
-				getLog().info("Attaching archive: " + target + ", with classifier: "
-						+ this.classifier);
-				this.projectHelper.attachArtifact(this.project, this.project.getPackaging(),
-						this.classifier, target);
-			}
-			else if (!source.equals(target)) {
-				this.project.getArtifact().setFile(target);
-				getLog().info("Replacing main artifact " + source + " to " + target);
-			}
-		}
-		else if (source.equals(target)) {
-			File backup = repackager.getBackupFile();
-			this.project.getArtifact().setFile(backup);
-			getLog().info("Updating main artifact " + source + " to " + backup);
-		}
-	}
-
-	private ArtifactsFilter[] getAdditionalFilters() {
-		if (this.excludeDevtools) {
-			Exclude exclude = new Exclude();
-			exclude.setGroupId("org.springframework.boot");
-			exclude.setArtifactId("spring-boot-devtools");
-			ExcludeFilter filter = new ExcludeFilter(exclude);
-			return new ArtifactsFilter[] { filter };
-		}
-		return new ArtifactsFilter[] {};
+		updateArtifact(source, target, repackager.getBackupFile());
 	}
 
 	private File getTargetFile() {
@@ -260,6 +212,27 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		}
 		return new File(this.outputDirectory, this.finalName + classifier + "."
 				+ this.project.getArtifact().getArtifactHandler().getExtension());
+	}
+
+	private Repackager getRepackager(File source) {
+		Repackager repackager = new LoggingRepackager(source, getLog());
+		repackager.setMainClass(this.mainClass);
+		if (this.layout != null) {
+			getLog().info("Layout: " + this.layout);
+			repackager.setLayout(this.layout.layout());
+		}
+		return repackager;
+	}
+
+	private ArtifactsFilter[] getAdditionalFilters() {
+		if (this.excludeDevtools) {
+			Exclude exclude = new Exclude();
+			exclude.setGroupId("org.springframework.boot");
+			exclude.setArtifactId("spring-boot-devtools");
+			ExcludeFilter filter = new ExcludeFilter(exclude);
+			return new ArtifactsFilter[] { filter };
+		}
+		return new ArtifactsFilter[] {};
 	}
 
 	private LaunchScript getLaunchScript() throws IOException {
@@ -297,6 +270,29 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 					return;
 				}
 			}
+		}
+	}
+
+	private void updateArtifact(File source, File repackaged, File original) {
+		if (this.attach) {
+			attachArtifact(source, repackaged);
+		}
+		else if (source.equals(repackaged)) {
+			this.project.getArtifact().setFile(original);
+			getLog().info("Updating main artifact " + source + " to " + original);
+		}
+	}
+
+	private void attachArtifact(File source, File repackaged) {
+		if (this.classifier != null) {
+			getLog().info("Attaching archive: " + repackaged + ", with classifier: "
+					+ this.classifier);
+			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(),
+					this.classifier, repackaged);
+		}
+		else if (!source.equals(repackaged)) {
+			this.project.getArtifact().setFile(repackaged);
+			getLog().info("Replacing main artifact " + source + " to " + repackaged);
 		}
 	}
 
@@ -344,6 +340,33 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		LayoutType(Layout layout) {
 			this.layout = layout;
 		}
+
 	}
 
+	private static class LoggingRepackager extends Repackager {
+
+		private final Log log;
+
+		LoggingRepackager(File source, Log log) {
+			super(source);
+			this.log = log;
+		}
+
+		@Override
+		protected String findMainMethod(JarFile source) throws IOException {
+			long startTime = System.currentTimeMillis();
+			try {
+				return super.findMainMethod(source);
+			}
+			finally {
+				long duration = System.currentTimeMillis() - startTime;
+				if (duration > FIND_WARNING_TIMEOUT) {
+					this.log.warn("Searching for the main-class is taking some time, "
+							+ "consider using the mainClass configuration "
+							+ "parameter");
+				}
+			}
+		}
+
+	}
 }

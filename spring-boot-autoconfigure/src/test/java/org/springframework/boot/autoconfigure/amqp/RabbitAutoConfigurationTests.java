@@ -134,10 +134,9 @@ public class RabbitAutoConfigurationTests {
 	@Test
 	public void testRabbitTemplateMessageConverters() {
 		load(MessageConvertersConfiguration.class);
-		RabbitTemplate rabbitTemplate = this.context
-				.getBean(RabbitTemplate.class);
-		assertThat(rabbitTemplate.getMessageConverter()).isSameAs(
-				this.context.getBean("myMessageConverter"));
+		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
+		assertThat(rabbitTemplate.getMessageConverter())
+				.isSameAs(this.context.getBean("myMessageConverter"));
 	}
 
 	@Test
@@ -233,8 +232,8 @@ public class RabbitAutoConfigurationTests {
 		assertThat(dfa.getPropertyValue("maxConcurrentConsumers")).isEqualTo(10);
 		assertThat(dfa.getPropertyValue("prefetchCount")).isEqualTo(40);
 		assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
-		assertThat(dfa.getPropertyValue("messageConverter")).isSameAs(
-				this.context.getBean("myMessageConverter"));
+		assertThat(dfa.getPropertyValue("messageConverter"))
+				.isSameAs(this.context.getBean("myMessageConverter"));
 	}
 
 	@Test

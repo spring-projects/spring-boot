@@ -146,8 +146,7 @@ public class SampleActuatorApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody())
 				.contains("\"artifact\":\"spring-boot-sample-actuator\"");
-		assertThat(entity.getBody())
-				.contains("\"someKey\":\"someValue\"");
+		assertThat(entity.getBody()).contains("\"someKey\":\"someValue\"");
 	}
 
 	@Test
@@ -223,7 +222,8 @@ public class SampleActuatorApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertThat(body).containsKey("spring.datasource-" + DataSourceProperties.class.getName());
+		assertThat(body)
+				.containsKey("spring.datasource-" + DataSourceProperties.class.getName());
 	}
 
 	private String getPassword() {
