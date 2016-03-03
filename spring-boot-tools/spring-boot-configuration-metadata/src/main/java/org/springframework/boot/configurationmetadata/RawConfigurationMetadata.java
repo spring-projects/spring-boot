@@ -77,10 +77,10 @@ class RawConfigurationMetadata {
 		}
 		ConfigurationMetadataSource source = getSource(item.getSourceType());
 		if (source != null) {
-			String groupId = source.getGroupId();
+			String dottedPrefix = source.getGroupId() + ".";
 			String id = item.getId();
-			if (id.startsWith(groupId)) { // match
-				String name = id.substring(groupId.length() + 1, id.length()); // "."
+			if (id.startsWith(dottedPrefix)) {
+				String name = id.substring(dottedPrefix.length(), id.length());
 				item.setName(name);
 			}
 		}
