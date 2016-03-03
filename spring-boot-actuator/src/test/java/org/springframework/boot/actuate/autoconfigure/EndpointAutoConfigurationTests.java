@@ -16,9 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Test;
@@ -37,16 +40,24 @@ import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.info.Info;
+import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
+import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.validation.BindException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,6 +70,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Meang Akira Tanaka
  */
 public class EndpointAutoConfigurationTests {
 
@@ -138,11 +150,13 @@ public class EndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void testInfoEndpointConfiguration() throws Exception {
+	public void testInfoEndpoint() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, "info.foo:bar");
-		this.context.register(ProjectInfoAutoConfiguration.class, EndpointAutoConfiguration.class);
+		this.context.register(ProjectInfoAutoConfiguration.class,
+				InfoContributorAutoConfiguration.class, EndpointAutoConfiguration.class);
 		this.context.refresh();
+
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
 		assertThat(endpoint).isNotNull();
 		assertThat(endpoint.invoke().get("git")).isNotNull();
@@ -150,15 +164,32 @@ public class EndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void testNoGitProperties() throws Exception {
+	public void testInfoEndpointNoGitProperties() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.info.git.location:classpath:nonexistent");
-		this.context.register(EndpointAutoConfiguration.class);
+		this.context.register(InfoContributorAutoConfiguration.class, EndpointAutoConfiguration.class);
 		this.context.refresh();
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
 		assertThat(endpoint).isNotNull();
 		assertThat(endpoint.invoke().get("git")).isNull();
+	}
+
+	@Test
+	public void testInfoEndpointOrdering() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "info.name:foo");
+		this.context.register(CustomInfoContributorsConfig.class, ProjectInfoAutoConfiguration.class,
+				InfoContributorAutoConfiguration.class, EndpointAutoConfiguration.class);
+		this.context.refresh();
+
+		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
+		Info info = endpoint.invoke();
+		assertThat(info).isNotNull();
+		assertThat(info.get("name")).isEqualTo("foo");
+		assertThat(info.get("version")).isEqualTo("1.0");
+		Object git = info.get("git");
+		assertThat(git).isInstanceOf(Map.class);
 	}
 
 	@Test
@@ -201,6 +232,55 @@ public class EndpointAutoConfigurationTests {
 					return Collections.<Metric<?>>singleton(metric);
 				}
 			};
+		}
+
+	}
+
+	@Configuration
+	static class CustomInfoContributorsConfig {
+
+		@Bean
+		@Order(InfoContributorAutoConfiguration.DEFAULT_ORDER - 1)
+		public InfoContributor myInfoContributor() {
+			return new InfoContributor() {
+				@Override
+				public void contribute(Info.Builder builder) {
+					builder.withDetail("name", "bar");
+					builder.withDetail("version", "1.0");
+				}
+			};
+		}
+
+		@Bean
+		@Order(InfoContributorAutoConfiguration.DEFAULT_ORDER + 1)
+		public InfoContributor myAnotherContributor(ProjectInfoProperties properties)
+				throws IOException, BindException {
+			return new GitFullInfoContributor(properties.getGit().getLocation());
+		}
+
+		private static class GitFullInfoContributor implements InfoContributor {
+
+			private final Map<String, Object> content;
+
+			GitFullInfoContributor(Resource location) throws BindException, IOException {
+				this.content = new LinkedHashMap<String, Object>();
+				if (location.exists()) {
+					PropertiesConfigurationFactory<Map<String, Object>> factory
+							= new PropertiesConfigurationFactory<Map<String, Object>>(this.content);
+					factory.setTargetName("git");
+					Properties gitInfoProperties = PropertiesLoaderUtils
+							.loadProperties(location);
+					factory.setProperties(gitInfoProperties);
+					factory.bindPropertiesToTarget();
+				}
+			}
+
+			@Override
+			public void contribute(Info.Builder builder) {
+				if (!this.content.isEmpty()) {
+					builder.withDetail("git", this.content);
+				}
+			}
 		}
 
 	}

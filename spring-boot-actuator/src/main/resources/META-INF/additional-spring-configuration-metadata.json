@@ -124,6 +124,24 @@
     "defaultValue": true
   },
   {
+    "name": "management.info.defaults.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable default info contributors.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.info.env.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable environment info.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.info.git.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable git info.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.git.properties",
     "type": "java.lang.String",
     "description": "Resource reference to a generated git info properties file.",

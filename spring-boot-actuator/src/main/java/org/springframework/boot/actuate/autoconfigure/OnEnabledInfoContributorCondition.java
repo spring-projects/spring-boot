@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,25 +19,24 @@ package org.springframework.boot.actuate.autoconfigure;
 import org.springframework.context.annotation.Condition;
 
 /**
- * {@link Condition} that checks if a health indicator is enabled.
+ * {@link Condition} that checks if a info indicator is enabled.
  *
  * @author Stephane Nicoll
  */
-class OnEnabledHealthIndicatorCondition extends OnEnabledEndpointElementCondition {
+class OnEnabledInfoContributorCondition extends OnEnabledEndpointElementCondition {
 
-	OnEnabledHealthIndicatorCondition() {
-		super("management.health.", ConditionalOnEnabledHealthIndicator.class);
+	OnEnabledInfoContributorCondition() {
+		super("management.info.", ConditionalOnEnabledInfoContributor.class);
 	}
 
 	@Override
 	protected String getEndpointElementOutcomeMessage(String name, boolean match) {
-		return "The health indicator " + name + " is " + (match ? "enabled" : "disabled");
+		return "The info contributor " + name + " is " + (match ? "enabled" : "disabled");
 	}
 
 	@Override
 	protected String getDefaultEndpointElementOutcomeMessage(boolean match) {
-		return "All default health indicators are " + (match ? "enabled" : "disabled")
+		return "All default info contributors are " + (match ? "enabled" : "disabled")
 				+ " by default";
 	}
-
 }

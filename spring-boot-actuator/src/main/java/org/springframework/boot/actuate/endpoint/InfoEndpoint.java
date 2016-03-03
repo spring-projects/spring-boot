@@ -17,9 +17,11 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.boot.actuate.info.Info;
+import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -27,30 +29,41 @@ import org.springframework.util.Assert;
  * {@link Endpoint} to expose arbitrary application information.
  *
  * @author Dave Syer
+ * @author Meang Akira Tanaka
+ * @author Stephane Nicoll
  */
 @ConfigurationProperties(prefix = "endpoints.info")
-public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
+public class InfoEndpoint extends AbstractEndpoint<Info> {
 
-	private final Map<String, ? extends Object> info;
+	private final List<InfoContributor> infoContributors;
 
 	/**
 	 * Create a new {@link InfoEndpoint} instance.
-	 *
-	 * @param info the info to expose
+	 * @param infoContributors the info contributors to use
 	 */
-	public InfoEndpoint(Map<String, ? extends Object> info) {
+	public InfoEndpoint(List<InfoContributor> infoContributors) {
 		super("info", false);
-		Assert.notNull(info, "Info must not be null");
-		this.info = info;
+		Assert.notNull(infoContributors, "Info contributors must not be null");
+		this.infoContributors = infoContributors;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public Map<String, Object> invoke() {
-		Map<String, Object> info = new LinkedHashMap<String, Object>(this.info);
-		info.putAll(getAdditionalInfo());
-		return info;
+	public Info invoke() {
+		Info.Builder builder = new Info.Builder();
+		for (InfoContributor contributor : this.infoContributors) {
+			contributor.contribute(builder);
+		}
+		builder.withDetails(getAdditionalInfo());
+		return builder.build();
 	}
 
+	/**
+	 * Return additional information to include in the output.
+	 * @return additional information
+	 * @deprecated define an additional {@link InfoContributor} bean instead.
+	 */
+	@Deprecated
 	protected Map<String, Object> getAdditionalInfo() {
 		return Collections.emptyMap();
 	}
