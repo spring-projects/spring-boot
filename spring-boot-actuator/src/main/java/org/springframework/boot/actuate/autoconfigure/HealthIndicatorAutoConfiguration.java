@@ -100,11 +100,11 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 		RabbitAutoConfiguration.class, SolrAutoConfiguration.class,
 		MailSenderAutoConfiguration.class, JmsAutoConfiguration.class,
 		ElasticsearchAutoConfiguration.class })
-@EnableConfigurationProperties({ HealthIndicatorAutoConfigurationProperties.class })
+@EnableConfigurationProperties({ HealthIndicatorProperties.class })
 public class HealthIndicatorAutoConfiguration {
 
 	@Autowired
-	private HealthIndicatorAutoConfigurationProperties configurationProperties = new HealthIndicatorAutoConfigurationProperties();
+	private HealthIndicatorProperties configurationProperties = new HealthIndicatorProperties();
 
 	@Bean
 	@ConditionalOnMissingBean(HealthAggregator.class)
