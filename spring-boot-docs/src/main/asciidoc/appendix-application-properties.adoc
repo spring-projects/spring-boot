@@ -755,7 +755,11 @@ content into your application; rather pick only the properties that you need.
 	spring.jms.pub-sub-domain=false # Specify if the default destination type is topic.
 
 	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
-	spring.rabbitmq.addresses= # Comma-separated list of addresses to which the client should connect to.
+	spring.rabbitmq.addresses= # Comma-separated list of addresses to which the client should connect.
+	spring.rabbitmq.cache.channel.checkout-timeout= # Number of milliseconds to wait to obtain a channel if the cache size has been reached.
+	spring.rabbitmq.cache.channel.size= # Number of channels to retain in the cache.
+	spring.rabbitmq.cache.connection.mode= # Connection factory cache mode.
+	spring.rabbitmq.cache.connection.size= # Number of connections to cache.
 	spring.rabbitmq.dynamic=true # Create an AmqpAdmin bean.
 	spring.rabbitmq.host=localhost # RabbitMQ host.
 	spring.rabbitmq.listener.acknowledge-mode= # Acknowledge mode of container.
@@ -774,7 +778,6 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.ssl.trust-store-password= # Password used to access the trust store.
 	spring.rabbitmq.username= # Login user to authenticate to the broker.
 	spring.rabbitmq.virtual-host= # Virtual host to use when connecting to the broker.
-
 
 	# ----------------------------------------
 	# ACTUATOR PROPERTIES
