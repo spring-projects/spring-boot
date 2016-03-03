@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -39,6 +40,7 @@ import org.springframework.web.servlet.HandlerMapping;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Sebastian Kirsch
  */
 @Configuration
 @ConditionalOnBean({ CounterService.class, GaugeService.class })
@@ -46,7 +48,11 @@ import org.springframework.web.servlet.HandlerMapping;
 		OncePerRequestFilter.class, HandlerMapping.class })
 @AutoConfigureAfter(MetricRepositoryAutoConfiguration.class)
 @ConditionalOnProperty(name = "endpoints.metrics.filter.enabled", matchIfMissing = true)
+@EnableConfigurationProperties({ MetricFilterAutoConfigurationProperties.class })
 public class MetricFilterAutoConfiguration {
+
+	@Autowired
+	private MetricFilterAutoConfigurationProperties configurationProperties = new MetricFilterAutoConfigurationProperties();
 
 	@Autowired
 	private CounterService counterService;
@@ -56,7 +62,9 @@ public class MetricFilterAutoConfiguration {
 
 	@Bean
 	public MetricsFilter metricFilter() {
-		return new MetricsFilter(this.counterService, this.gaugeService);
+		return new MetricsFilter(this.counterService, this.gaugeService,
+				this.configurationProperties.isRecordRolledUpMetrics(),
+				this.configurationProperties.isRecordMetricsPerHttpMethod());
 	}
 
 }
