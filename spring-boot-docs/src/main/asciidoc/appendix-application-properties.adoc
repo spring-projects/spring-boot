@@ -79,6 +79,9 @@ content into your application; rather pick only the properties that you need.
 	# HAZELCAST ({sc-spring-boot-autoconfigure}/hazelcast/HazelcastProperties.{sc-ext}[HazelcastProperties])
 	spring.hazelcast.config= # The location of the configuration file to use to initialize Hazelcast.
 
+	# PROJECT INFORMATION ({sc-spring-boot-autoconfigure}/info/ProjectInfoProperties.{sc-ext}[ProjectInfoProperties])
+	spring.info.git.location=classpath:git.properties # Location of the generated git info properties file
+
 	# JMX
 	spring.jmx.default-domain= # JMX domain name.
 	spring.jmx.enabled=true # Expose management beans to the JMX domain.
@@ -903,9 +906,6 @@ content into your application; rather pick only the properties that you need.
 	shell.ssh.port=2000 # SSH port.
 	shell.telnet.enabled=false # Enable CRaSH telnet support. Enabled by default if the TelnetPlugin is  available.
 	shell.telnet.port=5000 # Telnet port.
-
-	# GIT INFO
-	spring.git.properties= # Resource reference to a generated git info properties file.
 
 	# METRICS EXPORT ({sc-spring-boot-actuator}/metrics/export/MetricExportProperties.{sc-ext}[MetricExportProperties])
 	spring.metrics.export.aggregate.key-pattern= # Pattern that tells the aggregator what to do with the keys from the source repository.

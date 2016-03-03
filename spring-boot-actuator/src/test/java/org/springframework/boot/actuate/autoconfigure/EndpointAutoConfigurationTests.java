@@ -40,6 +40,7 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -140,7 +141,7 @@ public class EndpointAutoConfigurationTests {
 	public void testInfoEndpointConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, "info.foo:bar");
-		this.context.register(EndpointAutoConfiguration.class);
+		this.context.register(ProjectInfoAutoConfiguration.class, EndpointAutoConfiguration.class);
 		this.context.refresh();
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
 		assertThat(endpoint).isNotNull();
@@ -152,7 +153,7 @@ public class EndpointAutoConfigurationTests {
 	public void testNoGitProperties() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.git.properties:classpath:nonexistent");
+				"spring.info.git.location:classpath:nonexistent");
 		this.context.register(EndpointAutoConfiguration.class);
 		this.context.refresh();
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
