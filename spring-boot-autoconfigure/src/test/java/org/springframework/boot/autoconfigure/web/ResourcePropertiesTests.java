@@ -31,7 +31,6 @@ public class ResourcePropertiesTests {
 
 	@Test
 	public void resourceChainNoCustomization() {
-		System.out.println(this.properties.getChain().getEnabled());
 		assertThat(this.properties.getChain().getEnabled()).isNull();
 	}
 
