@@ -16,55 +16,49 @@
 
 package org.springframework.boot.actuate.info;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
-import org.springframework.boot.info.GitProperties;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 
+
 /**
- * An {@link InfoContributor} that exposes {@link GitProperties}.
+ * An {@link InfoContributor} that exposes {@link BuildProperties}.
  *
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-public class GitInfoContributor extends InfoPropertiesInfoContributor<GitProperties> {
+public class BuildInfoContributor extends InfoPropertiesInfoContributor<BuildProperties> {
 
-	public GitInfoContributor(GitProperties properties, Mode mode) {
+	public BuildInfoContributor(BuildProperties properties, Mode mode) {
 		super(properties, mode);
 	}
 
-	public GitInfoContributor(GitProperties properties) {
+	public BuildInfoContributor(BuildProperties properties) {
 		this(properties, Mode.SIMPLE);
 	}
 
 	@Override
 	public void contribute(Info.Builder builder) {
-		builder.withDetail("git", generateContent());
+		builder.withDetail("build", generateContent());
 	}
 
 	@Override
 	protected PropertySource<?> toSimplePropertySource() {
 		Properties props = new Properties();
-		copyIfSet(props, "branch");
-		String commitId = getProperties().getShortCommitId();
-		if (commitId != null) {
-			props.put("commit.id", commitId);
-		}
-		copyIfSet(props, "commit.time");
-		return new PropertiesPropertySource("git", props);
+		copyIfSet(props, "group");
+		copyIfSet(props, "artifact");
+		copyIfSet(props, "name");
+		copyIfSet(props, "version");
+		copyIfSet(props, "time");
+		return new PropertiesPropertySource("build", props);
 	}
 
-	/**
-	 * Post-process the content to expose. By default, well known keys representing dates
-	 * are converted to {@link Date} instances.
-	 * @param content the content to expose
-	 */
+	@Override
 	protected void postProcessContent(Map<String, Object> content) {
-		replaceValue(getNestedMap(content, "commit"), "time", getProperties().getCommitTime());
-		replaceValue(getNestedMap(content, "build"), "time", getProperties().getDate("build.time"));
+		replaceValue(content, "time", getProperties().getTime());
 	}
 
 }

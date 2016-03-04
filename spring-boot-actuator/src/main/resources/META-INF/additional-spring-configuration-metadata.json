@@ -124,6 +124,12 @@
     "defaultValue": true
   },
   {
+    "name": "management.info.build.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable build info.",
+    "defaultValue": true
+  },
+  {
     "name": "management.info.defaults.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable default info contributors.",

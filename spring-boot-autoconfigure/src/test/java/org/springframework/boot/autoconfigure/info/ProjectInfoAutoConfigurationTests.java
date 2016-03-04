@@ -23,6 +23,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -82,10 +83,46 @@ public class ProjectInfoAutoConfigurationTests {
 
 	@Test
 	public void gitPropertiesFallbackWithGitPropertiesBean() {
-		load(CustomGitPropertiesConfiguration.class,
+		load(CustomInfoPropertiesConfiguration.class,
 				"spring.info.git.location=classpath:/org/springframework/boot/autoconfigure/info/git.properties");
 		GitProperties gitProperties = this.context.getBean(GitProperties.class);
 		assertThat(gitProperties).isSameAs(this.context.getBean("customGitProperties"));
+	}
+
+	@Test
+	public void buildPropertiesDefaultLocation() {
+		load();
+		BuildProperties buildProperties = this.context.getBean(BuildProperties.class);
+		assertThat(buildProperties.getGroup()).isEqualTo("com.example");
+		assertThat(buildProperties.getArtifact()).isEqualTo("demo");
+		assertThat(buildProperties.getName()).isEqualTo("Demo Project");
+		assertThat(buildProperties.getVersion()).isEqualTo("0.0.1-SNAPSHOT");
+		assertThat(buildProperties.getTime().getTime()).isEqualTo(1457100965000L);
+	}
+
+	@Test
+	public void buildPropertiesCustomLocation() {
+		load("spring.info.build.location=classpath:/org/springframework/boot/autoconfigure/info/build.properties");
+		BuildProperties buildProperties = this.context.getBean(BuildProperties.class);
+		assertThat(buildProperties.getGroup()).isEqualTo("com.example.acme");
+		assertThat(buildProperties.getArtifact()).isEqualTo("acme");
+		assertThat(buildProperties.getName()).isEqualTo("acme");
+		assertThat(buildProperties.getVersion()).isEqualTo("1.0.1-SNAPSHOT");
+		assertThat(buildProperties.getTime().getTime()).isEqualTo(1457088120000L);
+	}
+
+	@Test
+	public void buildPropertiesCustomInvalidLocation() {
+		load("spring.info.build.location=classpath:/org/acme/no-build.properties");
+		Map<String, BuildProperties> beans = this.context.getBeansOfType(BuildProperties.class);
+		assertThat(beans).hasSize(0);
+	}
+
+	@Test
+	public void buildPropertiesFallbackWithBuildInfoBean() {
+		load(CustomInfoPropertiesConfiguration.class);
+		BuildProperties buildProperties = this.context.getBean(BuildProperties.class);
+		assertThat(buildProperties).isSameAs(this.context.getBean("customBuildProperties"));
 	}
 
 	private void load(String... environment) {
@@ -105,11 +142,16 @@ public class ProjectInfoAutoConfigurationTests {
 	}
 
 	@Configuration
-	static class CustomGitPropertiesConfiguration {
+	static class CustomInfoPropertiesConfiguration {
 
 		@Bean
 		public GitProperties customGitProperties() {
 			return new GitProperties(new Properties());
+		}
+
+		@Bean
+		public BuildProperties customBuildProperties() {
+			return new BuildProperties(new Properties());
 		}
 
 	}

@@ -22,9 +22,11 @@ import java.util.Properties;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.info.BuildInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -111,6 +113,41 @@ public class InfoContributorAutoConfigurationTests {
 				.isSameAs(this.context.getBean("customGitInfoContributor"));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void buildPropertiesDefaultMode() {
+		load(BuildPropertiesConfiguration.class);
+		Map<String, InfoContributor> beans = this.context
+				.getBeansOfType(InfoContributor.class);
+		assertThat(beans).containsKeys("buildInfoContributor");
+		Map<String, Object> content =
+				invokeContributor(this.context.getBean("buildInfoContributor", InfoContributor.class));
+		Object build = content.get("build");
+		assertThat(build).isInstanceOf(Map.class);
+		Map<String, Object> gitInfo = (Map<String, Object>) build;
+		assertThat(gitInfo).containsOnlyKeys("group", "artifact");
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void buildPropertiesFullMode() {
+		load(BuildPropertiesConfiguration.class, "management.info.build.mode=full");
+		Map<String, Object> content =
+				invokeContributor(this.context.getBean("buildInfoContributor", InfoContributor.class));
+		Object build = content.get("build");
+		assertThat(build).isInstanceOf(Map.class);
+		Map<String, Object> gitInfo = (Map<String, Object>) build;
+		assertThat(gitInfo).containsOnlyKeys("group", "artifact", "foo");
+		assertThat(gitInfo.get("foo")).isEqualTo("bar");
+	}
+
+	@Test
+	public void customBuildInfoContributor() {
+		load(CustomBuildInfoProviderConfiguration.class);
+		assertThat(this.context.getBean(BuildInfoContributor.class))
+				.isSameAs(this.context.getBean("customBuildInfoContributor"));
+	}
+
 	private Map<String, Object> invokeContributor(InfoContributor contributor) {
 		Info.Builder builder = new Info.Builder();
 		contributor.contribute(builder);
@@ -147,6 +184,20 @@ public class InfoContributorAutoConfigurationTests {
 	}
 
 	@Configuration
+	static class BuildPropertiesConfiguration {
+
+		@Bean
+		public BuildProperties buildProperties() {
+			Properties properties = new Properties();
+			properties.put("group", "com.example");
+			properties.put("artifact", "demo");
+			properties.put("foo", "bar");
+			return new BuildProperties(properties);
+		}
+
+	}
+
+	@Configuration
 	static class CustomInfoProviderConfiguration {
 
 		@Bean
@@ -166,6 +217,16 @@ public class InfoContributorAutoConfigurationTests {
 		@Bean
 		public GitInfoContributor customGitInfoContributor() {
 			return new GitInfoContributor(new GitProperties(new Properties()));
+		}
+
+	}
+
+	@Configuration
+	static class CustomBuildInfoProviderConfiguration {
+
+		@Bean
+		public BuildInfoContributor customBuildInfoContributor() {
+			return new BuildInfoContributor(new BuildProperties(new Properties()));
 		}
 
 	}

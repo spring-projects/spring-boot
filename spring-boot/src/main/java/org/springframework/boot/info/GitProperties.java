@@ -19,7 +19,6 @@ package org.springframework.boot.info;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -98,7 +97,7 @@ public class GitProperties extends InfoProperties {
 		if (epoch != null) {
 			return String.valueOf(epoch);
 		}
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX", Locale.US);
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		try {
 			return String.valueOf(format.parse(s).getTime());
 		}
