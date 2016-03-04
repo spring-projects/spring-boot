@@ -16,22 +16,24 @@
 
 package org.springframework.boot.autoconfigure.neo4j;
 
+import org.assertj.core.api.Assertions;
+
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.junit.rules.ExpectedException;
+
 import org.neo4j.ogm.session.SessionFactory;
+
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
 import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.template.Neo4jOperations;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link org.springframework.boot.autoconfigure.neo4j.Neo4jDataAutoConfiguration}.
@@ -59,7 +61,7 @@ public class Neo4jDataAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(PropertyPlaceholderAutoConfiguration.class, Neo4jDataAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(Neo4jOperations.class).length);
+		Assertions.assertThat(this.context.getBeanNamesForType(Neo4jOperations.class).length).isEqualTo(1);
 	}
 
 	@Test
@@ -67,7 +69,7 @@ public class Neo4jDataAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(PropertyPlaceholderAutoConfiguration.class, Neo4jDataAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(SessionFactory.class).length);
+		Assertions.assertThat(this.context.getBeanNamesForType(SessionFactory.class).length).isEqualTo(1);
 	}
 
 	@Test
@@ -86,7 +88,7 @@ public class Neo4jDataAutoConfigurationTests {
 	private static void assertDomainTypesDiscovered(Neo4jMappingContext mappingContext,
 			Class<?>... types) {
 		for (Class<?> type : types) {
-			assertThat(mappingContext.getPersistentEntity(type), is(notNullValue()));
+			Assertions.assertThat(mappingContext.getPersistentEntity(type)).isNotNull();
 		}
 	}
 

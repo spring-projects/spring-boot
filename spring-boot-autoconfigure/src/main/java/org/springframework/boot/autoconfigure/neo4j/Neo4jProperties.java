@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.neo4j;
 
 import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.service.Components;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -34,22 +35,22 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.data.neo4j")
 public class Neo4jProperties {
 
-    // if you don't set this up somewhere, this is what we'll use by default
-    private String driver = "org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver";
+	// if you don't set this up somewhere, this is what we'll use by default
+	private String driver = "org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver";
 
-    public String getDriver() {
-        return driver;
-    }
+	public String getDriver() {
+		return this.driver;
+	}
 
-    public void setDriver(String driver) {
-        this.driver = driver;
-    }
+	public void setDriver(String driver) {
+		this.driver = driver;
+	}
 
-    public Configuration configure() {
-        Configuration configuration = new Configuration();
-        configuration.driverConfiguration()
-                .setDriverClassName( getDriver() );
-        Components.configure( configuration );
-        return configuration;
-    }
+	public Configuration configure() {
+		Configuration configuration = new Configuration();
+		configuration.driverConfiguration()
+				.setDriverClassName(getDriver());
+		Components.configure(configuration);
+		return configuration;
+	}
 }

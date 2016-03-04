@@ -16,14 +16,14 @@
 
 package org.springframework.boot.autoconfigure.neo4j;
 
+import org.assertj.core.api.Assertions;
+
 import org.junit.Test;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-
-import static org.junit.Assert.assertEquals;
-
 
 /**
  * Tests for {@link org.springframework.boot.autoconfigure.neo4j.Neo4jProperties}.
@@ -35,48 +35,49 @@ import static org.junit.Assert.assertEquals;
 
 public class Neo4jPropertiesTests {
 
+	@Test
+	public void shouldHaveCorrectDefaultDriver() {
+
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(Conf.class);
+		context.refresh();
+
+		Neo4jProperties neo4jProperties = context.getBean(Neo4jProperties.class);
+
+		Assertions.assertThat(neo4jProperties.getDriver()).isEqualTo("org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver");
+	}
+
+	@Test
+	public void shouldConfigureFromDefaults()  {
+
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(Conf.class);
+		context.refresh();
+
+		Neo4jProperties neo4jProperties = context.getBean(Neo4jProperties.class);
+
+		org.neo4j.ogm.config.Configuration configuration = neo4jProperties.configure();
+		Assertions.assertThat(configuration.driverConfiguration().getDriverClassName())
+		.isEqualTo("org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver");
+
+	}
+
+	@Test
+	public void shouldBeCustomisable() {
+
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "spring.data.neo4j.driver:CustomDriver");
+		context.register(Conf.class);
+		context.refresh();
+
+		Neo4jProperties neo4jProperties = context.getBean(Neo4jProperties.class);
+
+		Assertions.assertThat(neo4jProperties.getDriver()).isEqualTo("CustomDriver");
+
+	}
+
 	@Configuration
 	@EnableConfigurationProperties(Neo4jProperties.class)
 	static class Conf {
 	}
-
-    @Test
-    public void shouldHaveCorrectDefaultDriver() {
-
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-        context.register( Conf.class );
-        context.refresh();
-
-        Neo4jProperties neo4jProperties = context.getBean(Neo4jProperties.class);
-
-        assertEquals("org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver", neo4jProperties.getDriver());
-    }
-
-    @Test
-    public void shouldConfigureFromDefaults()  {
-
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-        context.register( Conf.class );
-        context.refresh();
-
-        Neo4jProperties neo4jProperties = context.getBean(Neo4jProperties.class);
-
-        org.neo4j.ogm.config.Configuration configuration = neo4jProperties.configure();
-        assertEquals( "org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver", configuration.driverConfiguration().getDriverClassName());
-
-    }
-
-    @Test
-    public void shouldBeCustomisable() {
-
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-        EnvironmentTestUtils.addEnvironment( context, "spring.data.neo4j.driver:CustomDriver" );
-        context.register( Conf.class );
-        context.refresh();
-
-        Neo4jProperties neo4jProperties = context.getBean(Neo4jProperties.class);
-
-        assertEquals("CustomDriver", neo4jProperties.getDriver());
-
-    }
 }

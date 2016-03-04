@@ -16,10 +16,17 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.assertj.core.api.Assertions;
+
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.city.City;
 import org.springframework.boot.autoconfigure.data.jpa.city.CityRepository;
@@ -29,26 +36,27 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfigurationTests;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.boot.test.EnvironmentTestUtils;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
+
 import org.springframework.core.type.AnnotationMetadata;
+
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration}.
  *
  * @author Dave Syer
  * @author Oliver Gierke
+ * @author Michael Hunger
+ * @author Vince Bickers
  */
 public class MixedNeo4jRepositoriesAutoConfigurationTests {
 
@@ -65,7 +73,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(TestConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CountryRepository.class));
+		Assertions.assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
 	}
 
 	@Test
@@ -74,8 +82,8 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(MixedConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CountryRepository.class));
-		assertNotNull(this.context.getBean(CityRepository.class));
+		Assertions.assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
+		Assertions.assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Test
@@ -84,7 +92,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(JpaConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CityRepository.class));
+		Assertions.assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Test
@@ -94,7 +102,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialize:false");
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CityRepository.class));
+		Assertions.assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Test
@@ -105,7 +113,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 				"spring.data.neo4j.repositories.enabled:false");
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CityRepository.class));
+		Assertions.assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Configuration
