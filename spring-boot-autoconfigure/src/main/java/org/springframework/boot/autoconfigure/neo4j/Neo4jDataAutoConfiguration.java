@@ -16,27 +16,32 @@
 
 package org.springframework.boot.autoconfigure.neo4j;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.neo4j.ogm.session.Neo4jSession;
 import org.neo4j.ogm.session.SessionFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.core.env.Environment;
+
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.template.Neo4jOperations;
 import org.springframework.data.neo4j.template.Neo4jTemplate;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Neo4j support.
@@ -83,7 +88,7 @@ public abstract class Neo4jDataAutoConfiguration extends Neo4jConfiguration impl
 	@Override
 	@ConditionalOnMissingBean(SessionFactory.class)
 	public SessionFactory getSessionFactory() {
-		Collection<String> packages = getMappingBasePackages(beanFactory);
+		Collection<String> packages = getMappingBasePackages(this.beanFactory);
 		return new SessionFactory(packages.toArray(new String[packages.size()]));
 	}
 

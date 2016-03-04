@@ -17,14 +17,18 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.neo4j.ogm.session.Neo4jSession;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jDataAutoConfiguration;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+
 import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.repository.config.Neo4jRepositoryConfigurationExtension;

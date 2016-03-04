@@ -16,18 +16,22 @@
 
 package org.springframework.boot.autoconfigure.neo4j;
 
+import org.assertj.core.api.Assertions;
+
 import org.junit.After;
 import org.junit.Test;
+
 import org.neo4j.ogm.config.Configuration;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link org.springframework.boot.autoconfigure.neo4j.Neo4jDataAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Michael Hunger
+ * @author Vince Bickers
  */
 public class Neo4jAutoConfigurationTests {
 
@@ -44,7 +48,7 @@ public class Neo4jAutoConfigurationTests {
 	public void configurationExists() {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, Neo4jDataAutoConfiguration.class);
-		assertEquals(1, this.context.getBeanNamesForType(Configuration.class).length);
+		Assertions.assertThat(this.context.getBeanNamesForType(Configuration.class).length).isEqualTo(1);
 	}
 
 }

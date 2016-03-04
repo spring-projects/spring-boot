@@ -16,10 +16,15 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
+import org.assertj.core.api.Assertions;
+
 import org.junit.After;
 import org.junit.Test;
+
 import org.neo4j.ogm.session.SessionFactory;
+
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.alt.neo4j.CityNeo4jRepository;
@@ -27,20 +32,20 @@ import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
 import org.springframework.boot.autoconfigure.data.neo4j.city.CityRepository;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jDataAutoConfiguration;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.*;
 
 /**
  * Tests for {@link org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration}.
  *
  * @author Dave Syer
  * @author Oliver Gierke
+ * @author Michael Hunger
+ * @author Vince Bickers
  */
 public class Neo4jRepositoriesAutoConfigurationTests {
 
@@ -56,24 +61,24 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 
 		prepareApplicationContext(TestConfiguration.class);
 
-		assertNotNull(this.context.getBean(CityRepository.class));
+		Assertions.assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 
 		Neo4jMappingContext mappingContext = this.context.getBean(Neo4jMappingContext.class);
-		assertThat(mappingContext.getPersistentEntity(City.class), is(notNullValue()));
+		Assertions.assertThat(mappingContext.getPersistentEntity(City.class)).isNotNull();
 
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
 		prepareApplicationContext(EmptyConfiguration.class);
-		assertNotNull( this.context.getBean( SessionFactory.class ) );
+		Assertions.assertThat(this.context.getBean(SessionFactory.class)).isNotNull();
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		prepareApplicationContext(CustomizedConfiguration.class);
 
-		assertNotNull(this.context.getBean(CityNeo4jRepository.class));
+		Assertions.assertThat(this.context.getBean(CityNeo4jRepository.class)).isNotNull();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
