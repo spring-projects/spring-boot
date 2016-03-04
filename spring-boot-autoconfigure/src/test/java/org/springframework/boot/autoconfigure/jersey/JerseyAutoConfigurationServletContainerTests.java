@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationServ
 import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.bind.LocalServerPort;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.OutputCapture;
@@ -62,7 +63,7 @@ public class JerseyAutoConfigurationServletContainerTests {
 	@ClassRule
 	public static OutputCapture output = new OutputCapture();
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port;
 
 	@Test
