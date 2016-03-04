@@ -29,6 +29,8 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Retry;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Template;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -36,6 +38,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.retry.backoff.ExponentialBackOffPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitTemplate}.
@@ -94,11 +99,31 @@ public class RabbitAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(RabbitTemplate.class)
-	public RabbitTemplate rabbitTemplate() {
+	public RabbitTemplate rabbitTemplate(RabbitProperties config) {
 		RabbitTemplate rabbitTemplate = new RabbitTemplate(this.connectionFactory);
 		MessageConverter messageConverter = this.messageConverter.getIfUnique();
 		if (messageConverter != null) {
 			rabbitTemplate.setMessageConverter(messageConverter);
+		}
+		Template template = config.getTemplate();
+		Retry retry = template.getRetry();
+		if (retry.isEnable()) {
+			RetryTemplate retryTemplate = new RetryTemplate();
+			SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
+			retryPolicy.setMaxAttempts(retry.getMaxAttempts());
+			retryTemplate.setRetryPolicy(retryPolicy);
+			ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+			backOffPolicy.setInitialInterval(retry.getInitialInterval());
+			backOffPolicy.setMultiplier(retry.getMultiplier());
+			backOffPolicy.setMaxInterval(retry.getMaxInterval());
+			retryTemplate.setBackOffPolicy(backOffPolicy);
+			rabbitTemplate.setRetryTemplate(retryTemplate);
+		}
+		if (template.getReceiveTimeout() != null) {
+			rabbitTemplate.setReceiveTimeout(template.getReceiveTimeout());
+		}
+		if (template.getReplyTimeout() != null) {
+			rabbitTemplate.setReplyTimeout(template.getReplyTimeout());
 		}
 		return rabbitTemplate;
 	}
