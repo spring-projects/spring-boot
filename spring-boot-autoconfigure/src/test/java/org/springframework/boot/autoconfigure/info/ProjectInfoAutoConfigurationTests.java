@@ -59,7 +59,7 @@ public class ProjectInfoAutoConfigurationTests {
 		GitInfo gitInfo = this.context.getBean(GitInfo.class);
 		assertThat(gitInfo.getBranch()).isNull();
 		assertThat(gitInfo.getCommit().getId()).isEqualTo("f95038e");
-		assertThat(gitInfo.getCommit().getTime()).isEqualTo("2016-03-03T10:02:00");
+		assertThat(gitInfo.getCommit().getTime()).isEqualTo("2016-03-03T10:02:00+0100");
 	}
 
 	@Test
@@ -68,7 +68,7 @@ public class ProjectInfoAutoConfigurationTests {
 		GitInfo gitInfo = this.context.getBean(GitInfo.class);
 		assertThat(gitInfo.getBranch()).isEqualTo("master");
 		assertThat(gitInfo.getCommit().getId()).isEqualTo("5009933");
-		assertThat(gitInfo.getCommit().getTime()).isEqualTo("2016-03-04T16:04:10");
+		assertThat(gitInfo.getCommit().getTime()).isEqualTo("2016-03-04T16:04:10+0100");
 	}
 
 	@Test
