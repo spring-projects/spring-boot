@@ -104,14 +104,14 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 public class HealthIndicatorAutoConfiguration {
 
 	@Autowired
-	private HealthIndicatorProperties configurationProperties = new HealthIndicatorProperties();
+	private HealthIndicatorProperties properties = new HealthIndicatorProperties();
 
 	@Bean
 	@ConditionalOnMissingBean(HealthAggregator.class)
 	public OrderedHealthAggregator healthAggregator() {
 		OrderedHealthAggregator healthAggregator = new OrderedHealthAggregator();
-		if (this.configurationProperties.getOrder() != null) {
-			healthAggregator.setStatusOrder(this.configurationProperties.getOrder());
+		if (this.properties.getOrder() != null) {
+			healthAggregator.setStatusOrder(this.properties.getOrder());
 		}
 		return healthAggregator;
 	}
