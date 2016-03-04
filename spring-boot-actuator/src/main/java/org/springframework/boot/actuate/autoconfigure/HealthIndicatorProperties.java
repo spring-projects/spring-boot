@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 1.2.0
  */
 @ConfigurationProperties("management.health.status")
-public class HealthIndicatorAutoConfigurationProperties {
+public class HealthIndicatorProperties {
 
 	/**
 	 * Comma-separated list of health statuses in order of severity.
