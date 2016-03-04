@@ -57,14 +57,18 @@ public class ProjectInfoAutoConfigurationTests {
 		load("spring.info.git.location=classpath:/org/springframework/boot/autoconfigure/info/git.properties",
 				"spring.git.properties=classpath:/org/springframework/boot/autoconfigure/info/git-no-data.properties");
 		GitInfo gitInfo = this.context.getBean(GitInfo.class);
-		assertGitInfo(gitInfo);
+		assertThat(gitInfo.getBranch()).isNull();
+		assertThat(gitInfo.getCommit().getId()).isEqualTo("f95038e");
+		assertThat(gitInfo.getCommit().getTime()).isEqualTo("2016-03-03T10:02:00");
 	}
 
 	@Test
 	public void gitLegacyKeyIsUsedAsFallback() {
-		load("spring.git.properties=classpath:/org/springframework/boot/autoconfigure/info/git.properties");
+		load("spring.git.properties=classpath:/org/springframework/boot/autoconfigure/info/git-epoch.properties");
 		GitInfo gitInfo = this.context.getBean(GitInfo.class);
-		assertGitInfo(gitInfo);
+		assertThat(gitInfo.getBranch()).isEqualTo("master");
+		assertThat(gitInfo.getCommit().getId()).isEqualTo("5009933");
+		assertThat(gitInfo.getCommit().getTime()).isEqualTo("2016-03-04T16:04:10");
 	}
 
 	@Test
@@ -82,11 +86,6 @@ public class ProjectInfoAutoConfigurationTests {
 		assertThat(gitInfo).isSameAs(this.context.getBean("customGitInfo"));
 	}
 
-	private void assertGitInfo(GitInfo gitInfo) {
-		assertThat(gitInfo.getBranch()).isNull();
-		assertThat(gitInfo.getCommit().getId()).isEqualTo("f95038e");
-		assertThat(gitInfo.getCommit().getTime()).isEqualTo("2016-03-03T10:02:00+0100");
-	}
 
 	private void load(String... environment) {
 		load(null, environment);

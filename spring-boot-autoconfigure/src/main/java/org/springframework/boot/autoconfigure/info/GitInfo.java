@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.info;
 
+import java.util.Date;
+
 /**
  * Provide git-related information such as commit id and time.
  *
@@ -45,7 +47,7 @@ public class GitInfo {
 
 		private String id;
 
-		private String time;
+		private Date time;
 
 		public String getId() {
 			return (this.id == null ? "" : getShortId(this.id));
@@ -59,11 +61,11 @@ public class GitInfo {
 			this.id = id;
 		}
 
-		public String getTime() {
+		public Date getTime() {
 			return this.time;
 		}
 
-		public void setTime(String time) {
+		public void setTime(Date time) {
 			this.time = time;
 		}
 
