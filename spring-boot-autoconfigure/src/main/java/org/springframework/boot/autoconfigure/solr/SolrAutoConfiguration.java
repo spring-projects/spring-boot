@@ -16,10 +16,6 @@
 
 package org.springframework.boot.autoconfigure.solr;
 
-import java.io.IOException;
-
-import javax.annotation.PreDestroy;
-
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -49,13 +45,6 @@ public class SolrAutoConfiguration {
 
 	public SolrAutoConfiguration(SolrProperties properties) {
 		this.properties = properties;
-	}
-
-	@PreDestroy
-	public void close() throws IOException {
-		if (this.solrClient != null) {
-			this.solrClient.close();
-		}
 	}
 
 	@Bean
