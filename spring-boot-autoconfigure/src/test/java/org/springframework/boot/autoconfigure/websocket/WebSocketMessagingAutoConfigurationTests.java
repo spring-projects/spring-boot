@@ -124,8 +124,8 @@ public class WebSocketMessagingAutoConfigurationTests {
 
 	private List<MessageConverter> getCustomizedConverters() {
 		List<MessageConverter> customizedConverters = new ArrayList<MessageConverter>();
-		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration();
-		ReflectionTestUtils.setField(configuration, "objectMapper", new ObjectMapper());
+		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
+				new ObjectMapper());
 		configuration.configureMessageConverters(customizedConverters);
 		return customizedConverters;
 	}

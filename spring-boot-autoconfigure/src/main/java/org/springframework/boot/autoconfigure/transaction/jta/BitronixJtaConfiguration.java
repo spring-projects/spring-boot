@@ -25,7 +25,6 @@ import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.TransactionManagerServices;
 import bitronix.tm.jndi.BitronixContext;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -54,8 +53,11 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 class BitronixJtaConfiguration {
 
-	@Autowired
-	private JtaProperties jtaProperties;
+	private final JtaProperties jtaProperties;
+
+	BitronixJtaConfiguration(JtaProperties jtaProperties) {
+		this.jtaProperties = jtaProperties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

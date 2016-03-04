@@ -23,7 +23,6 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -242,8 +241,11 @@ public class ResourceServerTokenServicesConfigurationTests {
 	@Configuration
 	protected static class ResourceServerPropertiesConfiguration {
 
-		@Autowired
 		private OAuth2ClientProperties credentials;
+
+		public ResourceServerPropertiesConfiguration(OAuth2ClientProperties credentials) {
+			this.credentials = credentials;
+		}
 
 		@Bean
 		public ResourceServerProperties resourceServerProperties() {

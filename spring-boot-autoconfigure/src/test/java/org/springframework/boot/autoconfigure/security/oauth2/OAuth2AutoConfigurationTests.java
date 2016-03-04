@@ -469,8 +469,11 @@ public class OAuth2AutoConfigurationTests {
 	@EnableResourceServer
 	protected static class CustomResourceServer extends ResourceServerConfigurerAdapter {
 
-		@Autowired
-		private ResourceServerProperties config;
+		private final ResourceServerProperties config;
+
+		protected CustomResourceServer(ResourceServerProperties config) {
+			this.config = config;
+		}
 
 		@Override
 		public void configure(ResourceServerSecurityConfigurer resources)
@@ -493,8 +496,11 @@ public class OAuth2AutoConfigurationTests {
 	protected static class CustomAuthorizationServer
 			extends AuthorizationServerConfigurerAdapter {
 
-		@Autowired
-		private AuthenticationManager authenticationManager;
+		private final AuthenticationManager authenticationManager;
+
+		protected CustomAuthorizationServer(AuthenticationManager authenticationManager) {
+			this.authenticationManager = authenticationManager;
+		}
 
 		@Bean
 		public TokenStore tokenStore() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -142,8 +142,11 @@ public class ResourceServerTokenServicesConfiguration {
 		@Conditional(TokenInfoCondition.class)
 		protected static class TokenInfoServicesConfiguration {
 
-			@Autowired
-			private ResourceServerProperties resource;
+			private final ResourceServerProperties resource;
+
+			protected TokenInfoServicesConfiguration(ResourceServerProperties resource) {
+				this.resource = resource;
+			}
 
 			@Bean
 			public RemoteTokenServices remoteTokenServices() {

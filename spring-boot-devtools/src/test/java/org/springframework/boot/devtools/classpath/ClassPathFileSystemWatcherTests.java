@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
@@ -92,8 +91,11 @@ public class ClassPathFileSystemWatcherTests {
 	@Configuration
 	public static class Config {
 
-		@Autowired
-		public Environment environment;
+		public final Environment environment;
+
+		public Config(Environment environment) {
+			this.environment = environment;
+		}
 
 		@Bean
 		public ClassPathFileSystemWatcher watcher() {

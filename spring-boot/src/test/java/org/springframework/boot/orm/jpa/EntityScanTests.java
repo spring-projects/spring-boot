@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -170,8 +169,11 @@ public class EntityScanTests {
 	@EntityScan("com.mycorp.entity")
 	static class BeanPostProcessorConfiguration {
 
-		@Autowired
-		protected EntityManagerFactory entityManagerFactory;
+		protected final EntityManagerFactory entityManagerFactory;
+
+		BeanPostProcessorConfiguration(EntityManagerFactory entityManagerFactory) {
+			this.entityManagerFactory = entityManagerFactory;
+		}
 
 		@Bean
 		public BeanPostProcessor beanPostProcessor() {

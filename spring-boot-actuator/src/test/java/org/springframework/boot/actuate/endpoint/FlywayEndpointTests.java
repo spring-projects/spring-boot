@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.endpoint;
 import org.flywaydb.core.Flyway;
 import org.junit.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -48,12 +47,9 @@ public class FlywayEndpointTests extends AbstractEndpointTests<FlywayEndpoint> {
 	@Import({ EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class })
 	public static class Config {
 
-		@Autowired
-		private Flyway flyway;
-
 		@Bean
-		public FlywayEndpoint endpoint() {
-			return new FlywayEndpoint(this.flyway);
+		public FlywayEndpoint endpoint(Flyway flyway) {
+			return new FlywayEndpoint(flyway);
 		}
 
 	}

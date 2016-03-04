@@ -22,7 +22,6 @@ import javax.validation.Validator;
 
 import com.couchbase.client.java.CouchbaseBucket;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -62,8 +61,11 @@ public class CouchbaseAutoConfiguration {
 	@ConditionalOnMissingBean(AbstractCouchbaseConfiguration.class)
 	public static class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
 
-		@Autowired
-		private CouchbaseProperties properties;
+		private final CouchbaseProperties properties;
+
+		public CouchbaseConfiguration(CouchbaseProperties properties) {
+			this.properties = properties;
+		}
 
 		@Override
 		protected List<String> getBootstrapHosts() {

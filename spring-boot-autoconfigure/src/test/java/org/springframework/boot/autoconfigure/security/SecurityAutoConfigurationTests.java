@@ -23,7 +23,6 @@ import javax.servlet.DispatcherType;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -442,8 +441,11 @@ public class SecurityAutoConfigurationTests {
 	@Configuration
 	protected static class SecurityCustomizer extends WebSecurityConfigurerAdapter {
 
-		@Autowired
-		AuthenticationManager authenticationManager;
+		final AuthenticationManager authenticationManager;
+
+		protected SecurityCustomizer(AuthenticationManager authenticationManager) {
+			this.authenticationManager = authenticationManager;
+		}
 
 	}
 
@@ -451,11 +453,14 @@ public class SecurityAutoConfigurationTests {
 	protected static class WorkaroundSecurityCustomizer
 			extends WebSecurityConfigurerAdapter {
 
-		@Autowired
-		private AuthenticationManagerBuilder builder;
+		private final AuthenticationManagerBuilder builder;
 
 		@SuppressWarnings("unused")
 		private AuthenticationManager authenticationManager;
+
+		protected WorkaroundSecurityCustomizer(AuthenticationManagerBuilder builder) {
+			this.builder = builder;
+		}
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {

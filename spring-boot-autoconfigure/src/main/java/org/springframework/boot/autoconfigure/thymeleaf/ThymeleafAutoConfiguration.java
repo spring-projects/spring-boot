@@ -212,11 +212,15 @@ public class ThymeleafAutoConfiguration {
 	@ConditionalOnWebApplication
 	protected static class ThymeleafViewResolverConfiguration {
 
-		@Autowired
-		private ThymeleafProperties properties;
+		private final ThymeleafProperties properties;
 
-		@Autowired
-		private SpringTemplateEngine templateEngine;
+		private final SpringTemplateEngine templateEngine;
+
+		protected ThymeleafViewResolverConfiguration(ThymeleafProperties properties,
+				SpringTemplateEngine templateEngine) {
+			this.properties = properties;
+			this.templateEngine = templateEngine;
+		}
 
 		@Bean
 		@ConditionalOnMissingBean(name = "thymeleafViewResolver")

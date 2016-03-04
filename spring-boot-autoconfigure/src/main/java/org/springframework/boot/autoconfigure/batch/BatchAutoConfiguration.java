@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,8 +132,11 @@ public class BatchAutoConfiguration {
 	@Configuration
 	protected static class JpaBatchConfiguration {
 
-		@Autowired
-		private BatchProperties properties;
+		private final BatchProperties properties;
+
+		protected JpaBatchConfiguration(BatchProperties properties) {
+			this.properties = properties;
+		}
 
 		// The EntityManagerFactory may not be discoverable by type when this condition
 		// is evaluated, so we need a well-known bean name. This is the one used by Spring

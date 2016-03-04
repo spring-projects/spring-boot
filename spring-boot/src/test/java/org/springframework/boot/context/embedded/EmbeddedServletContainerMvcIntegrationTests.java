@@ -22,7 +22,6 @@ import java.nio.charset.Charset;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
@@ -168,8 +167,11 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 	@PropertySource("classpath:/org/springframework/boot/context/embedded/conf.properties")
 	public static class AdvancedConfig {
 
-		@Autowired
-		private Environment env;
+		private final Environment env;
+
+		public AdvancedConfig(Environment env) {
+			this.env = env;
+		}
 
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {

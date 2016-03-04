@@ -31,7 +31,6 @@ import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -69,10 +68,13 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	private static final Log logger = LogFactory
 			.getLog(ElasticsearchAutoConfiguration.class);
 
-	@Autowired
-	private ElasticsearchProperties properties;
+	private final ElasticsearchProperties properties;
 
 	private Releasable releasable;
+
+	public ElasticsearchAutoConfiguration(ElasticsearchProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

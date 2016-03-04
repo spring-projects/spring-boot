@@ -32,7 +32,6 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
-import org.springframework.boot.autoconfigure.transaction.jta.JtaProperties;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -133,7 +132,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void defaultJtaPlatform() throws Exception {
-		this.context.register(JtaProperties.class, JtaAutoConfiguration.class);
+		this.context.register(JtaAutoConfiguration.class);
 		setupTestConfiguration();
 		this.context.refresh();
 		Map<String, Object> jpaPropertyMap = this.context
@@ -148,7 +147,7 @@ public class HibernateJpaAutoConfigurationTests
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jpa.properties.hibernate.transaction.jta.platform:"
 						+ TestJtaPlatform.class.getName());
-		this.context.register(JtaProperties.class, JtaAutoConfiguration.class);
+		this.context.register(JtaAutoConfiguration.class);
 		setupTestConfiguration();
 		this.context.refresh();
 		Map<String, Object> jpaPropertyMap = this.context

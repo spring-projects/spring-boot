@@ -296,8 +296,11 @@ public class WebMvcAutoConfiguration {
 		@ConditionalOnProperty(value = "spring.mvc.favicon.enabled", matchIfMissing = true)
 		public static class FaviconConfiguration {
 
-			@Autowired
-			private ResourceProperties resourceProperties = new ResourceProperties();
+			private final ResourceProperties resourceProperties;
+
+			public FaviconConfiguration(ResourceProperties resourceProperties) {
+				this.resourceProperties = resourceProperties;
+			}
 
 			@Bean
 			public SimpleUrlHandlerMapping faviconHandlerMapping() {

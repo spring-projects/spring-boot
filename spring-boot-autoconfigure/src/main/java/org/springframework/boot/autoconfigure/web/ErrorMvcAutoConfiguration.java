@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.aop.framework.autoproxy.AutoProxyUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -77,8 +76,11 @@ import org.springframework.web.util.HtmlUtils;
 @Configuration
 public class ErrorMvcAutoConfiguration {
 
-	@Autowired
-	private ServerProperties properties;
+	private final ServerProperties properties;
+
+	public ErrorMvcAutoConfiguration(ServerProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)

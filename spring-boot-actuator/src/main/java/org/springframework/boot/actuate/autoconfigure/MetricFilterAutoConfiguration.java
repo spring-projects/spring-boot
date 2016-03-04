@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure;
 import javax.servlet.Servlet;
 import javax.servlet.ServletRegistration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -48,11 +47,15 @@ import org.springframework.web.servlet.HandlerMapping;
 @ConditionalOnProperty(name = "endpoints.metrics.filter.enabled", matchIfMissing = true)
 public class MetricFilterAutoConfiguration {
 
-	@Autowired
-	private CounterService counterService;
+	private final CounterService counterService;
 
-	@Autowired
-	private GaugeService gaugeService;
+	private final GaugeService gaugeService;
+
+	public MetricFilterAutoConfiguration(CounterService counterService,
+			GaugeService gaugeService) {
+		this.counterService = counterService;
+		this.gaugeService = gaugeService;
+	}
 
 	@Bean
 	public MetricsFilter metricFilter() {

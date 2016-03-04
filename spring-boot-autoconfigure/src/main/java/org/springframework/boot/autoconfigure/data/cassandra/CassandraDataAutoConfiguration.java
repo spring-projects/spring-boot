@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
@@ -51,11 +50,15 @@ import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 @AutoConfigureAfter(CassandraAutoConfiguration.class)
 public class CassandraDataAutoConfiguration {
 
-	@Autowired
-	private CassandraProperties properties;
+	private final CassandraProperties properties;
 
-	@Autowired
-	private Cluster cluster;
+	private final Cluster cluster;
+
+	public CassandraDataAutoConfiguration(CassandraProperties properties,
+			Cluster cluster) {
+		this.properties = properties;
+		this.cluster = cluster;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

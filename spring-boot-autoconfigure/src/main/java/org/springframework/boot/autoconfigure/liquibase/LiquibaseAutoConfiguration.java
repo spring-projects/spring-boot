@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import liquibase.servicelocator.ServiceLocator;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -39,7 +38,6 @@ import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -68,14 +66,18 @@ public class LiquibaseAutoConfiguration {
 	@Import(LiquibaseJpaDependencyConfiguration.class)
 	public static class LiquibaseConfiguration {
 
-		@Autowired
-		private LiquibaseProperties properties = new LiquibaseProperties();
+		private final LiquibaseProperties properties;
 
-		@Autowired
-		private ResourceLoader resourceLoader = new DefaultResourceLoader();
+		private final ResourceLoader resourceLoader;
 
-		@Autowired
-		private DataSource dataSource;
+		private final DataSource dataSource;
+
+		public LiquibaseConfiguration(LiquibaseProperties properties,
+				ResourceLoader resourceLoader, DataSource dataSource) {
+			this.properties = properties;
+			this.resourceLoader = resourceLoader;
+			this.dataSource = dataSource;
+		}
 
 		@PostConstruct
 		public void checkChangelogExists() {

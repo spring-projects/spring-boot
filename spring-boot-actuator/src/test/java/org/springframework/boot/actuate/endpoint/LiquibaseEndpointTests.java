@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.endpoint;
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -49,8 +48,11 @@ public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpo
 	@Import({ EmbeddedDataSourceConfiguration.class, LiquibaseAutoConfiguration.class })
 	public static class Config {
 
-		@Autowired
-		private SpringLiquibase liquibase;
+		private final SpringLiquibase liquibase;
+
+		public Config(SpringLiquibase liquibase) {
+			this.liquibase = liquibase;
+		}
 
 		@Bean
 		public LiquibaseEndpoint endpoint() {

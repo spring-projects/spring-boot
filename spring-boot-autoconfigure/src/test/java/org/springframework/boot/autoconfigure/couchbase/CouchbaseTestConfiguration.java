@@ -36,6 +36,10 @@ import static org.mockito.Mockito.mock;
 public class CouchbaseTestConfiguration
 		extends CouchbaseAutoConfiguration.CouchbaseConfiguration {
 
+	public CouchbaseTestConfiguration(CouchbaseProperties properties) {
+		super(properties);
+	}
+
 	@Override
 	public Cluster couchbaseCluster() throws Exception {
 		return mock(CouchbaseCluster.class);

@@ -103,8 +103,12 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @EnableConfigurationProperties({ HealthIndicatorProperties.class })
 public class HealthIndicatorAutoConfiguration {
 
-	@Autowired
-	private HealthIndicatorProperties properties = new HealthIndicatorProperties();
+	private final HealthIndicatorProperties properties;
+
+	public HealthIndicatorAutoConfiguration(
+			HealthIndicatorProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(HealthAggregator.class)

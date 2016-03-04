@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,8 +137,11 @@ public class GroovyTemplateAutoConfiguration {
 	@ConditionalOnProperty(name = "spring.groovy.template.enabled", matchIfMissing = true)
 	public static class GroovyWebConfiguration {
 
-		@Autowired
-		private GroovyTemplateProperties properties;
+		private final GroovyTemplateProperties properties;
+
+		public GroovyWebConfiguration(GroovyTemplateProperties properties) {
+			this.properties = properties;
+		}
 
 		@Bean
 		@ConditionalOnMissingBean(name = "groovyMarkupViewResolver")

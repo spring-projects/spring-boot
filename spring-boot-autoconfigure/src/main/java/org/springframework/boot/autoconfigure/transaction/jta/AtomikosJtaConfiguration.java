@@ -27,7 +27,6 @@ import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -59,8 +58,11 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 class AtomikosJtaConfiguration {
 
-	@Autowired
-	private JtaProperties jtaProperties;
+	private final JtaProperties jtaProperties;
+
+	AtomikosJtaConfiguration(JtaProperties jtaProperties) {
+		this.jtaProperties = jtaProperties;
+	}
 
 	@Bean(initMethod = "init", destroyMethod = "shutdownForce")
 	@ConditionalOnMissingBean(UserTransactionService.class)

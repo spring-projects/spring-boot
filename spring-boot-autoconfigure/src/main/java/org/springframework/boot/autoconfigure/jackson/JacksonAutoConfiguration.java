@@ -41,7 +41,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
@@ -97,8 +96,11 @@ public class JacksonAutoConfiguration {
 		private static final Log logger = LogFactory
 				.getLog(JodaDateTimeJacksonConfiguration.class);
 
-		@Autowired
-		private JacksonProperties jacksonProperties;
+		private final JacksonProperties jacksonProperties;
+
+		JodaDateTimeJacksonConfiguration(JacksonProperties jacksonProperties) {
+			this.jacksonProperties = jacksonProperties;
+		}
 
 		@Bean
 		public SimpleModule jodaDateTimeSerializationModule() {
@@ -155,11 +157,15 @@ public class JacksonAutoConfiguration {
 	@EnableConfigurationProperties(JacksonProperties.class)
 	static class JacksonObjectMapperBuilderConfiguration {
 
-		@Autowired
-		private ApplicationContext applicationContext;
+		private final ApplicationContext applicationContext;
 
-		@Autowired
-		private JacksonProperties jacksonProperties;
+		private final JacksonProperties jacksonProperties;
+
+		JacksonObjectMapperBuilderConfiguration(ApplicationContext applicationContext,
+				JacksonProperties jacksonProperties) {
+			this.applicationContext = applicationContext;
+			this.jacksonProperties = jacksonProperties;
+		}
 
 		@Bean
 		@ConditionalOnMissingBean(Jackson2ObjectMapperBuilder.class)

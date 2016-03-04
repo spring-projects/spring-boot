@@ -245,6 +245,8 @@ public class SpringBootWebSecurityConfigurationTests {
 	protected static class TestInjectWebConfiguration
 			extends WebSecurityConfigurerAdapter {
 
+		private final AuthenticationManagerBuilder auth;
+
 		// It's a bad idea to inject an AuthenticationManager into a
 		// WebSecurityConfigurerAdapter because it can cascade early instantiation,
 		// unless you explicitly want the Boot default AuthenticationManager. It's
@@ -252,8 +254,9 @@ public class SpringBootWebSecurityConfigurationTests {
 		// might even be necessary to wrap the builder in a lazy AuthenticationManager
 		// (that calls getOrBuild() only when the AuthenticationManager is actually
 		// called).
-		@Autowired
-		private AuthenticationManagerBuilder auth;
+		protected TestInjectWebConfiguration(AuthenticationManagerBuilder auth) {
+			this.auth = auth;
+		}
 
 		@Override
 		public void init(WebSecurity web) throws Exception {

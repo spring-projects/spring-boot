@@ -139,8 +139,11 @@ public class OAuth2AuthorizationServerConfiguration
 	@Configuration
 	protected static class ClientDetailsLogger {
 
-		@Autowired
-		private OAuth2ClientProperties credentials;
+		private final OAuth2ClientProperties credentials;
+
+		protected ClientDetailsLogger(OAuth2ClientProperties credentials) {
+			this.credentials = credentials;
+		}
 
 		@PostConstruct
 		public void init() {
@@ -158,8 +161,11 @@ public class OAuth2AuthorizationServerConfiguration
 	@ConditionalOnMissingBean(BaseClientDetails.class)
 	protected static class BaseClientDetailsConfiguration {
 
-		@Autowired
-		private OAuth2ClientProperties client;
+		private final OAuth2ClientProperties client;
+
+		protected BaseClientDetailsConfiguration(OAuth2ClientProperties client) {
+			this.client = client;
+		}
 
 		@Bean
 		@ConfigurationProperties("security.oauth2.client")

@@ -66,11 +66,15 @@ public class FreeMarkerAutoConfiguration {
 	private static final Log logger = LogFactory
 			.getLog(FreeMarkerAutoConfiguration.class);
 
-	@Autowired
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
-	@Autowired
-	private FreeMarkerProperties properties;
+	private final FreeMarkerProperties properties;
+
+	public FreeMarkerAutoConfiguration(ApplicationContext applicationContext,
+			FreeMarkerProperties properties) {
+		this.applicationContext = applicationContext;
+		this.properties = properties;
+	}
 
 	@PostConstruct
 	public void checkTemplateLocationExists() {

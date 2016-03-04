@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,11 +64,15 @@ public class VelocityAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(VelocityAutoConfiguration.class);
 
-	@Autowired
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
-	@Autowired
-	private VelocityProperties properties;
+	private final VelocityProperties properties;
+
+	public VelocityAutoConfiguration(ApplicationContext applicationContext,
+			VelocityProperties properties) {
+		this.applicationContext = applicationContext;
+		this.properties = properties;
+	}
 
 	@PostConstruct
 	public void checkTemplateLocationExists() {

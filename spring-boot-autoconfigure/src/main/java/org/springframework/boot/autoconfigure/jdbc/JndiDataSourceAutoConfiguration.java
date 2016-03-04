@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -50,8 +49,11 @@ import org.springframework.jmx.support.JmxUtils;
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class JndiDataSourceAutoConfiguration {
 
-	@Autowired
-	private ApplicationContext context;
+	private final ApplicationContext context;
+
+	public JndiDataSourceAutoConfiguration(ApplicationContext context) {
+		this.context = context;
+	}
 
 	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean

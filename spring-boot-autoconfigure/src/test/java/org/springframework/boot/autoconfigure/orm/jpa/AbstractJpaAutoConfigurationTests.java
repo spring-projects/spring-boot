@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -291,8 +290,11 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	@TestAutoConfigurationPackage(AbstractJpaAutoConfigurationTests.class)
 	public static class TestConfigurationWithCustomPersistenceUnitManager {
 
-		@Autowired
-		private DataSource dataSource;
+		private final DataSource dataSource;
+
+		public TestConfigurationWithCustomPersistenceUnitManager(DataSource dataSource) {
+			this.dataSource = dataSource;
+		}
 
 		@Bean
 		public PersistenceUnitManager persistenceUnitManager() {

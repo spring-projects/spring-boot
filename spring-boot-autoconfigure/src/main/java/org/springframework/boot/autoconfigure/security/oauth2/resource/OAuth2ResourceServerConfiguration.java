@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -64,8 +63,11 @@ import org.springframework.util.StringUtils;
 @Import(ResourceServerTokenServicesConfiguration.class)
 public class OAuth2ResourceServerConfiguration {
 
-	@Autowired
-	private ResourceServerProperties resource;
+	private final ResourceServerProperties resource;
+
+	public OAuth2ResourceServerConfiguration(ResourceServerProperties resource) {
+		this.resource = resource;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(ResourceServerConfigurer.class)

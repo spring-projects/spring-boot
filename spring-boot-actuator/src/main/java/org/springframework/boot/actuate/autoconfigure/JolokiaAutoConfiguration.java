@@ -20,7 +20,6 @@ import java.util.Properties;
 
 import org.jolokia.http.AgentServlet;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration.JolokiaCondition;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -69,8 +68,11 @@ import org.springframework.web.servlet.mvc.ServletWrappingController;
 @EnableConfigurationProperties(JolokiaProperties.class)
 public class JolokiaAutoConfiguration {
 
-	@Autowired
-	JolokiaProperties properties = new JolokiaProperties();
+	private final JolokiaProperties properties;
+
+	public JolokiaAutoConfiguration(JolokiaProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

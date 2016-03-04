@@ -22,7 +22,6 @@ import javax.annotation.PostConstruct;
 
 import org.junit.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint.Report;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -66,8 +65,11 @@ public class AutoConfigurationReportEndpointTests
 	@EnableConfigurationProperties
 	public static class Config {
 
-		@Autowired
-		private ConfigurableApplicationContext context;
+		private final ConfigurableApplicationContext context;
+
+		public Config(ConfigurableApplicationContext context) {
+			this.context = context;
+		}
 
 		@PostConstruct
 		public void setupAutoConfigurationReport() {

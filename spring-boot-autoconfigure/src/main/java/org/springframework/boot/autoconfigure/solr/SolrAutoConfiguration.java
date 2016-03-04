@@ -24,7 +24,6 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -44,10 +43,13 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(SolrProperties.class)
 public class SolrAutoConfiguration {
 
-	@Autowired
-	private SolrProperties properties;
+	private final SolrProperties properties;
 
 	private SolrClient solrClient;
+
+	public SolrAutoConfiguration(SolrProperties properties) {
+		this.properties = properties;
+	}
 
 	@PreDestroy
 	public void close() throws IOException {

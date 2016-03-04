@@ -20,7 +20,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -58,8 +57,11 @@ public class WebSocketMessagingAutoConfiguration {
 	static class WebSocketMessageConverterConfiguration
 			extends AbstractWebSocketMessageBrokerConfigurer {
 
-		@Autowired
-		private ObjectMapper objectMapper;
+		private final ObjectMapper objectMapper;
+
+		WebSocketMessageConverterConfiguration(ObjectMapper objectMapper) {
+			this.objectMapper = objectMapper;
+		}
 
 		@Override
 		public void registerStompEndpoints(StompEndpointRegistry registry) {
