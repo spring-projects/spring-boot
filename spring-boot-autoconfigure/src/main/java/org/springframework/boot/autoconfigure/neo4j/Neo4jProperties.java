@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.neo4j;
 
 import org.neo4j.ogm.config.Configuration;
-import org.neo4j.ogm.service.Components;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -37,6 +36,10 @@ public class Neo4jProperties {
 
 	// if you don't set this up somewhere, this is what we'll use by default
 	private String driver = "org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver";
+	private String compiler;
+	private String URI;
+	private String username;
+	private String password;
 
 	public String getDriver() {
 		return this.driver;
@@ -46,11 +49,57 @@ public class Neo4jProperties {
 		this.driver = driver;
 	}
 
+	public String getCompiler() {
+		return this.compiler;
+	}
+
+	public void setCompiler(String compiler) {
+		this.compiler = compiler;
+	}
+
+	public String getURI() {
+		return this.URI;
+	}
+
+	public void setURI(String URI) {
+		this.URI = URI;
+	}
+
+	public String getUsername() {
+		return this.username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	public Configuration configure() {
 		Configuration configuration = new Configuration();
-		configuration.driverConfiguration()
-				.setDriverClassName(getDriver());
-		Components.configure(configuration);
+
+		if (this.driver != null) {
+			configuration.driverConfiguration().setDriverClassName(this.driver);
+		}
+
+		if (this.URI != null) {
+			configuration.driverConfiguration().setURI(this.URI);
+		}
+
+		if (this.username != null && this.password != null) {
+			configuration.driverConfiguration().setCredentials(this.username, this.password);
+		}
+
+		if (this.compiler != null) {
+			configuration.compilerConfiguration().setCompilerClassName(this.compiler);
+		}
+
 		return configuration;
 	}
 }

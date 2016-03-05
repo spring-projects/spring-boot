@@ -36,7 +36,7 @@ import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.template.Neo4jOperations;
 
 /**
- * Tests for {@link org.springframework.boot.autoconfigure.neo4j.Neo4jDataAutoConfiguration}.
+ * Tests for {@link org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration}.
  *
  * @author Josh Long
  * @author Oliver Gierke
@@ -59,7 +59,7 @@ public class Neo4jDataAutoConfigurationTests {
 	@Test
 	public void templateExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(PropertyPlaceholderAutoConfiguration.class, Neo4jDataAutoConfiguration.class);
+		this.context.register(PropertyPlaceholderAutoConfiguration.class, Neo4jAutoConfiguration.class);
 		this.context.refresh();
 		Assertions.assertThat(this.context.getBeanNamesForType(Neo4jOperations.class).length).isEqualTo(1);
 	}
@@ -67,7 +67,7 @@ public class Neo4jDataAutoConfigurationTests {
 	@Test
 	public void sessionFactoryExists() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(PropertyPlaceholderAutoConfiguration.class, Neo4jDataAutoConfiguration.class);
+		this.context.register(PropertyPlaceholderAutoConfiguration.class, Neo4jAutoConfiguration.class);
 		this.context.refresh();
 		Assertions.assertThat(this.context.getBeanNamesForType(SessionFactory.class).length).isEqualTo(1);
 	}
@@ -77,7 +77,7 @@ public class Neo4jDataAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(this.context, cityPackage);
-		this.context.register(Neo4jDataAutoConfiguration.class);
+		this.context.register(Neo4jAutoConfiguration.class);
 		this.context.refresh();
 		assertDomainTypesDiscovered(this.context.getBean(Neo4jMappingContext.class),
 				City.class);

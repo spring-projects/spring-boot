@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -61,7 +61,7 @@ import org.springframework.data.neo4j.repository.support.GraphRepositoryFactoryB
 		Neo4jRepositoryConfigurationExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.neo4j.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(Neo4jRepositoriesAutoConfigureRegistrar.class)
-@AutoConfigureAfter(Neo4jDataAutoConfiguration.class)
+@AutoConfigureAfter(Neo4jAutoConfiguration.class)
 public class Neo4jRepositoriesAutoConfiguration {
 
 }
