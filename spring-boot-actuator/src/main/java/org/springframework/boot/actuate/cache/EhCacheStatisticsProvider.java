@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class EhCacheStatisticsProvider implements CacheStatisticsProvider<EhCach
 		DefaultCacheStatistics statistics = new DefaultCacheStatistics();
 		StatisticsGateway ehCacheStatistics = cache.getNativeCache().getStatistics();
 		statistics.setSize(ehCacheStatistics.getSize());
-		Double hitRatio = ehCacheStatistics.cacheHitRatio();
+		Double hitRatio = cacheHitRatio(ehCacheStatistics);
 		if (!hitRatio.isNaN()) {
 			// ratio is calculated 'racily' and can drift marginally above unity,
 			// so we cap it here
@@ -44,6 +44,12 @@ public class EhCacheStatisticsProvider implements CacheStatisticsProvider<EhCach
 			statistics.setMissRatio(1 - sanitizedHitRatio);
 		}
 		return statistics;
+	}
+
+	private static Double cacheHitRatio(StatisticsGateway stats) {
+		long hitCount = stats.cacheHitCount();
+		long cacheMissCount = stats.cacheMissCount();
+		return ((double) hitCount) / (hitCount + cacheMissCount);
 	}
 
 }
