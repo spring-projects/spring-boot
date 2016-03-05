@@ -3017,16 +3017,80 @@ suited for connected big data than traditional rdbms approaches.
 Spring Boot offers several conveniences for working with Neo4j, including the
 `spring-boot-starter-data-neo4j` '`Starter POM`'.
 
-
-
 [[boot-features-connecting-to-neo4j]]
 ==== Connecting to a Neo4j database
 You can inject an auto-configured `org.neo4j.ogm.session.Neo4jSession` to
-access Neo4j databases. By default the instance will attempt to connect to a Neo4j
-server using the URL `http://localhost:7474`:
+access Neo4j databases.
 
+In your `application properties`, you can supply any domain packages to be scanned by the OGM at startup
+as well as the lifetime of the OGM session that will be established for web clients.
+
+By default your application will be configured to use an in-process embedded instance of Neo4j that will not persist any data when your application shuts down. You can also connect to a remote Neo4j server, or to an embedded instance that persists data between restarts of your application.
+
+The following sections show how you can configure your application for each of these scenarios.
+
+[[boot-features-neo4j-embedded]]
+==== Connecting to an embedded database
+[source,properties,indent=0]
+----
+        # embedded driver (optional: default is embedded driver)
+        spring.data.neo4j.driver=org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver
+
+        # database path (optional: default is in-memory)
+        spring.data.neo4j.URI=file://var/tmp/graph.db
+
+        # declare the domain packages for the OGM to scan at startup
+        # note: if you don't need to do any object mapping, you can omit this property
+        spring.data.neo4.domain.packages=my.app.domain.core, my.app.domain.external, ...
+
+        # OGM session lifetime for web clients
+        # options: session (httpSession), request (httpRequest)
+        # default: session
+        spring.data.neo4j.session.lifetime=session
+----
+
+[[boot-features-neo4j-remote]]
+==== Connecting to a remote database
+[source,properties,indent=0]
+----
+        # http driver
+        spring.data.neo4j.driver=org.neo4j.ogm.drivers.http.driver.HttpDriver
+
+        # database uri
+        spring.data.neo4j.URI=http://user:password@localhost:7474
+
+        # declare the domain packages for the OGM to scan at startup
+        # note: if you don't need to do any object mapping, you can omit this property
+        spring.data.neo4.domain.packages=my.app.domain.core, my.app.domain.external, ...
+
+        # OGM session lifetime for web clients
+        # options: session (httpSession), request (httpRequest)
+        # default: session
+        spring.data.neo4j.session.lifetime=session
+----
+
+[[boot-features-spring-data-neo4j-application]]
+==== Application
+[source,java,indent=0]]
+----
+    @SpringBootApplication
+    @Import(Neo4jAutoConfiguration.class)
+    public class Application {
+
+        public static void main(String[] args) {
+           new SpringApplication(Application.class).run(args);
+        }
+
+    }
+----
+
+[[boot-features-neo4j-ogm-session]]
+==== Neo4jSession
 [source,java,indent=0]
 ----
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.stereotype.Component;
+
 	import org.neo4j.ogm.session.Neo4jSession;
 
 	@Component
@@ -3040,7 +3104,6 @@ server using the URL `http://localhost:7474`:
 		}
 
 		// ...
-
 		public void example() {
 			Iterable result = session.query("MATCH (c:Customer) RETURN count(*)",null);
 			// ...
@@ -3049,34 +3112,7 @@ server using the URL `http://localhost:7474`:
 	}
 ----
 
-You can set `spring.data.neo4j.url` property to change the `url`.
-
-[source,properties,indent=0]
-----
-	spring.data.neo4j.url=http://user:password@host:port
-----
-
-Alternatively, specify a `host`/`port`. For example, you might declare the following in
-your `application.properties`:
-
-[source,properties,indent=0]
-----
-	spring.data.neo4j.host=neo4jserver
-	spring.data.neo4j.port=7474
-----
-
-TIP: If `spring.data.neo4j.port` is not specified the default of `7474` is used. You
-could simply delete this line from the sample above.
-
-TIP: If you aren't using Spring Data Neo4j you can inject `org.neo4j.ogm.Neo4jSession` beans
-instead of using `Neo4jTemplate`.
-
-You can also declare your own `Neo4jTemplate` or `Neo4jSession` bean if you want to take
-complete control of establishing the Neo4j connection.
-
-
-
-[[boot-features-neo4j-template]]
+[[boot-features-spring-data-neo4j-template]]
 ==== Neo4jTemplate
 Spring Data Neo4j provides a
 {spring-data-neo4j-javadoc}/core/Neo4jTemplate.html[`Neo4jTemplate`] class that is very
@@ -3086,8 +3122,9 @@ auto-configures a bean for you to simply inject:
 [source,java,indent=0]
 ----
 	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.data.neo4j.template.Neo4jTemplate;
 	import org.springframework.stereotype.Component;
+
+	import org.springframework.data.neo4j.template.Neo4jTemplate;
 
 	@Component
 	public class MyBean {
@@ -3106,19 +3143,24 @@ auto-configures a bean for you to simply inject:
 
 See the `Neo4jOperations` Javadoc for complete details.
 
-
-
 [[boot-features-spring-data-neo4j-repositories]]
 ==== Spring Data Neo4j repositories
-Spring Data includes repository support for Neo4j. As with the JPA repositories
-discussed earlier, the basic principle is that Cypher queries are constructed for you
-automatically based on method names. They also support annotated finder methods that
-allow you to specify your own custom Cypher queries.
+Spring Data includes repository support for Neo4j.
 
 In fact, both Spring Data JPA and Spring Data Neo4j share the same common
 infrastructure; so you could take the JPA example from earlier and, assuming that `City`
-is now a Neo4j data class rather than a JPA `@Entity`, it will work in the same way.
+is now a Neo4j OGM `@NodeEntity` rather than a JPA `@Entity`, it will work in the same way.
 
+To enable repository support (and optionally support for `@Transactional`), add the following two annotations to
+your Spring configuration:
+
+[source,java,indent=0]
+----
+    @EnableNeo4jRepositories(basePackages = "com.example.myapp.repository")
+    @EnableTransactionManagement
+----
+
+==== Repository example
 [source,java,indent=0]
 ----
 	package com.example.myapp.domain;

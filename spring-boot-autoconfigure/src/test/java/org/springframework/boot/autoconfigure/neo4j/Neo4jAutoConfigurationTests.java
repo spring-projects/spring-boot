@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
- * Tests for {@link org.springframework.boot.autoconfigure.neo4j.Neo4jDataAutoConfiguration}.
+ * Tests for {@link org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration}.
  *
  * @author Dave Syer
  * @author Michael Hunger
@@ -47,7 +47,7 @@ public class Neo4jAutoConfigurationTests {
 	@Test
 	public void configurationExists() {
 		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class, Neo4jDataAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class, Neo4jAutoConfiguration.class);
 		Assertions.assertThat(this.context.getBeanNamesForType(Configuration.class).length).isEqualTo(1);
 	}
 

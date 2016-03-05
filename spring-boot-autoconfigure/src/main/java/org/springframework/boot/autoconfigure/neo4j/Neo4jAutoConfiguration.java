@@ -16,28 +16,23 @@
 
 package org.springframework.boot.autoconfigure.neo4j;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.neo4j.ogm.session.Neo4jSession;
+import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanClassLoaderAware;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
-import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.template.Neo4jOperations;
@@ -58,16 +53,13 @@ import org.springframework.data.neo4j.template.Neo4jTemplate;
 @EnableConfigurationProperties(Neo4jProperties.class)
 @ConditionalOnMissingBean(type = "org.springframework.data.neo4j.template.Neo4jOperations")
 @ConditionalOnClass({ Neo4jSession.class, Neo4jOperations.class })
-public abstract class Neo4jDataAutoConfiguration extends Neo4jConfiguration implements BeanClassLoaderAware, BeanFactoryAware {
+public class Neo4jAutoConfiguration extends Neo4jConfiguration {
 
 	@Autowired
 	private Neo4jProperties properties;
 
-	@Autowired
-	private Environment environment;
-
-	private ClassLoader classLoader;
-	private BeanFactory beanFactory;
+	@Value("${spring.data.neo4j.domain.packages:null}")
+	private String[] domainPackages;
 
 	@Bean
 	@ConditionalOnMissingBean(org.neo4j.ogm.config.Configuration.class)
@@ -76,30 +68,16 @@ public abstract class Neo4jDataAutoConfiguration extends Neo4jConfiguration impl
 	}
 
 	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
-	}
-
-	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
-	}
-
-	@Override
 	@ConditionalOnMissingBean(SessionFactory.class)
 	public SessionFactory getSessionFactory() {
-		Collection<String> packages = getMappingBasePackages(this.beanFactory);
-		return new SessionFactory(packages.toArray(new String[packages.size()]));
+		return new SessionFactory(configuration(), this.domainPackages);
 	}
 
-	private static Collection<String> getMappingBasePackages(BeanFactory beanFactory) {
-		try {
-			return AutoConfigurationPackages.get(beanFactory);
-		}
-		catch (IllegalStateException ex) {
-			// no auto-configuration package registered yet
-			return Collections.emptyList();
-		}
+	@Bean
+	@ConditionalOnMissingBean(Session.class)
+	@Scope(value = "${spring.data.neo4j.session.lifetime:session}", proxyMode = ScopedProxyMode.TARGET_CLASS)
+	public Session getSession() throws Exception {
+		return getSessionFactory().openSession();
 	}
 
 }

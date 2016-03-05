@@ -26,18 +26,18 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.city.City;
 import org.springframework.boot.autoconfigure.data.jpa.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.neo4j.country.Country;
 import org.springframework.boot.autoconfigure.data.neo4j.country.CountryRepository;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfigurationTests;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 
 import org.springframework.boot.orm.jpa.EntityScan;
+
 import org.springframework.boot.test.EnvironmentTestUtils;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -48,6 +48,7 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
 /**
@@ -164,7 +165,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 			for (Class<?> type : new Class<?>[] { DataSourceAutoConfiguration.class,
 					HibernateJpaAutoConfiguration.class,
 					JpaRepositoriesAutoConfiguration.class,
-					Neo4jDataAutoConfiguration.class,
+					Neo4jAutoConfiguration.class,
 					Neo4jRepositoriesAutoConfiguration.class }) {
 				names.add(type.getName());
 			}
