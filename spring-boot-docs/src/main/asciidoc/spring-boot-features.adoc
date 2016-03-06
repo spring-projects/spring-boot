@@ -2373,9 +2373,9 @@ loadable.
 See {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[`DataSourceProperties`]
 for more of the supported options. These are the standard options that work regardless of
 the actual implementation. It is also possible to fine-tune implementation-specific
-settings using their respective prefix (`+spring.datasource.tomcat*+`,
-`+spring.datasource.hikari+`, `+spring.datasource.dbcp*+` and
-`+spring.datasource.dbcp2*+`), refer to the documentation of the connection pool
+settings using their respective prefix (`+spring.datasource.tomcat.*+`,
+`+spring.datasource.hikari.*+`, `+spring.datasource.dbcp.*+` and
+`+spring.datasource.dbcp2.*+`). Refer to the documentation of the connection pool
 implementation you are using for more details.
 
 For instance, if you are using the
@@ -3747,7 +3747,7 @@ used to declare a corresponding queue on the RabbitMQ instance if necessary.
 When the Rabbit infrastructure is present, any bean can be annotated with
 `@RabbitListener` to create a listener endpoint. If no `RabbitListenerContainerFactory`
 has been defined, a default one is configured automatically.  If a `MessageConverter`
-beans is defined, is is associated automatically to the default factory.
+beans is defined, it is associated automatically to the default factory.
 
 The following component creates a listener endpoint on the `someQueue` queue:
 

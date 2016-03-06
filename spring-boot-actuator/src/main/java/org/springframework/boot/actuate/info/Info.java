@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 /**
  * Carries information of the application.
  * <p>
- * Each detail element can singular or a hierarchical object such as a pojo or a nested
+ * Each detail element can be singular or a hierarchical object such as a pojo or a nested
  * Map.
  *
  * @author Meang Akira Tanaka
