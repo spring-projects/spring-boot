@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfiguration;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
 import org.springframework.boot.autoconfigure.data.couchbase.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
@@ -52,7 +52,7 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void couchbaseNotAvailable() throws Exception {
-		load(CouchbaseNotAvailableConfiguration.class);
+		load(null);
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}
 
@@ -83,6 +83,7 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 		}
 		context.register(PropertyPlaceholderAutoConfiguration.class,
 				CouchbaseAutoConfiguration.class,
+				CouchbaseDataAutoConfiguration.class,
 				CouchbaseRepositoriesAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
@@ -96,14 +97,14 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 
 	@Configuration
 	@TestAutoConfigurationPackage(City.class)
-	@Import(CouchbaseTestConfiguration.class)
+	@Import(CouchbaseTestConfigurer.class)
 	static class DefaultConfiguration {
 
 	}
 
 	@Configuration
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
-	@Import(CouchbaseTestConfiguration.class)
+	@Import(CouchbaseTestConfigurer.class)
 	protected static class NoRepositoryConfiguration {
 
 	}

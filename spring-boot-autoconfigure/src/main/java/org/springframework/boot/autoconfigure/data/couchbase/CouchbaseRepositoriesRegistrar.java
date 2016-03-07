@@ -31,7 +31,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Eddú Meléndez
  * @since 1.4.0
  */
-public class CouchbaseRepositoriesRegistrar
+class CouchbaseRepositoriesRegistrar
 		extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override

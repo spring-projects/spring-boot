@@ -14,46 +14,57 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.couchbase;
+package org.springframework.boot.autoconfigure.data.couchbase;
 
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.CouchbaseBucket;
-import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.cluster.ClusterInfo;
+import com.couchbase.client.java.env.CouchbaseEnvironment;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import static org.mockito.Mockito.mock;
+import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 
 /**
- * Test configuration for couchbase that mocks access.
+ * A simple {@link CouchbaseConfigurer} implementation.
  *
  * @author Stephane Nicoll
+ * @since 1.4.0
  */
-@Configuration
-public class CouchbaseTestConfiguration
-		extends CouchbaseAutoConfiguration.CouchbaseConfiguration {
+public class SpringBootCouchbaseConfigurer implements CouchbaseConfigurer {
 
-	public CouchbaseTestConfiguration(CouchbaseProperties properties) {
-		super(properties);
+	private final CouchbaseEnvironment env;
+
+	private final Cluster cluster;
+
+	private final ClusterInfo clusterInfo;
+
+	private final Bucket bucket;
+
+	public SpringBootCouchbaseConfigurer(CouchbaseEnvironment env, Cluster cluster,
+			ClusterInfo clusterInfo, Bucket bucket) {
+		this.env = env;
+		this.cluster = cluster;
+		this.clusterInfo = clusterInfo;
+		this.bucket = bucket;
+	}
+
+	@Override
+	public CouchbaseEnvironment couchbaseEnvironment() throws Exception {
+		return this.env;
 	}
 
 	@Override
 	public Cluster couchbaseCluster() throws Exception {
-		return mock(CouchbaseCluster.class);
+		return this.cluster;
 	}
 
 	@Override
-	@Bean
-	public ClusterInfo couchbaseClusterInfo() {
-		return mock(ClusterInfo.class);
+	public ClusterInfo couchbaseClusterInfo() throws Exception {
+		return this.clusterInfo;
 	}
 
 	@Override
 	public Bucket couchbaseClient() throws Exception {
-		return mock(CouchbaseBucket.class);
+		return this.bucket;
 	}
 
 }

@@ -16,12 +16,9 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.data.couchbase.core.query.Consistency;
 
 /**
  * Configuration properties for Couchbase.
@@ -30,35 +27,15 @@ import org.springframework.data.couchbase.core.query.Consistency;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@ConfigurationProperties(prefix = "spring.data.couchbase")
+@ConfigurationProperties(prefix = "spring.couchbase")
 public class CouchbaseProperties {
-
-	/**
-	 * Automatically create views and indexes. Use the meta-data provided by
-	 * "@ViewIndexed", "@N1qlPrimaryIndexed" and "@N1qlSecondaryIndexed".
-	 */
-	private boolean autoIndex;
 
 	/**
 	 * Couchbase nodes (host or IP address) to bootstrap from.
 	 */
-	private List<String> bootstrapHosts = new ArrayList<String>(
-			Collections.singletonList("localhost"));
+	private List<String> bootstrapHosts;
 
 	private final Bucket bucket = new Bucket();
-
-	/**
-	 * Consistency to apply by default on generated queries.
-	 */
-	private Consistency consistency = Consistency.READ_YOUR_OWN_WRITES;
-
-	public boolean isAutoIndex() {
-		return this.autoIndex;
-	}
-
-	public void setAutoIndex(boolean autoIndex) {
-		this.autoIndex = autoIndex;
-	}
 
 	public List<String> getBootstrapHosts() {
 		return this.bootstrapHosts;
@@ -72,20 +49,12 @@ public class CouchbaseProperties {
 		return this.bucket;
 	}
 
-	public Consistency getConsistency() {
-		return this.consistency;
-	}
-
-	public void setConsistency(Consistency consistency) {
-		this.consistency = consistency;
-	}
-
 	static class Bucket {
 
 		/**
 		 * Name of the bucket to connect to.
 		 */
-		private String name;
+		private String name = "default";
 
 		/**
 		 * Password of the bucket.

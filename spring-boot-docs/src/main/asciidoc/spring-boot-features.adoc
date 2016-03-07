@@ -3198,24 +3198,38 @@ dependencies in a convenient way.
 
 [[boot-features-connecting-to-couchbase]]
 ==== Connecting to Couchbase
-You can inject an auto-configured `CouchbaseTemplate` instance as you would with any
-other Spring Bean. The `spring.data.couchbase.*` properties can be used to customize the
+You can very easily get a a `Bucket` and `Cluster` by adding the couchbase SDK and some
+configuration. The `spring.couchbase.*` properties can be used to customize the
 connection. Generally you will provide the bootstrap hosts, bucket name and password:
 
 [source,properties,indent=0]
 ----
-	spring.data.couchbase.bootstrap-hosts=my-host-1,192.168.1.123
-	spring.data.couchbase.bucket.name=my-bucket
-	spring.data.couchbase.bucket.password=secret
+	spring.couchbase.bootstrap-hosts=my-host-1,192.168.1.123
+	spring.couchbase.bucket.name=my-bucket
+	spring.couchbase.bucket.password=secret
 ----
 
 [TIP]
 ====
-You need to provide _at least_ the bucket name, in which case the bootstrap host is
-localhost and the password is an empty String. Alternatively, you can define your
-own `org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration` `@Bean`
-configuration to take control over the whole configuration.
+You need to provide _at least_ the bootstrap host(s), in which case the bucket name
+is `default` and the password is the empty String. Alternatively, you can define your
+own `org.springframework.data.couchbase.config.CouchbaseConfigurer` `@Bean` to take
+control over the whole configuration.
 ====
+
+[[boot-features-spring-data-couchbase-repositories]]
+==== Spring Data Couchbase repositories
+Spring Data includes repository support for Couchbase. For complete details of Spring
+Data Couchbase, refer to their
+http://docs.spring.io/spring-data/couchbase/docs/current/reference/html/[reference documentation].
+
+You can inject an auto-configured `CouchbaseTemplate` instance as you would with any
+other Spring Bean as long as a _default_ `CouchbaseConfigurer` is available (that
+happens when you enable the couchbase support as explained above). If you want to
+bypass the auto-configuration for Spring Data Couchbase, provide your own
+`org.springframework.data.couchbase.config.AbstractCouchbaseDataConfiguration`
+implementation.
+
 
 [source,java,indent=0]
 ----
@@ -3236,14 +3250,6 @@ configuration to take control over the whole configuration.
 
 If you add a `@Bean` of your own of type `CouchbaseTemplate` named `couchbaseTemplate` it
 will replace the default.
-
-
-
-[[boot-features-spring-data-couchbase-repositories]]
-==== Spring Data Couchbase repositories
-Spring Data includes repository support for Couchbase. For complete details of Spring
-Data Couchbase, refer to their
-http://docs.spring.io/spring-data/couchbase/docs/current/reference/html/[reference documentation].
 
 
 [[boot-features-caching]]
