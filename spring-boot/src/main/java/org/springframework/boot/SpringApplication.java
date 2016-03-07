@@ -305,7 +305,14 @@ public class SpringApplication {
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(
 					args);
-			context = createAndRefreshContext(listeners, applicationArguments);
+			ConfigurableEnvironment environment = prepareEnvironment(listeners,
+					applicationArguments);
+			if (this.bannerMode != Banner.Mode.OFF) {
+				printBanner(environment);
+			}
+			context = createApplicationContext();
+			prepareContext(context, environment, listeners, applicationArguments);
+			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			listeners.finished(context, null);
 			stopWatch.stop();
@@ -321,10 +328,9 @@ public class SpringApplication {
 		}
 	}
 
-	private ConfigurableApplicationContext createAndRefreshContext(
+	private ConfigurableEnvironment prepareEnvironment(
 			SpringApplicationRunListeners listeners,
 			ApplicationArguments applicationArguments) {
-		ConfigurableApplicationContext context;
 		// Create and configure the environment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
@@ -332,13 +338,12 @@ public class SpringApplication {
 		if (isWebEnvironment(environment) && !this.webEnvironment) {
 			environment = convertToStandardEnvironment(environment);
 		}
+		return environment;
+	}
 
-		if (this.bannerMode != Banner.Mode.OFF) {
-			printBanner(environment);
-		}
-
-		// Create, load, refresh and run the ApplicationContext
-		context = createApplicationContext();
+	private void prepareContext(ConfigurableApplicationContext context,
+			ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
+			ApplicationArguments applicationArguments) {
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
 		applyInitializers(context);
@@ -357,8 +362,9 @@ public class SpringApplication {
 		Assert.notEmpty(sources, "Sources must not be empty");
 		load(context, sources.toArray(new Object[sources.size()]));
 		listeners.contextLoaded(context);
+	}
 
-		// Refresh the context
+	private void refreshContext(ConfigurableApplicationContext context) {
 		refresh(context);
 		if (this.registerShutdownHook) {
 			try {
@@ -368,7 +374,6 @@ public class SpringApplication {
 				// Not allowed in some environments.
 			}
 		}
-		return context;
 	}
 
 	private void configureHeadlessProperty() {
@@ -886,7 +891,7 @@ public class SpringApplication {
 
 	private int getExitCodeFromMappedException(ConfigurableApplicationContext context,
 			Throwable exception) {
-		if (context == null) {
+		if (context == null || !context.isActive()) {
 			return 0;
 		}
 		ExitCodeGenerators generators = new ExitCodeGenerators();
