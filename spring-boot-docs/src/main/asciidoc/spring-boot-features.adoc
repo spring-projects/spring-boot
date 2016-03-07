@@ -1204,6 +1204,11 @@ the classpath, and further customized by providing a suitable configuration file
 root of the classpath, or in a location specified by the Spring `Environment` property
 `logging.config`.
 
+You can force Spring Boot to use a particular logging system using the
+`org.springframework.boot.logging.LoggingSystem` system property. The value should be
+the fully-qualified class name of a `LoggingSystem` implementation. You can also disable
+Spring Boot's logging configuration entirely by used a value of `none`.
+
 NOTE: Since logging is initialized *before* the `ApplicationContext` is created, it isn't
 possible to control logging from `@PropertySources` in Spring `@Configuration` files.
 System properties and the conventional Spring Boot external configuration files work just
