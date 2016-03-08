@@ -37,6 +37,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -44,6 +45,7 @@ import org.springframework.boot.context.embedded.AbstractEmbeddedServletContaine
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.testutil.OutputCapture;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 
@@ -66,6 +68,9 @@ import static org.mockito.Mockito.verify;
  */
 public class TomcatEmbeddedServletContainerFactoryTests
 		extends AbstractEmbeddedServletContainerFactoryTests {
+
+	@Rule
+	public OutputCapture outputCapture = new OutputCapture();
 
 	@Override
 	protected TomcatEmbeddedServletContainerFactory getFactory() {
@@ -333,6 +338,16 @@ public class TomcatEmbeddedServletContainerFactoryTests
 
 		});
 
+	}
+
+	@Test
+	public void startupFailureDoesNotResultInUnstoppedThreadsBeingReported()
+			throws IOException {
+		super.portClashOfPrimaryConnectorResultsInPortInUseException();
+
+		String string = this.outputCapture.toString();
+		assertThat(string)
+				.doesNotContain("appears to have started a thread named [main]");
 	}
 
 	@Override

@@ -155,6 +155,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			}
 
 		};
+		awaitThread.setContextClassLoader(getClass().getClassLoader());
 		awaitThread.setDaemon(false);
 		awaitThread.start();
 	}
@@ -191,11 +192,19 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	private void stopSilently() {
 		try {
-			this.tomcat.stop();
+			stopTomcat();
 		}
 		catch (LifecycleException ex) {
 			// Ignore
 		}
+	}
+
+	private void stopTomcat() throws LifecycleException {
+		if (Thread.currentThread()
+				.getContextClassLoader() instanceof TomcatEmbeddedWebappClassLoader) {
+			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+		}
+		this.tomcat.stop();
 	}
 
 	private void addPreviouslyRemovedConnectors() {
@@ -246,7 +255,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 	public synchronized void stop() throws EmbeddedServletContainerException {
 		try {
 			try {
-				this.tomcat.stop();
+				stopTomcat();
 				this.tomcat.destroy();
 			}
 			catch (LifecycleException ex) {
@@ -258,10 +267,6 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 					ex);
 		}
 		finally {
-			if (Thread.currentThread()
-					.getContextClassLoader() instanceof TomcatEmbeddedWebappClassLoader) {
-				Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-			}
 			containerCounter.decrementAndGet();
 		}
 	}
