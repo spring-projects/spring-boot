@@ -51,10 +51,15 @@ import org.springframework.data.couchbase.repository.support.IndexManager;
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class CouchbaseAutoConfiguration {
 
-	@Bean
-	@ConditionalOnBean(Validator.class)
-	public ValidatingCouchbaseEventListener validationEventListener(Validator validator) {
-		return new ValidatingCouchbaseEventListener(validator);
+	@Configuration
+	@ConditionalOnClass(Validator.class)
+	public static class ValidationConfiguration {
+
+		@Bean
+		@ConditionalOnBean(Validator.class)
+		public ValidatingCouchbaseEventListener validationEventListener(Validator validator) {
+			return new ValidatingCouchbaseEventListener(validator);
+		}
 	}
 
 	@Configuration
