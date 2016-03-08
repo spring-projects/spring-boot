@@ -21,38 +21,43 @@ import java.util.Map;
 
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySources;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 
 /**
- * A base {@link InfoContributor} implementation working on the {@link Environment}.
+ * Helper extracting info from {@link PropertySources}.
  *
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-public abstract class AbstractEnvironmentInfoContributor implements InfoContributor {
+public class PropertySourcesBinder {
 
-	private final ConfigurableEnvironment environment;
+	private final PropertySources propertySources;
 
-	protected AbstractEnvironmentInfoContributor(ConfigurableEnvironment environment) {
-		this.environment = environment;
+	public PropertySourcesBinder(PropertySources propertySources) {
+		this.propertySources = propertySources;
 	}
 
-	public final ConfigurableEnvironment getEnvironment() {
-		return this.environment;
+	public PropertySourcesBinder(ConfigurableEnvironment environment) {
+		this(environment.getPropertySources());
+	}
+
+	public final PropertySources getPropertySources() {
+		return this.propertySources;
 	}
 
 	/**
-	 * Extract the keys from the environment using the specified {@code prefix}. The
+	 * Extract the keys using the specified {@code prefix}. The
 	 * prefix won't be included.
 	 * <p>
 	 * Any key that starts with the {@code prefix} will be included
 	 * @param prefix the prefix to use
-	 * @return the keys from the environment matching the prefix
+	 * @return the keys matching the prefix
 	 */
-	protected Map<String, Object> extract(String prefix) {
+	public Map<String, Object> extractAll(String prefix) {
 		Map<String, Object> content = new LinkedHashMap<String, Object>();
-		bindEnvironmentTo(prefix, content);
+		bindTo(prefix, content);
 		return content;
 	}
 
@@ -63,11 +68,13 @@ public abstract class AbstractEnvironmentInfoContributor implements InfoContribu
 	 * @param prefix the prefix to use
 	 * @param target the object to bind to
 	 */
-	protected void bindEnvironmentTo(String prefix, Object target) {
+	public void bindTo(String prefix, Object target) {
 		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
 				target);
-		factory.setTargetName(prefix);
-		factory.setPropertySources(this.environment.getPropertySources());
+		if (StringUtils.hasText(prefix)) {
+			factory.setTargetName(prefix);
+		}
+		factory.setPropertySources(this.propertySources);
 		try {
 			factory.bindPropertiesToTarget();
 		}

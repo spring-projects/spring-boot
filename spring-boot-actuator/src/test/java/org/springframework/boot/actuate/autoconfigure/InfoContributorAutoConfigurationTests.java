@@ -17,13 +17,15 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.Map;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
-import org.springframework.boot.autoconfigure.info.GitInfo;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -74,12 +76,45 @@ public class InfoContributorAutoConfigurationTests {
 				.isSameAs(beans.values().iterator().next());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
-	public void gitInfoAvailable() {
-		load(GitInfoConfiguration.class);
+	public void gitPropertiesDefaultMode() {
+		load(GitPropertiesConfiguration.class);
 		Map<String, InfoContributor> beans = this.context
 				.getBeansOfType(InfoContributor.class);
 		assertThat(beans).containsKeys("gitInfoContributor");
+		Map<String, Object> content =
+				invokeContributor(this.context.getBean("gitInfoContributor", InfoContributor.class));
+		Object git = content.get("git");
+		assertThat(git).isInstanceOf(Map.class);
+		Map<String, Object> gitInfo = (Map<String, Object>) git;
+		assertThat(gitInfo).containsOnlyKeys("branch", "commit");
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void gitPropertiesFullMode() {
+		load(GitPropertiesConfiguration.class, "management.info.git.mode=full");
+		Map<String, Object> content =
+				invokeContributor(this.context.getBean("gitInfoContributor", InfoContributor.class));
+		Object git = content.get("git");
+		assertThat(git).isInstanceOf(Map.class);
+		Map<String, Object> gitInfo = (Map<String, Object>) git;
+		assertThat(gitInfo).containsOnlyKeys("branch", "commit", "foo");
+		assertThat(gitInfo.get("foo")).isEqualTo("bar");
+	}
+
+	@Test
+	public void customGitInfoContributor() {
+		load(CustomGitInfoProviderConfiguration.class);
+		assertThat(this.context.getBean(GitInfoContributor.class))
+				.isSameAs(this.context.getBean("customGitInfoContributor"));
+	}
+
+	private Map<String, Object> invokeContributor(InfoContributor contributor) {
+		Info.Builder builder = new Info.Builder();
+		contributor.contribute(builder);
+		return builder.build().getDetails();
 	}
 
 	private void load(String... environment) {
@@ -98,14 +133,15 @@ public class InfoContributorAutoConfigurationTests {
 	}
 
 	@Configuration
-	static class GitInfoConfiguration {
+	static class GitPropertiesConfiguration {
 
 		@Bean
-		public GitInfo gitInfo() {
-			GitInfo gitInfo = new GitInfo();
-			gitInfo.setBranch("master");
-			gitInfo.getCommit().setId("abcdefg");
-			return gitInfo;
+		public GitProperties gitProperties() {
+			Properties properties = new Properties();
+			properties.put("branch", "master");
+			properties.put("commit.id", "abcdefg");
+			properties.put("foo", "bar");
+			return new GitProperties(properties);
 		}
 
 	}
@@ -120,6 +156,16 @@ public class InfoContributorAutoConfigurationTests {
 				public void contribute(Info.Builder builder) {
 				}
 			};
+		}
+
+	}
+
+	@Configuration
+	static class CustomGitInfoProviderConfiguration {
+
+		@Bean
+		public GitInfoContributor customGitInfoContributor() {
+			return new GitInfoContributor(new GitProperties(new Properties()));
 		}
 
 	}

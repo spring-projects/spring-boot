@@ -17,11 +17,13 @@
 package org.springframework.boot.autoconfigure.info;
 
 import java.util.Map;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -46,9 +48,9 @@ public class ProjectInfoAutoConfigurationTests {
 	}
 
 	@Test
-	public void gitInfoUnavailableIfResourceNotAvailable() {
+	public void gitPropertiesUnavailableIfResourceNotAvailable() {
 		load();
-		Map<String, GitInfo> beans = this.context.getBeansOfType(GitInfo.class);
+		Map<String, GitProperties> beans = this.context.getBeansOfType(GitProperties.class);
 		assertThat(beans).hasSize(0);
 	}
 
@@ -56,34 +58,34 @@ public class ProjectInfoAutoConfigurationTests {
 	public void gitLocationTakesPrecedenceOverLegacyKey() {
 		load("spring.info.git.location=classpath:/org/springframework/boot/autoconfigure/info/git.properties",
 				"spring.git.properties=classpath:/org/springframework/boot/autoconfigure/info/git-no-data.properties");
-		GitInfo gitInfo = this.context.getBean(GitInfo.class);
-		assertThat(gitInfo.getBranch()).isNull();
-		assertThat(gitInfo.getCommit().getId()).isEqualTo("f95038e");
-		assertThat(gitInfo.getCommit().getTime().getTime()).isEqualTo(1456995720000L);
+		GitProperties gitProperties = this.context.getBean(GitProperties.class);
+		assertThat(gitProperties.getBranch()).isNull();
+		assertThat(gitProperties.getCommitId()).isEqualTo("f95038ec09e29d8f91982fd1cbcc0f3b131b1d0a");
+		assertThat(gitProperties.getCommitTime()).isEqualTo("1456995720000");
 	}
 
 	@Test
 	public void gitLegacyKeyIsUsedAsFallback() {
 		load("spring.git.properties=classpath:/org/springframework/boot/autoconfigure/info/git-epoch.properties");
-		GitInfo gitInfo = this.context.getBean(GitInfo.class);
-		assertThat(gitInfo.getBranch()).isEqualTo("master");
-		assertThat(gitInfo.getCommit().getId()).isEqualTo("5009933");
-		assertThat(gitInfo.getCommit().getTime().getTime()).isEqualTo(1457103850000L);
+		GitProperties gitProperties = this.context.getBean(GitProperties.class);
+		assertThat(gitProperties.getBranch()).isEqualTo("master");
+		assertThat(gitProperties.getCommitId()).isEqualTo("5009933788f5f8c687719de6a697074ff80b1b69");
+		assertThat(gitProperties.getCommitTime()).isEqualTo("1457103850000");
 	}
 
 	@Test
-	public void gitInfoWithNoData() {
+	public void gitPropertiesWithNoData() {
 		load("spring.info.git.location=classpath:/org/springframework/boot/autoconfigure/info/git-no-data.properties");
-		GitInfo gitInfo = this.context.getBean(GitInfo.class);
-		assertThat(gitInfo.getBranch()).isNull();
+		GitProperties gitProperties = this.context.getBean(GitProperties.class);
+		assertThat(gitProperties.getBranch()).isNull();
 	}
 
 	@Test
-	public void gitInfoFallbackWithGitInfoBean() {
-		load(CustomGitInfoConfiguration.class,
+	public void gitPropertiesFallbackWithGitPropertiesBean() {
+		load(CustomGitPropertiesConfiguration.class,
 				"spring.info.git.location=classpath:/org/springframework/boot/autoconfigure/info/git.properties");
-		GitInfo gitInfo = this.context.getBean(GitInfo.class);
-		assertThat(gitInfo).isSameAs(this.context.getBean("customGitInfo"));
+		GitProperties gitProperties = this.context.getBean(GitProperties.class);
+		assertThat(gitProperties).isSameAs(this.context.getBean("customGitProperties"));
 	}
 
 	private void load(String... environment) {
@@ -103,11 +105,11 @@ public class ProjectInfoAutoConfigurationTests {
 	}
 
 	@Configuration
-	static class CustomGitInfoConfiguration {
+	static class CustomGitPropertiesConfiguration {
 
 		@Bean
-		public GitInfo customGitInfo() {
-			return new GitInfo();
+		public GitProperties customGitProperties() {
+			return new GitProperties(new Properties());
 		}
 
 	}

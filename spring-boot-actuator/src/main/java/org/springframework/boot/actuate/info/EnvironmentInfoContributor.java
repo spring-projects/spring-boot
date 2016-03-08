@@ -16,29 +16,26 @@
 
 package org.springframework.boot.actuate.info;
 
-import java.util.Map;
-
 import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
- * A {@link InfoContributor} that provides all environment entries prefixed with info.
+ * An {@link InfoContributor} that provides all environment entries prefixed with info.
  *
  * @author Meang Akira Tanaka
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-public class EnvironmentInfoContributor extends AbstractEnvironmentInfoContributor {
+public class EnvironmentInfoContributor implements InfoContributor {
 
-	private final Map<String, Object> info;
+	private final PropertySourcesBinder binder;
 
 	public EnvironmentInfoContributor(ConfigurableEnvironment environment) {
-		super(environment);
-		this.info = extract("info");
+		this.binder = new PropertySourcesBinder(environment);
 	}
 
 	@Override
 	public void contribute(Info.Builder builder) {
-		builder.withDetails(this.info);
+		builder.withDetails(this.binder.extractAll("info"));
 	}
 
 }
