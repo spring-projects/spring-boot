@@ -64,7 +64,8 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void disableRepository() {
-		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.enabled=false");
+		load(DefaultConfiguration.class,
+				"spring.data.couchbase.repositories.enabled=false");
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}
 
@@ -87,13 +88,11 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 		this.context = context;
 	}
 
-
 	@Configuration
 	@TestAutoConfigurationPackage(City.class)
 	static class CouchbaseNotAvailableConfiguration {
 
 	}
-
 
 	@Configuration
 	@TestAutoConfigurationPackage(City.class)

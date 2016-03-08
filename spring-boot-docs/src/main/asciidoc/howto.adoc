@@ -438,6 +438,7 @@ in the '`Spring Boot features`' section, or the
 code.
 
 
+
 [[howto-user-a-random-unassigned-http-port]]
 === Use a random unassigned HTTP port
 To scan for a free port (using OS natives to prevent clashes) use `server.port=0`.
@@ -507,6 +508,8 @@ the two to configure programmatically. See the
 {github-code}/spring-boot-samples/spring-boot-sample-tomcat-multi-connectors[`spring-boot-sample-tomcat-multi-connectors`]
 sample project for an example.
 
+
+
 [[howto-configure-accesslogs]]
 === Configure Access Logging
 Access logs can be configured for Tomcat and Undertow via their respective namespaces.
@@ -536,6 +539,7 @@ Access logging for undertow can be configured in a similar fashion
 
 Logs are stored in a `logs` directory relative to the working directory of the
 application. This can be customized via `server.undertow.accesslog.directory`.
+
 
 
 [[howto-use-behind-a-proxy-server]]

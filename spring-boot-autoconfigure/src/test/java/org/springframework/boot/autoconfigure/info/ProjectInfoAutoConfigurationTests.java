@@ -86,7 +86,6 @@ public class ProjectInfoAutoConfigurationTests {
 		assertThat(gitInfo).isSameAs(this.context.getBean("customGitInfo"));
 	}
 
-
 	private void load(String... environment) {
 		load(null, environment);
 	}

@@ -344,7 +344,6 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	public void startupFailureDoesNotResultInUnstoppedThreadsBeingReported()
 			throws IOException {
 		super.portClashOfPrimaryConnectorResultsInPortInUseException();
-
 		String string = this.outputCapture.toString();
 		assertThat(string)
 				.doesNotContain("appears to have started a thread named [main]");

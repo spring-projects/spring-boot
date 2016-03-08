@@ -74,8 +74,8 @@ public class ProjectInfoAutoConfiguration {
 
 	protected void bindPropertiesTo(Object target, Resource location, String prefix)
 			throws BindException, IOException {
-		PropertiesConfigurationFactory<Object> factory =
-				new PropertiesConfigurationFactory<Object>(target);
+		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
+				target);
 		factory.setConversionService(this.conversionService);
 		factory.setTargetName(prefix);
 		Properties gitInfoProperties = PropertiesLoaderUtils.loadProperties(location);
@@ -88,7 +88,6 @@ public class ProjectInfoAutoConfiguration {
 		conversionService.addConverter(new StringToDateConverter());
 		return conversionService;
 	}
-
 
 	static class GitResourceAvailableCondition extends SpringBootCondition {
 
@@ -125,7 +124,8 @@ public class ProjectInfoAutoConfiguration {
 			if (epoch != null) {
 				return new Date(epoch);
 			}
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX", Locale.US);
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX",
+					Locale.US);
 			try {
 				return format.parse(s);
 			}
@@ -145,10 +145,11 @@ public class ProjectInfoAutoConfiguration {
 			try {
 				return Long.parseLong(s) * 1000;
 			}
-			catch (NumberFormatException e) {
+			catch (NumberFormatException ex) {
 				return null;
 			}
 		}
+
 	}
 
 }

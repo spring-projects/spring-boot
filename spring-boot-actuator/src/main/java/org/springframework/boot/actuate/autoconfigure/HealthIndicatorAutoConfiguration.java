@@ -105,8 +105,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	private final HealthIndicatorProperties properties;
 
-	public HealthIndicatorAutoConfiguration(
-			HealthIndicatorProperties properties) {
+	public HealthIndicatorAutoConfiguration(HealthIndicatorProperties properties) {
 		this.properties = properties;
 	}
 

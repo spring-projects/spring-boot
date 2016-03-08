@@ -57,9 +57,11 @@ public class CouchbaseAutoConfiguration {
 
 		@Bean
 		@ConditionalOnBean(Validator.class)
-		public ValidatingCouchbaseEventListener validationEventListener(Validator validator) {
+		public ValidatingCouchbaseEventListener validationEventListener(
+				Validator validator) {
 			return new ValidatingCouchbaseEventListener(validator);
 		}
+
 	}
 
 	@Configuration
