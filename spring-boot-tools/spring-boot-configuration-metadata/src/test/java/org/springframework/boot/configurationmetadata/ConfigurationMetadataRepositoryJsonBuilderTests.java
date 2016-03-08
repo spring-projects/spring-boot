@@ -206,8 +206,7 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests
 		ConfigurationMetadataSource source = group.getSources().get("org.acme.Foo");
 		contains(source.getProperties(), "name");
 		assertEquals(1, source.getProperties().size());
-		ConfigurationMetadataSource source2 = group.getSources()
-				.get("org.acme.Bar");
+		ConfigurationMetadataSource source2 = group.getSources().get("org.acme.Bar");
 		contains(source2.getProperties(), "title");
 		assertEquals(1, source2.getProperties().size());
 		validatePropertyHints(repo.getAllProperties().get("name"), 0, 0);
