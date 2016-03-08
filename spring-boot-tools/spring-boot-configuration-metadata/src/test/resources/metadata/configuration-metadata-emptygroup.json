@@ -1,0 +1,18 @@
+{
+  "groups": [
+    {
+      "name": "",
+      "type": "org.acme.Foo",
+      "sourceType": "org.acme.config.FooApp",
+      "sourceMethod": "foo()",
+      "description": "This is Foo."
+    }
+  ],
+  "properties": [
+    {
+      "name": "name",
+      "type": "java.lang.String",
+      "sourceType": "org.acme.Foo"
+    }
+  ]
+}

@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationmetadata;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 
 import org.json.JSONException;
 import org.junit.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JsonReader}
@@ -47,6 +47,17 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 	public void invalidMetadata() throws IOException {
 		this.thrown.expect(JSONException.class);
 		readFor("invalid");
+	}
+
+	@Test
+	public void emptyGroupName() throws IOException {
+		RawConfigurationMetadata rawMetadata = readFor("emptygroup");
+		List<ConfigurationMetadataItem> items = rawMetadata.getItems();
+		assertThat(items).hasSize(1);
+
+		ConfigurationMetadataItem item = items.get(0);
+		assertProperty(item, "name", "name", String.class, null);
+
 	}
 
 	@Test
