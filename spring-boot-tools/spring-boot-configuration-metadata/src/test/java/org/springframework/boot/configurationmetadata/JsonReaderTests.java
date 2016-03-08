@@ -54,13 +54,14 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 
 	@Test
 	public void emptyGroupName() throws IOException {
-		RawConfigurationMetadata rawMetadata = readFor("emptygroup");
+		RawConfigurationMetadata rawMetadata = readFor("empty-groups");
 		List<ConfigurationMetadataItem> items = rawMetadata.getItems();
-		assertEquals(1, items.size());
+		assertEquals(2, items.size());
 
-		ConfigurationMetadataItem item = items.get(0);
-		assertProperty(item, "name", "name", String.class, null);
-
+		ConfigurationMetadataItem name = items.get(0);
+		assertProperty(name, "name", "name", String.class, null);
+		ConfigurationMetadataItem dotTitle = items.get(1);
+		assertProperty(dotTitle, "title", "title", String.class, null);
 	}
 
 	@Test

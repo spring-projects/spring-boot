@@ -6,6 +6,13 @@
       "sourceType": "org.acme.config.FooApp",
       "sourceMethod": "foo()",
       "description": "This is Foo."
+    },
+    {
+      "name": "",
+      "type": "org.acme.Bar",
+      "sourceType": "org.acme.config.FooApp",
+      "sourceMethod": "bar()",
+      "description": "This is Bar."
     }
   ],
   "properties": [
@@ -13,6 +20,11 @@
       "name": "name",
       "type": "java.lang.String",
       "sourceType": "org.acme.Foo"
+    },
+    {
+      "name": "title",
+      "type": "java.lang.String",
+      "sourceType": "org.acme.Bar"
     }
   ]
 }

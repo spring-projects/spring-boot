@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,12 +77,18 @@ class RawConfigurationMetadata {
 		}
 		ConfigurationMetadataSource source = getSource(item.getSourceType());
 		if (source != null) {
-			String dottedPrefix = source.getGroupId() + ".";
+			String groupId = source.getGroupId();
+			String dottedPrefix = groupId + ".";
 			String id = item.getId();
-			if (id.startsWith(dottedPrefix)) {
+			if (hasLength(groupId) && id.startsWith(dottedPrefix)) {
 				String name = id.substring(dottedPrefix.length(), id.length());
 				item.setName(name);
 			}
 		}
 	}
+
+	private static boolean hasLength(String s) {
+		return (s != null && s.length() > 0);
+	}
+
 }
