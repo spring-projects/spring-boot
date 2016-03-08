@@ -87,8 +87,8 @@ class RawConfigurationMetadata {
 		}
 	}
 
-	private static boolean hasLength(String s) {
-		return (s != null && s.length() > 0);
+	private static boolean hasLength(String string) {
+		return (string != null && string.length() > 0);
 	}
 
 }

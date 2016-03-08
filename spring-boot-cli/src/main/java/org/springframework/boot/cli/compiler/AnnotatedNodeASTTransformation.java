@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,14 +57,11 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 	public void visit(ASTNode[] nodes, SourceUnit source) {
 		this.sourceUnit = source;
 		List<AnnotationNode> annotationNodes = new ArrayList<AnnotationNode>();
-
 		ClassVisitor classVisitor = new ClassVisitor(source, annotationNodes);
 		for (ASTNode node : nodes) {
 			if (node instanceof ModuleNode) {
 				ModuleNode module = (ModuleNode) node;
-
 				visitAnnotatedNode(module.getPackage(), annotationNodes);
-
 				for (ImportNode importNode : module.getImports()) {
 					visitAnnotatedNode(importNode, annotationNodes);
 				}
@@ -79,14 +76,12 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 						.entrySet()) {
 					visitAnnotatedNode(entry.getValue(), annotationNodes);
 				}
-
 				for (ClassNode classNode : module.getClasses()) {
 					visitAnnotatedNode(classNode, annotationNodes);
 					classNode.visitContents(classVisitor);
 				}
 			}
 		}
-
 		processAnnotationNodes(annotationNodes);
 	}
 
@@ -117,6 +112,7 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 	private class ClassVisitor extends ClassCodeVisitorSupport {
 
 		private final SourceUnit source;
+
 		private List<AnnotationNode> annotationNodes;
 
 		ClassVisitor(SourceUnit source, List<AnnotationNode> annotationNodes) {

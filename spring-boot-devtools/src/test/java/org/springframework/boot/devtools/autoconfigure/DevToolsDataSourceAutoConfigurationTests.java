@@ -192,6 +192,7 @@ public class DevToolsDataSourceAutoConfigurationTests {
 		public EntityManagerFactory entityManagerFactory() {
 			return mock(EntityManagerFactory.class);
 		}
+
 	}
 
 }
