@@ -50,10 +50,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.jackson.JsonComponent;
+import org.springframework.boot.jackson.JsonObjectSerializer;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
@@ -347,6 +350,7 @@ public class JacksonAutoConfigurationTests {
 		assertThat(this.context.getBean(CustomModule.class).getOwners())
 				.contains((ObjectCodec) objectMapper);
 		assertThat(objectMapper.canSerialize(LocalDateTime.class)).isTrue();
+		assertThat(objectMapper.canSerialize(Baz.class)).isTrue();
 	}
 
 	@Test
@@ -456,12 +460,14 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Configuration
+	@Import(BazSerializer.class)
 	protected static class ModuleConfig {
 
 		@Bean
 		public CustomModule jacksonModule() {
 			return new CustomModule();
 		}
+
 	}
 
 	@Configuration
@@ -538,6 +544,20 @@ public class JacksonAutoConfigurationTests {
 		}
 	}
 
+	@JsonComponent
+	private static class BazSerializer extends JsonObjectSerializer<Baz> {
+
+		@Override
+		protected void serializeObject(Baz value, JsonGenerator jgen,
+				SerializerProvider provider) throws IOException {
+		}
+
+	}
+
+	private static class Baz {
+
+	}
+
 	private static class CustomModule extends SimpleModule {
 
 		private Set<ObjectCodec> owners = new HashSet<ObjectCodec>();
@@ -552,4 +572,5 @@ public class JacksonAutoConfigurationTests {
 		}
 
 	}
+
 }

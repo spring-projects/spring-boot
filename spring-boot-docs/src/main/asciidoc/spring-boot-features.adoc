@@ -1470,6 +1470,51 @@ converters. You can also override default converters that way.
 
 
 
+[[boot-features-json-components]]
+==== Custom JSON Serializers and Deserializers
+If you're using Jackson to serialize and deserialize JSON data, you might want to write
+your own `JsonSerializer` and `JsonDeserializer` classes. Custom serializers are usually
+http://wiki.fasterxml.com/JacksonHowToCustomDeserializers[registered with Jackson via a Module],
+but Spring Boot provides an alternative `@JsonComponent` annotation which makes it easier
+to directly register Spring Beans.
+
+You can use `@JsonComponent` directly on `JsonSerializer` or `JsonDeserializer`
+implementations. You can also use it on classes that contains serializers/deserializers as
+inner-classes. For example:
+
+[source,java,indent=0]
+----
+	import java.io.*;
+	import com.fasterxml.jackson.core.*;
+	import com.fasterxml.jackson.databind.*;
+	import org.springframework.boot.jackson.*;
+
+	@JsonComponent
+	public class Example {
+
+		public static class Serializer extends JsonSerializer<SomeObject> {
+			// ...
+		}
+
+		public static class Deserializer extends JsonDeserializer<SomeObject> {
+			// ...
+		}
+
+	}
+----
+
+All `@JsonComponent` beans in the `ApplicationContext` will be automatically registered with
+Jackson, and since `@JsonComponent` is meta-annotated with `@Component`, the usual
+component-scanning rules apply.
+
+Spring Boot also provides
+{sc-spring-boot}/jackson/JsonObjectSerializer.{sc-ext}[`JsonObjectSerializer`] and
+{sc-spring-boot}/jackson/JsonObjectDeserializer.{sc-ext}[`JsonObjectDeserializer`] base
+classes which provide useful alternatives to the standard Jackson versions when
+serializing Objects. See the Javadoc for details.
+
+
+
 [[boot-features-spring-message-codes]]
 ==== MessageCodesResolver
 Spring MVC has a strategy for generating error codes for rendering error messages

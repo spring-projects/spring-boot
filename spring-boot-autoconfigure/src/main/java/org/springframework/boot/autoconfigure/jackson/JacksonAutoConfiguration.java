@@ -46,6 +46,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jackson.JsonComponentModule;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -74,6 +75,11 @@ import org.springframework.util.ReflectionUtils;
 @Configuration
 @ConditionalOnClass(ObjectMapper.class)
 public class JacksonAutoConfiguration {
+
+	@Bean
+	public JsonComponentModule jsonComponentModule() {
+		return new JsonComponentModule();
+	}
 
 	@Configuration
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
