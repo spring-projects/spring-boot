@@ -996,6 +996,10 @@ public class SpringApplication {
 	public void setLogStartupInfo(boolean logStartupInfo) {
 		this.logStartupInfo = logStartupInfo;
 	}
+	
+	public boolean isLogStartupInfo(){
+		return this.logStartupInfo;
+	}
 
 	/**
 	 * Sets if a {@link CommandLinePropertySource} should be added to the application
