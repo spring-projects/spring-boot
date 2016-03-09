@@ -3344,7 +3344,7 @@ Generic caching is used if the context defines _at least_ one
 [[boot-features-caching-provider-jcache]]
 ==== JCache
 JCache is bootstrapped via the presence of a `javax.cache.spi.CachingProvider` on the
-classpath (i.e. a JSR-107 compliant caching library). It might happen than more that one
+classpath (i.e. a JSR-107 compliant caching library). It might happen that more that one
 provider is present, in which case the provider must be explicitly specified. Even if the
 JSR-107 standard does not enforce a standardized way to define the location of the
 configuration file, Spring Boot does its best to accommodate with implementation details.
