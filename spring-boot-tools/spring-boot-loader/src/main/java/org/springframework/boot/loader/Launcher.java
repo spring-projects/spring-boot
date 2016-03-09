@@ -58,7 +58,6 @@ public abstract class Launcher {
 			launch(args, getMainClass(), classLoader);
 		}
 		catch (Exception ex) {
-			ex.printStackTrace();
 			System.exit(1);
 		}
 	}
