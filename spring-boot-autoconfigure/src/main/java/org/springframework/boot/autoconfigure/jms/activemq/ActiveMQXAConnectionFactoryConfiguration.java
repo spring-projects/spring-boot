@@ -16,13 +16,9 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
-import javax.jms.ConnectionFactory;
-import javax.transaction.TransactionManager;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQXAConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -32,10 +28,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+import javax.jms.ConnectionFactory;
+import javax.transaction.TransactionManager;
+
 /**
  * Configuration for ActiveMQ XA {@link ConnectionFactory}.
  *
  * @author Phillip Webb
+ * @author Aurélien Leboulanger
  * @since 1.2.0
  */
 @Configuration
@@ -54,7 +54,7 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.activemq", name = "pooled", havingValue = "false", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false", matchIfMissing = true)
 	public ActiveMQConnectionFactory nonXaJmsConnectionFactory(
 			ActiveMQProperties properties) {
 		return new ActiveMQConnectionFactoryFactory(properties)
@@ -62,17 +62,25 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	}
 
 	@ConditionalOnClass(PooledConnectionFactory.class)
-	@ConditionalOnProperty(prefix = "spring.activemq", name = "pooled", havingValue = "true", matchIfMissing = false)
+	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "true", matchIfMissing = false)
 	static class PooledConnectionFactoryConfiguration {
 
 		@Bean(destroyMethod = "stop")
 		public PooledConnectionFactory pooledNonXaJmsConnectionFactory(
 				ActiveMQProperties properties) {
-			return new PooledConnectionFactory(
+			PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory(
 					new ActiveMQConnectionFactoryFactory(properties)
 							.createConnectionFactory(ActiveMQConnectionFactory.class));
-		}
 
+			ActiveMQProperties.Pool pool = properties.getPool();
+			pooledConnectionFactory.setExpiryTimeout(pool.getExpiryTimeMillis());
+			pooledConnectionFactory.setMaxConnections(pool.getMaxConnections());
+			pooledConnectionFactory.setIdleTimeout(pool.getIdleTimeMillis());
+			pooledConnectionFactory.setMaximumActiveSessionPerConnection(pool.getMaxSessionsPerConnection());
+			pooledConnectionFactory.setTimeBetweenExpirationCheckMillis(pool.getTimeBetweenEvictionRunsMillis());
+
+			return pooledConnectionFactory;
+		}
 	}
 
 }
