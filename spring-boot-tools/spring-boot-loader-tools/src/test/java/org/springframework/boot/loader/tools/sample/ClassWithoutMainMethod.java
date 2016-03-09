@@ -18,7 +18,7 @@ package org.springframework.boot.loader.tools.sample;
 
 /**
  * Sample class without a main method.
- * 
+ *
  * @author Phillip Webb
  */
 public class ClassWithoutMainMethod {

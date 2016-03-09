@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +21,23 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.tools.MainClassFinder.ClassNameCallback;
+import org.springframework.boot.loader.tools.JarWriter.EntryTransformer;
+import org.springframework.lang.UsesJava8;
 
 /**
  * Utility class that can be used to repackage an archive so that it can be executed using
  * '{@literal java -jar}'.
- * 
+ *
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class Repackager {
 
@@ -40,6 +46,10 @@ public class Repackager {
 	private static final String START_CLASS_ATTRIBUTE = "Start-Class";
 
 	private static final String BOOT_VERSION_ATTRIBUTE = "Spring-Boot-Version";
+
+	private static final String BOOT_LIB_ATTRIBUTE = "Spring-Boot-Lib";
+
+	private static final String BOOT_CLASSES_ATTRIBUTE = "Spring-Boot-Classes";
 
 	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
@@ -89,9 +99,9 @@ public class Repackager {
 	}
 
 	/**
-	 * Repackage the source file so that it can be run using '{@literal java -jar}'
+	 * Repackage the source file so that it can be run using '{@literal java -jar}'.
 	 * @param libraries the libraries required to run the archive
-	 * @throws IOException
+	 * @throws IOException if the file cannot be repackaged
 	 */
 	public void repackage(Libraries libraries) throws IOException {
 		repackage(this.source, libraries);
@@ -99,23 +109,39 @@ public class Repackager {
 
 	/**
 	 * Repackage to the given destination so that it can be launched using '
-	 * {@literal java -jar}'
+	 * {@literal java -jar}'.
 	 * @param destination the destination file (may be the same as the source)
 	 * @param libraries the libraries required to run the archive
-	 * @throws IOException
+	 * @throws IOException if the file cannot be repackaged
 	 */
 	public void repackage(File destination, Libraries libraries) throws IOException {
+		repackage(destination, libraries, null);
+	}
+
+	/**
+	 * Repackage to the given destination so that it can be launched using '
+	 * {@literal java -jar}'.
+	 * @param destination the destination file (may be the same as the source)
+	 * @param libraries the libraries required to run the archive
+	 * @param launchScript an optional launch script prepended to the front of the jar
+	 * @throws IOException if the file cannot be repackaged
+	 * @since 1.3.0
+	 */
+	public void repackage(File destination, Libraries libraries,
+			LaunchScript launchScript) throws IOException {
 		if (destination == null || destination.isDirectory()) {
 			throw new IllegalArgumentException("Invalid destination");
 		}
 		if (libraries == null) {
 			throw new IllegalArgumentException("Libraries must not be null");
 		}
+		if (alreadyRepackaged()) {
+			return;
+		}
 		destination = destination.getAbsoluteFile();
 		File workingSource = this.source;
 		if (this.source.equals(destination)) {
-			workingSource = new File(this.source.getParentFile(), this.source.getName()
-					+ ".original");
+			workingSource = getBackupFile();
 			workingSource.delete();
 			renameFile(this.source, workingSource);
 		}
@@ -123,7 +149,7 @@ public class Repackager {
 		try {
 			JarFile jarFileSource = new JarFile(workingSource);
 			try {
-				repackage(jarFileSource, destination, libraries);
+				repackage(jarFileSource, destination, libraries, launchScript);
 			}
 			finally {
 				jarFileSource.close();
@@ -136,27 +162,59 @@ public class Repackager {
 		}
 	}
 
-	private void repackage(JarFile sourceJar, File destination, Libraries libraries)
-			throws IOException {
-		final JarWriter writer = new JarWriter(destination);
-		try {
-			writer.writeManifest(buildManifest(sourceJar));
-			writer.writeEntries(sourceJar);
+	/**
+	 * Return the {@link File} to use to backup the original source.
+	 * @return the file to use to backup the original source
+	 */
+	public final File getBackupFile() {
+		return new File(this.source.getParentFile(), this.source.getName() + ".original");
+	}
 
+	private boolean alreadyRepackaged() throws IOException {
+		JarFile jarFile = new JarFile(this.source);
+		try {
+			Manifest manifest = jarFile.getManifest();
+			return (manifest != null && manifest.getMainAttributes()
+					.getValue(BOOT_VERSION_ATTRIBUTE) != null);
+		}
+		finally {
+			jarFile.close();
+		}
+	}
+
+	private void repackage(JarFile sourceJar, File destination, Libraries libraries,
+			LaunchScript launchScript) throws IOException {
+		JarWriter writer = new JarWriter(destination, launchScript);
+		try {
+			final List<Library> unpackLibraries = new ArrayList<Library>();
+			final List<Library> standardLibraries = new ArrayList<Library>();
 			libraries.doWithLibraries(new LibraryCallback() {
 				@Override
-				public void library(File file, LibraryScope scope) throws IOException {
+				public void library(Library library) throws IOException {
+					File file = library.getFile();
 					if (isZip(file)) {
-						String destination = Repackager.this.layout
-								.getLibraryDestination(file.getName(), scope);
-						if (destination != null) {
-							writer.writeNestedLibrary(destination, file);
+						if (library.isUnpackRequired()) {
+							unpackLibraries.add(library);
+						}
+						else {
+							standardLibraries.add(library);
 						}
 					}
 				}
 			});
-
-			if (!(this.layout instanceof Layouts.None)) {
+			writer.writeManifest(buildManifest(sourceJar));
+			Set<String> seen = new HashSet<String>();
+			writeNestedLibraries(unpackLibraries, seen, writer);
+			if (this.layout instanceof RepackagingLayout) {
+				writer.writeEntries(sourceJar,
+						new RenamingEntryTransformer(((RepackagingLayout) this.layout)
+								.getRepackagedClassesLocation()));
+			}
+			else {
+				writer.writeEntries(sourceJar);
+			}
+			writeNestedLibraries(standardLibraries, seen, writer);
+			if (this.layout.isExecutable()) {
 				writer.writeLoaderClasses();
 			}
 		}
@@ -166,6 +224,21 @@ public class Repackager {
 			}
 			catch (Exception ex) {
 				// Ignore
+			}
+		}
+	}
+
+	private void writeNestedLibraries(List<Library> libraries, Set<String> alreadySeen,
+			JarWriter writer) throws IOException {
+		for (Library library : libraries) {
+			String destination = Repackager.this.layout
+					.getLibraryDestination(library.getName(), library.getScope());
+			if (destination != null) {
+				if (!alreadySeen.add(destination + library.getName())) {
+					throw new IllegalStateException(
+							"Duplicate library " + library.getName());
+				}
+				writer.writeNestedLibrary(destination, library);
 			}
 		}
 	}
@@ -210,8 +283,8 @@ public class Repackager {
 		}
 		String launcherClassName = this.layout.getLauncherClassName();
 		if (launcherClassName != null) {
-			manifest.getMainAttributes()
-					.putValue(MAIN_CLASS_ATTRIBUTE, launcherClassName);
+			manifest.getMainAttributes().putValue(MAIN_CLASS_ATTRIBUTE,
+					launcherClassName);
 			if (startClass == null) {
 				throw new IllegalStateException("Unable to find main class");
 			}
@@ -220,24 +293,26 @@ public class Repackager {
 		else if (startClass != null) {
 			manifest.getMainAttributes().putValue(MAIN_CLASS_ATTRIBUTE, startClass);
 		}
-
 		String bootVersion = getClass().getPackage().getImplementationVersion();
 		manifest.getMainAttributes().putValue(BOOT_VERSION_ATTRIBUTE, bootVersion);
-
+		manifest.getMainAttributes().putValue(BOOT_CLASSES_ATTRIBUTE,
+				(this.layout instanceof RepackagingLayout)
+						? ((RepackagingLayout) this.layout).getRepackagedClassesLocation()
+						: this.layout.getClassesLocation());
+		manifest.getMainAttributes().putValue(BOOT_LIB_ATTRIBUTE,
+				this.layout.getLibraryDestination("", LibraryScope.COMPILE));
 		return manifest;
 	}
 
 	protected String findMainMethod(JarFile source) throws IOException {
-		MainClassesCallback callback = new MainClassesCallback();
-		MainClassFinder.doWithMainClasses(source, this.layout.getClassesLocation(),
-				callback);
-		return callback.getMainClass();
+		return MainClassFinder.findSingleMainClass(source,
+				this.layout.getClassesLocation());
 	}
 
 	private void renameFile(File file, File dest) {
 		if (!file.renameTo(dest)) {
-			throw new IllegalStateException("Unable to rename '" + file + "' to '" + dest
-					+ "'");
+			throw new IllegalStateException(
+					"Unable to rename '" + file + "' to '" + dest + "'");
 		}
 	}
 
@@ -247,24 +322,77 @@ public class Repackager {
 		}
 	}
 
-	private static class MainClassesCallback implements ClassNameCallback<Object> {
+	/**
+	 * An {@code EntryTransformer} that renames entries by applying a prefix.
+	 */
+	private static final class RenamingEntryTransformer implements EntryTransformer {
 
-		private final List<String> classNames = new ArrayList<String>();
+		private final String namePrefix;
 
-		@Override
-		public Object doWith(String className) {
-			this.classNames.add(className);
-			return null;
+		private RenamingEntryTransformer(String namePrefix) {
+			this.namePrefix = namePrefix;
 		}
 
-		public String getMainClass() {
-			if (this.classNames.size() > 1) {
-				throw new IllegalStateException(
-						"Unable to find a single main class from the following candidates "
-								+ this.classNames);
+		@Override
+		public JarEntry transform(JarEntry entry) {
+			if (entry.getName().startsWith("META-INF/")
+					|| entry.getName().startsWith("BOOT-INF/")) {
+				return entry;
 			}
-			return this.classNames.isEmpty() ? null : this.classNames.get(0);
+			JarEntry renamedEntry = new JarEntry(this.namePrefix + entry.getName());
+			renamedEntry.setTime(entry.getTime());
+			renamedEntry.setSize(entry.getSize());
+			renamedEntry.setMethod(entry.getMethod());
+			if (entry.getComment() != null) {
+				renamedEntry.setComment(entry.getComment());
+			}
+			renamedEntry.setCompressedSize(entry.getCompressedSize());
+			renamedEntry.setCrc(entry.getCrc());
+			setCreationTimeIfPossible(entry, renamedEntry);
+			if (entry.getExtra() != null) {
+				renamedEntry.setExtra(entry.getExtra());
+			}
+			setLastAccessTimeIfPossible(entry, renamedEntry);
+			setLastModifiedTimeIfPossible(entry, renamedEntry);
+			return renamedEntry;
+		}
+
+		@UsesJava8
+		private void setCreationTimeIfPossible(JarEntry source, JarEntry target) {
+			try {
+				if (source.getCreationTime() != null) {
+					target.setCreationTime(source.getCreationTime());
+				}
+			}
+			catch (NoSuchMethodError ex) {
+				// Not running on Java 8. Continue.
+			}
+		}
+
+		@UsesJava8
+		private void setLastAccessTimeIfPossible(JarEntry source, JarEntry target) {
+			try {
+				if (source.getLastAccessTime() != null) {
+					target.setLastAccessTime(source.getLastAccessTime());
+				}
+			}
+			catch (NoSuchMethodError ex) {
+				// Not running on Java 8. Continue.
+			}
+		}
+
+		@UsesJava8
+		private void setLastModifiedTimeIfPossible(JarEntry source, JarEntry target) {
+			try {
+				if (source.getLastModifiedTime() != null) {
+					target.setLastModifiedTime(source.getLastModifiedTime());
+				}
+			}
+			catch (NoSuchMethodError ex) {
+				// Not running on Java 8. Continue.
+			}
 		}
 
 	}
+
 }

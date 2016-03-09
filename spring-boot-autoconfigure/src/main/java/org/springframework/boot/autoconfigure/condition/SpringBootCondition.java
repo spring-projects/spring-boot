@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.ClassUtils;
@@ -29,7 +31,7 @@ import org.springframework.util.StringUtils;
 /**
  * Base of all {@link Condition} implementations used with Spring Boot. Provides sensible
  * logging to help the user diagnose what classes are loaded.
- * 
+ *
  * @author Phillip Webb
  * @author Greg Turnquist
  */
@@ -38,7 +40,8 @@ public abstract class SpringBootCondition implements Condition {
 	private final Log logger = LogFactory.getLog(getClass());
 
 	@Override
-	public final boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+	public final boolean matches(ConditionContext context,
+			AnnotatedTypeMetadata metadata) {
 		String classOrMethodName = getClassOrMethodName(metadata);
 		try {
 			ConditionOutcome outcome = getMatchOutcome(context, metadata);
@@ -48,11 +51,30 @@ public abstract class SpringBootCondition implements Condition {
 		}
 		catch (NoClassDefFoundError ex) {
 			throw new IllegalStateException(
-					"Could not evaluate condition owing to internal class not found. "
-							+ "This can happen if you are @ComponentScanning a "
-							+ "springframework package (e.g. if you put a @ComponentScan "
-							+ "in the default package by mistake)", ex);
+					"Could not evaluate condition on " + classOrMethodName + " due to "
+							+ ex.getMessage() + " not "
+							+ "found. Make sure your own configuration does not rely on "
+							+ "that class. This can also happen if you are "
+							+ "@ComponentScanning a springframework package (e.g. if you "
+							+ "put a @ComponentScan in the default package by mistake)",
+					ex);
 		}
+		catch (RuntimeException ex) {
+			throw new IllegalStateException(
+					"Error processing condition on " + getName(metadata), ex);
+		}
+	}
+
+	private String getName(AnnotatedTypeMetadata metadata) {
+		if (metadata instanceof AnnotationMetadata) {
+			return ((AnnotationMetadata) metadata).getClassName();
+		}
+		if (metadata instanceof MethodMetadata) {
+			MethodMetadata methodMetadata = (MethodMetadata) metadata;
+			return methodMetadata.getDeclaringClassName() + "."
+					+ methodMetadata.getMethodName();
+		}
+		return metadata.toString();
 	}
 
 	private static String getClassOrMethodName(AnnotatedTypeMetadata metadata) {
@@ -71,7 +93,8 @@ public abstract class SpringBootCondition implements Condition {
 		}
 	}
 
-	private StringBuilder getLogMessage(String classOrMethodName, ConditionOutcome outcome) {
+	private StringBuilder getLogMessage(String classOrMethodName,
+			ConditionOutcome outcome) {
 		StringBuilder message = new StringBuilder();
 		message.append("Condition ");
 		message.append(ClassUtils.getShortName(getClass()));
@@ -95,6 +118,9 @@ public abstract class SpringBootCondition implements Condition {
 
 	/**
 	 * Determine the outcome of the match along with suitable log output.
+	 * @param context the condition context
+	 * @param metadata the annotation metadata
+	 * @return the condition outcome
 	 */
 	public abstract ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata);

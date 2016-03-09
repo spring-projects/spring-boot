@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.metrics.rich;
 
 /**
  * A basic set of read operations for {@link RichGauge} instances.
- * 
+ *
  * @author Dave Syer
  */
 public interface RichGaugeReader {
@@ -37,7 +37,8 @@ public interface RichGaugeReader {
 	Iterable<RichGauge> findAll();
 
 	/**
-	 * @return the number of gauge values available
+	 * Return the number of gauge values available.
+	 * @return the number of values
 	 */
 	long count();
 

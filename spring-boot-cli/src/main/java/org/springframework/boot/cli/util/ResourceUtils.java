@@ -36,24 +36,24 @@ import org.springframework.util.StringUtils;
 
 /**
  * Utilities for manipulating resource paths and URLs.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
 public abstract class ResourceUtils {
 
 	/**
-	 * Pseudo URL prefix for loading from the class path: "classpath:"
+	 * Pseudo URL prefix for loading from the class path: "classpath:".
 	 */
 	public static final String CLASSPATH_URL_PREFIX = "classpath:";
 
 	/**
-	 * Pseudo URL prefix for loading all resources from the class path: "classpath*:"
+	 * Pseudo URL prefix for loading all resources from the class path: "classpath*:".
 	 */
 	public static final String ALL_CLASSPATH_URL_PREFIX = "classpath*:";
 
 	/**
-	 * URL prefix for loading from the file system: "file:"
+	 * URL prefix for loading from the file system: "file:".
 	 */
 	public static final String FILE_URL_PREFIX = "file:";
 
@@ -77,8 +77,8 @@ public abstract class ResourceUtils {
 			return getUrlsFromWildcardPath(path, classLoader);
 		}
 		catch (Exception ex) {
-			throw new IllegalArgumentException("Cannot create URL from path [" + path
-					+ "]", ex);
+			throw new IllegalArgumentException(
+					"Cannot create URL from path [" + path + "]", ex);
 
 		}
 	}
@@ -115,7 +115,7 @@ public abstract class ResourceUtils {
 						continue;
 					}
 				}
-				result.add(resource.getURL().toExternalForm());
+				result.add(absolutePath(resource));
 			}
 		}
 		return result;
@@ -127,10 +127,17 @@ public abstract class ResourceUtils {
 		List<String> childFiles = new ArrayList<String>();
 		for (Resource child : children) {
 			if (!child.getFile().isDirectory()) {
-				childFiles.add(child.getURL().toExternalForm());
+				childFiles.add(absolutePath(child));
 			}
 		}
 		return childFiles;
+	}
+
+	private static String absolutePath(Resource resource) throws IOException {
+		if (!resource.getURI().getScheme().equals("file")) {
+			return resource.getURL().toExternalForm();
+		}
+		return resource.getFile().getAbsoluteFile().toURI().toString();
 	}
 
 	private static String stripLeadingSlashes(String path) {
@@ -144,7 +151,7 @@ public abstract class ResourceUtils {
 
 		private final FileSystemResourceLoader files;
 
-		public FileSearchResourceLoader(ClassLoader classLoader) {
+		FileSearchResourceLoader(ClassLoader classLoader) {
 			super(classLoader);
 			this.files = new FileSystemResourceLoader();
 		}
@@ -153,8 +160,9 @@ public abstract class ResourceUtils {
 		public Resource getResource(String location) {
 			Assert.notNull(location, "Location must not be null");
 			if (location.startsWith(CLASSPATH_URL_PREFIX)) {
-				return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX
-						.length()), getClassLoader());
+				return new ClassPathResource(
+						location.substring(CLASSPATH_URL_PREFIX.length()),
+						getClassLoader());
 			}
 			else {
 				if (location.startsWith(FILE_URL_PREFIX)) {

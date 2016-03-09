@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,33 +25,36 @@ import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.ast.PropertyNode;
-import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.ClosureExpression;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
-import org.codehaus.groovy.ast.stmt.ExpressionStatement;
-import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
+
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link ASTTransformation} to resolve beans declarations inside application source
  * files. Users only need to define a <code>beans{}</code> DSL element, and this
  * transformation will remove it and make it accessible to the Spring application via an
  * interface.
- * 
+ *
  * @author Dave Syer
  */
+@Order(GroovyBeansTransformation.ORDER)
 public class GroovyBeansTransformation implements ASTTransformation {
+
+	/**
+	 * The order of the transformation.
+	 */
+	public static final int ORDER = DependencyManagementBomTransformation.ORDER + 200;
 
 	@Override
 	public void visit(ASTNode[] nodes, SourceUnit source) {
 		for (ASTNode node : nodes) {
 			if (node instanceof ModuleNode) {
 				ModuleNode module = (ModuleNode) node;
-				for (ClassNode classNode : new ArrayList<ClassNode>(module.getClasses())) {
+				for (ClassNode classNode : new ArrayList<ClassNode>(
+						module.getClasses())) {
 					if (classNode.isScript()) {
 						classNode.visitContents(new ClassVisitor(source, classNode));
 					}
@@ -63,12 +66,16 @@ public class GroovyBeansTransformation implements ASTTransformation {
 	private class ClassVisitor extends ClassCodeVisitorSupport {
 
 		private static final String SOURCE_INTERFACE = "org.springframework.boot.BeanDefinitionLoader.GroovyBeanDefinitionSource";
+
 		private static final String BEANS = "beans";
+
 		private final SourceUnit source;
+
 		private final ClassNode classNode;
+
 		private boolean xformed = false;
 
-		public ClassVisitor(SourceUnit source, ClassNode classNode) {
+		ClassVisitor(SourceUnit source, ClassNode classNode) {
 			this.source = source;
 			this.classNode = classNode;
 		}
@@ -90,9 +97,10 @@ public class GroovyBeansTransformation implements ASTTransformation {
 				// Implement the interface by adding a public read-only property with the
 				// same name as the method in the interface (getBeans). Make it return the
 				// closure.
-				this.classNode.addProperty(new PropertyNode(BEANS, Modifier.PUBLIC
-						| Modifier.FINAL, ClassHelper.CLOSURE_TYPE
-						.getPlainNodeReference(), this.classNode, closure, null, null));
+				this.classNode.addProperty(
+						new PropertyNode(BEANS, Modifier.PUBLIC | Modifier.FINAL,
+								ClassHelper.CLOSURE_TYPE.getPlainNodeReference(),
+								this.classNode, closure, null, null));
 				// Only do this once per class
 				this.xformed = true;
 			}
@@ -105,29 +113,9 @@ public class GroovyBeansTransformation implements ASTTransformation {
 		 * @return a beans Closure if one can be found, null otherwise
 		 */
 		private ClosureExpression beans(BlockStatement block) {
-
-			for (Statement statement : new ArrayList<Statement>(block.getStatements())) {
-				if (statement instanceof ExpressionStatement) {
-					Expression expression = ((ExpressionStatement) statement)
-							.getExpression();
-					if (expression instanceof MethodCallExpression) {
-						MethodCallExpression call = (MethodCallExpression) expression;
-						Expression methodCall = call.getMethod();
-						if (methodCall instanceof ConstantExpression) {
-							ConstantExpression method = (ConstantExpression) methodCall;
-							if (BEANS.equals(method.getValue())) {
-								ArgumentListExpression arguments = (ArgumentListExpression) call
-										.getArguments();
-								block.getStatements().remove(statement);
-								ClosureExpression closure = (ClosureExpression) arguments
-										.getExpression(0);
-								return closure;
-							}
-						}
-					}
-				}
-			}
-			return null;
+			return AstUtils.getClosure(block, BEANS, true);
 		}
+
 	}
+
 }

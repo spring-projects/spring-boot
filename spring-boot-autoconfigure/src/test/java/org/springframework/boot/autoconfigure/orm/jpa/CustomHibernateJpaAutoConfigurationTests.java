@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,13 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -26,14 +31,12 @@ import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HibernateJpaAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
@@ -58,11 +61,12 @@ public class CustomHibernateJpaAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				HibernateJpaAutoConfiguration.class);
 		this.context.refresh();
-		LocalContainerEntityManagerFactoryBean bean = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		String actual = (String) bean.getJpaPropertyMap().get("hibernate.hbm2ddl.auto");
-		// No default (let Hibernate choose)
-		assertThat(actual, equalTo(null));
+		JpaProperties bean = this.context.getBean(JpaProperties.class);
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		String actual = bean.getHibernateProperties(dataSource)
+				.get("hibernate.hbm2ddl.auto");
+		// Default is generic and safe
+		assertThat(actual).isNull();
 	}
 
 	@Test
@@ -74,10 +78,27 @@ public class CustomHibernateJpaAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				HibernateJpaAutoConfiguration.class);
 		this.context.refresh();
-		LocalContainerEntityManagerFactoryBean bean = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		String actual = (String) bean.getJpaPropertyMap().get("hibernate.hbm2ddl.auto");
-		assertThat(actual, equalTo("create-drop"));
+		JpaProperties bean = this.context.getBean(JpaProperties.class);
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		String actual = bean.getHibernateProperties(dataSource)
+				.get("hibernate.hbm2ddl.auto");
+		assertThat(actual).isEqualTo("create-drop");
+	}
+
+	@Test
+	public void testNamingStrategyDelegatorTakesPrecedence() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
+						+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator");
+		this.context.register(TestConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				HibernateJpaAutoConfiguration.class);
+		this.context.refresh();
+		JpaProperties bean = this.context.getBean(JpaProperties.class);
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		Map<String, String> hibernateProperties = bean.getHibernateProperties(dataSource);
+		assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy")).isNull();
 	}
 
 	@Configuration

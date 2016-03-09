@@ -26,9 +26,9 @@ import org.springframework.core.env.PropertySources;
 
 /**
  * Convenience class for manipulating PropertySources.
- * 
+ *
  * @author Dave Syer
- * 
+ *
  * @see PropertySource
  * @see PropertySources
  */
@@ -51,7 +51,7 @@ public abstract class PropertySourceUtils {
 	 * Return a Map of all values from the specified {@link PropertySources} that start
 	 * with a particular key.
 	 * @param propertySources the property sources to scan
-	 * @param rootPrefix a root prefix to be prepended to the keyPrefex (can be
+	 * @param rootPrefix a root prefix to be prepended to the keyPrefix (can be
 	 * {@code null})
 	 * @param keyPrefix the key prefixes to test
 	 * @return a map of all sub properties starting with the specified key prefixes.
@@ -67,7 +67,7 @@ public abstract class PropertySourceUtils {
 						.getPropertyNames()) {
 					String key = PropertySourceUtils.getSubKey(name, rootPrefix,
 							keyPrefixes);
-					if (key != null) {
+					if (key != null && !subProperties.containsKey(key)) {
 						subProperties.put(key, source.getProperty(name));
 					}
 				}

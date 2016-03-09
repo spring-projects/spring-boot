@@ -21,7 +21,8 @@
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 		xmlns:xslthl="http://xslthl.sf.net"
-		exclude-result-prefixes="xslthl"
+		xmlns:d="http://docbook.org/ns/docbook"
+		exclude-result-prefixes="xslthl d"
 		version='1.0'>
 
 	<!-- Extensions -->
@@ -39,6 +40,6 @@
 	<xsl:param name="toc.section.depth">3</xsl:param>
 
 	<!-- Hide revhistory -->
-	<xsl:template match="revhistory" mode="titlepage.mode"/>
+	<xsl:template match="d:revhistory" mode="titlepage.mode"/>
 
 </xsl:stylesheet>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.Manifest;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,9 +37,7 @@ import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.Archive.Entry;
 import org.springframework.boot.loader.archive.Archive.EntryFilter;
 import org.springframework.boot.loader.archive.ExplodedArchive;
-import org.springframework.boot.loader.archive.FilteredArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
-import org.springframework.boot.loader.util.AsciiBytes;
 import org.springframework.boot.loader.util.SystemPropertyUtils;
 
 /**
@@ -51,41 +46,41 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * well-behaved OS-level services than a model based on executable jars.
  * <p>
  * Looks in various places for a properties file to extract loader settings, defaulting to
- * <code>application.properties</code> either on the current classpath or in the current
+ * {@code application.properties} either on the current classpath or in the current
  * working directory. The name of the properties file can be changed by setting a System
- * property <code>loader.config.name</code> (e.g. <code>-Dloader.config.name=foo</code>
- * will look for <code>foo.properties</code>. If that file doesn't exist then tries
- * <code>loader.config.location</code> (with allowed prefixes <code>classpath:</code> and
- * <code>file:</code> or any valid URL). Once that file is located turns it into
- * Properties and extracts optional values (which can also be provided overridden as
- * System properties in case the file doesn't exist):
+ * property {@code loader.config.name} (e.g. {@code -Dloader.config.name=foo} will look
+ * for {@code foo.properties}. If that file doesn't exist then tries
+ * {@code loader.config.location} (with allowed prefixes {@code classpath:} and
+ * {@code file:} or any valid URL). Once that file is located turns it into Properties and
+ * extracts optional values (which can also be provided overridden as System properties in
+ * case the file doesn't exist):
  * <ul>
- * <li><code>loader.path</code>: a comma-separated list of directories to append to the
+ * <li>{@code loader.path}: a comma-separated list of directories to append to the
  * classpath (containing file resources and/or nested archives in *.jar or *.zip).
- * Defaults to <code>lib</code> (i.e. a directory in the current working directory)</li>
- * <li><code>loader.main</code>: the main method to delegate execution to once the class
- * loader is set up. No default, but will fall back to looking for a
- * <code>Start-Class</code> in a <code>MANIFEST.MF</code>, if there is one in
- * <code>${loader.home}/META-INF</code>.</li>
+ * Defaults to {@code BOOT-INF/classes,BOOT-INF/lib} in your application archive</li>
+ * <li>{@code loader.main}: the main method to delegate execution to once the class loader
+ * is set up. No default, but will fall back to looking for a {@code Start-Class} in a
+ * {@code MANIFEST.MF}, if there is one in <code>${loader.home}/META-INF</code>.</li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  * @author Janne Valkealahti
+ * @author Andy Wilkinson
  */
 public class PropertiesLauncher extends Launcher {
 
-	private final Logger logger = Logger.getLogger(Launcher.class.getName());
+	private static final String DEBUG = "loader.debug";
 
 	/**
 	 * Properties key for main class. As a manifest entry can also be specified as
-	 * <code>Start-Class</code>.
+	 * {@code Start-Class}.
 	 */
 	public static final String MAIN = "loader.main";
 
 	/**
 	 * Properties key for classpath entries (directories possibly containing jars).
 	 * Defaults to "lib/" (relative to {@link #HOME loader home directory}). Multiple
-	 * entries can be specified using a comma separeted list.
+	 * entries can be specified using a comma-separated list.
 	 */
 	public static final String PATH = "loader.path";
 
@@ -112,7 +107,7 @@ public class PropertiesLauncher extends Launcher {
 
 	/**
 	 * Properties key for config file location (including optional classpath:, file: or
-	 * URL prefix)
+	 * URL prefix).
 	 */
 	public static final String CONFIG_LOCATION = "loader.config.location";
 
@@ -123,63 +118,43 @@ public class PropertiesLauncher extends Launcher {
 	 */
 	public static final String SET_SYSTEM_PROPERTIES = "loader.system";
 
-	private static final List<String> DEFAULT_PATHS = Arrays.asList("lib/");
-
 	private static final Pattern WORD_SEPARATOR = Pattern.compile("\\W+");
-
-	private static final URL[] EMPTY_URLS = {};
 
 	private final File home;
 
-	private List<String> paths = new ArrayList<String>(DEFAULT_PATHS);
+	private List<String> paths = new ArrayList<String>();
 
 	private final Properties properties = new Properties();
 
+	private Archive parent;
+
 	public PropertiesLauncher() {
-		if (!isDebug()) {
-			this.logger.setLevel(Level.SEVERE);
-		}
 		try {
 			this.home = getHomeDirectory();
 			initializeProperties(this.home);
 			initializePaths();
+			this.parent = createArchive();
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
 
-	private boolean isDebug() {
-		String debug = System.getProperty("debug");
-		if (debug != null && !"false".equals(debug)) {
-			return true;
-		}
-		debug = System.getProperty("DEBUG");
-		if (debug != null && !"false".equals(debug)) {
-			return true;
-		}
-		debug = System.getenv("DEBUG");
-		if (debug != null && !"false".equals(debug)) {
-			return true;
-		}
-		return false;
-	}
-
 	protected File getHomeDirectory() {
-		return new File(SystemPropertyUtils.resolvePlaceholders(System.getProperty(HOME,
-				"${user.dir}")));
+		return new File(SystemPropertyUtils
+				.resolvePlaceholders(System.getProperty(HOME, "${user.dir}")));
 	}
 
 	private void initializeProperties(File home) throws Exception, IOException {
-		String config = "classpath:"
-				+ SystemPropertyUtils.resolvePlaceholders(SystemPropertyUtils
-						.getProperty(CONFIG_NAME, "application")) + ".properties";
-		config = SystemPropertyUtils.resolvePlaceholders(SystemPropertyUtils.getProperty(
-				CONFIG_LOCATION, config));
+		String config = "classpath:BOOT-INF/classes/"
+				+ SystemPropertyUtils.resolvePlaceholders(
+						SystemPropertyUtils.getProperty(CONFIG_NAME, "application"))
+				+ ".properties";
+		config = SystemPropertyUtils.resolvePlaceholders(
+				SystemPropertyUtils.getProperty(CONFIG_LOCATION, config));
 		InputStream resource = getResource(config);
-
 		if (resource != null) {
-			this.logger.info("Found: " + config);
+			log("Found: " + config);
 			try {
 				this.properties.load(resource);
 			}
@@ -194,9 +169,10 @@ public class PropertiesLauncher extends Launcher {
 					this.properties.put(key, value);
 				}
 			}
-			if (SystemPropertyUtils.resolvePlaceholders(
-					"${" + SET_SYSTEM_PROPERTIES + ":false}").equals("true")) {
-				this.logger.info("Adding resolved properties to System properties");
+			if (SystemPropertyUtils
+					.resolvePlaceholders("${" + SET_SYSTEM_PROPERTIES + ":false}")
+					.equals("true")) {
+				log("Adding resolved properties to System properties");
 				for (Object key : Collections.list(this.properties.propertyNames())) {
 					String value = this.properties.getProperty((String) key);
 					System.setProperty((String) key, value);
@@ -204,7 +180,7 @@ public class PropertiesLauncher extends Launcher {
 			}
 		}
 		else {
-			this.logger.info("Not found: " + config);
+			log("Not found: " + config);
 		}
 
 	}
@@ -239,13 +215,13 @@ public class PropertiesLauncher extends Launcher {
 			config = config.substring(1);
 		}
 		config = "/" + config;
-		this.logger.fine("Trying classpath: " + config);
+		log("Trying classpath: " + config);
 		return getClass().getResourceAsStream(config);
 	}
 
 	private InputStream getFileResource(String config) throws Exception {
 		File file = new File(config);
-		this.logger.fine("Trying file: " + config);
+		log("Trying file: " + config);
 		if (file.canRead()) {
 			return new FileInputStream(file);
 		}
@@ -274,8 +250,8 @@ public class PropertiesLauncher extends Launcher {
 		// Try a URL connection content-length header...
 		URLConnection connection = url.openConnection();
 		try {
-			connection.setUseCaches(connection.getClass().getSimpleName()
-					.startsWith("JNLP"));
+			connection.setUseCaches(
+					connection.getClass().getSimpleName().startsWith("JNLP"));
 			if (connection instanceof HttpURLConnection) {
 				HttpURLConnection httpConnection = (HttpURLConnection) connection;
 				httpConnection.setRequestMethod("HEAD");
@@ -302,9 +278,10 @@ public class PropertiesLauncher extends Launcher {
 			path = this.properties.getProperty(PATH);
 		}
 		if (path != null) {
-			this.paths = parsePathsProperty(SystemPropertyUtils.resolvePlaceholders(path));
+			this.paths = parsePathsProperty(
+					SystemPropertyUtils.resolvePlaceholders(path));
 		}
-		this.logger.info("Nested archive paths: " + this.paths);
+		log("Nested archive paths: " + this.paths);
 	}
 
 	private List<String> parsePathsProperty(String commaSeparatedPaths) {
@@ -313,15 +290,12 @@ public class PropertiesLauncher extends Launcher {
 			path = cleanupPath(path);
 			// Empty path (i.e. the archive itself if running from a JAR) is always added
 			// to the classpath so no need for it to be explicitly listed
-			if (!(path.equals(".") || path.equals(""))) {
+			if (!path.equals("")) {
 				paths.add(path);
 			}
 		}
 		if (paths.isEmpty()) {
-			// On the other hand, we don't want a completely empty path. If the app is
-			// running from an archive (java -jar) then this will make sure the archive
-			// itself is included at the very least.
-			paths.add(".");
+			paths.add("lib");
 		}
 		return paths;
 	}
@@ -343,8 +317,8 @@ public class PropertiesLauncher extends Launcher {
 	protected String getMainClass() throws Exception {
 		String mainClass = getProperty(MAIN, "Start-Class");
 		if (mainClass == null) {
-			throw new IllegalStateException("No '" + MAIN
-					+ "' or 'Start-Class' specified");
+			throw new IllegalStateException(
+					"No '" + MAIN + "' or 'Start-Class' specified");
 		}
 		return mainClass;
 	}
@@ -355,7 +329,7 @@ public class PropertiesLauncher extends Launcher {
 		String customLoaderClassName = getProperty("loader.classLoader");
 		if (customLoaderClassName != null) {
 			loader = wrapWithCustomClassLoader(loader, customLoaderClassName);
-			this.logger.info("Using custom class loader: " + customLoaderClassName);
+			log("Using custom class loader: " + customLoaderClassName);
 		}
 		return loader;
 	}
@@ -363,9 +337,8 @@ public class PropertiesLauncher extends Launcher {
 	@SuppressWarnings("unchecked")
 	private ClassLoader wrapWithCustomClassLoader(ClassLoader parent,
 			String loaderClassName) throws Exception {
-
-		Class<ClassLoader> loaderClass = (Class<ClassLoader>) Class.forName(
-				loaderClassName, true, parent);
+		Class<ClassLoader> loaderClass = (Class<ClassLoader>) Class
+				.forName(loaderClassName, true, parent);
 
 		try {
 			return loaderClass.getConstructor(ClassLoader.class).newInstance(parent);
@@ -373,7 +346,6 @@ public class PropertiesLauncher extends Launcher {
 		catch (NoSuchMethodException ex) {
 			// Ignore and try with URLs
 		}
-
 		try {
 			return loaderClass.getConstructor(URL[].class, ClassLoader.class)
 					.newInstance(new URL[0], parent);
@@ -381,7 +353,6 @@ public class PropertiesLauncher extends Launcher {
 		catch (NoSuchMethodException ex) {
 			// Ignore and try without any arguments
 		}
-
 		return loaderClass.newInstance();
 	}
 
@@ -394,42 +365,37 @@ public class PropertiesLauncher extends Launcher {
 			manifestKey = propertyKey.replace(".", "-");
 			manifestKey = toCamelCase(manifestKey);
 		}
-
 		String property = SystemPropertyUtils.getProperty(propertyKey);
 		if (property != null) {
 			String value = SystemPropertyUtils.resolvePlaceholders(property);
-			this.logger.fine("Property '" + propertyKey + "' from environment: " + value);
+			log("Property '" + propertyKey + "' from environment: " + value);
 			return value;
 		}
-
 		if (this.properties.containsKey(propertyKey)) {
-			String value = SystemPropertyUtils.resolvePlaceholders(this.properties
-					.getProperty(propertyKey));
-			this.logger.fine("Property '" + propertyKey + "' from properties: " + value);
+			String value = SystemPropertyUtils
+					.resolvePlaceholders(this.properties.getProperty(propertyKey));
+			log("Property '" + propertyKey + "' from properties: " + value);
 			return value;
 		}
-
 		try {
 			// Prefer home dir for MANIFEST if there is one
 			Manifest manifest = new ExplodedArchive(this.home, false).getManifest();
 			if (manifest != null) {
 				String value = manifest.getMainAttributes().getValue(manifestKey);
-				this.logger.fine("Property '" + manifestKey
-						+ "' from home directory manifest: " + value);
+				log("Property '" + manifestKey + "' from home directory manifest: "
+						+ value);
 				return value;
 			}
 		}
 		catch (IllegalStateException ex) {
 			// Ignore
 		}
-
 		// Otherwise try the parent archive
 		Manifest manifest = createArchive().getManifest();
 		if (manifest != null) {
 			String value = manifest.getMainAttributes().getValue(manifestKey);
 			if (value != null) {
-				this.logger.fine("Property '" + manifestKey + "' from archive manifest: "
-						+ value);
+				log("Property '" + manifestKey + "' from archive manifest: " + value);
 				return value;
 			}
 		}
@@ -447,7 +413,7 @@ public class PropertiesLauncher extends Launcher {
 				lib.addAll(nested);
 			}
 		}
-		addParentClassLoaderEntries(lib);
+		addNestedEntries(lib);
 		return lib;
 	}
 
@@ -455,27 +421,30 @@ public class PropertiesLauncher extends Launcher {
 		String root = cleanupPath(stripFileUrlPrefix(path));
 		List<Archive> lib = new ArrayList<Archive>();
 		File file = new File(root);
-		if (!root.startsWith("/")) {
+		if (!isAbsolutePath(root)) {
 			file = new File(this.home, root);
 		}
 		if (file.isDirectory()) {
-			this.logger.info("Adding classpath entries from " + file);
+			log("Adding classpath entries from " + file);
 			Archive archive = new ExplodedArchive(file, false);
 			lib.add(archive);
 		}
 		Archive archive = getArchive(file);
 		if (archive != null) {
-			this.logger.info("Adding classpath entries from archive " + archive.getUrl()
-					+ root);
+			log("Adding classpath entries from archive " + archive.getUrl() + root);
 			lib.add(archive);
 		}
 		Archive nested = getNestedArchive(root);
 		if (nested != null) {
-			this.logger.info("Adding classpath entries from nested " + nested.getUrl()
-					+ root);
+			log("Adding classpath entries from nested " + nested.getUrl() + root);
 			lib.add(nested);
 		}
 		return lib;
+	}
+
+	private boolean isAbsolutePath(String root) {
+		// Windows contains ":" others start with "/"
+		return root.contains(":") || root.startsWith("/");
 	}
 
 	private Archive getArchive(File file) throws IOException {
@@ -486,52 +455,49 @@ public class PropertiesLauncher extends Launcher {
 		return null;
 	}
 
-	private Archive getNestedArchive(final String root) throws Exception {
-		Archive parent = createArchive();
-		if (root.startsWith("/") || parent.getUrl().equals(this.home.toURI().toURL())) {
+	private Archive getNestedArchive(String root) throws Exception {
+		if (root.startsWith("/")
+				|| this.parent.getUrl().equals(this.home.toURI().toURL())) {
 			// If home dir is same as parent archive, no need to add it twice.
 			return null;
 		}
 		EntryFilter filter = new PrefixMatchingArchiveFilter(root);
-		if (parent.getNestedArchives(filter).isEmpty()) {
+		if (this.parent.getNestedArchives(filter).isEmpty()) {
 			return null;
 		}
 		// If there are more archives nested in this subdirectory (root) then create a new
 		// virtual archive for them, and have it added to the classpath
-		return new FilteredArchive(parent, filter);
+		return new FilteredArchive(this.parent, filter);
 	}
 
-	private void addParentClassLoaderEntries(List<Archive> lib) throws IOException,
-			URISyntaxException {
-		ClassLoader parentClassLoader = getClass().getClassLoader();
-		for (URL url : getURLs(parentClassLoader)) {
-			if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
-				lib.add(0, new JarFileArchive(new File(url.toURI())));
-			}
-			else if (url.toString().endsWith("/*")) {
-				String name = url.getFile();
-				File dir = new File(name.substring(0, name.length() - 1));
-				if (dir.exists()) {
-					lib.add(0,
-							new ExplodedArchive(new File(name.substring(0,
-									name.length() - 1)), false));
+	private void addNestedEntries(List<Archive> lib) {
+		// The parent archive might have "BOOT-INF/lib/" and "BOOT-INF/classes/"
+		// directories, meaning we are running from an executable JAR. We add nested
+		// entries from there with low priority (i.e. at end).
+		try {
+			lib.addAll(this.parent.getNestedArchives(new EntryFilter() {
+
+				@Override
+				public boolean matches(Entry entry) {
+					if (entry.isDirectory()) {
+						return entry.getName().startsWith(JarLauncher.BOOT_INF_CLASSES);
+					}
+					return entry.getName().startsWith(JarLauncher.BOOT_INF_LIB);
 				}
-			}
-			else {
-				lib.add(0, new ExplodedArchive(new File(url.getFile())));
-			}
-		}
-	}
 
-	private URL[] getURLs(ClassLoader classLoader) {
-		if (classLoader instanceof URLClassLoader) {
-			return ((URLClassLoader) classLoader).getURLs();
+			}));
 		}
-		return EMPTY_URLS;
+		catch (IOException ex) {
+			// Ignore
+		}
 	}
 
 	private String cleanupPath(String path) {
 		path = path.trim();
+		// No need for current dir path
+		if (path.startsWith("./")) {
+			path = path.substring(2);
+		}
 		if (path.toLowerCase().endsWith(".jar") || path.toLowerCase().endsWith(".zip")) {
 			return path;
 		}
@@ -540,13 +506,9 @@ public class PropertiesLauncher extends Launcher {
 		}
 		else {
 			// It's a directory
-			if (!path.endsWith("/")) {
+			if (!path.endsWith("/") && !path.equals(".")) {
 				path = path + "/";
 			}
-		}
-		// No need for current dir path
-		if (path.startsWith("./")) {
-			path = path.substring(2);
 		}
 		return path;
 	}
@@ -579,20 +541,11 @@ public class PropertiesLauncher extends Launcher {
 		return sb.toString();
 	}
 
-	/**
-	 * Convenience class for finding nested archives (archive entries that can be
-	 * classpath entries).
-	 */
-	private static final class ArchiveEntryFilter implements EntryFilter {
-
-		private static final AsciiBytes DOT_JAR = new AsciiBytes(".jar");
-
-		private static final AsciiBytes DOT_ZIP = new AsciiBytes(".zip");
-
-		@Override
-		public boolean matches(Entry entry) {
-			return entry.isDirectory() || entry.getName().endsWith(DOT_JAR)
-					|| entry.getName().endsWith(DOT_ZIP);
+	private void log(String message) {
+		if (Boolean.getBoolean(DEBUG)) {
+			// We shouldn't use java.util.logging because of classpath issues so we
+			// just sysout log messages when "loader.debug" is true
+			System.out.println(message);
 		}
 	}
 
@@ -602,18 +555,78 @@ public class PropertiesLauncher extends Launcher {
 	 */
 	private static final class PrefixMatchingArchiveFilter implements EntryFilter {
 
-		private final AsciiBytes prefix;
+		private final String prefix;
 
 		private final ArchiveEntryFilter filter = new ArchiveEntryFilter();
 
 		private PrefixMatchingArchiveFilter(String prefix) {
-			this.prefix = new AsciiBytes(prefix);
+			this.prefix = prefix;
 		}
 
 		@Override
 		public boolean matches(Entry entry) {
 			return entry.getName().startsWith(this.prefix) && this.filter.matches(entry);
 		}
+
 	}
 
+	/**
+	 * Convenience class for finding nested archives (archive entries that can be
+	 * classpath entries).
+	 */
+	private static final class ArchiveEntryFilter implements EntryFilter {
+
+		private static final String DOT_JAR = ".jar";
+
+		private static final String DOT_ZIP = ".zip";
+
+		@Override
+		public boolean matches(Entry entry) {
+			return entry.getName().endsWith(DOT_JAR) || entry.getName().endsWith(DOT_ZIP);
+		}
+
+	}
+
+	/**
+	 * Decorator to apply an {@link Archive.EntryFilter} to an existing {@link Archive}.
+	 */
+	private static class FilteredArchive implements Archive {
+
+		private final Archive parent;
+
+		private final EntryFilter filter;
+
+		FilteredArchive(Archive parent, EntryFilter filter) {
+			this.parent = parent;
+			this.filter = filter;
+		}
+
+		@Override
+		public URL getUrl() throws MalformedURLException {
+			return this.parent.getUrl();
+		}
+
+		@Override
+		public Manifest getManifest() throws IOException {
+			return this.parent.getManifest();
+		}
+
+		@Override
+		public Iterator<Entry> iterator() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<Archive> getNestedArchives(final EntryFilter filter)
+				throws IOException {
+			return this.parent.getNestedArchives(new EntryFilter() {
+				@Override
+				public boolean matches(Entry entry) {
+					return FilteredArchive.this.filter.matches(entry)
+							&& filter.matches(entry);
+				}
+			});
+		}
+
+	}
 }

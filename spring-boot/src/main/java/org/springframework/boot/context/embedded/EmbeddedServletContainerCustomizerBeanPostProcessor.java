@@ -30,12 +30,12 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 /**
  * {@link BeanPostProcessor} that apply all {@link EmbeddedServletContainerCustomizer}s
  * from the bean factory to {@link ConfigurableEmbeddedServletContainer} beans.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
-public class EmbeddedServletContainerCustomizerBeanPostProcessor implements
-		BeanPostProcessor, ApplicationContextAware {
+public class EmbeddedServletContainerCustomizerBeanPostProcessor
+		implements BeanPostProcessor, ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
 
@@ -62,7 +62,8 @@ public class EmbeddedServletContainerCustomizerBeanPostProcessor implements
 		return bean;
 	}
 
-	private void postProcessBeforeInitialization(ConfigurableEmbeddedServletContainer bean) {
+	private void postProcessBeforeInitialization(
+			ConfigurableEmbeddedServletContainer bean) {
 		for (EmbeddedServletContainerCustomizer customizer : getCustomizers()) {
 			customizer.customize(bean);
 		}
@@ -72,8 +73,10 @@ public class EmbeddedServletContainerCustomizerBeanPostProcessor implements
 		if (this.customizers == null) {
 			// Look up does not include the parent context
 			this.customizers = new ArrayList<EmbeddedServletContainerCustomizer>(
-					this.applicationContext.getBeansOfType(
-							EmbeddedServletContainerCustomizer.class).values());
+					this.applicationContext
+							.getBeansOfType(EmbeddedServletContainerCustomizer.class,
+									false, false)
+							.values());
 			Collections.sort(this.customizers, AnnotationAwareOrderComparator.INSTANCE);
 			this.customizers = Collections.unmodifiableList(this.customizers);
 		}

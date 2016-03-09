@@ -24,19 +24,24 @@ import org.springframework.boot.cli.command.core.HelpCommand;
 import org.springframework.boot.cli.command.core.HintCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
 import org.springframework.boot.cli.command.shell.ShellCommand;
+import org.springframework.boot.loader.tools.LogbackInitializer;
 
 /**
  * Spring Command Line Interface. This is the main entry-point for the Spring command line
  * application.
- * 
+ *
  * @author Phillip Webb
  * @see #main(String...)
  * @see CommandRunner
  */
-public class SpringCli {
+public final class SpringCli {
+
+	private SpringCli() {
+	}
 
 	public static void main(String... args) {
 		System.setProperty("java.awt.headless", Boolean.toString(true));
+		LogbackInitializer.initialize();
 
 		CommandRunner runner = new CommandRunner("spring");
 		runner.addCommand(new HelpCommand(runner));
@@ -48,13 +53,14 @@ public class SpringCli {
 
 		int exitCode = runner.runAndHandleErrors(args);
 		if (exitCode != 0) {
+			// If successful, leave it to run in case it's a server app
 			System.exit(exitCode);
 		}
 	}
 
 	private static void addServiceLoaderCommands(CommandRunner runner) {
-		ServiceLoader<CommandFactory> factories = ServiceLoader.load(
-				CommandFactory.class, runner.getClass().getClassLoader());
+		ServiceLoader<CommandFactory> factories = ServiceLoader.load(CommandFactory.class,
+				runner.getClass().getClassLoader());
 		for (CommandFactory factory : factories) {
 			runner.addCommands(factory.getCommands());
 		}

@@ -26,12 +26,13 @@ import org.eclipse.aether.transfer.TransferResource;
 
 /**
  * Provide detailed progress feedback for long running resolves.
- * 
+ *
  * @author Andy Wilkinson
  */
 final class DetailedProgressReporter implements ProgressReporter {
 
-	DetailedProgressReporter(DefaultRepositorySystemSession session, final PrintStream out) {
+	DetailedProgressReporter(DefaultRepositorySystemSession session,
+			final PrintStream out) {
 
 		session.setTransferListener(new AbstractTransferListener() {
 
@@ -56,8 +57,8 @@ final class DetailedProgressReporter implements ProgressReporter {
 
 	private String getTransferSpeed(TransferEvent event) {
 		long kb = event.getTransferredBytes() / 1024;
-		float seconds = (System.currentTimeMillis() - event.getResource()
-				.getTransferStartTime()) / 1000.0f;
+		float seconds = (System.currentTimeMillis()
+				- event.getResource().getTransferStartTime()) / 1000.0f;
 
 		return String.format("%dKB at %.1fKB/sec", kb, (kb / seconds));
 	}

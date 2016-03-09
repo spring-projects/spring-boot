@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +21,25 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Tests for {@link RequestMappingEndpoint}.
+ *
  * @author Dave Syer
  */
 public class RequestMappingEndpointTests {
@@ -44,13 +52,13 @@ public class RequestMappingEndpointTests {
 		mapping.setUrlMap(Collections.singletonMap("/foo", new Object()));
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.initApplicationContext();
-		this.endpoint.setHandlerMappings(Collections
-				.<AbstractUrlHandlerMapping> singletonList(mapping));
+		this.endpoint.setHandlerMappings(
+				Collections.<AbstractUrlHandlerMapping>singletonList(mapping));
 		Map<String, Object> result = this.endpoint.invoke();
-		assertEquals(1, result.size());
+		assertThat(result).hasSize(1);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) result.get("/foo");
-		assertEquals("java.lang.Object", map.get("type"));
+		assertThat(map.get("type")).isEqualTo("java.lang.Object");
 	}
 
 	@Test
@@ -63,10 +71,22 @@ public class RequestMappingEndpointTests {
 		context.getDefaultListableBeanFactory().registerSingleton("mapping", mapping);
 		this.endpoint.setApplicationContext(context);
 		Map<String, Object> result = this.endpoint.invoke();
-		assertEquals(1, result.size());
+		assertThat(result).hasSize(1);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) result.get("/foo");
-		assertEquals("mapping", map.get("bean"));
+		assertThat(map.get("bean")).isEqualTo("mapping");
+	}
+
+	@Test
+	public void beanUrlMappingsProxy() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				MappingConfiguration.class);
+		this.endpoint.setApplicationContext(context);
+		Map<String, Object> result = this.endpoint.invoke();
+		assertThat(result).hasSize(1);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> map = (Map<String, Object>) result.get("/foo");
+		assertThat(map.get("bean")).isEqualTo("scopedTarget.mapping");
 	}
 
 	@Test
@@ -79,12 +99,12 @@ public class RequestMappingEndpointTests {
 		context.getDefaultListableBeanFactory().registerSingleton("mapping", mapping);
 		this.endpoint.setApplicationContext(context);
 		Map<String, Object> result = this.endpoint.invoke();
-		assertEquals(1, result.size());
-		assertTrue(result.keySet().iterator().next().contains("/dump"));
+		assertThat(result).hasSize(1);
+		assertThat(result.keySet().iterator().next().contains("/dump")).isTrue();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> handler = (Map<String, Object>) result.values().iterator()
 				.next();
-		assertTrue(handler.containsKey("method"));
+		assertThat(handler.containsKey("method")).isTrue();
 	}
 
 	@Test
@@ -93,15 +113,26 @@ public class RequestMappingEndpointTests {
 				Arrays.asList(new EndpointMvcAdapter(new DumpEndpoint())));
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.afterPropertiesSet();
-		this.endpoint.setMethodMappings(Collections
-				.<AbstractHandlerMethodMapping<?>> singletonList(mapping));
+		this.endpoint.setMethodMappings(
+				Collections.<AbstractHandlerMethodMapping<?>>singletonList(mapping));
 		Map<String, Object> result = this.endpoint.invoke();
-		assertEquals(1, result.size());
-		assertTrue(result.keySet().iterator().next().contains("/dump"));
+		assertThat(result).hasSize(1);
+		assertThat(result.keySet().iterator().next().contains("/dump")).isTrue();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> handler = (Map<String, Object>) result.values().iterator()
 				.next();
-		assertTrue(handler.containsKey("method"));
+		assertThat(handler.containsKey("method")).isTrue();
 	}
 
+	@Configuration
+	protected static class MappingConfiguration {
+		@Bean
+		@Lazy
+		@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
+		public AbstractUrlHandlerMapping mapping() {
+			SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
+			mapping.setUrlMap(Collections.singletonMap("/foo", new Object()));
+			return mapping;
+		}
+	}
 }

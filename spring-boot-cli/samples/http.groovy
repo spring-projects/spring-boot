@@ -20,4 +20,5 @@ class Example implements CommandLineRunner {
 		def world = new RESTClient("http://localhost:" + port).get(path:"/").data.text
 		print "Hello " + world
 	}
+
 }

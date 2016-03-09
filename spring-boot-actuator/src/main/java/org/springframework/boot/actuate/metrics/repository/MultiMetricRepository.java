@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,42 +16,27 @@
 
 package org.springframework.boot.actuate.metrics.repository;
 
-import java.util.Collection;
-
-import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
+import org.springframework.boot.actuate.metrics.writer.PrefixMetricWriter;
 
 /**
  * A repository for metrics that allows efficient storage and retrieval of groups of
  * metrics with a common name prefix (their group name).
- * 
+ *
  * @author Dave Syer
  */
-public interface MultiMetricRepository extends PrefixMetricReader {
+public interface MultiMetricRepository extends PrefixMetricReader, PrefixMetricWriter {
 
 	/**
-	 * Save some metric values and associate them with a group name.
-	 * @param group the name of the group
-	 * @param values the metric values to save
-	 */
-	void save(String group, Collection<Metric<?>> values);
-
-	/**
-	 * Rest the values of all metrics in the group. Implementations may choose to discard
-	 * the old values.
-	 * @param group reset the whole group
-	 */
-	void reset(String group);
-
-	/**
-	 * The names of all the groups known to this repository
+	 * The names of all the groups known to this repository.
 	 * @return all available group names
 	 */
 	Iterable<String> groups();
 
 	/**
-	 * @return the number of groups available
+	 * The number of groups available in this repository.
+	 * @return the number of groups
 	 */
-	long count();
+	long countGroups();
 
 }

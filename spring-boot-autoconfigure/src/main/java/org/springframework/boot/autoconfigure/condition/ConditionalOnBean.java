@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,12 @@ import org.springframework.context.annotation.Conditional;
 /**
  * {@link Conditional} that only matches when the specified bean classes and/or names are
  * already contained in the {@link BeanFactory}.
- * 
+ * <p>
+ * The condition can only match the bean definitions that have been processed by the
+ * application context so far and, as such, it is strongly recommended to use this
+ * condition on auto-configuration classes only. If a candidate bean may be created by
+ * another auto-configuration, make sure that the one using this condition runs after.
+ *
  * @author Phillip Webb
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
@@ -47,9 +52,17 @@ public @interface ConditionalOnBean {
 	Class<?>[] value() default {};
 
 	/**
+	 * The class type names of bean that should be checked. The condition matches when any
+	 * of the classes specified is contained in the {@link ApplicationContext}.
+	 * @return the class type names of beans to check
+	 */
+	String[] type() default {};
+
+	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
-	 * when each class specified is missing from beans in the {@link ApplicationContext}.
-	 * @return the class types of beans to check
+	 * when any of the annotations specified is defined on a bean in the
+	 * {@link ApplicationContext}.
+	 * @return the class-level annotation types to check
 	 */
 	Class<? extends Annotation>[] annotation() default {};
 
@@ -63,6 +76,7 @@ public @interface ConditionalOnBean {
 	/**
 	 * Strategy to decide if the application context hierarchy (parent contexts) should be
 	 * considered.
+	 * @return the search strategy
 	 */
 	SearchStrategy search() default SearchStrategy.ALL;
 

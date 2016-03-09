@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,43 +16,43 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
-import org.springframework.util.ClassUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link DataSourceAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class DataSourceAutoConfigurationTests {
 
@@ -60,9 +60,16 @@ public class DataSourceAutoConfigurationTests {
 
 	@Before
 	public void init() {
+		EmbeddedDatabaseConnection.override = null;
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.initialize:false",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt());
+	}
+
+	@After
+	public void restore() {
+		EmbeddedDatabaseConnection.override = null;
+		this.context.close();
 	}
 
 	@Test
@@ -70,7 +77,98 @@ public class DataSourceAutoConfigurationTests {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
+	}
+
+	@Test
+	public void testDataSourceHasEmbeddedDefault() throws Exception {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		org.apache.tomcat.jdbc.pool.DataSource dataSource = this.context
+				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
+		assertThat(dataSource.getUrl()).isNotNull();
+		assertThat(dataSource.getDriverClassName()).isNotNull();
+	}
+
+	@Test(expected = BeanCreationException.class)
+	public void testBadUrl() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.url:jdbc:not-going-to-work");
+		EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
+	}
+
+	@Test(expected = BeanCreationException.class)
+	public void testBadDriverClass() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.driverClassName:org.none.jdbcDriver",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb");
+		EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
+	}
+
+	@Test
+	public void tomcatValidatesConnectionByDefault() {
+		org.apache.tomcat.jdbc.pool.DataSource dataSource = autoConfigureDataSource(
+				org.apache.tomcat.jdbc.pool.DataSource.class);
+		assertThat(dataSource.isTestOnBorrow()).isTrue();
+		assertThat(dataSource.getValidationQuery())
+				.isEqualTo(DatabaseDriver.HSQLDB.getValidationQuery());
+	}
+
+	@Test
+	public void hikariIsFallback() throws Exception {
+		HikariDataSource dataSource = autoConfigureDataSource(HikariDataSource.class,
+				"org.apache.tomcat");
+		assertThat(dataSource.getJdbcUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
+	}
+
+	@Test
+	public void hikariValidatesConnectionByDefault() throws Exception {
+		HikariDataSource dataSource = autoConfigureDataSource(HikariDataSource.class,
+				"org.apache.tomcat");
+		assertThat(dataSource.getConnectionTestQuery()).isNull(); // Use
+																	// Connection#isValid()
+	}
+
+	@Test
+	public void commonsDbcpIsFallback() throws Exception {
+		BasicDataSource dataSource = autoConfigureDataSource(BasicDataSource.class,
+				"org.apache.tomcat", "com.zaxxer.hikari");
+		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
+	}
+
+	@Test
+	public void commonsDbcpValidatesConnectionByDefault() {
+		BasicDataSource dataSource = autoConfigureDataSource(BasicDataSource.class,
+				"org.apache.tomcat", "com.zaxxer.hikari");
+		assertThat(dataSource.getTestOnBorrow()).isTrue();
+		assertThat(dataSource.getValidationQuery())
+				.isEqualTo(DatabaseDriver.HSQLDB.getValidationQuery());
+	}
+
+	@Test
+	public void commonsDbcp2IsFallback() throws Exception {
+		org.apache.commons.dbcp2.BasicDataSource dataSource = autoConfigureDataSource(
+				org.apache.commons.dbcp2.BasicDataSource.class, "org.apache.tomcat",
+				"com.zaxxer.hikari", "org.apache.commons.dbcp.");
+		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
+	}
+
+	@Test
+	public void commonsDbcp2ValidatesConnectionByDefault() throws Exception {
+		org.apache.commons.dbcp2.BasicDataSource dataSource = autoConfigureDataSource(
+				org.apache.commons.dbcp2.BasicDataSource.class, "org.apache.tomcat",
+				"com.zaxxer.hikari", "org.apache.commons.dbcp.");
+		assertThat(dataSource.getTestOnBorrow()).isEqualTo(true);
+		assertThat(dataSource.getValidationQuery()).isNull(); // Use Connection#isValid()
 	}
 
 	@Test
@@ -82,29 +180,42 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource bean = this.context.getBean(DataSource.class);
-		assertNotNull(bean);
+		assertThat(bean).isNotNull();
 		org.apache.tomcat.jdbc.pool.DataSource pool = (org.apache.tomcat.jdbc.pool.DataSource) bean;
-		assertEquals("org.hsqldb.jdbcDriver", pool.getDriverClassName());
-		assertEquals("sa", pool.getUsername());
+		assertThat(pool.getDriverClassName()).isEqualTo("org.hsqldb.jdbcDriver");
+		assertThat(pool.getUsername()).isEqualTo("sa");
 	}
 
 	@Test
-	public void testExplicitDriverClassClearsUserName() throws Exception {
-		EnvironmentTestUtils
-				.addEnvironment(
-						this.context,
-						"spring.datasource.driverClassName:org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseDriver",
-						"spring.datasource.url:jdbc:foo://localhost");
+	public void explicitType() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
+				"spring.datasource.type:" + HikariDataSource.class.getName());
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource bean = this.context.getBean(DataSource.class);
-		assertNotNull(bean);
+		assertThat(bean).isNotNull();
+		assertThat(bean.getClass()).isEqualTo(HikariDataSource.class);
+	}
+
+	@Test
+	public void testExplicitDriverClassClearsUserName() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.driverClassName:"
+						+ "org.springframework.boot.autoconfigure.jdbc."
+						+ "DataSourceAutoConfigurationTests$DatabaseTestDriver",
+				"spring.datasource.url:jdbc:foo://localhost");
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource bean = this.context.getBean(DataSource.class);
+		assertThat(bean).isNotNull();
 		org.apache.tomcat.jdbc.pool.DataSource pool = (org.apache.tomcat.jdbc.pool.DataSource) bean;
-		assertEquals(
-				"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseDriver",
-				pool.getDriverClassName());
-		assertNull(pool.getUsername());
+		assertThat(pool.getDriverClassName()).isEqualTo(
+				"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseTestDriver");
+		assertThat(pool.getUsername()).isNull();
 	}
 
 	@Test
@@ -114,8 +225,7 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue("DataSource is wrong type: " + dataSource,
-				dataSource instanceof BasicDataSource);
+		assertThat(dataSource).isInstanceOf(BasicDataSource.class);
 	}
 
 	@Test
@@ -124,8 +234,8 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
-		assertNotNull(jdbcTemplate);
-		assertNotNull(jdbcTemplate.getDataSource());
+		assertThat(jdbcTemplate).isNotNull();
+		assertThat(jdbcTemplate.getDataSource()).isNotNull();
 	}
 
 	@Test
@@ -135,8 +245,8 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
-		assertNotNull(jdbcTemplate);
-		assertTrue(jdbcTemplate.getDataSource() instanceof BasicDataSource);
+		assertThat(jdbcTemplate).isNotNull();
+		assertThat(jdbcTemplate.getDataSource() instanceof BasicDataSource).isTrue();
 	}
 
 	@Test
@@ -144,64 +254,36 @@ public class DataSourceAutoConfigurationTests {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(NamedParameterJdbcOperations.class));
+		assertThat(this.context.getBean(NamedParameterJdbcOperations.class)).isNotNull();
 	}
 
-	@Test
-	public void testDataSourceInitialized() throws Exception {
+	@SuppressWarnings("unchecked")
+	private <T extends DataSource> T autoConfigureDataSource(Class<T> expectedType,
+			final String... hiddenPackages) {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:true");
-		this.context.register(DataSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
-		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(0),
-				template.queryForObject("SELECT COUNT(*) from BAR", Integer.class));
-	}
+				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb");
+		this.context.setClassLoader(
+				new URLClassLoader(new URL[0], getClass().getClassLoader()) {
 
-	@Test
-	public void testDataSourceInitializedWithExplicitScript() throws Exception {
-		this.context.register(DataSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put(DataSourceAutoConfiguration.CONFIGURATION_PREFIX + ".schema",
-				ClassUtils.addResourcePathToPackagePath(getClass(), "schema.sql"));
-		this.context.getEnvironment().getPropertySources()
-				.addFirst(new MapPropertySource("test", map));
-		this.context.refresh();
-		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
-		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(0),
-				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
-	}
+					@Override
+					protected Class<?> loadClass(String name, boolean resolve)
+							throws ClassNotFoundException {
+						for (String hiddenPackage : hiddenPackages) {
+							if (name.startsWith(hiddenPackage)) {
+								throw new ClassNotFoundException();
+							}
+						}
+						return super.loadClass(name, resolve);
+					}
 
-	@Test
-	public void testDataSourceInitializedWithMultipleScripts() throws Exception {
-		EnvironmentTestUtils.addEnvironment(
-				this.context,
-				"spring.datasource.initialize:true",
-				"spring.datasource.schema:"
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-								"schema.sql")
-						+ ","
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-								"another.sql"));
+				});
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
-		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(0),
-				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
-		assertEquals(new Integer(0),
-				template.queryForObject("SELECT COUNT(*) from SPAM", Integer.class));
+		DataSource bean = this.context.getBean(DataSource.class);
+		assertThat(bean).isInstanceOf(expectedType);
+		return (T) bean;
 	}
 
 	@Configuration
@@ -220,11 +302,12 @@ public class DataSourceAutoConfigurationTests {
 
 	}
 
-	public static class DatabaseDriver implements Driver {
+	// see testExplicitDriverClassClearsUserName
+	public static class DatabaseTestDriver implements Driver {
 
 		@Override
 		public Connection connect(String url, Properties info) throws SQLException {
-			return Mockito.mock(Connection.class);
+			return mock(Connection.class);
 		}
 
 		@Override
@@ -253,8 +336,9 @@ public class DataSourceAutoConfigurationTests {
 			return false;
 		}
 
+		@Override
 		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-			return Mockito.mock(Logger.class);
+			return mock(Logger.class);
 		}
 
 	}

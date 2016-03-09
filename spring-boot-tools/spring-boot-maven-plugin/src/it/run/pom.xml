@@ -16,7 +16,6 @@
 				<version>@project.version@</version>
 				<executions>
 					<execution>
-						<id></id>
 						<phase>package</phase>
 						<goals>
 							<goal>run</goal>

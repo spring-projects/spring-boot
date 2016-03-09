@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,76 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for Rabbit.
- * 
+ *
  * @author Greg Turnquist
  * @author Dave Syer
+ * @author Stephane Nicoll
+ * @author Andy Wilkinson
+ * @author Josh Thornhill
+ * @author Gary Russell
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
 
+	/**
+	 * RabbitMQ host.
+	 */
 	private String host = "localhost";
 
+	/**
+	 * RabbitMQ port.
+	 */
 	private int port = 5672;
 
+	/**
+	 * Login user to authenticate to the broker.
+	 */
 	private String username;
 
+	/**
+	 * Login to authenticate against the broker.
+	 */
 	private String password;
 
+	/**
+	 * SSL configuration.
+	 */
+	private final Ssl ssl = new Ssl();
+
+	/**
+	 * Virtual host to use when connecting to the broker.
+	 */
 	private String virtualHost;
 
+	/**
+	 * Comma-separated list of addresses to which the client should connect.
+	 */
 	private String addresses;
 
-	private boolean dynamic = true;
+	/**
+	 * Requested heartbeat timeout, in seconds; zero for none.
+	 */
+	private Integer requestedHeartbeat;
+
+	/**
+	 * Cache configuration.
+	 */
+	private final Cache cache = new Cache();
+
+	/**
+	 * Listener container configuration.
+	 */
+	private final Listener listener = new Listener();
 
 	public String getHost() {
 		if (this.addresses == null) {
@@ -70,11 +115,42 @@ public class RabbitProperties {
 	}
 
 	public void setAddresses(String addresses) {
-		this.addresses = addresses;
+		this.addresses = parseAddresses(addresses);
 	}
 
 	public String getAddresses() {
 		return (this.addresses == null ? this.host + ":" + this.port : this.addresses);
+	}
+
+	private String parseAddresses(String addresses) {
+		Set<String> result = new LinkedHashSet<String>();
+		for (String address : StringUtils.commaDelimitedListToStringArray(addresses)) {
+			address = address.trim();
+			if (address.startsWith("amqp://")) {
+				address = address.substring("amqp://".length());
+			}
+			if (address.contains("@")) {
+				String[] split = StringUtils.split(address, "@");
+				String creds = split[0];
+				address = split[1];
+				split = StringUtils.split(creds, ":");
+				this.username = split[0];
+				if (split.length > 0) {
+					this.password = split[1];
+				}
+			}
+			int index = address.indexOf("/");
+			if (index >= 0 && index < address.length()) {
+				setVirtualHost(address.substring(index + 1));
+				address = address.substring(0, index);
+			}
+			if (!address.contains(":")) {
+				address = address + ":" + this.port;
+			}
+			result.add(address);
+		}
+		return (result.isEmpty() ? null
+				: StringUtils.collectionToCommaDelimitedString(result));
 	}
 
 	public void setPort(int port) {
@@ -97,12 +173,8 @@ public class RabbitProperties {
 		this.password = password;
 	}
 
-	public boolean isDynamic() {
-		return this.dynamic;
-	}
-
-	public void setDynamic(boolean dynamic) {
-		this.dynamic = dynamic;
+	public Ssl getSsl() {
+		return this.ssl;
 	}
 
 	public String getVirtualHost() {
@@ -110,10 +182,253 @@ public class RabbitProperties {
 	}
 
 	public void setVirtualHost(String virtualHost) {
-		while (virtualHost.startsWith("/") && virtualHost.length() > 0) {
-			virtualHost = virtualHost.substring(1);
+		this.virtualHost = ("".equals(virtualHost) ? "/" : virtualHost);
+	}
+
+	public Integer getRequestedHeartbeat() {
+		return this.requestedHeartbeat;
+	}
+
+	public void setRequestedHeartbeat(Integer requestedHeartbeat) {
+		this.requestedHeartbeat = requestedHeartbeat;
+	}
+
+	public Cache getCache() {
+		return this.cache;
+	}
+
+	public Listener getListener() {
+		return this.listener;
+	}
+
+	public static class Ssl {
+
+		/**
+		 * Enable SSL support.
+		 */
+		private boolean enabled;
+
+		/**
+		 * Path to the key store that holds the SSL certificate.
+		 */
+		private String keyStore;
+
+		/**
+		 * Password used to access the key store.
+		 */
+		private String keyStorePassword;
+
+		/**
+		 * Trust store that holds SSL certificates.
+		 */
+		private String trustStore;
+
+		/**
+		 * Password used to access the trust store.
+		 */
+		private String trustStorePassword;
+
+		public boolean isEnabled() {
+			return this.enabled;
 		}
-		this.virtualHost = "/" + virtualHost;
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getKeyStore() {
+			return this.keyStore;
+		}
+
+		public void setKeyStore(String keyStore) {
+			this.keyStore = keyStore;
+		}
+
+		public String getKeyStorePassword() {
+			return this.keyStorePassword;
+		}
+
+		public void setKeyStorePassword(String keyStorePassword) {
+			this.keyStorePassword = keyStorePassword;
+		}
+
+		public String getTrustStore() {
+			return this.trustStore;
+		}
+
+		public void setTrustStore(String trustStore) {
+			this.trustStore = trustStore;
+		}
+
+		public String getTrustStorePassword() {
+			return this.trustStorePassword;
+		}
+
+		public void setTrustStorePassword(String trustStorePassword) {
+			this.trustStorePassword = trustStorePassword;
+		}
+
+	}
+
+	public static class Cache {
+
+		private final Channel channel = new Channel();
+
+		private final Connection connection = new Connection();
+
+		public Channel getChannel() {
+			return this.channel;
+		}
+
+		public Connection getConnection() {
+			return this.connection;
+		}
+
+		public static class Channel {
+
+			/**
+			 * Number of channels to retain in the cache. When "check-timeout" > 0, max
+			 * channels per connection.
+			 */
+			private Integer size;
+
+			/**
+			 * Number of milliseconds to wait to obtain a channel if the cache size has
+			 * been reached. If 0, always create a new channel.
+			 */
+			private Long checkoutTimeout;
+
+			public Integer getSize() {
+				return this.size;
+			}
+
+			public void setSize(Integer size) {
+				this.size = size;
+			}
+
+			public Long getCheckoutTimeout() {
+				return this.checkoutTimeout;
+			}
+
+			public void setCheckoutTimeout(Long checkoutTimeout) {
+				this.checkoutTimeout = checkoutTimeout;
+			}
+
+		}
+
+		public static class Connection {
+
+			/**
+			 * Connection factory cache mode.
+			 */
+			private CacheMode mode = CacheMode.CHANNEL;
+
+			/**
+			 * Number of connections to cache. Only applies when mode is CONNECTION.
+			 */
+			private Integer size;
+
+			public CacheMode getMode() {
+				return this.mode;
+			}
+
+			public void setMode(CacheMode mode) {
+				this.mode = mode;
+			}
+
+			public Integer getSize() {
+				return this.size;
+			}
+
+			public void setSize(Integer size) {
+				this.size = size;
+			}
+
+		}
+
+	}
+
+	public static class Listener {
+
+		/**
+		 * Start the container automatically on startup.
+		 */
+		private boolean autoStartup = true;
+
+		/**
+		 * Acknowledge mode of container.
+		 */
+		private AcknowledgeMode acknowledgeMode;
+
+		/**
+		 * Minimum number of consumers.
+		 */
+		private Integer concurrency;
+
+		/**
+		 * Maximum number of consumers.
+		 */
+		private Integer maxConcurrency;
+
+		/**
+		 * Number of messages to be handled in a single request. It should be greater than
+		 * or equal to the transaction size (if used).
+		 */
+		private Integer prefetch;
+
+		/**
+		 * Number of messages to be processed in a transaction. For best results it should
+		 * be less than or equal to the prefetch count.
+		 */
+		private Integer transactionSize;
+
+		public boolean isAutoStartup() {
+			return this.autoStartup;
+		}
+
+		public void setAutoStartup(boolean autoStartup) {
+			this.autoStartup = autoStartup;
+		}
+
+		public AcknowledgeMode getAcknowledgeMode() {
+			return this.acknowledgeMode;
+		}
+
+		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+			this.acknowledgeMode = acknowledgeMode;
+		}
+
+		public Integer getConcurrency() {
+			return this.concurrency;
+		}
+
+		public void setConcurrency(Integer concurrency) {
+			this.concurrency = concurrency;
+		}
+
+		public Integer getMaxConcurrency() {
+			return this.maxConcurrency;
+		}
+
+		public void setMaxConcurrency(Integer maxConcurrency) {
+			this.maxConcurrency = maxConcurrency;
+		}
+
+		public Integer getPrefetch() {
+			return this.prefetch;
+		}
+
+		public void setPrefetch(Integer prefetch) {
+			this.prefetch = prefetch;
+		}
+
+		public Integer getTransactionSize() {
+			return this.transactionSize;
+		}
+
+		public void setTransactionSize(Integer transactionSize) {
+			this.transactionSize = transactionSize;
+		}
 	}
 
 }

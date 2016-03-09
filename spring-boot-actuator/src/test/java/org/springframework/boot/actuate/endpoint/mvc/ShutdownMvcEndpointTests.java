@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,37 +18,32 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link ShutdownMvcEndpoint}.
- * 
+ *
  * @author Dave Syer
  */
 public class ShutdownMvcEndpointTests {
 
 	private ShutdownEndpoint endpoint = mock(ShutdownEndpoint.class);
-	private ShutdownMvcEndpoint mvc = new ShutdownMvcEndpoint(this.endpoint);
 
-	@Before
-	public void init() {
-		when(this.endpoint.isEnabled()).thenReturn(false);
-	}
+	private ShutdownMvcEndpoint mvc = new ShutdownMvcEndpoint(this.endpoint);
 
 	@Test
 	public void disabled() {
 		@SuppressWarnings("unchecked")
 		ResponseEntity<Map<String, String>> response = (ResponseEntity<Map<String, String>>) this.mvc
 				.invoke();
-		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 }

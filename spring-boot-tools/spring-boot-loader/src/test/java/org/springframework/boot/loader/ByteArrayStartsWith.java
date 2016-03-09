@@ -21,7 +21,7 @@ import org.hamcrest.TypeSafeMatcher;
 
 /**
  * Hamcrest matcher to tests that a byte array starts with specific bytes.
- * 
+ *
  * @author Phillip Webb
  */
 public class ByteArrayStartsWith extends TypeSafeMatcher<byte[]> {
@@ -34,16 +34,16 @@ public class ByteArrayStartsWith extends TypeSafeMatcher<byte[]> {
 
 	@Override
 	public void describeTo(Description description) {
-		description.appendText("a byte array starting with ").appendValue(bytes);
+		description.appendText("a byte array starting with ").appendValue(this.bytes);
 	}
 
 	@Override
 	protected boolean matchesSafely(byte[] item) {
-		if (item.length < bytes.length) {
+		if (item.length < this.bytes.length) {
 			return false;
 		}
-		for (int i = 0; i < bytes.length; i++) {
-			if (item[i] != bytes[i]) {
+		for (int i = 0; i < this.bytes.length; i++) {
+			if (item[i] != this.bytes[i]) {
 				return false;
 			}
 		}

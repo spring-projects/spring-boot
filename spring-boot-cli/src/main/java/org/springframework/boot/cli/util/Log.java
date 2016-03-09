@@ -18,7 +18,7 @@ package org.springframework.boot.cli.util;
 
 /**
  * Simple logger used by the CLI.
- * 
+ *
  * @author Phillip Webb
  */
 public abstract class Log {

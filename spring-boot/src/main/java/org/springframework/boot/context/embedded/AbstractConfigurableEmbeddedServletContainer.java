@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,24 +26,30 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Abstract base class for {@link ConfigurableEmbeddedServletContainer} implementations.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
+ * @author Stephane Nicoll
+ * @author Ivan Sopov
+ * @author Eddú Meléndez
  * @see AbstractEmbeddedServletContainerFactory
  */
-public abstract class AbstractConfigurableEmbeddedServletContainer implements
-		ConfigurableEmbeddedServletContainer {
+public abstract class AbstractConfigurableEmbeddedServletContainer
+		implements ConfigurableEmbeddedServletContainer {
+
+	private static final int DEFAULT_SESSION_TIMEOUT = (int) TimeUnit.MINUTES
+			.toSeconds(30);
 
 	private String contextPath = "";
 
+	private String displayName;
+
 	private boolean registerDefaultServlet = true;
-
-	private boolean registerJspServlet = true;
-
-	private String jspServletClassName = "org.apache.jasper.servlet.JspServlet";
 
 	private int port = 8080;
 
@@ -57,7 +63,19 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 
 	private InetAddress address;
 
-	private int sessionTimeout;
+	private int sessionTimeout = DEFAULT_SESSION_TIMEOUT;
+
+	private boolean persistSession;
+
+	private File sessionStoreDir;
+
+	private Ssl ssl;
+
+	private JspServlet jspServlet = new JspServlet();
+
+	private Compression compression;
+
+	private String serverHeader;
 
 	/**
 	 * Create a new {@link AbstractConfigurableEmbeddedServletContainer} instance.
@@ -101,7 +119,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 			}
 			if (!contextPath.startsWith("/") || contextPath.endsWith("/")) {
 				throw new IllegalArgumentException(
-						"ContextPath must start with '/ and not end with '/'");
+						"ContextPath must start with '/' and not end with '/'");
 			}
 		}
 	}
@@ -109,9 +127,19 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	/**
 	 * Returns the context path for the embedded servlet container. The path will start
 	 * with "/" and not end with "/". The root context is represented by an empty string.
+	 * @return the context path
 	 */
 	public String getContextPath() {
 		return this.contextPath;
+	}
+
+	@Override
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getDisplayName() {
+		return this.displayName;
 	}
 
 	@Override
@@ -133,7 +161,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	/**
-	 * @return the address the embedded container binds to
+	 * Return the address that the embedded container binds to.
+	 * @return the address
 	 */
 	public InetAddress getAddress() {
 		return this.address;
@@ -151,10 +180,29 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	/**
-	 * @return the session timeout in seconds
+	 * Return the session timeout in seconds.
+	 * @return the timeout in seconds
 	 */
 	public int getSessionTimeout() {
 		return this.sessionTimeout;
+	}
+
+	@Override
+	public void setPersistSession(boolean persistSession) {
+		this.persistSession = persistSession;
+	}
+
+	public boolean isPersistSession() {
+		return this.persistSession;
+	}
+
+	@Override
+	public void setSessionStoreDir(File sessionStoreDir) {
+		this.sessionStoreDir = sessionStoreDir;
+	}
+
+	public File getSessionStoreDir() {
+		return this.sessionStoreDir;
 	}
 
 	@Override
@@ -177,6 +225,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	/**
 	 * Returns the document root which will be used by the web context to serve static
 	 * files.
+	 * @return the document root
 	 */
 	public File getDocumentRoot() {
 		return this.documentRoot;
@@ -195,8 +244,9 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	/**
-	 * Returns a mutable set of {@link ErrorPage}s that will be used when handling
-	 * exceptions.
+	 * Returns a mutable set of {@link ErrorPage ErrorPages} that will be used when
+	 * handling exceptions.
+	 * @return the error pages
 	 */
 	public Set<ErrorPage> getErrorPages() {
 		return this.errorPages;
@@ -221,20 +271,6 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	/**
-	 * Flag to indicate that the JSP servlet should be registered if available on the
-	 * classpath.
-	 * @return true if the JSP servlet is to be registered
-	 */
-	public boolean isRegisterJspServlet() {
-		return this.registerJspServlet;
-	}
-
-	@Override
-	public void setRegisterJspServlet(boolean registerJspServlet) {
-		this.registerJspServlet = registerJspServlet;
-	}
-
-	/**
 	 * Flag to indicate that the default servlet should be registered.
 	 * @return true if the default servlet is to be registered
 	 */
@@ -243,15 +279,39 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	@Override
-	public void setJspServletClassName(String jspServletClassName) {
-		this.jspServletClassName = jspServletClassName;
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
 	}
 
-	/**
-	 * @return the JSP servlet class name
-	 */
-	protected String getJspServletClassName() {
-		return this.jspServletClassName;
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
+	@Override
+	public void setJspServlet(JspServlet jspServlet) {
+		this.jspServlet = jspServlet;
+	}
+
+	public JspServlet getJspServlet() {
+		return this.jspServlet;
+	}
+
+	public Compression getCompression() {
+		return this.compression;
+	}
+
+	@Override
+	public void setCompression(Compression compression) {
+		this.compression = compression;
+	}
+
+	public String getServerHeader() {
+		return this.serverHeader;
+	}
+
+	@Override
+	public void setServerHeader(String serverHeader) {
+		this.serverHeader = serverHeader;
 	}
 
 	/**
@@ -268,6 +328,16 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 		mergedInitializers.addAll(this.initializers);
 		return mergedInitializers
 				.toArray(new ServletContextInitializer[mergedInitializers.size()]);
+	}
+
+	/**
+	 * Returns whether or not the JSP servlet should be registered with the embedded
+	 * container.
+	 * @return {@code true} if the container should be registered, otherwise {@code false}
+	 */
+	protected boolean shouldRegisterJspServlet() {
+		return this.jspServlet != null && this.jspServlet.getRegistered() && ClassUtils
+				.isPresent(this.jspServlet.getClassName(), getClass().getClassLoader());
 	}
 
 }

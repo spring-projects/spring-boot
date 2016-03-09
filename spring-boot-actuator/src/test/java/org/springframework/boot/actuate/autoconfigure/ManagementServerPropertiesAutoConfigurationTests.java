@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,49 +17,45 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ManagementServerPropertiesAutoConfiguration}.
- * 
+ *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class ManagementServerPropertiesAutoConfigurationTests {
 
 	@Test
 	public void defaultManagementServerProperties() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				ManagementServerPropertiesAutoConfiguration.class);
-		assertThat(context.getBean(ManagementServerProperties.class).getPort(),
-				nullValue());
-		context.close();
+		ManagementServerProperties properties = new ManagementServerProperties();
+		assertThat(properties.getPort()).isNull();
+		assertThat(properties.getContextPath()).isEqualTo("");
 	}
 
 	@Test
-	public void definedManagementServerProperties() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				Config.class, ManagementServerPropertiesAutoConfiguration.class);
-		assertThat(context.getBean(ManagementServerProperties.class).getPort(),
-				equalTo(Integer.valueOf(123)));
-		context.close();
+	public void definedManagementServerProperties() {
+		ManagementServerProperties properties = new ManagementServerProperties();
+		properties.setPort(123);
+		properties.setContextPath("/foo");
+		assertThat(properties.getPort()).isEqualTo(123);
+		assertThat(properties.getContextPath()).isEqualTo("/foo");
 	}
 
-	@Configuration
-	public static class Config {
+	@Test
+	public void trailingSlashOfContextPathIsRemoved() {
+		ManagementServerProperties properties = new ManagementServerProperties();
+		properties.setContextPath("/foo/");
+		assertThat(properties.getContextPath()).isEqualTo("/foo");
+	}
 
-		@Bean
-		public ManagementServerProperties managementServerProperties() {
-			ManagementServerProperties properties = new ManagementServerProperties();
-			properties.setPort(123);
-			return properties;
-		}
-
+	@Test
+	public void slashOfContextPathIsDefaultValue() {
+		ManagementServerProperties properties = new ManagementServerProperties();
+		properties.setContextPath("/");
+		assertThat(properties.getContextPath()).isEqualTo("");
 	}
 
 }

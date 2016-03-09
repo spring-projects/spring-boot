@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,29 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
 import org.springframework.util.FileSystemUtils;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests fir {@link FileUtils}.
- * 
+ * Tests for {@link FileUtils}.
+ *
  * @author Dave Syer
+ * @author Phillip Webb
  */
 public class FileUtilsTests {
+
+	@Rule
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	private File outputDirectory;
 
@@ -54,31 +62,31 @@ public class FileUtilsTests {
 		new File(this.originDirectory, "logback.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
 				this.originDirectory);
-		assertFalse(file.exists());
+		assertThat(file.exists()).isFalse();
 	}
 
 	@Test
 	public void nestedDuplicateFile() throws IOException {
-		assertTrue(new File(this.outputDirectory, "sub").mkdirs());
-		assertTrue(new File(this.originDirectory, "sub").mkdirs());
+		assertThat(new File(this.outputDirectory, "sub").mkdirs()).isTrue();
+		assertThat(new File(this.originDirectory, "sub").mkdirs()).isTrue();
 		File file = new File(this.outputDirectory, "sub/logback.xml");
 		file.createNewFile();
 		new File(this.originDirectory, "sub/logback.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
 				this.originDirectory);
-		assertFalse(file.exists());
+		assertThat(file.exists()).isFalse();
 	}
 
 	@Test
 	public void nestedNonDuplicateFile() throws IOException {
-		assertTrue(new File(this.outputDirectory, "sub").mkdirs());
-		assertTrue(new File(this.originDirectory, "sub").mkdirs());
+		assertThat(new File(this.outputDirectory, "sub").mkdirs()).isTrue();
+		assertThat(new File(this.originDirectory, "sub").mkdirs()).isTrue();
 		File file = new File(this.outputDirectory, "sub/logback.xml");
 		file.createNewFile();
 		new File(this.originDirectory, "sub/different.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
 				this.originDirectory);
-		assertTrue(file.exists());
+		assertThat(file.exists()).isTrue();
 	}
 
 	@Test
@@ -88,7 +96,21 @@ public class FileUtilsTests {
 		new File(this.originDirectory, "different.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
 				this.originDirectory);
-		assertTrue(file.exists());
+		assertThat(file.exists()).isTrue();
+	}
+
+	@Test
+	public void hash() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		OutputStream outputStream = new FileOutputStream(file);
+		try {
+			outputStream.write(new byte[] { 1, 2, 3 });
+		}
+		finally {
+			outputStream.close();
+		}
+		assertThat(FileUtils.sha1Hash(file))
+				.isEqualTo("7037807198c22a7d2b0807371d763779a84fdfcf");
 	}
 
 }

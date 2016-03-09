@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +33,7 @@ import org.springframework.util.Assert;
 /**
  * Utility to invoke the command line in the same way as a user would, i.e. via the shell
  * script in the package's bin directory.
- * 
+ *
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
@@ -55,7 +57,10 @@ public final class CommandLineInvoker {
 		List<String> command = new ArrayList<String>();
 		command.add(findLaunchScript().getAbsolutePath());
 		command.addAll(Arrays.asList(args));
-		return new ProcessBuilder(command).directory(this.workingDirectory).start();
+		ProcessBuilder processBuilder = new ProcessBuilder(command)
+				.directory(this.workingDirectory);
+		processBuilder.environment().remove("JAVA_OPTS");
+		return processBuilder.start();
 	}
 
 	private File findLaunchScript() {
@@ -66,8 +71,8 @@ public final class CommandLineInvoker {
 				return pathname.isDirectory() && pathname.getName().contains("-bin");
 			}
 		})[0];
-		dir = new File(dir, dir.getName().replace("-bin", "")
-				.replace("spring-boot-cli", "spring"));
+		dir = new File(dir,
+				dir.getName().replace("-bin", "").replace("spring-boot-cli", "spring"));
 		dir = new File(dir, "bin");
 		File launchScript = new File(dir, isWindows() ? "spring.bat" : "spring");
 		Assert.state(launchScript.exists() && launchScript.isFile(),
@@ -88,27 +93,53 @@ public final class CommandLineInvoker {
 
 		private final StringBuffer out = new StringBuffer();
 
+		private final StringBuffer combined = new StringBuffer();
+
 		private final Process process;
+
+		private final List<Thread> streamReaders = new ArrayList<Thread>();
 
 		public Invocation(Process process) {
 			this.process = process;
-			new Thread(new StreamReadingRunnable(this.process.getErrorStream(), this.err))
-					.start();
-			new Thread(new StreamReadingRunnable(this.process.getInputStream(), this.out))
-					.start();
+			this.streamReaders.add(new Thread(new StreamReadingRunnable(
+					this.process.getErrorStream(), this.err, this.combined)));
+			this.streamReaders.add(new Thread(new StreamReadingRunnable(
+					this.process.getInputStream(), this.out, this.combined)));
+			for (Thread streamReader : this.streamReaders) {
+				streamReader.start();
+			}
+		}
+
+		public String getOutput() {
+			return postProcessLines(getLines(this.combined));
 		}
 
 		public String getErrorOutput() {
-			return this.err.toString();
+			return postProcessLines(getLines(this.err));
 		}
 
 		public String getStandardOutput() {
-			return this.out.toString();
+			return postProcessLines(getStandardOutputLines());
 		}
 
 		public List<String> getStandardOutputLines() {
-			BufferedReader reader = new BufferedReader(new StringReader(
-					this.out.toString()));
+			return getLines(this.out);
+		}
+
+		private String postProcessLines(List<String> lines) {
+			StringWriter out = new StringWriter();
+			PrintWriter printOut = new PrintWriter(out);
+			for (String line : lines) {
+				if (!line.startsWith("Maven settings decryption failed")) {
+					printOut.println(line);
+				}
+			}
+			return out.toString();
+		}
+
+		private List<String> getLines(StringBuffer buffer) {
+			BufferedReader reader = new BufferedReader(
+					new StringReader(buffer.toString()));
 			String line;
 			List<String> lines = new ArrayList<String>();
 			try {
@@ -117,12 +148,15 @@ public final class CommandLineInvoker {
 				}
 			}
 			catch (IOException ex) {
-				throw new RuntimeException("Failed to read standard output");
+				throw new RuntimeException("Failed to read output");
 			}
 			return lines;
 		}
 
 		public int await() throws InterruptedException {
+			for (Thread streamReader : this.streamReaders) {
+				streamReader.join();
+			}
 			return this.process.waitFor();
 		}
 
@@ -133,13 +167,13 @@ public final class CommandLineInvoker {
 
 			private final InputStream stream;
 
-			private final StringBuffer output;
+			private final StringBuffer[] outputs;
 
 			private final byte[] buffer = new byte[4096];
 
-			private StreamReadingRunnable(InputStream stream, StringBuffer buffer) {
+			private StreamReadingRunnable(InputStream stream, StringBuffer... outputs) {
 				this.stream = stream;
-				this.output = buffer;
+				this.outputs = outputs;
 			}
 
 			@Override
@@ -147,13 +181,16 @@ public final class CommandLineInvoker {
 				int read;
 				try {
 					while ((read = this.stream.read(this.buffer)) > 0) {
-						this.output.append(new String(this.buffer, 0, read));
+						for (StringBuffer output : this.outputs) {
+							output.append(new String(this.buffer, 0, read));
+						}
 					}
 				}
 				catch (IOException ex) {
 					// Allow thread to die
 				}
 			}
+
 		}
 
 	}

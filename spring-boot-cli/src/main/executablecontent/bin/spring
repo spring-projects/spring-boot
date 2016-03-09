@@ -69,7 +69,7 @@ if [ -z "${SPRING_HOME}" ]; then
     done
     SAVED="`pwd`"
     cd "`dirname \"$PRG\"`/../" >&-
-    SPRING_HOME="`pwd -P`"
+    export SPRING_HOME="`pwd -P`"
     cd "$SAVED" >&-
 fi
 
@@ -92,4 +92,4 @@ if $cygwin; then
 	CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
 fi
 
-"${JAVA_HOME}/bin/java" ${JAVA_OPTS} -cp "$CLASSPATH" org.springframework.boot.loader.JarLauncher $*
+"${JAVA_HOME}/bin/java" ${JAVA_OPTS} -cp "$CLASSPATH" org.springframework.boot.loader.JarLauncher "$@"

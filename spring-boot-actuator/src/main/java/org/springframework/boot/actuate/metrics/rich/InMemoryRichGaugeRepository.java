@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.metrics.writer.MetricWriter;
  * set a metric value (using {@link MetricWriter#set(Metric)}) it is used to update a rich
  * gauge (increment is a no-op). Gauge values can then be read out using the reader
  * operations.
- * 
+ *
  * @author Dave Syer
  */
 public class InMemoryRichGaugeRepository implements RichGaugeRepository {

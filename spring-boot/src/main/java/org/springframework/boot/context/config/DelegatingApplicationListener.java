@@ -35,12 +35,12 @@ import org.springframework.util.StringUtils;
 /**
  * {@link ApplicationListener} that delegates to other listeners that are specified under
  * a {@literal context.listener.classes} environment property.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
-public class DelegatingApplicationListener implements
-		ApplicationListener<ApplicationEvent>, Ordered {
+public class DelegatingApplicationListener
+		implements ApplicationListener<ApplicationEvent>, Ordered {
 
 	// NOTE: Similar to org.springframework.web.context.ContextLoader
 
@@ -53,8 +53,8 @@ public class DelegatingApplicationListener implements
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			List<ApplicationListener<ApplicationEvent>> delegates = getListeners(((ApplicationEnvironmentPreparedEvent) event)
-					.getEnvironment());
+			List<ApplicationListener<ApplicationEvent>> delegates = getListeners(
+					((ApplicationEnvironmentPreparedEvent) event).getEnvironment());
 			if (delegates.isEmpty()) {
 				return;
 			}

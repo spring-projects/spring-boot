@@ -17,21 +17,22 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
  * Java Virtual Machine Utils.
- * 
+ *
  * @author Phillip Webb
  */
 abstract class JvmUtils {
 
 	/**
-	 * Various search locations for tools, including the odd Java 6 OSX jar
+	 * Various search locations for tools, including the odd Java 6 OSX jar.
 	 */
-	private static final String[] TOOLS_LOCATIONS = { "lib/tools.jar",
-			"../lib/tools.jar", "../Classes/classes.jar" };
+	private static final String[] TOOLS_LOCATIONS = { "lib/tools.jar", "../lib/tools.jar",
+			"../Classes/classes.jar" };
 
 	public static ClassLoader getToolsClassLoader() {
 		ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
@@ -42,7 +43,7 @@ abstract class JvmUtils {
 		String javaHome = getJavaHome();
 		for (String location : TOOLS_LOCATIONS) {
 			try {
-				URL url = new URL("file://" + javaHome + "/" + location);
+				URL url = new URL(javaHome + "/" + location);
 				if (new File(url.toURI()).exists()) {
 					return url;
 				}
@@ -55,7 +56,13 @@ abstract class JvmUtils {
 	}
 
 	private static String getJavaHome() {
-		return System.getProperty("java.home");
+		try {
+			return new File(System.getProperty("java.home")).toURI().toURL()
+					.toExternalForm();
+		}
+		catch (MalformedURLException e) {
+			throw new IllegalStateException("Cannot locate java.home", e);
+		}
 	}
 
 }

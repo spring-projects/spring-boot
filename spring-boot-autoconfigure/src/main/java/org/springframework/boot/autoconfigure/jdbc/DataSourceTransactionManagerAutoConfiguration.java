@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -35,25 +36,23 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
  * {@link DataSourceTransactionManager}.
- * 
+ *
  * @author Dave Syer
+ * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
-public class DataSourceTransactionManagerAutoConfiguration implements Ordered {
-
-	@Override
-	public int getOrder() {
-		return Integer.MAX_VALUE;
-	}
+@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
+public class DataSourceTransactionManagerAutoConfiguration {
 
 	@Autowired(required = false)
 	private DataSource dataSource;
 
 	@Bean
-	@ConditionalOnMissingBean(name = "transactionManager")
+	@ConditionalOnMissingBean(PlatformTransactionManager.class)
 	@ConditionalOnBean(DataSource.class)
-	public PlatformTransactionManager transactionManager() {
+	public DataSourceTransactionManager transactionManager() {
 		return new DataSourceTransactionManager(this.dataSource);
 	}
 

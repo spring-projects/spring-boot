@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,27 +20,40 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Factory to create a {@link JsonParser}.
- * 
+ *
  * @author Dave Syer
  * @see JacksonJsonParser
+ * @see GsonJsonParser
  * @see YamlJsonParser
- * @see SimpleJsonParser
+ * @see JsonSimpleJsonParser
+ * @see JsonJsonParser
+ * @see BasicJsonParser
  */
 public abstract class JsonParserFactory {
 
 	/**
 	 * Static factory for the "best" JSON parser available on the classpath. Tries Jackson
-	 * 2, then Snake YAML, and then falls back to the {@link SimpleJsonParser}.
+	 * 2, then Gson, Snake YAML, Simple JSON, JSON (from eclipse), and then falls back to
+	 * the {@link BasicJsonParser}.
 	 * @return a {@link JsonParser}
 	 */
 	public static JsonParser getJsonParser() {
 		if (ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", null)) {
 			return new JacksonJsonParser();
 		}
+		if (ClassUtils.isPresent("com.google.gson.Gson", null)) {
+			return new GsonJsonParser();
+		}
 		if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
 			return new YamlJsonParser();
 		}
-		return new SimpleJsonParser();
+		if (ClassUtils.isPresent("org.json.simple.JSONObject", null)) {
+			return new JsonSimpleJsonParser();
+		}
+		if (ClassUtils.isPresent("org.json.JSONObject", null)) {
+			return new JsonJsonParser();
+		}
+		return new BasicJsonParser();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,10 @@ import java.nio.charset.Charset;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -40,14 +41,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link EmbeddedWebApplicationContext} and
  * {@link EmbeddedServletContainer}s running Spring MVC.
- * 
+ *
  * @author Phillip Webb
+ * @author Ivan Sopov
  */
 public class EmbeddedServletContainerMvcIntegrationTests {
 
@@ -59,6 +60,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 			this.context.close();
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 	}
 
@@ -77,6 +79,13 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 	}
 
 	@Test
+	public void undertow() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
+				UndertowConfig.class);
+		doTest(this.context, "/hello");
+	}
+
+	@Test
 	public void advancedConfig() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				AdvancedConfig.class);
@@ -86,18 +95,26 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 	private void doTest(AnnotationConfigEmbeddedWebApplicationContext context,
 			String resourcePath) throws Exception {
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
-		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI(
-				"http://localhost:" + context.getEmbeddedServletContainer().getPort()
-						+ resourcePath), HttpMethod.GET);
+		ClientHttpRequest request = clientHttpRequestFactory.createRequest(
+				new URI("http://localhost:"
+						+ context.getEmbeddedServletContainer().getPort() + resourcePath),
+				HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
 		try {
 			String actual = StreamUtils.copyToString(response.getBody(),
 					Charset.forName("UTF-8"));
-			assertThat(actual, equalTo("Hello World"));
+			assertThat(actual).isEqualTo("Hello World");
 		}
 		finally {
 			response.close();
 		}
+	}
+
+	// Simple main method for testing in a browser
+	@SuppressWarnings("resource")
+	public static void main(String[] args) {
+		new AnnotationConfigEmbeddedWebApplicationContext(
+				JettyEmbeddedServletContainerFactory.class, Config.class);
 	}
 
 	@Configuration
@@ -115,6 +132,15 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
 			return new JettyEmbeddedServletContainerFactory(0);
+		}
+	}
+
+	@Configuration
+	@Import(Config.class)
+	public static class UndertowConfig {
+		@Bean
+		public EmbeddedServletContainerFactory containerFactory() {
+			return new UndertowEmbeddedServletContainerFactory(0);
 		}
 	}
 
@@ -141,8 +167,11 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 	@PropertySource("classpath:/org/springframework/boot/context/embedded/conf.properties")
 	public static class AdvancedConfig {
 
-		@Autowired
-		private Environment env;
+		private final Environment env;
+
+		public AdvancedConfig(Environment env) {
+			this.env = env;
+		}
 
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
@@ -181,13 +210,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 		public String sayHello() {
 			return "Hello World";
 		}
-	}
 
-	// Simple main method for testing in a browser
-	@SuppressWarnings("resource")
-	public static void main(String[] args) {
-		new AnnotationConfigEmbeddedWebApplicationContext(
-				JettyEmbeddedServletContainerFactory.class, Config.class);
 	}
 
 }

@@ -20,7 +20,7 @@ import org.springframework.boot.cli.command.CommandException;
 
 /**
  * Exception used to stop the {@link Shell}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ShellExitException extends CommandException {

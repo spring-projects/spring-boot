@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,11 @@ import java.util.Map;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertyResolver;
-import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
-
-import static java.lang.String.format;
 
 /**
  * {@link PropertyResolver} that attempts to resolve values using {@link RelaxedNames}.
- * 
+ *
  * @author Phillip Webb
  * @see RelaxedNames
  */
@@ -56,7 +53,7 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 	public <T> T getRequiredProperty(String key, Class<T> targetType)
 			throws IllegalStateException {
 		T value = getProperty(key, targetType);
-		Assert.state(value != null, format("required key [%s] not found", key));
+		Assert.state(value != null, String.format("required key [%s] not found", key));
 		return value;
 	}
 
@@ -137,15 +134,14 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 	 * {@link ConfigurableEnvironment}.
 	 * @param keyPrefix the key prefix used to filter results
 	 * @return a map of all sub properties starting with the specified key prefix.
-	 * @see PropertySourceUtils#getSubProperties(PropertySources, String)
-	 * @see PropertySourceUtils#getSubProperties(PropertySources, String, String)
+	 * @see PropertySourceUtils#getSubProperties
 	 */
 	public Map<String, Object> getSubProperties(String keyPrefix) {
 		Assert.isInstanceOf(ConfigurableEnvironment.class, this.resolver,
 				"SubProperties not available.");
 		ConfigurableEnvironment env = (ConfigurableEnvironment) this.resolver;
-		return PropertySourceUtils.getSubProperties(env.getPropertySources(),
-				this.prefix, keyPrefix);
+		return PropertySourceUtils.getSubProperties(env.getPropertySources(), this.prefix,
+				keyPrefix);
 	}
 
 }

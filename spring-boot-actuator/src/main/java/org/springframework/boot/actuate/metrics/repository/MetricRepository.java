@@ -21,7 +21,7 @@ import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 
 /**
  * Convenient combination of reader and writer concerns.
- * 
+ *
  * @author Dave Syer
  */
 public interface MetricRepository extends MetricReader, MetricWriter {

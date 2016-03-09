@@ -18,13 +18,14 @@ package org.springframework.boot.cli.compiler.autoconfigure;
 
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+
 import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Websocket.
- * 
+ *
  * @author Dave Syer
  */
 public class SpringWebsocketCompilerAutoConfiguration extends CompilerAutoConfiguration {
@@ -49,8 +50,8 @@ public class SpringWebsocketCompilerAutoConfiguration extends CompilerAutoConfig
 				"org.springframework.messaging.simp.config",
 				"org.springframework.web.socket.handler",
 				"org.springframework.web.socket.sockjs.transport.handler",
-				"org.springframework.web.socket.config.annotation").addImports(
-				"org.springframework.web.socket.WebSocketHandler");
+				"org.springframework.web.socket.config.annotation")
+				.addImports("org.springframework.web.socket.WebSocketHandler");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 package org.springframework.boot.loader;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Method;
 
 /**
  * Utility class that used by {@link Launcher}s to call a main method. This class allows
  * methods to be executed within a thread configured with a specific context class loader.
- * 
+ *
  * @author Phillip Webb
  */
 public class MainMethodRunner implements Runnable {
@@ -47,14 +48,18 @@ public class MainMethodRunner implements Runnable {
 					.loadClass(this.mainClassName);
 			Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
 			if (mainMethod == null) {
-				throw new IllegalStateException(this.mainClassName
-						+ " does not have a main method");
+				throw new IllegalStateException(
+						this.mainClassName + " does not have a main method");
 			}
 			mainMethod.invoke(null, new Object[] { this.args });
 		}
 		catch (Exception ex) {
-			ex.printStackTrace();
-			System.exit(1);
+			UncaughtExceptionHandler handler = Thread.currentThread()
+					.getUncaughtExceptionHandler();
+			if (handler != null) {
+				handler.uncaughtException(Thread.currentThread(), ex);
+			}
+			throw new RuntimeException(ex);
 		}
 	}
 

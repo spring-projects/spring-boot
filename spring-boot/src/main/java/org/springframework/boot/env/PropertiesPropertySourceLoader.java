@@ -22,11 +22,12 @@ import java.util.Properties;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 /**
  * Strategy to load '.properties' files into a {@link PropertySource}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
@@ -34,14 +35,15 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 
 	@Override
 	public String[] getFileExtensions() {
-		return new String[] { "properties" };
+		return new String[] { "properties", "xml" };
 	}
 
 	@Override
 	public PropertySource<?> load(String name, Resource resource, String profile)
 			throws IOException {
 		if (profile == null) {
-			Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+			Properties properties = PropertiesLoaderUtils
+					.loadProperties(new EncodedResource(resource, "UTF-8"));
 			if (!properties.isEmpty()) {
 				return new PropertiesPropertySource(name, properties);
 			}

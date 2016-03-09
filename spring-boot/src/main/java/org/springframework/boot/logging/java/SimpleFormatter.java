@@ -24,7 +24,7 @@ import java.util.logging.LogRecord;
 
 /**
  * Simple 'Java Logging' {@link Formatter}.
- * 
+ *
  * @author Phillip Webb
  */
 public class SimpleFormatter extends Formatter {

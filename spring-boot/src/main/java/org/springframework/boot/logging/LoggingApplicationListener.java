@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,128 +16,271 @@
 
 package org.springframework.boot.logging;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.SmartApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.Ordered;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
- * An {@link ApplicationListener} that configures a logging framework depending on what it
- * finds on the classpath and in the {@link Environment}. If the environment contains a
- * property <code>logging.config</code> then that will be used to initialize the logging
- * system, otherwise a default location is used. The classpath is probed for log4j and
- * logback and if those are present they will be reconfigured, otherwise vanilla
- * <code>java.util.logging</code> will be used. </p>
+ * An {@link ApplicationListener} that configures the {@link LoggingSystem}. If the
+ * environment contains a {@code logging.config} property a then that will be used to
+ * initialize the logging system, otherwise a default configuration is used.
  * <p>
- * The default config locations are <code>classpath:log4j.properties</code> or
- * <code>classpath:log4j.xml</code> for log4j; <code>classpath:logback.xml</code> for
- * logback; and <code>classpath:logging.properties</code> for
- * <code>java.util.logging</code>. If the correct one of those files is not found then
- * some sensible defaults are adopted from files of the same name but in the package
- * containing {@link LoggingApplicationListener}.
+ * By default, log output is only written to the console. If a log file is required the
+ * {@code logging.path} and {@code logging.file} properties can be used.
  * <p>
  * Some system properties may be set as side effects, and these can be useful if the
  * logging configuration supports placeholders (i.e. log4j or logback):
  * <ul>
- * <li><code>LOG_FILE</code> is set to the value of <code>logging.file</code> if found in
- * the environment</li>
- * <li><code>LOG_PATH</code> is set to the value of <code>logging.path</code> if found in
- * the environment</li>
- * <li><code>PID</code> is set to the value of the current process ID if it can be
- * determined</li>
+ * <li>{@code LOG_FILE} is set to the value of path of the log file that should be written
+ * (if any).</li>
+ * <li>{@code PID} is set to the value of the current process ID if it can be determined.
+ * </li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @see LoggingSystem#get(ClassLoader)
  */
-public class LoggingApplicationListener implements SmartApplicationListener {
+public class LoggingApplicationListener implements GenericApplicationListener {
 
-	private static final Map<String, String> ENVIRONMENT_SYSTEM_PROPERTY_MAPPING;
+	/**
+	 * The default order for the LoggingApplicationListener.
+	 */
+	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 20;
 
+	/**
+	 * The name of the Spring property that contains a reference to the logging
+	 * configuration to load.
+	 */
+	public static final String CONFIG_PROPERTY = "logging.config";
+
+	/**
+	 * The name of the Spring property that controls the registration of a shutdown hook
+	 * to shut down the logging system when the JVM exits.
+	 * @see LoggingSystem#getShutdownHandler
+	 */
+	public static final String REGISTER_SHUTDOWN_HOOK_PROPERTY = "logging.register-shutdown-hook";
+
+	/**
+	 * The name of the Spring property that contains the directory where log files are
+	 * written.
+	 */
+	public static final String PATH_PROPERTY = LogFile.PATH_PROPERTY;
+
+	/**
+	 * The name of the Spring property that contains the name of the log file. Names can
+	 * be an exact location or relative to the current directory.
+	 */
+	public static final String FILE_PROPERTY = LogFile.FILE_PROPERTY;
+
+	/**
+	 * The name of the System property that contains the process ID.
+	 */
 	public static final String PID_KEY = "PID";
 
-	static {
-		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING = new HashMap<String, String>();
-		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("logging.file", "LOG_FILE");
-		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("logging.path", "LOG_PATH");
-		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put(PID_KEY, PID_KEY);
-	}
+	/**
+	 * The name of the System property that contains the exception conversion word.
+	 */
+	public static final String EXCEPTION_CONVERSION_WORD = "LOG_EXCEPTION_CONVERSION_WORD";
+
+	/**
+	 * The name of the System property that contains the log file.
+	 */
+	public static final String LOG_FILE = "LOG_FILE";
+
+	/**
+	 * The name of the System property that contains the log path.
+	 */
+	public static final String LOG_PATH = "LOG_PATH";
+
+	/**
+	 * The name of the System property that contains the console log pattern.
+	 */
+	public static final String CONSOLE_LOG_PATTERN = "CONSOLE_LOG_PATTERN";
+
+	/**
+	 * The name of the System property that contains the file log pattern.
+	 */
+	public static final String FILE_LOG_PATTERN = "FILE_LOG_PATTERN";
+
+	/**
+	 * The name of the System property that contains the log level pattern.
+	 */
+	public static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
+
+	/**
+	 * The name of the {@link LoggingSystem} bean.
+	 */
+	public static final String LOGGING_SYSTEM_BEAN_NAME = "springBootLoggingSystem";
 
 	private static MultiValueMap<LogLevel, String> LOG_LEVEL_LOGGERS;
+
+	private static AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
+
 	static {
 		LOG_LEVEL_LOGGERS = new LinkedMultiValueMap<LogLevel, String>();
 		LOG_LEVEL_LOGGERS.add(LogLevel.DEBUG, "org.springframework.boot");
 		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.springframework");
 		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.apache.tomcat");
+		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.apache.catalina");
 		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.eclipse.jetty");
 		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.hibernate.tool.hbm2ddl");
+		LOG_LEVEL_LOGGERS.add(LogLevel.DEBUG, "org.hibernate.SQL");
 	}
 
 	private static Class<?>[] EVENT_TYPES = { ApplicationStartedEvent.class,
-			ApplicationEnvironmentPreparedEvent.class };
+			ApplicationEnvironmentPreparedEvent.class, ApplicationPreparedEvent.class,
+			ContextClosedEvent.class };
+
+	private static Class<?>[] SOURCE_TYPES = { SpringApplication.class,
+			ApplicationContext.class };
 
 	private final Log logger = LogFactory.getLog(getClass());
 
-	private int order = Ordered.HIGHEST_PRECEDENCE + 11;
+	private LoggingSystem loggingSystem;
+
+	private int order = DEFAULT_ORDER;
 
 	private boolean parseArgs = true;
 
 	private LogLevel springBootLogging = null;
 
 	@Override
-	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
-		for (Class<?> type : EVENT_TYPES) {
-			if (type.isAssignableFrom(eventType)) {
-				return true;
+	public boolean supportsEventType(ResolvableType resolvableType) {
+		return isAssignableFrom(resolvableType.getRawClass(), EVENT_TYPES);
+	}
+
+	@Override
+	public boolean supportsSourceType(Class<?> sourceType) {
+		return isAssignableFrom(sourceType, SOURCE_TYPES);
+	}
+
+	private boolean isAssignableFrom(Class<?> type, Class<?>... supportedTypes) {
+		if (type != null) {
+			for (Class<?> supportedType : supportedTypes) {
+				if (supportedType.isAssignableFrom(type)) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
 	@Override
-	public boolean supportsSourceType(Class<?> sourceType) {
-		return SpringApplication.class.isAssignableFrom(sourceType);
+	public void onApplicationEvent(ApplicationEvent event) {
+		if (event instanceof ApplicationStartedEvent) {
+			onApplicationStartedEvent((ApplicationStartedEvent) event);
+		}
+		else if (event instanceof ApplicationEnvironmentPreparedEvent) {
+			onApplicationEnvironmentPreparedEvent(
+					(ApplicationEnvironmentPreparedEvent) event);
+		}
+		else if (event instanceof ApplicationPreparedEvent) {
+			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
+		}
+		else if (event instanceof ContextClosedEvent && ((ContextClosedEvent) event)
+				.getApplicationContext().getParent() == null) {
+			onContextClosedEvent();
+		}
 	}
 
-	@Override
-	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			ApplicationEnvironmentPreparedEvent available = (ApplicationEnvironmentPreparedEvent) event;
-			initialize(available.getEnvironment(), available.getSpringApplication()
-					.getClassLoader());
+	private void onApplicationStartedEvent(ApplicationStartedEvent event) {
+		this.loggingSystem = LoggingSystem
+				.get(event.getSpringApplication().getClassLoader());
+		this.loggingSystem.beforeInitialize();
+	}
+
+	private void onApplicationEnvironmentPreparedEvent(
+			ApplicationEnvironmentPreparedEvent event) {
+		if (this.loggingSystem == null) {
+			this.loggingSystem = LoggingSystem
+					.get(event.getSpringApplication().getClassLoader());
 		}
-		else {
-			if (System.getProperty(PID_KEY) == null) {
-				System.setProperty(PID_KEY, new ApplicationPid().toString());
-			}
-			LoggingSystem loggingSystem = LoggingSystem.get(ClassUtils
-					.getDefaultClassLoader());
-			loggingSystem.beforeInitialize();
+		initialize(event.getEnvironment(), event.getSpringApplication().getClassLoader());
+	}
+
+	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
+		ConfigurableListableBeanFactory beanFactory = event.getApplicationContext()
+				.getBeanFactory();
+		if (!beanFactory.containsBean(LOGGING_SYSTEM_BEAN_NAME)) {
+			beanFactory.registerSingleton(LOGGING_SYSTEM_BEAN_NAME, this.loggingSystem);
+		}
+	}
+
+	private void onContextClosedEvent() {
+		if (this.loggingSystem != null) {
+			this.loggingSystem.cleanUp();
 		}
 	}
 
 	/**
 	 * Initialize the logging system according to preferences expressed through the
 	 * {@link Environment} and the classpath.
+	 * @param environment the environment
+	 * @param classLoader the classloader
 	 */
-	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
+	protected void initialize(ConfigurableEnvironment environment,
+			ClassLoader classLoader) {
+		setSystemProperties(environment);
+		LogFile logFile = LogFile.get(environment);
+		if (logFile != null) {
+			logFile.applyToSystemProperties();
+		}
+		initializeEarlyLoggingLevel(environment);
+		initializeSystem(environment, this.loggingSystem, logFile);
+		initializeFinalLoggingLevels(environment, this.loggingSystem);
+		registerShutdownHookIfNecessary(environment, this.loggingSystem);
+	}
 
+	private void setSystemProperties(ConfigurableEnvironment environment) {
+		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(
+				environment, "logging.");
+		setSystemProperty(propertyResolver, EXCEPTION_CONVERSION_WORD,
+				"exception-conversion-word");
+		setSystemProperty(propertyResolver, CONSOLE_LOG_PATTERN, "pattern.console");
+		setSystemProperty(propertyResolver, FILE_LOG_PATTERN, "pattern.file");
+		setSystemProperty(propertyResolver, LOG_LEVEL_PATTERN, "pattern.level");
+		setSystemProperty(PID_KEY, new ApplicationPid().toString());
+	}
+
+	private void setSystemProperty(RelaxedPropertyResolver propertyResolver,
+			String systemPropertyName, String propertyName) {
+		setSystemProperty(systemPropertyName, propertyResolver.getProperty(propertyName));
+	}
+
+	private void setSystemProperty(String name, String value) {
+		if (System.getProperty(name) == null && value != null) {
+			System.setProperty(name, value);
+		}
+	}
+
+	private void initializeEarlyLoggingLevel(ConfigurableEnvironment environment) {
 		if (this.parseArgs && this.springBootLogging == null) {
 			if (environment.containsProperty("debug")) {
 				this.springBootLogging = LogLevel.DEBUG;
@@ -146,42 +289,46 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 				this.springBootLogging = LogLevel.TRACE;
 			}
 		}
+	}
 
-		boolean environmentChanged = false;
-		for (Map.Entry<String, String> mapping : ENVIRONMENT_SYSTEM_PROPERTY_MAPPING
-				.entrySet()) {
-			if (environment.containsProperty(mapping.getKey())) {
-				System.setProperty(mapping.getValue(),
-						environment.getProperty(mapping.getKey()));
-				environmentChanged = true;
-			}
+	private void initializeSystem(ConfigurableEnvironment environment,
+			LoggingSystem system, LogFile logFile) {
+		LoggingInitializationContext initializationContext = new LoggingInitializationContext(
+				environment);
+		String logConfig = environment.getProperty(CONFIG_PROPERTY);
+		if (ignoreLogConfig(logConfig)) {
+			system.initialize(initializationContext, null, logFile);
 		}
-
-		LoggingSystem system = LoggingSystem.get(classLoader);
-
-		if (environmentChanged) {
-			// Re-initialize the defaults in case the Environment changed
-			system.beforeInitialize();
-		}
-		// User specified configuration
-		if (environment.containsProperty("logging.config")) {
-			String value = environment.getProperty("logging.config");
+		else {
 			try {
-				ResourceUtils.getURL(value).openStream().close();
-				system.initialize(value);
-				return;
+				ResourceUtils.getURL(logConfig).openStream().close();
+				system.initialize(initializationContext, logConfig, logFile);
 			}
 			catch (Exception ex) {
-				// Swallow exception and continue
+				// NOTE: We can't use the logger here to report the problem
+				System.err.println("Logging system failed to initialize "
+						+ "using configuration from '" + logConfig + "'");
+				ex.printStackTrace(System.err);
+				throw new IllegalStateException(ex);
 			}
-			this.logger.warn("Logging environment value '" + value
-					+ "' cannot be opened and will be ignored");
 		}
+	}
 
-		system.initialize();
+	private boolean ignoreLogConfig(String logConfig) {
+		return !StringUtils.hasLength(logConfig)
+				|| isDefaultAzureLoggingConfig(logConfig);
+	}
+
+	private boolean isDefaultAzureLoggingConfig(String candidate) {
+		return candidate.startsWith("-Djava.util.logging.config.file=");
+	}
+
+	private void initializeFinalLoggingLevels(ConfigurableEnvironment environment,
+			LoggingSystem system) {
 		if (this.springBootLogging != null) {
 			initializeLogLevel(system, this.springBootLogging);
 		}
+		setLogLevels(system, environment);
 	}
 
 	protected void initializeLogLevel(LoggingSystem system, LogLevel level) {
@@ -191,6 +338,52 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 				system.setLogLevel(logger, level);
 			}
 		}
+	}
+
+	protected void setLogLevels(LoggingSystem system, Environment environment) {
+		Map<String, Object> levels = new RelaxedPropertyResolver(environment)
+				.getSubProperties("logging.level.");
+		for (Entry<String, Object> entry : levels.entrySet()) {
+			setLogLevel(system, environment, entry.getKey(), entry.getValue().toString());
+		}
+	}
+
+	private void setLogLevel(LoggingSystem system, Environment environment, String name,
+			String level) {
+		try {
+			if (name.equalsIgnoreCase("root")) {
+				name = null;
+			}
+			level = environment.resolvePlaceholders(level);
+			system.setLogLevel(name, coerceLogLevel(level));
+		}
+		catch (RuntimeException ex) {
+			this.logger.error("Cannot set level: " + level + " for '" + name + "'");
+		}
+	}
+
+	private LogLevel coerceLogLevel(String level) {
+		if ("false".equalsIgnoreCase(level)) {
+			return LogLevel.OFF;
+		}
+		return LogLevel.valueOf(level.toUpperCase());
+	}
+
+	private void registerShutdownHookIfNecessary(Environment environment,
+			LoggingSystem loggingSystem) {
+		boolean registerShutdownHook = new RelaxedPropertyResolver(environment)
+				.getProperty(REGISTER_SHUTDOWN_HOOK_PROPERTY, Boolean.class, false);
+		if (registerShutdownHook) {
+			Runnable shutdownHandler = loggingSystem.getShutdownHandler();
+			if (shutdownHandler != null
+					&& shutdownHookRegistered.compareAndSet(false, true)) {
+				registerShutdownHook(new Thread(shutdownHandler));
+			}
+		}
+	}
+
+	void registerShutdownHook(Thread shutdownHook) {
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
 	}
 
 	public void setOrder(int order) {

@@ -28,7 +28,7 @@ import org.eclipse.aether.transfer.TransferEvent;
 
 /**
  * Provide high-level progress feedback for long running resolves.
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
@@ -48,10 +48,10 @@ final class SummaryProgressReporter implements ProgressReporter {
 
 	private boolean finished;
 
-	public SummaryProgressReporter(DefaultRepositorySystemSession session, PrintStream out) {
+	SummaryProgressReporter(DefaultRepositorySystemSession session, PrintStream out) {
 		this.out = out;
-
 		session.setTransferListener(new AbstractTransferListener() {
+
 			@Override
 			public void transferStarted(TransferEvent event)
 					throws TransferCancelledException {
@@ -63,24 +63,28 @@ final class SummaryProgressReporter implements ProgressReporter {
 					throws TransferCancelledException {
 				reportProgress();
 			}
-		});
 
+		});
 		session.setRepositoryListener(new AbstractRepositoryListener() {
+
 			@Override
 			public void artifactResolved(RepositoryEvent event) {
 				reportProgress();
 			}
+
 		});
 	}
 
 	private void reportProgress() {
-		if (!this.finished && System.currentTimeMillis() - this.startTime > INITIAL_DELAY) {
+		if (!this.finished
+				&& System.currentTimeMillis() - this.startTime > INITIAL_DELAY) {
 			if (!this.started) {
 				this.started = true;
 				this.out.print("Resolving dependencies..");
 				this.lastProgressTime = System.currentTimeMillis();
 			}
-			else if (System.currentTimeMillis() - this.lastProgressTime > PROGRESS_DELAY) {
+			else if (System.currentTimeMillis()
+					- this.lastProgressTime > PROGRESS_DELAY) {
 				this.out.print(".");
 				this.lastProgressTime = System.currentTimeMillis();
 			}

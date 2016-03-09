@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
  * {@link ClassLoader#getSystemClassLoader() system classloader}. This is required to to
  * ensure that any custom context classloader is always used (as is the case with some
  * executable archives).
- * 
+ *
  * @author Phillip Webb
  */
 public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
@@ -46,7 +46,6 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 	@Override
 	public synchronized Class<?> loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
-
 		Class<?> resultClass = null;
 
 		// Check local class caches
@@ -60,7 +59,7 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 		checkPackageAccess(name);
 
 		// Perform the actual load
-		boolean delegateLoad = (this.delegate || filter(name));
+		boolean delegateLoad = (this.delegate || filter(name, true));
 
 		if (delegateLoad) {
 			resultClass = (resultClass == null ? loadFromParent(name) : resultClass);
@@ -117,8 +116,8 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 	private void checkPackageAccess(String name) throws ClassNotFoundException {
 		if (this.securityManager != null && name.lastIndexOf('.') >= 0) {
 			try {
-				this.securityManager.checkPackageAccess(name.substring(0,
-						name.lastIndexOf('.')));
+				this.securityManager
+						.checkPackageAccess(name.substring(0, name.lastIndexOf('.')));
 			}
 			catch (SecurityException ex) {
 				throw new ClassNotFoundException("Security Violation, attempt to use "

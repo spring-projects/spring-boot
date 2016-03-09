@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
@@ -33,18 +33,21 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServerPropertiesAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
+ * @author Ivan Sopov
  */
 public class ServerPropertiesAutoConfigurationTests {
 
@@ -57,7 +60,7 @@ public class ServerPropertiesAutoConfigurationTests {
 
 	@Before
 	public void init() {
-		containerFactory = Mockito.mock(AbstractEmbeddedServletContainerFactory.class);
+		containerFactory = mock(AbstractEmbeddedServletContainerFactory.class);
 	}
 
 	@After
@@ -75,14 +78,14 @@ public class ServerPropertiesAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "server.port:9000");
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
-		assertNotNull(server);
-		assertEquals(9000, server.getPort().intValue());
-		Mockito.verify(containerFactory).setPort(9000);
+		assertThat(server).isNotNull();
+		assertThat(server.getPort().intValue()).isEqualTo(9000);
+		verify(containerFactory).setPort(9000);
 	}
 
 	@Test
 	public void tomcatProperties() throws Exception {
-		containerFactory = Mockito.mock(TomcatEmbeddedServletContainerFactory.class);
+		containerFactory = mock(TomcatEmbeddedServletContainerFactory.class);
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -90,46 +93,60 @@ public class ServerPropertiesAutoConfigurationTests {
 				"server.tomcat.basedir:target/foo", "server.port:9000");
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
-		assertNotNull(server);
-		assertEquals(new File("target/foo"), server.getTomcat().getBasedir());
-		Mockito.verify(containerFactory).setPort(9000);
+		assertThat(server).isNotNull();
+		assertThat(server.getTomcat().getBasedir()).isEqualTo(new File("target/foo"));
+		verify(containerFactory).setPort(9000);
 	}
 
 	@Test
-	public void customizeWithContainerFactory() throws Exception {
+	public void customizeWithJettyContainerFactory() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(CustomContainerConfig.class,
+		this.context.register(CustomJettyContainerConfig.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		containerFactory = this.context
 				.getBean(AbstractEmbeddedServletContainerFactory.class);
 		ServerProperties server = this.context.getBean(ServerProperties.class);
-		assertNotNull(server);
+		assertThat(server).isNotNull();
 		// The server.port environment property was not explicitly set so the container
 		// factory should take precedence...
-		assertEquals(3000, containerFactory.getPort());
+		assertThat(containerFactory.getPort()).isEqualTo(3000);
+	}
+
+	@Test
+	public void customizeWithUndertowContainerFactory() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(CustomUndertowContainerConfig.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		containerFactory = this.context
+				.getBean(AbstractEmbeddedServletContainerFactory.class);
+		ServerProperties server = this.context.getBean(ServerProperties.class);
+		assertThat(server).isNotNull();
+		assertThat(containerFactory.getPort()).isEqualTo(3000);
 	}
 
 	@Test
 	public void customizeTomcatWithCustomizer() throws Exception {
-		containerFactory = Mockito.mock(TomcatEmbeddedServletContainerFactory.class);
+		containerFactory = mock(TomcatEmbeddedServletContainerFactory.class);
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, CustomizeConfig.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
-		assertNotNull(server);
+		assertThat(server).isNotNull();
 		// The server.port environment property was not explicitly set so the container
 		// customizer should take precedence...
-		Mockito.verify(containerFactory).setPort(3000);
+		verify(containerFactory).setPort(3000);
 	}
 
 	@Test
 	public void testAccidentalMultipleServerPropertiesBeans() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, MutiServerPropertiesBeanConfig.class,
+		this.context.register(Config.class, MultiServerPropertiesBeanConfig.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.thrown.expect(ApplicationContextException.class);
@@ -153,11 +170,28 @@ public class ServerPropertiesAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class CustomContainerConfig {
+	protected static class CustomJettyContainerConfig {
 
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
 			JettyEmbeddedServletContainerFactory factory = new JettyEmbeddedServletContainerFactory();
+			factory.setPort(3000);
+			return factory;
+		}
+
+		@Bean
+		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
+			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
+		}
+
+	}
+
+	@Configuration
+	protected static class CustomUndertowContainerConfig {
+
+		@Bean
+		public EmbeddedServletContainerFactory containerFactory() {
+			UndertowEmbeddedServletContainerFactory factory = new UndertowEmbeddedServletContainerFactory();
 			factory.setPort(3000);
 			return factory;
 		}
@@ -187,7 +221,7 @@ public class ServerPropertiesAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class MutiServerPropertiesBeanConfig {
+	protected static class MultiServerPropertiesBeanConfig {
 
 		@Bean
 		public ServerProperties serverPropertiesOne() {

@@ -36,7 +36,7 @@ import org.springframework.boot.cli.util.Log;
 
 /**
  * JLine {@link Completer} for Spring Boot {@link Command}s.
- * 
+ *
  * @author Jon Brisbin
  * @author Phillip Webb
  */
@@ -59,10 +59,10 @@ public class CommandCompleter extends StringsCompleter {
 			for (OptionHelp optionHelp : command.getOptionsHelp()) {
 				options.addAll(optionHelp.getOptions());
 			}
-			AggregateCompleter arguementCompleters = new AggregateCompleter(
+			AggregateCompleter argumentCompleters = new AggregateCompleter(
 					new StringsCompleter(options), new FileNameCompleter());
-			ArgumentCompleter argumentCompleter = new ArgumentCompleter(
-					argumentDelimiter, arguementCompleters);
+			ArgumentCompleter argumentCompleter = new ArgumentCompleter(argumentDelimiter,
+					argumentCompleters);
 			argumentCompleter.setStrict(false);
 			this.commandCompleters.put(command.getName(), argumentCompleter);
 		}
@@ -99,8 +99,8 @@ public class CommandCompleter extends StringsCompleter {
 			for (OptionHelp optionHelp : command.getOptionsHelp()) {
 				OptionHelpLine optionHelpLine = new OptionHelpLine(optionHelp);
 				optionHelpLines.add(optionHelpLine);
-				maxOptionsLength = Math.max(maxOptionsLength, optionHelpLine.getOptions()
-						.length());
+				maxOptionsLength = Math.max(maxOptionsLength,
+						optionHelpLine.getOptions().length());
 			}
 
 			this.console.println();
@@ -126,7 +126,7 @@ public class CommandCompleter extends StringsCompleter {
 
 		private final String usage;
 
-		public OptionHelpLine(OptionHelp optionHelp) {
+		OptionHelpLine(OptionHelp optionHelp) {
 			StringBuffer options = new StringBuffer();
 			for (String option : optionHelp.getOptions()) {
 				options.append(options.length() == 0 ? "" : ", ");

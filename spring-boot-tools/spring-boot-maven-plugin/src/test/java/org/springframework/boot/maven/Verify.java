@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,22 +26,35 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.springframework.util.FileCopyUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Verification utility for use with maven-invoker-plugin verification scripts.
- * 
+ *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-public class Verify {
+public final class Verify {
 
-	public static void verifyJar(File file) throws Exception {
-		new JarArchiveVerification(file, "org.test.SampleApplication").verify();
+	public static final String SAMPLE_APP = "org.test.SampleApplication";
+
+	private Verify() {
 	}
 
-	public static void verifyJar(File file, String main) throws Exception {
-		new JarArchiveVerification(file, main).verify();
+	public static void verifyJar(File file) throws Exception {
+		new JarArchiveVerification(file, SAMPLE_APP).verify();
+	}
+
+	public static void verifyJar(File file, String main, String... scriptContents)
+			throws Exception {
+		verifyJar(file, main, true, scriptContents);
+	}
+
+	public static void verifyJar(File file, String main, boolean executable,
+			String... scriptContents) throws Exception {
+		new JarArchiveVerification(file, main).verify(executable, scriptContents);
 	}
 
 	public static void verifyWar(File file) throws Exception {
@@ -50,53 +65,148 @@ public class Verify {
 		new ZipArchiveVerification(file).verify();
 	}
 
+	public static void verifyModule(File file) throws Exception {
+		new ModuleArchiveVerification(file).verify();
+	}
+
+	public static class ArchiveVerifier {
+
+		private final ZipFile zipFile;
+		private final Map<String, ZipEntry> content;
+
+		public ArchiveVerifier(ZipFile zipFile) {
+			this.zipFile = zipFile;
+			Enumeration<? extends ZipEntry> entries = zipFile.entries();
+			this.content = new HashMap<String, ZipEntry>();
+			while (entries.hasMoreElements()) {
+				ZipEntry zipEntry = entries.nextElement();
+				this.content.put(zipEntry.getName(), zipEntry);
+			}
+		}
+
+		public void assertHasEntryNameStartingWith(String entry) {
+			for (String name : this.content.keySet()) {
+				if (name.startsWith(entry)) {
+					return;
+				}
+			}
+			throw new IllegalStateException("Expected entry starting with " + entry);
+		}
+
+		public void assertHasNoEntryNameStartingWith(String entry) {
+			for (String name : this.content.keySet()) {
+				if (name.startsWith(entry)) {
+					throw new IllegalStateException("Entry starting with " + entry
+							+ " should not have been found");
+				}
+			}
+		}
+
+		public void assertHasNonUnpackEntry(String entryName) {
+			assertThat(hasNonUnpackEntry(entryName))
+					.as("Entry starting with " + entryName + " was an UNPACK entry")
+					.isTrue();
+		}
+
+		public void assertHasUnpackEntry(String entryName) {
+			assertThat(hasUnpackEntry(entryName))
+					.as("Entry starting with " + entryName + " was not an UNPACK entry")
+					.isTrue();
+		}
+
+		private boolean hasNonUnpackEntry(String entryName) {
+			return !hasUnpackEntry(entryName);
+		}
+
+		private boolean hasUnpackEntry(String entryName) {
+			String comment = getEntryStartingWith(entryName).getComment();
+			return comment != null && comment.startsWith("UNPACK:");
+		}
+
+		private ZipEntry getEntryStartingWith(String entryName) {
+			for (Map.Entry<String, ZipEntry> entry : this.content.entrySet()) {
+				if (entry.getKey().startsWith(entryName)) {
+					return entry.getValue();
+				}
+			}
+			throw new IllegalStateException(
+					"Unable to find entry starting with " + entryName);
+		}
+
+		public boolean hasEntry(String entry) {
+			return this.content.containsKey(entry);
+		}
+
+		public ZipEntry getEntry(String entry) {
+			return this.content.get(entry);
+		}
+
+		public InputStream getEntryContent(String entry) throws IOException {
+			ZipEntry zipEntry = getEntry(entry);
+			if (zipEntry == null) {
+				throw new IllegalArgumentException("No entry with name [" + entry + "]");
+			}
+			return this.zipFile.getInputStream(zipEntry);
+		}
+
+	}
+
 	private static abstract class AbstractArchiveVerification {
 
 		private final File file;
 
-		public AbstractArchiveVerification(File file) {
+		AbstractArchiveVerification(File file) {
 			this.file = file;
 		}
 
 		public void verify() throws Exception {
-			assertTrue("Archive missing", this.file.exists());
-			assertTrue("Archive not a file", this.file.isFile());
+			verify(true);
+		}
+
+		public void verify(boolean executable, String... scriptContents)
+				throws Exception {
+			assertThat(this.file).exists().isFile();
+
+			if (scriptContents.length > 0 && executable) {
+				String contents = new String(FileCopyUtils.copyToByteArray(this.file));
+				contents = contents.substring(0, contents
+						.indexOf(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 })));
+				for (String content : scriptContents) {
+					assertThat(contents).contains(content);
+				}
+			}
+
+			if (!executable) {
+				String contents = new String(FileCopyUtils.copyToByteArray(this.file));
+				assertThat(contents).as("Is executable")
+						.startsWith(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 }));
+			}
 
 			ZipFile zipFile = new ZipFile(this.file);
-			Enumeration<? extends ZipEntry> entries = zipFile.entries();
-			Map<String, ZipEntry> zipMap = new HashMap<String, ZipEntry>();
-			while (entries.hasMoreElements()) {
-				ZipEntry zipEntry = entries.nextElement();
-				zipMap.put(zipEntry.getName(), zipEntry);
+			try {
+				ArchiveVerifier verifier = new ArchiveVerifier(zipFile);
+				verifyZipEntries(verifier);
 			}
-			verifyZipEntries(zipFile, zipMap);
-			zipFile.close();
+			finally {
+				zipFile.close();
+			}
 		}
 
-		protected void verifyZipEntries(ZipFile zipFile, Map<String, ZipEntry> entries)
-				throws Exception {
-			verifyManifest(zipFile, entries.get("META-INF/MANIFEST.MF"));
+		protected void verifyZipEntries(ArchiveVerifier verifier) throws Exception {
+			verifyManifest(verifier);
 		}
 
-		private void verifyManifest(ZipFile zipFile, ZipEntry zipEntry) throws Exception {
-			Manifest manifest = new Manifest(zipFile.getInputStream(zipEntry));
+		private void verifyManifest(ArchiveVerifier verifier) throws Exception {
+			Manifest manifest = new Manifest(
+					verifier.getEntryContent("META-INF/MANIFEST.MF"));
 			verifyManifest(manifest);
 		}
 
 		protected abstract void verifyManifest(Manifest manifest) throws Exception;
 
-		protected final void assertHasEntryNameStartingWith(
-				Map<String, ZipEntry> entries, String value) {
-			for (String name : entries.keySet()) {
-				if (name.startsWith(value)) {
-					return;
-				}
-			}
-			throw new IllegalStateException("Expected entry starting with " + value);
-		}
 	}
 
-	private static class JarArchiveVerification extends AbstractArchiveVerification {
+	public static class JarArchiveVerification extends AbstractArchiveVerification {
 
 		private final String main;
 
@@ -106,72 +216,103 @@ public class Verify {
 		}
 
 		@Override
-		protected void verifyZipEntries(ZipFile zipFile, Map<String, ZipEntry> entries)
-				throws Exception {
-			super.verifyZipEntries(zipFile, entries);
-			assertHasEntryNameStartingWith(entries, "lib/spring-context");
-			assertHasEntryNameStartingWith(entries, "lib/spring-core");
-			assertHasEntryNameStartingWith(entries, "lib/javax.servlet-api-3.0.1.jar");
-			assertTrue("Unpacked launcher classes", entries.containsKey("org/"
-					+ "springframework/boot/loader/JarLauncher.class"));
-			assertTrue("Own classes", entries.containsKey("org/"
-					+ "test/SampleApplication.class"));
+		protected void verifyZipEntries(ArchiveVerifier verifier) throws Exception {
+			super.verifyZipEntries(verifier);
+			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/spring-context");
+			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/spring-core");
+			verifier.assertHasEntryNameStartingWith("BOOT-INF/lib/javax.servlet-api-3");
+			assertThat(verifier
+					.hasEntry("org/springframework/boot/loader/JarLauncher.class"))
+							.as("Unpacked launcher classes").isTrue();
+			assertThat(verifier
+					.hasEntry("BOOT-INF/classes/org/test/SampleApplication.class"))
+							.as("Own classes").isTrue();
 		}
 
 		@Override
 		protected void verifyManifest(Manifest manifest) throws Exception {
-			assertEquals("org.springframework.boot.loader.JarLauncher", manifest
-					.getMainAttributes().getValue("Main-Class"));
-			assertEquals(this.main, manifest.getMainAttributes().getValue("Start-Class"));
-			assertEquals("Foo", manifest.getMainAttributes().getValue("Not-Used"));
+			assertThat(manifest.getMainAttributes().getValue("Main-Class"))
+					.isEqualTo("org.springframework.boot.loader.JarLauncher");
+			assertThat(manifest.getMainAttributes().getValue("Start-Class"))
+					.isEqualTo(this.main);
+			assertThat(manifest.getMainAttributes().getValue("Not-Used"))
+					.isEqualTo("Foo");
 		}
 	}
 
-	private static class WarArchiveVerification extends AbstractArchiveVerification {
+	public static class WarArchiveVerification extends AbstractArchiveVerification {
 
 		public WarArchiveVerification(File file) {
 			super(file);
 		}
 
 		@Override
-		protected void verifyZipEntries(ZipFile zipFile, Map<String, ZipEntry> entries)
-				throws Exception {
-			super.verifyZipEntries(zipFile, entries);
-			assertHasEntryNameStartingWith(entries, "WEB-INF/lib/spring-context");
-			assertHasEntryNameStartingWith(entries, "WEB-INF/lib/spring-core");
-			assertHasEntryNameStartingWith(entries,
-					"WEB-INF/lib-provided/javax.servlet-api-3.0.1.jar");
-			assertTrue("Unpacked launcher classes", entries.containsKey("org/"
-					+ "springframework/boot/loader/JarLauncher.class"));
-			assertTrue("Own classes", entries.containsKey("WEB-INF/classes/org/"
-					+ "test/SampleApplication.class"));
-			assertTrue("Web content", entries.containsKey("index.html"));
+		protected void verifyZipEntries(ArchiveVerifier verifier) throws Exception {
+			super.verifyZipEntries(verifier);
+			verifier.assertHasEntryNameStartingWith("WEB-INF/lib/spring-context");
+			verifier.assertHasEntryNameStartingWith("WEB-INF/lib/spring-core");
+			verifier.assertHasEntryNameStartingWith(
+					"WEB-INF/lib-provided/javax.servlet-api-3");
+			assertThat(verifier
+					.hasEntry("org/" + "springframework/boot/loader/JarLauncher.class"))
+							.as("Unpacked launcher classes").isTrue();
+			assertThat(verifier
+					.hasEntry("WEB-INF/classes/org/" + "test/SampleApplication.class"))
+							.as("Own classes").isTrue();
+			assertThat(verifier.hasEntry("index.html")).as("Web content").isTrue();
 		}
 
 		@Override
 		protected void verifyManifest(Manifest manifest) throws Exception {
-			assertEquals("org.springframework.boot.loader.WarLauncher", manifest
-					.getMainAttributes().getValue("Main-Class"));
-			assertEquals("org.test.SampleApplication", manifest.getMainAttributes()
-					.getValue("Start-Class"));
-			assertEquals("Foo", manifest.getMainAttributes().getValue("Not-Used"));
+			assertThat(manifest.getMainAttributes().getValue("Main-Class"))
+					.isEqualTo("org.springframework.boot.loader.WarLauncher");
+			assertThat(manifest.getMainAttributes().getValue("Start-Class"))
+					.isEqualTo("org.test.SampleApplication");
+			assertThat(manifest.getMainAttributes().getValue("Not-Used"))
+					.isEqualTo("Foo");
 		}
 	}
 
 	private static class ZipArchiveVerification extends AbstractArchiveVerification {
 
-		public ZipArchiveVerification(File file) {
+		ZipArchiveVerification(File file) {
 			super(file);
 		}
 
 		@Override
 		protected void verifyManifest(Manifest manifest) throws Exception {
-			assertEquals("org.springframework.boot.loader.PropertiesLauncher", manifest
-					.getMainAttributes().getValue("Main-Class"));
-			assertEquals("org.test.SampleApplication", manifest.getMainAttributes()
-					.getValue("Start-Class"));
-			assertEquals("Foo", manifest.getMainAttributes().getValue("Not-Used"));
+			assertThat(manifest.getMainAttributes().getValue("Main-Class"))
+					.isEqualTo("org.springframework.boot.loader.PropertiesLauncher");
+			assertThat(manifest.getMainAttributes().getValue("Start-Class"))
+					.isEqualTo("org.test.SampleApplication");
+			assertThat(manifest.getMainAttributes().getValue("Not-Used"))
+					.isEqualTo("Foo");
 		}
+	}
+
+	private static class ModuleArchiveVerification extends AbstractArchiveVerification {
+
+		ModuleArchiveVerification(File file) {
+			super(file);
+		}
+
+		@Override
+		protected void verifyZipEntries(ArchiveVerifier verifier) throws Exception {
+			super.verifyZipEntries(verifier);
+			verifier.assertHasEntryNameStartingWith("lib/spring-context");
+			verifier.assertHasEntryNameStartingWith("lib/spring-core");
+			verifier.assertHasNoEntryNameStartingWith("lib/javax.servlet-api-3");
+			assertThat(verifier
+					.hasEntry("org/" + "springframework/boot/loader/JarLauncher.class"))
+							.as("Unpacked launcher classes").isFalse();
+			assertThat(verifier.hasEntry("org/" + "test/SampleModule.class"))
+					.as("Own classes").isTrue();
+		}
+
+		@Override
+		protected void verifyManifest(Manifest manifest) throws Exception {
+		}
+
 	}
 
 }

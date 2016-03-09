@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,37 +16,43 @@
 
 package org.springframework.boot.autoconfigure.mobile;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration;
+import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceHandlerMethodArgumentResolver;
 import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.stereotype.Controller;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link DeviceResolverAutoConfiguration}.
- * 
+ *
  * @author Roy Clarkson
+ * @author Andy Wilkinson
  */
 public class DeviceResolverAutoConfigurationTests {
-
-	private static final MockEmbeddedServletContainerFactory containerFactory = new MockEmbeddedServletContainerFactory();
 
 	private AnnotationConfigWebApplicationContext context;
 
@@ -62,7 +68,8 @@ public class DeviceResolverAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(DeviceResolverAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DeviceResolverHandlerInterceptor.class));
+		assertThat(this.context.getBean(DeviceResolverHandlerInterceptor.class))
+				.isNotNull();
 	}
 
 	@Test
@@ -70,45 +77,59 @@ public class DeviceResolverAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(DeviceResolverAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DeviceHandlerMethodArgumentResolver.class));
+		assertThat(this.context.getBean(DeviceHandlerMethodArgumentResolver.class))
+				.isNotNull();
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void deviceResolverHandlerInterceptorRegistered() throws Exception {
-		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
-		context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				DeviceResolverAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		context.refresh();
-		RequestMappingHandlerMapping mapping = (RequestMappingHandlerMapping) context
-				.getBean("requestMappingHandlerMapping");
-		Field interceptorsField = ReflectionUtils.findField(
-				RequestMappingHandlerMapping.class, "interceptors");
-		interceptorsField.setAccessible(true);
-		List<Object> interceptors = (List<Object>) ReflectionUtils.getField(
-				interceptorsField, mapping);
-		context.close();
-		for (Object o : interceptors) {
-			if (o instanceof DeviceResolverHandlerInterceptor) {
-				return;
-			}
-		}
-		fail("DeviceResolverHandlerInterceptor was not registered.");
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(Config.class);
+		this.context.refresh();
+		RequestMappingHandlerMapping mapping = this.context
+				.getBean(RequestMappingHandlerMapping.class);
+		HandlerInterceptor[] interceptors = mapping
+				.getHandler(new MockHttpServletRequest()).getInterceptors();
+		assertThat(interceptors)
+				.hasAtLeastOneElementOfType(DeviceResolverHandlerInterceptor.class);
+	}
+
+	@Test
+	public void deviceHandlerMethodArgumentWorksWithSpringData() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(Config.class);
+		this.context.setServletContext(new MockServletContext());
+		this.context.refresh();
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/")).andExpect(status().isOk());
 	}
 
 	@Configuration
+	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			DeviceResolverAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class,
+			SpringDataWebAutoConfiguration.class,
+			RepositoryRestMvcAutoConfiguration.class })
 	protected static class Config {
 
 		@Bean
-		public EmbeddedServletContainerFactory containerFactory() {
-			return containerFactory;
+		public MyController controller() {
+			return new MyController();
 		}
 
-		@Bean
-		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
-			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
+	}
+
+	@Controller
+	protected static class MyController {
+
+		@RequestMapping("/")
+		public ResponseEntity<Void> test(Device device) {
+			if (device.getDevicePlatform() != null) {
+				return new ResponseEntity<Void>(HttpStatus.OK);
+			}
+			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}

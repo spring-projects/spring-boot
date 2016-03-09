@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
 
 /**
  * Extract source file options (anything following '--' in an {@link OptionSet}).
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Greg Turnquist
@@ -94,9 +94,9 @@ public class SourceOptions {
 				}
 			}
 		}
-		this.args = Collections.unmodifiableList(nonOptionArguments.subList(
-				sourceArgCount, nonOptionArguments.size()));
-		Assert.isTrue(sources.size() > 0, "Please specify at least one file");
+		this.args = Collections.unmodifiableList(
+				nonOptionArguments.subList(sourceArgCount, nonOptionArguments.size()));
+		Assert.isTrue(!sources.isEmpty(), "Please specify at least one file");
 		this.sources = Collections.unmodifiableList(sources);
 	}
 

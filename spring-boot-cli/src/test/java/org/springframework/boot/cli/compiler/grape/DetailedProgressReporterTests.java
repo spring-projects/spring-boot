@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,13 @@ import org.eclipse.aether.transfer.TransferResource;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Tests for {@link DetailedProgressReporter}.
+ *
+ * @author Andy Wilkinson
+ */
 public final class DetailedProgressReporterTests {
 
 	private static final String REPOSITORY = "http://my.repository.com/";
@@ -54,22 +58,22 @@ public final class DetailedProgressReporterTests {
 		TransferEvent startedEvent = new TransferEvent.Builder(this.session,
 				this.resource).build();
 		this.session.getTransferListener().transferStarted(startedEvent);
-
-		assertEquals(String.format("Downloading: %s%s%n", REPOSITORY, ARTIFACT),
-				new String(this.baos.toByteArray()));
+		assertThat(new String(this.baos.toByteArray()))
+				.isEqualTo(String.format("Downloading: %s%s%n", REPOSITORY, ARTIFACT));
 	}
 
 	@Test
 	public void downloaded() throws InterruptedException {
 		// Ensure some transfer time
 		Thread.sleep(100);
-
 		TransferEvent completedEvent = new TransferEvent.Builder(this.session,
 				this.resource).addTransferredBytes(4096).build();
 		this.session.getTransferListener().transferSucceeded(completedEvent);
-
-		assertTrue(new String(this.baos.toByteArray()).matches(String.format(
-				"Downloaded: %s%s \\(4KB at [0-9]+(\\.|,)[0-9]KB/sec\\)\\n", REPOSITORY,
-				ARTIFACT)));
+		String message = new String(this.baos.toByteArray()).replace("\\", "/");
+		assertThat(message).startsWith("Downloaded: " + REPOSITORY + ARTIFACT);
+		assertThat(message).contains("4KB at");
+		assertThat(message).contains("KB/sec");
+		assertThat(message).endsWith("\n");
 	}
+
 }

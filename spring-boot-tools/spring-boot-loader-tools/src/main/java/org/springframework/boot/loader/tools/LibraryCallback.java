@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +21,16 @@ import java.io.IOException;
 
 /**
  * Callback interface used to iterate {@link Libraries}.
- * 
+ *
  * @author Phillip Webb
  */
 public interface LibraryCallback {
 
 	/**
 	 * Callback to for a single library backed by a {@link File}.
-	 * @param file the library file
-	 * @param scope the scope of the library
-	 * @throws IOException
+	 * @param library the library
+	 * @throws IOException if the operation fails
 	 */
-	void library(File file, LibraryScope scope) throws IOException;
+	void library(Library library) throws IOException;
 
 }

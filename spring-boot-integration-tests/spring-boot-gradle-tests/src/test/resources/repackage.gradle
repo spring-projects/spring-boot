@@ -1,0 +1,52 @@
+buildscript {
+	repositories {
+		mavenLocal()
+	}
+	dependencies {
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:${project.bootVersion}"
+	}
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+apply plugin: 'spring-boot'
+apply plugin: 'java'
+
+dependencies {
+	compile 'org.springframework.boot:spring-boot-starter-freemarker'
+	compile 'org.springframework.boot:spring-boot-starter-web'
+	compile 'org.springframework.boot:spring-boot-devtools'
+	compile files("foo.jar")
+}
+
+springBoot {
+	mainClass = 'foo.bar.Baz'
+	excludeDevtools = Boolean.valueOf(project.excludeDevtools)
+}
+
+bootRepackage.enabled = Boolean.valueOf(project.repackage)
+
+task customJar(type: Jar) {
+	archiveName = 'custom.jar'
+	from sourceSets.main.output
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+artifacts {
+	archives sourcesJar
+}
+
+task customRepackagedJar(type: BootRepackage, dependsOn: customJar) {
+	withJarTask = customJar
+}
+
+task customRepackagedJarWithStringReference(type: BootRepackage, dependsOn: customJar) {
+	withJarTask = 'customJar'
+}

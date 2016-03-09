@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -32,18 +34,19 @@ import org.junit.Assume;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+
 import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.OptionParsingCommand;
+import org.springframework.boot.cli.command.archive.JarCommand;
 import org.springframework.boot.cli.command.grab.GrabCommand;
-import org.springframework.boot.cli.command.jar.JarCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
 import org.springframework.boot.cli.command.test.TestCommand;
-import org.springframework.boot.cli.util.OutputCapture;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.util.SocketUtils;
 
 /**
  * {@link TestRule} that can be used to invoke CLI commands.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
@@ -76,8 +79,13 @@ public class CliTester implements TestRule {
 
 	public String test(String... args) throws Exception {
 		Future<TestCommand> future = submitCommand(new TestCommand(), args);
-		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
-		return getOutput();
+		try {
+			this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
+			return getOutput();
+		}
+		catch (Exception ex) {
+			return getOutput();
+		}
 	}
 
 	public String grab(String... args) throws Exception {
@@ -94,6 +102,7 @@ public class CliTester implements TestRule {
 
 	private <T extends OptionParsingCommand> Future<T> submitCommand(final T command,
 			String... args) {
+		clearUrlHandler();
 		final String[] sources = getSources(args);
 		return Executors.newSingleThreadExecutor().submit(new Callable<T>() {
 			@Override
@@ -110,6 +119,21 @@ public class CliTester implements TestRule {
 				}
 			}
 		});
+	}
+
+	/**
+	 * The TomcatURLStreamHandlerFactory fails if the factory is already set, use
+	 * reflection to reset it.
+	 */
+	private void clearUrlHandler() {
+		try {
+			Field field = URL.class.getDeclaredField("factory");
+			field.setAccessible(true);
+			field.set(null, null);
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	protected String[] getSources(String... args) {
@@ -137,8 +161,8 @@ public class CliTester implements TestRule {
 
 	@Override
 	public Statement apply(final Statement base, final Description description) {
-		final Statement statement = CliTester.this.outputCapture.apply(
-				new RunLauncherStatement(base), description);
+		final Statement statement = CliTester.this.outputCapture
+				.apply(new RunLauncherStatement(base), description);
 		return new Statement() {
 
 			@Override
@@ -158,8 +182,8 @@ public class CliTester implements TestRule {
 
 	public String getHttpOutput(String uri) {
 		try {
-			InputStream stream = URI.create("http://localhost:" + this.port + uri)
-					.toURL().openStream();
+			InputStream stream = URI.create("http://localhost:" + this.port + uri).toURL()
+					.openStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			String line;
 			StringBuilder result = new StringBuilder();

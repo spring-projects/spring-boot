@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ import java.net.UnknownHostException;
 
 import javax.annotation.PreDestroy;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,8 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.mongodb.Mongo;
+import org.springframework.core.env.Environment;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Mongo.
@@ -38,14 +40,21 @@ import com.mongodb.Mongo;
  * @author Phillip Webb
  */
 @Configuration
-@ConditionalOnClass(Mongo.class)
+@ConditionalOnClass(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)
+@ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDbFactory")
 public class MongoAutoConfiguration {
 
 	@Autowired
 	private MongoProperties properties;
 
-	private Mongo mongo;
+	@Autowired(required = false)
+	private MongoClientOptions options;
+
+	@Autowired
+	private Environment environment;
+
+	private MongoClient mongo;
 
 	@PreDestroy
 	public void close() {
@@ -56,8 +65,8 @@ public class MongoAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Mongo mongo() throws UnknownHostException {
-		this.mongo = this.properties.createMongoClient();
+	public MongoClient mongo() throws UnknownHostException {
+		this.mongo = this.properties.createMongoClient(this.options, this.environment);
 		return this.mongo;
 	}
 

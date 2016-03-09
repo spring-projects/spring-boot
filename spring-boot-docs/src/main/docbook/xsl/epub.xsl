@@ -21,7 +21,8 @@ under the License.
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 		xmlns:xslthl="http://xslthl.sf.net"
-		exclude-result-prefixes="xslthl"
+		xmlns:d="http://docbook.org/ns/docbook"
+		exclude-result-prefixes="xslthl d"
 		version='1.0'>
 
 	<xsl:import href="urn:docbkx:stylesheet"/>

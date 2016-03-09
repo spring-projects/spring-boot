@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,41 +21,44 @@ import javax.servlet.ServletRegistration;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.trace.TraceProperties;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
-import org.springframework.boot.actuate.web.BasicErrorController;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.web.ErrorAttributes;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link WebRequestTraceFilter
  * tracing}.
- * 
+ *
  * @author Dave Syer
  */
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServletRegistration.class })
 @AutoConfigureAfter(TraceRepositoryAutoConfiguration.class)
+@EnableConfigurationProperties(TraceProperties.class)
 public class TraceWebFilterAutoConfiguration {
 
 	@Autowired
 	private TraceRepository traceRepository;
 
 	@Autowired(required = false)
-	private BasicErrorController errorController;
+	private ErrorAttributes errorAttributes;
 
-	@Value("${management.dump_requests:false}")
-	private boolean dumpRequests;
+	@Autowired
+	TraceProperties traceProperties = new TraceProperties();
 
 	@Bean
 	public WebRequestTraceFilter webRequestLoggingFilter(BeanFactory beanFactory) {
-		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository);
-		filter.setDumpRequests(this.dumpRequests);
-		if (this.errorController != null) {
-			filter.setErrorController(this.errorController);
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository,
+				this.traceProperties);
+
+		if (this.errorAttributes != null) {
+			filter.setErrorAttributes(this.errorAttributes);
 		}
 		return filter;
 	}

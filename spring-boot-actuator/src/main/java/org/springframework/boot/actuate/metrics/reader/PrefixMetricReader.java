@@ -20,7 +20,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 
 /**
  * Interface for extracting metrics as a group whose name starts with a prefix.
- * 
+ *
  * @author Dave Syer
  */
 public interface PrefixMetricReader {

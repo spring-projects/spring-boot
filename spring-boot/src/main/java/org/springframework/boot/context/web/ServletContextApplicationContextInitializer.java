@@ -24,18 +24,18 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 /**
  * {@link ApplicationContextInitializer} for setting the servlet context.
- * 
+ *
  * @author Dave Syer
  */
 public class ServletContextApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableWebApplicationContext>, Ordered {
 
-	private int order = Integer.MIN_VALUE;
+	private int order = Ordered.HIGHEST_PRECEDENCE;
 
 	private final ServletContext servletContext;
 
 	/**
-	 * Create a new {@link ServletContextApplicationContextInitializer} instance
+	 * Create a new {@link ServletContextApplicationContextInitializer} instance.
 	 * @param servletContext the servlet that should be ultimately set.
 	 */
 	public ServletContextApplicationContextInitializer(ServletContext servletContext) {

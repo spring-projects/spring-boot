@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for externalized configuration. Add this to a class definition if you want
- * to bind and validate some external Properties (e.g. from a .properties file).
- * 
+ * Annotation for externalized configuration. Add this to a class definition or a
+ * {@code @Bean} method in a {@code @Configuration} class if you want to bind and validate
+ * some external Properties (e.g. from a .properties file).
+ * <p>
+ * Note that contrary to {@code @Value}, SpEL expressions are not evaluated since property
+ * values are externalized.
+ *
  * @author Dave Syer
  * @see ConfigurationPropertiesBindingPostProcessor
+ * @see EnableConfigurationProperties
  */
-@Target(ElementType.TYPE)
+@Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ConfigurationProperties {
@@ -71,17 +76,33 @@ public @interface ConfigurationProperties {
 	boolean ignoreUnknownFields() default true;
 
 	/**
-	 * Flag to indicate that validation errors can be swallowed. If set they will be
-	 * logged, but not propagate to the caller.
+	 * Flag to indicate that an exception should be raised if a Validator is available and
+	 * validation fails. If it is set to false, validation errors will be swallowed. They
+	 * will be logged, but not propagated to the caller.
 	 * @return the flag value (default true)
 	 */
 	boolean exceptionIfInvalid() default true;
 
 	/**
-	 * Optionally provide an explicit resource locations to bind to instead of using the
-	 * default environment.
+	 * Optionally provide explicit resource locations to bind to. By default the
+	 * configuration at these specified locations will be merged with the default
+	 * configuration. These resources take precedence over any other property sources
+	 * defined in the environment.
 	 * @return the path (or paths) of resources to bind to
+	 * @see #merge()
+	 * @deprecated configure the environment with those additional locations instead
 	 */
+	@Deprecated
 	String[] locations() default {};
+
+	/**
+	 * Flag to indicate that configuration loaded from the specified locations should be
+	 * merged with the default configuration.
+	 * @return the flag value (default true)
+	 * @see #locations()
+	 * @deprecated as {@link #locations()} is deprecated as well
+	 */
+	@Deprecated
+	boolean merge() default true;
 
 }

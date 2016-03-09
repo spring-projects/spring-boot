@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,22 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import com.mongodb.Mongo;
+import com.mongodb.MongoClientOptions;
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
-import static org.junit.Assert.assertEquals;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MongoAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class MongoAutoConfigurationTests {
@@ -41,11 +46,46 @@ public class MongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void templateExists() {
+	public void clientExists() {
 		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
-				MongoTemplateAutoConfiguration.class);
-		assertEquals(1, this.context.getBeanNamesForType(MongoTemplate.class).length);
+				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
+		assertThat(this.context.getBeanNamesForType(Mongo.class).length).isEqualTo(1);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	public void optionsAdded() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.mongodb.host:localhost");
+		this.context.register(OptionsConfig.class,
+				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(Mongo.class).getMongoOptions().getSocketTimeout())
+				.isEqualTo(300);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	public void optionsAddedButNoHost() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.mongodb.uri:mongodb://localhost/test");
+		this.context.register(OptionsConfig.class,
+				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(Mongo.class).getMongoOptions().getSocketTimeout())
+				.isEqualTo(300);
+	}
+
+	@Configuration
+	protected static class OptionsConfig {
+
+		@Bean
+		public MongoClientOptions mongoOptions() {
+			return MongoClientOptions.builder().socketTimeout(300).build();
+		}
+
 	}
 
 }

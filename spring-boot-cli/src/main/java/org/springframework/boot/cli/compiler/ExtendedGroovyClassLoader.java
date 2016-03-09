@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.lang.GroovyClassLoader;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -32,17 +30,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import groovy.lang.GroovyClassLoader;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.SourceUnit;
+
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Extension of the {@link GroovyClassLoader} with support for obtaining '.class' files as
  * resources.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -159,8 +160,8 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		@Override
 		protected Class<?> createClass(byte[] code, ClassNode classNode) {
 			Class<?> createdClass = super.createClass(code, classNode);
-			ExtendedGroovyClassLoader.this.classResources.put(classNode.getName()
-					.replace(".", "/") + ".class", code);
+			ExtendedGroovyClassLoader.this.classResources
+					.put(classNode.getName().replace(".", "/") + ".class", code);
 			return createdClass;
 		}
 	}
@@ -175,7 +176,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 
 		private final URLClassLoader groovyOnlyClassLoader;
 
-		public DefaultScopeParentClassLoader(ClassLoader parent) {
+		DefaultScopeParentClassLoader(ClassLoader parent) {
 			super(parent);
 			this.groovyOnlyClassLoader = new URLClassLoader(getGroovyJars(parent), null);
 		}
@@ -186,7 +187,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 			if (urls.isEmpty()) {
 				findGroovyJarsFromClassPath(parent, urls);
 			}
-			Assert.state(urls.size() > 0, "Unable to find groovy JAR");
+			Assert.state(!urls.isEmpty(), "Unable to find groovy JAR");
 			return new ArrayList<URL>(urls).toArray(new URL[urls.size()]);
 		}
 
@@ -222,6 +223,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		}
 
 		private boolean isGroovyJar(String entry) {
+			entry = StringUtils.cleanPath(entry);
 			for (String jarPrefix : GROOVY_JARS_PREFIXES) {
 				if (entry.contains("/" + jarPrefix + "-")) {
 					return true;

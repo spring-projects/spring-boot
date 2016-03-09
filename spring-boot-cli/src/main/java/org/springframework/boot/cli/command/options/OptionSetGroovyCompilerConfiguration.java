@@ -28,8 +28,8 @@ import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 
 /**
  * Simple adapter class to present an {@link OptionSet} as a
- * {@link GroovyCompilerConfiguration}
- * 
+ * {@link GroovyCompilerConfiguration}.
+ *
  * @author Andy Wilkinson
  */
 public class OptionSetGroovyCompilerConfiguration implements GroovyCompilerConfiguration {
@@ -42,8 +42,8 @@ public class OptionSetGroovyCompilerConfiguration implements GroovyCompilerConfi
 
 	protected OptionSetGroovyCompilerConfiguration(OptionSet optionSet,
 			CompilerOptionHandler compilerOptionHandler) {
-		this(optionSet, compilerOptionHandler, RepositoryConfigurationFactory
-				.createDefaultRepositoryConfiguration());
+		this(optionSet, compilerOptionHandler,
+				RepositoryConfigurationFactory.createDefaultRepositoryConfiguration());
 	}
 
 	public OptionSetGroovyCompilerConfiguration(OptionSet optionSet,

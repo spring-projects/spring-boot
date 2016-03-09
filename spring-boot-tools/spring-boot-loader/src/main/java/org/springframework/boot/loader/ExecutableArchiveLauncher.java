@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.loader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
+import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.Archive.Entry;
@@ -26,8 +27,9 @@ import org.springframework.boot.loader.archive.Archive.EntryFilter;
 
 /**
  * Base class for executable archive {@link Launcher}s.
- * 
+ *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public abstract class ExecutableArchiveLauncher extends Launcher {
 
@@ -42,13 +44,26 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		}
 	}
 
+	protected ExecutableArchiveLauncher(Archive archive) {
+		this.archive = archive;
+	}
+
 	protected final Archive getArchive() {
 		return this.archive;
 	}
 
 	@Override
 	protected String getMainClass() throws Exception {
-		return this.archive.getMainClass();
+		Manifest manifest = this.archive.getManifest();
+		String mainClass = null;
+		if (manifest != null) {
+			mainClass = manifest.getMainAttributes().getValue("Start-Class");
+		}
+		if (mainClass == null) {
+			throw new IllegalStateException(
+					"No 'Start-Class' manifest entry specified in " + this);
+		}
+		return mainClass;
 	}
 
 	@Override
@@ -76,7 +91,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * Called to post-process archive entries before they are used. Implementations can
 	 * add and remove entries.
 	 * @param archives the archives
-	 * @throws Exception
+	 * @throws Exception if the post processing fails
 	 */
 	protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {
 	}

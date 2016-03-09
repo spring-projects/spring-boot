@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.Enumeration;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -42,7 +44,7 @@ import org.springframework.asm.Type;
 /**
  * Finds any class with a {@code public static main} method by performing a breadth first
  * search.
- * 
+ *
  * @author Phillip Webb
  */
 public abstract class MainClassFinder {
@@ -74,7 +76,7 @@ public abstract class MainClassFinder {
 	 * Find the main class from a given folder.
 	 * @param rootFolder the root folder to search
 	 * @return the main class or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the folder cannot be read
 	 */
 	public static String findMainClass(File rootFolder) throws IOException {
 		return doWithMainClasses(rootFolder, new ClassNameCallback<String>() {
@@ -86,20 +88,34 @@ public abstract class MainClassFinder {
 	}
 
 	/**
+	 * Find a single main class from a given folder.
+	 * @param rootFolder the root folder to search
+	 * @return the main class or {@code null}
+	 * @throws IOException if the folder cannot be read
+	 */
+	public static String findSingleMainClass(File rootFolder) throws IOException {
+		MainClassesCallback callback = new MainClassesCallback();
+		MainClassFinder.doWithMainClasses(rootFolder, callback);
+		return callback.getMainClass();
+	}
+
+	/**
 	 * Perform the given callback operation on all main classes from the given root
 	 * folder.
+	 * @param <T> the result type
 	 * @param rootFolder the root folder
 	 * @param callback the callback
 	 * @return the first callback result or {@code null}
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
-	public static <T> T doWithMainClasses(File rootFolder, ClassNameCallback<T> callback)
+	static <T> T doWithMainClasses(File rootFolder, ClassNameCallback<T> callback)
 			throws IOException {
 		if (!rootFolder.exists()) {
 			return null; // nothing to do
 		}
 		if (!rootFolder.isDirectory()) {
-			throw new IllegalArgumentException("Invalid root folder '" + rootFolder + "'");
+			throw new IllegalArgumentException(
+					"Invalid root folder '" + rootFolder + "'");
 		}
 		String prefix = rootFolder.getAbsolutePath() + "/";
 		Deque<File> stack = new ArrayDeque<File>();
@@ -147,7 +163,7 @@ public abstract class MainClassFinder {
 	 * @param jarFile the jar file to search
 	 * @param classesLocation the location within the jar containing classes
 	 * @return the main class or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the jar file cannot be read
 	 */
 	public static String findMainClass(JarFile jarFile, String classesLocation)
 			throws IOException {
@@ -161,13 +177,29 @@ public abstract class MainClassFinder {
 	}
 
 	/**
-	 * Perform the given callback operation on all main classes from the given jar.
+	 * Find a single main class in a given jar file.
 	 * @param jarFile the jar file to search
 	 * @param classesLocation the location within the jar containing classes
-	 * @return the first callback result or {@code null}
-	 * @throws IOException
+	 * @return the main class or {@code null}
+	 * @throws IOException if the jar file cannot be read
 	 */
-	public static <T> T doWithMainClasses(JarFile jarFile, String classesLocation,
+	public static String findSingleMainClass(JarFile jarFile, String classesLocation)
+			throws IOException {
+		MainClassesCallback callback = new MainClassesCallback();
+		MainClassFinder.doWithMainClasses(jarFile, classesLocation, callback);
+		return callback.getMainClass();
+	}
+
+	/**
+	 * Perform the given callback operation on all main classes from the given jar.
+	 * @param <T> the result type
+	 * @param jarFile the jar file to search
+	 * @param classesLocation the location within the jar containing classes
+	 * @param callback the callback
+	 * @return the first callback result or {@code null}
+	 * @throws IOException in case of I/O errors
+	 */
+	static <T> T doWithMainClasses(JarFile jarFile, String classesLocation,
 			ClassNameCallback<T> callback) throws IOException {
 		List<JarEntry> classEntries = getClassEntries(jarFile, classesLocation);
 		Collections.sort(classEntries, new ClassEntryComparator());
@@ -201,7 +233,8 @@ public abstract class MainClassFinder {
 		return name;
 	}
 
-	private static List<JarEntry> getClassEntries(JarFile source, String classesLocation) {
+	private static List<JarEntry> getClassEntries(JarFile source,
+			String classesLocation) {
 		classesLocation = (classesLocation != null ? classesLocation : "");
 		Enumeration<JarEntry> sourceEntries = source.entries();
 		List<JarEntry> classEntries = new ArrayList<JarEntry>();
@@ -250,7 +283,7 @@ public abstract class MainClassFinder {
 
 		private boolean found;
 
-		public MainMethodFinder() {
+		MainMethodFinder() {
 			super(Opcodes.ASM4);
 		}
 
@@ -282,15 +315,42 @@ public abstract class MainClassFinder {
 
 	/**
 	 * Callback interface used to receive class names.
+	 * @param <T> the result type
 	 */
-	public static interface ClassNameCallback<T> {
+	public interface ClassNameCallback<T> {
 
 		/**
-		 * Handle the specified class name
+		 * Handle the specified class name.
 		 * @param className the class name
 		 * @return a non-null value if processing should end or {@code null} to continue
 		 */
 		T doWith(String className);
 
 	}
+
+	/**
+	 * Find a single main class, throwing an {@link IllegalStateException} if multiple
+	 * candidates exist.
+	 */
+	private static class MainClassesCallback implements ClassNameCallback<Object> {
+
+		private final Set<String> classNames = new LinkedHashSet<String>();
+
+		@Override
+		public Object doWith(String className) {
+			this.classNames.add(className);
+			return null;
+		}
+
+		public String getMainClass() {
+			if (this.classNames.size() > 1) {
+				throw new IllegalStateException(
+						"Unable to find a single main class from the following candidates "
+								+ this.classNames);
+			}
+			return this.classNames.isEmpty() ? null : this.classNames.iterator().next();
+		}
+
+	}
+
 }
