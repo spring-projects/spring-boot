@@ -61,17 +61,17 @@ public abstract class JsonObjectDeserializer<T>
 
 	/**
 	 * Deserialize JSON content into the value type this serializer handles.
-	 * @param jasonParser the source parser used for reading JSON content
+	 * @param jsonParser the source parser used for reading JSON content
 	 * @param context Context that can be used to access information about this
 	 * deserialization activity
 	 * @param codec the {@link ObjectCodec} associated with the parser
 	 * @param tree deserialized JSON content as tree expressed using set of
 	 * {@link TreeNode} instances
-	 * @return the dserialized object
+	 * @return the deserialized object
 	 * @throws IOException on error
 	 * @see #deserialize(JsonParser, DeserializationContext)
 	 */
-	protected abstract T deserializeObject(JsonParser jasonParser,
+	protected abstract T deserializeObject(JsonParser jsonParser,
 			DeserializationContext context, ObjectCodec codec, JsonNode tree)
 					throws IOException;
 
