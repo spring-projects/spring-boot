@@ -16,6 +16,7 @@
 
 package org.springframework.boot.info;
 
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
@@ -51,6 +52,28 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 	 */
 	public String get(String property) {
 		return this.entries.getProperty(property);
+	}
+
+	/**
+	 * Return the value of the specified property as a {@link Date} or {@code null}
+	 * <p>
+	 * Return {@code null} if the value is not a valid {@link Long} representing an
+	 * epoch time.
+	 * @param key the id of the property
+	 * @return the property value
+	 */
+	public Date getDate(String key) {
+		String s = get(key);
+		if (s != null) {
+			try {
+				long epoch = Long.parseLong(s);
+				return new Date(epoch);
+			}
+			catch (NumberFormatException e) {
+				// Not valid epoch time
+			}
+		}
+		return null;
 	}
 
 	@Override

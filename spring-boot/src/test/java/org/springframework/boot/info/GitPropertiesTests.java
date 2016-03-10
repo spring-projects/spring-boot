@@ -51,21 +51,26 @@ public class GitPropertiesTests {
 	public void coerceEpochSecond() {
 		GitProperties properties = new GitProperties(
 				createProperties("master", "abcdefg", "1457527123"));
-		assertThat(properties.getCommitTime()).isEqualTo("1457527123000");
+		assertThat(properties.getCommitTime()).isNotNull();
+		assertThat(properties.get("commit.time")).isEqualTo("1457527123000");
+		assertThat(properties.getCommitTime().getTime()).isEqualTo(1457527123000L);
 	}
 
 	@Test
 	public void coerceDateString() {
 		GitProperties properties = new GitProperties(
 				createProperties("master", "abcdefg", "2016-03-04T14:36:33+0100"));
-		assertThat(properties.getCommitTime()).isEqualTo("1457098593000");
+		assertThat(properties.getCommitTime()).isNotNull();
+		assertThat(properties.get("commit.time")).isEqualTo("1457098593000");
+		assertThat(properties.getCommitTime().getTime()).isEqualTo(1457098593000L);
 	}
 
 	@Test
 	public void coerceUnsupportedFormat() {
 		GitProperties properties = new GitProperties(
 				createProperties("master", "abcdefg", "2016-03-04 15:22:24"));
-		assertThat(properties.getCommitTime()).isEqualTo("2016-03-04 15:22:24");
+		assertThat(properties.getCommitTime()).isNull();
+		assertThat(properties.get("commit.time")).isEqualTo("2016-03-04 15:22:24");
 	}
 
 	@Test

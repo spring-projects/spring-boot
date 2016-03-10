@@ -21,9 +21,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.boot.info.GitProperties;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
@@ -37,8 +34,6 @@ import org.springframework.util.StringUtils;
  * @since 1.4.0
  */
 public class GitInfoContributor implements InfoContributor {
-
-	private static final Log logger = LogFactory.getLog(GitInfoContributor.class);
 
 	private final GitProperties properties;
 
@@ -84,25 +79,19 @@ public class GitInfoContributor implements InfoContributor {
 	 * @param content the content to expose
 	 */
 	protected void postProcess(Map<String, Object> content) {
-		coerceDate(getNestedMap(content, "commit"), "time");
-		coerceDate(getNestedMap(content, "build"), "time");
+		replaceValue(getNestedMap(content, "commit"), "time", getProperties().getDate("commit.time"));
+		replaceValue(getNestedMap(content, "build"), "time", getProperties().getDate("build.time"));
 	}
 
 	/**
-	 * Coerce the specified key if the value is a proper epoch time.
+	 * Replace the {@code value} for the specified key if the value is not {@code null}.
 	 * @param content the content to expose
-	 * @param key the property to coerce
+	 * @param key the property to replace
+	 * @param value the new value
 	 */
-	protected void coerceDate(Map<String, Object> content, String key) {
-		Object value = content.get(key);
-		if (value != null) {
-			try {
-				long epoch = Long.parseLong(value.toString());
-				content.put(key, new Date(epoch));
-			}
-			catch (NumberFormatException ex) {
-				logger.warn("Expected a date for '" + key + "'", ex);
-			}
+	protected void replaceValue(Map<String, Object> content, String key, Object value) {
+		if (content.containsKey(key) && value != null) {
+			content.put(key, value);
 		}
 	}
 

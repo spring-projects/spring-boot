@@ -61,12 +61,15 @@ public class GitProperties extends InfoProperties {
 	}
 
 	/**
-	 * Return the timestamp of the commit, possibly as epoch time in millisecond, or {@code null}.
+	 * Return the timestamp of the commit or {@code null}.
+	 * <p>
+	 * If the original value could not be parsed properly, it is still available with
+	 * the {@code commit.time} key.
 	 * @return the commit time
-	 * @see Date#getTime()
+	 * @see #get(String)
 	 */
-	public String getCommitTime() {
-		return get("commit.time");
+	public Date getCommitTime() {
+		return getDate("commit.time");
 	}
 
 	private static Properties processEntries(Properties properties) {
