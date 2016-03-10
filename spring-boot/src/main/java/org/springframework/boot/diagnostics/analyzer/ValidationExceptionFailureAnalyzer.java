@@ -28,7 +28,7 @@ import org.springframework.boot.diagnostics.FailureAnalyzer;
  *
  * @author Andy Wilkinson
  */
-class ValidationExceptionFailureAnalzer
+class ValidationExceptionFailureAnalyzer
 		extends AbstractFailureAnalyzer<ValidationException> {
 
 	private static final String MISSING_IMPLEMENTATION_MESSAGE = "Unable to create a "

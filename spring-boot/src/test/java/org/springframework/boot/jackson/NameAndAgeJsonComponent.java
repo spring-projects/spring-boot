@@ -47,7 +47,7 @@ public class NameAndAgeJsonComponent {
 	public static class Deserializer extends JsonObjectDeserializer<NameAndAge> {
 
 		@Override
-		protected NameAndAge deserializeObject(JsonParser jasonParser,
+		protected NameAndAge deserializeObject(JsonParser jsonParser,
 				DeserializationContext context, ObjectCodec codec, JsonNode tree)
 						throws IOException {
 			String name = nullSafeValue(tree.get("name"), String.class);
