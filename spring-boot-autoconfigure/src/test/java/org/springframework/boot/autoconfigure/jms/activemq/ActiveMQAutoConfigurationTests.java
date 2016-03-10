@@ -16,22 +16,21 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
+
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 
@@ -65,22 +64,22 @@ public class ActiveMQAutoConfigurationTests {
 	@Test
 	public void custompooledConnectionFactoryConfiguration() {
 		load(EmptyConfiguration.class,
-		     "spring.activemq.pool.enabled:true",
-		     "spring.activemq.pool.max-connections:256",
-		     "spring.activemq.pool.idle-time-millis:512",
-		     "spring.activemq.pool.max-sessions-per-connection:1024",
-		     "spring.activemq.pool.time-between-eviction-runs-millis:2048",
-		     "spring.activemq.pool.expiry-time-millis:4096"
+			"spring.activemq.pool.enabled:true",
+			"spring.activemq.pool.max-connections:256",
+			"spring.activemq.pool.idle-time-millis:512",
+			"spring.activemq.pool.max-sessions-per-connection:1024",
+			"spring.activemq.pool.time-between-eviction-runs-millis:2048",
+			"spring.activemq.pool.expiry-time-millis:4096"
 		);
 		ConnectionFactory connectionFactory = this.context.getBean(ConnectionFactory.class);
-		assertThat(connectionFactory, instanceOf(PooledConnectionFactory.class));
+		assertThat(connectionFactory).isInstanceOf(PooledConnectionFactory.class);
 
 		PooledConnectionFactory pooledConnectionFactory = (PooledConnectionFactory) connectionFactory;
-		assertThat(pooledConnectionFactory.getMaxConnections(), is(256));
-		assertThat(pooledConnectionFactory.getIdleTimeout(), is(512));
-		assertThat(pooledConnectionFactory.getMaximumActiveSessionPerConnection(), is(1024));
-		assertThat(pooledConnectionFactory.getTimeBetweenExpirationCheckMillis(), is(2048L));
-		assertThat(pooledConnectionFactory.getExpiryTimeout(), is(4096L));
+		assertThat(pooledConnectionFactory.getMaxConnections()).isEqualTo(256);
+		assertThat(pooledConnectionFactory.getIdleTimeout()).isEqualTo(512);
+		assertThat(pooledConnectionFactory.getMaximumActiveSessionPerConnection()).isEqualTo(1024);
+		assertThat(pooledConnectionFactory.getTimeBetweenExpirationCheckMillis()).isEqualTo(2048);
+		assertThat(pooledConnectionFactory.getExpiryTimeout()).isEqualTo(4096);
 	}
 
 	@Test

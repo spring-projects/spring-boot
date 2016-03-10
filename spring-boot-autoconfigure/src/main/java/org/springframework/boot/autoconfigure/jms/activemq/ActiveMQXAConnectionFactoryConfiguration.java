@@ -16,9 +16,13 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
+import javax.jms.ConnectionFactory;
+import javax.transaction.TransactionManager;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQXAConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -27,9 +31,6 @@ import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-
-import javax.jms.ConnectionFactory;
-import javax.transaction.TransactionManager;
 
 /**
  * Configuration for ActiveMQ XA {@link ConnectionFactory}.

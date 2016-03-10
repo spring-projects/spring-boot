@@ -16,10 +16,14 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
+import javax.jms.ConnectionFactory;
+import javax.jms.Session;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -42,9 +46,6 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.Session;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -53,6 +54,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Greg Turnquist
  * @author Stephane Nicoll
+ * @author Aurélien Leboulanger
  */
 public class JmsAutoConfigurationTests {
 

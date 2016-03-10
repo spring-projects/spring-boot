@@ -84,7 +84,7 @@ public class ActiveMQProperties {
 	}
 
 	public Pool getPool() {
-		return pool;
+		return this.pool;
 	}
 
 	public void setPool(Pool pool) {
@@ -100,22 +100,22 @@ public class ActiveMQProperties {
 		private boolean enabled;
 
 		/**
-		 * Sets the maximum number of pooled Connections
+		 * Sets the maximum number of pooled Connections.
 		 */
 		private int maxConnections = 1;
 
 		/**
-		 * Sets the idle timeout value for Connection's that are created by this pool in Milliseconds
+		 * Sets the idle timeout value for Connection's that are created by this pool in Milliseconds.
 		 */
 		private int idleTimeMillis = 30 * 1000;
 
 		/**
-		 * Allow connections to expire, irrespective of load or idle time
+		 * Allow connections to expire, irrespective of load or idle time.
 		 */
 		private long expiryTimeMillis = 0L;
 
 		/**
-		 * Sets the maximum number of active sessions per connection
+		 * Sets the maximum number of active sessions per connection.
 		 */
 		private int maxSessionsPerConnection = 500;
 
@@ -125,7 +125,7 @@ public class ActiveMQProperties {
 		private long timeBetweenEvictionRunsMillis = -1L;
 
 		public boolean isEnabled() {
-			return enabled;
+			return this.enabled;
 		}
 
 		public void setEnabled(boolean enabled) {
@@ -133,7 +133,7 @@ public class ActiveMQProperties {
 		}
 
 		public int getMaxConnections() {
-			return maxConnections;
+			return this.maxConnections;
 		}
 
 		public void setMaxConnections(int maxConnections) {
@@ -141,7 +141,7 @@ public class ActiveMQProperties {
 		}
 
 		public int getIdleTimeMillis() {
-			return idleTimeMillis;
+			return this.idleTimeMillis;
 		}
 
 		public void setIdleTimeMillis(int idleTimeMillis) {
@@ -149,7 +149,7 @@ public class ActiveMQProperties {
 		}
 
 		public long getExpiryTimeMillis() {
-			return expiryTimeMillis;
+			return this.expiryTimeMillis;
 		}
 
 		public void setExpiryTimeMillis(long expiryTimeMillis) {
@@ -157,7 +157,7 @@ public class ActiveMQProperties {
 		}
 
 		public int getMaxSessionsPerConnection() {
-			return maxSessionsPerConnection;
+			return this.maxSessionsPerConnection;
 		}
 
 		public void setMaxSessionsPerConnection(int maxSessionsPerConnection) {
@@ -165,7 +165,7 @@ public class ActiveMQProperties {
 		}
 
 		public long getTimeBetweenEvictionRunsMillis() {
-			return timeBetweenEvictionRunsMillis;
+			return this.timeBetweenEvictionRunsMillis;
 		}
 
 		public void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
