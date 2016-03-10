@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Tests for {@link ValidationExceptionFailureAnalzer}
+ * Tests for {@link ValidationExceptionFailureAnalyzer}
  *
  * @author Andy Wilkinson
  */
@@ -45,7 +45,7 @@ public class ValidationExceptionFailureAnalyzerTests {
 			fail("Expected failure did not occur");
 		}
 		catch (Exception ex) {
-			FailureAnalysis analysis = new ValidationExceptionFailureAnalzer()
+			FailureAnalysis analysis = new ValidationExceptionFailureAnalyzer()
 					.analyze(ex);
 			assertThat(analysis).isNotNull();
 		}

@@ -197,7 +197,7 @@ public class JsonObjectDeserializerTests {
 	static class TestJsonObjectDeserializer<T> extends JsonObjectDeserializer<T> {
 
 		@Override
-		protected T deserializeObject(JsonParser jasonParser,
+		protected T deserializeObject(JsonParser jsonParser,
 				DeserializationContext context, ObjectCodec codec, JsonNode tree)
 						throws IOException {
 			return null;

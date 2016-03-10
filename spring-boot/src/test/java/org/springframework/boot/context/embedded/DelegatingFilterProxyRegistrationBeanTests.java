@@ -38,7 +38,7 @@ public class DelegatingFilterProxyRegistrationBeanTests
 		extends AbstractFilterRegistrationBeanTests {
 
 	private WebApplicationContext applicationContext = new GenericWebApplicationContext(
-			new MockServletContext());;
+			new MockServletContext());
 
 	@Test
 	public void targetBeanNameMustNotBeNull() throws Exception {
