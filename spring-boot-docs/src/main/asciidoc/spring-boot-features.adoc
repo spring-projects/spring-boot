@@ -1073,7 +1073,7 @@ NOTE: you can also specify `debug=true` in your `application.properties`.
 
 When the debug mode is enabled, a selection of core loggers (embedded container, Hibernate
 and Spring) are configured to output more information. Enabling the debug mode does _not_
-configure your application log all messages with `DEBUG` level.
+configure your application to log all messages with `DEBUG` level.
 
 [[boot-features-logging-color-coded-output]]
 ==== Color-coded output
