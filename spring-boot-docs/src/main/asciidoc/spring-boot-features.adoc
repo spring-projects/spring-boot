@@ -1072,8 +1072,13 @@ default `ERROR`, `WARN` and `INFO` level messages are logged. You can also enabl
 NOTE: you can also specify `debug=true` in your `application.properties`.
 
 When the debug mode is enabled, a selection of core loggers (embedded container, Hibernate
-and Spring) are configured to output more information. Enabling the debug mode does _not_
+and Spring Boot) are configured to output more information. Enabling the debug mode does _not_
 configure your application to log all messages with `DEBUG` level.
+
+Alternatively, you can enable a "`trace`" mode by starting your application with a `--trace`
+flag (or `trace=true` in your `application.properties`). This will enable trace logging for a
+selection of core loggers (embedded container, Hibernate schema generation and the whole Spring
+portfolio).
 
 [[boot-features-logging-color-coded-output]]
 ==== Color-coded output

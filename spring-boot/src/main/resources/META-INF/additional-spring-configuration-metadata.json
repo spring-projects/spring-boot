@@ -160,6 +160,13 @@
     "type": "java.lang.String",
     "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
     "description": "Unconditionally activate the specified comma separated profiles."
+  },
+  {
+    "name": "trace",
+    "type": "java.lang.Boolean",
+    "description": "Enable trace logs.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener",
+    "defaultValue": false
   }
 ],"hints": [
   {

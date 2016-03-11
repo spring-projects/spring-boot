@@ -55,6 +55,7 @@ import static org.hamcrest.Matchers.not;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class LoggingApplicationListenerTests {
 
@@ -229,6 +230,26 @@ public class LoggingApplicationListenerTests {
 		this.logger.trace("testattrace");
 		assertThat(this.outputCapture.toString()).contains("testatdebug");
 		assertThat(this.outputCapture.toString()).contains("testattrace");
+	}
+
+	@Test
+	public void disableDebugArg() {
+		disableDebugTraceArg("debug=false");
+	}
+
+	@Test
+	public void disableTraceArg() {
+		disableDebugTraceArg("trace=false");
+	}
+
+	private void disableDebugTraceArg(String... environment) {
+		EnvironmentTestUtils.addEnvironment(this.context, environment);
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.debug("testatdebug");
+		this.logger.trace("testattrace");
+		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug");
+		assertThat(this.outputCapture.toString()).doesNotContain("testattrace");
 	}
 
 	@Test
