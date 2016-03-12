@@ -23,27 +23,43 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.test.context.IntegrationTest;
+import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringApplicationContextLoader;
+import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
 
 /**
- * Test class annotation signifying that the tests are "web integration tests" and
+ * Test class annotation signifying that the tests are "web integration tests" for a
+ * {@link org.springframework.boot.SpringApplication Spring Boot Application} and
  * therefore require full startup in the same way as a production application (listening
- * on normal ports). Normally used in conjunction with
- * {@code @SpringApplicationConfiguration},
+ * on normal ports. By default will load nested {@code @Configuration} classes, or
+ * fallback an {@link SpringApplicationConfiguration @SpringApplicationConfiguration}
+ * search. Unless otherwise configured, a {@link SpringApplicationContextLoader} will be
+ * used to load the {@link ApplicationContext}. Use
+ * {@link SpringApplicationConfiguration @SpringApplicationConfiguration} or
+ * {@link ContextConfiguration @ContextConfiguration} if custom configuration is required.
  * <p>
- * This annotation can be used as an alternative to {@code @IntegrationTest} and
- * {@code @WebAppConfiguration}.
+ * If you are not testing a web application consider using the
+ * {@link IntegrationTest @IntegrationTest} annotation instead. If you are testing a web
+ * application and want to mock the servlet environment (for example so that you can use
+ * {@link MockMvc}) you should switch to the
+ * {@link SpringApplicationTest @SpringApplicationTest} annotation.
  *
  * @author Phillip Webb
- * @since 1.2.1
- * @see org.springframework.boot.test.context.IntegrationTest
+ * @since 1.4.0
+ * @see SpringApplicationTest
+ * @see IntegrationTest
  */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@BootstrapWith(WebAppIntegrationTestContextBootstrapper.class)
+@BootstrapWith(WebIntegrationTestContextBootstrapper.class)
 public @interface WebIntegrationTest {
 
 	/**

@@ -17,6 +17,7 @@
 package org.springframework.boot.test;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextLoader;
 
@@ -35,11 +36,16 @@ import org.springframework.test.context.ContextLoader;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @see IntegrationTest
- * @see WebIntegrationTest
- * @see TestRestTemplate
+ * @see org.springframework.boot.test.context.SpringApplicationTest
+ * @see org.springframework.boot.test.context.IntegrationTest
+ * @see org.springframework.boot.test.context.web.WebIntegrationTest
  * @deprecated since 1.4.0 in favor of
- * {@link org.springframework.boot.test.context.SpringApplicationContextLoader}
+ * {@link SpringApplicationTest @SpringApplicationTest},
+ * {@link org.springframework.boot.test.context.IntegrationTest @IntegrationTest},
+ * {@link org.springframework.boot.test.context.web.WebIntegrationTest @WebIntegrationTest}
+ * annotations.
+ * {@link org.springframework.boot.test.context.SpringApplicationContextLoader} can also
+ * be considered if absolutely necessary.
  */
 @Deprecated
 public class SpringApplicationContextLoader

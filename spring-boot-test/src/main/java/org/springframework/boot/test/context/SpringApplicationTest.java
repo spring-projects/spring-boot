@@ -27,11 +27,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 
 /**
- * Test class annotation signifying that the tests are "integration tests" for a
+ * Test class annotation signifying that the tests are for a
  * {@link org.springframework.boot.SpringApplication Spring Boot Application}. By default
  * will load nested {@code @Configuration} classes, or fallback an
  * {@link SpringApplicationConfiguration @SpringApplicationConfiguration} search. Unless
@@ -40,31 +38,29 @@ import org.springframework.test.web.servlet.MockMvc;
  * {@link SpringApplicationConfiguration @SpringApplicationConfiguration} or
  * {@link ContextConfiguration @ContextConfiguration} if custom configuration is required.
  * <p>
- * It's recommended that {@code @IntegrationTest} is used only for non-web applications
- * (i.e. not combined with {@link WebAppConfiguration @WebAppConfiguration}). If you want
- * to start a real embedded servlet container in the same way as a production application
- * (listening on normal ports) use
+ * A mock servlet environment will used when this annotation is used to a test web
+ * application. If you want to start a real embedded servlet container in the same way as
+ * a production application (listening on normal ports) the
  * {@link org.springframework.boot.test.context.web.WebIntegrationTest @WebIntegrationTest}
- * instead. If you are testing a web application and want to mock the servlet environment
- * (for example so that you can use {@link MockMvc}) you should switch to the
- * {@link SpringApplicationTest @SpringApplicationTest} annotation.
+ * annotation should be used instead. If you are testing a non-web application, and you
+ * don't need a mock servlet environment you should switch to
+ * {@link IntegrationTest @IntegrationTest}.
  *
- * @author Dave Syer
  * @author Phillip Webb
- * @see SpringApplicationTest
+ * @since 1.4.0
+ * @see IntegrationTest
  * @see org.springframework.boot.test.context.web.WebIntegrationTest
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@BootstrapWith(IntegrationTestContextBootstrapper.class)
-public @interface IntegrationTest {
+@BootstrapWith(SpringApplicationTestContextBootstrapper.class)
+public @interface SpringApplicationTest {
 
 	/**
 	 * Properties in form {@literal key=value} that should be added to the Spring
 	 * {@link Environment} before the test runs.
-	 * @return the environment properties
 	 */
 	String[] value() default {};
 

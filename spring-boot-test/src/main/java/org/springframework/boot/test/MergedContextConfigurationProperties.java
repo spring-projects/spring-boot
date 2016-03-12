@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -28,14 +28,14 @@ import org.springframework.test.util.ReflectionTestUtils;
  * Provides access to {@link MergedContextConfiguration} properties.
  *
  * @author Phillip Webb
- * @since 1.4.0
+ * @deprecated since 1.4.0 along with {@link IntegrationTestPropertiesListener}
  */
-public class MergedContextConfigurationProperties {
+@Deprecated
+class MergedContextConfigurationProperties {
 
 	private final MergedContextConfiguration configuration;
 
-	public MergedContextConfigurationProperties(
-			MergedContextConfiguration configuration) {
+	MergedContextConfigurationProperties(MergedContextConfiguration configuration) {
 		this.configuration = configuration;
 	}
 

@@ -16,16 +16,56 @@
 
 package org.springframework.boot.test;
 
+import org.springframework.boot.test.context.IntegrationTest;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.support.AbstractTestExecutionListener;
+import org.springframework.test.util.ReflectionTestUtils;
+
 /**
  * Manipulate the TestContext to merge properties from {@code @IntegrationTest}.
  *
  * @author Dave Syer
  * @author Phillip Webb
  * @since 1.2.0
- * @deprecated since 1.4.0 in favor of IntegrationTestPropertiesListener
+ * @deprecated since 1.4.0 as no longer used by {@code @IntegrationTest}.
  */
 @Deprecated
-public class IntegrationTestPropertiesListener
-		extends org.springframework.boot.test.context.IntegrationTestPropertiesListener {
+public class IntegrationTestPropertiesListener extends AbstractTestExecutionListener {
+
+	@Override
+	public void prepareTestInstance(TestContext testContext) throws Exception {
+		Class<?> testClass = testContext.getTestClass();
+		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
+				.getMergedAnnotationAttributes(testClass,
+						IntegrationTest.class.getName());
+		if (annotationAttributes != null) {
+			addPropertySourceProperties(testContext,
+					annotationAttributes.getStringArray("value"));
+		}
+	}
+
+	private void addPropertySourceProperties(TestContext testContext,
+			String[] properties) {
+		try {
+			MergedContextConfiguration configuration = (MergedContextConfiguration) ReflectionTestUtils
+					.getField(testContext, "mergedContextConfiguration");
+			new MergedContextConfigurationProperties(configuration).add(properties);
+		}
+		catch (RuntimeException ex) {
+			throw ex;
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE;
+	}
 
 }

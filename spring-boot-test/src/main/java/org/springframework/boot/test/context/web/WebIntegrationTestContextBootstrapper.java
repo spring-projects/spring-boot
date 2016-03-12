@@ -16,11 +16,14 @@
 
 package org.springframework.boot.test.context.web;
 
-import org.springframework.boot.test.context.MergedContextConfigurationProperties;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 
 /**
@@ -28,26 +31,36 @@ import org.springframework.test.context.web.WebMergedContextConfiguration;
  *
  * @author Phillip Webb
  */
-class WebAppIntegrationTestContextBootstrapper extends SpringBootTestContextBootstrapper {
+class WebIntegrationTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected MergedContextConfiguration processMergedContextConfiguration(
 			MergedContextConfiguration mergedConfig) {
+		assertValidAnnotations(mergedConfig.getTestClass());
 		mergedConfig = super.processMergedContextConfiguration(mergedConfig);
-		WebIntegrationTest annotation = AnnotatedElementUtils.findMergedAnnotation(
-				mergedConfig.getTestClass(), WebIntegrationTest.class);
-		if (annotation != null) {
-			mergedConfig = new WebMergedContextConfiguration(mergedConfig, null);
-			MergedContextConfigurationProperties properties = new MergedContextConfigurationProperties(
-					mergedConfig);
-			if (annotation.randomPort()) {
-				properties.add(annotation.value(), "server.port:0");
-			}
-			else {
-				properties.add(annotation.value());
-			}
+		return new WebMergedContextConfiguration(mergedConfig, null);
+	}
+
+	private void assertValidAnnotations(Class<?> testClass) {
+		if (AnnotatedElementUtils.findMergedAnnotation(testClass,
+				WebAppConfiguration.class) != null
+				&& AnnotatedElementUtils.findMergedAnnotation(testClass,
+						WebIntegrationTest.class) != null) {
+			throw new IllegalStateException("@WebIntegrationTest and "
+					+ "@WebAppConfiguration cannot be used together");
 		}
-		return mergedConfig;
+	}
+
+	@Override
+	protected void processPropertySourceProperties(
+			MergedContextConfiguration mergedConfig,
+			List<String> propertySourceProperties) {
+		WebIntegrationTest annotation = AnnotatedElementUtils.getMergedAnnotation(
+				mergedConfig.getTestClass(), WebIntegrationTest.class);
+		propertySourceProperties.addAll(Arrays.asList(annotation.value()));
+		if (annotation.randomPort()) {
+			propertySourceProperties.add("server.port=0");
+		}
 	}
 
 }

@@ -34,9 +34,20 @@ import org.springframework.test.context.ContextConfiguration;
  * <p>
  * Similar to the standard {@link ContextConfiguration @ContextConfiguration} but uses
  * Spring Boot's {@link SpringApplicationContextLoader}.
+ * <p>
+ * Tests that using this annotation only to define {@code classes} should consider using
+ * {@link SpringApplicationTest @SpringApplicationTest},
+ * {@link IntegrationTest @IntegrationTest} or
+ * {@link org.springframework.boot.test.context.web.WebIntegrationTest @WebIntegrationTest}
+ * instead.
  *
  * @author Dave Syer
  * @author Sam Brannen
+ * @author Phillip Webb
+ * @since 1.4.0
+ * @see SpringApplicationTest
+ * @see IntegrationTest
+ * @see org.springframework.boot.test.context.web.WebIntegrationTest
  * @see SpringApplicationContextLoader
  * @see ContextConfiguration
  */
