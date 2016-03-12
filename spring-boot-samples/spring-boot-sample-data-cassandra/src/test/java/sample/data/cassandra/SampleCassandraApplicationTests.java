@@ -22,10 +22,9 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.IntegrationTestPropertiesListener;
-import org.springframework.boot.test.OutputCapture;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.IntegrationTest;
+import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestExecutionListeners.MergeMode;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -37,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(mergeMode = MergeMode.MERGE_WITH_DEFAULTS, listeners = {
-		IntegrationTestPropertiesListener.class,
 		OrderedCassandraTestExecutionListener.class })
 @SpringApplicationConfiguration(SampleCassandraApplication.class)
 @IntegrationTest("spring.data.cassandra.port=9142")

@@ -22,7 +22,7 @@ import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;

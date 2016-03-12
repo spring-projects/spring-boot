@@ -26,7 +26,7 @@ import sample.data.gemfire.service.GemstoneService;
 import sample.data.gemfire.service.GemstoneServiceImpl.IllegalGemstoneException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;

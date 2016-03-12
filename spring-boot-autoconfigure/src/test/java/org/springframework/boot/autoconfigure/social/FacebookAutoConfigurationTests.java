@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.social;
 
 import org.junit.Test;
 
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 

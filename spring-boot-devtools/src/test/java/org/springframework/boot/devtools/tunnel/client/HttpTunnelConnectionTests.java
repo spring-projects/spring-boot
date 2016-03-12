@@ -34,7 +34,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.devtools.test.MockClientHttpRequestFactory;
 import org.springframework.boot.devtools.tunnel.client.HttpTunnelConnection.TunnelChannel;
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.SocketUtils;
 

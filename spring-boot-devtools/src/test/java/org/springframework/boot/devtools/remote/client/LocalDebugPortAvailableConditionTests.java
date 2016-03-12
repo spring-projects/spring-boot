@@ -23,7 +23,7 @@ import javax.net.ServerSocketFactory;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.SocketUtils;
