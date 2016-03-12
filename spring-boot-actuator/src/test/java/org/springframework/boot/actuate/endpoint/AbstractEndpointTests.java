@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Abstract base class for endpoint tests.
@@ -79,12 +78,12 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 
 	@Test
 	public void getId() throws Exception {
-		assertThat(getEndpointBean().getId(), equalTo(this.id));
+		assertThat(getEndpointBean().getId()).isEqualTo(this.id);
 	}
 
 	@Test
 	public void isSensitive() throws Exception {
-		assertThat(getEndpointBean().isSensitive(), equalTo(this.sensitive));
+		assertThat(getEndpointBean().isSensitive()).isEqualTo(this.sensitive);
 	}
 
 	@Test
@@ -93,7 +92,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		EnvironmentTestUtils.addEnvironment(this.context, this.property + ".id:myid");
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().getId(), equalTo("myid"));
+		assertThat(getEndpointBean().getId()).isEqualTo("myid");
 	}
 
 	@Test
@@ -105,38 +104,49 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().isSensitive(), equalTo(!this.sensitive));
+		assertThat(getEndpointBean().isSensitive()).isEqualTo(!this.sensitive);
+	}
+
+	@Test
+	public void isSensitiveOverrideWithGlobal() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put("endpoint.sensitive", this.sensitive);
+		properties.put(this.property + ".sensitive", String.valueOf(!this.sensitive));
+		PropertySource<?> propertySource = new MapPropertySource("test", properties);
+		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+		this.context.register(this.configClass);
+		this.context.refresh();
+		assertThat(getEndpointBean().isSensitive()).isEqualTo(!this.sensitive);
 	}
 
 	@Test
 	public void isEnabledByDefault() throws Exception {
-		assertThat(getEndpointBean().isEnabled(), equalTo(true));
+		assertThat(getEndpointBean().isEnabled()).isTrue();
 	}
 
 	@Test
 	public void isEnabledFallbackToEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object>singletonMap(this.property + ".enabled",
-						false));
+		PropertySource<?> propertySource = new MapPropertySource("test", Collections
+				.<String, Object>singletonMap(this.property + ".enabled", false));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().isEnabled(), equalTo(false));
+		assertThat(getEndpointBean().isEnabled()).isFalse();
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void isExplicitlyEnabled() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object>singletonMap(this.property + ".enabled",
-						false));
+		PropertySource<?> propertySource = new MapPropertySource("test", Collections
+				.<String, Object>singletonMap(this.property + ".enabled", false));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
 		((AbstractEndpoint) getEndpointBean()).setEnabled(true);
-		assertThat(getEndpointBean().isEnabled(), equalTo(true));
+		assertThat(getEndpointBean().isEnabled()).isTrue();
 	}
 
 	@Test
@@ -147,7 +157,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().isEnabled(), equalTo(false));
+		assertThat(getEndpointBean().isEnabled()).isFalse();
 	}
 
 	@Test
@@ -160,7 +170,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().isEnabled(), equalTo(true));
+		assertThat(getEndpointBean().isEnabled()).isTrue();
 	}
 
 	@Test
@@ -169,6 +179,26 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		if (result != null) {
 			this.context.getBean(ObjectMapper.class).writeValue(System.out, result);
 		}
+	}
+
+	@Test
+	public void isAllEndpointsSensitive() throws Exception {
+		testGlobalEndpointsSensitive(true);
+	}
+
+	@Test
+	public void isAllEndpointsNotSensitive() throws Exception {
+		testGlobalEndpointsSensitive(false);
+	}
+
+	private void testGlobalEndpointsSensitive(boolean sensitive) {
+		this.context = new AnnotationConfigApplicationContext();
+		PropertySource<?> propertySource = new MapPropertySource("test", Collections
+				.<String, Object>singletonMap("endpoints.sensitive", sensitive));
+		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+		this.context.register(this.configClass);
+		this.context.refresh();
+		assertThat(getEndpointBean().isSensitive()).isEqualTo(sensitive);
 	}
 
 	@SuppressWarnings("unchecked")

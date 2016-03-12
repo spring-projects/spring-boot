@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,12 +31,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.boot.loader.tools.LibraryScope;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -79,9 +79,9 @@ public class ArtifactsLibrariesTests {
 		this.libs.doWithLibraries(this.callback);
 		verify(this.callback).library(this.libraryCaptor.capture());
 		Library library = this.libraryCaptor.getValue();
-		assertThat(library.getFile(), equalTo(this.file));
-		assertThat(library.getScope(), equalTo(LibraryScope.COMPILE));
-		assertThat(library.isUnpackRequired(), equalTo(false));
+		assertThat(library.getFile()).isEqualTo(this.file);
+		assertThat(library.getScope()).isEqualTo(LibraryScope.COMPILE);
+		assertThat(library.isUnpackRequired()).isFalse();
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class ArtifactsLibrariesTests {
 				mock(Log.class));
 		this.libs.doWithLibraries(this.callback);
 		verify(this.callback).library(this.libraryCaptor.capture());
-		assertThat(this.libraryCaptor.getValue().isUnpackRequired(), equalTo(true));
+		assertThat(this.libraryCaptor.getValue().isUnpackRequired()).isTrue();
 	}
 
 	@Test
@@ -116,8 +116,8 @@ public class ArtifactsLibrariesTests {
 		this.libs = new ArtifactsLibraries(this.artifacts, null, mock(Log.class));
 		this.libs.doWithLibraries(this.callback);
 		verify(this.callback, times(2)).library(this.libraryCaptor.capture());
-		assertThat(this.libraryCaptor.getAllValues().get(0).getName(), equalTo("g1-a"));
-		assertThat(this.libraryCaptor.getAllValues().get(1).getName(), equalTo("g2-a"));
+		assertThat(this.libraryCaptor.getAllValues().get(0).getName()).isEqualTo("g1-a");
+		assertThat(this.libraryCaptor.getAllValues().get(1).getName()).isEqualTo("g2-a");
 	}
 
 }

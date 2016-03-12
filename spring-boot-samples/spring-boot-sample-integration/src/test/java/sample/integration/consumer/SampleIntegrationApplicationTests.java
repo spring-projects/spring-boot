@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import sample.integration.SampleIntegrationApplication;
+import sample.integration.producer.ProducerApplication;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -35,10 +38,7 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
 
-import sample.integration.SampleIntegrationApplication;
-import sample.integration.producer.ProducerApplication;
-
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for service demo application.
@@ -71,12 +71,12 @@ public class SampleIntegrationApplicationTests {
 	public void testVanillaExchange() throws Exception {
 		SpringApplication.run(ProducerApplication.class, "World");
 		String output = getOutput();
-		assertTrue("Wrong output: " + output, output.contains("Hello World"));
+		assertThat(output).contains("Hello World");
 	}
 
 	private String getOutput() throws Exception {
-		Future<String> future = Executors.newSingleThreadExecutor().submit(
-				new Callable<String>() {
+		Future<String> future = Executors.newSingleThreadExecutor()
+				.submit(new Callable<String>() {
 					@Override
 					public String call() throws Exception {
 						Resource[] resources = getResourcesWithContent();
@@ -96,8 +96,9 @@ public class SampleIntegrationApplicationTests {
 	}
 
 	private Resource[] getResourcesWithContent() throws IOException {
-		Resource[] candidates = ResourcePatternUtils.getResourcePatternResolver(
-				new DefaultResourceLoader()).getResources("file:target/output/**");
+		Resource[] candidates = ResourcePatternUtils
+				.getResourcePatternResolver(new DefaultResourceLoader())
+				.getResources("file:target/output/**");
 		for (Resource candidate : candidates) {
 			if (candidate.contentLength() == 0) {
 				return new Resource[0];

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.3.0.BUILD-SNAPSHOT</version>
+		<version>1.4.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-deployment-tests</artifactId>
@@ -23,6 +23,7 @@
 		<cargo.container.download-dir>${java.io.tmpdir}/cargo/installs</cargo.container.download-dir>
 	</properties>
 	<modules>
+		<module>spring-boot-deployment-test-glassfish</module>
 		<module>spring-boot-deployment-test-tomee</module>
 		<module>spring-boot-deployment-test-tomcat</module>
 		<module>spring-boot-deployment-test-wildfly</module>

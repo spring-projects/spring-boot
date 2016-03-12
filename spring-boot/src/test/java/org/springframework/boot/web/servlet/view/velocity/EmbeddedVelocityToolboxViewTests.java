@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,35 +27,35 @@ import org.apache.struts.mock.MockHttpServletResponse;
 import org.apache.struts.mock.MockServletContext;
 import org.apache.velocity.tools.ToolContext;
 import org.junit.Test;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link EmbeddedVelocityToolboxView}.
  *
  * @author Phillip Webb
  */
+@SuppressWarnings("deprecation")
 public class EmbeddedVelocityToolboxViewTests {
 
-	private static final String PATH = EmbeddedVelocityToolboxViewTests.class
-			.getPackage().getName().replace(".", "/");
+	private static final String PATH = EmbeddedVelocityToolboxViewTests.class.getPackage()
+			.getName().replace(".", "/");
 
 	@Test
 	public void loadsContextFromClassPath() throws Exception {
 		ToolContext context = getToolContext(PATH + "/toolbox.xml");
-		assertThat(context.getToolbox().keySet(), contains("math"));
+		assertThat(context.getToolbox().keySet()).contains("math");
 	}
 
 	@Test
 	public void loadsWithoutConfig() throws Exception {
 		ToolContext context = getToolContext(null);
-		assertThat(context, notNullValue());
+		assertThat(context).isNotNull();
 	}
 
 	private ToolContext getToolContext(String toolboxConfigLocation) throws Exception {
@@ -69,8 +69,8 @@ public class EmbeddedVelocityToolboxViewTests {
 		Map<String, Object> model = new LinkedHashMap<String, Object>();
 		HttpServletRequest request = new MockHttpServletRequest();
 		HttpServletResponse response = new MockHttpServletResponse();
-		ToolContext toolContext = (ToolContext) view.createVelocityContext(model,
-				request, response);
+		ToolContext toolContext = (ToolContext) view.createVelocityContext(model, request,
+				response);
 		context.close();
 		return toolContext;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,12 @@ import org.hornetq.core.config.Configuration;
 import org.hornetq.core.server.JournalType;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HornetQEmbeddedConfigurationFactory}.
  *
- * @author Stephane Nicol
+ * @author Stephane Nicoll
  * @author Phillip Webb
  */
 public class HornetQEmbeddedConfigurationFactoryTests {
@@ -39,9 +36,8 @@ public class HornetQEmbeddedConfigurationFactoryTests {
 		properties.getEmbedded().setPersistent(true);
 		Configuration configuration = new HornetQEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
-		assertThat(configuration.getJournalDirectory(),
-				startsWith(System.getProperty("java.io.tmpdir")));
-		assertThat(configuration.getJournalDirectory(), endsWith("/journal"));
+		assertThat(configuration.getJournalDirectory())
+				.startsWith(System.getProperty("java.io.tmpdir")).endsWith("/journal");
 	}
 
 	@Test
@@ -50,25 +46,25 @@ public class HornetQEmbeddedConfigurationFactoryTests {
 		properties.getEmbedded().setPersistent(true);
 		Configuration configuration = new HornetQEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
-		assertThat(configuration.isPersistenceEnabled(), equalTo(true));
-		assertThat(configuration.getJournalType(), equalTo(JournalType.NIO));
+		assertThat(configuration.isPersistenceEnabled()).isTrue();
+		assertThat(configuration.getJournalType()).isEqualTo(JournalType.NIO);
 	}
 
 	@Test
-	public void generatedClusterPassoword() throws Exception {
+	public void generatedClusterPassword() throws Exception {
 		HornetQProperties properties = new HornetQProperties();
 		Configuration configuration = new HornetQEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
-		assertThat(configuration.getClusterPassword().length(), equalTo(36));
+		assertThat(configuration.getClusterPassword().length()).isEqualTo(36);
 	}
 
 	@Test
-	public void specificClusterPassoword() throws Exception {
+	public void specificClusterPassword() throws Exception {
 		HornetQProperties properties = new HornetQProperties();
 		properties.getEmbedded().setClusterPassword("password");
 		Configuration configuration = new HornetQEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
-		assertThat(configuration.getClusterPassword(), equalTo("password"));
+		assertThat(configuration.getClusterPassword()).isEqualTo("password");
 	}
 
 }

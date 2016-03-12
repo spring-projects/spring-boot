@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,11 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.VelocityException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -42,7 +45,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.velocity.VelocityEngineFactory;
 import org.springframework.ui.velocity.VelocityEngineFactoryBean;
-import org.springframework.util.Assert;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.view.velocity.VelocityConfig;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
@@ -53,32 +55,43 @@ import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
  * @author Andy Wilkinson
  * @author Brian Clozel
  * @since 1.1.0
+ * @deprecated In 1.4.0 following the deprecation of Velocity support in Spring Framework
+ * 4.3
  */
 @Configuration
 @ConditionalOnClass({ VelocityEngine.class, VelocityEngineFactory.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(VelocityProperties.class)
+@Deprecated
 public class VelocityAutoConfiguration {
 
-	@Autowired
-	private ApplicationContext applicationContext;
+	private static final Log logger = LogFactory.getLog(VelocityAutoConfiguration.class);
 
-	@Autowired
-	private VelocityProperties properties;
+	private final ApplicationContext applicationContext;
+
+	private final VelocityProperties properties;
+
+	public VelocityAutoConfiguration(ApplicationContext applicationContext,
+			VelocityProperties properties) {
+		this.applicationContext = applicationContext;
+		this.properties = properties;
+	}
 
 	@PostConstruct
 	public void checkTemplateLocationExists() {
 		if (this.properties.isCheckTemplateLocation()) {
 			TemplateLocation location = new TemplateLocation(
 					this.properties.getResourceLoaderPath());
-			Assert.state(location.exists(this.applicationContext),
-					"Cannot find template location: " + location
-							+ " (please add some templates, check your Velocity "
-							+ "configuration, or set spring.velocity."
-							+ "checkTemplateLocation=false)");
+			if (!location.exists(this.applicationContext)) {
+				logger.warn("Cannot find template location: " + location
+						+ " (please add some templates, check your Velocity "
+						+ "configuration, or set spring.velocity."
+						+ "checkTemplateLocation=false)");
+			}
 		}
 	}
 
+	@Deprecated
 	protected static class VelocityConfiguration {
 
 		@Autowired
@@ -88,6 +101,8 @@ public class VelocityAutoConfiguration {
 			factory.setResourceLoaderPath(this.properties.getResourceLoaderPath());
 			factory.setPreferFileSystemAccess(this.properties.isPreferFileSystemAccess());
 			Properties velocityProperties = new Properties();
+			velocityProperties.setProperty("input.encoding",
+					this.properties.getCharsetName());
 			velocityProperties.putAll(this.properties.getProperties());
 			factory.setVelocityProperties(velocityProperties);
 		}
@@ -96,6 +111,7 @@ public class VelocityAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnNotWebApplication
+	@Deprecated
 	public static class VelocityNonWebConfiguration extends VelocityConfiguration {
 
 		@Bean
@@ -111,6 +127,7 @@ public class VelocityAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(Servlet.class)
 	@ConditionalOnWebApplication
+	@Deprecated
 	public static class VelocityWebConfiguration extends VelocityConfiguration {
 
 		@Bean

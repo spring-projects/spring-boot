@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.devtools.restart;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -26,8 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RestartScopeInitializer}.
@@ -48,8 +48,8 @@ public class RestartScopeInitializerTests {
 		context.close();
 		context = runApplication();
 		context.close();
-		assertThat(createCount.get(), equalTo(1));
-		assertThat(refreshCount.get(), equalTo(2));
+		assertThat(createCount.get()).isEqualTo(1);
+		assertThat(refreshCount.get()).isEqualTo(2);
 	}
 
 	private ConfigurableApplicationContext runApplication() {
@@ -69,8 +69,8 @@ public class RestartScopeInitializerTests {
 
 	}
 
-	public static class ScopeTestBean implements
-			ApplicationListener<ContextRefreshedEvent> {
+	public static class ScopeTestBean
+			implements ApplicationListener<ContextRefreshedEvent> {
 
 		public ScopeTestBean() {
 			createCount.incrementAndGet();

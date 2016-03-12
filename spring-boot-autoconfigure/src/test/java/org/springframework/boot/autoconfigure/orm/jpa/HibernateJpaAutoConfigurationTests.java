@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,21 +27,17 @@ import javax.transaction.UserTransaction;
 
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 import org.junit.Test;
+
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
-import org.springframework.boot.autoconfigure.transaction.jta.JtaProperties;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HibernateJpaAutoConfiguration}.
@@ -50,7 +46,8 @@ import static org.junit.Assert.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTests {
+public class HibernateJpaAutoConfigurationTests
+		extends AbstractJpaAutoConfigurationTests {
 
 	@Override
 	protected Class<?> getAutoConfigureClass() {
@@ -65,9 +62,8 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 				"spring.datasource.schema:classpath:/ddl.sql");
 		setupTestConfiguration();
 		this.context.refresh();
-		assertEquals(new Integer(1),
-				new JdbcTemplate(this.context.getBean(DataSource.class)).queryForObject(
-						"SELECT COUNT(*) from CITY", Integer.class));
+		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
+				.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isEqualTo(1);
 	}
 
 	// This can't succeed because the data SQL is executed immediately after the schema
@@ -78,9 +74,8 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 				"spring.datasource.data:classpath:/city.sql");
 		setupTestConfiguration();
 		this.context.refresh();
-		assertEquals(new Integer(1),
-				new JdbcTemplate(this.context.getBean(DataSource.class)).queryForObject(
-						"SELECT COUNT(*) from CITY", Integer.class));
+		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
+				.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isEqualTo(1);
 	}
 
 	@Test
@@ -92,9 +87,9 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean bean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		String actual = (String) bean.getJpaPropertyMap().get(
-				"hibernate.ejb.naming_strategy");
-		assertThat(actual, equalTo("org.hibernate.cfg.EJB3NamingStrategy"));
+		String actual = (String) bean.getJpaPropertyMap()
+				.get("hibernate.ejb.naming_strategy");
+		assertThat(actual).isEqualTo("org.hibernate.cfg.EJB3NamingStrategy");
 	}
 
 	@Test
@@ -106,11 +101,11 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean bean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		String actual = (String) bean.getJpaPropertyMap().get(
-				"hibernate.ejb.naming_strategy");
+		String actual = (String) bean.getJpaPropertyMap()
+				.get("hibernate.ejb.naming_strategy");
 		// You can't override this one from spring.jpa.properties because it has an
 		// opinionated default
-		assertThat(actual, not(equalTo("org.hibernate.cfg.EJB3NamingStrategy")));
+		assertThat(actual).isNotEqualTo("org.hibernate.cfg.EJB3NamingStrategy");
 	}
 
 	@Test
@@ -137,13 +132,14 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 
 	@Test
 	public void defaultJtaPlatform() throws Exception {
-		this.context.register(JtaProperties.class, JtaAutoConfiguration.class);
+		this.context.register(JtaAutoConfiguration.class);
 		setupTestConfiguration();
 		this.context.refresh();
-		Map<String, Object> jpaPropertyMap = this.context.getBean(
-				LocalContainerEntityManagerFactoryBean.class).getJpaPropertyMap();
-		assertThat(jpaPropertyMap.get("hibernate.transaction.jta.platform"),
-				instanceOf(SpringJtaPlatform.class));
+		Map<String, Object> jpaPropertyMap = this.context
+				.getBean(LocalContainerEntityManagerFactoryBean.class)
+				.getJpaPropertyMap();
+		assertThat(jpaPropertyMap.get("hibernate.transaction.jta.platform"))
+				.isInstanceOf(SpringJtaPlatform.class);
 	}
 
 	@Test
@@ -151,13 +147,14 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jpa.properties.hibernate.transaction.jta.platform:"
 						+ TestJtaPlatform.class.getName());
-		this.context.register(JtaProperties.class, JtaAutoConfiguration.class);
+		this.context.register(JtaAutoConfiguration.class);
 		setupTestConfiguration();
 		this.context.refresh();
-		Map<String, Object> jpaPropertyMap = this.context.getBean(
-				LocalContainerEntityManagerFactoryBean.class).getJpaPropertyMap();
-		assertThat((String) jpaPropertyMap.get("hibernate.transaction.jta.platform"),
-				equalTo(TestJtaPlatform.class.getName()));
+		Map<String, Object> jpaPropertyMap = this.context
+				.getBean(LocalContainerEntityManagerFactoryBean.class)
+				.getJpaPropertyMap();
+		assertThat((String) jpaPropertyMap.get("hibernate.transaction.jta.platform"))
+				.isEqualTo(TestJtaPlatform.class.getName());
 	}
 
 	public static class TestJtaPlatform implements JtaPlatform {

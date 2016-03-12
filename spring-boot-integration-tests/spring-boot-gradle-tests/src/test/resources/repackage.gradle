@@ -18,11 +18,13 @@ apply plugin: 'java'
 dependencies {
 	compile 'org.springframework.boot:spring-boot-starter-freemarker'
 	compile 'org.springframework.boot:spring-boot-starter-web'
+	compile 'org.springframework.boot:spring-boot-devtools'
 	compile files("foo.jar")
 }
 
 springBoot {
 	mainClass = 'foo.bar.Baz'
+	excludeDevtools = Boolean.valueOf(project.excludeDevtools)
 }
 
 bootRepackage.enabled = Boolean.valueOf(project.repackage)

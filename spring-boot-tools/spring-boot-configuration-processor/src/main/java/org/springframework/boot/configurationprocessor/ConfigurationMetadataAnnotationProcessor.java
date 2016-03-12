@@ -169,13 +169,13 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	private void processExecutableElement(String prefix, ExecutableElement element) {
 		if (element.getModifiers().contains(Modifier.PUBLIC)
 				&& (TypeKind.VOID != element.getReturnType().getKind())) {
-			Element returns = this.processingEnv.getTypeUtils().asElement(
-					element.getReturnType());
+			Element returns = this.processingEnv.getTypeUtils()
+					.asElement(element.getReturnType());
 			if (returns instanceof TypeElement) {
-				this.metadataCollector.add(ItemMetadata.newGroup(prefix,
-						this.typeUtils.getType(returns),
-						this.typeUtils.getType(element.getEnclosingElement()),
-						element.toString()));
+				this.metadataCollector.add(
+						ItemMetadata.newGroup(prefix, this.typeUtils.getType(returns),
+								this.typeUtils.getType(element.getEnclosingElement()),
+								element.toString()));
 				processTypeElement(prefix, (TypeElement) returns);
 			}
 		}
@@ -185,8 +185,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		TypeElementMembers members = new TypeElementMembers(this.processingEnv, element);
 		Map<String, Object> fieldValues = getFieldValues(element);
 		processSimpleTypes(prefix, element, members, fieldValues);
-		processLombokTypes(prefix, element, members, fieldValues);
+		processSimpleLombokTypes(prefix, element, members, fieldValues);
 		processNestedTypes(prefix, element, members);
+		processNestedLombokTypes(prefix, element, members);
 	}
 
 	private Map<String, Object> getFieldValues(TypeElement element) {
@@ -204,11 +205,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				.entrySet()) {
 			String name = entry.getKey();
 			ExecutableElement getter = entry.getValue();
-			ExecutableElement setter = members.getPublicSetters().get(name);
-			VariableElement field = members.getFields().get(name);
 			TypeMirror returnType = getter.getReturnType();
-			Element returnTypeElement = this.processingEnv.getTypeUtils().asElement(
-					returnType);
+			ExecutableElement setter = members.getPublicSetter(name, returnType);
+			VariableElement field = members.getFields().get(name);
+			Element returnTypeElement = this.processingEnv.getTypeUtils()
+					.asElement(returnType);
 			boolean isExcluded = this.typeExcludeFilter.isExcluded(returnType);
 			boolean isNested = isNested(returnTypeElement, field, element);
 			boolean isCollection = this.typeUtils.isCollectionOrMap(returnType);
@@ -240,7 +241,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				("".equals(replacement) ? null : replacement));
 	}
 
-	private void processLombokTypes(String prefix, TypeElement element,
+	private void processSimpleLombokTypes(String prefix, TypeElement element,
 			TypeElementMembers members, Map<String, Object> fieldValues) {
 		for (Map.Entry<String, VariableElement> entry : members.getFields().entrySet()) {
 			String name = entry.getKey();
@@ -249,8 +250,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				continue;
 			}
 			TypeMirror returnType = field.asType();
-			Element returnTypeElement = this.processingEnv.getTypeUtils().asElement(
-					returnType);
+			Element returnTypeElement = this.processingEnv.getTypeUtils()
+					.asElement(returnType);
 			boolean isExcluded = this.typeExcludeFilter.isExcluded(returnType);
 			boolean isNested = isNested(returnTypeElement, field, element);
 			boolean isCollection = this.typeUtils.isCollectionOrMap(returnType);
@@ -268,6 +269,29 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
+	private void processNestedTypes(String prefix, TypeElement element,
+			TypeElementMembers members) {
+		for (Map.Entry<String, ExecutableElement> entry : members.getPublicGetters()
+				.entrySet()) {
+			String name = entry.getKey();
+			ExecutableElement getter = entry.getValue();
+			VariableElement field = members.getFields().get(name);
+			processNestedType(prefix, element, name, getter, field,
+					getter.getReturnType());
+		}
+	}
+
+	private void processNestedLombokTypes(String prefix, TypeElement element,
+			TypeElementMembers members) {
+		for (Map.Entry<String, VariableElement> entry : members.getFields().entrySet()) {
+			String name = entry.getKey();
+			VariableElement field = entry.getValue();
+			if (isLombokField(field, element)) {
+				processNestedType(prefix, element, name, null, field, field.asType());
+			}
+		}
+	}
+
 	private boolean isLombokField(VariableElement field, TypeElement element) {
 		return hasAnnotation(field, LOMBOK_GETTER_ANNOTATION)
 				|| hasAnnotation(element, LOMBOK_GETTER_ANNOTATION)
@@ -277,30 +301,24 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	private boolean hasLombokSetter(VariableElement field, TypeElement element) {
 		return !field.getModifiers().contains(Modifier.FINAL)
 				&& (hasAnnotation(field, LOMBOK_SETTER_ANNOTATION)
-						|| hasAnnotation(element, LOMBOK_SETTER_ANNOTATION) || hasAnnotation(
-							element, LOMBOK_DATA_ANNOTATION));
+						|| hasAnnotation(element, LOMBOK_SETTER_ANNOTATION)
+						|| hasAnnotation(element, LOMBOK_DATA_ANNOTATION));
 	}
 
-	private void processNestedTypes(String prefix, TypeElement element,
-			TypeElementMembers members) {
-		for (Map.Entry<String, ExecutableElement> entry : members.getPublicGetters()
-				.entrySet()) {
-			String name = entry.getKey();
-			ExecutableElement getter = entry.getValue();
-			VariableElement field = members.getFields().get(name);
-			Element returnType = this.processingEnv.getTypeUtils().asElement(
-					getter.getReturnType());
-			AnnotationMirror annotation = getAnnotation(getter,
-					configurationPropertiesAnnotation());
-			boolean isNested = isNested(returnType, field, element);
-			if (returnType != null && returnType instanceof TypeElement
-					&& annotation == null && isNested) {
-				String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, name);
-				this.metadataCollector.add(ItemMetadata.newGroup(nestedPrefix,
-						this.typeUtils.getType(returnType),
-						this.typeUtils.getType(element), getter.toString()));
-				processTypeElement(nestedPrefix, (TypeElement) returnType);
-			}
+	private void processNestedType(String prefix, TypeElement element, String name,
+			ExecutableElement getter, VariableElement field, TypeMirror returnType) {
+		Element returnElement = this.processingEnv.getTypeUtils().asElement(returnType);
+		boolean isNested = isNested(returnElement, field, element);
+		AnnotationMirror annotation = getAnnotation(getter,
+				configurationPropertiesAnnotation());
+		if (returnElement != null && returnElement instanceof TypeElement
+				&& annotation == null && isNested) {
+			String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, name);
+			this.metadataCollector.add(ItemMetadata.newGroup(nestedPrefix,
+					this.typeUtils.getType(returnElement),
+					this.typeUtils.getType(element),
+					(getter == null ? null : getter.toString())));
+			processTypeElement(nestedPrefix, (TypeElement) returnElement);
 		}
 	}
 
@@ -350,8 +368,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		Map<String, Object> values = new LinkedHashMap<String, Object>();
 		for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation
 				.getElementValues().entrySet()) {
-			values.put(entry.getKey().getSimpleName().toString(), entry.getValue()
-					.getValue());
+			values.put(entry.getKey().getSimpleName().toString(),
+					entry.getValue().getValue());
 		}
 		return values;
 	}
@@ -371,7 +389,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return null;
 	}
 
-	private ConfigurationMetadata mergeAdditionalMetadata(ConfigurationMetadata metadata) {
+	private ConfigurationMetadata mergeAdditionalMetadata(
+			ConfigurationMetadata metadata) {
 		try {
 			ConfigurationMetadata merged = new ConfigurationMetadata(metadata);
 			merged.merge(this.metadataStore.readAdditionalMetadata());

@@ -87,7 +87,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	/**
-	 * Returns the underling File.
+	 * Returns the underlying File.
 	 * @return the underlying file
 	 */
 	public File getFile() {
@@ -247,8 +247,9 @@ public class RandomAccessDataFile implements RandomAccessData {
 			try {
 				this.available.acquire();
 				RandomAccessFile file = this.files.poll();
-				return (file == null ? new RandomAccessFile(
-						RandomAccessDataFile.this.file, "r") : file);
+				return (file == null
+						? new RandomAccessFile(RandomAccessDataFile.this.file, "r")
+						: file);
 			}
 			catch (InterruptedException ex) {
 				throw new IOException(ex);

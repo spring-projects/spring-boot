@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,10 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint.Report;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
@@ -32,10 +36,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 /**
  * {@link Endpoint} to expose the {@link ConditionEvaluationReport}.
  *
@@ -44,7 +44,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@ConfigurationProperties(prefix = "endpoints.autoconfig", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "endpoints.autoconfig")
 public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
 	@Autowired

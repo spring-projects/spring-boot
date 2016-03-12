@@ -78,12 +78,12 @@ public abstract class ResourceCondition extends SpringBootCondition {
 		for (String location : this.resourceLocations) {
 			Resource resource = context.getResourceLoader().getResource(location);
 			if (resource != null && resource.exists()) {
-				return ConditionOutcome.match("Found " + this.name + " config in "
-						+ resource);
+				return ConditionOutcome
+						.match("Found " + this.name + " config in " + resource);
 			}
 		}
-		return ConditionOutcome.noMatch("No specific " + this.name
-				+ " configuration found");
+		return ConditionOutcome
+				.noMatch("No specific " + this.name + " configuration found");
 	}
 
 }

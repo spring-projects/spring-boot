@@ -16,11 +16,10 @@
 
 package org.springframework.boot.liquibase;
 
+import liquibase.logging.LogLevel;
 import org.apache.commons.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
-
-import liquibase.logging.LogLevel;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -143,7 +142,8 @@ public class CommonsLoggingLiquibaseLoggerTests {
 		verify(this.delegate, never()).error("severe");
 	}
 
-	private class MockCommonsLoggingLiquibaseLogger extends CommonsLoggingLiquibaseLogger {
+	private class MockCommonsLoggingLiquibaseLogger
+			extends CommonsLoggingLiquibaseLogger {
 
 		@Override
 		protected Log createLogger(String name) {

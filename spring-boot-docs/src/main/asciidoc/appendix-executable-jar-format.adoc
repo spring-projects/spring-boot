@@ -42,16 +42,18 @@ Spring Boot Loader compatible jar files should be structured in the following wa
 	 |     +-boot
 	 |        +-loader
 	 |           +-<spring boot loader classes>
-	 +-com
-	 |  +-mycompany
-	 |     + project
-	 |        +-YouClasses.class
-	 +-lib
-	    +-dependency1.jar
-	    +-dependency2.jar
+	 +-BOOT-INF
+	    +-classes
+	    |  +-mycompany
+	    |     +-project
+	    |        +-YouClasses.class
+	    +-lib
+	       +-dependency1.jar
+	       +-dependency2.jar
 ----
 
-Dependencies should be placed in a nested `lib` directory.
+Application classes should be placed in a nested `BOOT-INF/classes` directory.
+Dependencies should be placed in a nested `BOOT-INF/lib` directory.
 
 
 
@@ -61,7 +63,7 @@ Spring Boot Loader compatible war files should be structured in the following wa
 
 [indent=0]
 ----
-	example.jar
+	example.war
 	 |
 	 +-META-INF
 	 |  +-MANIFEST.MF
@@ -229,6 +231,10 @@ properties (System properties, environment variables, manifest entries or
 Manifest entry keys are formed by capitalizing initial letters of words and changing the
 separator to "`-`" from "`.`" (e.g. `Loader-Path`). The exception is `loader.main` which
 is looked up as `Start-Class` in the manifest for compatibility with `JarLauncher`).
+
+TIP: Build plugins automatically move the `Main-Class` attribute to `Start-Class` when
+the fat jar is built. If you are using that, specify the name of the class to launch using
+the `Main-Class` attribute and leave out `Start-Class`.
 
 Environment variables can be capitalized with underscore separators instead of periods.
 

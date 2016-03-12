@@ -27,7 +27,7 @@ import org.yaml.snakeyaml.nodes.NodeId;
 
 /**
  * Extended version of snakeyaml's Constructor class to facilitate mapping custom YAML
- * keys to Javabean property names.
+ * keys to JavaBean property names.
  *
  * @author Luke Taylor
  */
@@ -57,15 +57,14 @@ public class YamlJavaBeanPropertyConstructor extends Constructor {
 	}
 
 	/**
-	 * Adds an alias for a Javabean property name on a particular type. The values of YAML
-	 * keys with the alias name will be mapped to the Javabean property.
+	 * Adds an alias for a JavaBean property name on a particular type. The values of YAML
+	 * keys with the alias name will be mapped to the JavaBean property.
 	 * @param alias the alias to map
 	 * @param type the type of property
 	 * @param name the property name
 	 */
 	protected final void addPropertyAlias(String alias, Class<?> type, String name) {
 		Map<String, Property> typeMap = this.properties.get(type);
-
 		if (typeMap == null) {
 			typeMap = new HashMap<String, Property>();
 			this.properties.put(type, typeMap);

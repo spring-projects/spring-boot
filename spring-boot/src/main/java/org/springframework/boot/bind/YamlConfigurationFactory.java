@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,10 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.error.YAMLException;
+
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
@@ -36,9 +40,6 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.error.YAMLException;
 
 /**
  * Validate some YAML by binding it to an object of a specified type and then optionally
@@ -48,8 +49,8 @@ import org.yaml.snakeyaml.error.YAMLException;
  * @author Luke Taylor
  * @author Dave Syer
  */
-public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourceAware,
-		InitializingBean {
+public class YamlConfigurationFactory<T>
+		implements FactoryBean<T>, MessageSourceAware, InitializingBean {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -71,7 +72,7 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 
 	/**
 	 * Sets a validation constructor which will be applied to the YAML doc to see whether
-	 * it matches the expected Javabean.
+	 * it matches the expected JavaBean.
 	 * @param type the root type
 	 */
 	public YamlConfigurationFactory(Class<?> type) {
@@ -93,7 +94,8 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 	 * @param propertyAliases the property aliases
 	 */
 	public void setPropertyAliases(Map<Class<?>, Map<String, String>> propertyAliases) {
-		this.propertyAliases = new HashMap<Class<?>, Map<String, String>>(propertyAliases);
+		this.propertyAliases = new HashMap<Class<?>, Map<String, String>>(
+				propertyAliases);
 	}
 
 	/**
@@ -136,7 +138,7 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 				+ "either set it directly or set the resource to load it from");
 		try {
 			if (this.logger.isTraceEnabled()) {
-				this.logger.trace("Yaml document is\n" + this.yaml);
+				this.logger.trace(String.format("Yaml document is %n%s" + this.yaml));
 			}
 			Constructor constructor = new YamlJavaBeanPropertyConstructor(this.type,
 					this.propertyAliases);
@@ -161,9 +163,11 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 		if (errors.hasErrors()) {
 			this.logger.error("YAML configuration failed validation");
 			for (ObjectError error : errors.getAllErrors()) {
-				this.logger.error(this.messageSource != null ? this.messageSource
-						.getMessage(error, Locale.getDefault()) + " (" + error + ")"
-						: error);
+				this.logger
+						.error(this.messageSource != null
+								? this.messageSource.getMessage(error,
+										Locale.getDefault()) + " (" + error + ")"
+								: error);
 			}
 			if (this.exceptionIfInvalid) {
 				BindException summary = new BindException(errors);

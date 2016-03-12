@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,15 @@ import java.sql.Connection;
 
 import javax.sql.DataSource;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.actuate.health.DataSourceHealthIndicator.Product;
+
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -48,21 +43,29 @@ public class DataSourceHealthIndicatorTests {
 
 	private final DataSourceHealthIndicator indicator = new DataSourceHealthIndicator();
 
-	private DriverManagerDataSource dataSource;
+	private SingleConnectionDataSource dataSource;
 
 	@Before
 	public void init() {
 		EmbeddedDatabaseConnection db = EmbeddedDatabaseConnection.HSQL;
-		this.dataSource = new SingleConnectionDataSource(db.getUrl(), "sa", "", false);
+		this.dataSource = new SingleConnectionDataSource(db.getUrl() + ";shutdown=true",
+				"sa", "", false);
 		this.dataSource.setDriverClassName(db.getDriverClassName());
+	}
+
+	@After
+	public void close() {
+		if (this.dataSource != null) {
+			this.dataSource.destroy();
+		}
 	}
 
 	@Test
 	public void database() {
 		this.indicator.setDataSource(this.dataSource);
 		Health health = this.indicator.health();
-		assertNotNull(health.getDetails().get("database"));
-		assertNotNull(health.getDetails().get("hello"));
+		assertThat(health.getDetails().get("database")).isNotNull();
+		assertThat(health.getDetails().get("hello")).isNotNull();
 	}
 
 	@Test
@@ -73,9 +76,9 @@ public class DataSourceHealthIndicatorTests {
 		this.indicator.setQuery("SELECT COUNT(*) from FOO");
 		Health health = this.indicator.health();
 		System.err.println(health);
-		assertNotNull(health.getDetails().get("database"));
-		assertEquals(Status.UP, health.getStatus());
-		assertNotNull(health.getDetails().get("hello"));
+		assertThat(health.getDetails().get("database")).isNotNull();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("hello")).isNotNull();
 	}
 
 	@Test
@@ -83,35 +86,21 @@ public class DataSourceHealthIndicatorTests {
 		this.indicator.setDataSource(this.dataSource);
 		this.indicator.setQuery("SELECT COUNT(*) from BAR");
 		Health health = this.indicator.health();
-		assertThat(health.getDetails().get("database"), notNullValue());
-		assertEquals(Status.DOWN, health.getStatus());
+		assertThat(health.getDetails().get("database")).isNotNull();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	@Test
 	public void connectionClosed() throws Exception {
 		DataSource dataSource = mock(DataSource.class);
 		Connection connection = mock(Connection.class);
-		given(connection.getMetaData()).willReturn(
-				this.dataSource.getConnection().getMetaData());
+		given(connection.getMetaData())
+				.willReturn(this.dataSource.getConnection().getMetaData());
 		given(dataSource.getConnection()).willReturn(connection);
 		this.indicator.setDataSource(dataSource);
 		Health health = this.indicator.health();
-		assertNotNull(health.getDetails().get("database"));
+		assertThat(health.getDetails().get("database")).isNotNull();
 		verify(connection, times(2)).close();
-	}
-
-	@Test
-	public void productLooksups() throws Exception {
-		assertThat(Product.forProduct("newone"), nullValue());
-		assertThat(Product.forProduct("HSQL Database Engine"), equalTo(Product.HSQLDB));
-		assertThat(Product.forProduct("Oracle"), equalTo(Product.ORACLE));
-		assertThat(Product.forProduct("Apache Derby"), equalTo(Product.DERBY));
-		assertThat(Product.forProduct("DB2"), equalTo(Product.DB2));
-		assertThat(Product.forProduct("DB2/LINUXX8664"), equalTo(Product.DB2));
-		assertThat(Product.forProduct("Informix Dynamic Server"),
-				equalTo(Product.INFORMIX));
-		assertThat(Product.forProduct("Firebird 2.5.WI"), equalTo(Product.FIREBIRD));
-		assertThat(Product.forProduct("Firebird 2.1.LI"), equalTo(Product.FIREBIRD));
 	}
 
 }

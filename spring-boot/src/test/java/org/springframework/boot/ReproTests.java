@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 package org.springframework.boot;
 
+import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests to reproduce reported issues.
@@ -31,17 +32,26 @@ import static org.junit.Assert.assertThat;
  */
 public class ReproTests {
 
+	private ConfigurableApplicationContext context;
+
+	@After
+	public void cleanUp() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
 	public void enableProfileViaApplicationProperties() throws Exception {
 		// gh-308
 		SpringApplication application = new SpringApplication(Config.class);
 
 		application.setWebEnvironment(false);
-		ConfigurableApplicationContext context = application.run(
+		this.context = application.run(
 				"--spring.config.name=enableprofileviaapplicationproperties",
 				"--spring.profiles.active=dev");
-		assertThat(context.getEnvironment().acceptsProfiles("dev"), equalTo(true));
-		assertThat(context.getEnvironment().acceptsProfiles("a"), equalTo(true));
+		assertThat(this.context.getEnvironment().acceptsProfiles("dev")).isTrue();
+		assertThat(this.context.getEnvironment().acceptsProfiles("a")).isTrue();
 	}
 
 	@Test
@@ -50,8 +60,8 @@ public class ReproTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		String configName = "--spring.config.name=activeprofilerepro";
-		assertVersionProperty(application.run(configName, "--spring.profiles.active=B"),
-				"B", "B");
+		this.context = application.run(configName, "--spring.profiles.active=B");
+		assertVersionProperty(this.context, "B", "B");
 	}
 
 	@Test
@@ -60,7 +70,8 @@ public class ReproTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		String configName = "--spring.config.name=activeprofilerepro";
-		assertVersionProperty(application.run(configName), "B", "B");
+		this.context = application.run(configName);
+		assertVersionProperty(this.context, "B", "B");
 	}
 
 	@Test
@@ -69,7 +80,8 @@ public class ReproTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		String configName = "--spring.config.name=activeprofilerepro-ordered";
-		assertVersionProperty(application.run(configName), "B", "A", "B");
+		this.context = application.run(configName);
+		assertVersionProperty(this.context, "B", "A", "B");
 	}
 
 	@Test
@@ -78,8 +90,8 @@ public class ReproTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		String configName = "--spring.config.name=activeprofilerepro";
-		assertVersionProperty(application.run(configName, "--spring.profiles.active=C"),
-				"C", "C");
+		this.context = application.run(configName, "--spring.profiles.active=C");
+		assertVersionProperty(this.context, "C", "C");
 	}
 
 	@Test
@@ -88,9 +100,8 @@ public class ReproTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		String configName = "--spring.config.name=activeprofilerepro";
-		assertVersionProperty(
-				application.run(configName, "--spring.profiles.active=A,C"), "C", "A",
-				"C");
+		this.context = application.run(configName, "--spring.profiles.active=A,C");
+		assertVersionProperty(this.context, "C", "A", "C");
 	}
 
 	@Test
@@ -99,9 +110,8 @@ public class ReproTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		String configName = "--spring.config.name=activeprofilerepro";
-		assertVersionProperty(
-				application.run(configName, "--spring.profiles.active=C,A"), "A", "C",
-				"A");
+		this.context = application.run(configName, "--spring.profiles.active=C,A");
+		assertVersionProperty(this.context, "A", "C", "A");
 	}
 
 	@Test
@@ -110,8 +120,8 @@ public class ReproTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		String configName = "--spring.config.name=activeprofilerepro-without-override";
-		assertVersionProperty(application.run(configName, "--spring.profiles.active=B"),
-				"B", "B");
+		this.context = application.run(configName, "--spring.profiles.active=B");
+		assertVersionProperty(this.context, "B", "B");
 	}
 
 	@Test
@@ -120,7 +130,8 @@ public class ReproTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		String configName = "--spring.config.name=activeprofilerepro-without-override";
-		assertVersionProperty(application.run(configName), null);
+		this.context = application.run(configName);
+		assertVersionProperty(this.context, null);
 	}
 
 	@Test
@@ -129,8 +140,8 @@ public class ReproTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		String configName = "--spring.config.name=activeprofilerepro-without-override";
-		assertVersionProperty(application.run(configName, "--spring.profiles.active=C"),
-				"C", "C");
+		this.context = application.run(configName, "--spring.profiles.active=C");
+		assertVersionProperty(this.context, "C", "C");
 	}
 
 	@Test
@@ -139,9 +150,8 @@ public class ReproTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		String configName = "--spring.config.name=activeprofilerepro-without-override";
-		assertVersionProperty(
-				application.run(configName, "--spring.profiles.active=A,C"), "C", "A",
-				"C");
+		this.context = application.run(configName, "--spring.profiles.active=A,C");
+		assertVersionProperty(this.context, "C", "A", "C");
 	}
 
 	@Test
@@ -150,17 +160,16 @@ public class ReproTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		String configName = "--spring.config.name=activeprofilerepro-without-override";
-		assertVersionProperty(
-				application.run(configName, "--spring.profiles.active=C,A"), "A", "C",
-				"A");
+		this.context = application.run(configName, "--spring.profiles.active=C,A");
+		assertVersionProperty(this.context, "A", "C", "A");
 	}
 
 	private void assertVersionProperty(ConfigurableApplicationContext context,
 			String expectedVersion, String... expectedActiveProfiles) {
-		assertThat(context.getEnvironment().getActiveProfiles(),
-				equalTo(expectedActiveProfiles));
-		assertThat("version mismatch", context.getEnvironment().getProperty("version"),
-				equalTo(expectedVersion));
+		assertThat(context.getEnvironment().getActiveProfiles())
+				.isEqualTo(expectedActiveProfiles);
+		assertThat(context.getEnvironment().getProperty("version")).as("version mismatch")
+				.isEqualTo(expectedVersion);
 		context.close();
 	}
 

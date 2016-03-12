@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,14 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConditionalOnClass}.
@@ -40,32 +39,32 @@ public class ConditionalOnClassTests {
 	public void testVanillaOnClassCondition() {
 		this.context.register(BasicConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
 	public void testMissingOnClassCondition() {
 		this.context.register(MissingConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
-		assertFalse(this.context.containsBean("bar"));
-		assertEquals("foo", this.context.getBean("foo"));
+		assertThat(this.context.containsBean("bar")).isFalse();
+		assertThat(this.context.getBean("foo")).isEqualTo("foo");
 	}
 
 	@Test
 	public void testOnClassConditionWithXml() {
 		this.context.register(BasicConfiguration.class, XmlConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
 	public void testOnClassConditionWithCombinedXml() {
 		this.context.register(CombinedXmlConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Configuration

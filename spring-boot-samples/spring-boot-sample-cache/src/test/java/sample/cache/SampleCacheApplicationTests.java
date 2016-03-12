@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,14 @@ package sample.cache;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsNull.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleCacheApplication.class)
@@ -42,11 +40,11 @@ public class SampleCacheApplicationTests {
 	@Test
 	public void validateCache() {
 		Cache countries = this.cacheManager.getCache("countries");
-		assertThat(countries, is(notNullValue()));
+		assertThat(countries).isNotNull();
 		countries.clear(); // Simple test assuming the cache is empty
-		assertThat(countries.get("BE"), is(nullValue()));
+		assertThat(countries.get("BE")).isNull();
 		Country be = this.countryRepository.findByCode("BE");
-		assertThat((Country) countries.get("BE").get(), is(be));
+		assertThat((Country) countries.get("BE").get()).isEqualTo(be);
 	}
 
 }

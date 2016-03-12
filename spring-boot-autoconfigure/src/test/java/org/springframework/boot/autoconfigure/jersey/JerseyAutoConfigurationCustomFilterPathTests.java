@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import javax.ws.rs.Path;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -41,11 +42,12 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JerseyAutoConfiguration} when using custom servlet paths.
@@ -53,6 +55,7 @@ import static org.junit.Assert.assertEquals;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 @SpringApplicationConfiguration(Application.class)
 @IntegrationTest({ "server.port=0", "spring.jersey.type=filter" })
 @WebAppConfiguration
@@ -67,7 +70,7 @@ public class JerseyAutoConfigurationCustomFilterPathTests {
 	public void contextLoads() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity(
 				"http://localhost:" + this.port + "/rest/hello", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@MinimalWebConfiguration

@@ -23,6 +23,7 @@ import java.util.jar.JarFile;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+
 import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.util.StringUtils;
 
@@ -64,15 +65,15 @@ public class FindMainClass extends Task {
 					"one of @mainClass or @classesRoot must be specified");
 		}
 		if (!this.classesRoot.exists()) {
-			throw new BuildException("@classesRoot " + this.classesRoot
-					+ " does not exist");
+			throw new BuildException(
+					"@classesRoot " + this.classesRoot + " does not exist");
 		}
 		try {
 			if (this.classesRoot.isDirectory()) {
 				return MainClassFinder.findSingleMainClass(this.classesRoot);
 			}
-			return MainClassFinder
-					.findSingleMainClass(new JarFile(this.classesRoot), "/");
+			return MainClassFinder.findSingleMainClass(new JarFile(this.classesRoot),
+					"/");
 		}
 		catch (IOException ex) {
 			throw new BuildException(ex);

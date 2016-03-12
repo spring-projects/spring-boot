@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -91,10 +92,10 @@ public class ResourceServerTokenServicesConfiguration {
 
 		static {
 			DEFAULT_RESOURCE_DETAILS.setClientId("<N/A>");
-			DEFAULT_RESOURCE_DETAILS.setUserAuthorizationUri("Not a URI "
-					+ "because there is no client");
-			DEFAULT_RESOURCE_DETAILS.setAccessTokenUri("Not a URI "
-					+ "because there is no client");
+			DEFAULT_RESOURCE_DETAILS
+					.setUserAuthorizationUri("Not a URI " + "because there is no client");
+			DEFAULT_RESOURCE_DETAILS
+					.setAccessTokenUri("Not a URI " + "because there is no client");
 		}
 
 		@Autowired(required = false)
@@ -113,8 +114,7 @@ public class ResourceServerTokenServicesConfiguration {
 				this.details = DEFAULT_RESOURCE_DETAILS;
 			}
 			OAuth2RestTemplate template = getTemplate();
-			template.setInterceptors(Arrays
-					.<ClientHttpRequestInterceptor>asList(new AcceptJsonRequestInterceptor()));
+			template.getInterceptors().add(new AcceptJsonRequestInterceptor());
 			AuthorizationCodeAccessTokenProvider accessTokenProvider = new AuthorizationCodeAccessTokenProvider();
 			accessTokenProvider.setTokenRequestEnhancer(new AcceptJsonRequestEnhancer());
 			template.setAccessTokenProvider(accessTokenProvider);
@@ -142,8 +142,11 @@ public class ResourceServerTokenServicesConfiguration {
 		@Conditional(TokenInfoCondition.class)
 		protected static class TokenInfoServicesConfiguration {
 
-			@Autowired
-			private ResourceServerProperties resource;
+			private final ResourceServerProperties resource;
+
+			protected TokenInfoServicesConfiguration(ResourceServerProperties resource) {
+				this.resource = resource;
+			}
 
 			@Bean
 			public RemoteTokenServices remoteTokenServices() {
@@ -171,6 +174,9 @@ public class ResourceServerTokenServicesConfiguration {
 			@Qualifier("userInfoRestTemplate")
 			private OAuth2RestOperations restTemplate;
 
+			@Autowired(required = false)
+			private AuthoritiesExtractor authoritiesExtractor;
+
 			@Bean
 			@ConditionalOnBean(ConnectionFactoryLocator.class)
 			@ConditionalOnMissingBean(ResourceServerTokenServices.class)
@@ -187,6 +193,9 @@ public class ResourceServerTokenServicesConfiguration {
 						this.sso.getUserInfoUri(), this.sso.getClientId());
 				services.setTokenType(this.sso.getTokenType());
 				services.setRestTemplate(this.restTemplate);
+				if (this.authoritiesExtractor != null) {
+					services.setAuthoritiesExtractor(this.authoritiesExtractor);
+				}
 				return services;
 			}
 
@@ -204,6 +213,9 @@ public class ResourceServerTokenServicesConfiguration {
 			@Qualifier("userInfoRestTemplate")
 			private OAuth2RestOperations restTemplate;
 
+			@Autowired(required = false)
+			private AuthoritiesExtractor authoritiesExtractor;
+
 			@Bean
 			@ConditionalOnMissingBean(ResourceServerTokenServices.class)
 			public UserInfoTokenServices userInfoTokenServices() {
@@ -211,6 +223,9 @@ public class ResourceServerTokenServicesConfiguration {
 						this.sso.getUserInfoUri(), this.sso.getClientId());
 				services.setRestTemplate(this.restTemplate);
 				services.setTokenType(this.sso.getTokenType());
+				if (this.authoritiesExtractor != null) {
+					services.setAuthoritiesExtractor(this.authoritiesExtractor);
+				}
 				return services;
 			}
 
@@ -298,8 +313,9 @@ public class ResourceServerTokenServicesConfiguration {
 			Boolean preferTokenInfo = resolver.getProperty("prefer-token-info",
 					Boolean.class);
 			if (preferTokenInfo == null) {
-				preferTokenInfo = environment.resolvePlaceholders(
-						"${OAUTH2_RESOURCE_PREFERTOKENINFO:true}").equals("true");
+				preferTokenInfo = environment
+						.resolvePlaceholders("${OAUTH2_RESOURCE_PREFERTOKENINFO:true}")
+						.equals("true");
 			}
 			String tokenInfoUri = resolver.getProperty("token-info-uri");
 			String userInfoUri = resolver.getProperty("user-info-uri");
@@ -307,8 +323,8 @@ public class ResourceServerTokenServicesConfiguration {
 				return ConditionOutcome.match("No user info provided");
 			}
 			if (StringUtils.hasLength(tokenInfoUri) && preferTokenInfo) {
-				return ConditionOutcome.match("Token info endpoint "
-						+ "is preferred and user info provided");
+				return ConditionOutcome.match(
+						"Token info endpoint " + "is preferred and user info provided");
 			}
 			return ConditionOutcome.noMatch("Token info endpoint is not provided");
 		}
@@ -339,8 +355,8 @@ public class ResourceServerTokenServicesConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			return ConditionOutcome.inverse(this.tokenInfoCondition.getMatchOutcome(
-					context, metadata));
+			return ConditionOutcome
+					.inverse(this.tokenInfoCondition.getMatchOutcome(context, metadata));
 		}
 
 	}
@@ -352,14 +368,14 @@ public class ResourceServerTokenServicesConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			return ConditionOutcome.inverse(this.jwtTokenCondition.getMatchOutcome(
-					context, metadata));
+			return ConditionOutcome
+					.inverse(this.jwtTokenCondition.getMatchOutcome(context, metadata));
 		}
 
 	}
 
-	private static class AcceptJsonRequestInterceptor implements
-			ClientHttpRequestInterceptor {
+	private static class AcceptJsonRequestInterceptor
+			implements ClientHttpRequestInterceptor {
 
 		@Override
 		public ClientHttpResponse intercept(HttpRequest request, byte[] body,

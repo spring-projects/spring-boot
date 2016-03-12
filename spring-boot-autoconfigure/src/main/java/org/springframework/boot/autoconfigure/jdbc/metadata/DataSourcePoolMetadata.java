@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc.metadata;
 import javax.sql.DataSource;
 
 /**
- * Provides access meta-data that is commonly available from most polled
+ * Provides access meta-data that is commonly available from most pooled
  * {@link DataSource} implementations.
  *
  * @author Stephane Nicoll
@@ -33,7 +33,8 @@ public interface DataSourcePoolMetadata {
 	 * <ul>
 	 * <li>1 means that the maximum number of connections have been allocated</li>
 	 * <li>0 means that no connection is currently active</li>
-	 * <li>-1 means there is not limit to the number of connections that can be allocated</li>
+	 * <li>-1 means there is not limit to the number of connections that can be allocated
+	 * </li>
 	 * </ul>
 	 * This may also return {@code null} if the data source does not provide the necessary
 	 * information to compute the poll usage.

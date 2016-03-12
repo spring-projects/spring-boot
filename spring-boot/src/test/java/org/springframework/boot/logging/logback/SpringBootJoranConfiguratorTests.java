@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,25 @@
 
 package org.springframework.boot.logging.logback;
 
+import ch.qos.logback.classic.BasicConfigurator;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.impl.StaticLoggerBinder;
+
 import org.springframework.boot.logging.LoggingInitializationContext;
-import org.springframework.boot.test.EnvironmentTestUtils;
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.testutil.EnvironmentTestUtils;
+import org.springframework.boot.testutil.OutputCapture;
 import org.springframework.mock.env.MockEnvironment;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link SpringBootJoranConfigurator}.
@@ -69,7 +69,8 @@ public class SpringBootJoranConfiguratorTests {
 
 	@After
 	public void reset() {
-		this.context.reset();
+		this.context.stop();
+		BasicConfigurator.configureDefaultContext();
 	}
 
 	@Test
@@ -127,14 +128,14 @@ public class SpringBootJoranConfiguratorTests {
 	public void springProperty() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.environment, "my.example-property:test");
 		initialize("property.xml");
-		assertThat(this.context.getProperty("MINE"), equalTo("test"));
+		assertThat(this.context.getProperty("MINE")).isEqualTo("test");
 	}
 
 	@Test
 	public void relaxedSpringProperty() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.environment, "my.EXAMPLE_PROPERTY:test");
 		initialize("property.xml");
-		assertThat(this.context.getProperty("MINE"), equalTo("test"));
+		assertThat(this.context.getProperty("MINE")).isEqualTo("test");
 	}
 
 	private void doTestNestedProfile(boolean expected, String... profiles)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.message.Message;
+
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -45,6 +46,7 @@ import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link LoggingSystem} for <a href="http://logging.apache.org/log4j/2.x/">Log4j 2</a>.
@@ -57,6 +59,7 @@ import org.springframework.util.ResourceUtils;
 public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	private static final Map<LogLevel, Level> LEVELS;
+
 	static {
 		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
 		levels.put(LogLevel.TRACE, Level.TRACE);
@@ -114,8 +117,8 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 			Collections.addAll(supportedConfigLocations, "log4j2.json", "log4j2.jsn");
 		}
 		supportedConfigLocations.add("log4j2.xml");
-		return supportedConfigLocations.toArray(new String[supportedConfigLocations
-				.size()]);
+		return supportedConfigLocations
+				.toArray(new String[supportedConfigLocations.size()]);
 	}
 
 	protected boolean isClassAvailable(String className) {
@@ -154,9 +157,6 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	protected void loadConfiguration(String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
-		if (logFile != null) {
-			logFile.applyToSystemProperties();
-		}
 		try {
 			LoggerContext ctx = getLoggerContext();
 			URL url = ResourceUtils.getURL(location);
@@ -164,8 +164,8 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 			ctx.start(ConfigurationFactory.getInstance().getConfiguration(source));
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Could not initialize Log4J2 logging from "
-					+ location, ex);
+			throw new IllegalStateException(
+					"Could not initialize Log4J2 logging from " + location, ex);
 		}
 	}
 
@@ -196,16 +196,30 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		getLoggerContext().updateLoggers();
 	}
 
+	@Override
+	public Runnable getShutdownHandler() {
+		return new ShutdownHandler();
+	}
+
 	private LoggerConfig getRootLoggerConfig() {
 		return getLoggerContext().getConfiguration().getLoggerConfig("");
 	}
 
-	private LoggerConfig getLoggerConfig(String loggerName) {
-		return getLoggerContext().getConfiguration().getLoggers().get(loggerName);
+	private LoggerConfig getLoggerConfig(String name) {
+		name = (StringUtils.hasText(name) ? name : LogManager.ROOT_LOGGER_NAME);
+		return getLoggerContext().getConfiguration().getLoggers().get(name);
 	}
 
 	private LoggerContext getLoggerContext() {
 		return (LoggerContext) LogManager.getContext(false);
 	}
 
+	private final class ShutdownHandler implements Runnable {
+
+		@Override
+		public void run() {
+			getLoggerContext().stop();
+		}
+
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,10 @@ import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.springframework.boot.test.OutputCapture;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for bootRun's resource handling
@@ -52,7 +52,7 @@ public class BootRunResourceTests {
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "-PaddResources=true")
 				.run();
 
-		assertThat(this.output.toString(), containsString("src/main/resources/test.txt"));
+		assertThat(this.output.toString()).contains("src/main/resources/test.txt");
 	}
 
 	@Test
@@ -60,8 +60,7 @@ public class BootRunResourceTests {
 		project.newBuild().forTasks("clean", "bootRun")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "-PaddResources=false")
 				.run();
-		assertThat(this.output.toString(),
-				containsString("build/resources/main/test.txt"));
+		assertThat(this.output.toString()).contains("build/resources/main/test.txt");
 	}
 
 }

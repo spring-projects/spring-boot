@@ -20,15 +20,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.boot.actuate.metrics.CounterService;
-import org.springframework.boot.actuate.metrics.GaugeService;
-
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+
+import org.springframework.boot.actuate.metrics.CounterService;
+import org.springframework.boot.actuate.metrics.GaugeService;
 
 /**
  * A {@link GaugeService} and {@link CounterService} that sends data to a Dropwizard
@@ -46,12 +46,14 @@ import com.codahale.metrics.Timer;
  * </ul>
  *
  * @author Dave Syer
+ * @author Jay Anderson
+ * @author Andy Wilkinson
  */
 public class DropwizardMetricServices implements CounterService, GaugeService {
 
 	private final MetricRegistry registry;
 
-	private final ConcurrentMap<String, Object> gaugeLocks = new ConcurrentHashMap<String, Object>();
+	private final ConcurrentMap<String, SimpleGauge> gauges = new ConcurrentHashMap<String, SimpleGauge>();
 
 	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<String, String>();
 
@@ -99,15 +101,22 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 		}
 		else {
 			name = wrapGaugeName(name);
-			final double gauge = value;
-			// Ensure we synchronize to avoid another thread pre-empting this thread after
-			// remove causing an error in Dropwizard metrics
-			// NOTE: Dropwizard provides no way to do this atomically
-			synchronized (getGaugeLock(name)) {
-				this.registry.remove(name);
-				this.registry.register(name, new SimpleGauge(gauge));
+			setGaugeValue(name, value);
+		}
+	}
+
+	private void setGaugeValue(String name, double value) {
+		// NOTE: Dropwizard provides no way to do this atomically
+		SimpleGauge gauge = this.gauges.get(name);
+		if (gauge == null) {
+			SimpleGauge newGauge = new SimpleGauge(value);
+			gauge = this.gauges.putIfAbsent(name, newGauge);
+			if (gauge == null) {
+				this.registry.register(name, newGauge);
+				return;
 			}
 		}
+		gauge.setValue(value);
 	}
 
 	private String wrapGaugeName(String metricName) {
@@ -130,16 +139,6 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 		return name;
 	}
 
-	private Object getGaugeLock(String name) {
-		Object lock = this.gaugeLocks.get(name);
-		if (lock == null) {
-			Object newLock = new Object();
-			lock = this.gaugeLocks.putIfAbsent(name, newLock);
-			lock = (lock == null ? newLock : lock);
-		}
-		return lock;
-	}
-
 	@Override
 	public void reset(String name) {
 		if (!name.startsWith("meter")) {
@@ -153,7 +152,7 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 	 */
 	private final static class SimpleGauge implements Gauge<Double> {
 
-		private final double value;
+		private volatile double value;
 
 		private SimpleGauge(double value) {
 			this.value = value;
@@ -162,6 +161,10 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 		@Override
 		public Double getValue() {
 			return this.value;
+		}
+
+		public void setValue(double value) {
+			this.value = value;
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.Date;
 
 import org.junit.Test;
+
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -32,9 +33,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConditionalOnBean}.
@@ -49,8 +48,8 @@ public class ConditionalOnBeanTests {
 	public void testNameOnBeanCondition() {
 		this.context.register(FooConfiguration.class, OnBeanNameConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
@@ -63,7 +62,7 @@ public class ConditionalOnBeanTests {
 		 * specified in the different attributes of @ConditionalOnBean are combined with
 		 * logical OR (not AND) so if any of them match the condition is true.
 		 */
-		assertFalse(this.context.containsBean("bar"));
+		assertThat(this.context.containsBean("bar")).isFalse();
 	}
 
 	@Test
@@ -71,31 +70,31 @@ public class ConditionalOnBeanTests {
 		this.context.register(OnBeanNameConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
 		// Ideally this should be true
-		assertFalse(this.context.containsBean("bar"));
+		assertThat(this.context.containsBean("bar")).isFalse();
 	}
 
 	@Test
 	public void testClassOnBeanCondition() {
 		this.context.register(FooConfiguration.class, OnBeanClassConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
 	public void testClassOnBeanClassNameCondition() {
 		this.context.register(FooConfiguration.class, OnBeanClassNameConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
 	public void testOnBeanConditionWithXml() {
 		this.context.register(XmlConfiguration.class, OnBeanNameConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
@@ -103,15 +102,15 @@ public class ConditionalOnBeanTests {
 		this.context.register(CombinedXmlConfiguration.class);
 		this.context.refresh();
 		// Ideally this should be true
-		assertFalse(this.context.containsBean("bar"));
+		assertThat(this.context.containsBean("bar")).isFalse();
 	}
 
 	@Test
 	public void testAnnotationOnBeanCondition() {
 		this.context.register(FooConfiguration.class, OnAnnotationConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
@@ -119,7 +118,7 @@ public class ConditionalOnBeanTests {
 		this.context.register(FooConfiguration.class,
 				OnBeanMissingClassConfiguration.class);
 		this.context.refresh();
-		assertFalse(this.context.containsBean("bar"));
+		assertThat(this.context.containsBean("bar")).isFalse();
 	}
 
 	@Test
@@ -210,8 +209,8 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	protected static class WithPropertyPlaceholderClassNameRegistrar implements
-			ImportBeanDefinitionRegistrar {
+	protected static class WithPropertyPlaceholderClassNameRegistrar
+			implements ImportBeanDefinitionRegistrar {
 
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,

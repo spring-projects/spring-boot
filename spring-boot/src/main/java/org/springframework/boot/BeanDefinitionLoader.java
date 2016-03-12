@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,12 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import groovy.lang.Closure;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
+import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -41,8 +44,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
-import groovy.lang.Closure;
-
 /**
  * Loads bean definitions from underlying sources, including XML and JavaConfig. Acts as a
  * simple facade over {@link AnnotatedBeanDefinitionReader},
@@ -60,7 +61,7 @@ class BeanDefinitionLoader {
 
 	private final XmlBeanDefinitionReader xmlReader;
 
-	private GroovyBeanDefinitionReader groovyReader;
+	private BeanDefinitionReader groovyReader;
 
 	private final ClassPathBeanDefinitionScanner scanner;
 
@@ -162,7 +163,7 @@ class BeanDefinitionLoader {
 
 	private int load(GroovyBeanDefinitionSource source) {
 		int before = this.xmlReader.getRegistry().getBeanDefinitionCount();
-		this.groovyReader.beans(source.getBeans());
+		((GroovyBeanDefinitionReader) this.groovyReader).beans(source.getBeans());
 		int after = this.xmlReader.getRegistry().getBeanDefinitionCount();
 		return after - before;
 	}
@@ -183,10 +184,8 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(CharSequence source) {
-
-		String resolvedSource = this.xmlReader.getEnvironment().resolvePlaceholders(
-				source.toString());
-
+		String resolvedSource = this.xmlReader.getEnvironment()
+				.resolvePlaceholders(source.toString());
 		// Attempt as a Class
 		try {
 			return load(ClassUtils.forName(resolvedSource, null));
@@ -197,7 +196,6 @@ class BeanDefinitionLoader {
 		catch (ClassNotFoundException ex) {
 			// swallow exception and continue
 		}
-
 		// Attempt as resources
 		Resource[] resources = findResources(resolvedSource);
 		int loadCount = 0;
@@ -211,13 +209,11 @@ class BeanDefinitionLoader {
 		if (atLeastOneResourceExists) {
 			return loadCount;
 		}
-
 		// Attempt as package
 		Package packageResource = findPackage(resolvedSource);
 		if (packageResource != null) {
 			return load(packageResource);
 		}
-
 		throw new IllegalArgumentException("Invalid source '" + resolvedSource + "'");
 	}
 
@@ -248,11 +244,12 @@ class BeanDefinitionLoader {
 			// Attempt to find a class in this package
 			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
 					getClass().getClassLoader());
-			Resource[] resources = resolver.getResources(ClassUtils
-					.convertClassNameToResourcePath(source.toString()) + "/*.class");
+			Resource[] resources = resolver.getResources(
+					ClassUtils.convertClassNameToResourcePath(source.toString())
+							+ "/*.class");
 			for (Resource resource : resources) {
-				String className = StringUtils.stripFilenameExtension(resource
-						.getFilename());
+				String className = StringUtils
+						.stripFilenameExtension(resource.getFilename());
 				load(Class.forName(source.toString() + "." + className));
 				break;
 			}
@@ -282,7 +279,8 @@ class BeanDefinitionLoader {
 	 * Simple {@link TypeFilter} used to ensure that specified {@link Class} sources are
 	 * not accidentally re-added during scanning.
 	 */
-	private static class ClassExcludeFilter extends AbstractTypeHierarchyTraversingFilter {
+	private static class ClassExcludeFilter
+			extends AbstractTypeHierarchyTraversingFilter {
 
 		private final Set<String> classNames = new HashSet<String>();
 

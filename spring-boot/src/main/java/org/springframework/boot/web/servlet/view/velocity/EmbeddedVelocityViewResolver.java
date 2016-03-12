@@ -26,7 +26,10 @@ import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
  *
  * @author Phillip Webb
  * @since 1.2.5
+ * @deprecated In 1.4.0 following the deprecation of Velocity support in Spring Framework
+ * 4.3
  */
+@Deprecated
 public class EmbeddedVelocityViewResolver extends VelocityViewResolver {
 
 	private String toolboxConfigLocation;

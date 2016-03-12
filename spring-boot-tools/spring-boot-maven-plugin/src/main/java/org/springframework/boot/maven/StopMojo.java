@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,19 @@ public class StopMojo extends AbstractMojo {
 	@Parameter
 	private int jmxPort = 9001;
 
+	/**
+	 * Skip the execution.
+	 * @since 1.3.2
+	 */
+	@Parameter(defaultValue = "false")
+	private boolean skip;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (this.skip) {
+			getLog().debug("skipping stop as per configuration.");
+			return;
+		}
 		getLog().info("Stopping application...");
 		try {
 			if (Boolean.TRUE.equals(this.fork)) {
@@ -79,8 +90,8 @@ public class StopMojo extends AbstractMojo {
 		}
 	}
 
-	private void stopForkedProcess() throws IOException, MojoFailureException,
-			MojoExecutionException {
+	private void stopForkedProcess()
+			throws IOException, MojoFailureException, MojoExecutionException {
 		JMXConnector connector = SpringApplicationAdminClient.connect(this.jmxPort);
 		try {
 			MBeanServerConnection connection = connector.getMBeanServerConnection();
@@ -95,15 +106,16 @@ public class StopMojo extends AbstractMojo {
 		doStop(ManagementFactory.getPlatformMBeanServer());
 	}
 
-	private void doStop(MBeanServerConnection connection) throws IOException,
-			MojoExecutionException {
+	private void doStop(MBeanServerConnection connection)
+			throws IOException, MojoExecutionException {
 		try {
 			new SpringApplicationAdminClient(connection, this.jmxName).stop();
 		}
 		catch (InstanceNotFoundException ex) {
 			throw new MojoExecutionException(
 					"Spring application lifecycle JMX bean not found (fork is " + ""
-							+ this.fork + "). Could not stop application gracefully", ex);
+							+ this.fork + "). Could not stop application gracefully",
+					ex);
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,14 @@ import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
 
 import org.junit.Test;
+import org.yaml.snakeyaml.error.YAMLException;
+
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
-import org.yaml.snakeyaml.error.YAMLException;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link YamlConfigurationFactory}
@@ -70,14 +71,14 @@ public class YamlConfigurationFactoryTests {
 	@Test
 	public void testValidYamlLoadsWithNoErrors() throws Exception {
 		Foo foo = createFoo("name: blah\nbar: blah");
-		assertEquals("blah", foo.bar);
+		assertThat(foo.bar).isEqualTo("blah");
 	}
 
 	@Test
 	public void testValidYamlWithAliases() throws Exception {
 		this.aliases.put(Foo.class, Collections.singletonMap("foo-name", "name"));
 		Foo foo = createFoo("foo-name: blah\nbar: blah");
-		assertEquals("blah", foo.name);
+		assertThat(foo.name).isEqualTo("blah");
 	}
 
 	@Test(expected = YAMLException.class)
@@ -87,15 +88,15 @@ public class YamlConfigurationFactoryTests {
 
 	@Test(expected = BindException.class)
 	public void missingPropertyCausesValidationError() throws Exception {
-		this.validator = new SpringValidatorAdapter(Validation
-				.buildDefaultValidatorFactory().getValidator());
+		this.validator = new SpringValidatorAdapter(
+				Validation.buildDefaultValidatorFactory().getValidator());
 		createFoo("bar: blah");
 	}
 
 	@Test
 	public void testWithPeriodInKey() throws Exception {
 		Jee jee = createJee("mymap:\n  ? key1.key2\n  : value");
-		assertEquals("value", jee.mymap.get("key1.key2"));
+		assertThat(jee.mymap.get("key1.key2")).isEqualTo("value");
 	}
 
 	private static class Foo {

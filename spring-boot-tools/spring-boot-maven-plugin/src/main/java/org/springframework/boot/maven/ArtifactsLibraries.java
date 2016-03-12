@@ -27,6 +27,7 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.logging.Log;
+
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
@@ -41,6 +42,7 @@ import org.springframework.boot.loader.tools.LibraryScope;
 public class ArtifactsLibraries implements Libraries {
 
 	private static final Map<String, LibraryScope> SCOPES;
+
 	static {
 		Map<String, LibraryScope> scopes = new HashMap<String, LibraryScope>();
 		scopes.put(Artifact.SCOPE_COMPILE, LibraryScope.COMPILE);

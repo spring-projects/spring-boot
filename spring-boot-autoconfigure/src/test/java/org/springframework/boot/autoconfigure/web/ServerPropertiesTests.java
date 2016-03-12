@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -35,21 +36,22 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
+import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
+import org.springframework.mock.env.MockEnvironment;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -58,6 +60,8 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 public class ServerPropertiesTests {
 
@@ -74,37 +78,51 @@ public class ServerPropertiesTests {
 	@Test
 	public void testAddressBinding() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap("server.address",
-				"127.0.0.1")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals(InetAddress.getByName("127.0.0.1"), this.properties.getAddress());
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("server.address", "127.0.0.1")));
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		assertThat(this.properties.getAddress())
+				.isEqualTo(InetAddress.getByName("127.0.0.1"));
 	}
 
 	@Test
 	public void testPortBinding() throws Exception {
 		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
 				Collections.singletonMap("server.port", "9000")));
-		assertEquals(9000, this.properties.getPort().intValue());
+		assertThat(this.properties.getPort().intValue()).isEqualTo(9000);
+	}
+
+	@Test
+	public void testServerHeaderDefault() throws Exception {
+		assertThat(this.properties.getServerHeader()).isNull();
+	}
+
+	@Test
+	public void testServerHeader() throws Exception {
+		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("server.server-header", "Custom Server")));
+		assertThat(this.properties.getServerHeader()).isEqualTo("Custom Server");
 	}
 
 	@Test
 	public void testServletPathAsMapping() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"server.servletPath", "/foo/*")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals("/foo/*", this.properties.getServletMapping());
-		assertEquals("/foo", this.properties.getServletPrefix());
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("server.servletPath", "/foo/*")));
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		assertThat(this.properties.getServletMapping()).isEqualTo("/foo/*");
+		assertThat(this.properties.getServletPrefix()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void testServletPathAsPrefix() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"server.servletPath", "/foo")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals("/foo/*", this.properties.getServletMapping());
-		assertEquals("/foo", this.properties.getServletPrefix());
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("server.servletPath", "/foo")));
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		assertThat(this.properties.getServletMapping()).isEqualTo("/foo/*");
+		assertThat(this.properties.getServletPrefix()).isEqualTo("/foo");
 	}
 
 	@Test
@@ -118,45 +136,49 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.internal_proxies", "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 		bindProperties(map);
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
-		assertEquals("%h %t '%r' %s %b", tomcat.getAccesslog().getPattern());
-		assertEquals("foo", tomcat.getAccesslog().getPrefix());
-		assertEquals("-bar.log", tomcat.getAccesslog().getSuffix());
-		assertEquals("Remote-Ip", tomcat.getRemoteIpHeader());
-		assertEquals("X-Forwarded-Protocol", tomcat.getProtocolHeader());
-		assertEquals("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}", tomcat.getInternalProxies());
+		assertThat(tomcat.getAccesslog().getPattern()).isEqualTo("%h %t '%r' %s %b");
+		assertThat(tomcat.getAccesslog().getPrefix()).isEqualTo("foo");
+		assertThat(tomcat.getAccesslog().getSuffix()).isEqualTo("-bar.log");
+		assertThat(tomcat.getRemoteIpHeader()).isEqualTo("Remote-Ip");
+		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
+		assertThat(tomcat.getInternalProxies())
+				.isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 	}
 
 	@Test
 	public void testTrailingSlashOfContextPathIsRemoved() {
 		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
 				Collections.singletonMap("server.contextPath", "/foo/")));
-		assertThat(this.properties.getContextPath(), equalTo("/foo"));
+		assertThat(this.properties.getContextPath()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void testSlashOfContextPathIsDefaultValue() {
 		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
 				Collections.singletonMap("server.contextPath", "/")));
-		assertThat(this.properties.getContextPath(), equalTo(""));
+		assertThat(this.properties.getContextPath()).isEqualTo("");
 	}
 
 	@Test
 	public void testCustomizeTomcat() throws Exception {
-		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(
+				ConfigurableEmbeddedServletContainer.class);
 		this.properties.customize(factory);
 		verify(factory, never()).setContextPath("");
 	}
 
 	@Test
 	public void testDefaultDisplayName() throws Exception {
-		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(
+				ConfigurableEmbeddedServletContainer.class);
 		this.properties.customize(factory);
 		verify(factory).setDisplayName("application");
 	}
 
 	@Test
 	public void testCustomizeDisplayName() throws Exception {
-		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(
+				ConfigurableEmbeddedServletContainer.class);
 		this.properties.setDisplayName("TestName");
 		this.properties.customize(factory);
 		verify(factory).setDisplayName("TestName");
@@ -175,7 +197,8 @@ public class ServerPropertiesTests {
 		map.put("server.session.cookie.secure", "true");
 		map.put("server.session.cookie.max-age", "60");
 		bindProperties(map);
-		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(
+				ConfigurableEmbeddedServletContainer.class);
 		ServletContext servletContext = mock(ServletContext.class);
 		SessionCookieConfig sessionCookieConfig = mock(SessionCookieConfig.class);
 		given(servletContext.getSessionCookieConfig()).willReturn(sessionCookieConfig);
@@ -195,8 +218,8 @@ public class ServerPropertiesTests {
 
 	private void triggerInitializers(ConfigurableEmbeddedServletContainer container,
 			ServletContext servletContext) throws ServletException {
-		verify(container, atLeastOnce()).addInitializers(
-				this.initializersCaptor.capture());
+		verify(container, atLeastOnce())
+				.addInitializers(this.initializersCaptor.capture());
 		for (Object initializers : this.initializersCaptor.getAllValues()) {
 			if (initializers instanceof ServletContextInitializer) {
 				((ServletContextInitializer) initializers).onStartup(servletContext);
@@ -211,7 +234,8 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeTomcatPort() throws Exception {
-		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(
+				ConfigurableEmbeddedServletContainer.class);
 		this.properties.setPort(8080);
 		this.properties.customize(factory);
 		verify(factory).setPort(8080);
@@ -222,8 +246,8 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.uriEncoding", "US-ASCII");
 		bindProperties(map);
-		assertEquals(Charset.forName("US-ASCII"), this.properties.getTomcat()
-				.getUriEncoding());
+		assertThat(this.properties.getTomcat().getUriEncoding())
+				.isEqualTo(Charset.forName("US-ASCII"));
 	}
 
 	@Test
@@ -231,7 +255,7 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.maxHttpHeaderSize", "9999");
 		bindProperties(map);
-		assertEquals(9999, this.properties.getTomcat().getMaxHttpHeaderSize());
+		assertThat(this.properties.getTomcat().getMaxHttpHeaderSize()).isEqualTo(9999);
 	}
 
 	@Test
@@ -239,11 +263,9 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.display-name", "MyBootApp");
 		bindProperties(map);
-
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
-
-		assertEquals("MyBootApp", container.getDisplayName());
+		assertThat(container.getDisplayName()).isEqualTo("MyBootApp");
 	}
 
 	@Test
@@ -252,32 +274,44 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.remote_ip_header", "");
 		map.put("server.tomcat.protocol_header", "");
 		bindProperties(map);
-
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
-
-		assertEquals(0, container.getValves().size());
+		assertThat(container.getValves()).isEmpty();
 	}
 
 	@Test
 	public void defaultTomcatRemoteIpValve() throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
-		// Since 1.1.7 you need to specify at least the protocol and ip properties
-		map.put("server.tomcat.protocol_header", "x-forwarded-proto");
-		map.put("server.tomcat.remote_ip_header", "x-forwarded-for");
+		// Since 1.1.7 you need to specify at least the protocol
+		map.put("server.tomcat.protocol_header", "X-Forwarded-Proto");
+		map.put("server.tomcat.remote_ip_header", "X-Forwarded-For");
 		bindProperties(map);
+		testRemoteIpValveConfigured();
+	}
 
+	@Test
+	public void setUseForwardHeadersTomcat() throws Exception {
+		// Since 1.3.0 no need to explicitly set header names if use-forward-header=true
+		this.properties.setUseForwardHeaders(true);
+		testRemoteIpValveConfigured();
+	}
+
+	@Test
+	public void deduceUseForwardHeadersTomcat() throws Exception {
+		this.properties.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
+		testRemoteIpValveConfigured();
+	}
+
+	private void testRemoteIpValveConfigured() {
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
-
-		assertEquals(1, container.getValves().size());
+		assertThat(container.getValves()).hasSize(1);
 		Valve valve = container.getValves().iterator().next();
-		assertThat(valve, instanceOf(RemoteIpValve.class));
+		assertThat(valve).isInstanceOf(RemoteIpValve.class);
 		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
-		assertEquals("x-forwarded-proto", remoteIpValve.getProtocolHeader());
-		assertEquals("https", remoteIpValve.getProtocolHeaderHttpsValue());
-		assertEquals("x-forwarded-for", remoteIpValve.getRemoteIpHeader());
-
+		assertThat(remoteIpValve.getProtocolHeader()).isEqualTo("X-Forwarded-Proto");
+		assertThat(remoteIpValve.getProtocolHeaderHttpsValue()).isEqualTo("https");
+		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("X-Forwarded-For");
 		String expectedInternalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
 				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
@@ -285,8 +319,7 @@ public class ServerPropertiesTests {
 				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
 				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
 				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}";
-
-		assertEquals(expectedInternalProxies, remoteIpValve.getInternalProxies());
+		assertThat(remoteIpValve.getInternalProxies()).isEqualTo(expectedInternalProxies);
 	}
 
 	@Test
@@ -302,20 +335,83 @@ public class ServerPropertiesTests {
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
 
-		assertEquals(1, container.getValves().size());
+		assertThat(container.getValves()).hasSize(1);
 		Valve valve = container.getValves().iterator().next();
-		assertThat(valve, instanceOf(RemoteIpValve.class));
+		assertThat(valve).isInstanceOf(RemoteIpValve.class);
 		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
-		assertEquals("x-my-protocol-header", remoteIpValve.getProtocolHeader());
-		assertEquals("On", remoteIpValve.getProtocolHeaderHttpsValue());
-		assertEquals("x-my-remote-ip-header", remoteIpValve.getRemoteIpHeader());
-		assertEquals("x-my-forward-port", remoteIpValve.getPortHeader());
-		assertEquals("192.168.0.1", remoteIpValve.getInternalProxies());
+		assertThat(remoteIpValve.getProtocolHeader()).isEqualTo("x-my-protocol-header");
+		assertThat(remoteIpValve.getProtocolHeaderHttpsValue()).isEqualTo("On");
+		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("x-my-remote-ip-header");
+		assertThat(remoteIpValve.getPortHeader()).isEqualTo("x-my-forward-port");
+		assertThat(remoteIpValve.getInternalProxies()).isEqualTo("192.168.0.1");
+	}
+
+	@Test
+	public void defaultUseForwardHeadersUndertow() throws Exception {
+		UndertowEmbeddedServletContainerFactory container = spy(
+				new UndertowEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+		verify(container).setUseForwardHeaders(false);
+	}
+
+	@Test
+	public void setUseForwardHeadersUndertow() throws Exception {
+		this.properties.setUseForwardHeaders(true);
+		UndertowEmbeddedServletContainerFactory container = spy(
+				new UndertowEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+		verify(container).setUseForwardHeaders(true);
+	}
+
+	@Test
+	public void deduceUseForwardHeadersUndertow() throws Exception {
+		this.properties.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
+		UndertowEmbeddedServletContainerFactory container = spy(
+				new UndertowEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+		verify(container).setUseForwardHeaders(true);
+	}
+
+	@Test
+	public void defaultUseForwardHeadersJetty() throws Exception {
+		JettyEmbeddedServletContainerFactory container = spy(
+				new JettyEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+		verify(container).setUseForwardHeaders(false);
+	}
+
+	@Test
+	public void setUseForwardHeadersJetty() throws Exception {
+		this.properties.setUseForwardHeaders(true);
+		JettyEmbeddedServletContainerFactory container = spy(
+				new JettyEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+		verify(container).setUseForwardHeaders(true);
+	}
+
+	@Test
+	public void deduceUseForwardHeadersJetty() throws Exception {
+		this.properties.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
+		JettyEmbeddedServletContainerFactory container = spy(
+				new JettyEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+		verify(container).setUseForwardHeaders(true);
+	}
+
+	@Test
+	public void sessionStoreDir() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.session.store-dir", "myfolder");
+		bindProperties(map);
+		JettyEmbeddedServletContainerFactory container = spy(
+				new JettyEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+		verify(container).setSessionStoreDir(new File("myfolder"));
 	}
 
 	private void bindProperties(Map<String, String> map) {
-		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
-				map));
+		new RelaxedDataBinder(this.properties, "server")
+				.bind(new MutablePropertyValues(map));
 	}
 
 }

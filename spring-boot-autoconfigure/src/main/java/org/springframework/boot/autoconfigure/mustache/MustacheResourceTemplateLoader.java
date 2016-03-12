@@ -19,13 +19,13 @@ package org.springframework.boot.autoconfigure.mustache;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Mustache.TemplateLoader;
+
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Mustache.TemplateLoader;
 
 /**
  * Mustache TemplateLoader implementation that uses a prefix, suffix and the Spring
@@ -38,8 +38,8 @@ import com.samskivert.mustache.Mustache.TemplateLoader;
  * @see Mustache
  * @see Resource
  */
-public class MustacheResourceTemplateLoader implements TemplateLoader,
-		ResourceLoaderAware {
+public class MustacheResourceTemplateLoader
+		implements TemplateLoader, ResourceLoaderAware {
 
 	private String prefix = "";
 
@@ -77,8 +77,9 @@ public class MustacheResourceTemplateLoader implements TemplateLoader,
 
 	@Override
 	public Reader getTemplate(String name) throws Exception {
-		return new InputStreamReader(this.resourceLoader.getResource(
-				this.prefix + name + this.suffix).getInputStream(), this.charSet);
+		return new InputStreamReader(this.resourceLoader
+				.getResource(this.prefix + name + this.suffix).getInputStream(),
+				this.charSet);
 	}
 
 }

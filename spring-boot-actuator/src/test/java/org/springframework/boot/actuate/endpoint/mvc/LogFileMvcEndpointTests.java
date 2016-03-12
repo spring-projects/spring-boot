@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,27 +18,25 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.core.io.Resource;
+
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link LogFileMvcEndpoint}.
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  * @author Phillip Webb
  */
 public class LogFileMvcEndpointTests {
@@ -62,37 +60,54 @@ public class LogFileMvcEndpointTests {
 	}
 
 	@Test
-	public void notAvailableWithoutLogFile() throws IOException {
-		assertThat(this.mvc.available().getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
+	public void notAvailableWithoutLogFile() throws Exception {
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		MockHttpServletRequest request = new MockHttpServletRequest(
+				HttpMethod.HEAD.name(), "/logfile");
+		this.mvc.invoke(request, response);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@Test
 	public void notAvailableWithMissingLogFile() throws Exception {
 		this.environment.setProperty("logging.file", "no_test.log");
-		assertThat(this.mvc.available().getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		MockHttpServletRequest request = new MockHttpServletRequest(
+				HttpMethod.HEAD.name(), "/logfile");
+		this.mvc.invoke(request, response);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@Test
 	public void availableWithLogFile() throws Exception {
 		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
-		assertThat(this.mvc.available().getStatusCode(), equalTo(HttpStatus.OK));
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		MockHttpServletRequest request = new MockHttpServletRequest(
+				HttpMethod.HEAD.name(), "/logfile");
+		this.mvc.invoke(request, response);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	@Test
 	public void notAvailableIfDisabled() throws Exception {
 		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
 		this.mvc.setEnabled(false);
-		assertThat(this.mvc.available().getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		MockHttpServletRequest request = new MockHttpServletRequest(
+				HttpMethod.HEAD.name(), "/logfile");
+		this.mvc.invoke(request, response);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@Test
-	public void invokeGetsContent() throws IOException {
+	public void invokeGetsContent() throws Exception {
 		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
-		ResponseEntity<?> response = this.mvc.invoke();
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		InputStream inputStream = ((Resource) response.getBody()).getInputStream();
-		InputStreamReader reader = new InputStreamReader(inputStream);
-		assertEquals("--TEST--", FileCopyUtils.copyToString(reader));
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.GET.name(),
+				"/logfile");
+		this.mvc.invoke(request, response);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.getContentAsString()).isEqualTo("--TEST--");
 	}
 
 }

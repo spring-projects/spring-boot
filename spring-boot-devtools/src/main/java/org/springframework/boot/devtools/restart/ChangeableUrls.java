@@ -23,7 +23,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
+
+import org.springframework.boot.devtools.settings.DevToolsSettings;
 
 /**
  * A filtered collections of URLs which can be change after the application has started.
@@ -32,46 +33,22 @@ import java.util.regex.Pattern;
  */
 final class ChangeableUrls implements Iterable<URL> {
 
-	private static final String[] SKIPPED_PROJECTS = { "spring-boot",
-			"spring-boot-devtools", "spring-boot-autoconfigure", "spring-boot-actuator",
-			"spring-boot-starter" };
-
-	private static final Pattern STARTER_PATTERN = Pattern
-			.compile("\\/spring-boot-starter-[\\w-]+\\/");
-
 	private final List<URL> urls;
 
 	private ChangeableUrls(URL... urls) {
+		DevToolsSettings settings = DevToolsSettings.get();
 		List<URL> reloadableUrls = new ArrayList<URL>(urls.length);
 		for (URL url : urls) {
-			if (isReloadable(url)) {
+			if ((settings.isRestartInclude(url) || isFolderUrl(url.toString()))
+					&& !settings.isRestartExclude(url)) {
 				reloadableUrls.add(url);
 			}
 		}
 		this.urls = Collections.unmodifiableList(reloadableUrls);
 	}
 
-	private boolean isReloadable(URL url) {
-		String urlString = url.toString();
-		return isFolderUrl(urlString) && !isSkipped(urlString);
-	}
-
 	private boolean isFolderUrl(String urlString) {
 		return urlString.startsWith("file:") && urlString.endsWith("/");
-	}
-
-	private boolean isSkipped(String urlString) {
-		// Skip certain spring-boot projects to allow them to be imported in the same IDE
-		for (String skipped : SKIPPED_PROJECTS) {
-			if (urlString.contains("/" + skipped + "/target/classes/")) {
-				return true;
-			}
-		}
-		// Skip all starter projects
-		if (STARTER_PATTERN.matcher(urlString).find()) {
-			return true;
-		}
-		return false;
 	}
 
 	@Override

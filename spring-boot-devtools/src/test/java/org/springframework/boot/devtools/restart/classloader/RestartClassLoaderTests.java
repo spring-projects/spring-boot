@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RestartClassLoader}.
@@ -112,49 +111,49 @@ public class RestartClassLoaderTests {
 
 	@Test
 	public void getResourceFromReloadableUrl() throws Exception {
-		String content = readString(this.reloadClassLoader
-				.getResourceAsStream(PACKAGE_PATH + "/Sample.txt"));
-		assertThat(content, startsWith("fromchild"));
+		String content = readString(
+				this.reloadClassLoader.getResourceAsStream(PACKAGE_PATH + "/Sample.txt"));
+		assertThat(content).startsWith("fromchild");
 	}
 
 	@Test
 	public void getResourceFromParent() throws Exception {
-		String content = readString(this.reloadClassLoader
-				.getResourceAsStream(PACKAGE_PATH + "/Parent.txt"));
-		assertThat(content, startsWith("fromparent"));
+		String content = readString(
+				this.reloadClassLoader.getResourceAsStream(PACKAGE_PATH + "/Parent.txt"));
+		assertThat(content).startsWith("fromparent");
 	}
 
 	@Test
 	public void getResourcesFiltersDuplicates() throws Exception {
-		List<URL> resources = toList(this.reloadClassLoader.getResources(PACKAGE_PATH
-				+ "/Sample.txt"));
-		assertThat(resources.size(), equalTo(1));
+		List<URL> resources = toList(
+				this.reloadClassLoader.getResources(PACKAGE_PATH + "/Sample.txt"));
+		assertThat(resources.size()).isEqualTo(1);
 	}
 
 	@Test
 	public void loadClassFromReloadableUrl() throws Exception {
 		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".Sample");
-		assertThat(loaded.getClassLoader(), equalTo((ClassLoader) this.reloadClassLoader));
+		assertThat(loaded.getClassLoader()).isEqualTo(this.reloadClassLoader);
 	}
 
 	@Test
 	public void loadClassFromParent() throws Exception {
 		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".SampleParent");
-		assertThat(loaded.getClassLoader(), equalTo(getClass().getClassLoader()));
+		assertThat(loaded.getClassLoader()).isEqualTo(getClass().getClassLoader());
 	}
 
 	@Test
 	public void getDeletedResource() throws Exception {
 		String name = PACKAGE_PATH + "/Sample.txt";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
-		assertThat(this.reloadClassLoader.getResource(name), equalTo(null));
+		assertThat(this.reloadClassLoader.getResource(name)).isEqualTo(null);
 	}
 
 	@Test
 	public void getDeletedResourceAsStream() throws Exception {
 		String name = PACKAGE_PATH + "/Sample.txt";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
-		assertThat(this.reloadClassLoader.getResourceAsStream(name), equalTo(null));
+		assertThat(this.reloadClassLoader.getResourceAsStream(name)).isEqualTo(null);
 	}
 
 	@Test
@@ -163,7 +162,7 @@ public class RestartClassLoaderTests {
 		byte[] bytes = "abc".getBytes();
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, bytes));
 		URL resource = this.reloadClassLoader.getResource(name);
-		assertThat(FileCopyUtils.copyToByteArray(resource.openStream()), equalTo(bytes));
+		assertThat(FileCopyUtils.copyToByteArray(resource.openStream())).isEqualTo(bytes);
 	}
 
 	@Test
@@ -171,7 +170,7 @@ public class RestartClassLoaderTests {
 		String name = PACKAGE_PATH + "/Sample.txt";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
 		List<URL> resources = toList(this.reloadClassLoader.getResources(name));
-		assertThat(resources.size(), equalTo(0));
+		assertThat(resources.size()).isEqualTo(0);
 	}
 
 	@Test
@@ -180,8 +179,8 @@ public class RestartClassLoaderTests {
 		byte[] bytes = "abc".getBytes();
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, bytes));
 		List<URL> resources = toList(this.reloadClassLoader.getResources(name));
-		assertThat(FileCopyUtils.copyToByteArray(resources.get(0).openStream()),
-				equalTo(bytes));
+		assertThat(FileCopyUtils.copyToByteArray(resources.get(0).openStream()))
+				.isEqualTo(bytes);
 	}
 
 	@Test
@@ -203,11 +202,11 @@ public class RestartClassLoaderTests {
 	@Test
 	public void getAddedClass() throws Exception {
 		String name = PACKAGE_PATH + "/SampleParent.class";
-		byte[] bytes = FileCopyUtils.copyToByteArray(getClass().getResourceAsStream(
-				"SampleParent.class"));
+		byte[] bytes = FileCopyUtils
+				.copyToByteArray(getClass().getResourceAsStream("SampleParent.class"));
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.ADDED, bytes));
 		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".SampleParent");
-		assertThat(loaded.getClassLoader(), equalTo((ClassLoader) this.reloadClassLoader));
+		assertThat(loaded.getClassLoader()).isEqualTo(this.reloadClassLoader);
 	}
 
 	private String readString(InputStream in) throws IOException {

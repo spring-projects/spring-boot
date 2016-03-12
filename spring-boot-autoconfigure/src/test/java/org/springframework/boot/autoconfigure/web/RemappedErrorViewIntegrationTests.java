@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.RemappedErrorViewIntegrationTests.TestConfiguration;
@@ -37,7 +38,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Dave Syer
@@ -56,18 +57,18 @@ public class RemappedErrorViewIntegrationTests {
 
 	@Test
 	public void directAccessToErrorPage() throws Exception {
-		String content = this.template.getForObject("http://localhost:" + this.port
-				+ "/spring/error", String.class);
-		assertTrue("Wrong content: " + content, content.contains("error"));
-		assertTrue("Wrong content: " + content, content.contains("999"));
+		String content = this.template.getForObject(
+				"http://localhost:" + this.port + "/spring/error", String.class);
+		assertThat(content).contains("error");
+		assertThat(content).contains("999");
 	}
 
 	@Test
 	public void forwardToErrorPage() throws Exception {
-		String content = this.template.getForObject("http://localhost:" + this.port
-				+ "/spring/", String.class);
-		assertTrue("Wrong content: " + content, content.contains("error"));
-		assertTrue("Wrong content: " + content, content.contains("500"));
+		String content = this.template
+				.getForObject("http://localhost:" + this.port + "/spring/", String.class);
+		assertThat(content).contains("error");
+		assertThat(content).contains("500");
 	}
 
 	@Configuration
@@ -91,8 +92,8 @@ public class RemappedErrorViewIntegrationTests {
 
 		// For manual testing
 		public static void main(String[] args) {
-			new SpringApplicationBuilder(TestConfiguration.class).properties(
-					"server.servletPath:spring/*").run(args);
+			new SpringApplicationBuilder(TestConfiguration.class)
+					.properties("server.servletPath:spring/*").run(args);
 		}
 
 	}

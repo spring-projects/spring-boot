@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Condition;
  * to create composite conditions, for example:
  *
  * <pre class="code">
- * static class OnJndiOrProperty extends AllNestedConditions {
+ * static class OnJndiAndProperty extends AllNestedConditions {
  *
  *    &#064;ConditionalOnJndi()
  *    static class OnJndi {
@@ -47,10 +47,11 @@ public abstract class AllNestedConditions extends AbstractNestedCondition {
 
 	@Override
 	protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
-		return new ConditionOutcome(memberOutcomes.getMatches().size() == memberOutcomes
-				.getAll().size(), "nested all match resulted in "
-				+ memberOutcomes.getMatches() + " matches and "
-				+ memberOutcomes.getNonMatches() + " non matches");
+		return new ConditionOutcome(
+				memberOutcomes.getMatches().size() == memberOutcomes.getAll().size(),
+				"nested all match resulted in " + memberOutcomes.getMatches()
+						+ " matches and " + memberOutcomes.getNonMatches()
+						+ " non matches");
 	}
 
 }

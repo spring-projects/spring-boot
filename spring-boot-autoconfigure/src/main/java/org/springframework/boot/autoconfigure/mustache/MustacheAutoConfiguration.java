@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,13 @@ package org.springframework.boot.autoconfigure.mustache;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Mustache.Collector;
+import com.samskivert.mustache.Mustache.Compiler;
+import com.samskivert.mustache.Mustache.TemplateLoader;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -31,12 +37,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
-
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Mustache.Collector;
-import com.samskivert.mustache.Mustache.Compiler;
-import com.samskivert.mustache.Mustache.TemplateLoader;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Mustache.
@@ -49,24 +49,31 @@ import com.samskivert.mustache.Mustache.TemplateLoader;
 @EnableConfigurationProperties(MustacheProperties.class)
 public class MustacheAutoConfiguration {
 
-	@Autowired
-	private MustacheProperties mustache;
+	private static final Log logger = LogFactory.getLog(MustacheAutoConfiguration.class);
 
-	@Autowired
-	private Environment environment;
+	private final MustacheProperties mustache;
 
-	@Autowired
-	private ApplicationContext applicationContext;
+	private final Environment environment;
+
+	private final ApplicationContext applicationContext;
+
+	public MustacheAutoConfiguration(MustacheProperties mustache, Environment environment,
+			ApplicationContext applicationContext) {
+		this.mustache = mustache;
+		this.environment = environment;
+		this.applicationContext = applicationContext;
+	}
 
 	@PostConstruct
 	public void checkTemplateLocationExists() {
 		if (this.mustache.isCheckTemplateLocation()) {
 			TemplateLocation location = new TemplateLocation(this.mustache.getPrefix());
-			Assert.state(location.exists(this.applicationContext),
-					"Cannot find template location: " + location
-							+ " (please add some templates, check your Mustache "
-							+ "configuration, or set spring.mustache."
-							+ "check-template-location=false)");
+			if (!location.exists(this.applicationContext)) {
+				logger.warn("Cannot find template location: " + location
+						+ " (please add some templates, check your Mustache "
+						+ "configuration, or set spring.mustache."
+						+ "check-template-location=false)");
+			}
 		}
 	}
 
@@ -96,8 +103,11 @@ public class MustacheAutoConfiguration {
 	@ConditionalOnWebApplication
 	protected static class MustacheWebConfiguration {
 
-		@Autowired
-		private MustacheProperties mustache;
+		private final MustacheProperties mustache;
+
+		protected MustacheWebConfiguration(MustacheProperties mustache) {
+			this.mustache = mustache;
+		}
 
 		@Bean
 		@ConditionalOnMissingBean(MustacheViewResolver.class)

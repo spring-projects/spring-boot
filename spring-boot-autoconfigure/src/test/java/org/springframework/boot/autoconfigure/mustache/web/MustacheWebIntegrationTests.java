@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Template;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -45,15 +48,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Template;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration Tests for {@link MustacheAutoConfiguration}, {@link MustacheViewResolver}
@@ -62,6 +62,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 @SpringApplicationConfiguration(Application.class)
 @IntegrationTest("server.port:0")
 @WebAppConfiguration
@@ -82,21 +83,22 @@ public class MustacheWebIntegrationTests {
 		Template tmpl = Mustache.compiler().compile(source);
 		Map<String, String> context = new HashMap<String, String>();
 		context.put("arg", "world");
-		assertEquals("Hello world!", tmpl.execute(context)); // returns "Hello world!"
+		assertThat(tmpl.execute(context)).isEqualTo("Hello world!"); // returns "Hello
+																		// world!"
 	}
 
 	@Test
 	public void testHomePage() throws Exception {
-		String body = new TestRestTemplate().getForObject(
-				"http://localhost:" + this.port, String.class);
-		assertTrue(body.contains("Hello World"));
+		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port,
+				String.class);
+		assertThat(body.contains("Hello World")).isTrue();
 	}
 
 	@Test
 	public void testPartialPage() throws Exception {
-		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port
-				+ "/partial", String.class);
-		assertTrue(body.contains("Hello World"));
+		String body = new TestRestTemplate()
+				.getForObject("http://localhost:" + this.port + "/partial", String.class);
+		assertThat(body.contains("Hello World")).isTrue();
 	}
 
 	@Target(ElementType.TYPE)
@@ -135,9 +137,9 @@ public class MustacheWebIntegrationTests {
 			MustacheViewResolver resolver = new MustacheViewResolver();
 			resolver.setPrefix("classpath:/mustache-templates/");
 			resolver.setSuffix(".html");
-			resolver.setCompiler(Mustache.compiler().withLoader(
-					new MustacheResourceTemplateLoader("classpath:/mustache-templates/",
-							".html")));
+			resolver.setCompiler(
+					Mustache.compiler().withLoader(new MustacheResourceTemplateLoader(
+							"classpath:/mustache-templates/", ".html")));
 			return resolver;
 		}
 

@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.metrics.writer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandler;

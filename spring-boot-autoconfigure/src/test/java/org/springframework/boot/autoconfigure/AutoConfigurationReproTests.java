@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
@@ -26,8 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests to reproduce reported issues.
@@ -53,7 +53,7 @@ public class AutoConfigurationReproTests {
 				ServerPropertiesAutoConfiguration.class);
 		this.context = application.run("--server.port=0");
 		String bean = (String) this.context.getBean("earlyInit");
-		assertThat(bean, equalTo("bucket"));
+		assertThat(bean).isEqualTo("bucket");
 	}
 
 	@Configuration
@@ -65,4 +65,5 @@ public class AutoConfigurationReproTests {
 	public static class EarlyInitConfig {
 
 	}
+
 }

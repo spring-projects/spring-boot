@@ -18,12 +18,12 @@ package org.springframework.boot.autoconfigure.jdbc.metadata;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Register the {@link DataSourcePoolMetadataProvider} instances for the supported data
@@ -90,6 +90,27 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 					if (dataSource instanceof BasicDataSource) {
 						return new CommonsDbcpDataSourcePoolMetadata(
 								(BasicDataSource) dataSource);
+					}
+					return null;
+				}
+			};
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
+	static class CommonsDbcp2PoolDataSourceMetadataProviderConfiguration {
+
+		@Bean
+		public DataSourcePoolMetadataProvider commonsDbcp2PoolDataSourceMetadataProvider() {
+			return new DataSourcePoolMetadataProvider() {
+				@Override
+				public DataSourcePoolMetadata getDataSourcePoolMetadata(
+						DataSource dataSource) {
+					if (dataSource instanceof org.apache.commons.dbcp2.BasicDataSource) {
+						return new CommonsDbcp2DataSourcePoolMetadata(
+								(org.apache.commons.dbcp2.BasicDataSource) dataSource);
 					}
 					return null;
 				}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,24 +41,20 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.core.SessionCallback;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HornetQAutoConfiguration}.
@@ -85,7 +81,7 @@ public class HornetQAutoConfigurationTests {
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		HornetQConnectionFactory connectionFactory = this.context
 				.getBean(HornetQConnectionFactory.class);
-		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
+		assertThat(connectionFactory).isEqualTo(jmsTemplate.getConnectionFactory());
 		assertNettyConnectionFactory(connectionFactory, "localhost", 5445);
 	}
 
@@ -103,14 +99,13 @@ public class HornetQAutoConfigurationTests {
 		load(EmptyConfiguration.class, "spring.hornetq.mode:embedded");
 
 		HornetQProperties properties = this.context.getBean(HornetQProperties.class);
-		assertEquals(HornetQMode.EMBEDDED, properties.getMode());
+		assertThat(properties.getMode()).isEqualTo(HornetQMode.EMBEDDED);
 
-		assertEquals(1, this.context.getBeansOfType(EmbeddedJMS.class).size());
+		assertThat(this.context.getBeansOfType(EmbeddedJMS.class)).hasSize(1);
 		org.hornetq.core.config.Configuration configuration = this.context
 				.getBean(org.hornetq.core.config.Configuration.class);
-		assertFalse("Persistence disabled by default",
-				configuration.isPersistenceEnabled());
-		assertFalse("Security disabled by default", configuration.isSecurityEnabled());
+		assertThat(configuration.isPersistenceEnabled()).isFalse();
+		assertThat(configuration.isSecurityEnabled()).isFalse();
 
 		HornetQConnectionFactory connectionFactory = this.context
 				.getBean(HornetQConnectionFactory.class);
@@ -122,12 +117,11 @@ public class HornetQAutoConfigurationTests {
 		// No mode is specified
 		load(EmptyConfiguration.class);
 
-		assertEquals(1, this.context.getBeansOfType(EmbeddedJMS.class).size());
+		assertThat(this.context.getBeansOfType(EmbeddedJMS.class)).hasSize(1);
 		org.hornetq.core.config.Configuration configuration = this.context
 				.getBean(org.hornetq.core.config.Configuration.class);
-		assertFalse("Persistence disabled by default",
-				configuration.isPersistenceEnabled());
-		assertFalse("Security disabled by default", configuration.isSecurityEnabled());
+		assertThat(configuration.isPersistenceEnabled()).isFalse();
+		assertThat(configuration.isSecurityEnabled()).isFalse();
 
 		HornetQConnectionFactory connectionFactory = this.context
 				.getBean(HornetQConnectionFactory.class);
@@ -139,7 +133,7 @@ public class HornetQAutoConfigurationTests {
 		// No mode is specified
 		load(EmptyConfiguration.class, "spring.hornetq.embedded.enabled:false");
 
-		assertEquals(0, this.context.getBeansOfType(EmbeddedJMS.class).size());
+		assertThat(this.context.getBeansOfType(EmbeddedJMS.class)).isEmpty();
 
 		HornetQConnectionFactory connectionFactory = this.context
 				.getBean(HornetQConnectionFactory.class);
@@ -147,12 +141,12 @@ public class HornetQAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedConnectionFactorEvenIfEmbeddedServiceDisabled() {
+	public void embeddedConnectionFactoryEvenIfEmbeddedServiceDisabled() {
 		// No mode is specified
 		load(EmptyConfiguration.class, "spring.hornetq.mode:embedded",
 				"spring.hornetq.embedded.enabled:false");
 
-		assertEquals(0, this.context.getBeansOfType(EmbeddedJMS.class).size());
+		assertThat(this.context.getBeansOfType(EmbeddedJMS.class)).isEmpty();
 
 		HornetQConnectionFactory connectionFactory = this.context
 				.getBean(HornetQConnectionFactory.class);
@@ -185,7 +179,8 @@ public class HornetQAutoConfigurationTests {
 	@Test
 	public void embeddedServiceWithCustomJmsConfiguration() {
 		// Ignored with custom config
-		load(CustomJmsConfiguration.class, "spring.hornetq.embedded.queues=Queue1,Queue2");
+		load(CustomJmsConfiguration.class,
+				"spring.hornetq.embedded.queues=Queue1,Queue2");
 		DestinationChecker checker = new DestinationChecker(this.context);
 		checker.checkQueue("custom", true); // See CustomJmsConfiguration
 
@@ -198,7 +193,7 @@ public class HornetQAutoConfigurationTests {
 		load(CustomHornetQConfiguration.class);
 		org.hornetq.core.config.Configuration configuration = this.context
 				.getBean(org.hornetq.core.config.Configuration.class);
-		assertEquals("customFooBar", configuration.getName());
+		assertThat(configuration.getName()).isEqualTo("customFooBar");
 	}
 
 	@Test
@@ -228,9 +223,8 @@ public class HornetQAutoConfigurationTests {
 		JmsTemplate jmsTemplate2 = this.context.getBean(JmsTemplate.class);
 		jmsTemplate2.setReceiveTimeout(1000L);
 		Message message = jmsTemplate2.receive("TestQueue");
-		assertNotNull("No message on persistent queue", message);
-		assertEquals("Invalid message received on queue", msgId,
-				((TextMessage) message).getText());
+		assertThat(message).isNotNull();
+		assertThat(((TextMessage) message).getText()).isEqualTo(msgId);
 	}
 
 	@Test
@@ -244,8 +238,8 @@ public class HornetQAutoConfigurationTests {
 			HornetQProperties properties = this.context.getBean(HornetQProperties.class);
 			HornetQProperties anotherProperties = anotherContext
 					.getBean(HornetQProperties.class);
-			assertTrue("ServerId should not match", properties.getEmbedded()
-					.getServerId() < anotherProperties.getEmbedded().getServerId());
+			assertThat(properties.getEmbedded().getServerId() < anotherProperties
+					.getEmbedded().getServerId()).isTrue();
 
 			DestinationChecker checker = new DestinationChecker(this.context);
 			checker.checkQueue("Queue1", true);
@@ -284,19 +278,21 @@ public class HornetQAutoConfigurationTests {
 
 	private TransportConfiguration assertInVmConnectionFactory(
 			HornetQConnectionFactory connectionFactory) {
-		TransportConfiguration transportConfig = getSingleTransportConfiguration(connectionFactory);
-		assertEquals(InVMConnectorFactory.class.getName(),
-				transportConfig.getFactoryClassName());
+		TransportConfiguration transportConfig = getSingleTransportConfiguration(
+				connectionFactory);
+		assertThat(transportConfig.getFactoryClassName())
+				.isEqualTo(InVMConnectorFactory.class.getName());
 		return transportConfig;
 	}
 
 	private TransportConfiguration assertNettyConnectionFactory(
 			HornetQConnectionFactory connectionFactory, String host, int port) {
-		TransportConfiguration transportConfig = getSingleTransportConfiguration(connectionFactory);
-		assertEquals(NettyConnectorFactory.class.getName(),
-				transportConfig.getFactoryClassName());
-		assertEquals(host, transportConfig.getParams().get("host"));
-		assertEquals(port, transportConfig.getParams().get("port"));
+		TransportConfiguration transportConfig = getSingleTransportConfiguration(
+				connectionFactory);
+		assertThat(transportConfig.getFactoryClassName())
+				.isEqualTo(NettyConnectorFactory.class.getName());
+		assertThat(transportConfig.getParams().get("host")).isEqualTo(host);
+		assertThat(transportConfig.getParams().get("port")).isEqualTo(port);
 		return transportConfig;
 	}
 
@@ -304,7 +300,7 @@ public class HornetQAutoConfigurationTests {
 			HornetQConnectionFactory connectionFactory) {
 		TransportConfiguration[] transportConfigurations = connectionFactory
 				.getServerLocator().getStaticTransportConfigurations();
-		assertEquals(1, transportConfigurations.length);
+		assertThat(transportConfigurations.length).isEqualTo(1);
 		return transportConfigurations[0];
 	}
 
@@ -316,7 +312,7 @@ public class HornetQAutoConfigurationTests {
 			String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(config);
-		applicationContext.register(HornetQAutoConfigurationWithoutXA.class,
+		applicationContext.register(HornetQAutoConfiguration.class,
 				JmsAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.refresh();
@@ -392,8 +388,8 @@ public class HornetQAutoConfigurationTests {
 		@Bean
 		public JMSConfiguration myJmsConfiguration() {
 			JMSConfiguration config = new JMSConfigurationImpl();
-			config.getQueueConfigurations().add(
-					new JMSQueueConfigurationImpl("custom", null, false));
+			config.getQueueConfigurations()
+					.add(new JMSQueueConfigurationImpl("custom", null, false));
 			return config;
 		}
 	}
@@ -405,19 +401,13 @@ public class HornetQAutoConfigurationTests {
 		public HornetQConfigurationCustomizer myHornetQCustomize() {
 			return new HornetQConfigurationCustomizer() {
 				@Override
-				public void customize(org.hornetq.core.config.Configuration configuration) {
+				public void customize(
+						org.hornetq.core.config.Configuration configuration) {
 					configuration.setClusterPassword("Foobar");
 					configuration.setName("customFooBar");
 				}
 			};
 		}
-	}
-
-	@Configuration
-	@EnableConfigurationProperties(HornetQProperties.class)
-	@Import({ HornetQEmbeddedServerConfiguration.class,
-			HornetQConnectionFactoryConfiguration.class })
-	protected static class HornetQAutoConfigurationWithoutXA {
 	}
 
 }

@@ -18,12 +18,13 @@ package org.springframework.boot.env;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
@@ -39,7 +40,7 @@ import org.springframework.util.StringUtils;
  */
 public class PropertySourcesLoader {
 
-	private static Log logger = LogFactory.getLog(PropertySourcesLoader.class);
+	private static final Log logger = LogFactory.getLog(PropertySourcesLoader.class);
 
 	private final MutablePropertySources propertySources;
 
@@ -134,10 +135,8 @@ public class PropertySourcesLoader {
 	}
 
 	private boolean isFile(Resource resource) {
-		return resource != null
-				&& resource.exists()
-				&& StringUtils.hasText(StringUtils.getFilenameExtension(resource
-						.getFilename()));
+		return resource != null && resource.exists() && StringUtils
+				.hasText(StringUtils.getFilenameExtension(resource.getFilename()));
 	}
 
 	private String generatePropertySourceName(String name, String profile) {
@@ -201,7 +200,7 @@ public class PropertySourcesLoader {
 	 * @return the file extensions
 	 */
 	public Set<String> getAllFileExtensions() {
-		Set<String> fileExtensions = new HashSet<String>();
+		Set<String> fileExtensions = new LinkedHashSet<String>();
 		for (PropertySourceLoader loader : this.loaders) {
 			fileExtensions.addAll(Arrays.asList(loader.getFileExtensions()));
 		}

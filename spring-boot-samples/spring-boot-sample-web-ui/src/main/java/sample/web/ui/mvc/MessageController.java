@@ -1,21 +1,26 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package sample.web.ui.mvc;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import sample.web.ui.Message;
+import sample.web.ui.MessageRepository;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,18 +30,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import sample.web.ui.Message;
-import sample.web.ui.MessageRepository;
-
 /**
  * @author Rob Winch
+ * @author Doo-Hwan Kwak
  */
 @Controller
 @RequestMapping("/")
 public class MessageController {
+
 	private final MessageRepository messageRepository;
 
-	@Autowired
 	public MessageController(MessageRepository messageRepository) {
 		this.messageRepository = messageRepository;
 	}
@@ -71,6 +74,18 @@ public class MessageController {
 	@RequestMapping("foo")
 	public String foo() {
 		throw new RuntimeException("Expected exception in controller");
+	}
+
+	@RequestMapping(value = "delete/{id}")
+	public ModelAndView delete(@PathVariable("id") Long id) {
+		this.messageRepository.deleteMessage(id);
+		Iterable<Message> messages = this.messageRepository.findAll();
+		return new ModelAndView("messages/list", "messages", messages);
+	}
+
+	@RequestMapping(value = "modify/{id}", method = RequestMethod.GET)
+	public ModelAndView modifyForm(@PathVariable("id") Message message) {
+		return new ModelAndView("messages/form", "message", message);
 	}
 
 }

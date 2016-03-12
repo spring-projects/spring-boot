@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,9 @@ class JCacheCacheConfiguration {
 	@Autowired
 	private CacheProperties cacheProperties;
 
+	@Autowired
+	private CacheManagerCustomizers customizers;
+
 	@Autowired(required = false)
 	private javax.cache.configuration.Configuration<?, ?> defaultCacheConfiguration;
 
@@ -71,7 +74,8 @@ class JCacheCacheConfiguration {
 
 	@Bean
 	public JCacheCacheManager cacheManager(CacheManager jCacheCacheManager) {
-		return new JCacheCacheManager(jCacheCacheManager);
+		JCacheCacheManager cacheManager = new JCacheCacheManager(jCacheCacheManager);
+		return this.customizers.customize(cacheManager);
 	}
 
 	@Bean
@@ -89,8 +93,8 @@ class JCacheCacheConfiguration {
 	}
 
 	private CacheManager createCacheManager() throws IOException {
-		CachingProvider cachingProvider = getCachingProvider(this.cacheProperties
-				.getJcache().getProvider());
+		CachingProvider cachingProvider = getCachingProvider(
+				this.cacheProperties.getJcache().getProvider());
 		Resource configLocation = this.cacheProperties
 				.resolveConfigLocation(this.cacheProperties.getJcache().getConfig());
 		if (configLocation != null) {
@@ -112,8 +116,8 @@ class JCacheCacheConfiguration {
 			throws IOException {
 		Properties properties = new Properties();
 		// Hazelcast does not use the URI as a mean to specify a custom config.
-		properties.setProperty("hazelcast.config.location", configLocation.getURI()
-				.toString());
+		properties.setProperty("hazelcast.config.location",
+				configLocation.getURI().toString());
 		return properties;
 	}
 
@@ -178,8 +182,8 @@ class JCacheCacheConfiguration {
 			}
 			providers.next();
 			if (providers.hasNext()) {
-				return ConditionOutcome.noMatch("Multiple default JSR-107 compliant "
-						+ "providers found");
+				return ConditionOutcome.noMatch(
+						"Multiple default JSR-107 compliant " + "providers found");
 
 			}
 			return ConditionOutcome.match("Default JSR-107 compliant provider found.");

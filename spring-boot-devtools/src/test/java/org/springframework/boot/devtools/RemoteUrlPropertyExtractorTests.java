@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,18 @@
 
 package org.springframework.boot.devtools;
 
+import ch.qos.logback.classic.Logger;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
-import ch.qos.logback.classic.Logger;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RemoteUrlPropertyExtractor}.
@@ -73,10 +70,17 @@ public class RemoteUrlPropertyExtractorTests {
 	@Test
 	public void validUrl() throws Exception {
 		ApplicationContext context = doTest("http://localhost:8080");
-		assertThat(context.getEnvironment().getProperty("remoteUrl"),
-				equalTo("http://localhost:8080"));
-		assertThat(context.getEnvironment().getProperty("spring.thymeleaf.cache"),
-				is(nullValue()));
+		assertThat(context.getEnvironment().getProperty("remoteUrl"))
+				.isEqualTo("http://localhost:8080");
+		assertThat(context.getEnvironment().getProperty("spring.thymeleaf.cache"))
+				.isNull();
+	}
+
+	@Test
+	public void cleanValidUrl() throws Exception {
+		ApplicationContext context = doTest("http://localhost:8080/");
+		assertThat(context.getEnvironment().getProperty("remoteUrl"))
+				.isEqualTo("http://localhost:8080");
 	}
 
 	private ApplicationContext doTest(String... args) {

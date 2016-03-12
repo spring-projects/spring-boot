@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.rest;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
@@ -33,11 +32,18 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
 @Configuration
 class SpringBootRepositoryRestMvcConfiguration extends RepositoryRestMvcConfiguration {
 
+	private final RepositoryRestProperties properties;
+
+	SpringBootRepositoryRestMvcConfiguration(RepositoryRestProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
-	@ConfigurationProperties(prefix = "spring.data.rest")
 	@Override
 	public RepositoryRestConfiguration config() {
-		return super.config();
+		RepositoryRestConfiguration config = super.config();
+		this.properties.applyTo(config);
+		return config;
 	}
 
 }

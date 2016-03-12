@@ -35,6 +35,7 @@ import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
+
 import org.springframework.util.PatternMatchUtils;
 
 /**
@@ -79,8 +80,8 @@ public abstract class AstUtils {
 			String... annotations) {
 		for (AnnotationNode annotationNode : node.getAnnotations()) {
 			for (String annotation : annotations) {
-				if (PatternMatchUtils.simpleMatch(annotation, annotationNode
-						.getClassNode().getName())) {
+				if (PatternMatchUtils.simpleMatch(annotation,
+						annotationNode.getClassNode().getName())) {
 					return true;
 				}
 			}
@@ -164,7 +165,8 @@ public abstract class AstUtils {
 		return null;
 	}
 
-	private static List<ExpressionStatement> getExpressionStatements(BlockStatement block) {
+	private static List<ExpressionStatement> getExpressionStatements(
+			BlockStatement block) {
 		ArrayList<ExpressionStatement> statements = new ArrayList<ExpressionStatement>();
 		for (Statement statement : block.getStatements()) {
 			if (statement instanceof ExpressionStatement) {

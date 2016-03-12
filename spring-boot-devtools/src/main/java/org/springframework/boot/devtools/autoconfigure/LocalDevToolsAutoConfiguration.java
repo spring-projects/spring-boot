@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import java.net.URL;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -40,12 +42,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for local development support.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Vladimir Tsanev
  * @since 1.3.0
  */
 @Configuration
@@ -105,7 +110,7 @@ public class LocalDevToolsAutoConfiguration {
 		public void onClassPathChanged(ClassPathChangedEvent event) {
 			if (event.isRestartRequired()) {
 				Restarter.getInstance().restart(
-						new FileWatchingFailureHandler(getFileSystemWatcherFactory()));
+						new FileWatchingFailureHandler(fileSystemWatcherFactory()));
 			}
 		}
 
@@ -114,7 +119,7 @@ public class LocalDevToolsAutoConfiguration {
 		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
 			URL[] urls = Restarter.getInstance().getInitialUrls();
 			ClassPathFileSystemWatcher watcher = new ClassPathFileSystemWatcher(
-					getFileSystemWatcherFactory(), classPathRestartStrategy(), urls);
+					fileSystemWatcherFactory(), classPathRestartStrategy(), urls);
 			watcher.setStopWatcherOnRestart(true);
 			return watcher;
 		}
@@ -122,12 +127,17 @@ public class LocalDevToolsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public ClassPathRestartStrategy classPathRestartStrategy() {
-			return new PatternClassPathRestartStrategy(this.properties.getRestart()
-					.getAllExclude());
+			return new PatternClassPathRestartStrategy(
+					this.properties.getRestart().getAllExclude());
 		}
 
 		@Bean
-		public FileSystemWatcherFactory getFileSystemWatcherFactory() {
+		public HateoasObjenesisCacheDisabler hateoasObjenesisCacheDisabler() {
+			return new HateoasObjenesisCacheDisabler();
+		}
+
+		@Bean
+		public FileSystemWatcherFactory fileSystemWatcherFactory() {
 			return new FileSystemWatcherFactory() {
 
 				@Override
@@ -152,6 +162,21 @@ public class LocalDevToolsAutoConfiguration {
 				watcher.addSourceFolder(path.getAbsoluteFile());
 			}
 			return watcher;
+		}
+
+		@Configuration
+		@ConditionalOnBean(name = RedisRestartConfiguration.SESSION_REDIS_TEMPLATE_BEAN_NAME)
+		static class RedisRestartConfiguration {
+
+			static final String SESSION_REDIS_TEMPLATE_BEAN_NAME = "sessionRedisTemplate";
+
+			@Bean
+			public RestartCompatibleRedisSerializerConfigurer restartCompatibleRedisSerializerConfigurer(
+					@Qualifier(SESSION_REDIS_TEMPLATE_BEAN_NAME) RedisTemplate<?, ?> sessionRedisTemplate) {
+				return new RestartCompatibleRedisSerializerConfigurer(
+						sessionRedisTemplate);
+			}
+
 		}
 
 	}

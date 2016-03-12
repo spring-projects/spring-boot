@@ -16,12 +16,12 @@
 
 package sample.aop;
 
+import sample.aop.service.HelloWorldService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import sample.aop.service.HelloWorldService;
 
 @SpringBootApplication
 public class SampleAopApplication implements CommandLineRunner {

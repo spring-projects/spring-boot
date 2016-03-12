@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,15 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
+import java.util.Map;
+
+import liquibase.integration.spring.SpringLiquibase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -29,14 +33,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import liquibase.integration.spring.SpringLiquibase;
-
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link LiquibaseAutoConfiguration}.
@@ -68,7 +65,8 @@ public class LiquibaseAutoConfigurationTests {
 		this.context.register(LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(0, this.context.getBeanNamesForType(SpringLiquibase.class).length);
+		assertThat(this.context.getBeanNamesForType(SpringLiquibase.class).length)
+				.isEqualTo(0);
 	}
 
 	@Test
@@ -78,11 +76,11 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertEquals("classpath:/db/changelog/db.changelog-master.yaml",
-				liquibase.getChangeLog());
-		assertNull(liquibase.getContexts());
-		assertNull(liquibase.getDefaultSchema());
-		assertFalse(liquibase.isDropFirst());
+		assertThat(liquibase.getChangeLog())
+				.isEqualTo("classpath:/db/changelog/db.changelog-master.yaml");
+		assertThat(liquibase.getContexts()).isNull();
+		assertThat(liquibase.getDefaultSchema()).isNull();
+		assertThat(liquibase.isDropFirst()).isFalse();
 	}
 
 	@Test
@@ -94,8 +92,8 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertEquals("classpath:/db/changelog/db.changelog-override.xml",
-				liquibase.getChangeLog());
+		assertThat(liquibase.getChangeLog())
+				.isEqualTo("classpath:/db/changelog/db.changelog-override.xml");
 	}
 
 	@Test
@@ -107,7 +105,7 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertEquals("test, production", liquibase.getContexts());
+		assertThat(liquibase.getContexts()).isEqualTo("test, production");
 	}
 
 	@Test
@@ -119,7 +117,7 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertEquals("public", liquibase.getDefaultSchema());
+		assertThat(liquibase.getDefaultSchema()).isEqualTo("public");
 	}
 
 	@Test
@@ -130,7 +128,7 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertTrue(liquibase.isDropFirst());
+		assertThat(liquibase.isDropFirst()).isTrue();
 	}
 
 	@Test
@@ -142,8 +140,8 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertEquals("jdbc:hsqldb:mem:liquibase", liquibase.getDataSource()
-				.getConnection().getMetaData().getURL());
+		assertThat(liquibase.getDataSource().getConnection().getMetaData().getURL())
+				.isEqualTo("jdbc:hsqldb:mem:liquibase");
 	}
 
 	@Test(expected = BeanCreationException.class)
@@ -164,7 +162,34 @@ public class LiquibaseAutoConfigurationTests {
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
 		Object log = ReflectionTestUtils.getField(liquibase, "log");
-		assertThat(log, instanceOf(CommonsLoggingLiquibaseLogger.class));
+		assertThat(log).isInstanceOf(CommonsLoggingLiquibaseLogger.class);
+	}
+
+	@Test
+	public void testOverrideLabels() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"liquibase.labels:test, production");
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+		assertThat(liquibase.getLabels()).isEqualTo("test, production");
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testOverrideParameters() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context, "liquibase.parameters.foo:bar");
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+		Map<String, String> parameters = (Map<String, String>) ReflectionTestUtils
+				.getField(liquibase, "parameters");
+		assertThat(parameters.containsKey("foo")).isTrue();
+		assertThat(parameters.get("foo")).isEqualTo("bar");
 	}
 
 }

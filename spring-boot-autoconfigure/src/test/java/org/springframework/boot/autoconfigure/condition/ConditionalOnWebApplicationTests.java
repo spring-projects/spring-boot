@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,13 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConditionalOnWebApplication}.
@@ -40,8 +39,8 @@ public class ConditionalOnWebApplicationTests {
 		this.context.register(BasicConfiguration.class);
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
-		assertTrue(this.context.containsBean("foo"));
-		assertEquals("foo", this.context.getBean("foo"));
+		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(this.context.getBean("foo")).isEqualTo("foo");
 	}
 
 	@Test
@@ -49,7 +48,7 @@ public class ConditionalOnWebApplicationTests {
 		this.context.register(MissingConfiguration.class);
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
-		assertFalse(this.context.containsBean("foo"));
+		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Configuration

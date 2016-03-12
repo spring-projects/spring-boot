@@ -15,9 +15,10 @@
  */
 
 /**
- * Support for Jetty {@link org.springframework.boot.context.embedded.EmbeddedServletContainer EmbeddedServletContainers}.
+ * Support for Jetty
+ * {@link org.springframework.boot.context.embedded.EmbeddedServletContainer
+ * EmbeddedServletContainers}.
  *
  * @see org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory
  */
 package org.springframework.boot.context.embedded.jetty;
-

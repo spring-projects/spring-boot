@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -47,7 +48,7 @@ import org.springframework.util.StringUtils;
  */
 public abstract class AutoConfigurationPackages {
 
-	private static Log logger = LogFactory.getLog(AutoConfigurationPackages.class);
+	private static final Log logger = LogFactory.getLog(AutoConfigurationPackages.class);
 
 	private static final String BEAN = AutoConfigurationPackages.class.getName();
 
@@ -110,8 +111,8 @@ public abstract class AutoConfigurationPackages {
 
 	private static String[] addBasePackages(
 			ConstructorArgumentValues constructorArguments, String[] packageNames) {
-		String[] existing = (String[]) constructorArguments.getIndexedArgumentValue(0,
-				String[].class).getValue();
+		String[] existing = (String[]) constructorArguments
+				.getIndexedArgumentValue(0, String[].class).getValue();
 		Set<String> merged = new LinkedHashSet<String>();
 		merged.addAll(Arrays.asList(existing));
 		merged.addAll(Arrays.asList(packageNames));

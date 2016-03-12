@@ -222,6 +222,41 @@ the `deprecation` element. This is still supported in a deprecated fashion and s
 be used. If no reason and replacement are available, an empty `deprecation` object should be
 set.
 
+Deprecation can also be specified declaratively in code by adding the
+`@DeprecatedConfigurationProperty` annotation to the getter exposing the deprecated
+property. For instance, let's assume the `app.foo.target` property was confusing and
+was renamed to `app.foo.name`
+
+[source,java,indent=0]
+----
+	@ConfigurationProperties("app.foo")
+	public class FooProperties {
+
+		private String name;
+
+		public String getName() { ... }
+
+		public void setName(String name) { ... }
+
+		@DeprecatedConfigurationProperty(replacement = "app.foo.name")
+		@Deprecated
+		public String getTarget() {
+			return getName();
+		}
+
+		@Deprecated
+		public void setTarget(String target) {
+			setName(target);
+		}
+	}
+----
+
+The code above makes sure that the deprecated property still works (delegating
+to the `name` property behind the scenes). Once the `getTarget` and `setTarget`
+methods can be removed from your public API, the automatic deprecation hint in the
+meta-data will go away as well.
+
+
 
 [[configuration-metadata-hints-attributes]]
 ==== Hint Attributes
@@ -293,10 +328,10 @@ following attributes:
 [[configuration-metadata-repeated-items]]
 ==== Repeated meta-data items
 It is perfectly acceptable for "`property`" and "`group`" objects with the same name to
-appear multiple times within a meta-data file. For example, Spring Boot binds
-`spring.datasource` properties to Hikari, Tomcat and DBCP classes, with each potentially
-offering overlap of property names. Consumers of meta-data should take care to ensure
-that they support such scenarios.
+appear multiple times within a meta-data file. For example, you could bind two separate
+classes to the same prefix, with each potentially offering overlap of property names.
+While this is not supposed to be a frequent scenario, consumers of meta-data should take
+care to ensure that they support such scenarios.
 
 
 
@@ -700,7 +735,7 @@ NOTE: You need to add `compileJava.dependsOn(processResources)` to your build to
 that resources are processed before code is compiled. Without this directive any
 `additional-spring-configuration-metadata.json` files will not be processed.
 
-The processor will pickup both classes and methods that are annotated with
+The processor will pick up both classes and methods that are annotated with
 `@ConfigurationProperties`. The Javadoc for field values within configuration classes
 will be used to populate the `description` attribute.
 
@@ -711,6 +746,26 @@ Properties are discovered via the presence of standard getters and setters with 
 handling for collection types (that will be detected even if only a getter is present). The
 annotation processor also supports the use of the `@Data`, `@Getter` and `@Setter` lombok
 annotations.
+
+[NOTE]
+====
+If you are using AspectJ in your project, you need to make sure that the annotation
+processor only runs once. There are several ways to do this: with Maven, you can
+configure the `maven-apt-plugin` explicitly and add the dependency to the annotation
+processor only there. You could also let the AspectJ plugin run all the processing
+and disable annotation processing in the `maven-compiler-plugin` configuration:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<configuration>
+			<proc>none</proc>
+		</configuration>
+	</plugin>
+----
+====
 
 
 

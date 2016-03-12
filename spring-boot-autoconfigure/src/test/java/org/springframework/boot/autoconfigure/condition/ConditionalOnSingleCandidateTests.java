@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,14 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ConditionalOnSingleCandidate}.
@@ -52,44 +51,44 @@ public class ConditionalOnSingleCandidateTests {
 	@Test
 	public void singleCandidateNoCandidate() {
 		load(OnBeanSingleCandidateConfiguration.class);
-		assertFalse(this.context.containsBean("baz"));
+		assertThat(this.context.containsBean("baz")).isFalse();
 	}
 
 	@Test
 	public void singleCandidateOneCandidate() {
 		load(FooConfiguration.class, OnBeanSingleCandidateConfiguration.class);
-		assertTrue(this.context.containsBean("baz"));
-		assertEquals("foo", this.context.getBean("baz"));
+		assertThat(this.context.containsBean("baz")).isTrue();
+		assertThat(this.context.getBean("baz")).isEqualTo("foo");
 	}
 
 	@Test
 	public void singleCandidateMultipleCandidates() {
 		load(FooConfiguration.class, BarConfiguration.class,
 				OnBeanSingleCandidateConfiguration.class);
-		assertFalse(this.context.containsBean("baz"));
+		assertThat(this.context.containsBean("baz")).isFalse();
 	}
 
 	@Test
 	public void singleCandidateMultipleCandidatesOnePrimary() {
 		load(FooPrimaryConfiguration.class, BarConfiguration.class,
 				OnBeanSingleCandidateConfiguration.class);
-		assertTrue(this.context.containsBean("baz"));
-		assertEquals("foo", this.context.getBean("baz"));
+		assertThat(this.context.containsBean("baz")).isTrue();
+		assertThat(this.context.getBean("baz")).isEqualTo("foo");
 	}
 
 	@Test
 	public void singleCandidateMultipleCandidatesMultiplePrimary() {
 		load(FooPrimaryConfiguration.class, BarPrimaryConfiguration.class,
 				OnBeanSingleCandidateConfiguration.class);
-		assertFalse(this.context.containsBean("baz"));
+		assertThat(this.context.containsBean("baz")).isFalse();
 	}
 
 	@Test
 	public void invalidAnnotationTwoTypes() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectCause(isA(IllegalArgumentException.class));
-		this.thrown.expectMessage(OnBeanSingleCandidateTwoTypesConfiguration.class
-				.getName());
+		this.thrown.expectMessage(
+				OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
 		load(OnBeanSingleCandidateTwoTypesConfiguration.class);
 	}
 
@@ -97,8 +96,8 @@ public class ConditionalOnSingleCandidateTests {
 	public void invalidAnnotationNoType() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectCause(isA(IllegalArgumentException.class));
-		this.thrown.expectMessage(OnBeanSingleCandidateNoTypeConfiguration.class
-				.getName());
+		this.thrown
+				.expectMessage(OnBeanSingleCandidateNoTypeConfiguration.class.getName());
 		load(OnBeanSingleCandidateNoTypeConfiguration.class);
 	}
 

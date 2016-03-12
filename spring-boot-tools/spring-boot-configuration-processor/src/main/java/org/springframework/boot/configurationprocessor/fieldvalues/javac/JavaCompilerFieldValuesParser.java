@@ -60,6 +60,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 	private static class FieldCollector implements TreeVisitor {
 
 		private static final Map<String, Class<?>> WRAPPER_TYPES;
+
 		static {
 			Map<String, Class<?>> types = new HashMap<String, Class<?>>();
 			types.put("boolean", Boolean.class);
@@ -76,6 +77,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		}
 
 		private static final Map<Class<?>, Object> DEFAULT_TYPE_VALUES;
+
 		static {
 			Map<Class<?>, Object> values = new HashMap<Class<?>, Object>();
 			values.put(Boolean.class, false);
@@ -87,6 +89,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		}
 
 		private static final Map<String, Object> WELL_KNOWN_STATIC_FINALS;
+
 		static {
 			Map<String, Object> values = new HashMap<String, Object>();
 			values.put("Boolean.TRUE", true);

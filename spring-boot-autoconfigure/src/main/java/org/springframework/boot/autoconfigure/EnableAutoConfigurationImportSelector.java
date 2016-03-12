@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,11 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
+import org.springframework.boot.bind.PropertySourcesPropertyValues;
+import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
@@ -37,10 +40,13 @@ import org.springframework.context.annotation.DeferredImportSelector;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -71,7 +77,8 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 	public String[] selectImports(AnnotationMetadata metadata) {
 		try {
 			AnnotationAttributes attributes = getAttributes(metadata);
-			List<String> configurations = getCandidateConfigurations(metadata, attributes);
+			List<String> configurations = getCandidateConfigurations(metadata,
+					attributes);
 			configurations = removeDuplicates(configurations);
 			Set<String> exclusions = getExclusions(metadata, attributes);
 			configurations.removeAll(exclusions);
@@ -93,8 +100,8 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 	 */
 	protected AnnotationAttributes getAttributes(AnnotationMetadata metadata) {
 		String name = getAnnotationClass().getName();
-		AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
-				.getAnnotationAttributes(name, true));
+		AnnotationAttributes attributes = AnnotationAttributes
+				.fromMap(metadata.getAnnotationAttributes(name, true));
 		Assert.notNull(attributes,
 				"No auto-configuration attributes found. Is " + metadata.getClassName()
 						+ " annotated with " + ClassUtils.getShortName(name) + "?");
@@ -150,6 +157,14 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 	}
 
 	private List<String> getExcludeAutoConfigurationsProperty() {
+		if (getEnvironment() instanceof ConfigurableEnvironment) {
+			Excludes excludes = new Excludes();
+			RelaxedDataBinder binder = new RelaxedDataBinder(excludes,
+					"spring.autoconfigure.");
+			binder.bind(new PropertySourcesPropertyValues(
+					((ConfigurableEnvironment) getEnvironment()).getPropertySources()));
+			return excludes.getExclude();
+		}
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(getEnvironment(),
 				"spring.autoconfigure.");
 		String[] exclude = resolver.getProperty("exclude", String[].class);
@@ -157,9 +172,20 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 	}
 
 	private List<String> sort(List<String> configurations) throws IOException {
-		configurations = new AutoConfigurationSorter(getResourceLoader())
+		configurations = new AutoConfigurationSorter(getMetadataReaderFactory())
 				.getInPriorityOrder(configurations);
 		return configurations;
+	}
+
+	private MetadataReaderFactory getMetadataReaderFactory() {
+		try {
+			return getBeanFactory().getBean(
+					SharedMetadataReaderFactoryContextInitializer.BEAN_NAME,
+					MetadataReaderFactory.class);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			return new CachingMetadataReaderFactory(this.resourceLoader);
+		}
 	}
 
 	private void recordWithConditionEvaluationReport(List<String> configurations,
@@ -214,6 +240,23 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 
 	protected final ResourceLoader getResourceLoader() {
 		return this.resourceLoader;
+	}
+
+	/**
+	 * Bindable object used to get excludes.
+	 */
+	static class Excludes {
+
+		private List<String> exclude = new ArrayList<String>();
+
+		public List<String> getExclude() {
+			return this.exclude;
+		}
+
+		public void setExclude(List<String> excludes) {
+			this.exclude = excludes;
+		}
+
 	}
 
 }

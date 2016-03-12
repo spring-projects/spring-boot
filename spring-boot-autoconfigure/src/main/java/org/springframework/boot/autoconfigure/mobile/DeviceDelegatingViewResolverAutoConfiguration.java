@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.mobile;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -35,7 +37,6 @@ import org.springframework.core.Ordered;
 import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Mobile's
@@ -52,7 +53,7 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 @AutoConfigureAfter({ WebMvcAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 public class DeviceDelegatingViewResolverAutoConfiguration {
 
-	private static Log logger = LogFactory
+	private static final Log logger = LogFactory
 			.getLog(DeviceDelegatingViewResolverAutoConfiguration.class);
 
 	private static abstract class AbstractDelegateConfiguration {
@@ -97,8 +98,12 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 		protected static class ThymeleafViewResolverViewResolverDelegateConfiguration
 				extends AbstractDelegateConfiguration {
 
-			@Autowired
-			private ThymeleafViewResolver viewResolver;
+			private final ThymeleafViewResolver viewResolver;
+
+			protected ThymeleafViewResolverViewResolverDelegateConfiguration(
+					ThymeleafViewResolver viewResolver) {
+				this.viewResolver = viewResolver;
+			}
 
 			@Bean
 			public LiteDeviceDelegatingViewResolver deviceDelegatingViewResolver() {
@@ -116,11 +121,15 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 		@EnableConfigurationProperties(DeviceDelegatingViewResolverProperties.class)
 		@ConditionalOnMissingBean(name = "thymeleafViewResolver")
 		@ConditionalOnBean(InternalResourceViewResolver.class)
-		protected static class InternalResourceViewResolverDelegateConfiguration extends
-				AbstractDelegateConfiguration {
+		protected static class InternalResourceViewResolverDelegateConfiguration
+				extends AbstractDelegateConfiguration {
 
-			@Autowired
-			private InternalResourceViewResolver viewResolver;
+			private final InternalResourceViewResolver viewResolver;
+
+			protected InternalResourceViewResolverDelegateConfiguration(
+					InternalResourceViewResolver viewResolver) {
+				this.viewResolver = viewResolver;
+			}
 
 			@Bean
 			public LiteDeviceDelegatingViewResolver deviceDelegatingViewResolver() {

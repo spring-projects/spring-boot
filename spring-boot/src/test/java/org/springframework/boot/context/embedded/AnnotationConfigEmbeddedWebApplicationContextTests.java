@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.config.ExampleEmbeddedWebApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -36,8 +37,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -70,7 +70,7 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 				ExampleEmbeddedWebApplicationConfiguration.class,
 				ExampleServletWithAutowired.class, SessionScopedComponent.class);
 		Servlet servlet = this.context.getBean(ExampleServletWithAutowired.class);
-		assertNotNull(servlet);
+		assertThat(servlet).isNotNull();
 	}
 
 	@Test
@@ -91,8 +91,8 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 	@Test
 	public void scanAndRefresh() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.scan(ExampleEmbeddedWebApplicationConfiguration.class.getPackage()
-				.getName());
+		this.context.scan(
+				ExampleEmbeddedWebApplicationConfiguration.class.getPackage().getName());
 		this.context.refresh();
 		verifyContext();
 	}
@@ -104,8 +104,8 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 		verifyContext();
 		// You can't initialize the application context and inject the servlet context
 		// because of a cycle - we'd like this to be not null but it never will be
-		assertNull(this.context.getBean(ServletContextAwareEmbeddedConfiguration.class)
-				.getServletContext());
+		assertThat(this.context.getBean(ServletContextAwareEmbeddedConfiguration.class)
+				.getServletContext()).isNull();
 	}
 
 	@Test
@@ -118,8 +118,8 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 		this.context.setParent(parent);
 		this.context.refresh();
 		verifyContext();
-		assertNotNull(this.context.getBean(ServletContextAwareConfiguration.class)
-				.getServletContext());
+		assertThat(this.context.getBean(ServletContextAwareConfiguration.class)
+				.getServletContext()).isNotNull();
 	}
 
 	private void verifyContext() {
@@ -139,7 +139,7 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 		@Override
 		public void service(ServletRequest req, ServletResponse res)
 				throws ServletException, IOException {
-			assertNotNull(this.component);
+			assertThat(this.component).isNotNull();
 		}
 
 	}
@@ -152,8 +152,8 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 
 	@Configuration
 	@EnableWebMvc
-	public static class ServletContextAwareEmbeddedConfiguration implements
-			ServletContextAware {
+	public static class ServletContextAwareEmbeddedConfiguration
+			implements ServletContextAware {
 
 		private ServletContext servletContext;
 

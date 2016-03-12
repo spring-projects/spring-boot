@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mobile;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
@@ -35,10 +36,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import static org.hamcrest.Matchers.hasItemInArray;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SitePreferenceAutoConfiguration}.
@@ -62,7 +60,8 @@ public class SitePreferenceAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(SitePreferenceHandlerInterceptor.class));
+		assertThat(this.context.getBean(SitePreferenceHandlerInterceptor.class))
+				.isNotNull();
 	}
 
 	@Test
@@ -72,7 +71,8 @@ public class SitePreferenceAutoConfigurationTests {
 				"spring.mobile.sitepreference.enabled:true");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(SitePreferenceHandlerInterceptor.class));
+		assertThat(this.context.getBean(SitePreferenceHandlerInterceptor.class))
+				.isNotNull();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -90,8 +90,9 @@ public class SitePreferenceAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context
-				.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
+		assertThat(
+				this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class))
+						.isNotNull();
 	}
 
 	@Test
@@ -101,8 +102,9 @@ public class SitePreferenceAutoConfigurationTests {
 				"spring.mobile.sitepreference.enabled:true");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context
-				.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
+		assertThat(
+				this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class))
+						.isNotNull();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -126,10 +128,10 @@ public class SitePreferenceAutoConfigurationTests {
 		this.context.refresh();
 		RequestMappingHandlerMapping mapping = this.context
 				.getBean(RequestMappingHandlerMapping.class);
-		HandlerInterceptor[] interceptors = mapping.getHandler(
-				new MockHttpServletRequest()).getInterceptors();
-		assertThat(interceptors,
-				hasItemInArray(instanceOf(SitePreferenceHandlerInterceptor.class)));
+		HandlerInterceptor[] interceptors = mapping
+				.getHandler(new MockHttpServletRequest()).getInterceptors();
+		assertThat(interceptors)
+				.hasAtLeastOneElementOfType(SitePreferenceHandlerInterceptor.class);
 	}
 
 	@Configuration

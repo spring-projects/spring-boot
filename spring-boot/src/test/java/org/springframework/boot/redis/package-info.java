@@ -18,4 +18,3 @@
  * Redis support classes
  */
 package org.springframework.boot.redis;
-

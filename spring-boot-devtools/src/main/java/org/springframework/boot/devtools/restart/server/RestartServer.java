@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
@@ -93,10 +94,10 @@ public class RestartServer {
 		}
 		updateTimeStamp(urls);
 		restart(urls, files);
-
 	}
 
-	private boolean updateFileSystem(URL url, String name, ClassLoaderFile classLoaderFile) {
+	private boolean updateFileSystem(URL url, String name,
+			ClassLoaderFile classLoaderFile) {
 		if (!isFolderUrl(url.toString())) {
 			return false;
 		}

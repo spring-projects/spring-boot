@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,18 +36,17 @@ import org.eclipse.jetty.websocket.common.events.JettyListenerEventDriver;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.util.SocketUtils;
 import org.springframework.web.client.RestTemplate;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link LiveReloadServer}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class LiveReloadServerTests {
 
@@ -61,13 +60,13 @@ public class LiveReloadServerTests {
 	private MonitoredLiveReloadServer server;
 
 	@Before
-	public void setup() throws Exception {
+	public void setUp() throws Exception {
 		this.server = new MonitoredLiveReloadServer(this.port);
 		this.server.start();
 	}
 
 	@After
-	public void teardown() throws Exception {
+	public void tearDown() throws Exception {
 		this.server.stop();
 	}
 
@@ -76,7 +75,7 @@ public class LiveReloadServerTests {
 		RestTemplate template = new RestTemplate();
 		URI uri = new URI("http://localhost:" + this.port + "/livereload.js");
 		String script = template.getForObject(uri, String.class);
-		assertThat(script, containsString("livereload.com/protocols/official-7"));
+		assertThat(script).contains("livereload.com/protocols/official-7");
 	}
 
 	@Test
@@ -87,9 +86,9 @@ public class LiveReloadServerTests {
 			this.server.triggerReload();
 			Thread.sleep(500);
 			this.server.stop();
-			assertThat(socket.getMessages(0),
-					containsString("http://livereload.com/protocols/official-7"));
-			assertThat(socket.getMessages(1), containsString("command\":\"reload\""));
+			assertThat(socket.getMessages(0))
+					.contains("http://livereload.com/protocols/official-7");
+			assertThat(socket.getMessages(1)).contains("command\":\"reload\"");
 		}
 		finally {
 			client.stop();
@@ -105,7 +104,7 @@ public class LiveReloadServerTests {
 			socket.getRemote().sendPing(NO_DATA);
 			Thread.sleep(200);
 			this.server.stop();
-			assertThat(driver.getPongCount(), equalTo(1));
+			assertThat(driver.getPongCount()).isEqualTo(1);
 		}
 		finally {
 			client.stop();
@@ -122,7 +121,16 @@ public class LiveReloadServerTests {
 		finally {
 			client.stop();
 		}
-		assertThat(this.server.getClosedExceptions().size(), greaterThan(0));
+		awaitClosedException();
+		assertThat(this.server.getClosedExceptions().size()).isGreaterThan(0);
+	}
+
+	private void awaitClosedException() throws InterruptedException {
+		long startTime = System.currentTimeMillis();
+		while (this.server.getClosedExceptions().isEmpty()
+				&& System.currentTimeMillis() - startTime < 10000) {
+			Thread.sleep(100);
+		}
 	}
 
 	@Test
@@ -133,7 +141,7 @@ public class LiveReloadServerTests {
 			Thread.sleep(200);
 			this.server.stop();
 			Thread.sleep(200);
-			assertThat(socket.getCloseStatus(), equalTo(1006));
+			assertThat(socket.getCloseStatus()).isEqualTo(1006);
 		}
 		finally {
 			client.stop();
@@ -221,7 +229,9 @@ public class LiveReloadServerTests {
 	 */
 	private static class MonitoredLiveReloadServer extends LiveReloadServer {
 
-		private List<ConnectionClosedException> closedExceptions = new ArrayList<ConnectionClosedException>();
+		private final List<ConnectionClosedException> closedExceptions = new ArrayList<ConnectionClosedException>();
+
+		private final Object monitor = new Object();
 
 		MonitoredLiveReloadServer(int port) {
 			super(port);
@@ -234,7 +244,9 @@ public class LiveReloadServerTests {
 		}
 
 		public List<ConnectionClosedException> getClosedExceptions() {
-			return this.closedExceptions;
+			synchronized (this.monitor) {
+				return new ArrayList<ConnectionClosedException>(this.closedExceptions);
+			}
 		}
 
 		private class MonitoredConnection extends Connection {
@@ -250,7 +262,9 @@ public class LiveReloadServerTests {
 					super.run();
 				}
 				catch (ConnectionClosedException ex) {
-					MonitoredLiveReloadServer.this.closedExceptions.add(ex);
+					synchronized (MonitoredLiveReloadServer.this.monitor) {
+						MonitoredLiveReloadServer.this.closedExceptions.add(ex);
+					}
 					throw ex;
 				}
 			}

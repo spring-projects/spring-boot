@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
@@ -39,9 +40,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -77,8 +76,8 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void notRegisteredByDefault() throws MalformedObjectNameException,
-			InstanceNotFoundException {
+	public void notRegisteredByDefault()
+			throws MalformedObjectNameException, InstanceNotFoundException {
 		load();
 		this.thrown.expect(InstanceNotFoundException.class);
 		this.mBeanServer.getObjectInstance(createDefaultObjectName());
@@ -89,7 +88,8 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 		load(ENABLE_ADMIN_PROP);
 		ObjectName objectName = createDefaultObjectName();
 		ObjectInstance objectInstance = this.mBeanServer.getObjectInstance(objectName);
-		assertNotNull("Lifecycle bean should have been registered", objectInstance);
+		assertThat(objectInstance).as("Lifecycle bean should have been registered")
+				.isNotNull();
 	}
 
 	@Test
@@ -114,19 +114,20 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 
 	@Test
 	public void registerWithSimpleWebApp() throws Exception {
-		this.context = new SpringApplicationBuilder().sources(
-				EmbeddedServletContainerAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class, JmxAutoConfiguration.class,
-				SpringApplicationAdminJmxAutoConfiguration.class).run(
-				"--" + ENABLE_ADMIN_PROP, "--server.port=0");
-		assertTrue(this.context instanceof EmbeddedWebApplicationContext);
-		assertEquals(true, this.mBeanServer.getAttribute(createDefaultObjectName(),
-				"EmbeddedWebApplication"));
+		this.context = new SpringApplicationBuilder()
+				.sources(EmbeddedServletContainerAutoConfiguration.class,
+						ServerPropertiesAutoConfiguration.class,
+						DispatcherServletAutoConfiguration.class,
+						JmxAutoConfiguration.class,
+						SpringApplicationAdminJmxAutoConfiguration.class)
+				.run("--" + ENABLE_ADMIN_PROP, "--server.port=0");
+		assertThat(this.context).isInstanceOf(EmbeddedWebApplicationContext.class);
+		assertThat(this.mBeanServer.getAttribute(createDefaultObjectName(),
+				"EmbeddedWebApplication")).isEqualTo(Boolean.TRUE);
 		int expected = ((EmbeddedWebApplicationContext) this.context)
 				.getEmbeddedServletContainer().getPort();
 		String actual = getProperty(createDefaultObjectName(), "local.server.port");
-		assertEquals(String.valueOf(expected), actual);
+		assertThat(actual).isEqualTo(String.valueOf(expected));
 	}
 
 	private ObjectName createDefaultObjectName() {

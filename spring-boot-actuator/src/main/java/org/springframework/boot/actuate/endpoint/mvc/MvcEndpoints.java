@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,13 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 /**
  * A registry for all {@link MvcEndpoint} beans, and a factory for a set of generic ones
@@ -58,11 +62,18 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 		this.endpoints.addAll(existing);
 		this.customTypes = findEndpointClasses(existing);
 		@SuppressWarnings("rawtypes")
-		Collection<Endpoint> delegates = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-				this.applicationContext, Endpoint.class).values();
+		Collection<Endpoint> delegates = BeanFactoryUtils
+				.beansOfTypeIncludingAncestors(this.applicationContext, Endpoint.class)
+				.values();
 		for (Endpoint<?> endpoint : delegates) {
 			if (isGenericEndpoint(endpoint.getClass()) && endpoint.isEnabled()) {
-				this.endpoints.add(new EndpointMvcAdapter(endpoint));
+				EndpointMvcAdapter adapter = new EndpointMvcAdapter(endpoint);
+				String path = determinePath(endpoint,
+						this.applicationContext.getEnvironment());
+				if (path != null) {
+					adapter.setPath(path);
+				}
+				this.endpoints.add(adapter);
 			}
 		}
 	}
@@ -85,6 +96,17 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 	private boolean isGenericEndpoint(Class<?> type) {
 		return !this.customTypes.contains(type)
 				&& !MvcEndpoint.class.isAssignableFrom(type);
+	}
+
+	private String determinePath(Endpoint<?> endpoint, Environment environment) {
+		ConfigurationProperties configurationProperties = AnnotationUtils
+				.findAnnotation(endpoint.getClass(), ConfigurationProperties.class);
+		if (configurationProperties != null) {
+			String prefix = StringUtils.hasText(configurationProperties.prefix())
+					? configurationProperties.prefix() : configurationProperties.value();
+			return environment.getProperty(prefix + ".path");
+		}
+		return null;
 	}
 
 }

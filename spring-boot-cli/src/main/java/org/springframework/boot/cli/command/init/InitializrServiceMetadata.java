@@ -68,8 +68,8 @@ class InitializrServiceMetadata {
 	InitializrServiceMetadata(ProjectType defaultProjectType) {
 		this.dependencies = new HashMap<String, Dependency>();
 		this.projectTypes = new MetadataHolder<String, ProjectType>();
-		this.projectTypes.getContent()
-				.put(defaultProjectType.getId(), defaultProjectType);
+		this.projectTypes.getContent().put(defaultProjectType.getId(),
+				defaultProjectType);
 		this.projectTypes.setDefaultItem(defaultProjectType);
 		this.defaults = new HashMap<String, String>();
 	}
@@ -145,8 +145,8 @@ class InitializrServiceMetadata {
 		}
 		JSONObject type = root.getJSONObject(TYPE_EL);
 		JSONArray array = type.getJSONArray(VALUES_EL);
-		String defaultType = type.has(DEFAULT_ATTRIBUTE) ? type
-				.getString(DEFAULT_ATTRIBUTE) : null;
+		String defaultType = type.has(DEFAULT_ATTRIBUTE)
+				? type.getString(DEFAULT_ATTRIBUTE) : null;
 		for (int i = 0; i < array.length(); i++) {
 			JSONObject typeJson = array.getJSONObject(i);
 			ProjectType projectType = parseType(typeJson, defaultType);

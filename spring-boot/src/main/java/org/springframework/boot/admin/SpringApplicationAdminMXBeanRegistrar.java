@@ -24,6 +24,7 @@ import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -45,9 +46,9 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContextAware,
-		EnvironmentAware, InitializingBean, DisposableBean,
-		ApplicationListener<ApplicationReadyEvent> {
+public class SpringApplicationAdminMXBeanRegistrar
+		implements ApplicationContextAware, EnvironmentAware, InitializingBean,
+		DisposableBean, ApplicationListener<ApplicationReadyEvent> {
 
 	private static final Log logger = LogFactory.getLog(SpringApplicationAdmin.class);
 
@@ -106,7 +107,8 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 
 		@Override
 		public boolean isEmbeddedWebApplication() {
-			return (SpringApplicationAdminMXBeanRegistrar.this.applicationContext != null && SpringApplicationAdminMXBeanRegistrar.this.applicationContext instanceof EmbeddedWebApplicationContext);
+			return (SpringApplicationAdminMXBeanRegistrar.this.applicationContext != null
+					&& SpringApplicationAdminMXBeanRegistrar.this.applicationContext instanceof EmbeddedWebApplicationContext);
 		}
 
 		@Override
@@ -120,6 +122,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 			logger.info("Application shutdown requested.");
 			SpringApplicationAdminMXBeanRegistrar.this.applicationContext.close();
 		}
+
 	}
 
 }

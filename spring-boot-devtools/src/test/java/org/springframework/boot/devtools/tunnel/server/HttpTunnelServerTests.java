@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
 import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayload;
 import org.springframework.boot.devtools.tunnel.server.HttpTunnelServer.HttpConnection;
 import org.springframework.http.HttpStatus;
@@ -46,8 +47,7 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -145,7 +145,7 @@ public class HttpTunnelServerTests {
 	}
 
 	@Test
-	public void intialRequestIsUsedForFirstServerResponse() throws Exception {
+	public void initialRequestIsUsedForFirstServerResponse() throws Exception {
 		this.servletRequest.addHeader(SEQ_HEADER, "1");
 		this.servletRequest.setContent("hello".getBytes());
 		this.server.handle(this.request, this.response);
@@ -153,7 +153,7 @@ public class HttpTunnelServerTests {
 		this.serverChannel.send("hello");
 		this.serverChannel.disconnect();
 		this.server.getServerThread().join();
-		assertThat(this.servletResponse.getContentAsString(), equalTo("hello"));
+		assertThat(this.servletResponse.getContentAsString()).isEqualTo("hello");
 		this.serverChannel.verifyReceived("hello");
 	}
 
@@ -166,7 +166,7 @@ public class HttpTunnelServerTests {
 	}
 
 	@Test
-	public void typicalReqestResponseTraffic() throws Exception {
+	public void typicalRequestResponseTraffic() throws Exception {
 		MockHttpConnection h1 = new MockHttpConnection();
 		this.server.handle(h1);
 		MockHttpConnection h2 = new MockHttpConnection("hello server", 1);
@@ -192,7 +192,7 @@ public class HttpTunnelServerTests {
 		this.server.handle(h1);
 		this.serverChannel.disconnect();
 		this.server.getServerThread().join();
-		assertThat(h1.getServletResponse().getStatus(), equalTo(410));
+		assertThat(h1.getServletResponse().getStatus()).isEqualTo(410);
 	}
 
 	@Test
@@ -203,8 +203,8 @@ public class HttpTunnelServerTests {
 		h2.getServletRequest().addHeader("Content-Type", "application/x-disconnect");
 		this.server.handle(h2);
 		this.server.getServerThread().join();
-		assertThat(h1.getServletResponse().getStatus(), equalTo(410));
-		assertThat(this.serverChannel.isOpen(), equalTo(false));
+		assertThat(h1.getServletResponse().getStatus()).isEqualTo(410);
+		assertThat(this.serverChannel.isOpen()).isFalse();
 	}
 
 	@Test
@@ -216,13 +216,13 @@ public class HttpTunnelServerTests {
 		MockHttpConnection h3 = new MockHttpConnection("2", 3);
 		this.server.handle(h3);
 		h1.waitForResponse();
-		assertThat(h1.getServletResponse().getStatus(), equalTo(429));
+		assertThat(h1.getServletResponse().getStatus()).isEqualTo(429);
 		this.serverChannel.disconnect();
 		this.server.getServerThread().join();
 	}
 
 	@Test
-	public void requestRecievedOutOfOrder() throws Exception {
+	public void requestReceivedOutOfOrder() throws Exception {
 		MockHttpConnection h1 = new MockHttpConnection();
 		MockHttpConnection h2 = new MockHttpConnection("1+2", 1);
 		MockHttpConnection h3 = new MockHttpConnection("+3", 2);
@@ -245,8 +245,8 @@ public class HttpTunnelServerTests {
 		Thread.sleep(400);
 		this.serverChannel.disconnect();
 		this.server.getServerThread().join();
-		assertThat(h1.getServletResponse().getStatus(), equalTo(204));
-		assertThat(h2.getServletResponse().getStatus(), equalTo(204));
+		assertThat(h1.getServletResponse().getStatus()).isEqualTo(204);
+		assertThat(h2.getServletResponse().getStatus()).isEqualTo(204);
 	}
 
 	@Test
@@ -257,7 +257,7 @@ public class HttpTunnelServerTests {
 		this.server.handle(h1);
 		this.serverChannel.send("hello");
 		this.server.getServerThread().join();
-		assertThat(this.serverChannel.isOpen(), equalTo(false));
+		assertThat(this.serverChannel.isOpen()).isFalse();
 	}
 
 	@Test
@@ -272,9 +272,9 @@ public class HttpTunnelServerTests {
 		HttpConnection connection = new HttpConnection(this.request, this.response);
 		connection.waitForResponse();
 		connection.respond(new HttpTunnelPayload(1, ByteBuffer.wrap("hello".getBytes())));
-		assertThat(this.servletResponse.getStatus(), equalTo(200));
-		assertThat(this.servletResponse.getContentAsString(), equalTo("hello"));
-		assertThat(this.servletResponse.getHeader(SEQ_HEADER), equalTo("1"));
+		assertThat(this.servletResponse.getStatus()).isEqualTo(200);
+		assertThat(this.servletResponse.getContentAsString()).isEqualTo("hello");
+		assertThat(this.servletResponse.getHeader(SEQ_HEADER)).isEqualTo("1");
 	}
 
 	@Test
@@ -282,8 +282,8 @@ public class HttpTunnelServerTests {
 		HttpConnection connection = new HttpConnection(this.request, this.response);
 		connection.waitForResponse();
 		connection.respond(HttpStatus.I_AM_A_TEAPOT);
-		assertThat(this.servletResponse.getStatus(), equalTo(418));
-		assertThat(this.servletResponse.getContentLength(), equalTo(0));
+		assertThat(this.servletResponse.getStatus()).isEqualTo(418);
+		assertThat(this.servletResponse.getContentLength()).isEqualTo(0);
 	}
 
 	@Test
@@ -304,11 +304,11 @@ public class HttpTunnelServerTests {
 		testHttpConnectionNonAsync(100);
 	}
 
-	private void testHttpConnectionNonAsync(long sleepBeforeResponse) throws IOException,
-			InterruptedException {
+	private void testHttpConnectionNonAsync(long sleepBeforeResponse)
+			throws IOException, InterruptedException {
 		ServerHttpRequest request = mock(ServerHttpRequest.class);
-		given(request.getAsyncRequestControl(this.response)).willThrow(
-				new IllegalArgumentException());
+		given(request.getAsyncRequestControl(this.response))
+				.willThrow(new IllegalArgumentException());
 		final HttpConnection connection = new HttpConnection(request, this.response);
 		final AtomicBoolean responded = new AtomicBoolean();
 		Thread connectionThread = new Thread() {
@@ -321,19 +321,19 @@ public class HttpTunnelServerTests {
 
 		};
 		connectionThread.start();
-		assertThat(responded.get(), equalTo(false));
+		assertThat(responded.get()).isFalse();
 		Thread.sleep(sleepBeforeResponse);
 		connection.respond(HttpStatus.NO_CONTENT);
 		connectionThread.join();
-		assertThat(responded.get(), equalTo(true));
+		assertThat(responded.get()).isTrue();
 	}
 
 	@Test
 	public void httpConnectionRunning() throws Exception {
 		HttpConnection connection = new HttpConnection(this.request, this.response);
-		assertThat(connection.isOlderThan(100), equalTo(false));
+		assertThat(connection.isOlderThan(100)).isFalse();
 		Thread.sleep(200);
-		assertThat(connection.isOlderThan(100), equalTo(true));
+		assertThat(connection.isOlderThan(100)).isTrue();
 	}
 
 	/**
@@ -373,7 +373,7 @@ public class HttpTunnelServerTests {
 
 		public void verifyReceived(byte[] expected) {
 			synchronized (this.written) {
-				assertThat(this.written.toByteArray(), equalTo(expected));
+				assertThat(this.written.toByteArray()).isEqualTo(expected);
 				this.written.reset();
 			}
 		}
@@ -465,8 +465,8 @@ public class HttpTunnelServerTests {
 				throws Exception {
 			waitForServletResponse();
 			MockHttpServletResponse resp = getServletResponse();
-			assertThat(resp.getContentAsString(), equalTo(expectedContent));
-			assertThat(resp.getHeader(SEQ_HEADER), equalTo(String.valueOf(expectedSeq)));
+			assertThat(resp.getContentAsString()).isEqualTo(expectedContent);
+			assertThat(resp.getHeader(SEQ_HEADER)).isEqualTo(String.valueOf(expectedSeq));
 		}
 
 		public void waitForServletResponse() throws InterruptedException {

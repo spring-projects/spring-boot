@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,17 +28,21 @@ import java.util.Map;
 
 import javax.servlet.Filter;
 
+import groovy.text.Template;
+import groovy.text.TemplateEngine;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentation;
+import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -49,9 +53,6 @@ import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
-
-import groovy.text.Template;
-import groovy.text.TemplateEngine;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -69,7 +70,7 @@ public class EndpointDocumentation {
 	private static final String RESTDOCS_OUTPUT_DIR = "target/generated-snippets";
 
 	@Rule
-	public final RestDocumentation restDocumentation = new RestDocumentation(
+	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation(
 			RESTDOCS_OUTPUT_DIR);
 
 	@Autowired
@@ -105,6 +106,15 @@ public class EndpointDocumentation {
 	}
 
 	@Test
+	public void partialLogfile() throws Exception {
+		this.mockMvc
+				.perform(get("/logfile").accept(MediaType.TEXT_PLAIN)
+						.header(HttpHeaders.RANGE, "bytes=0-1024"))
+				.andExpect(status().isPartialContent())
+				.andDo(document("partial-logfile"));
+	}
+
+	@Test
 	public void endpoints() throws Exception {
 
 		final File docs = new File("src/main/asciidoc");
@@ -113,19 +123,19 @@ public class EndpointDocumentation {
 		final List<EndpointDoc> endpoints = new ArrayList<EndpointDoc>();
 		model.put("endpoints", endpoints);
 		for (MvcEndpoint endpoint : getEndpoints()) {
-			final String endpointPath = StringUtils.hasText(endpoint.getPath()) ? endpoint
-					.getPath() : "/";
+			final String endpointPath = StringUtils.hasText(endpoint.getPath())
+					? endpoint.getPath() : "/";
 
 			if (!endpointPath.equals("/docs") && !endpointPath.equals("/logfile")) {
 				String output = endpointPath.substring(1);
 				output = output.length() > 0 ? output : "./";
-				this.mockMvc
-						.perform(get(endpointPath).accept(MediaType.APPLICATION_JSON))
+				this.mockMvc.perform(get(endpointPath).accept(MediaType.APPLICATION_JSON))
 						.andExpect(status().isOk()).andDo(document(output))
 						.andDo(new ResultHandler() {
 							@Override
 							public void handle(MvcResult mvcResult) throws Exception {
-								EndpointDoc endpoint = new EndpointDoc(docs, endpointPath);
+								EndpointDoc endpoint = new EndpointDoc(docs,
+										endpointPath);
 								endpoints.add(endpoint);
 							}
 						});
@@ -135,8 +145,8 @@ public class EndpointDocumentation {
 		file.getParentFile().mkdirs();
 		PrintWriter writer = new PrintWriter(file, "UTF-8");
 		try {
-			Template template = this.templates.createTemplate(new File(
-					"src/restdoc/resources/templates/endpoints.adoc.tpl"));
+			Template template = this.templates.createTemplate(
+					new File("src/restdoc/resources/templates/endpoints.adoc.tpl"));
 			template.make(model).writeTo(writer);
 		}
 		finally {

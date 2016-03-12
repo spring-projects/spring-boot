@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,16 @@
 package org.springframework.boot.autoconfigure.reactor;
 
 import org.junit.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import reactor.bus.EventBus;
 import reactor.core.Dispatcher;
 import reactor.core.dispatch.MpscDispatcher;
 import reactor.core.dispatch.RingBufferDispatcher;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ReactorAutoConfiguration}.
@@ -44,7 +43,7 @@ public class ReactorAutoConfigurationTests {
 		this.context.register(ReactorAutoConfiguration.class);
 		this.context.refresh();
 		EventBus eventBus = this.context.getBean(EventBus.class);
-		assertThat(eventBus.getDispatcher(), instanceOf(RingBufferDispatcher.class));
+		assertThat(eventBus.getDispatcher()).isInstanceOf(RingBufferDispatcher.class);
 		this.context.close();
 	}
 
@@ -53,7 +52,7 @@ public class ReactorAutoConfigurationTests {
 		this.context.register(TestConfiguration.class, ReactorAutoConfiguration.class);
 		this.context.refresh();
 		EventBus eventBus = this.context.getBean(EventBus.class);
-		assertThat(eventBus.getDispatcher(), instanceOf(MpscDispatcher.class));
+		assertThat(eventBus.getDispatcher()).isInstanceOf(MpscDispatcher.class);
 		this.context.close();
 	}
 

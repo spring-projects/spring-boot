@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,22 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DefaultLaunchScript}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class DefaultLaunchScriptTests {
 
@@ -42,8 +43,61 @@ public class DefaultLaunchScriptTests {
 	public void loadsDefaultScript() throws Exception {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
-		assertThat(content, containsString("Spring Boot Startup Script"));
-		assertThat(content, containsString("MODE=\"auto\""));
+		assertThat(content).contains("Spring Boot Startup Script");
+	}
+
+	@Test
+	public void initInfoProvidesCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("initInfoProvides");
+	}
+
+	@Test
+	public void initInfoShortDescriptionCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("initInfoShortDescription");
+	}
+
+	@Test
+	public void initInfoDescriptionCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("initInfoDescription");
+	}
+
+	@Test
+	public void initInfoChkconfigCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("initInfoChkconfig");
+	}
+
+	@Test
+	public void modeCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("mode");
+	}
+
+	@Test
+	public void useStartStopDaemonCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("useStartStopDaemon");
+	}
+
+	@Test
+	public void logFolderCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("logFolder");
+	}
+
+	@Test
+	public void pidFolderCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("pidFolder");
+	}
+
+	@Test
+	public void defaultForUseStartStopDaemonIsTrue() throws Exception {
+		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
+		String content = new String(script.toByteArray());
+		assertThat(content).contains("USE_START_STOP_DAEMON=\"true\"");
+	}
+
+	@Test
+	public void defaultForModeIsAuto() throws Exception {
+		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
+		String content = new String(script.toByteArray());
+		assertThat(content).contains("MODE=\"auto\"");
 	}
 
 	@Test
@@ -52,31 +106,27 @@ public class DefaultLaunchScriptTests {
 		FileCopyUtils.copy("ABC".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("ABC"));
+		assertThat(content).isEqualTo("ABC");
 	}
 
 	@Test
 	public void expandVariables() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		FileCopyUtils.copy("h{{a}}ll{{b}}".getBytes(), file);
-		Properties properties = new Properties();
-		properties.put("a", "e");
-		properties.put("b", "o");
-		DefaultLaunchScript script = new DefaultLaunchScript(file, properties);
+		DefaultLaunchScript script = new DefaultLaunchScript(file,
+				createProperties("a:e", "b:o"));
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("hello"));
+		assertThat(content).isEqualTo("hello");
 	}
 
 	@Test
 	public void expandVariablesMultiLine() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		FileCopyUtils.copy("h{{a}}l\nl{{b}}".getBytes(), file);
-		Properties properties = new Properties();
-		properties.put("a", "e");
-		properties.put("b", "o");
-		DefaultLaunchScript script = new DefaultLaunchScript(file, properties);
+		DefaultLaunchScript script = new DefaultLaunchScript(file,
+				createProperties("a:e", "b:o"));
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("hel\nlo"));
+		assertThat(content).isEqualTo("hel\nlo");
 	}
 
 	@Test
@@ -85,18 +135,17 @@ public class DefaultLaunchScriptTests {
 		FileCopyUtils.copy("h{{a:e}}ll{{b:o}}".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("hello"));
+		assertThat(content).isEqualTo("hello");
 	}
 
 	@Test
 	public void expandVariablesWithDefaultsOverride() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		FileCopyUtils.copy("h{{a:e}}ll{{b:o}}".getBytes(), file);
-		Properties properties = new Properties();
-		properties.put("a", "a");
-		DefaultLaunchScript script = new DefaultLaunchScript(file, properties);
+		DefaultLaunchScript script = new DefaultLaunchScript(file,
+				createProperties("a:a"));
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("hallo"));
+		assertThat(content).isEqualTo("hallo");
 	}
 
 	@Test
@@ -105,7 +154,23 @@ public class DefaultLaunchScriptTests {
 		FileCopyUtils.copy("h{{a}}ll{{b}}".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("h{{a}}ll{{b}}"));
+		assertThat(content).isEqualTo("h{{a}}ll{{b}}");
+	}
+
+	private void assertThatPlaceholderCanBeReplaced(String placeholder) throws Exception {
+		DefaultLaunchScript script = new DefaultLaunchScript(null,
+				createProperties(placeholder + ":__test__"));
+		String content = new String(script.toByteArray());
+		assertThat(content).contains("__test__");
+	}
+
+	private Map<?, ?> createProperties(String... pairs) {
+		Map<Object, Object> properties = new HashMap<Object, Object>();
+		for (String pair : pairs) {
+			String[] keyValue = pair.split(":");
+			properties.put(keyValue[0], keyValue[1]);
+		}
+		return properties;
 	}
 
 }

@@ -25,6 +25,7 @@ import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
 import org.eclipse.aether.repository.ProxySelector;
 import org.eclipse.aether.util.repository.JreProxySelector;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -33,8 +34,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-public class DefaultRepositorySystemSessionAutoConfiguration implements
-		RepositorySystemSessionAutoConfiguration {
+public class DefaultRepositorySystemSessionAutoConfiguration
+		implements RepositorySystemSessionAutoConfiguration {
 
 	@Override
 	public void apply(DefaultRepositorySystemSession session,

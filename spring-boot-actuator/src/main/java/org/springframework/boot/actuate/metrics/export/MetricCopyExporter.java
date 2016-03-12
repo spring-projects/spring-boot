@@ -20,12 +20,18 @@ import java.io.Flushable;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.writer.CompositeMetricWriter;
+import org.springframework.boot.actuate.metrics.writer.CounterWriter;
+import org.springframework.boot.actuate.metrics.writer.Delta;
+import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
@@ -34,7 +40,15 @@ import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link Exporter} that "exports" by copying metric data from a source
- * {@link MetricReader} to a destination {@link MetricWriter}.
+ * {@link MetricReader} to a destination {@link MetricWriter}. Actually the output writer
+ * can be a {@link GaugeWriter}, in which case all metrics are simply output as their
+ * current value. If the output writer is also a {@link CounterWriter} then metrics whose
+ * names begin with "counter." are special: instead of writing them out as simple gauges
+ * the writer will increment the counter value. This involves the exporter storing the
+ * previous value of the counter so the delta can be computed. For best results with the
+ * counters, do not use the exporter concurrently in multiple threads (normally it will
+ * only be used periodically and sequentially, even if it is in a background thread, and
+ * this is fine).
  *
  * @author Dave Syer
  * @since 1.3.0
@@ -45,7 +59,11 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 
 	private final MetricReader reader;
 
-	private final MetricWriter writer;
+	private final GaugeWriter writer;
+
+	private final CounterWriter counter;
+
+	private ConcurrentMap<String, Long> counts = new ConcurrentHashMap<String, Long>();
 
 	private String[] includes = new String[0];
 
@@ -56,7 +74,7 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 	 * @param reader the metric reader
 	 * @param writer the metric writer
 	 */
-	public MetricCopyExporter(MetricReader reader, MetricWriter writer) {
+	public MetricCopyExporter(MetricReader reader, GaugeWriter writer) {
 		this(reader, writer, "");
 	}
 
@@ -66,10 +84,16 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 	 * @param writer the metric writer
 	 * @param prefix the name prefix
 	 */
-	public MetricCopyExporter(MetricReader reader, MetricWriter writer, String prefix) {
+	public MetricCopyExporter(MetricReader reader, GaugeWriter writer, String prefix) {
 		super(prefix);
 		this.reader = reader;
 		this.writer = writer;
+		if (writer instanceof CounterWriter) {
+			this.counter = (CounterWriter) writer;
+		}
+		else {
+			this.counter = null;
+		}
 	}
 
 	/**
@@ -103,8 +127,25 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 	@Override
 	protected void write(String group, Collection<Metric<?>> values) {
 		for (Metric<?> value : values) {
-			this.writer.set(value);
+			if (value.getName().startsWith("counter.") && this.counter != null) {
+				this.counter.increment(calculateDelta(value));
+			}
+			else {
+				this.writer.set(value);
+			}
 		}
+	}
+
+	private Delta<?> calculateDelta(Metric<?> value) {
+		long delta = value.getValue().longValue();
+		Long old = this.counts.replace(value.getName(), delta);
+		if (old != null) {
+			delta = delta - old;
+		}
+		else {
+			this.counts.putIfAbsent(value.getName(), delta);
+		}
+		return new Delta<Long>(value.getName(), delta, value.getTimestamp());
 	}
 
 	@Override
@@ -112,7 +153,7 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 		flush(this.writer);
 	}
 
-	private void flush(MetricWriter writer) {
+	private void flush(GaugeWriter writer) {
 		if (writer instanceof CompositeMetricWriter) {
 			for (MetricWriter child : (CompositeMetricWriter) writer) {
 				flush(child);

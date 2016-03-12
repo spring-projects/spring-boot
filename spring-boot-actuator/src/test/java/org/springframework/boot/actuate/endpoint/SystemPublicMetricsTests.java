@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.metrics.Metric;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SystemPublicMetrics}
@@ -38,24 +39,26 @@ public class SystemPublicMetricsTests {
 		for (Metric<?> metric : publicMetrics.metrics()) {
 			results.put(metric.getName(), metric);
 		}
-		assertTrue(results.containsKey("mem"));
-		assertTrue(results.containsKey("mem.free"));
-		assertTrue(results.containsKey("processors"));
-		assertTrue(results.containsKey("uptime"));
-		assertTrue(results.containsKey("systemload.average"));
-
-		assertTrue(results.containsKey("heap.committed"));
-		assertTrue(results.containsKey("heap.init"));
-		assertTrue(results.containsKey("heap.used"));
-		assertTrue(results.containsKey("heap"));
-
-		assertTrue(results.containsKey("threads.peak"));
-		assertTrue(results.containsKey("threads.daemon"));
-		assertTrue(results.containsKey("threads"));
-
-		assertTrue(results.containsKey("classes.loaded"));
-		assertTrue(results.containsKey("classes.unloaded"));
-		assertTrue(results.containsKey("classes"));
+		assertThat(results).containsKey("mem");
+		assertThat(results).containsKey("mem.free");
+		assertThat(results).containsKey("processors");
+		assertThat(results).containsKey("uptime");
+		assertThat(results).containsKey("systemload.average");
+		assertThat(results).containsKey("heap.committed");
+		assertThat(results).containsKey("heap.init");
+		assertThat(results).containsKey("heap.used");
+		assertThat(results).containsKey("heap");
+		assertThat(results).containsKey("nonheap.committed");
+		assertThat(results).containsKey("nonheap.init");
+		assertThat(results).containsKey("nonheap.used");
+		assertThat(results).containsKey("nonheap");
+		assertThat(results).containsKey("threads.peak");
+		assertThat(results).containsKey("threads.daemon");
+		assertThat(results).containsKey("threads.totalStarted");
+		assertThat(results).containsKey("threads");
+		assertThat(results).containsKey("classes.loaded");
+		assertThat(results).containsKey("classes.unloaded");
+		assertThat(results).containsKey("classes");
 	}
 
 }

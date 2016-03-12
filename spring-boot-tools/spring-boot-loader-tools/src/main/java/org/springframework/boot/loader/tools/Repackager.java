@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+
+import org.springframework.boot.loader.tools.JarWriter.EntryTransformer;
+import org.springframework.lang.UsesJava8;
 
 /**
  * Utility class that can be used to repackage an archive so that it can be executed using
@@ -33,6 +37,7 @@ import java.util.jar.Manifest;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class Repackager {
 
@@ -41,6 +46,10 @@ public class Repackager {
 	private static final String START_CLASS_ATTRIBUTE = "Start-Class";
 
 	private static final String BOOT_VERSION_ATTRIBUTE = "Spring-Boot-Version";
+
+	private static final String BOOT_LIB_ATTRIBUTE = "Spring-Boot-Lib";
+
+	private static final String BOOT_CLASSES_ATTRIBUTE = "Spring-Boot-Classes";
 
 	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
@@ -118,8 +127,8 @@ public class Repackager {
 	 * @throws IOException if the file cannot be repackaged
 	 * @since 1.3.0
 	 */
-	public void repackage(File destination, Libraries libraries, LaunchScript launchScript)
-			throws IOException {
+	public void repackage(File destination, Libraries libraries,
+			LaunchScript launchScript) throws IOException {
 		if (destination == null || destination.isDirectory()) {
 			throw new IllegalArgumentException("Invalid destination");
 		}
@@ -132,8 +141,7 @@ public class Repackager {
 		destination = destination.getAbsoluteFile();
 		File workingSource = this.source;
 		if (this.source.equals(destination)) {
-			workingSource = new File(this.source.getParentFile(), this.source.getName()
-					+ ".original");
+			workingSource = getBackupFile();
 			workingSource.delete();
 			renameFile(this.source, workingSource);
 		}
@@ -154,12 +162,20 @@ public class Repackager {
 		}
 	}
 
+	/**
+	 * Return the {@link File} to use to backup the original source.
+	 * @return the file to use to backup the original source
+	 */
+	public final File getBackupFile() {
+		return new File(this.source.getParentFile(), this.source.getName() + ".original");
+	}
+
 	private boolean alreadyRepackaged() throws IOException {
 		JarFile jarFile = new JarFile(this.source);
 		try {
 			Manifest manifest = jarFile.getManifest();
-			return (manifest != null && manifest.getMainAttributes().getValue(
-					BOOT_VERSION_ATTRIBUTE) != null);
+			return (manifest != null && manifest.getMainAttributes()
+					.getValue(BOOT_VERSION_ATTRIBUTE) != null);
 		}
 		finally {
 			jarFile.close();
@@ -189,7 +205,14 @@ public class Repackager {
 			writer.writeManifest(buildManifest(sourceJar));
 			Set<String> seen = new HashSet<String>();
 			writeNestedLibraries(unpackLibraries, seen, writer);
-			writer.writeEntries(sourceJar);
+			if (this.layout instanceof RepackagingLayout) {
+				writer.writeEntries(sourceJar,
+						new RenamingEntryTransformer(((RepackagingLayout) this.layout)
+								.getRepackagedClassesLocation()));
+			}
+			else {
+				writer.writeEntries(sourceJar);
+			}
 			writeNestedLibraries(standardLibraries, seen, writer);
 			if (this.layout.isExecutable()) {
 				writer.writeLoaderClasses();
@@ -208,12 +231,12 @@ public class Repackager {
 	private void writeNestedLibraries(List<Library> libraries, Set<String> alreadySeen,
 			JarWriter writer) throws IOException {
 		for (Library library : libraries) {
-			String destination = Repackager.this.layout.getLibraryDestination(
-					library.getName(), library.getScope());
+			String destination = Repackager.this.layout
+					.getLibraryDestination(library.getName(), library.getScope());
 			if (destination != null) {
 				if (!alreadySeen.add(destination + library.getName())) {
-					throw new IllegalStateException("Duplicate library "
-							+ library.getName());
+					throw new IllegalStateException(
+							"Duplicate library " + library.getName());
 				}
 				writer.writeNestedLibrary(destination, library);
 			}
@@ -260,8 +283,8 @@ public class Repackager {
 		}
 		String launcherClassName = this.layout.getLauncherClassName();
 		if (launcherClassName != null) {
-			manifest.getMainAttributes()
-					.putValue(MAIN_CLASS_ATTRIBUTE, launcherClassName);
+			manifest.getMainAttributes().putValue(MAIN_CLASS_ATTRIBUTE,
+					launcherClassName);
 			if (startClass == null) {
 				throw new IllegalStateException("Unable to find main class");
 			}
@@ -272,6 +295,12 @@ public class Repackager {
 		}
 		String bootVersion = getClass().getPackage().getImplementationVersion();
 		manifest.getMainAttributes().putValue(BOOT_VERSION_ATTRIBUTE, bootVersion);
+		manifest.getMainAttributes().putValue(BOOT_CLASSES_ATTRIBUTE,
+				(this.layout instanceof RepackagingLayout)
+						? ((RepackagingLayout) this.layout).getRepackagedClassesLocation()
+						: this.layout.getClassesLocation());
+		manifest.getMainAttributes().putValue(BOOT_LIB_ATTRIBUTE,
+				this.layout.getLibraryDestination("", LibraryScope.COMPILE));
 		return manifest;
 	}
 
@@ -282,8 +311,8 @@ public class Repackager {
 
 	private void renameFile(File file, File dest) {
 		if (!file.renameTo(dest)) {
-			throw new IllegalStateException("Unable to rename '" + file + "' to '" + dest
-					+ "'");
+			throw new IllegalStateException(
+					"Unable to rename '" + file + "' to '" + dest + "'");
 		}
 	}
 
@@ -291,6 +320,79 @@ public class Repackager {
 		if (!file.delete()) {
 			throw new IllegalStateException("Unable to delete '" + file + "'");
 		}
+	}
+
+	/**
+	 * An {@code EntryTransformer} that renames entries by applying a prefix.
+	 */
+	private static final class RenamingEntryTransformer implements EntryTransformer {
+
+		private final String namePrefix;
+
+		private RenamingEntryTransformer(String namePrefix) {
+			this.namePrefix = namePrefix;
+		}
+
+		@Override
+		public JarEntry transform(JarEntry entry) {
+			if (entry.getName().startsWith("META-INF/")
+					|| entry.getName().startsWith("BOOT-INF/")) {
+				return entry;
+			}
+			JarEntry renamedEntry = new JarEntry(this.namePrefix + entry.getName());
+			renamedEntry.setTime(entry.getTime());
+			renamedEntry.setSize(entry.getSize());
+			renamedEntry.setMethod(entry.getMethod());
+			if (entry.getComment() != null) {
+				renamedEntry.setComment(entry.getComment());
+			}
+			renamedEntry.setCompressedSize(entry.getCompressedSize());
+			renamedEntry.setCrc(entry.getCrc());
+			setCreationTimeIfPossible(entry, renamedEntry);
+			if (entry.getExtra() != null) {
+				renamedEntry.setExtra(entry.getExtra());
+			}
+			setLastAccessTimeIfPossible(entry, renamedEntry);
+			setLastModifiedTimeIfPossible(entry, renamedEntry);
+			return renamedEntry;
+		}
+
+		@UsesJava8
+		private void setCreationTimeIfPossible(JarEntry source, JarEntry target) {
+			try {
+				if (source.getCreationTime() != null) {
+					target.setCreationTime(source.getCreationTime());
+				}
+			}
+			catch (NoSuchMethodError ex) {
+				// Not running on Java 8. Continue.
+			}
+		}
+
+		@UsesJava8
+		private void setLastAccessTimeIfPossible(JarEntry source, JarEntry target) {
+			try {
+				if (source.getLastAccessTime() != null) {
+					target.setLastAccessTime(source.getLastAccessTime());
+				}
+			}
+			catch (NoSuchMethodError ex) {
+				// Not running on Java 8. Continue.
+			}
+		}
+
+		@UsesJava8
+		private void setLastModifiedTimeIfPossible(JarEntry source, JarEntry target) {
+			try {
+				if (source.getLastModifiedTime() != null) {
+					target.setLastModifiedTime(source.getLastModifiedTime());
+				}
+			}
+			catch (NoSuchMethodError ex) {
+				// Not running on Java 8. Continue.
+			}
+		}
+
 	}
 
 }

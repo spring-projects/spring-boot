@@ -22,6 +22,7 @@ import org.junit.Assume;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
@@ -46,7 +47,7 @@ public class RedisTestServer implements TestRule {
 			return new RedisStatement(base, this.connectionFactory);
 		}
 		catch (Exception ex) {
-			logger.error("No Redis server availble", ex);
+			logger.error("No Redis server available", ex);
 			return new SkipStatement();
 		}
 	}

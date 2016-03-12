@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2013-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Set;
 
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration;
@@ -35,6 +35,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -42,10 +43,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,6 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 @SpringApplicationConfiguration(Config.class)
 @WebAppConfiguration
 public class JolokiaMvcEndpointTests {
@@ -72,15 +72,14 @@ public class JolokiaMvcEndpointTests {
 	@Before
 	public void setUp() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		EnvironmentTestUtils.addEnvironment(
-				(ConfigurableApplicationContext) this.context, "foo:bar");
+		EnvironmentTestUtils.addEnvironment((ConfigurableApplicationContext) this.context,
+				"foo:bar");
 	}
 
 	@Test
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void endpointRegistered() throws Exception {
 		Set<? extends MvcEndpoint> values = this.endpoints.getEndpoints();
-		assertThat(values, (Matcher) hasItem(instanceOf(JolokiaMvcEndpoint.class)));
+		assertThat(values).hasAtLeastOneElementOfType(JolokiaMvcEndpoint.class);
 	}
 
 	@Test

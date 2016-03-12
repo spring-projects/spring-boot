@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.devtools.remote.client;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy.Type;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +29,7 @@ import javax.servlet.Filter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -37,6 +40,7 @@ import org.springframework.boot.devtools.autoconfigure.DevToolsProperties;
 import org.springframework.boot.devtools.autoconfigure.DevToolsProperties.Restart;
 import org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer;
 import org.springframework.boot.devtools.autoconfigure.RemoteDevToolsProperties;
+import org.springframework.boot.devtools.autoconfigure.RemoteDevToolsProperties.Proxy;
 import org.springframework.boot.devtools.autoconfigure.TriggerFileFilter;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
@@ -76,11 +80,14 @@ public class RemoteClientConfiguration {
 
 	private static final Log logger = LogFactory.getLog(RemoteClientConfiguration.class);
 
-	@Autowired
-	private DevToolsProperties properties;
+	private final DevToolsProperties properties;
 
 	@Value("${remoteUrl}")
 	private String remoteUrl;
+
+	public RemoteClientConfiguration(DevToolsProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
@@ -91,8 +98,13 @@ public class RemoteClientConfiguration {
 	public ClientHttpRequestFactory clientHttpRequestFactory() {
 		List<ClientHttpRequestInterceptor> interceptors = Arrays
 				.asList(getSecurityInterceptor());
-		return new InterceptingClientHttpRequestFactory(
-				new SimpleClientHttpRequestFactory(), interceptors);
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		Proxy proxy = this.properties.getRemote().getProxy();
+		if (proxy.getHost() != null && proxy.getPort() != null) {
+			requestFactory.setProxy(new java.net.Proxy(Type.HTTP,
+					new InetSocketAddress(proxy.getHost(), proxy.getPort())));
+		}
+		return new InterceptingClientHttpRequestFactory(requestFactory, interceptors);
 	}
 
 	private ClientHttpRequestInterceptor getSecurityInterceptor() {
@@ -149,8 +161,8 @@ public class RemoteClientConfiguration {
 		@EventListener
 		public void onClassPathChanged(ClassPathChangedEvent event) {
 			String url = this.remoteUrl + this.properties.getRemote().getContextPath();
-			this.executor.execute(new DelayedLiveReloadTrigger(
-					optionalLiveReloadServer(), this.clientHttpRequestFactory, url));
+			this.executor.execute(new DelayedLiveReloadTrigger(optionalLiveReloadServer(),
+					this.clientHttpRequestFactory, url));
 		}
 
 		@Bean
@@ -213,8 +225,8 @@ public class RemoteClientConfiguration {
 
 		@Bean
 		public ClassPathRestartStrategy classPathRestartStrategy() {
-			return new PatternClassPathRestartStrategy(this.properties.getRestart()
-					.getAllExclude());
+			return new PatternClassPathRestartStrategy(
+					this.properties.getRestart().getAllExclude());
 		}
 
 		@Bean

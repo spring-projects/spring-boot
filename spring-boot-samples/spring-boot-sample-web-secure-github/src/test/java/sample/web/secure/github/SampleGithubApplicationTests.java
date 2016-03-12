@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,64 +16,55 @@
 
 package sample.web.secure.github;
 
-import org.junit.Before;
+import java.net.URI;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
-import org.springframework.security.web.FilterChainProxy;
+import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Basic integration tests for github sso application.
+ * Basic integration tests for GitHub SSO application.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleGithubSecureApplication.class)
-@WebAppConfiguration
+@WebIntegrationTest(randomPort = true)
 @DirtiesContext
 public class SampleGithubApplicationTests {
 
-	@Autowired
-	private WebApplicationContext context;
-
-	@Autowired
-	private FilterChainProxy filterChain;
-
-	@Autowired
-	private OAuth2ClientContextFilter filter;
-
-	private MockMvc mvc;
-
-	@Before
-	public void setUp() {
-		this.mvc = webAppContextSetup(this.context).addFilters(this.filter,
-				this.filterChain).build();
-		SecurityContextHolder.clearContext();
-	}
+	@Value("${local.server.port}")
+	private int port;
 
 	@Test
 	public void everythingIsSecuredByDefault() throws Exception {
-		this.mvc.perform(get("/")).andExpect(status().isFound())
-				.andExpect(redirectedUrlPattern("**/login"));
+		TestRestTemplate restTemplate = new TestRestTemplate();
+		ResponseEntity<Void> entity = restTemplate
+				.getForEntity("http://localhost:" + this.port, Void.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+		assertThat(entity.getHeaders().getLocation())
+				.isEqualTo(URI.create("http://localhost:" + this.port + "/login"));
 	}
 
 	@Test
 	public void loginRedirectsToGithub() throws Exception {
-		this.mvc.perform(get("/login")).andExpect(status().isFound())
-				.andExpect(redirectedUrlPattern("https://github.com/**"));
+		TestRestTemplate restTemplate = new TestRestTemplate();
+		ResponseEntity<Void> entity = restTemplate
+				.getForEntity("http://localhost:" + this.port + "/login", Void.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+		assertThat(entity.getHeaders().getLocation().toString())
+				.startsWith("https://github.com/login/oauth");
 	}
 
 }

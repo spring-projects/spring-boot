@@ -18,6 +18,7 @@ package org.springframework.boot.cli.compiler.autoconfigure;
 
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+
 import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
@@ -38,9 +39,9 @@ public class SpringRetryCompilerAutoConfiguration extends CompilerAutoConfigurat
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses(
-				"org.springframework.retry.annotation.EnableRetry").add("spring-retry",
-				"spring-boot-starter-aop");
+		dependencies
+				.ifAnyMissingClasses("org.springframework.retry.annotation.EnableRetry")
+				.add("spring-retry", "spring-boot-starter-aop");
 	}
 
 	@Override

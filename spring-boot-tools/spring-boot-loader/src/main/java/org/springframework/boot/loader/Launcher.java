@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.ExplodedArchive;
@@ -39,8 +38,6 @@ import org.springframework.boot.loader.jar.JarFile;
  * @author Dave Syer
  */
 public abstract class Launcher {
-
-	protected Logger logger = Logger.getLogger(Launcher.class.getName());
 
 	/**
 	 * The main runner class. This must be loaded by the created ClassLoader so cannot be
@@ -61,7 +58,6 @@ public abstract class Launcher {
 			launch(args, getMainClass(), classLoader);
 		}
 		catch (Exception ex) {
-			ex.printStackTrace();
 			System.exit(1);
 		}
 	}
@@ -100,10 +96,8 @@ public abstract class Launcher {
 	protected void launch(String[] args, String mainClass, ClassLoader classLoader)
 			throws Exception {
 		Runnable runner = createMainMethodRunner(mainClass, args, classLoader);
-		Thread runnerThread = new Thread(runner);
-		runnerThread.setContextClassLoader(classLoader);
-		runnerThread.setName(Thread.currentThread().getName());
-		runnerThread.start();
+		Thread.currentThread().setContextClassLoader(classLoader);
+		runner.run();
 	}
 
 	/**
@@ -149,7 +143,8 @@ public abstract class Launcher {
 			throw new IllegalStateException(
 					"Unable to determine code source archive from " + root);
 		}
-		return (root.isDirectory() ? new ExplodedArchive(root) : new JarFileArchive(root));
+		return (root.isDirectory() ? new ExplodedArchive(root)
+				: new JarFileArchive(root));
 	}
 
 }

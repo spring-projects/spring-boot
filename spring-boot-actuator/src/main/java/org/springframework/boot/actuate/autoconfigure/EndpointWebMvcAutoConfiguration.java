@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -33,6 +34,7 @@ import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -40,6 +42,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
@@ -52,7 +55,6 @@ import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfigurat
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -85,7 +87,8 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Phillip Webb
  * @author Christian Dupuis
  * @author Andy Wilkinson
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
@@ -95,8 +98,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 		ManagementServerPropertiesAutoConfiguration.class,
 		RepositoryRestMvcAutoConfiguration.class, HypermediaAutoConfiguration.class,
 		HttpMessageConvertersAutoConfiguration.class })
-public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
-		BeanFactoryAware, SmartInitializingSingleton {
+public class EndpointWebMvcAutoConfiguration
+		implements ApplicationContextAware, BeanFactoryAware, SmartInitializingSingleton {
 
 	private static final Log logger = LogFactory
 			.getLog(EndpointWebMvcAutoConfiguration.class);
@@ -138,19 +141,25 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	public void afterSingletonsInstantiated() {
 		ManagementServerPort managementPort = ManagementServerPort.DIFFERENT;
 		if (this.applicationContext instanceof WebApplicationContext) {
-			managementPort = ManagementServerPort.get(
-					this.applicationContext.getEnvironment(), this.beanFactory);
+			managementPort = ManagementServerPort
+					.get(this.applicationContext.getEnvironment(), this.beanFactory);
 		}
-		if (managementPort == ManagementServerPort.DIFFERENT
-				&& this.applicationContext instanceof EmbeddedWebApplicationContext
-				&& ((EmbeddedWebApplicationContext) this.applicationContext)
-						.getEmbeddedServletContainer() != null) {
-			createChildManagementContext();
+		if (managementPort == ManagementServerPort.DIFFERENT) {
+			if (this.applicationContext instanceof EmbeddedWebApplicationContext
+					&& ((EmbeddedWebApplicationContext) this.applicationContext)
+							.getEmbeddedServletContainer() != null) {
+				createChildManagementContext();
+			}
+			else {
+				logger.warn("Could not start embedded management container on "
+						+ "different port (management endpoints are still available "
+						+ "through JMX)");
+			}
 		}
-		if (managementPort == ManagementServerPort.SAME
-				&& this.applicationContext.getEnvironment() instanceof ConfigurableEnvironment) {
-			addLocalManagementPortPropertyAlias((ConfigurableEnvironment) this.applicationContext
-					.getEnvironment());
+		if (managementPort == ManagementServerPort.SAME && this.applicationContext
+				.getEnvironment() instanceof ConfigurableEnvironment) {
+			addLocalManagementPortPropertyAlias(
+					(ConfigurableEnvironment) this.applicationContext.getEnvironment());
 		}
 	}
 
@@ -163,23 +172,10 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 				PropertyPlaceholderAutoConfiguration.class,
 				EmbeddedServletContainerAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
-		CloseEventPropagationListener
-				.addIfPossible(this.applicationContext, childContext);
-		try {
-			childContext.refresh();
-			managementContextResolver().setApplicationContext(childContext);
-		}
-		catch (RuntimeException ex) {
-			// No support currently for deploying a war with management.port=<different>,
-			// and this is the signature of that happening
-			if (ex instanceof EmbeddedServletContainerException
-					|| ex.getCause() instanceof EmbeddedServletContainerException) {
-				logger.warn("Could not start embedded container (management endpoints are still available through JMX)");
-			}
-			else {
-				throw ex;
-			}
-		}
+		CloseEventPropagationListener.addIfPossible(this.applicationContext,
+				childContext);
+		childContext.refresh();
+		managementContextResolver().setApplicationContext(childContext);
 	}
 
 	/**
@@ -189,8 +185,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	 */
 	private void addLocalManagementPortPropertyAlias(
 			final ConfigurableEnvironment environment) {
-		environment.getPropertySources().addLast(
-				new PropertySource<Object>("Management Server") {
+		environment.getPropertySources()
+				.addLast(new PropertySource<Object>("Management Server") {
 					@Override
 					public Object getProperty(String name) {
 						if ("local.management.port".equals(name)) {
@@ -204,6 +200,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	// Put Servlets and Filters in their own nested class so they don't force early
 	// instantiation of ManagementServerProperties.
 	@Configuration
+	@ConditionalOnProperty(prefix = "management", name = "add-application-context-header", matchIfMissing = true, havingValue = "true")
 	protected static class ApplicationContextFilterConfiguration {
 
 		@Bean
@@ -228,8 +225,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 		private final ApplicationContext applicationContext;
 
-		private ManagementServerProperties properties;
-
 		ApplicationContextHeaderFilter(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
@@ -237,15 +232,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain filterChain)
-				throws ServletException, IOException {
-			if (this.properties == null) {
-				this.properties = this.applicationContext
-						.getBean(ManagementServerProperties.class);
-			}
-			if (this.properties.getAddApplicationContextHeader()) {
-				response.addHeader("X-Application-Context",
-						this.applicationContext.getId());
-			}
+						throws ServletException, IOException {
+			response.addHeader("X-Application-Context", this.applicationContext.getId());
 			filterChain.doFilter(request, response);
 		}
 
@@ -255,8 +243,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	 * {@link ApplicationListener} to propagate the {@link ContextClosedEvent} from a
 	 * parent to a child.
 	 */
-	private static class CloseEventPropagationListener implements
-			ApplicationListener<ContextClosedEvent> {
+	private static class CloseEventPropagationListener
+			implements ApplicationListener<ContextClosedEvent> {
 
 		private final ApplicationContext parentContext;
 
@@ -284,14 +272,14 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 		private static void add(ConfigurableApplicationContext parentContext,
 				ConfigurableApplicationContext childContext) {
-			parentContext.addApplicationListener(new CloseEventPropagationListener(
-					parentContext, childContext));
+			parentContext.addApplicationListener(
+					new CloseEventPropagationListener(parentContext, childContext));
 		}
 
 	}
 
-	private static class OnManagementMvcCondition extends SpringBootCondition implements
-			ConfigurationCondition {
+	private static class OnManagementMvcCondition extends SpringBootCondition
+			implements ConfigurationCondition {
 
 		@Override
 		public ConfigurationPhase getConfigurationPhase() {
@@ -304,8 +292,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			if (!(context.getResourceLoader() instanceof WebApplicationContext)) {
 				return ConditionOutcome.noMatch("Non WebApplicationContext");
 			}
-			ManagementServerPort port = ManagementServerPort.get(
-					context.getEnvironment(), context.getBeanFactory());
+			ManagementServerPort port = ManagementServerPort.get(context.getEnvironment(),
+					context.getBeanFactory());
 			return new ConditionOutcome(port == ManagementServerPort.SAME,
 					"Management context");
 		}
@@ -319,20 +307,17 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		public static ManagementServerPort get(Environment environment,
 				BeanFactory beanFactory) {
 			Integer serverPort = getPortProperty(environment, "server.");
-			if (serverPort == null
-					&& hasCustomBeanDefinition(beanFactory, ServerProperties.class,
-							ServerPropertiesAutoConfiguration.class)) {
-				ServerProperties bean = beanFactory.getBean(ServerProperties.class);
-				serverPort = bean.getPort();
+			if (serverPort == null && hasCustomBeanDefinition(beanFactory,
+					ServerProperties.class, ServerPropertiesAutoConfiguration.class)) {
+				serverPort = getTemporaryBean(beanFactory, ServerProperties.class)
+						.getPort();
 			}
 			Integer managementPort = getPortProperty(environment, "management.");
-			if (managementPort == null
-					&& hasCustomBeanDefinition(beanFactory,
-							ManagementServerProperties.class,
-							ManagementServerPropertiesAutoConfiguration.class)) {
-				ManagementServerProperties bean = beanFactory
-						.getBean(ManagementServerProperties.class);
-				managementPort = bean.getPort();
+			if (managementPort == null && hasCustomBeanDefinition(beanFactory,
+					ManagementServerProperties.class,
+					ManagementServerPropertiesAutoConfiguration.class)) {
+				managementPort = getTemporaryBean(beanFactory,
+						ManagementServerProperties.class).getPort();
 			}
 			if (managementPort != null && managementPort < 0) {
 				return DISABLE;
@@ -340,7 +325,30 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			return ((managementPort == null)
 					|| (serverPort == null && managementPort.equals(8080))
 					|| (managementPort != 0 && managementPort.equals(serverPort)) ? SAME
-					: DIFFERENT);
+							: DIFFERENT);
+		}
+
+		private static <T> T getTemporaryBean(BeanFactory beanFactory, Class<T> type) {
+			if (!(beanFactory instanceof ConfigurableListableBeanFactory)) {
+				return null;
+			}
+			ConfigurableListableBeanFactory listable = (ConfigurableListableBeanFactory) beanFactory;
+			String[] names = listable.getBeanNamesForType(type, true, false);
+			if (names == null || names.length != 1) {
+				return null;
+			}
+			// Use a temporary child bean factory to avoid instantiating the bean in the
+			// parent (it won't be bound to the environment yet)
+			return createTemporaryBean(type, listable,
+					listable.getBeanDefinition(names[0]));
+		}
+
+		private static <T> T createTemporaryBean(Class<T> type,
+				ConfigurableListableBeanFactory parent, BeanDefinition definition) {
+			DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory(
+					parent);
+			beanFactory.registerBeanDefinition(type.getName(), definition);
+			return beanFactory.getBean(type);
 		}
 
 		private static Integer getPortProperty(Environment environment, String prefix) {

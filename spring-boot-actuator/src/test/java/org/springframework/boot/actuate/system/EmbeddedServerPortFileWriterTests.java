@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,15 +26,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -61,17 +60,26 @@ public class EmbeddedServerPortFileWriterTests {
 		File file = this.temporaryFolder.newFile();
 		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)), equalTo("8080"));
+		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEqualTo("8080");
 	}
 
 	@Test
-	public void overridePortFile() throws Exception {
+	public void overridePortFileWithDefault() throws Exception {
+		System.setProperty("PORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
+		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter();
+		listener.onApplicationEvent(mockEvent("", 8080));
+		FileReader reader = new FileReader(System.getProperty("PORTFILE"));
+		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("8080");
+	}
+
+	@Test
+	public void overridePortFileWithExplicitFile() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		System.setProperty("PORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
 		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
-		assertThat(FileCopyUtils.copyToString(new FileReader(System
-				.getProperty("PORTFILE"))), equalTo("8080"));
+		FileReader reader = new FileReader(System.getProperty("PORTFILE"));
+		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("8080");
 	}
 
 	@Test
@@ -80,15 +88,16 @@ public class EmbeddedServerPortFileWriterTests {
 		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
 		listener.onApplicationEvent(mockEvent("management", 9090));
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)), equalTo("8080"));
+		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEqualTo("8080");
 		String managementFile = file.getName();
 		managementFile = managementFile.substring(0, managementFile.length()
 				- StringUtils.getFilenameExtension(managementFile).length() - 1);
 		managementFile = managementFile + "-management."
 				+ StringUtils.getFilenameExtension(file.getName());
-		assertThat(FileCopyUtils.copyToString(new FileReader(new File(file
-				.getParentFile(), managementFile))), equalTo("9090"));
-		assertThat(collectFileNames(file.getParentFile()), hasItem(managementFile));
+		FileReader reader = new FileReader(
+				new File(file.getParentFile(), managementFile));
+		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("9090");
+		assertThat(collectFileNames(file.getParentFile())).contains(managementFile);
 	}
 
 	@Test
@@ -102,13 +111,15 @@ public class EmbeddedServerPortFileWriterTests {
 				- StringUtils.getFilenameExtension(managementFile).length() - 1);
 		managementFile = managementFile + "-MANAGEMENT."
 				+ StringUtils.getFilenameExtension(file.getName());
-		assertThat(FileCopyUtils.copyToString(new FileReader(new File(file
-				.getParentFile(), managementFile))), equalTo("9090"));
-		assertThat(collectFileNames(file.getParentFile()), hasItem(managementFile));
+		FileReader reader = new FileReader(
+				new File(file.getParentFile(), managementFile));
+		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("9090");
+		assertThat(collectFileNames(file.getParentFile())).contains(managementFile);
 	}
 
 	private EmbeddedServletContainerInitializedEvent mockEvent(String name, int port) {
-		EmbeddedWebApplicationContext applicationContext = mock(EmbeddedWebApplicationContext.class);
+		EmbeddedWebApplicationContext applicationContext = mock(
+				EmbeddedWebApplicationContext.class);
 		EmbeddedServletContainer source = mock(EmbeddedServletContainer.class);
 		given(applicationContext.getNamespace()).willReturn(name);
 		given(source.getPort()).willReturn(port);

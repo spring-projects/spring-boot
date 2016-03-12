@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.tomcat.jdbc.pool.DataSource;
-import org.junit.Test;
-import org.springframework.beans.BeanUtils;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.BeanDescription;
@@ -43,9 +35,16 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.SerializerFactory;
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.springframework.beans.BeanUtils;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test that a {@link DataSource} can be exposed as JSON for actuator endpoints.
@@ -62,7 +61,7 @@ public class DataSourceJsonSerializationTests {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializerFactory(factory);
 		String value = mapper.writeValueAsString(dataSource);
-		assertTrue(value.contains("\"url\":"));
+		assertThat(value.contains("\"url\":")).isTrue();
 	}
 
 	@Test
@@ -71,8 +70,8 @@ public class DataSourceJsonSerializationTests {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.addMixIn(DataSource.class, DataSourceJson.class);
 		String value = mapper.writeValueAsString(dataSource);
-		assertTrue(value.contains("\"url\":"));
-		assertEquals(1, StringUtils.countOccurrencesOf(value, "\"url\""));
+		assertThat(value.contains("\"url\":")).isTrue();
+		assertThat(StringUtils.countOccurrencesOf(value, "\"url\"")).isEqualTo(1);
 	}
 
 	@JsonSerialize(using = TomcatDataSourceSerializer.class)
@@ -90,8 +89,7 @@ public class DataSourceJsonSerializationTests {
 			for (PropertyDescriptor property : BeanUtils
 					.getPropertyDescriptors(DataSource.class)) {
 				Method reader = property.getReadMethod();
-				if (reader != null
-						&& property.getWriteMethod() != null
+				if (reader != null && property.getWriteMethod() != null
 						&& this.conversionService.canConvert(String.class,
 								property.getPropertyType())) {
 					jgen.writeObjectField(property.getName(),
@@ -114,10 +112,9 @@ public class DataSourceJsonSerializationTests {
 			for (BeanPropertyWriter writer : beanProperties) {
 				AnnotatedMethod setter = beanDesc.findMethod(
 						"set" + StringUtils.capitalize(writer.getName()),
-						new Class<?>[] { writer.getPropertyType() });
-				if (setter != null
-						&& this.conversionService.canConvert(String.class,
-								writer.getPropertyType())) {
+						new Class<?>[] { writer.getType().getRawClass() });
+				if (setter != null && this.conversionService.canConvert(String.class,
+						writer.getType().getRawClass())) {
 					result.add(writer);
 				}
 			}

@@ -16,16 +16,16 @@
 
 package org.springframework.boot.logging.logback;
 
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.core.env.Environment;
-import org.xml.sax.Attributes;
-
 import ch.qos.logback.core.joran.action.Action;
 import ch.qos.logback.core.joran.action.ActionUtil;
 import ch.qos.logback.core.joran.action.ActionUtil.Scope;
 import ch.qos.logback.core.joran.spi.ActionException;
 import ch.qos.logback.core.joran.spi.InterpretationContext;
 import ch.qos.logback.core.util.OptionHelper;
+import org.xml.sax.Attributes;
+
+import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.core.env.Environment;
 
 /**
  * Logback {@link Action} to support {@code <springProperty>} tags. Allows logback
@@ -50,7 +50,8 @@ class SpringPropertyAction extends Action {
 		String source = attributes.getValue(SOURCE_ATTRIBUTE);
 		Scope scope = ActionUtil.stringToScope(attributes.getValue(SCOPE_ATTRIBUTE));
 		if (OptionHelper.isEmpty(name) || OptionHelper.isEmpty(source)) {
-			addError("The \"name\" and \"source\" attributes of <springProperty> must be set");
+			addError(
+					"The \"name\" and \"source\" attributes of <springProperty> must be set");
 		}
 		ActionUtil.setProperty(ic, name, getValue(source), scope);
 	}

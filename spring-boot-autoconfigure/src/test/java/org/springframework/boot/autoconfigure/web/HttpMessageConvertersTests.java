@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,14 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
@@ -32,12 +33,9 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -58,12 +56,12 @@ public class HttpMessageConvertersTests {
 		for (HttpMessageConverter<?> converter : converters) {
 			converterClasses.add(converter.getClass());
 		}
-		assertThat(converterClasses, equalTo(Arrays.<Class<?>>asList(
-				ByteArrayHttpMessageConverter.class, StringHttpMessageConverter.class,
-				ResourceHttpMessageConverter.class, SourceHttpMessageConverter.class,
+		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
+				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
+				SourceHttpMessageConverter.class,
 				AllEncompassingFormHttpMessageConverter.class,
 				MappingJackson2HttpMessageConverter.class,
-				MappingJackson2XmlHttpMessageConverter.class)));
+				MappingJackson2XmlHttpMessageConverter.class);
 	}
 
 	@Test
@@ -72,8 +70,8 @@ public class HttpMessageConvertersTests {
 		MappingJackson2HttpMessageConverter converter2 = new MappingJackson2HttpMessageConverter();
 		HttpMessageConverters converters = new HttpMessageConverters(converter1,
 				converter2);
-		assertTrue(converters.getConverters().contains(converter1));
-		assertTrue(converters.getConverters().contains(converter2));
+		assertThat(converters.getConverters().contains(converter1)).isTrue();
+		assertThat(converters.getConverters().contains(converter2)).isTrue();
 		List<MappingJackson2HttpMessageConverter> httpConverters = new ArrayList<MappingJackson2HttpMessageConverter>();
 		for (HttpMessageConverter<?> candidate : converters) {
 			if (candidate instanceof MappingJackson2HttpMessageConverter) {
@@ -81,10 +79,10 @@ public class HttpMessageConvertersTests {
 			}
 		}
 		// The existing converter is still there, but with a lower priority
-		assertEquals(3, httpConverters.size());
-		assertEquals(0, httpConverters.indexOf(converter1));
-		assertEquals(1, httpConverters.indexOf(converter2));
-		assertNotEquals(0, converters.getConverters().indexOf(converter1));
+		assertThat(httpConverters).hasSize(3);
+		assertThat(httpConverters.indexOf(converter1)).isEqualTo(0);
+		assertThat(httpConverters.indexOf(converter2)).isEqualTo(1);
+		assertThat(converters.getConverters().indexOf(converter1)).isNotEqualTo(0);
 	}
 
 	@Test
@@ -93,9 +91,20 @@ public class HttpMessageConvertersTests {
 		HttpMessageConverter<?> converter2 = mock(HttpMessageConverter.class);
 		HttpMessageConverters converters = new HttpMessageConverters(converter1,
 				converter2);
-		assertTrue(converters.getConverters().contains(converter1));
-		assertEquals(converter1, converters.getConverters().get(0));
-		assertEquals(converter2, converters.getConverters().get(1));
+		assertThat(converters.getConverters().get(0)).isEqualTo(converter1);
+		assertThat(converters.getConverters().get(1)).isEqualTo(converter2);
+	}
+
+	@Test
+	public void convertersAreAddedToFormPartConverter() {
+		HttpMessageConverter<?> converter1 = mock(HttpMessageConverter.class);
+		HttpMessageConverter<?> converter2 = mock(HttpMessageConverter.class);
+		List<HttpMessageConverter<?>> converters = new HttpMessageConverters(converter1,
+				converter2).getConverters();
+		List<HttpMessageConverter<?>> partConverters = extractFormPartConverters(
+				converters);
+		assertThat(partConverters.get(0)).isEqualTo(converter1);
+		assertThat(partConverters.get(1)).isEqualTo(converter2);
 	}
 
 	@Test
@@ -104,9 +113,10 @@ public class HttpMessageConvertersTests {
 			@Override
 			protected List<HttpMessageConverter<?>> postProcessConverters(
 					List<HttpMessageConverter<?>> converters) {
-				for (Iterator<HttpMessageConverter<?>> iterator = converters.iterator(); iterator
-						.hasNext();) {
-					if (iterator.next() instanceof MappingJackson2XmlHttpMessageConverter) {
+				for (Iterator<HttpMessageConverter<?>> iterator = converters
+						.iterator(); iterator.hasNext();) {
+					if (iterator
+							.next() instanceof MappingJackson2XmlHttpMessageConverter) {
 						iterator.remove();
 					}
 				}
@@ -117,11 +127,57 @@ public class HttpMessageConvertersTests {
 		for (HttpMessageConverter<?> converter : converters) {
 			converterClasses.add(converter.getClass());
 		}
-		assertThat(converterClasses, equalTo(Arrays.<Class<?>>asList(
-				ByteArrayHttpMessageConverter.class, StringHttpMessageConverter.class,
-				ResourceHttpMessageConverter.class, SourceHttpMessageConverter.class,
+		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
+				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
+				SourceHttpMessageConverter.class,
 				AllEncompassingFormHttpMessageConverter.class,
-				MappingJackson2HttpMessageConverter.class)));
+				MappingJackson2HttpMessageConverter.class);
+	}
+
+	@Test
+	public void postProcessPartConverters() throws Exception {
+		HttpMessageConverters converters = new HttpMessageConverters() {
+			@Override
+			protected List<HttpMessageConverter<?>> postProcessPartConverters(
+					List<HttpMessageConverter<?>> converters) {
+				for (Iterator<HttpMessageConverter<?>> iterator = converters
+						.iterator(); iterator.hasNext();) {
+					if (iterator
+							.next() instanceof MappingJackson2XmlHttpMessageConverter) {
+						iterator.remove();
+					}
+				}
+				return converters;
+			};
+		};
+		List<Class<?>> converterClasses = new ArrayList<Class<?>>();
+		for (HttpMessageConverter<?> converter : extractFormPartConverters(
+				converters.getConverters())) {
+			converterClasses.add(converter.getClass());
+		}
+		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
+				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
+				SourceHttpMessageConverter.class,
+				MappingJackson2HttpMessageConverter.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<HttpMessageConverter<?>> extractFormPartConverters(
+			List<HttpMessageConverter<?>> converters) {
+		AllEncompassingFormHttpMessageConverter formConverter = findFormConverter(
+				converters);
+		return (List<HttpMessageConverter<?>>) ReflectionTestUtils.getField(formConverter,
+				"partConverters");
+	}
+
+	private AllEncompassingFormHttpMessageConverter findFormConverter(
+			Collection<HttpMessageConverter<?>> converters) {
+		for (HttpMessageConverter<?> converter : converters) {
+			if (converter instanceof AllEncompassingFormHttpMessageConverter) {
+				return (AllEncompassingFormHttpMessageConverter) converter;
+			}
+		}
+		return null;
 	}
 
 }

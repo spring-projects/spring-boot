@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,7 @@ import java.io.File;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ApplicationTemp}.
@@ -36,18 +33,18 @@ public class ApplicationTempTests {
 	public void generatesConsistentTemp() throws Exception {
 		ApplicationTemp t1 = new ApplicationTemp();
 		ApplicationTemp t2 = new ApplicationTemp();
-		assertThat(t1.getFolder(), notNullValue());
-		assertThat(t1.getFolder(), equalTo(t2.getFolder()));
+		assertThat(t1.getDir()).isNotNull();
+		assertThat(t1.getDir()).isEqualTo(t2.getDir());
 	}
 
 	@Test
 	public void differentBasedOnUserDir() throws Exception {
 		String userDir = System.getProperty("user.dir");
 		try {
-			File t1 = new ApplicationTemp().getFolder();
+			File t1 = new ApplicationTemp().getDir();
 			System.setProperty("user.dir", "abc");
-			File t2 = new ApplicationTemp().getFolder();
-			assertThat(t1, not(equalTo(t2)));
+			File t2 = new ApplicationTemp().getDir();
+			assertThat(t1).isNotEqualTo(t2);
 		}
 		finally {
 			System.setProperty("user.dir", userDir);
@@ -55,9 +52,9 @@ public class ApplicationTempTests {
 	}
 
 	@Test
-	public void getSubFolder() throws Exception {
+	public void getSubDir() throws Exception {
 		ApplicationTemp temp = new ApplicationTemp();
-		assertThat(temp.getFolder("abc"), equalTo(new File(temp.getFolder(), "abc")));
+		assertThat(temp.getDir("abc")).isEqualTo(new File(temp.getDir(), "abc"));
 	}
 
 }

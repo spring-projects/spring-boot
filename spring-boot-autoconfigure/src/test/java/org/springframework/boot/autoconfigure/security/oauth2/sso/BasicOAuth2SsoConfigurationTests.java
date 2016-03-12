@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import javax.servlet.Filter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.security.oauth2.OAuth2AutoConfiguration;
@@ -29,6 +30,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.sso.BasicOAuth2Sso
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -46,6 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 @SpringApplicationConfiguration(TestConfiguration.class)
 @WebAppConfiguration
 @TestPropertySource(properties = { "security.oauth2.client.clientId=client",
@@ -74,6 +77,12 @@ public class BasicOAuth2SsoConfigurationTests {
 	public void homePageIsSecure() throws Exception {
 		this.mvc.perform(get("/")).andExpect(status().isFound())
 				.andExpect(header().string("location", "http://localhost/login"));
+	}
+
+	@Test
+	public void homePageSends401ToXhr() throws Exception {
+		this.mvc.perform(get("/").header("X-Requested-With", "XMLHttpRequest"))
+				.andExpect(status().isUnauthorized());
 	}
 
 	@Configuration

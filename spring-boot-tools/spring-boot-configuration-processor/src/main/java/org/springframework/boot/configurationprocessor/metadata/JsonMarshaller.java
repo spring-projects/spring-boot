@@ -33,6 +33,7 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
 
 /**
@@ -88,7 +89,7 @@ public class JsonMarshaller {
 		}
 		ItemDeprecation deprecation = item.getDeprecation();
 		if (deprecation != null) {
-			jsonObject.put("deprecated", true); // backward compat
+			jsonObject.put("deprecated", true); // backward compatibility
 			JSONObject deprecationJsonObject = new JSONObject();
 			if (deprecation.getReason() != null) {
 				deprecationJsonObject.put("reason", deprecation.getReason());
@@ -221,8 +222,8 @@ public class JsonMarshaller {
 			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
 			ItemDeprecation deprecation = new ItemDeprecation();
 			deprecation.setReason(deprecationJsonObject.optString("reason", null));
-			deprecation.setReplacement(deprecationJsonObject.optString("replacement",
-					null));
+			deprecation
+					.setReplacement(deprecationJsonObject.optString("replacement", null));
 			return deprecation;
 		}
 		return (object.optBoolean("deprecated") ? new ItemDeprecation() : null);

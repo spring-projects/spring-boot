@@ -57,7 +57,7 @@ public class HintCommand extends AbstractCommand {
 			if (index == 0) {
 				showCommandHints(starting);
 			}
-			else if ((arguments.size() > 0) && (starting.length() > 0)) {
+			else if (!arguments.isEmpty() && (starting.length() > 0)) {
 				String command = arguments.remove(0);
 				showCommandOptionHints(command, Collections.unmodifiableList(arguments),
 						starting);
@@ -83,8 +83,8 @@ public class HintCommand extends AbstractCommand {
 			return false;
 		}
 		return command.getName().startsWith(starting)
-				|| (this.commandRunner.isOptionCommand(command) && ("--" + command
-						.getName()).startsWith(starting));
+				|| (this.commandRunner.isOptionCommand(command)
+						&& ("--" + command.getName()).startsWith(starting));
 	}
 
 	private void showCommandOptionHints(String commandName,

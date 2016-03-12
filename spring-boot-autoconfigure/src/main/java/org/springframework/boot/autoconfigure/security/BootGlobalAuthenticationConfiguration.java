@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.ApplicationContext;
@@ -56,10 +57,10 @@ public class BootGlobalAuthenticationConfiguration {
 		return new BootGlobalAuthenticationConfigurationAdapter(context);
 	}
 
-	private static class BootGlobalAuthenticationConfigurationAdapter extends
-			GlobalAuthenticationConfigurerAdapter {
+	private static class BootGlobalAuthenticationConfigurationAdapter
+			extends GlobalAuthenticationConfigurerAdapter {
 
-		private static Log logger = LogFactory
+		private static final Log logger = LogFactory
 				.getLog(BootGlobalAuthenticationConfiguration.class);
 
 		private final ApplicationContext context;

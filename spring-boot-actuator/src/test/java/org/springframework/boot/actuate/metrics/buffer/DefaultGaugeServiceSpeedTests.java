@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
+
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
@@ -40,7 +41,7 @@ import org.springframework.boot.actuate.metrics.writer.DefaultGaugeService;
 import org.springframework.lang.UsesJava8;
 import org.springframework.util.StopWatch;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Speed tests for {@link DefaultGaugeService}.
@@ -93,8 +94,8 @@ public class DefaultGaugeServiceSpeedTests {
 			public void run() {
 				for (int i = 0; i < number; i++) {
 					String name = sample[i % sample.length];
-					DefaultGaugeServiceSpeedTests.this.gaugeService.submit(name, count
-							+ i);
+					DefaultGaugeServiceSpeedTests.this.gaugeService.submit(name,
+							count + i);
 				}
 			}
 		};
@@ -124,7 +125,7 @@ public class DefaultGaugeServiceSpeedTests {
 		});
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
-		assertTrue(0 < total.longValue());
+		assertThat(0 < total.longValue()).isTrue();
 	}
 
 }

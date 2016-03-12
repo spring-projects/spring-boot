@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,19 @@
 package org.springframework.boot.bind;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
 
 import org.junit.Test;
+
 import org.springframework.beans.NotWritablePropertyException;
+import org.springframework.boot.context.config.RandomValuePropertySource;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.mock.env.MockPropertySource;
@@ -33,7 +37,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PropertiesConfigurationFactory}.
@@ -53,14 +57,14 @@ public class PropertiesConfigurationFactoryTests {
 	@Test
 	public void testValidPropertiesLoadsWithDash() throws Exception {
 		Foo foo = createFoo("na-me: blah\nbar: blah");
-		assertEquals("blah", foo.bar);
-		assertEquals("blah", foo.name);
+		assertThat(foo.bar).isEqualTo("blah");
+		assertThat(foo.name).isEqualTo("blah");
 	}
 
 	@Test
 	public void testUnknownPropertyOkByDefault() throws Exception {
 		Foo foo = createFoo("hi: hello\nname: foo\nbar: blah");
-		assertEquals("blah", foo.bar);
+		assertThat(foo.bar).isEqualTo("blah");
 	}
 
 	@Test(expected = NotWritablePropertyException.class)
@@ -71,15 +75,15 @@ public class PropertiesConfigurationFactoryTests {
 
 	@Test(expected = BindException.class)
 	public void testMissingPropertyCausesValidationError() throws Exception {
-		this.validator = new SpringValidatorAdapter(Validation
-				.buildDefaultValidatorFactory().getValidator());
+		this.validator = new SpringValidatorAdapter(
+				Validation.buildDefaultValidatorFactory().getValidator());
 		createFoo("bar: blah");
 	}
 
 	@Test
 	public void testValidationErrorCanBeSuppressed() throws Exception {
-		this.validator = new SpringValidatorAdapter(Validation
-				.buildDefaultValidatorFactory().getValidator());
+		this.validator = new SpringValidatorAdapter(
+				Validation.buildDefaultValidatorFactory().getValidator());
 		setupFactory();
 		this.factory.setExceptionIfInvalid(false);
 		bindFoo("bar: blah");
@@ -98,7 +102,7 @@ public class PropertiesConfigurationFactoryTests {
 		this.factory.setIgnoreUnknownFields(false);
 		this.factory.afterPropertiesSet();
 		Foo foo = this.factory.getObject();
-		assertEquals("bar", foo.name);
+		assertThat(foo.name).isEqualTo("bar");
 	}
 
 	@Test
@@ -113,6 +117,51 @@ public class PropertiesConfigurationFactoryTests {
 		this.factory.setPropertySources(propertySources);
 		this.factory.setIgnoreUnknownFields(false);
 		this.factory.afterPropertiesSet();
+	}
+
+	@Test
+	public void testBindWithDashPrefix() throws Exception {
+		// gh-4045
+		this.targetName = "foo-bar";
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(new SystemEnvironmentPropertySource("systemEnvironment",
+				Collections.<String, Object>singletonMap("FOO_BAR_NAME", "blah")));
+		propertySources.addLast(new RandomValuePropertySource());
+		setupFactory();
+		this.factory.setPropertySources(propertySources);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertThat(foo.name).isEqualTo("blah");
+	}
+
+	@Test
+	public void testBindWithDelimitedPrefixUsingMatchingDelimiter() throws Exception {
+		this.targetName = "env_foo";
+		this.ignoreUnknownFields = false;
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(new SystemEnvironmentPropertySource("systemEnvironment",
+				Collections.<String, Object>singletonMap("ENV_FOO_NAME", "blah")));
+		propertySources.addLast(new RandomValuePropertySource("random"));
+		setupFactory();
+		this.factory.setPropertySources(propertySources);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertThat(foo.name).isEqualTo("blah");
+	}
+
+	@Test
+	public void testBindWithDelimitedPrefixUsingDifferentDelimiter() throws Exception {
+		this.targetName = "env.foo";
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(new SystemEnvironmentPropertySource("systemEnvironment",
+				Collections.<String, Object>singletonMap("ENV_FOO_NAME", "blah")));
+		propertySources.addLast(new RandomValuePropertySource("random"));
+		this.ignoreUnknownFields = false;
+		setupFactory();
+		this.factory.setPropertySources(propertySources);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertThat(foo.name).isEqualTo("blah");
 	}
 
 	private Foo createFoo(final String values) throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,10 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 import org.junit.Test;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link EmbeddedDataSourceConfiguration}.
@@ -37,7 +38,7 @@ public class EmbeddedDataSourceConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(EmbeddedDataSourceConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
 		this.context.close();
 	}
 

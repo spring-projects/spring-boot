@@ -18,6 +18,7 @@ package org.springframework.boot.cli.compiler.autoconfigure;
 
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+
 import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
@@ -45,8 +46,7 @@ public class SpringSecurityCompilerAutoConfiguration extends CompilerAutoConfigu
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports(
-				"org.springframework.security.core.Authentication",
+		imports.addImports("org.springframework.security.core.Authentication",
 				"org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity",
 				"org.springframework.security.core.authority.AuthorityUtils")
 				.addStarImports(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,17 @@ import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -57,29 +56,27 @@ public class RedisHealthIndicatorTests {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, RedisAutoConfiguration.class,
 				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
-		assertEquals(1,
-				this.context.getBeanNamesForType(RedisConnectionFactory.class).length);
+		assertThat(this.context.getBeanNamesForType(RedisConnectionFactory.class))
+				.hasSize(1);
 		RedisHealthIndicator healthIndicator = this.context
 				.getBean(RedisHealthIndicator.class);
-		assertNotNull(healthIndicator);
+		assertThat(healthIndicator).isNotNull();
 	}
 
 	@Test
 	public void redisIsUp() throws Exception {
 		Properties info = new Properties();
 		info.put("redis_version", "2.8.9");
-
 		RedisConnection redisConnection = mock(RedisConnection.class);
-		RedisConnectionFactory redisConnectionFactory = mock(RedisConnectionFactory.class);
+		RedisConnectionFactory redisConnectionFactory = mock(
+				RedisConnectionFactory.class);
 		given(redisConnectionFactory.getConnection()).willReturn(redisConnection);
 		given(redisConnection.info()).willReturn(info);
 		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(
 				redisConnectionFactory);
-
 		Health health = healthIndicator.health();
-		assertEquals(Status.UP, health.getStatus());
-		assertEquals("2.8.9", health.getDetails().get("version"));
-
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("version")).isEqualTo("2.8.9");
 		verify(redisConnectionFactory).getConnection();
 		verify(redisConnection).info();
 	}
@@ -87,19 +84,19 @@ public class RedisHealthIndicatorTests {
 	@Test
 	public void redisIsDown() throws Exception {
 		RedisConnection redisConnection = mock(RedisConnection.class);
-		RedisConnectionFactory redisConnectionFactory = mock(RedisConnectionFactory.class);
+		RedisConnectionFactory redisConnectionFactory = mock(
+				RedisConnectionFactory.class);
 		given(redisConnectionFactory.getConnection()).willReturn(redisConnection);
-		given(redisConnection.info()).willThrow(
-				new RedisConnectionFailureException("Connection failed"));
+		given(redisConnection.info())
+				.willThrow(new RedisConnectionFailureException("Connection failed"));
 		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(
 				redisConnectionFactory);
-
 		Health health = healthIndicator.health();
-		assertEquals(Status.DOWN, health.getStatus());
-		assertTrue(((String) health.getDetails().get("error"))
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(((String) health.getDetails().get("error"))
 				.contains("Connection failed"));
-
 		verify(redisConnectionFactory).getConnection();
 		verify(redisConnection).info();
 	}
+
 }

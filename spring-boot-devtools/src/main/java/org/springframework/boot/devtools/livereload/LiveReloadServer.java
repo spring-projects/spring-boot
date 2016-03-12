@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.util.Assert;
 
 /**
@@ -48,7 +49,7 @@ public class LiveReloadServer {
 	 */
 	public static final int DEFAULT_PORT = 35729;
 
-	private static Log logger = LogFactory.getLog(LiveReloadServer.class);
+	private static final Log logger = LogFactory.getLog(LiveReloadServer.class);
 
 	private static final int READ_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(4);
 

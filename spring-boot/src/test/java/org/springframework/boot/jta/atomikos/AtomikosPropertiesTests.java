@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@ package org.springframework.boot.jta.atomikos;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for ;@link AtomikosProperties}.
@@ -50,7 +49,7 @@ public class AtomikosPropertiesTests {
 		this.properties.setConsoleFileLimit(6);
 		this.properties.setThreadedTwoPhaseCommit(true);
 
-		assertThat(this.properties.asProperties().size(), equalTo(17));
+		assertThat(this.properties.asProperties().size()).isEqualTo(17);
 		assertProperty("com.atomikos.icatch.service", "service");
 		assertProperty("com.atomikos.icatch.max_timeout", "1");
 		assertProperty("com.atomikos.icatch.default_jta_timeout", "2");
@@ -71,7 +70,7 @@ public class AtomikosPropertiesTests {
 	}
 
 	private void assertProperty(String key, String value) {
-		assertThat(this.properties.asProperties().getProperty(key), equalTo(value));
+		assertThat(this.properties.asProperties().getProperty(key)).isEqualTo(value);
 	}
 
 }

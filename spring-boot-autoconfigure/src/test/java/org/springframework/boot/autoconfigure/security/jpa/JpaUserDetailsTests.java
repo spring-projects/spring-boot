@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.security.jpa;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,10 +36,11 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Ivan Sopov
+ * @author Eddú Meléndez
  * @see AbstractEmbeddedServletContainerFactory
  */
-public abstract class AbstractConfigurableEmbeddedServletContainer implements
-		ConfigurableEmbeddedServletContainer {
+public abstract class AbstractConfigurableEmbeddedServletContainer
+		implements ConfigurableEmbeddedServletContainer {
 
 	private static final int DEFAULT_SESSION_TIMEOUT = (int) TimeUnit.MINUTES
 			.toSeconds(30);
@@ -66,11 +67,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 
 	private boolean persistSession;
 
+	private File sessionStoreDir;
+
 	private Ssl ssl;
 
 	private JspServlet jspServlet = new JspServlet();
 
 	private Compression compression;
+
+	private String serverHeader;
 
 	/**
 	 * Create a new {@link AbstractConfigurableEmbeddedServletContainer} instance.
@@ -192,6 +197,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	@Override
+	public void setSessionStoreDir(File sessionStoreDir) {
+		this.sessionStoreDir = sessionStoreDir;
+	}
+
+	public File getSessionStoreDir() {
+		return this.sessionStoreDir;
+	}
+
+	@Override
 	public void setInitializers(List<? extends ServletContextInitializer> initializers) {
 		Assert.notNull(initializers, "Initializers must not be null");
 		this.initializers = new ArrayList<ServletContextInitializer>(initializers);
@@ -256,12 +270,6 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 		this.registerDefaultServlet = registerDefaultServlet;
 	}
 
-	@Override
-	public void setRegisterJspServlet(boolean registerJspServlet) {
-		Assert.notNull(this.jspServlet);
-		this.jspServlet.setRegistered(registerJspServlet);
-	}
-
 	/**
 	 * Flag to indicate that the default servlet should be registered.
 	 * @return true if the default servlet is to be registered
@@ -277,12 +285,6 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 
 	public Ssl getSsl() {
 		return this.ssl;
-	}
-
-	@Override
-	public void setJspServletClassName(String jspServletClassName) {
-		Assert.notNull(this.jspServlet);
-		this.jspServlet.setClassName(jspServletClassName);
 	}
 
 	@Override
@@ -303,6 +305,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 		this.compression = compression;
 	}
 
+	public String getServerHeader() {
+		return this.serverHeader;
+	}
+
+	@Override
+	public void setServerHeader(String serverHeader) {
+		this.serverHeader = serverHeader;
+	}
+
 	/**
 	 * Utility method that can be used by subclasses wishing to combine the specified
 	 * {@link ServletContextInitializer} parameters with those defined in this instance.
@@ -320,15 +331,13 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	/**
-	 * Returns whether or not he JSP servlet should be registered with the embedded
+	 * Returns whether or not the JSP servlet should be registered with the embedded
 	 * container.
 	 * @return {@code true} if the container should be registered, otherwise {@code false}
 	 */
 	protected boolean shouldRegisterJspServlet() {
-		return this.jspServlet != null
-				&& this.jspServlet.getRegistered()
-				&& ClassUtils.isPresent(this.jspServlet.getClassName(), getClass()
-						.getClassLoader());
+		return this.jspServlet != null && this.jspServlet.getRegistered() && ClassUtils
+				.isPresent(this.jspServlet.getClassName(), getClass().getClassLoader());
 	}
 
 }

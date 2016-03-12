@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package sample.groovytemplates.mvc;
 
 import java.util.HashMap;
@@ -20,7 +21,9 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import sample.groovytemplates.Message;
+import sample.groovytemplates.MessageRepository;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -32,15 +35,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import sample.groovytemplates.Message;
-import sample.groovytemplates.MessageRepository;
-
 @Controller
 @RequestMapping("/")
 public class MessageController {
+
 	private final MessageRepository messageRepository;
 
-	@Autowired
 	public MessageController(MessageRepository messageRepository) {
 		this.messageRepository = messageRepository;
 	}

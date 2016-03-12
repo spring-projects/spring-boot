@@ -30,8 +30,8 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  *
  * @author Dave Syer
  */
-class MongoRepositoriesAutoConfigureRegistrar extends
-		AbstractRepositoryConfigurationSourceSupport {
+class MongoRepositoriesAutoConfigureRegistrar
+		extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {

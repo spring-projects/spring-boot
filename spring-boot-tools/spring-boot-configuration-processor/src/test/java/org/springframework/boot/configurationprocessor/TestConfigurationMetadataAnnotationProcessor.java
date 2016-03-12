@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ import org.springframework.boot.configurationprocessor.metadata.ConfigurationMet
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 
 /**
+ * Test {@link ConfigurationMetadataAnnotationProcessor}.
+ *
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -35,8 +37,8 @@ import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
  */
 @SupportedAnnotationTypes({ "*" })
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
-public class TestConfigurationMetadataAnnotationProcessor extends
-		ConfigurationMetadataAnnotationProcessor {
+public class TestConfigurationMetadataAnnotationProcessor
+		extends ConfigurationMetadataAnnotationProcessor {
 
 	static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot.configurationsample.ConfigurationProperties";
 
@@ -74,8 +76,8 @@ public class TestConfigurationMetadataAnnotationProcessor extends
 			File metadataFile = new File(this.outputLocation,
 					"META-INF/spring-configuration-metadata.json");
 			if (metadataFile.isFile()) {
-				this.metadata = new JsonMarshaller().read(new FileInputStream(
-						metadataFile));
+				this.metadata = new JsonMarshaller()
+						.read(new FileInputStream(metadataFile));
 			}
 			else {
 				this.metadata = new ConfigurationMetadata();

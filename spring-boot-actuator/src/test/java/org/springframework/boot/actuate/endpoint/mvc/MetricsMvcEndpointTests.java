@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
@@ -37,6 +38,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -56,6 +58,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Sergei Egorov
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 @SpringApplicationConfiguration(TestConfiguration.class)
 @WebAppConfiguration
 public class MetricsMvcEndpointTests {
@@ -86,7 +89,7 @@ public class MetricsMvcEndpointTests {
 	@Test
 	public void specificMetric() throws Exception {
 		this.mvc.perform(get("/metrics/foo")).andExpect(status().isOk())
-				.andExpect(content().string(equalTo("1")));
+				.andExpect(content().string(equalTo("{\"foo\":1}")));
 	}
 
 	@Test
@@ -125,7 +128,6 @@ public class MetricsMvcEndpointTests {
 	public void specificMetricWithDot() throws Exception {
 		this.mvc.perform(get("/metrics/group2.a")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("1")));
-
 	}
 
 	@Import({ JacksonAutoConfiguration.class,
@@ -147,6 +149,7 @@ public class MetricsMvcEndpointTests {
 					metrics.add(new Metric<Integer>("group1.b", 1));
 					metrics.add(new Metric<Integer>("group2.a", 1));
 					metrics.add(new Metric<Integer>("group2_a", 1));
+					metrics.add(new Metric<Integer>("baz", null));
 					return Collections.unmodifiableList(metrics);
 				}
 

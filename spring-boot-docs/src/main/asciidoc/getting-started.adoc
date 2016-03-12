@@ -287,15 +287,15 @@ classpath is set correctly).
 
 
 
-[[getting-started-gvm-cli-installation]]
-==== Installation with GVM
-GVM (the Groovy Environment Manager) can be used for managing multiple versions of
-various Groovy and Java binary packages, including Groovy itself and the Spring Boot CLI.
-Get `gvm` from http://gvmtool.net and install Spring Boot with
+[[getting-started-sdkman-cli-installation]]
+==== Installation with SDKMAN!
+SDKMAN! (The Software Development Kit Manager) can be used for managing multiple versions of
+various binary SDKs, including Groovy and the Spring Boot CLI.
+Get SDKMAN! from http://sdkman.io and install Spring Boot with
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	$ gvm install springboot
+	$ sdk install springboot
 	$ spring --version
 	Spring Boot v{spring-boot-version}
 ----
@@ -305,21 +305,21 @@ built, follow these extra instructions.
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	$ gvm install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-{spring-boot-version}-bin/spring-{spring-boot-version}/
-	$ gvm use springboot dev
+	$ sdk install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-{spring-boot-version}-bin/spring-{spring-boot-version}/
+	$ sdk default springboot dev
 	$ spring --version
 	Spring CLI v{spring-boot-version}
 ----
 
-This will install a local instance of `spring` called the `dev` instance inside your gvm
-repository. It points at your target build location, so every time you rebuild Spring
+This will install a local instance of `spring` called the `dev` instance.
+It points at your target build location, so every time you rebuild Spring
 Boot, `spring` will be up-to-date.
 
 You can see it by doing this:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	$ gvm ls springboot
+	$ sdk ls springboot
 
 	================================================================================
 	Available Springboot Versions
@@ -374,11 +374,11 @@ http://en.wikipedia.org/wiki/Zsh[zsh] shells. You can `source` the script (also 
 `spring`) in any shell, or put it in your personal or system-wide bash completion
 initialization. On a Debian system the system-wide scripts are in `/shell-completion/bash`
 and all scripts in that directory are executed when a new shell starts. To run the script
-manually, e.g. if you have installed using `GVM`
+manually, e.g. if you have installed using SDKMAN!
 
 [indent=0]
 ----
-	$ . ~/.gvm/springboot/current/shell-completion/bash/spring
+	$ . ~/.sdkman/springboot/current/shell-completion/bash/spring
 	$ spring <HIT TAB HERE>
 	  grab  help  jar  run  test  version
 ----
@@ -445,8 +445,17 @@ Let's develop a simple "`Hello World!`" web application in Java that highlights 
 of Spring Boot's key features. We'll use Maven to build this project since most IDEs
 support it.
 
-TIP: The http://spring.io[spring.io] web site contains many "`Getting Started`" guides
+[TIP]
+====
+The http://spring.io[spring.io] web site contains many "`Getting Started`" guides
 that use Spring Boot. If you're looking to solve a specific problem; check there first.
+
+You can shortcut the steps below by going to https://start.spring.io and choosing the
+`web` starter from the dependencies searcher. This will automatically generate a new
+project structure so that you can <<getting-started-first-application-code,start coding
+right the way>>. Check the https://github.com/spring-io/initializr[documentation for
+more details].
+====
 
 Before we begin, open a terminal to check that you have valid versions of Java and Maven
 installed.
@@ -538,8 +547,9 @@ text editor for this example.
 Spring Boot provides a number of "`Starter POMs`" that make easy to add jars to your
 classpath. Our sample application has already used `spring-boot-starter-parent` in the
 `parent` section of the POM. The `spring-boot-starter-parent` is a special starter
-that provides useful Maven defaults. It also provides a `dependency-management` section
-so that you can omit `version` tags for "`blessed`" dependencies.
+that provides useful Maven defaults. It also provides a
+<<using-spring-boot.adoc#using-boot-dependency-management,`dependency-management`>>
+section so that you can omit `version` tags for "`blessed`" dependencies.
 
 Other "`Starter POMs`" simply provide dependencies that you are likely to need when
 developing a specific type of application. Since we are developing a web application, we
@@ -796,6 +806,11 @@ developer you might want to jump over to http://spring.io and check out some of 
 http://spring.io/guides/[getting started] guides that solve specific
 "`How do I do that with Spring`" problems; we also have Spring Boot-specific
 _<<howto.adoc#howto, How-to>>_ reference documentation.
+
+The http://github.com/{github-repo}[Spring Boot repository] has also a
+{github-code}/spring-boot-samples[bunch of samples] you can run. The samples are
+independent of the rest of the code (that is you don't need to build the rest to run
+or use the samples).
 
 Otherwise, the next logical step is to read _<<using-spring-boot.adoc#using-boot>>_. If
 you're really impatient, you could also jump ahead and read about

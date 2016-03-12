@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jms.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -46,8 +47,8 @@ class ActiveMQConnectionFactoryFactory {
 			return doCreateConnectionFactory(factoryClass);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create "
-					+ "ActiveMQConnectionFactory", ex);
+			throw new IllegalStateException(
+					"Unable to create " + "ActiveMQConnectionFactory", ex);
 		}
 	}
 

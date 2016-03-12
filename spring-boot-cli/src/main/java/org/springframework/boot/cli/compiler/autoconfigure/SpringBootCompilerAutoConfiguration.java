@@ -16,6 +16,7 @@
 
 package org.springframework.boot.cli.compiler.autoconfigure;
 
+import groovy.lang.GroovyClassLoader;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.ClassNode;
@@ -23,11 +24,10 @@ import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
-
-import groovy.lang.GroovyClassLoader;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring.
@@ -45,10 +45,8 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports(
-				"javax.annotation.PostConstruct",
-				"javax.annotation.PreDestroy",
-				"groovy.util.logging.Log",
+		imports.addImports("javax.annotation.PostConstruct",
+				"javax.annotation.PreDestroy", "groovy.util.logging.Log",
 				"org.springframework.stereotype.Controller",
 				"org.springframework.stereotype.Service",
 				"org.springframework.stereotype.Component",

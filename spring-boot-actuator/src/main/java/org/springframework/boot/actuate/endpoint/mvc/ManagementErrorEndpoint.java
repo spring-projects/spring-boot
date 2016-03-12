@@ -18,9 +18,9 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Map;
 
-import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.autoconfigure.web.ErrorController;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,38 +33,21 @@ import org.springframework.web.context.request.RequestContextHolder;
  *
  * @author Dave Syer
  */
-public class ManagementErrorEndpoint implements MvcEndpoint {
+@Controller
+public class ManagementErrorEndpoint {
 
 	private final ErrorAttributes errorAttributes;
 
-	private final String path;
-
-	public ManagementErrorEndpoint(String path, ErrorAttributes errorAttributes) {
+	public ManagementErrorEndpoint(ErrorAttributes errorAttributes) {
 		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
-		this.path = path;
 		this.errorAttributes = errorAttributes;
 	}
 
-	@RequestMapping
+	@RequestMapping("${server.error.path:${error.path:/error}}")
 	@ResponseBody
 	public Map<String, Object> invoke() {
 		return this.errorAttributes.getErrorAttributes(
 				RequestContextHolder.currentRequestAttributes(), false);
 	}
 
-	@Override
-	public String getPath() {
-		return this.path;
-	}
-
-	@Override
-	public boolean isSensitive() {
-		return false;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public Class<? extends Endpoint> getEndpointType() {
-		return null;
-	}
 }

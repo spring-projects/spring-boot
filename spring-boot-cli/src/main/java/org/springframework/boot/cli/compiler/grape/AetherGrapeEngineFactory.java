@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import groovy.lang.GroovyClassLoader;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
@@ -34,8 +35,6 @@ import org.eclipse.aether.spi.locator.ServiceLocator;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 
-import groovy.lang.GroovyClassLoader;
-
 /**
  * Utility class to create a pre-configured {@link AetherGrapeEngine}.
  *
@@ -47,8 +46,8 @@ public abstract class AetherGrapeEngineFactory {
 			List<RepositoryConfiguration> repositoryConfigurations,
 			DependencyResolutionContext dependencyResolutionContext) {
 
-		RepositorySystem repositorySystem = createServiceLocator().getService(
-				RepositorySystem.class);
+		RepositorySystem repositorySystem = createServiceLocator()
+				.getService(RepositorySystem.class);
 
 		DefaultRepositorySystemSession repositorySystemSession = MavenRepositorySystemUtils
 				.newSession();
@@ -60,8 +59,8 @@ public abstract class AetherGrapeEngineFactory {
 			autoConfiguration.apply(repositorySystemSession, repositorySystem);
 		}
 
-		new DefaultRepositorySystemSessionAutoConfiguration().apply(
-				repositorySystemSession, repositorySystem);
+		new DefaultRepositorySystemSessionAutoConfiguration()
+				.apply(repositorySystemSession, repositorySystem);
 
 		return new AetherGrapeEngine(classLoader, repositorySystem,
 				repositorySystemSession, createRepositories(repositoryConfigurations),
@@ -84,13 +83,13 @@ public abstract class AetherGrapeEngineFactory {
 				repositoryConfigurations.size());
 		for (RepositoryConfiguration repositoryConfiguration : repositoryConfigurations) {
 			RemoteRepository.Builder builder = new RemoteRepository.Builder(
-					repositoryConfiguration.getName(), "default", repositoryConfiguration
-							.getUri().toASCIIString());
+					repositoryConfiguration.getName(), "default",
+					repositoryConfiguration.getUri().toASCIIString());
 
 			if (!repositoryConfiguration.getSnapshotsEnabled()) {
-				builder.setSnapshotPolicy(new RepositoryPolicy(false,
-						RepositoryPolicy.UPDATE_POLICY_NEVER,
-						RepositoryPolicy.CHECKSUM_POLICY_IGNORE));
+				builder.setSnapshotPolicy(
+						new RepositoryPolicy(false, RepositoryPolicy.UPDATE_POLICY_NEVER,
+								RepositoryPolicy.CHECKSUM_POLICY_IGNORE));
 			}
 			repositories.add(builder.build());
 		}

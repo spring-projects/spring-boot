@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -64,8 +63,11 @@ import org.springframework.util.StringUtils;
 @Import(ResourceServerTokenServicesConfiguration.class)
 public class OAuth2ResourceServerConfiguration {
 
-	@Autowired
-	private ResourceServerProperties resource;
+	private final ResourceServerProperties resource;
+
+	public OAuth2ResourceServerConfiguration(ResourceServerProperties resource) {
+		this.resource = resource;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(ResourceServerConfigurer.class)
@@ -73,12 +75,11 @@ public class OAuth2ResourceServerConfiguration {
 		return new ResourceSecurityConfigurer(this.resource);
 	}
 
-	protected static class ResourceSecurityConfigurer extends
-			ResourceServerConfigurerAdapter {
+	protected static class ResourceSecurityConfigurer
+			extends ResourceServerConfigurerAdapter {
 
 		private ResourceServerProperties resource;
 
-		@Autowired
 		public ResourceSecurityConfigurer(ResourceServerProperties resource) {
 			this.resource = resource;
 		}
@@ -96,8 +97,8 @@ public class OAuth2ResourceServerConfiguration {
 
 	}
 
-	protected static class ResourceServerCondition extends SpringBootCondition implements
-			ConfigurationCondition {
+	protected static class ResourceServerCondition extends SpringBootCondition
+			implements ConfigurationCondition {
 
 		private static final String AUTHORIZATION_ANNOTATION = "org.springframework."
 				+ "security.oauth2.config.annotation.web.configuration."
@@ -114,27 +115,31 @@ public class OAuth2ResourceServerConfiguration {
 			Environment environment = context.getEnvironment();
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
 					"security.oauth2.resource.");
-			String client = environment
-					.resolvePlaceholders("${security.oauth2.client.clientId:}");
-			if (StringUtils.hasText(client)) {
+			if (hasOAuthClientId(environment)) {
 				return ConditionOutcome.match("found client id");
 			}
 			if (!resolver.getSubProperties("jwt").isEmpty()) {
 				return ConditionOutcome.match("found JWT resource configuration");
 			}
 			if (StringUtils.hasText(resolver.getProperty("user-info-uri"))) {
-				return ConditionOutcome.match("found UserInfo "
-						+ "URI resource configuration");
+				return ConditionOutcome
+						.match("found UserInfo " + "URI resource configuration");
 			}
 			if (ClassUtils.isPresent(AUTHORIZATION_ANNOTATION, null)) {
 				if (AuthorizationServerEndpointsConfigurationBeanCondition
 						.matches(context)) {
-					return ConditionOutcome.match("found authorization "
-							+ "server endpoints configuration");
+					return ConditionOutcome.match(
+							"found authorization " + "server endpoints configuration");
 				}
 			}
 			return ConditionOutcome.noMatch("found neither client id nor "
 					+ "JWT resource nor authorization server");
+		}
+
+		private boolean hasOAuthClientId(Environment environment) {
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
+					"security.oauth2.client.");
+			return StringUtils.hasLength(resolver.getProperty("client-id", ""));
 		}
 
 	}

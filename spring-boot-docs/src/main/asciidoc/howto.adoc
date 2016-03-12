@@ -40,7 +40,7 @@ rules of thumb:
 * Look for classes called `+*AutoConfiguration+` and read their sources, in particular the
   `+@Conditional*+` annotations to find out what features they enable and when. Add
   `--debug` to the command line or a System property `-Ddebug` to get a log on the
-  console of all the autoconfiguration decisions that were made in your app. In a running
+  console of all the auto-configuration decisions that were made in your app. In a running
   Actuator app look at the `autoconfig` endpoint ('`/autoconfig`' or the JMX equivalent) for
   the same information.
 * Look for classes that are `@ConfigurationProperties` (e.g.
@@ -57,7 +57,7 @@ rules of thumb:
   specifically for OS environment variables (so `CAPITALS_AND_UNDERSCORES` are synonyms
   for `period.separated`).
 * Look for `@ConditionalOnExpression` annotations that switch features on and off in
-  response to SpEL expressions, normally evaluated with place-holders resolved from the
+  response to SpEL expressions, normally evaluated with placeholders resolved from the
   `Environment`.
 
 
@@ -101,8 +101,8 @@ Boot. A `SpringApplication` changes its `ApplicationContext` class depending on 
 thinks it needs a web application or not. The first thing you can do to help it is to just
 leave the servlet API dependencies off the classpath. If you can't do that (e.g. you are
 running 2 applications from the same code base) then you can explicitly call
-`SpringApplication.setWebEnvironment(false)`, or set the `applicationContextClass`
-property (through the Java API or with external properties).
+`setWebEnvironment(false)` on your `SpringApplication` instance, or set the
+`applicationContextClass` property (through the Java API or with external properties).
 Application code that you want to run as your business logic can be implemented as a
 `CommandLineRunner` and dropped into the context as a `@Bean` definition.
 
@@ -123,7 +123,7 @@ might have.
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.main.web_environment=false
-	spring.main.show_banner=false
+	spring.main.banner_mode=off
 ----
 
 and then the Spring Boot banner will not be printed on startup, and the application will
@@ -139,7 +139,7 @@ consider this application
 [source,java,indent=0]
 ----
 	new SpringApplicationBuilder()
-		.showBanner(false)
+		.bannerMode(Banner.Mode.OFF)
 		.sources(demo.MyApp.class)
 		.run(args);
 ----
@@ -149,7 +149,7 @@ used with the following configuration:
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.main.sources=com.acme.Config,com.acme.ExtraConfig
-	spring.main.show-banner=true
+	spring.main.banner_mode=console
 ----
 
 The actual application will _now_ show the banner (as overridden by configuration) and use
@@ -170,7 +170,7 @@ methods, and those added using `setSources()` are inspected to see if they have
 `@PropertySources`, and if they do, those properties are added to the `Environment` early
 enough to be used in all phases of the `ApplicationContext` lifecycle. Properties added
 in this way have lower
-priority than any added using the default locations (e.g. `application.properties), system properties, environment variables or the command line.
+priority than any added using the default locations (e.g. `application.properties`), system properties, environment variables or the command line.
 
 You can also provide System properties (or environment variables) to change the behavior:
 
@@ -370,11 +370,32 @@ In the case of `Filters` and `Servlets` you can also add mappings and init param
 adding a `FilterRegistrationBean` or `ServletRegistrationBean` instead of or as well as
 the underlying component.
 
+[NOTE]
+====
+If no `dispatcherType` is specified on a filter registration, it will match
+`FORWARD`,`INCLUDE` and `REQUEST`. If async has been enabled, it will match `ASYNC` as
+well.
+
+If you are migrating a filter that has no `dispatcher` element in `web.xml` you will
+need to specify a `dispatcherType` yourself:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+	public FilterRegistrationBean myFilterRegistration() {
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setDispatcherTypes(DispatcherType.REQUEST);
+		....
+
+		return registration;
+	}
+----
+====
 
 
 [[howto-disable-registration-of-a-servlet-or-filter]]
 ===== Disable registration of a Servlet or Filter
-As <<howto-add-a-servlet-filter-or-servletcontextlistener,described above>> any `Servlet`
+As <<howto-add-a-servlet-filter-or-listener-as-spring-bean,described above>> any `Servlet`
 or `Filter` beans will be registered with the servlet container automatically. To disable
 registration of a particular `Filter` or `Servlet` bean create a registration bean for it
 and mark it as disabled. For example:
@@ -388,6 +409,7 @@ and mark it as disabled. For example:
 		return registration;
 	}
 ----
+
 
 
 [[howto-add-a-servlet-filter-or-listener-using-scanning]]
@@ -414,6 +436,7 @@ For more details look at _<<spring-boot-features.adoc#boot-features-customizing-
 in the '`Spring Boot features`' section, or the
 {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`] source
 code.
+
 
 
 [[howto-user-a-random-unassigned-http-port]]
@@ -476,10 +499,6 @@ typically in `application.properties` or `application.yml`. For example:
 See {sc-spring-boot}/context/embedded/Ssl.{sc-ext}[`Ssl`] for details of all of the
 supported properties.
 
-NOTE: Tomcat requires the key store (and trust store if you're using one) to be directly
-accessible on the filesystem, i.e. it cannot be read from within a jar file. This
-limitation doesn't apply to Jetty and Undertow.
-
 Using configuration like the example above means the application will no longer support
 plain HTTP connector at port 8080. Spring Boot doesn't support the configuration of both
 an HTTP connector and an HTTPS connector via `application.properties`. If you want to
@@ -488,6 +507,91 @@ to use `application.properties` to configure HTTPS as the HTTP connector is the 
 the two to configure programmatically. See the
 {github-code}/spring-boot-samples/spring-boot-sample-tomcat-multi-connectors[`spring-boot-sample-tomcat-multi-connectors`]
 sample project for an example.
+
+
+
+[[howto-configure-accesslogs]]
+=== Configure Access Logging
+Access logs can be configured for Tomcat and Undertow via their respective namespaces.
+
+For instance, the following logs access on Tomcat with a
+https://tomcat.apache.org/tomcat-8.0-doc/config/valve.html#Access_Logging[custom pattern].
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	server.tomcat.basedir=my-tomcat
+	server.tomcat.accesslog.enabled=true
+	server.tomcat.accesslog.pattern=%t %a "%r" %s (%D ms)
+----
+
+NOTE: The default location for logs is a `logs` directory relative to the tomcat base dir
+and said directory is a temp directory by default so you may want to fix Tomcat's base
+directory or use an absolute path for the logs. In the example above, the logs will
+be available in `my-tomcat/logs` relative to the working directory of the application.
+
+Access logging for undertow can be configured in a similar fashion
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	server.undertow.accesslog.enabled=true
+	server.undertow.accesslog.pattern=%t %a "%r" %s (%D ms)
+----
+
+Logs are stored in a `logs` directory relative to the working directory of the
+application. This can be customized via `server.undertow.accesslog.directory`.
+
+
+
+[[howto-use-behind-a-proxy-server]]
+[[howto-use-tomcat-behind-a-proxy-server]]
+=== Use behind a front-end proxy server
+Your application might need to send `302` redirects or render content with absolute links
+back to itself. When running behind a proxy, the caller wants a link to the proxy, and not
+to the physical address of the machine hosting your app. Typically such situations are
+handled via a contract with the proxy, which will add headers to tell the back end how to
+construct links to itself.
+
+If the proxy adds conventional `X-Forwarded-For` and `X-Forwarded-Proto` headers (most do
+this out of the box) the absolute links should be rendered correctly as long as
+`server.use-forward-headers` is set to `true` in your `application.properties`.
+
+NOTE: If your application is running in Cloud Foundry or Heroku the
+`server.use-forward-headers` property will default to `true` if not specified. In all
+other instances it defaults to `false`.
+
+
+
+[[howto-customize-tomcat-behind-a-proxy-server]]
+==== Customize Tomcat's proxy configuration
+If you are using Tomcat you can additionally configure the names of the headers used to
+carry "`forwarded`" information:
+
+[indent=0]
+----
+	server.tomcat.remote-ip-header=x-your-remote-ip-header
+	server.tomcat.protocol-header=x-your-protocol-header
+----
+
+Tomcat is also configured with a default regular expression that matches internal
+proxies that are to be trusted. By default, IP addresses in `10/8`, `192.168/16`,
+`169.254/16` and `127/8` are trusted. You can customize the valve's configuration by
+adding an entry to `application.properties`, e.g.
+
+[indent=0]
+----
+	server.tomcat.internal-proxies=192\\.168\\.\\d{1,3}\\.\\d{1,3}
+----
+
+NOTE: The double backslashes are only required when you're using a properties file for
+configuration. If you are using YAML, single backslashes are sufficient and a value
+that's equivalent to the one shown above would be `192\.168\.\d{1,3}\.\d{1,3}`.
+
+NOTE: You can trust all proxies by setting the `internal-proxies` to empty (but don't do
+this in production).
+
+You can take complete control of the configuration of Tomcat's `RemoteIpValve` by
+switching the automatic one off (i.e. set `server.use-forward-headers=false`) and adding
+a new  valve instance in a `TomcatEmbeddedServletContainerFactory` bean.
 
 
 
@@ -541,66 +645,6 @@ HTTPS connector:
 		}
 	}
 ----
-
-
-
-[[howto-use-tomcat-behind-a-proxy-server]]
-=== Use Tomcat behind a front-end proxy server
-Your app might need to send 302 redirects, or render UI templates with
-absolute links to itself, or hypermedia links back to itself in the
-case of a RESTful service. If the app is behind a proxy, the caller
-wants a link to the proxy not to the physical address of the app, so
-something has to be done in the backend. Typically this is handled via
-a contract with the proxy, which will add headers to tell the back end
-how to construct links to itself. If the proxy adds conventional
-headers (most do this out of the box) the absolute links should be
-rendered correctly by default using the Tomcat server.
-
-Spring Boot using Tomcat automatically adds a `RemoteIpValve`. This
-transparently takes the standard `x-forwarded-for` and
-`x-forwarded-proto` headers and uses them to change local URLs created
-in the `HttpServletRequest`. You can configure the header names in
-Spring Boot and the valve is switched on unless one or both of these
-properties is empty. These values are the defaults and are the
-conventional values used by most proxies, so you don't need to set
-them unless you need different values:
-
-[indent=0]
-----
-	server.tomcat.remote-ip-header=x-forwarded-for
-	server.tomcat.protocol-header=x-forwarded-proto
-----
-
-If your proxy uses different headers you can customize the valve's configuration by adding
-some entries to `application.properties`, e.g.
-
-[indent=0]
-----
-	server.tomcat.remote-ip-header=x-your-remote-ip-header
-	server.tomcat.protocol-header=x-your-protocol-header
-----
-
-The valve is also configured with a default regular expression that matches internal
-proxies that are to be trusted. By default, IP addresses in 10/8, 192.168/16, 169.254/16
-and 127/8 are trusted. You can customize the valve's configuration by adding an entry
-to `application.properties`, e.g.
-
-[indent=0]
-----
-	server.tomcat.internal_proxies=192\\.168\\.\\d{1,3}\\.\\d{1,3}
-----
-
-NOTE: The double backslashes are only required when you're using a properties file for
-configuration. If you are using YAML, single backslashes are sufficient and a value
-that's equivalent to the one shown above would be `192\.168\.\d{1,3}\.\d{1,3}`.
-
-NOTE: You can trust all proxies by setting the `internal_proxies` to empty (but don't do
-this in production).
-
-You can take complete control of the configuration of the
-`RemoteIpValve` by switching the automatic one off (i.e. set one of
-the headers to empty) and adding a new valve instance in a
-`TomcatEmbeddedServletContainerFactory` bean.
 
 
 
@@ -944,7 +988,7 @@ To use it, add the following dependency to your project:
 	</dependency>
 ----
 
-You may also want to add a dependency on Woodstox. It's faster than the default Stax
+You may also want to add a dependency on Woodstox. It's faster than the default StAX
 implementation provided by the JDK and also adds pretty print support and improved
 namespace handling:
 
@@ -1012,7 +1056,7 @@ Jackson which map onto properties in the environment:
 |`spring.jackson.serialization.<feature_name>=true\|false`
 
 |`com.fasterxml.jackson.annotation.JsonInclude.Include`
-|`spring.jackson.serialization-inclusion=always\|non_null\|non_default\|non_empty`
+|`spring.jackson.serialization-inclusion=always\|non_null\|non_absent\|non_default\|non_empty`
 |===
 
 For example, to enable pretty print, set `spring.jackson.serialization.indent_output=true`.
@@ -1155,7 +1199,7 @@ added.
   looks for resources in a loader path by surrounding the view name with a prefix and
   suffix (externalized to `spring.groovy.template.prefix` and
   `spring.groovy.template.suffix`, defaults '`classpath:/templates/`' and '`.tpl`'
-  respectively). It can be overriden by providing a bean of the same name.
+  respectively). It can be overridden by providing a bean of the same name.
 * If you use Velocity you will also have a `VelocityViewResolver` with id '`velocityViewResolver`'.
   It looks for resources in a loader path (externalized to `spring.velocity.resourceLoaderPath`,
   default '`classpath:/templates/`') by surrounding the view name with a prefix and suffix
@@ -1197,7 +1241,7 @@ have been applied from the auto-configuration:
 [[howto-logging]]
 == Logging
 
-Spring Boot has no mandatory logging dependence, except for the `commons-logging` API, of
+Spring Boot has no mandatory logging dependency, except for the `commons-logging` API, of
 which there are many implementations to choose from. To use http://logback.qos.ch[Logback]
 you need to include it, and some bindings for `commons-logging` on the classpath. The
 simplest way to do that is through the starter poms which all depend on
@@ -1236,11 +1280,12 @@ using the "logging.config" property.
 
 
 
-[[howto-configure-logback-for-loggin]]
+[[howto-configure-logback-for-logging]]
 === Configure Logback for logging
 If you put a `logback.xml` in the root of your classpath it will be picked up from
 there
-(or `logback-spring.xml` to take advantage of the templating features provided by Boot). Spring Boot provides a default base configuration that you can include if you just
+(or `logback-spring.xml` to take advantage of the templating features provided by Boot).
+Spring Boot provides a default base configuration that you can include if you just
 want to set levels, e.g.
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -1272,14 +1317,40 @@ If Groovy is on the classpath you should be able to configure Logback with
 
 
 
+[[howto-configure-logback-for-logging-fileonly]]
+==== Configure logback for file only output
+If you want to disable console logging and write output only to a file you need a custom
+`logback-spring.xml` that imports `file-appender.xml` but not `console-appender.xml`:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<?xml version="1.0" encoding="UTF-8"?>
+	<configuration>
+		<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+		<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
+		<include resource="org/springframework/boot/logging/logback/file-appender.xml" />
+		<root level="INFO">
+			<appender-ref ref="FILE" />
+		</root>
+	</configuration>
+----
+
+You also need to add `logging.file` to your `application.properties`:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	logging.file=myapplication.log
+----
+
+
+
 [[howto-configure-log4j-for-logging]]
 === Configure Log4j for logging
-Spring Boot also supports either http://logging.apache.org/log4j/1.2[Log4j] or
-http://logging.apache.org/log4j/2.x[Log4j 2] for logging configuration, but only if one
-of them is on the classpath. If you are using the starter poms for assembling
-dependencies that means you have to exclude Logback and then include your chosen version
-of Log4j instead. If you aren't using the starter poms then you need to provide
-`commons-logging` (at least) in addition to your chosen version of Log4j.
+Spring Boot supports http://logging.apache.org/log4j/2.x[Log4j 2] for logging
+configuration if it is on the classpath. If you are using the starter poms for
+assembling dependencies that means you have to exclude Logback and then include log4j 2
+instead. If you aren't using the starter poms then you need to provide `commons-logging`
+(at least) in addition to Log4j 2.
 
 The simplest path is probably through the starter poms, even though it requires some
 jiggling with excludes, .e.g. in Maven:
@@ -1302,31 +1373,39 @@ jiggling with excludes, .e.g. in Maven:
 	</dependency>
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-log4j</artifactId>
+		<artifactId>spring-boot-starter-log4j2</artifactId>
 	</dependency>
 ----
 
-To use Log4j 2, simply depend on `spring-boot-starter-log4j2` rather than
-`spring-boot-starter-log4j`.
-
-NOTE: The use of one of the Log4j starters gathers together the dependencies for
-common logging requirements (e.g. including having Tomcat use `java.util.logging` but
-configuring the output using Log4j or Log4j 2). See the Actuator Log4j or Log4j 2
-samples for more detail and to see it in action.
+NOTE: The use of the Log4j starters gathers together the dependencies for common logging
+requirements (e.g. including having Tomcat use `java.util.logging` but configuring the
+output using Log4j 2). See the Actuator Log4j 2 samples for more detail and to see it in
+action.
 
 
 
 [[howto-configure-log4j-for-logging-yaml-or-json-config]]
 ==== Use YAML or JSON to configure Log4j 2
 In addition to its default XML configuration format, Log4j 2 also supports YAML and JSON
-configuration files. To configure Log4j 2 to use an alternative configuration file format
-all you need to do is add an appropriate dependency to the classpath. To use YAML, add a
-dependency on `com.fasterxml.jackson.dataformat:jackson-dataformat-yaml` and Log4j 2 will
-look for configuration files names `log4j2.yaml` or `log4j2.yml`. To use JSON, add a
-dependency on `com.fasterxml.jackson.core:jackson-databind` and Log4j 2 will look for
-configuration files named `log4j2.json` or `log4j2.jsn`
+configuration files. To configure Log4j 2 to use an alternative configuration file format,
+add the appropriate dependencies to the classpath and name your
+configuration files to match your chosen file format:
 
+[cols="10,75,15"]
+|===
+|Format|Dependencies|File names
 
+|YAML
+a| `com.fasterxml.jackson.core:jackson-databind` +
+   `com.fasterxml.jackson.dataformat:jackson-dataformat-yaml`
+a| `log4j2.yaml` +
+   `log4j2.yml`
+
+|JSON
+a| `com.fasterxml.jackson.core:jackson-databind`
+a| `log4j2.json` +
+   `log4j2.jsn`
+|===
 
 [[howto-data-access]]
 == Data Access
@@ -1361,6 +1440,21 @@ See _<<spring-boot-features.adoc#boot-features-configure-datasource>>_ in the
 '`Spring Boot features`' section and the
 {sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[`DataSourceAutoConfiguration`]
 class for more details.
+
+[TIP]
+====
+You could also do that if you want to configure a JNDI data-source.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean(destroyMethod="")
+	@ConfigurationProperties(prefix="datasource.mine")
+	public DataSource dataSource() throws Exception {
+		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
+		return dataSourceLookup.getDataSource("java:comp/env/jdbc/YourDS");
+	}
+----
+====
 
 
 
@@ -1566,7 +1660,7 @@ Spring Boot exposes as set of useful properties from the `spring.data.rest` name
 customize the
 {spring-data-rest-javadoc}/core/config/RepositoryRestConfiguration.{dc-ext}[`RepositoryRestConfiguration`].
 If you need to provide additional customization, you should use a
-{spring-data-rest-javadoc}/core/config/RepositoryRestConfigurer.{dc-ext}[`RepositoryRestConfigurer`]
+{spring-data-rest-javadoc}/webmvc/config/RepositoryRestConfigurer.{dc-ext}[`RepositoryRestConfigurer`]
 bean.
 
 
@@ -1610,7 +1704,7 @@ not something you want to be on the classpath in production. It is a Hibernate f
 (nothing to do with Spring).
 
 
-[[howto-intialize-a-database-using-spring-jdbc]]
+[[howto-initialize-a-database-using-spring-jdbc]]
 === Initialize a database using Spring JDBC
 Spring JDBC has a `DataSource` initializer feature. Spring Boot enables it by default and
 loads SQL from the standard locations `schema.sql` and `data.sql` (in the root of the
@@ -1618,13 +1712,13 @@ classpath). In addition Spring Boot will load the `schema-${platform}.sql`
 and `data-${platform}.sql` files (if present), where
 `platform` is the value of `spring.datasource.platform`, e.g. you might choose to set
 it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`,
-`postgresql` etc.). Spring Boot enables the failfast feature of the Spring JDBC
+`postgresql` etc.). Spring Boot enables the fail-fast feature of the Spring JDBC
 initializer by default, so if the scripts cause exceptions the application will fail
 to start. The script locations can be changed by setting `spring.datasource.schema` and
 `spring.datasource.data`, and neither location will be processed if
 `spring.datasource.initialize=false`.
 
-To disable the failfast you can set `spring.datasource.continueOnError=true`. This can be
+To disable the fail-fast you can set `spring.datasource.continue-on-error=true`. This can be
 useful once an application has matured and been deployed a few times, since the scripts
 can act as '`poor man's migrations`' -- inserts that fail mean that the data is already
 there, so there would be no need to prevent the application from running, for instance.
@@ -1670,6 +1764,9 @@ addition Spring Boot provides a small set of properties in
 {sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[`FlywayProperties`]
 that can be used to disable the migrations, or switch off the location checking.
 
+TIP: If you want to make use of http://flywaydb.org/documentation/callbacks.html[Flyway
+callbacks], those scripts should also live in the `classpath:db/migration` folder.
+
 By default Flyway will autowire the (`@Primary`) `DataSource` in your context and
 use that for migrations. If you like to use a different `DataSource` you can create
 one and mark its `@Bean` as `@FlywayDataSource` - if you do that remember to create
@@ -1704,7 +1801,7 @@ you can see how to set things up.
 
 [[howto-execute-spring-batch-jobs-on-startup]]
 === Execute Spring Batch jobs on startup
-Spring Batch auto configuration is enabled by adding `@EnableBatchProcessing`
+Spring Batch auto-configuration is enabled by adding `@EnableBatchProcessing`
 (from Spring Batch) somewhere in your context.
 
 By default it executes *all* `Jobs` in the application context on startup (see
@@ -1751,7 +1848,7 @@ in the '`Production-ready features`' section.
 Spring Boot installs a '`whitelabel`' error page that you will see in browser client if
 you encounter a server error (machine clients consuming JSON and other media types should
 see a sensible response with the right error code). To switch it off you can set
-`error.whitelabel.enabled=false`, but normally in addition or alternatively to that you
+`server.error.whitelabel.enabled=false`, but normally in addition or alternatively to that you
 will want to add your own error page replacing the whitelabel one. Exactly how you do this
 depends on the templating technology that you are using. For example, if you are using
 Thymeleaf you would add an `error.html` template and if you are using FreeMarker you would
@@ -1763,6 +1860,20 @@ Look at {sc-spring-boot-autoconfigure}/web/ErrorMvcAutoConfiguration.{sc-ext}[`E
 
 See also the section on <<boot-features-error-handling, Error Handling>> for details of
 how to register handlers in the servlet container.
+
+
+
+[[howto-use-actuator-with-jersey]]
+=== Actuator and Jersey
+Actuator HTTP endpoints are only available for Spring MVC-based applications. If you want
+to use Jersey and still use the actuator you will need to enable Spring MVC (by depending
+on `spring-boot-starter-web`, for example). By default, both Jersey and the Spring MVC
+dispatcher servlet are mapped to the same path (`/`). You will need to change the path for
+one of them (by configuring `server.servlet-path` for Spring MVC or
+`spring.jersey.application-path` for Jersey). For example, if you add
+`server.servlet-path=/system` into `application.properties`, the actuator HTTP endpoints
+will be available under `/system`.
+
 
 
 [[howto-security]]
@@ -1821,8 +1932,8 @@ authentication manager is needed elsewhere), e.g.
 ----
 	@Configuration
 	public class AuthenticationManagerConfiguration extends
+			GlobalAuthenticationConfigurerAdapter {
 
-		GlobalAuthenticationConfigurerAdapter {
 		@Override
 		public void init(AuthenticationManagerBuilder auth) {
 			auth.inMemoryAuthentication() // ... etc.
@@ -1867,16 +1978,19 @@ requests). To switch that on in a Spring Boot application you just need to set
 
 [[howto-reload-static-content]]
 === Reload static content
-There are several options for hot reloading. Running in an IDE (especially with debugging
-on) is a good way to do development (all modern IDEs allow reloading of static resources
-and usually also hot-swapping of Java class changes). The
-<<build-tool-plugins.adoc#build-tool-plugins, Maven and Gradle plugins>> also
-support running from the command line with reloading of static files. You can use that
-with an external css/js compiler process if you are writing that code with higher level
-tools.
+There are several options for hot reloading. The recommended approach is to use
+<<using-spring-boot.adoc#using-boot-devtools,`spring-boot-devtools`>> as it provides
+additional development-time features such as support for fast application restarts
+and LiveReload as well as sensible development-time configuration (e.g. template caching).
 
-The <<using-spring-boot.adoc#using-boot-devtools,`spring-boot-devtools`>> module is also
-available with support for fast application restarts and LiveReload.
+Alternatively, running in an IDE (especially with debugging on) is a good way to do
+development (all modern IDEs allow reloading of static resources and usually also
+hot-swapping of Java class changes).
+
+Finally, the <<build-tool-plugins.adoc#build-tool-plugins, Maven and Gradle plugins>> can
+be configured (see the `addResources` property) to support running from the command line
+with reloading of static files. You can use that with an external css/js compiler process
+if you are writing that code with higher level tools.
 
 
 
@@ -1886,7 +2000,7 @@ Most of the templating technologies supported by Spring Boot include a configura
 option to disable caching (see below for details). If you're using the
 `spring-boot-devtools` module these properties will be
 <<using-spring-boot.adoc#using-boot-devtools-property-defaults,automatically configured>>
-for you at developement time.
+for you at development time.
 
 
 
@@ -2006,7 +2120,7 @@ To configure IntelliJ IDEA correctly you can use the `idea` Gradle plugin:
 NOTE: IntelliJ IDEA must be configured to use the same Java version as the command line
 Gradle task and `springloaded` *must* be included as a `buildscript` dependency.
 
-You can also additionally enable '`Make Project Automatically`' inside  Intellij IDEA to
+You can also additionally enable '`Make Project Automatically`' inside  IntelliJ IDEA to
 automatically compile your code whenever a file is saved.
 
 
@@ -2563,12 +2677,12 @@ Boot application, and the guidance above might help, but your mileage may vary.
 
 
 [[howto-weblogic]]
-===  Deploying a WAR to Weblogic
-To deploy a Spring Boot application to Weblogic you must ensure that your servlet
+===  Deploying a WAR to WebLogic
+To deploy a Spring Boot application to WebLogic you must ensure that your servlet
 initializer *directly* implements `WebApplicationInitializer` (even if you extend from a
 base class that already implements it).
 
-A typical initializer for Weblogic would be something like this:
+A typical initializer for WebLogic would be something like this:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -2582,7 +2696,7 @@ A typical initializer for Weblogic would be something like this:
 	}
 ----
 
-If you use logback, you will also need to tell Weblogic to prefer the packaged version
+If you use logback, you will also need to tell WebLogic to prefer the packaged version
 rather than the version that pre-installed with the server. You can do this by adding a
 `WEB-INF/weblogic.xml` file with the following contents:
 

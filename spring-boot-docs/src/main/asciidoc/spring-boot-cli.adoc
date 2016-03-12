@@ -13,8 +13,8 @@ a new project or write your own command for it.
 
 [[cli-installation]]
 == Installing the CLI
-The Spring Boot CLI can be installed manually; using GVM (the Groovy Environment
-Manually) or using Homebrew or MacPorts if you are an OSX user. See
+The Spring Boot CLI can be installed manually; using SDKMAN! (the SDK Manager)
+or using Homebrew or MacPorts if you are an OSX user. See
 _<<getting-started.adoc#getting-started-installing-the-cli>>_
 in the "`Getting started`" section for comprehensive installation instructions.
 
@@ -219,25 +219,25 @@ By default, the CLI uses the dependency management declared in `spring-boot-depe
 when resolving `@Grab` dependencies. Additional dependency management, that will override
 the default dependency management, can be configured using the `@DependencyManagementBom`
 annotation. The annotation's value should specify the coordinates
-(`groupId:artifactId:version`) of one or more Maven boms.
+(`groupId:artifactId:version`) of one or more Maven BOMs.
 
 For example, the following declaration:
 
 [source,groovy,indent=0]
 ----
-	`@DependencyManagementBom("com.example.custom-bom:1.0.0")`
+	@DependencyManagementBom("com.example.custom-bom:1.0.0")
 ----
 
 Will pick up  `custom-bom-1.0.0.pom` in a Maven repository under
 `com/example/custom-versions/1.0.0/`.
 
-When multiple boms are specified they are applied in the order that they're declared.
+When multiple BOMs are specified they are applied in the order that they're declared.
 For example:
 
 [source,java,indent=0]
 ----
-	`@DependencyManagementBom(["com.example.custom-bom:1.0.0",
-			"com.example.another-bom:1.0.0"])`
+	@DependencyManagementBom(["com.example.custom-bom:1.0.0",
+			"com.example.another-bom:1.0.0"])
 ----
 
 indicates that dependency management in `another-bom` will override the dependency
@@ -248,7 +248,7 @@ ensure consistent ordering of the dependency management, you can only use
 `@DependencyManagementBom` at most once in your application. A useful source of
 dependency management (that is a superset of Spring Boot's dependency management) is the
 http://platform.spring.io/[Spring IO Platform], e.g.
-`@DepenedencyManagementBom('io.spring.platform:platform-bom:1.1.2.RELEASE')`.
+`@DependencyManagementBom('io.spring.platform:platform-bom:1.1.2.RELEASE')`.
 
 
 

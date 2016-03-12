@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,9 @@
 package org.springframework.boot.autoconfigure.mongo;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.env.Environment;
-import org.springframework.data.mapping.model.FieldNamingStrategy;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -30,6 +27,9 @@ import com.mongodb.MongoClientOptions.Builder;
 import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.env.Environment;
 
 /**
  * Configuration properties for Mongo.
@@ -91,7 +91,7 @@ public class MongoProperties {
 	/**
 	 * Fully qualified name of the FieldNamingStrategy to use.
 	 */
-	private Class<? extends FieldNamingStrategy> fieldNamingStrategy;
+	private Class<?> fieldNamingStrategy;
 
 	public String getHost() {
 		return this.host;
@@ -133,12 +133,11 @@ public class MongoProperties {
 		this.password = password;
 	}
 
-	public Class<? extends FieldNamingStrategy> getFieldNamingStrategy() {
+	public Class<?> getFieldNamingStrategy() {
 		return this.fieldNamingStrategy;
 	}
 
-	public void setFieldNamingStrategy(
-			Class<? extends FieldNamingStrategy> fieldNamingStrategy) {
+	public void setFieldNamingStrategy(Class<?> fieldNamingStrategy) {
 		this.fieldNamingStrategy = fieldNamingStrategy;
 	}
 
@@ -183,21 +182,6 @@ public class MongoProperties {
 	}
 
 	/**
-	 * Creates a {@link MongoClient} using the given {@code options}.
-	 *
-	 * @param options the options
-	 * @return the Mongo client
-	 * @throws UnknownHostException if the configured host is unknown
-	 * @deprecated Since 1.3.0 in favour of
-	 * {@link #createMongoClient(MongoClientOptions, Environment)}
-	 */
-	@Deprecated
-	public MongoClient createMongoClient(MongoClientOptions options)
-			throws UnknownHostException {
-		return this.createMongoClient(options, null);
-	}
-
-	/**
 	 * Creates a {@link MongoClient} using the given {@code options} and
 	 * {@code environment}. If the configured port is zero, the value of the
 	 * {@code local.mongo.port} property retrieved from the {@code environment} is used to
@@ -215,12 +199,12 @@ public class MongoProperties {
 				if (options == null) {
 					options = MongoClientOptions.builder().build();
 				}
-				List<MongoCredential> credentials = null;
+				List<MongoCredential> credentials = new ArrayList<MongoCredential>();
 				if (hasCustomCredentials()) {
-					String database = this.authenticationDatabase == null ? getMongoClientDatabase()
-							: this.authenticationDatabase;
-					credentials = Arrays.asList(MongoCredential.createMongoCRCredential(
-							this.username, database, this.password));
+					String database = this.authenticationDatabase == null
+							? getMongoClientDatabase() : this.authenticationDatabase;
+					credentials.add(MongoCredential.createCredential(this.username,
+							database, this.password));
 				}
 				String host = this.host == null ? "localhost" : this.host;
 				int port = determinePort(environment);
@@ -276,8 +260,8 @@ public class MongoProperties {
 			builder.socketFactory(options.getSocketFactory());
 			builder.socketKeepAlive(options.isSocketKeepAlive());
 			builder.socketTimeout(options.getSocketTimeout());
-			builder.threadsAllowedToBlockForConnectionMultiplier(options
-					.getThreadsAllowedToBlockForConnectionMultiplier());
+			builder.threadsAllowedToBlockForConnectionMultiplier(
+					options.getThreadsAllowedToBlockForConnectionMultiplier());
 			builder.writeConcern(options.getWriteConcern());
 		}
 		return builder;

@@ -27,15 +27,19 @@ import java.util.Arrays;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.ApplicationHome;
+import org.springframework.boot.ApplicationTemp;
+import org.springframework.util.Assert;
+
 /**
  * Abstract base class for {@link EmbeddedServletContainerFactory} implementations.
  *
  * @author Phillip Webb
  * @author Dave Syer
  */
-public abstract class AbstractEmbeddedServletContainerFactory extends
-		AbstractConfigurableEmbeddedServletContainer implements
-		EmbeddedServletContainerFactory {
+public abstract class AbstractEmbeddedServletContainerFactory
+		extends AbstractConfigurableEmbeddedServletContainer
+		implements EmbeddedServletContainerFactory {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
@@ -55,7 +59,7 @@ public abstract class AbstractEmbeddedServletContainerFactory extends
 	}
 
 	/**
-	 * Returns the absolute document root when it points to a valid folder, logging a
+	 * Returns the absolute document root when it points to a valid directory, logging a
 	 * warning and returning {@code null} otherwise.
 	 * @return the valid document root
 	 */
@@ -68,9 +72,9 @@ public abstract class AbstractEmbeddedServletContainerFactory extends
 		// Or maybe there is a document root in a well-known location
 		file = file != null ? file : getCommonDocumentRoot();
 		if (file == null && this.logger.isDebugEnabled()) {
-			this.logger.debug("None of the document roots "
-					+ Arrays.asList(COMMON_DOC_ROOTS)
-					+ " point to a directory and will be ignored.");
+			this.logger
+					.debug("None of the document roots " + Arrays.asList(COMMON_DOC_ROOTS)
+							+ " point to a directory and will be ignored.");
 		}
 		else if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Document root: " + file);
@@ -83,12 +87,17 @@ public abstract class AbstractEmbeddedServletContainerFactory extends
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Code archive: " + file);
 		}
-		if (file != null && file.exists() && file.getAbsolutePath().contains("/WEB-INF/")) {
+		if (file != null && file.exists()
+				&& file.getAbsolutePath().contains("/WEB-INF/")) {
 			String path = file.getAbsolutePath();
 			path = path.substring(0, path.indexOf("/WEB-INF/"));
 			return new File(path);
 		}
 		return null;
+	}
+
+	private File getWarFileDocumentRoot() {
+		return getArchiveFileDocumentRoot(".war");
 	}
 
 	private File getArchiveFileDocumentRoot(String extension) {
@@ -101,10 +110,6 @@ public abstract class AbstractEmbeddedServletContainerFactory extends
 			return file.getAbsoluteFile();
 		}
 		return null;
-	}
-
-	private File getWarFileDocumentRoot() {
-		return getArchiveFileDocumentRoot(".war");
 	}
 
 	private File getCommonDocumentRoot() {
@@ -136,6 +141,47 @@ public abstract class AbstractEmbeddedServletContainerFactory extends
 		}
 		catch (IOException ex) {
 			return null;
+		}
+	}
+
+	protected final File getValidSessionStoreDir() {
+		return getValidSessionStoreDir(true);
+	}
+
+	protected final File getValidSessionStoreDir(boolean mkdirs) {
+		File dir = getSessionStoreDir();
+		if (dir == null) {
+			return new ApplicationTemp().getDir("servlet-sessions");
+		}
+		if (!dir.isAbsolute()) {
+			dir = new File(new ApplicationHome().getDir(), dir.getPath());
+		}
+		if (!dir.exists() && mkdirs) {
+			dir.mkdirs();
+		}
+		Assert.state(!mkdirs || dir.exists(), "Session dir " + dir + " does not exist");
+		Assert.state(!dir.isFile(), "Session dir " + dir + " points to a file");
+		return dir;
+	}
+
+	/**
+	 * Returns the absolute temp dir for given servlet container.
+	 * @param prefix servlet container name
+	 * @return The temp dir for given servlet container.
+	 */
+	protected File createTempDir(String prefix) {
+		try {
+			File tempDir = File.createTempFile(prefix + ".", "." + getPort());
+			tempDir.delete();
+			tempDir.mkdir();
+			tempDir.deleteOnExit();
+			return tempDir;
+		}
+		catch (IOException ex) {
+			throw new EmbeddedServletContainerException(
+					"Unable to create tempDir. java.io.tmpdir is set to "
+							+ System.getProperty("java.io.tmpdir"),
+					ex);
 		}
 	}
 

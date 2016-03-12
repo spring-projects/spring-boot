@@ -16,11 +16,11 @@
 
 package org.springframework.boot.autoconfigure.websocket;
 
-import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer;
-import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
-
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
+
+import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 
 /**
  * {@link WebSocketContainerCustomizer} for
@@ -29,8 +29,8 @@ import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
  * @author Phillip Webb
  * @since 1.2.0
  */
-public class UndertowWebSocketContainerCustomizer extends
-		WebSocketContainerCustomizer<UndertowEmbeddedServletContainerFactory> {
+public class UndertowWebSocketContainerCustomizer
+		extends WebSocketContainerCustomizer<UndertowEmbeddedServletContainerFactory> {
 
 	@Override
 	protected void doCustomize(UndertowEmbeddedServletContainerFactory container) {
@@ -38,8 +38,8 @@ public class UndertowWebSocketContainerCustomizer extends
 		container.addDeploymentInfoCustomizers(customizer);
 	}
 
-	private static class WebsocketDeploymentInfoCustomizer implements
-			UndertowDeploymentInfoCustomizer {
+	private static class WebsocketDeploymentInfoCustomizer
+			implements UndertowDeploymentInfoCustomizer {
 
 		@Override
 		public void customize(DeploymentInfo deploymentInfo) {

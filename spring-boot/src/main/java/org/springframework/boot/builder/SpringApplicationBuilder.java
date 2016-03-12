@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ import org.springframework.core.io.ResourceLoader;
  * SpringApplication instead.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class SpringApplicationBuilder {
 
@@ -79,6 +80,8 @@ public class SpringApplicationBuilder {
 	private Set<String> additionalProfiles = new LinkedHashSet<String>();
 
 	private boolean registerShutdownHookApplied;
+
+	private boolean configuredAsChild = false;
 
 	public SpringApplicationBuilder(Object... sources) {
 		this.application = createSpringApplication(sources);
@@ -120,19 +123,11 @@ public class SpringApplicationBuilder {
 	 * @return an application context created from the current state
 	 */
 	public ConfigurableApplicationContext run(String... args) {
-		if (this.parent != null) {
-			// If there is a parent don't register a shutdown hook
-			if (!this.registerShutdownHookApplied) {
-				this.application.setRegisterShutdownHook(false);
-			}
-			// initialize it and make sure it is added to the current context
-			initializers(new ParentContextApplicationContextInitializer(
-					this.parent.run(args)));
-		}
 		if (this.running.get()) {
 			// If already created we just return the existing context
 			return this.context;
 		}
+		configureAsChildIfNecessary(args);
 		if (this.running.compareAndSet(false, true)) {
 			synchronized (this.running) {
 				// If not already running copy the sources over and then run.
@@ -142,11 +137,33 @@ public class SpringApplicationBuilder {
 		return this.context;
 	}
 
+	private void configureAsChildIfNecessary(String... args) {
+		if (this.parent != null && !this.configuredAsChild) {
+			this.configuredAsChild = true;
+			if (!this.registerShutdownHookApplied) {
+				this.application.setRegisterShutdownHook(false);
+			}
+			initializers(new ParentContextApplicationContextInitializer(
+					this.parent.run(args)));
+		}
+	}
+
 	/**
 	 * Returns a fully configured {@link SpringApplication} that is ready to run.
 	 * @return the fully configured {@link SpringApplication}.
 	 */
 	public SpringApplication build() {
+		return build(new String[0]);
+	}
+
+	/**
+	 * Returns a fully configured {@link SpringApplication} that is ready to run. Any
+	 * parent that has been configured will be run with the given {@code args}.
+	 * @param args the parent's args
+	 * @return the fully configured {@link SpringApplication}.
+	 */
+	public SpringApplication build(String... args) {
+		configureAsChildIfNecessary(args);
 		this.application.setSources(this.sources);
 		return this.application;
 	}
@@ -172,7 +189,7 @@ public class SpringApplicationBuilder {
 		web(false);
 
 		// Probably not interested in multiple banners
-		showBanner(false);
+		bannerMode(Banner.Mode.OFF);
 
 		// Make sure sources get copied over
 		this.application.setSources(this.sources);
@@ -306,13 +323,8 @@ public class SpringApplicationBuilder {
 		return this;
 	}
 
-	/**
-	 * Flag to indicate the startup banner should be printed.
-	 * @param showBanner the flag to set. Default true.
-	 * @return the current builder
-	 */
-	public SpringApplicationBuilder showBanner(boolean showBanner) {
-		this.application.setShowBanner(showBanner);
+	public SpringApplicationBuilder bannerMode(Banner.Mode bannerMode) {
+		this.application.setBannerMode(bannerMode);
 		return this;
 	}
 
@@ -445,7 +457,8 @@ public class SpringApplicationBuilder {
 	 * @param beanNameGenerator the generator to set.
 	 * @return the current builder
 	 */
-	public SpringApplicationBuilder beanNameGenerator(BeanNameGenerator beanNameGenerator) {
+	public SpringApplicationBuilder beanNameGenerator(
+			BeanNameGenerator beanNameGenerator) {
 		this.application.setBeanNameGenerator(beanNameGenerator);
 		return this;
 	}

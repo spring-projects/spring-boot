@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 
 package org.springframework.boot.context.config;
 
-import org.junit.Test;
+import java.util.Random;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RandomValuePropertySource}.
@@ -30,57 +31,72 @@ import static org.junit.Assert.assertTrue;
  */
 public class RandomValuePropertySourceTests {
 
-	private RandomValuePropertySource source = new RandomValuePropertySource("random");
+	private RandomValuePropertySource source = new RandomValuePropertySource();
 
 	@Test
 	public void notRandom() {
-		assertNull(this.source.getProperty("foo"));
+		assertThat(this.source.getProperty("foo")).isNull();
 	}
 
 	@Test
 	public void string() {
-		assertNotNull(this.source.getProperty("random.string"));
+		assertThat(this.source.getProperty("random.string")).isNotNull();
 	}
 
 	@Test
 	public void intValue() {
 		Integer value = (Integer) this.source.getProperty("random.int");
-		assertNotNull(value);
+		assertThat(value).isNotNull();
 	}
 
 	@Test
 	public void intRange() {
 		Integer value = (Integer) this.source.getProperty("random.int[4,10]");
-		assertNotNull(value);
-		assertTrue(value >= 4);
-		assertTrue(value < 10);
+		assertThat(value).isNotNull();
+		assertThat(value >= 4).isTrue();
+		assertThat(value < 10).isTrue();
 	}
 
 	@Test
 	public void intMax() {
 		Integer value = (Integer) this.source.getProperty("random.int(10)");
-		assertNotNull(value);
-		assertTrue(value < 10);
+		assertThat(value).isNotNull().isLessThan(10);
 	}
 
 	@Test
 	public void longValue() {
 		Long value = (Long) this.source.getProperty("random.long");
-		assertNotNull(value);
+		assertThat(value).isNotNull();
 	}
 
 	@Test
 	public void longRange() {
 		Long value = (Long) this.source.getProperty("random.long[4,10]");
-		assertNotNull(value);
-		assertTrue(Long.toString(value), value >= 4L);
-		assertTrue(Long.toString(value), value < 10L);
+		assertThat(value).isNotNull().isBetween(4L, 10L);
 	}
 
 	@Test
 	public void longMax() {
 		Long value = (Long) this.source.getProperty("random.long(10)");
-		assertNotNull(value);
-		assertTrue(value < 10L);
+		assertThat(value).isNotNull().isLessThan(10L);
 	}
+
+	@Test
+	public void longOverflow() {
+		RandomValuePropertySource source = Mockito.spy(this.source);
+		Mockito.when(source.getSource()).thenReturn(new Random() {
+
+			@Override
+			public long nextLong() {
+				// constant that used to become -8, now becomes 8
+				return Long.MIN_VALUE;
+			}
+
+		});
+		Long value = (Long) source.getProperty("random.long(10)");
+		assertThat(value).isNotNull().isGreaterThanOrEqualTo(0L).isLessThan(10L);
+		value = (Long) source.getProperty("random.long[4,10]");
+		assertThat(value).isNotNull().isGreaterThanOrEqualTo(4L).isLessThan(10L);
+	}
+
 }

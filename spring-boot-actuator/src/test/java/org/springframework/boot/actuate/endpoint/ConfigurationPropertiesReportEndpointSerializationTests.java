@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -31,8 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationPropertiesReportEndpoint} serialization.
@@ -66,13 +66,13 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("foo");
-		assertNotNull(nestedProperties);
-		assertEquals("foo", nestedProperties.get("prefix"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
-		assertNotNull(map);
-		assertEquals(2, map.size());
-		assertEquals("foo", map.get("name"));
+		assertThat(map).isNotNull();
+		assertThat(map).hasSize(2);
+		assertThat(map.get("name")).isEqualTo("foo");
 	}
 
 	@Test
@@ -86,12 +86,12 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("foo");
-		assertNotNull(nestedProperties);
+		assertThat(nestedProperties).isNotNull();
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
-		assertNotNull(map);
-		assertEquals(2, map.size());
-		assertEquals("foo", ((Map<String, Object>) map.get("bar")).get("name"));
+		assertThat(map).isNotNull();
+		assertThat(map).hasSize(2);
+		assertThat(((Map<String, Object>) map.get("bar")).get("name")).isEqualTo("foo");
 	}
 
 	@Test
@@ -105,13 +105,13 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("foo");
-		assertNotNull(nestedProperties);
-		assertEquals("foo", nestedProperties.get("prefix"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
-		assertNotNull(map);
-		assertEquals(1, map.size());
-		assertEquals("Cannot serialize 'foo'", map.get("error"));
+		assertThat(map).isNotNull();
+		assertThat(map).hasSize(1);
+		assertThat(map.get("error")).isEqualTo("Cannot serialize 'foo'");
 	}
 
 	@Test
@@ -125,13 +125,13 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("foo");
-		assertNotNull(nestedProperties);
-		assertEquals("foo", nestedProperties.get("prefix"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
-		assertNotNull(map);
-		assertEquals(3, map.size());
-		assertEquals("foo", ((Map<String, Object>) map.get("map")).get("name"));
+		assertThat(map).isNotNull();
+		assertThat(map).hasSize(3);
+		assertThat(((Map<String, Object>) map.get("map")).get("name")).isEqualTo("foo");
 	}
 
 	@Test
@@ -144,14 +144,14 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("foo");
-		assertNotNull(nestedProperties);
+		assertThat(nestedProperties).isNotNull();
 		System.err.println(nestedProperties);
-		assertEquals("foo", nestedProperties.get("prefix"));
+		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
-		assertNotNull(map);
-		assertEquals(3, map.size());
-		assertEquals(null, (map.get("map")));
+		assertThat(map).isNotNull();
+		assertThat(map).hasSize(3);
+		assertThat((map.get("map"))).isNull();
 	}
 
 	@Test
@@ -165,13 +165,13 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("foo");
-		assertNotNull(nestedProperties);
-		assertEquals("foo", nestedProperties.get("prefix"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
-		assertNotNull(map);
-		assertEquals(3, map.size());
-		assertEquals("foo", ((List<String>) map.get("list")).get(0));
+		assertThat(map).isNotNull();
+		assertThat(map).hasSize(3);
+		assertThat(((List<String>) map.get("list")).get(0)).isEqualTo("foo");
 	}
 
 	@Test
@@ -185,14 +185,14 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("foo");
-		assertNotNull(nestedProperties);
+		assertThat(nestedProperties).isNotNull();
 		System.err.println(nestedProperties);
-		assertEquals("foo", nestedProperties.get("prefix"));
+		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
-		assertNotNull(map);
-		assertEquals(3, map.size());
-		assertEquals("192.168.1.10", map.get("address"));
+		assertThat(map).isNotNull();
+		assertThat(map).hasSize(3);
+		assertThat(map.get("address")).isEqualTo("192.168.1.10");
 	}
 
 	@Configuration

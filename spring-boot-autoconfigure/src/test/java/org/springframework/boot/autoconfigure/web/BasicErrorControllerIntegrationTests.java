@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,27 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.web.BasicErrorControllerIntegrationTests.TestConfiguration;
 import org.springframework.boot.autoconfigure.web.BasicErrorControllerMockMvcTests.MinimalWebConfiguration;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -41,22 +48,23 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractView;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link BasicErrorController} using {@link IntegrationTest} that hit a real
- * HTTP server.
+ * Tests for {@link BasicErrorController} using a real HTTP server.
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(TestConfiguration.class)
@@ -65,57 +73,134 @@ import static org.junit.Assert.assertThat;
 @IntegrationTest("server.port=0")
 public class BasicErrorControllerIntegrationTests {
 
-	@Value("${local.server.port}")
-	private int port;
+	private ConfigurableApplicationContext context;
+
+	@After
+	public void closeContext() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testErrorForMachineClient() throws Exception {
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, Map.class);
-		String body = entity.getBody().toString();
-		assertThat(body, endsWith("status=500, " + "error=Internal Server Error, "
-				+ "exception=java.lang.IllegalStateException, " + "message=Expected!, "
-				+ "path=/}"));
+		load();
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("?trace=true"), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
+				IllegalStateException.class, "Expected!", "/");
+		assertThat(entity.getBody().containsKey("trace")).isFalse();
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void testErrorForMachineClientTraceParamStacktrace() throws Exception {
+		load("--server.error.include-stacktrace=on-trace-param");
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("?trace=true"), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
+				IllegalStateException.class, "Expected!", "/");
+		assertThat(entity.getBody().containsKey("trace")).isTrue();
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void testErrorForMachineClientNoStacktrace() throws Exception {
+		load("--server.error.include-stacktrace=never");
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("?trace=true"), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
+				IllegalStateException.class, "Expected!", "/");
+		assertThat(entity.getBody().containsKey("trace")).isFalse();
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void testErrorForMachineClientAlwaysStacktrace() throws Exception {
+		load("--server.error.include-stacktrace=always");
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("?trace=false"), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
+				IllegalStateException.class, "Expected!", "/");
+		assertThat(entity.getBody().containsKey("trace")).isTrue();
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testErrorForAnnotatedException() throws Exception {
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/annotated", Map.class);
-		assertThat(
-				entity.getBody().toString(),
-				endsWith("status=400, "
-						+ "error=Bad Request, "
-						+ "exception=org.springframework.boot.autoconfigure.web.BasicErrorControllerIntegrationTests$TestConfiguration$Errors$ExpectedException, "
-						+ "message=Expected!, " + "path=/annotated}"));
+		load();
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("/annotated"), Map.class);
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request",
+				TestConfiguration.Errors.ExpectedException.class, "Expected!",
+				"/annotated");
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void testErrorForAnnotatedNoReasonException() throws Exception {
-		ResponseEntity<?> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/annotatedNoReason", Object.class);
-		assertThat(
-				entity.getBody().toString(),
-				endsWith("status=406, "
-						+ "error=Not Acceptable, "
-						+ "exception=org.springframework.boot.autoconfigure.web.BasicErrorControllerIntegrationTests$TestConfiguration$Errors$NoReasonExpectedException, "
-						+ "message=Expected message, " + "path=/annotatedNoReason}"));
+		load();
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("/annotatedNoReason"), Map.class);
+		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
+				TestConfiguration.Errors.NoReasonExpectedException.class,
+				"Expected message", "/annotatedNoReason");
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testBindingExceptionForMachineClient() throws Exception {
-		RequestEntity request = RequestEntity
-				.get(URI.create("http://localhost:" + this.port + "/bind"))
+		load();
+		RequestEntity request = RequestEntity.get(URI.create(createUrl("/bind")))
 				.accept(MediaType.APPLICATION_JSON).build();
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
 		String resp = entity.getBody().toString();
-		assertThat(resp, containsString("Error count: 1"));
-		assertThat(resp, containsString("errors=[{"));
-		assertThat(resp, containsString("codes=["));
-		assertThat(resp, containsString("org.springframework.validation.BindException"));
+		assertThat(resp).contains("Error count: 1");
+		assertThat(resp).contains("errors=[{");
+		assertThat(resp).contains("codes=[");
+		assertThat(resp).contains("org.springframework.validation.BindException");
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void testRequestBodyValidationForMachineClient() throws Exception {
+		load();
+		RequestEntity request = RequestEntity
+				.post(URI.create(createUrl("/bodyValidation")))
+				.contentType(MediaType.APPLICATION_JSON).body("{}");
+		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
+		String resp = entity.getBody().toString();
+		assertThat(resp).contains("Error count: 1");
+		assertThat(resp).contains("errors=[{");
+		assertThat(resp).contains("codes=[");
+		assertThat(resp).contains(MethodArgumentNotValidException.class.getName());
+	}
+
+	private void assertErrorAttributes(Map<?, ?> content, String status, String error,
+			Class<?> exception, String message, String path) {
+		assertThat(content.get("status")).as("Wrong status").isEqualTo(status);
+		assertThat(content.get("error")).as("Wrong error").isEqualTo(error);
+		assertThat(content.get("exception")).as("Wrong exception")
+				.isEqualTo(exception.getName());
+		assertThat(content.get("message")).as("Wrong message").isEqualTo(message);
+		assertThat(content.get("path")).as("Wrong path").isEqualTo(path);
+	}
+
+	private String createUrl(String path) {
+		int port = this.context.getEnvironment().getProperty("local.server.port",
+				int.class);
+		return "http://localhost:" + port + path;
+	}
+
+	private void load(String... arguments) {
+		List<String> args = new ArrayList<String>();
+		args.add("--server.port=0");
+		if (arguments != null) {
+			args.addAll(Arrays.asList(arguments));
+		}
+		this.context = SpringApplication.run(TestConfiguration.class,
+				args.toArray(new String[args.size()]));
 	}
 
 	@Configuration
@@ -133,7 +218,7 @@ public class BasicErrorControllerIntegrationTests {
 				@Override
 				protected void renderMergedOutputModel(Map<String, Object> model,
 						HttpServletRequest request, HttpServletResponse response)
-						throws Exception {
+								throws Exception {
 					response.getWriter().write("ERROR_BEAN");
 				}
 			};
@@ -162,10 +247,15 @@ public class BasicErrorControllerIntegrationTests {
 			}
 
 			@RequestMapping("/bind")
-			public String bind(HttpServletRequest request) throws Exception {
+			public String bind() throws Exception {
 				BindException error = new BindException(this, "test");
 				error.rejectValue("foo", "bar.error");
 				throw error;
+			}
+
+			@RequestMapping(path = "/bodyValidation", method = RequestMethod.POST, produces = "application/json")
+			public String bodyValidation(@Valid @RequestBody DummyBody body) {
+				return body.content;
 			}
 
 			@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Expected!")
@@ -180,6 +270,21 @@ public class BasicErrorControllerIntegrationTests {
 
 				NoReasonExpectedException(String message) {
 					super(message);
+				}
+
+			}
+
+			static class DummyBody {
+
+				@NotNull
+				private String content;
+
+				public String getContent() {
+					return this.content;
+				}
+
+				public void setContent(String content) {
+					this.content = content;
 				}
 
 			}

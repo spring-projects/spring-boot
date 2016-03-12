@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,7 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ManagementServerPropertiesAutoConfiguration}.
@@ -33,8 +31,8 @@ public class ManagementServerPropertiesAutoConfigurationTests {
 	@Test
 	public void defaultManagementServerProperties() {
 		ManagementServerProperties properties = new ManagementServerProperties();
-		assertThat(properties.getPort(), nullValue());
-		assertThat(properties.getContextPath(), equalTo(""));
+		assertThat(properties.getPort()).isNull();
+		assertThat(properties.getContextPath()).isEqualTo("");
 	}
 
 	@Test
@@ -42,22 +40,22 @@ public class ManagementServerPropertiesAutoConfigurationTests {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.setPort(123);
 		properties.setContextPath("/foo");
-		assertThat(properties.getPort(), equalTo(123));
-		assertThat(properties.getContextPath(), equalTo("/foo"));
+		assertThat(properties.getPort()).isEqualTo(123);
+		assertThat(properties.getContextPath()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void trailingSlashOfContextPathIsRemoved() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.setContextPath("/foo/");
-		assertThat(properties.getContextPath(), equalTo("/foo"));
+		assertThat(properties.getContextPath()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void slashOfContextPathIsDefaultValue() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.setContextPath("/");
-		assertThat(properties.getContextPath(), equalTo(""));
+		assertThat(properties.getContextPath()).isEqualTo("");
 	}
 
 }

@@ -87,12 +87,12 @@ public class CachePublicMetrics implements PublicMetrics {
 	private CacheStatistics getCacheStatistics(Cache cache, CacheManager cacheManager) {
 		if (this.statisticsProviders != null) {
 			for (CacheStatisticsProvider provider : this.statisticsProviders) {
-				Class<?> cacheType = ResolvableType.forClass(
-						CacheStatisticsProvider.class, provider.getClass())
+				Class<?> cacheType = ResolvableType
+						.forClass(CacheStatisticsProvider.class, provider.getClass())
 						.resolveGeneric();
 				if (cacheType.isInstance(cache)) {
-					CacheStatistics statistics = provider.getCacheStatistics(
-							cacheManager, cache);
+					CacheStatistics statistics = provider.getCacheStatistics(cacheManager,
+							cache);
 					if (statistics != null) {
 						return statistics;
 					}

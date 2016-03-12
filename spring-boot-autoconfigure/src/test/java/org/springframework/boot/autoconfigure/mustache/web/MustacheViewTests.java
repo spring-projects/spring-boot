@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,17 @@ package org.springframework.boot.autoconfigure.mustache.web;
 
 import java.util.Collections;
 
+import com.samskivert.mustache.Mustache;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import com.samskivert.mustache.Mustache;
-
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MustacheView}.
@@ -55,10 +55,12 @@ public class MustacheViewTests {
 
 	@Test
 	public void viewResolvesHandlebars() throws Exception {
-		MustacheView view = new MustacheView(Mustache.compiler().compile("Hello {{msg}}"));
+		MustacheView view = new MustacheView(
+				Mustache.compiler().compile("Hello {{msg}}"));
 		view.setApplicationContext(this.context);
-		view.render(Collections.singletonMap("msg", "World"), this.request, this.response);
-		assertEquals("Hello World", this.response.getContentAsString());
+		view.render(Collections.singletonMap("msg", "World"), this.request,
+				this.response);
+		assertThat(this.response.getContentAsString()).isEqualTo("Hello World");
 	}
 
 }

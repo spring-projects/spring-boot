@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
@@ -38,8 +39,7 @@ import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -78,8 +78,8 @@ public class ServerPropertiesAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "server.port:9000");
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
-		assertNotNull(server);
-		assertEquals(9000, server.getPort().intValue());
+		assertThat(server).isNotNull();
+		assertThat(server.getPort().intValue()).isEqualTo(9000);
 		verify(containerFactory).setPort(9000);
 	}
 
@@ -93,8 +93,8 @@ public class ServerPropertiesAutoConfigurationTests {
 				"server.tomcat.basedir:target/foo", "server.port:9000");
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
-		assertNotNull(server);
-		assertEquals(new File("target/foo"), server.getTomcat().getBasedir());
+		assertThat(server).isNotNull();
+		assertThat(server.getTomcat().getBasedir()).isEqualTo(new File("target/foo"));
 		verify(containerFactory).setPort(9000);
 	}
 
@@ -108,10 +108,10 @@ public class ServerPropertiesAutoConfigurationTests {
 		containerFactory = this.context
 				.getBean(AbstractEmbeddedServletContainerFactory.class);
 		ServerProperties server = this.context.getBean(ServerProperties.class);
-		assertNotNull(server);
+		assertThat(server).isNotNull();
 		// The server.port environment property was not explicitly set so the container
 		// factory should take precedence...
-		assertEquals(3000, containerFactory.getPort());
+		assertThat(containerFactory.getPort()).isEqualTo(3000);
 	}
 
 	@Test
@@ -124,8 +124,8 @@ public class ServerPropertiesAutoConfigurationTests {
 		containerFactory = this.context
 				.getBean(AbstractEmbeddedServletContainerFactory.class);
 		ServerProperties server = this.context.getBean(ServerProperties.class);
-		assertNotNull(server);
-		assertEquals(3000, containerFactory.getPort());
+		assertThat(server).isNotNull();
+		assertThat(containerFactory.getPort()).isEqualTo(3000);
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class ServerPropertiesAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
-		assertNotNull(server);
+		assertThat(server).isNotNull();
 		// The server.port environment property was not explicitly set so the container
 		// customizer should take precedence...
 		verify(containerFactory).setPort(3000);
@@ -146,7 +146,7 @@ public class ServerPropertiesAutoConfigurationTests {
 	@Test
 	public void testAccidentalMultipleServerPropertiesBeans() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, MutiServerPropertiesBeanConfig.class,
+		this.context.register(Config.class, MultiServerPropertiesBeanConfig.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.thrown.expect(ApplicationContextException.class);
@@ -221,7 +221,7 @@ public class ServerPropertiesAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class MutiServerPropertiesBeanConfig {
+	protected static class MultiServerPropertiesBeanConfig {
 
 		@Bean
 		public ServerProperties serverPropertiesOne() {

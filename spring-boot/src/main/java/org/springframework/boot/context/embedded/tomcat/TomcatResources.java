@@ -28,6 +28,7 @@ import javax.servlet.ServletContext;
 import org.apache.catalina.Context;
 import org.apache.catalina.WebResourceRoot.ResourceSetType;
 import org.apache.catalina.core.StandardContext;
+
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -115,7 +116,7 @@ abstract class TomcatResources {
 
 		@Override
 		protected void addJar(String jar) {
-			URL url = getJarUlr(jar);
+			URL url = getJarUrl(jar);
 			if (url != null) {
 				try {
 					this.addResourceJarUrlMethod.invoke(getContext(), url);
@@ -126,7 +127,7 @@ abstract class TomcatResources {
 			}
 		}
 
-		private URL getJarUlr(String jar) {
+		private URL getJarUrl(String jar) {
 			try {
 				return new URL(jar);
 			}
@@ -142,8 +143,8 @@ abstract class TomcatResources {
 				try {
 					Class<?> fileDirContextClass = Class
 							.forName("org.apache.naming.resources.FileDirContext");
-					Method setDocBaseMethod = ReflectionUtils.findMethod(
-							fileDirContextClass, "setDocBase", String.class);
+					Method setDocBaseMethod = ReflectionUtils
+							.findMethod(fileDirContextClass, "setDocBase", String.class);
 					Object fileDirContext = fileDirContextClass.newInstance();
 					setDocBaseMethod.invoke(fileDirContext, dir);
 					Method addResourcesDirContextMethod = ReflectionUtils.findMethod(

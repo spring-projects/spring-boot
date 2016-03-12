@@ -16,12 +16,12 @@
 
 package sample.undertow.ssl.web;
 
+import sample.undertow.ssl.service.HelloWorldService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import sample.undertow.ssl.service.HelloWorldService;
 
 @Controller
 public class SampleController {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import com.rabbitmq.client.Channel;
+
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -23,6 +25,8 @@ import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,8 +37,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.rabbitmq.client.Channel;
-
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitTemplate}.
  * <p>
@@ -43,30 +45,25 @@ import com.rabbitmq.client.Channel;
  * <P>
  * Registers the following beans:
  * <ul>
- * <li>
- * {@link org.springframework.amqp.rabbit.core.RabbitTemplate RabbitTemplate} if there is
- * no other bean of the same type in the context.</li>
- * <li>
- * {@link org.springframework.amqp.rabbit.connection.CachingConnectionFactory
+ * <li>{@link org.springframework.amqp.rabbit.core.RabbitTemplate RabbitTemplate} if there
+ * is no other bean of the same type in the context.</li>
+ * <li>{@link org.springframework.amqp.rabbit.connection.CachingConnectionFactory
  * CachingConnectionFactory} instance if there is no other bean of the same type in the
  * context.</li>
- * <li>
- * {@link org.springframework.amqp.core.AmqpAdmin } instance as long as
+ * <li>{@link org.springframework.amqp.core.AmqpAdmin } instance as long as
  * {@literal spring.rabbitmq.dynamic=true}.</li>
  * </ul>
  * <p>
  * The {@link org.springframework.amqp.rabbit.connection.CachingConnectionFactory} honors
  * the following properties:
  * <ul>
- * <li>
- * {@literal spring.rabbitmq.port} is used to specify the port to which the client should
- * connect, and defaults to 5672.</li>
- * <li>
- * {@literal spring.rabbitmq.username} is used to specify the (optional) username.</li>
- * <li>
- * {@literal spring.rabbitmq.password} is used to specify the (optional) password.</li>
- * <li>
- * {@literal spring.rabbitmq.host} is used to specify the host, and defaults to
+ * <li>{@literal spring.rabbitmq.port} is used to specify the port to which the client
+ * should connect, and defaults to 5672.</li>
+ * <li>{@literal spring.rabbitmq.username} is used to specify the (optional) username.
+ * </li>
+ * <li>{@literal spring.rabbitmq.password} is used to specify the (optional) password.
+ * </li>
+ * <li>{@literal spring.rabbitmq.host} is used to specify the host, and defaults to
  * {@literal localhost}.</li>
  * <li>{@literal spring.rabbitmq.virtualHost} is used to specify the (optional) virtual
  * host to which the client should connect.</li>
@@ -74,6 +71,7 @@ import com.rabbitmq.client.Channel;
  * @author Greg Turnquist
  * @author Josh Long
  * @author Stephane Nicoll
+ * @author Gary Russell
  */
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
@@ -91,10 +89,18 @@ public class RabbitAutoConfiguration {
 	@Autowired
 	private ConnectionFactory connectionFactory;
 
+	@Autowired
+	private ObjectProvider<MessageConverter> messageConverter;
+
 	@Bean
 	@ConditionalOnMissingBean(RabbitTemplate.class)
 	public RabbitTemplate rabbitTemplate() {
-		return new RabbitTemplate(this.connectionFactory);
+		RabbitTemplate rabbitTemplate = new RabbitTemplate(this.connectionFactory);
+		MessageConverter messageConverter = this.messageConverter.getIfUnique();
+		if (messageConverter != null) {
+			rabbitTemplate.setMessageConverter(messageConverter);
+		}
+		return rabbitTemplate;
 	}
 
 	@Configuration
@@ -133,6 +139,22 @@ public class RabbitAutoConfiguration {
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
 					factory.getObject());
 			connectionFactory.setAddresses(config.getAddresses());
+			if (config.getCache().getChannel().getSize() != null) {
+				connectionFactory
+						.setChannelCacheSize(config.getCache().getChannel().getSize());
+			}
+			if (config.getCache().getConnection().getMode() != null) {
+				connectionFactory
+						.setCacheMode(config.getCache().getConnection().getMode());
+			}
+			if (config.getCache().getConnection().getSize() != null) {
+				connectionFactory.setConnectionCacheSize(
+						config.getCache().getConnection().getSize());
+			}
+			if (config.getCache().getChannel().getCheckoutTimeout() != null) {
+				connectionFactory.setChannelCheckoutTimeout(
+						config.getCache().getChannel().getCheckoutTimeout());
+			}
 			return connectionFactory;
 		}
 

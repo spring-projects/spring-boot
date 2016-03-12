@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,15 @@
  */
 package sample.secure.oauth2;
 
+import java.security.Principal;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * After you launch the app, you can seek a bearer token like this:
@@ -92,7 +96,13 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableAuthorizationServer
 @EnableResourceServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@RestController
 public class SampleSecureOAuth2Application {
+
+	@RequestMapping("/user")
+	public Principal user(Principal user) {
+		return user;
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(SampleSecureOAuth2Application.class, args);

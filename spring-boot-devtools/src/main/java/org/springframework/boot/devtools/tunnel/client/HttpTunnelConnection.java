@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.tunnel.client;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,6 +32,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayload;
 import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayloadForwarder;
 import org.springframework.http.HttpMethod;
@@ -45,13 +47,14 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Rob Winch
+ * @author Andy Wilkinson
  * @since 1.3.0
  * @see TunnelClient
  * @see org.springframework.boot.devtools.tunnel.server.HttpTunnelServer
  */
 public class HttpTunnelConnection implements TunnelConnection {
 
-	private static Log logger = LogFactory.getLog(HttpTunnelConnection.class);
+	private static final Log logger = LogFactory.getLog(HttpTunnelConnection.class);
 
 	private final URI uri;
 
@@ -88,8 +91,8 @@ public class HttpTunnelConnection implements TunnelConnection {
 			throw new IllegalArgumentException("Malformed URL '" + url + "'");
 		}
 		this.requestFactory = requestFactory;
-		this.executor = (executor == null ? Executors
-				.newCachedThreadPool(new TunnelThreadFactory()) : executor);
+		this.executor = (executor == null
+				? Executors.newCachedThreadPool(new TunnelThreadFactory()) : executor);
 	}
 
 	@Override
@@ -141,8 +144,8 @@ public class HttpTunnelConnection implements TunnelConnection {
 		public int write(ByteBuffer src) throws IOException {
 			int size = src.remaining();
 			if (size > 0) {
-				openNewConnection(new HttpTunnelPayload(
-						this.requestSeq.incrementAndGet(), src));
+				openNewConnection(
+						new HttpTunnelPayload(this.requestSeq.incrementAndGet(), src));
 			}
 			return size;
 		}
@@ -156,12 +159,18 @@ public class HttpTunnelConnection implements TunnelConnection {
 						sendAndReceive(payload);
 					}
 					catch (IOException ex) {
-						logger.trace("Unexpected connection error", ex);
-						closeQuitely();
+						if (ex instanceof ConnectException) {
+							logger.warn("Failed to connect to remote application at "
+									+ HttpTunnelConnection.this.uri);
+						}
+						else {
+							logger.trace("Unexpected connection error", ex);
+						}
+						closeQuietly();
 					}
 				}
 
-				private void closeQuitely() {
+				private void closeQuietly() {
 					try {
 						close();
 					}
@@ -184,6 +193,12 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 		private void handleResponse(ClientHttpResponse response) throws IOException {
 			if (response.getStatusCode() == HttpStatus.GONE) {
+				close();
+				return;
+			}
+			if (response.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) {
+				logger.warn("Remote application responded with service unavailable. Did "
+						+ "you forget to start it with remote debugging enabled?");
 				close();
 				return;
 			}

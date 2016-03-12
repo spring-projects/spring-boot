@@ -32,8 +32,8 @@ import javax.servlet.ServletResponse;
 public class MockServlet extends GenericServlet {
 
 	@Override
-	public void service(ServletRequest req, ServletResponse res) throws ServletException,
-			IOException {
+	public void service(ServletRequest req, ServletResponse res)
+			throws ServletException, IOException {
 	}
 
 }

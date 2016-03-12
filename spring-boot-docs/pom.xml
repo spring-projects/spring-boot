@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.3.0.BUILD-SNAPSHOT</version>
+		<version>1.4.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-docs</artifactId>
@@ -126,6 +126,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
 			<optional>true</optional>
@@ -175,11 +180,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -345,7 +345,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
-			<artifactId>infinispan-spring4</artifactId>
+			<artifactId>infinispan-spring4-embedded</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -461,6 +461,11 @@
 		<dependency>
 			<groupId>org.springframework.social</groupId>
 			<artifactId>spring-social-twitter</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-cassandra</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>

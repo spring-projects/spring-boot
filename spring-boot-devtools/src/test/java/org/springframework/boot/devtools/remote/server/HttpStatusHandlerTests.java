@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -28,8 +29,7 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HttpStatusHandler}.
@@ -68,14 +68,14 @@ public class HttpStatusHandlerTests {
 	public void respondsOk() throws Exception {
 		HttpStatusHandler handler = new HttpStatusHandler();
 		handler.handle(this.request, this.response);
-		assertThat(this.servletResponse.getStatus(), equalTo(200));
+		assertThat(this.servletResponse.getStatus()).isEqualTo(200);
 	}
 
 	@Test
 	public void respondsWithStatus() throws Exception {
 		HttpStatusHandler handler = new HttpStatusHandler(HttpStatus.I_AM_A_TEAPOT);
 		handler.handle(this.request, this.response);
-		assertThat(this.servletResponse.getStatus(), equalTo(418));
+		assertThat(this.servletResponse.getStatus()).isEqualTo(418);
 	}
 
 }

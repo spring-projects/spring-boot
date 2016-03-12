@@ -22,6 +22,9 @@ do as they were designed before this was clarified.
 |===
 | Name | Location
 
+| Central Authentication Service (CAS) client
+| https://github.com/Unicon/cas-client-autoconfig-support
+
 | http://modelmapper.org/[ModelMapper]
 | https://github.com/jmnarloch/modelmapper-spring-boot-starter
 
@@ -51,5 +54,26 @@ do as they were designed before this was clarified.
 
 | https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
 | https://github.com/domix/spring-boot-starter-jade4j
+
+| https://www.google.com/recaptcha[Google's reCAPTCHA]
+| https://github.com/mkopylec/recaptcha-spring-boot-starter
+
+| http://mybatis.org/mybatis-3/[Mybatis]
+| https://github.com/mybatis/mybatis-spring-boot
+
+| http://wicket.apache.org/[Apache Wicket]
+| https://github.com/MarcGiffing/wicket-spring-boot
+
+| https://cloudant.com/[Cloudant]
+| https://github.com/icha024/cloudant-spring-boot-starter
+
+| http://www.grpc.io/[gRPC]
+| https://github.com/LogNet/grpc-spring-boot-starter
+
+| https://github.com/facebook/nifty[Nifty] (Thrift on Netty)
+| https://github.com/bigdullrock/nifty-spring-boot-starter
+
+| http://www.couchbase.com/[Couchbase] HTTP session
+| https://github.com/mkopylec/session-couchbase-spring-boot-starter
 
 |===

@@ -28,6 +28,7 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import org.json.JSONException;
+
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
@@ -89,7 +90,8 @@ public class MetadataStore {
 		catch (JSONException ex) {
 			throw new InvalidConfigurationMetadataException(
 					"Invalid additional meta-data in '" + METADATA_PATH + "': "
-							+ ex.getMessage(), Diagnostic.Kind.ERROR);
+							+ ex.getMessage(),
+					Diagnostic.Kind.ERROR);
 		}
 		finally {
 			in.close();
@@ -97,21 +99,21 @@ public class MetadataStore {
 	}
 
 	private FileObject getMetadataResource() throws IOException {
-		FileObject resource = this.environment.getFiler().getResource(
-				StandardLocation.CLASS_OUTPUT, "", METADATA_PATH);
+		FileObject resource = this.environment.getFiler()
+				.getResource(StandardLocation.CLASS_OUTPUT, "", METADATA_PATH);
 		return resource;
 	}
 
 	private FileObject createMetadataResource() throws IOException {
-		FileObject resource = this.environment.getFiler().createResource(
-				StandardLocation.CLASS_OUTPUT, "", METADATA_PATH);
+		FileObject resource = this.environment.getFiler()
+				.createResource(StandardLocation.CLASS_OUTPUT, "", METADATA_PATH);
 		return resource;
 	}
 
 	private InputStream getAdditionalMetadataStream() throws IOException {
 		// Most build systems will have copied the file to the class output location
-		FileObject fileObject = this.environment.getFiler().getResource(
-				StandardLocation.CLASS_OUTPUT, "", ADDITIONAL_METADATA_PATH);
+		FileObject fileObject = this.environment.getFiler()
+				.getResource(StandardLocation.CLASS_OUTPUT, "", ADDITIONAL_METADATA_PATH);
 		File file = new File(fileObject.toUri());
 		if (!file.exists()) {
 			// Gradle keeps things separate
@@ -123,8 +125,8 @@ public class MetadataStore {
 				file = new File(path);
 			}
 		}
-		return (file.exists() ? new FileInputStream(file) : fileObject.toUri().toURL()
-				.openStream());
+		return (file.exists() ? new FileInputStream(file)
+				: fileObject.toUri().toURL().openStream());
 	}
 
 }

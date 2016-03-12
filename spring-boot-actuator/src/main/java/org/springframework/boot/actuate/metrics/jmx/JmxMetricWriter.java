@@ -25,6 +25,7 @@ import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
@@ -47,7 +48,7 @@ import org.springframework.jmx.export.naming.ObjectNamingStrategy;
 @ManagedResource(description = "MetricWriter for pushing metrics to JMX MBeans.")
 public class JmxMetricWriter implements MetricWriter {
 
-	private static Log logger = LogFactory.getLog(JmxMetricWriter.class);
+	private static final Log logger = LogFactory.getLog(JmxMetricWriter.class);
 
 	private final ConcurrentMap<String, MetricValue> values = new ConcurrentHashMap<String, MetricValue>();
 

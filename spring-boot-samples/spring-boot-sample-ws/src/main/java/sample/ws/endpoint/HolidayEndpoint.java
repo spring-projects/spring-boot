@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,11 @@ import org.jdom2.Namespace;
 import org.jdom2.filter.Filters;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import sample.ws.service.HumanResourceService;
+
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-
-import sample.ws.service.HumanResourceService;
 
 @Endpoint
 public class HolidayEndpoint {
@@ -46,7 +45,6 @@ public class HolidayEndpoint {
 
 	private HumanResourceService humanResourceService;
 
-	@Autowired
 	public HolidayEndpoint(HumanResourceService humanResourceService)
 			throws JDOMException, XPathFactoryConfigurationException,
 			XPathExpressionException {
@@ -69,10 +67,10 @@ public class HolidayEndpoint {
 	public void handleHolidayRequest(@RequestPayload Element holidayRequest)
 			throws Exception {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Date startDate = dateFormat.parse(this.startDateExpression.evaluateFirst(
-				holidayRequest).getText());
-		Date endDate = dateFormat.parse(this.endDateExpression.evaluateFirst(
-				holidayRequest).getText());
+		Date startDate = dateFormat
+				.parse(this.startDateExpression.evaluateFirst(holidayRequest).getText());
+		Date endDate = dateFormat
+				.parse(this.endDateExpression.evaluateFirst(holidayRequest).getText());
 		String name = this.nameExpression.evaluateFirst(holidayRequest);
 
 		this.humanResourceService.bookHoliday(startDate, endDate, name);

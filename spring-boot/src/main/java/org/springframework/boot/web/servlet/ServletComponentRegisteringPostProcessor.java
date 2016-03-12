@@ -40,16 +40,17 @@ import org.springframework.context.annotation.ScannedGenericBeanDefinition;
  * @see ServletComponentScan
  * @see ServletComponentScanRegistrar
  */
-class ServletComponentRegisteringPostProcessor implements BeanFactoryPostProcessor,
-		ApplicationContextAware {
+class ServletComponentRegisteringPostProcessor
+		implements BeanFactoryPostProcessor, ApplicationContextAware {
 
 	private static final List<ServletComponentHandler> HANDLERS;
+
 	static {
-		List<ServletComponentHandler> handers = new ArrayList<ServletComponentHandler>();
-		handers.add(new WebServletHandler());
-		handers.add(new WebFilterHandler());
-		handers.add(new WebListenerHandler());
-		HANDLERS = Collections.unmodifiableList(handers);
+		List<ServletComponentHandler> handlers = new ArrayList<ServletComponentHandler>();
+		handlers.add(new WebServletHandler());
+		handlers.add(new WebFilterHandler());
+		handlers.add(new WebListenerHandler());
+		HANDLERS = Collections.unmodifiableList(handlers);
 	}
 
 	private final Set<String> packagesToScan;

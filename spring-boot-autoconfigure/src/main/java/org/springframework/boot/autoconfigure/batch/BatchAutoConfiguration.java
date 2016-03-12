@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.support.SimpleJobOperator;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -91,7 +92,7 @@ public class BatchAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(ExitCodeGenerator.class)
 	public JobExecutionExitCodeGenerator jobExecutionExitCodeGenerator() {
 		return new JobExecutionExitCodeGenerator();
 	}
@@ -112,9 +113,9 @@ public class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(JobOperator.class)
-	public SimpleJobOperator jobOperator(JobExplorer jobExplorer,
-			JobLauncher jobLauncher, ListableJobLocator jobRegistry,
-			JobRepository jobRepository) throws Exception {
+	public SimpleJobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
+			ListableJobLocator jobRegistry, JobRepository jobRepository)
+					throws Exception {
 		SimpleJobOperator factory = new SimpleJobOperator();
 		factory.setJobExplorer(jobExplorer);
 		factory.setJobLauncher(jobLauncher);
@@ -131,8 +132,11 @@ public class BatchAutoConfiguration {
 	@Configuration
 	protected static class JpaBatchConfiguration {
 
-		@Autowired
-		private BatchProperties properties;
+		private final BatchProperties properties;
+
+		protected JpaBatchConfiguration(BatchProperties properties) {
+			this.properties = properties;
+		}
 
 		// The EntityManagerFactory may not be discoverable by type when this condition
 		// is evaluated, so we need a well-known bean name. This is the one used by Spring

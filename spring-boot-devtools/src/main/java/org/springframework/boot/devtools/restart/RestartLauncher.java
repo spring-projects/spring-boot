@@ -50,6 +50,7 @@ class RestartLauncher extends Thread {
 		}
 		catch (Throwable ex) {
 			this.error = ex;
+			getUncaughtExceptionHandler().uncaughtException(this, ex);
 		}
 	}
 

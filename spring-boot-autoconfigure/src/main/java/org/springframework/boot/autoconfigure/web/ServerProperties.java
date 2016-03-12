@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,9 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+
 import org.springframework.boot.autoconfigure.web.ServerProperties.Session.Cookie;
+import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -47,14 +49,16 @@ import org.springframework.boot.context.embedded.InitParameterConfiguringServlet
 import org.springframework.boot.context.embedded.JspServlet;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 /**
@@ -67,9 +71,11 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Ivan Sopov
  * @author Marcos Barbero
+ * @author Eddú Meléndez
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
-public class ServerProperties implements EmbeddedServletContainerCustomizer, Ordered {
+public class ServerProperties
+		implements EmbeddedServletContainerCustomizer, EnvironmentAware, Ordered {
 
 	/**
 	 * Server HTTP port.
@@ -91,10 +97,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	 */
 	private String displayName = "application";
 
-	private Session session = new Session();
-
 	@NestedConfigurationProperty
-	private Ssl ssl;
+	private ErrorProperties error = new ErrorProperties();
 
 	/**
 	 * Path of the main dispatcher servlet.
@@ -102,9 +106,25 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	@NotNull
 	private String servletPath = "/";
 
-	private final Tomcat tomcat = new Tomcat();
+	/**
+	 * ServletContext parameters.
+	 */
+	private final Map<String, String> contextParameters = new HashMap<String, String>();
 
-	private final Undertow undertow = new Undertow();
+	/**
+	 * If X-Forwarded-* headers should be applied to the HttpRequest.
+	 */
+	private Boolean useForwardHeaders;
+
+	/**
+	 * Value to use for the server header (uses servlet container default if empty).
+	 */
+	private String serverHeader;
+
+	private Session session = new Session();
+
+	@NestedConfigurationProperty
+	private Ssl ssl;
 
 	@NestedConfigurationProperty
 	private Compression compression = new Compression();
@@ -112,26 +132,139 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	@NestedConfigurationProperty
 	private JspServlet jspServlet;
 
-	/**
-	 * ServletContext parameters.
-	 */
-	private final Map<String, String> contextParameters = new HashMap<String, String>();
+	private final Tomcat tomcat = new Tomcat();
+
+	private final Jetty jetty = new Jetty();
+
+	private final Undertow undertow = new Undertow();
+
+	private Environment environment;
 
 	@Override
 	public int getOrder() {
 		return 0;
 	}
 
-	public Tomcat getTomcat() {
-		return this.tomcat;
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
-	public Undertow getUndertow() {
-		return this.undertow;
+	@Override
+	public void customize(ConfigurableEmbeddedServletContainer container) {
+		if (getPort() != null) {
+			container.setPort(getPort());
+		}
+		if (getAddress() != null) {
+			container.setAddress(getAddress());
+		}
+		if (getContextPath() != null) {
+			container.setContextPath(getContextPath());
+		}
+		if (getDisplayName() != null) {
+			container.setDisplayName(getDisplayName());
+		}
+		if (getSession().getTimeout() != null) {
+			container.setSessionTimeout(getSession().getTimeout());
+		}
+		container.setPersistSession(getSession().isPersistent());
+		container.setSessionStoreDir(getSession().getStoreDir());
+		if (getSsl() != null) {
+			container.setSsl(getSsl());
+		}
+		if (getJspServlet() != null) {
+			container.setJspServlet(getJspServlet());
+		}
+		if (getCompression() != null) {
+			container.setCompression(getCompression());
+		}
+		container.setServerHeader(getServerHeader());
+		if (container instanceof TomcatEmbeddedServletContainerFactory) {
+			getTomcat().customizeTomcat(this,
+					(TomcatEmbeddedServletContainerFactory) container);
+		}
+		if (container instanceof JettyEmbeddedServletContainerFactory) {
+			getJetty().customizeJetty(this,
+					(JettyEmbeddedServletContainerFactory) container);
+		}
+
+		if (container instanceof UndertowEmbeddedServletContainerFactory) {
+			getUndertow().customizeUndertow(this,
+					(UndertowEmbeddedServletContainerFactory) container);
+		}
+		container.addInitializers(new SessionConfiguringInitializer(this.session));
+		container.addInitializers(new InitParameterConfiguringServletContextInitializer(
+				getContextParameters()));
 	}
 
-	public Compression getCompression() {
-		return this.compression;
+	public String getServletMapping() {
+		if (this.servletPath.equals("") || this.servletPath.equals("/")) {
+			return "/";
+		}
+		if (this.servletPath.contains("*")) {
+			return this.servletPath;
+		}
+		if (this.servletPath.endsWith("/")) {
+			return this.servletPath + "*";
+		}
+		return this.servletPath + "/*";
+	}
+
+	public String getPath(String path) {
+		String prefix = getServletPrefix();
+		if (!path.startsWith("/")) {
+			path = "/" + path;
+		}
+		return prefix + path;
+	}
+
+	public String getServletPrefix() {
+		String result = this.servletPath;
+		if (result.contains("*")) {
+			result = result.substring(0, result.indexOf("*"));
+		}
+		if (result.endsWith("/")) {
+			result = result.substring(0, result.length() - 1);
+		}
+		return result;
+	}
+
+	public String[] getPathsArray(Collection<String> paths) {
+		String[] result = new String[paths.size()];
+		int i = 0;
+		for (String path : paths) {
+			result[i++] = getPath(path);
+		}
+		return result;
+	}
+
+	public String[] getPathsArray(String[] paths) {
+		String[] result = new String[paths.length];
+		int i = 0;
+		for (String path : paths) {
+			result[i++] = getPath(path);
+		}
+		return result;
+	}
+
+	public void setLoader(String value) {
+		// no op to support Tomcat running as a traditional container (not embedded)
+	}
+
+	public Integer getPort() {
+		return this.port;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+
+	public InetAddress getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(InetAddress address) {
+		this.address = address;
 	}
 
 	public String getContextPath() {
@@ -161,73 +294,48 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		return this.servletPath;
 	}
 
-	public String getServletMapping() {
-		if (this.servletPath.equals("") || this.servletPath.equals("/")) {
-			return "/";
-		}
-		if (this.servletPath.contains("*")) {
-			return this.servletPath;
-		}
-		if (this.servletPath.endsWith("/")) {
-			return this.servletPath + "*";
-		}
-		return this.servletPath + "/*";
-	}
-
-	public String getServletPrefix() {
-		String result = this.servletPath;
-		if (result.contains("*")) {
-			result = result.substring(0, result.indexOf("*"));
-		}
-		if (result.endsWith("/")) {
-			result = result.substring(0, result.length() - 1);
-		}
-		return result;
-	}
-
 	public void setServletPath(String servletPath) {
 		this.servletPath = servletPath;
 	}
 
-	public Integer getPort() {
-		return this.port;
+	public Map<String, String> getContextParameters() {
+		return this.contextParameters;
 	}
 
-	public void setPort(Integer port) {
-		this.port = port;
+	public Boolean isUseForwardHeaders() {
+		return this.useForwardHeaders;
 	}
 
-	public InetAddress getAddress() {
-		return this.address;
+	public void setUseForwardHeaders(Boolean useForwardHeaders) {
+		this.useForwardHeaders = useForwardHeaders;
 	}
 
-	public void setAddress(InetAddress address) {
-		this.address = address;
+	public String getServerHeader() {
+		return this.serverHeader;
 	}
 
-	/**
-	 * Get the session timeout.
-	 * @return the session timeout
-	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
-	 */
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "server.session.timeout")
-	public Integer getSessionTimeout() {
-		return this.session.getTimeout();
+	public void setServerHeader(String serverHeader) {
+		this.serverHeader = serverHeader;
 	}
 
-	/**
-	 * Set the session timeout.
-	 * @param sessionTimeout the session timeout
-	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
-	 */
-	@Deprecated
-	public void setSessionTimeout(Integer sessionTimeout) {
-		this.session.setTimeout(sessionTimeout);
+	protected final boolean getOrDeduceUseForwardHeaders() {
+		if (this.useForwardHeaders != null) {
+			return this.useForwardHeaders;
+		}
+		CloudPlatform platform = CloudPlatform.getActive(this.environment);
+		return (platform == null ? false : platform.isUsingForwardHeaders());
+	}
+
+	public ErrorProperties getError() {
+		return this.error;
 	}
 
 	public Session getSession() {
 		return this.session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
 	}
 
 	public Ssl getSsl() {
@@ -238,6 +346,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		this.ssl = ssl;
 	}
 
+	public Compression getCompression() {
+		return this.compression;
+	}
+
 	public JspServlet getJspServlet() {
 		return this.jspServlet;
 	}
@@ -246,78 +358,16 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		this.jspServlet = jspServlet;
 	}
 
-	public Map<String, String> getContextParameters() {
-		return this.contextParameters;
+	public Tomcat getTomcat() {
+		return this.tomcat;
 	}
 
-	public void setLoader(String value) {
-		// no op to support Tomcat running as a traditional container (not embedded)
+	private Jetty getJetty() {
+		return this.jetty;
 	}
 
-	@Override
-	public void customize(ConfigurableEmbeddedServletContainer container) {
-		if (getPort() != null) {
-			container.setPort(getPort());
-		}
-		if (getAddress() != null) {
-			container.setAddress(getAddress());
-		}
-		if (getContextPath() != null) {
-			container.setContextPath(getContextPath());
-		}
-		if (getDisplayName() != null) {
-			container.setDisplayName(getDisplayName());
-		}
-		if (getSession().getTimeout() != null) {
-			container.setSessionTimeout(getSession().getTimeout());
-		}
-		container.setPersistSession(getSession().isPersistent());
-		if (getSsl() != null) {
-			container.setSsl(getSsl());
-		}
-		if (getJspServlet() != null) {
-			container.setJspServlet(getJspServlet());
-		}
-		if (getCompression() != null) {
-			container.setCompression(getCompression());
-		}
-		if (container instanceof TomcatEmbeddedServletContainerFactory) {
-			getTomcat()
-					.customizeTomcat((TomcatEmbeddedServletContainerFactory) container);
-		}
-		if (container instanceof UndertowEmbeddedServletContainerFactory) {
-			getUndertow().customizeUndertow(
-					(UndertowEmbeddedServletContainerFactory) container);
-		}
-		container.addInitializers(new SessionConfiguringInitializer(this.session));
-		container.addInitializers(new InitParameterConfiguringServletContextInitializer(
-				getContextParameters()));
-	}
-
-	public String[] getPathsArray(Collection<String> paths) {
-		String[] result = new String[paths.size()];
-		int i = 0;
-		for (String path : paths) {
-			result[i++] = getPath(path);
-		}
-		return result;
-	}
-
-	public String[] getPathsArray(String[] paths) {
-		String[] result = new String[paths.length];
-		int i = 0;
-		for (String path : paths) {
-			result[i++] = getPath(path);
-		}
-		return result;
-	}
-
-	public String getPath(String path) {
-		String prefix = getServletPrefix();
-		if (!path.startsWith("/")) {
-			path = "/" + path;
-		}
-		return prefix + path;
+	public Undertow getUndertow() {
+		return this.undertow;
 	}
 
 	public static class Session {
@@ -336,6 +386,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		 * Persist session data between restarts.
 		 */
 		private boolean persistent;
+
+		/**
+		 * Directory used to store session data.
+		 */
+		private File storeDir;
 
 		private Cookie cookie = new Cookie();
 
@@ -365,6 +420,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		public void setPersistent(boolean persistent) {
 			this.persistent = persistent;
+		}
+
+		public File getStoreDir() {
+			return this.storeDir;
+		}
+
+		public void setStoreDir(File storeDir) {
+			this.storeDir = storeDir;
 		}
 
 		public static class Cookie {
@@ -484,7 +547,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		/**
 		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
-		 * Configured as a RemoteIpValve only if remoteIpHeader is also set.
 		 */
 		private String protocolHeader;
 
@@ -496,13 +558,12 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		/**
 		 * Name of the HTTP header used to override the original port value.
 		 */
-		private String portHeader = "x-forwarded-port";
+		private String portHeader = "X-Forwarded-Port";
 
 		/**
-		 * Name of the http header from which the remote ip is extracted. Configured as a
-		 * RemoteIpValve only if remoteIpHeader is also set.
+		 * Name of the http header from which the remote ip is extracted..
 		 */
-		private String remoteIpHeader = "x-forwarded-for";
+		private String remoteIpHeader;
 
 		/**
 		 * Tomcat base directory. If not specified a temporary directory will be used.
@@ -547,48 +608,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;
-		}
-
-		/**
-		 * Specify if access log is enabled.
-		 * @return {@code true} if access log is enabled
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.enabled}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.tomcat.accesslog.enabled")
-		public boolean getAccessLogEnabled() {
-			return this.accesslog.isEnabled();
-		}
-
-		/**
-		 * Set if access log is enabled.
-		 * @param accessLogEnabled the access log enable flag
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.enabled}
-		 */
-		@Deprecated
-		public void setAccessLogEnabled(boolean accessLogEnabled) {
-			getAccesslog().setEnabled(accessLogEnabled);
-		}
-
-		/**
-		 * Get the format pattern for access logs.
-		 * @return the format pattern for access logs
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.pattern}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.tomcat.accesslog.pattern")
-		public String getAccessLogPattern() {
-			return this.accesslog.getPattern();
-		}
-
-		/**
-		 * Set the format pattern for access logs.
-		 * @param accessLogPattern the pattern for access logs
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.pattern}
-		 */
-		@Deprecated
-		public void setAccessLogPattern(String accessLogPattern) {
-			this.accesslog.setPattern(accessLogPattern);
 		}
 
 		public int getBackgroundProcessorDelay() {
@@ -655,12 +674,13 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			this.uriEncoding = uriEncoding;
 		}
 
-		void customizeTomcat(TomcatEmbeddedServletContainerFactory factory) {
+		void customizeTomcat(ServerProperties serverProperties,
+				TomcatEmbeddedServletContainerFactory factory) {
 			if (getBasedir() != null) {
 				factory.setBaseDirectory(getBasedir());
 			}
 			customizeBackgroundProcessorDelay(factory);
-			customizeHeaders(factory);
+			customizeRemoteIpValve(serverProperties, factory);
 			if (this.maxThreads > 0) {
 				customizeMaxThreads(factory);
 			}
@@ -681,20 +701,26 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 				@Override
 				public void customize(Context context) {
-					context.setBackgroundProcessorDelay(Tomcat.this.backgroundProcessorDelay);
+					context.setBackgroundProcessorDelay(
+							Tomcat.this.backgroundProcessorDelay);
 				}
 
 			});
 		}
 
-		private void customizeHeaders(TomcatEmbeddedServletContainerFactory factory) {
-			String remoteIpHeader = getRemoteIpHeader();
+		private void customizeRemoteIpValve(ServerProperties properties,
+				TomcatEmbeddedServletContainerFactory factory) {
 			String protocolHeader = getProtocolHeader();
-			if (StringUtils.hasText(remoteIpHeader)
-					&& StringUtils.hasText(protocolHeader)) {
+			String remoteIpHeader = getRemoteIpHeader();
+			// For back compatibility the valve is also enabled if protocol-header is set
+			if (StringUtils.hasText(protocolHeader) || StringUtils.hasText(remoteIpHeader)
+					|| properties.getOrDeduceUseForwardHeaders()) {
 				RemoteIpValve valve = new RemoteIpValve();
-				valve.setRemoteIpHeader(remoteIpHeader);
-				valve.setProtocolHeader(protocolHeader);
+				valve.setProtocolHeader(StringUtils.hasLength(protocolHeader)
+						? protocolHeader : "X-Forwarded-Proto");
+				if (StringUtils.hasLength(remoteIpHeader)) {
+					valve.setRemoteIpHeader(remoteIpHeader);
+				}
 				// The internal proxies default to a white list of "safe" internal IP
 				// addresses
 				valve.setInternalProxies(getInternalProxies());
@@ -818,6 +844,15 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 	}
 
+	private static class Jetty {
+
+		void customizeJetty(ServerProperties serverProperties,
+				JettyEmbeddedServletContainerFactory factory) {
+			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
+		}
+
+	}
+
 	public static class Undertow {
 
 		/**
@@ -891,70 +926,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			return this.accesslog;
 		}
 
-		/**
-		 * Get the format pattern for access logs.
-		 * @return the format pattern for access logs
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.pattern}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.undertow.accesslog.pattern")
-		public String getAccessLogPattern() {
-			return this.accesslog.getPattern();
-		}
-
-		/**
-		 * Set the format pattern for access logs.
-		 * @param accessLogPattern the pattern for access logs
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.pattern}
-		 */
-		@Deprecated
-		public void setAccessLogPattern(String accessLogPattern) {
-			this.accesslog.setPattern(accessLogPattern);
-		}
-
-		/**
-		 * Specify if access log is enabled.
-		 * @return {@code true} if access log is enabled
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.enabled}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.undertow.accesslog.enabled")
-		public boolean isAccessLogEnabled() {
-			return this.accesslog.isEnabled();
-		}
-
-		/**
-		 * Set if access log is enabled.
-		 * @param accessLogEnabled the access log enable flag
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.enabled}
-		 */
-		@Deprecated
-		public void setAccessLogEnabled(boolean accessLogEnabled) {
-			getAccesslog().setEnabled(accessLogEnabled);
-		}
-
-		/**
-		 * Get the access log directory.
-		 * @return the access log directory
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.dir}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.undertow.accesslog.dir")
-		public File getAccessLogDir() {
-			return this.accesslog.getDir();
-		}
-
-		/**
-		 * Set the access log directory.
-		 * @param accessLogDir the access log directory
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.dir}
-		 */
-		@Deprecated
-		public void setAccessLogDir(File accessLogDir) {
-			getAccesslog().setDir(accessLogDir);
-		}
-
-		void customizeUndertow(UndertowEmbeddedServletContainerFactory factory) {
+		void customizeUndertow(ServerProperties serverProperties,
+				UndertowEmbeddedServletContainerFactory factory) {
 			factory.setBufferSize(this.bufferSize);
 			factory.setBuffersPerRegion(this.buffersPerRegion);
 			factory.setIoThreads(this.ioThreads);
@@ -963,6 +936,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			factory.setAccessLogDirectory(this.accesslog.dir);
 			factory.setAccessLogPattern(this.accesslog.pattern);
 			factory.setAccessLogEnabled(this.accesslog.enabled);
+			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
 		}
 
 		public static class Accesslog {
@@ -1014,8 +988,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	 * {@link ServletContextInitializer} to apply appropriate parts of the {@link Session}
 	 * configuration.
 	 */
-	private static class SessionConfiguringInitializer implements
-			ServletContextInitializer {
+	private static class SessionConfiguringInitializer
+			implements ServletContextInitializer {
 
 		private final Session session;
 

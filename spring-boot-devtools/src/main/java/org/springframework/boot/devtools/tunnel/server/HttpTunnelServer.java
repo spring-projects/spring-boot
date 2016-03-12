@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayload;
 import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayloadForwarder;
 import org.springframework.http.HttpStatus;
@@ -37,11 +38,11 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.util.Assert;
 
 /**
- * A server that can be used to tunnel TCP traffic over HTTP. Similar in design to the <a
- * href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over Synchronous
- * HTTP (BOSH)</a> XMPP extension protocol, the server uses long polling with HTTP
- * requests held open until a response is available. A typical traffic pattern would be as
- * follows:
+ * A server that can be used to tunnel TCP traffic over HTTP. Similar in design to the
+ * <a href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over
+ * Synchronous HTTP (BOSH)</a> XMPP extension protocol, the server uses long polling with
+ * HTTP requests held open until a response is available. A typical traffic pattern would
+ * be as follows:
  *
  * <pre>
  * [ CLIENT ]                      [ SERVER ]
@@ -87,6 +88,10 @@ import org.springframework.util.Assert;
  * <td>410 (Gone)</td>
  * <td>The target server has disconnected.</td>
  * </tr>
+ * <tr>
+ * <td>503 (Service Unavailable)</td>
+ * <td>The target server is unavailable</td>
+ * </tr>
  * </table>
  * <p>
  * Requests and responses that contain payloads include a {@code x-seq} header that
@@ -95,6 +100,7 @@ import org.springframework.util.Assert;
  * {@code 1}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.3.0
  * @see org.springframework.boot.devtools.tunnel.client.HttpTunnelConnection
  */
@@ -152,6 +158,9 @@ public class HttpTunnelServer {
 		catch (ConnectException ex) {
 			httpConnection.respond(HttpStatus.GONE);
 		}
+		catch (RemoteDebugNotRunningException ex) {
+			httpConnection.respond(HttpStatus.SERVICE_UNAVAILABLE);
+		}
 	}
 
 	/**
@@ -193,7 +202,8 @@ public class HttpTunnelServer {
 	 * @param disconnectTimeout the disconnect timeout in milliseconds
 	 */
 	public void setDisconnectTimeout(long disconnectTimeout) {
-		Assert.isTrue(disconnectTimeout > 0, "DisconnectTimeout must be a positive value");
+		Assert.isTrue(disconnectTimeout > 0,
+				"DisconnectTimeout must be a positive value");
 		this.disconnectTimeout = disconnectTimeout;
 	}
 
@@ -272,12 +282,13 @@ public class HttpTunnelServer {
 		}
 
 		private void closeStaleHttpConnections() throws IOException {
-			checkNotDisconnected();
 			synchronized (this.httpConnections) {
+				checkNotDisconnected();
 				Iterator<HttpConnection> iterator = this.httpConnections.iterator();
 				while (iterator.hasNext()) {
 					HttpConnection httpConnection = iterator.next();
-					if (httpConnection.isOlderThan(HttpTunnelServer.this.longPollTimeout)) {
+					if (httpConnection
+							.isOlderThan(HttpTunnelServer.this.longPollTimeout)) {
 						httpConnection.respond(HttpStatus.NO_CONTENT);
 						iterator.remove();
 					}
@@ -286,9 +297,12 @@ public class HttpTunnelServer {
 		}
 
 		private void checkNotDisconnected() {
-			long timeout = HttpTunnelServer.this.disconnectTimeout;
-			long duration = System.currentTimeMillis() - this.lastHttpRequestTime;
-			Assert.state(duration < timeout, "Disconnect timeout");
+			if (this.lastHttpRequestTime > 0) {
+				long timeout = HttpTunnelServer.this.disconnectTimeout;
+				long duration = System.currentTimeMillis() - this.lastHttpRequestTime;
+				Assert.state(duration < timeout,
+						"Disconnect timeout: " + timeout + " " + duration);
+			}
 		}
 
 		private void closeHttpConnections() {
@@ -324,8 +338,8 @@ public class HttpTunnelServer {
 			}
 			synchronized (this.httpConnections) {
 				while (this.httpConnections.size() > 1) {
-					this.httpConnections.removeFirst().respond(
-							HttpStatus.TOO_MANY_REQUESTS);
+					this.httpConnections.removeFirst()
+							.respond(HttpStatus.TOO_MANY_REQUESTS);
 				}
 				this.lastHttpRequestTime = System.currentTimeMillis();
 				this.httpConnections.addLast(httpConnection);
@@ -372,7 +386,7 @@ public class HttpTunnelServer {
 		}
 
 		/**
-		 * Start asynchronous support or if unavailble return {@code null} to cause
+		 * Start asynchronous support or if unavailable return {@code null} to cause
 		 * {@link #waitForResponse()} to block.
 		 * @return the async request control
 		 */
@@ -439,8 +453,8 @@ public class HttpTunnelServer {
 		 * @return if the request is a signal to disconnect
 		 */
 		public boolean isDisconnectRequest() {
-			return DISCONNECT_MEDIA_TYPE.equals(this.request.getHeaders()
-					.getContentType());
+			return DISCONNECT_MEDIA_TYPE
+					.equals(this.request.getHeaders().getContentType());
 		}
 
 		/**

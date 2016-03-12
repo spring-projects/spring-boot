@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @see EmbeddedServletContainerFactory
  * @see EmbeddedServletContainerCustomizer
  */
@@ -80,36 +81,16 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setPersistSession(boolean persistSession);
 
 	/**
+	 * Set the directory used to store serialized session data.
+	 * @param sessionStoreDir the directory or {@code null} to use a default location.
+	 */
+	void setSessionStoreDir(File sessionStoreDir);
+
+	/**
 	 * Sets the specific network address that the server should bind to.
 	 * @param address the address to set (defaults to {@code null})
 	 */
 	void setAddress(InetAddress address);
-
-	/**
-	 * The class name for the jsp servlet if used. If
-	 * {@link #setRegisterJspServlet(boolean) registerJspServlet} is true <b>and</b> this
-	 * class is on the classpath then it will be registered. Since both Tomcat and Jetty
-	 * use Jasper for their JSP implementation the default is
-	 * {@code org.apache.jasper.servlet.JspServlet}.
-	 * @param jspServletClassName the class name for the JSP servlet if used
-	 * @deprecated in 1.3.0 in favor of {@link JspServlet#setClassName(String)}
-	 * @see #setJspServlet
-	 * @see JspServlet#setClassName(String)
-	 */
-	@Deprecated
-	void setJspServletClassName(String jspServletClassName);
-
-	/**
-	 * Set if the JspServlet should be registered if it is on the classpath. Defaults to
-	 * {@code true} so that files from the {@link #setDocumentRoot(File) document root}
-	 * will be served.
-	 * @param registerJspServlet if the JSP servlet should be registered
-	 * @deprecated in 1.3.0 in favor of {@link JspServlet#setRegistered(boolean)}
-	 * @see #setJspServlet
-	 * @see JspServlet#setRegistered(boolean)
-	 */
-	@Deprecated
-	void setRegisterJspServlet(boolean registerJspServlet);
 
 	/**
 	 * Set if the DefaultServlet should be registered. Defaults to {@code true} so that
@@ -138,8 +119,8 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setMimeMappings(MimeMappings mimeMappings);
 
 	/**
-	 * Sets the document root folder which will be used by the web context to serve static
-	 * files.
+	 * Sets the document root directory which will be used by the web context to serve
+	 * static files.
 	 * @param documentRoot the document root or {@code null} if not required
 	 */
 	void setDocumentRoot(File documentRoot);
@@ -182,5 +163,11 @@ public interface ConfigurableEmbeddedServletContainer {
 	 * @param compression the compression configuration
 	 */
 	void setCompression(Compression compression);
+
+	/**
+	 * Sets the server header value.
+	 * @param serverHeader the server header value
+	 */
+	void setServerHeader(String serverHeader);
 
 }

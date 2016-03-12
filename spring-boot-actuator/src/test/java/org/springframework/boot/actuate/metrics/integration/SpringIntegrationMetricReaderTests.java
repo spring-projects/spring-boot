@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.metrics.integration;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetricReaderTests.TestConfiguration;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
@@ -31,7 +32,7 @@ import org.springframework.integration.monitor.IntegrationMBeanExporter;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringIntegrationMetricReader}.
@@ -49,7 +50,7 @@ public class SpringIntegrationMetricReaderTests {
 
 	@Test
 	public void test() {
-		assertTrue(this.reader.count() > 0);
+		assertThat(this.reader.count() > 0).isTrue();
 	}
 
 	@Configuration

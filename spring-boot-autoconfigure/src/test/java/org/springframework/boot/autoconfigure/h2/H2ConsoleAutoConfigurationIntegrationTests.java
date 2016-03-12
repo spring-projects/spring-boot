@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.h2;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfigurationIntegrationTests.TestConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
@@ -25,6 +26,7 @@ import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfigurat
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -46,6 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfiguration.class)
 @TestPropertySource(properties = "spring.h2.console.enabled:true")
@@ -74,8 +77,8 @@ public class H2ConsoleAutoConfigurationIntegrationTests {
 	public void someOtherPrincipal() throws Exception {
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
 				.apply(springSecurity()).build();
-		mockMvc.perform(get("/h2-console/").with(user("test").roles("FOO"))).andExpect(
-				status().isForbidden());
+		mockMvc.perform(get("/h2-console/").with(user("test").roles("FOO")))
+				.andExpect(status().isForbidden());
 	}
 
 	@Configuration

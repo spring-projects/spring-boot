@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
@@ -43,8 +44,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ClassPathChangeUploader}.
@@ -116,20 +116,20 @@ public class ClassPathChangeUploaderTests {
 		MockClientHttpRequest request = this.requestFactory.getExecutedRequests().get(0);
 		ClassLoaderFiles classLoaderFiles = deserialize(request.getBodyAsBytes());
 		Collection<SourceFolder> sourceFolders = classLoaderFiles.getSourceFolders();
-		assertThat(sourceFolders.size(), equalTo(1));
+		assertThat(sourceFolders.size()).isEqualTo(1);
 		SourceFolder classSourceFolder = sourceFolders.iterator().next();
-		assertThat(classSourceFolder.getName(), equalTo(sourceFolder.getAbsolutePath()));
+		assertThat(classSourceFolder.getName()).isEqualTo(sourceFolder.getAbsolutePath());
 		Iterator<ClassLoaderFile> classFiles = classSourceFolder.getFiles().iterator();
 		assertClassFile(classFiles.next(), "File1", ClassLoaderFile.Kind.ADDED);
 		assertClassFile(classFiles.next(), "File2", ClassLoaderFile.Kind.MODIFIED);
 		assertClassFile(classFiles.next(), null, ClassLoaderFile.Kind.DELETED);
-		assertThat(classFiles.hasNext(), equalTo(false));
+		assertThat(classFiles.hasNext()).isFalse();
 	}
 
 	private void assertClassFile(ClassLoaderFile file, String content, Kind kind) {
-		assertThat(file.getContents(),
-				equalTo(content == null ? null : content.getBytes()));
-		assertThat(file.getKind(), equalTo(kind));
+		assertThat(file.getContents())
+				.isEqualTo(content == null ? null : content.getBytes());
+		assertThat(file.getKind()).isEqualTo(kind);
 	}
 
 	private File createFile(File sourceFolder, String name) throws IOException {
@@ -138,8 +138,8 @@ public class ClassPathChangeUploaderTests {
 		return file;
 	}
 
-	private ClassLoaderFiles deserialize(byte[] bytes) throws IOException,
-			ClassNotFoundException {
+	private ClassLoaderFiles deserialize(byte[] bytes)
+			throws IOException, ClassNotFoundException {
 		ObjectInputStream objectInputStream = new ObjectInputStream(
 				new ByteArrayInputStream(bytes));
 		return (ClassLoaderFiles) objectInputStream.readObject();

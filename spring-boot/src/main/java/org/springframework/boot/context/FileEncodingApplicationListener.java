@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.context;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
@@ -42,10 +43,11 @@ import org.springframework.core.Ordered;
  *
  * @author Dave Syer
  */
-public class FileEncodingApplicationListener implements
-		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
+public class FileEncodingApplicationListener
+		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
-	private static Log logger = LogFactory.getLog(FileEncodingApplicationListener.class);
+	private static final Log logger = LogFactory
+			.getLog(FileEncodingApplicationListener.class);
 
 	@Override
 	public int getOrder() {
@@ -71,7 +73,8 @@ public class FileEncodingApplicationListener implements
 						+ desired + "'.");
 				throw new IllegalStateException(
 						"The Java Virtual Machine has not been configured to use the "
-								+ "desired default character encoding (" + desired + ").");
+								+ "desired default character encoding (" + desired
+								+ ").");
 			}
 		}
 	}

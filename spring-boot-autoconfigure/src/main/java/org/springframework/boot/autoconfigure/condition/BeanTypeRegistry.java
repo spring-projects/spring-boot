@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -62,7 +63,7 @@ import org.springframework.util.StringUtils;
  */
 abstract class BeanTypeRegistry {
 
-	static Log logger = LogFactory.getLog(BeanTypeRegistry.class);
+	private static final Log logger = LogFactory.getLog(BeanTypeRegistry.class);
 
 	static final String FACTORY_BEAN_OBJECT_TYPE = "factoryBeanObjectType";
 
@@ -96,8 +97,8 @@ abstract class BeanTypeRegistry {
 	}
 
 	private Class<?> doGetFactoryBeanGeneric(ConfigurableListableBeanFactory beanFactory,
-			BeanDefinition definition, String name) throws Exception,
-			ClassNotFoundException, LinkageError {
+			BeanDefinition definition, String name)
+					throws Exception, ClassNotFoundException, LinkageError {
 		if (StringUtils.hasLength(definition.getFactoryBeanName())
 				&& StringUtils.hasLength(definition.getFactoryMethodName())) {
 			return getConfigurationClassFactoryBeanGeneric(beanFactory, definition, name);
@@ -116,8 +117,8 @@ abstract class BeanTypeRegistry {
 				.as(FactoryBean.class).resolveGeneric();
 		if ((generic == null || generic.equals(Object.class))
 				&& definition.hasAttribute(FACTORY_BEAN_OBJECT_TYPE)) {
-			generic = getTypeFromAttribute(definition
-					.getAttribute(FACTORY_BEAN_OBJECT_TYPE));
+			generic = getTypeFromAttribute(
+					definition.getAttribute(FACTORY_BEAN_OBJECT_TYPE));
 		}
 		return generic;
 	}
@@ -132,12 +133,12 @@ abstract class BeanTypeRegistry {
 						.getIntrospectedMethod();
 			}
 		}
-		BeanDefinition factoryDefinition = beanFactory.getBeanDefinition(definition
-				.getFactoryBeanName());
+		BeanDefinition factoryDefinition = beanFactory
+				.getBeanDefinition(definition.getFactoryBeanName());
 		Class<?> factoryClass = ClassUtils.forName(factoryDefinition.getBeanClassName(),
 				beanFactory.getBeanClassLoader());
-		return ReflectionUtils
-				.findMethod(factoryClass, definition.getFactoryMethodName());
+		return ReflectionUtils.findMethod(factoryClass,
+				definition.getFactoryMethodName());
 	}
 
 	private Class<?> getDirectFactoryBeanGeneric(
@@ -145,12 +146,12 @@ abstract class BeanTypeRegistry {
 			String name) throws ClassNotFoundException, LinkageError {
 		Class<?> factoryBeanClass = ClassUtils.forName(definition.getBeanClassName(),
 				beanFactory.getBeanClassLoader());
-		Class<?> generic = ResolvableType.forClass(factoryBeanClass)
-				.as(FactoryBean.class).resolveGeneric();
+		Class<?> generic = ResolvableType.forClass(factoryBeanClass).as(FactoryBean.class)
+				.resolveGeneric();
 		if ((generic == null || generic.equals(Object.class))
 				&& definition.hasAttribute(FACTORY_BEAN_OBJECT_TYPE)) {
-			generic = getTypeFromAttribute(definition
-					.getAttribute(FACTORY_BEAN_OBJECT_TYPE));
+			generic = getTypeFromAttribute(
+					definition.getAttribute(FACTORY_BEAN_OBJECT_TYPE));
 		}
 		return generic;
 	}
@@ -195,8 +196,8 @@ abstract class BeanTypeRegistry {
 		@Override
 		public Set<String> getNamesForType(Class<?> type) {
 			Set<String> result = new LinkedHashSet<String>();
-			result.addAll(Arrays.asList(this.beanFactory.getBeanNamesForType(type, true,
-					false)));
+			result.addAll(Arrays
+					.asList(this.beanFactory.getBeanNamesForType(type, true, false)));
 			if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
 				collectBeanNamesForTypeFromFactoryBeans(result,
 						(ConfigurableListableBeanFactory) this.beanFactory, type);
@@ -225,8 +226,8 @@ abstract class BeanTypeRegistry {
 	 * {@link BeanTypeRegistry} optimized for {@link DefaultListableBeanFactory}
 	 * implementations that allow eager class loading.
 	 */
-	static class OptimizedBeanTypeRegistry extends BeanTypeRegistry implements
-			SmartInitializingSingleton {
+	static class OptimizedBeanTypeRegistry extends BeanTypeRegistry
+			implements SmartInitializingSingleton {
 
 		private static final String BEAN_NAME = BeanTypeRegistry.class.getName();
 
@@ -249,7 +250,8 @@ abstract class BeanTypeRegistry {
 
 		@Override
 		public Set<String> getNamesForType(Class<?> type) {
-			if (this.lastBeanDefinitionCount != this.beanFactory.getBeanDefinitionCount()) {
+			if (this.lastBeanDefinitionCount != this.beanFactory
+					.getBeanDefinitionCount()) {
 				Iterator<String> names = this.beanFactory.getBeanNamesIterator();
 				while (names.hasNext()) {
 					String name = names.next();
@@ -315,8 +317,8 @@ abstract class BeanTypeRegistry {
 
 		private boolean requiresEagerInit(String factoryBeanName) {
 			return (factoryBeanName != null
-					&& this.beanFactory.isFactoryBean(factoryBeanName) && !this.beanFactory
-						.containsSingleton(factoryBeanName));
+					&& this.beanFactory.isFactoryBean(factoryBeanName)
+					&& !this.beanFactory.containsSingleton(factoryBeanName));
 		}
 
 		/**

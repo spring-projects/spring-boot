@@ -34,10 +34,23 @@ include::{generated}/logfile/http-request.adoc[]
 Example HTTP response:
 include::{generated}/logfile/http-response.adoc[]
 
+==== Partial content
+
+You can use the `Range` header to retrieve part of the log file's content.
+
+Example curl request:
+include::{generated}/partial-logfile/curl-request.adoc[]
+
+Example HTTP request:
+include::{generated}/partial-logfile/http-request.adoc[]
+
+Example HTTP response:
+include::{generated}/partial-logfile/http-response.adoc[]
+
 
 
 === /docs
-This endpoint (if available) contains HTML documemtation for the other endpoints. Its path
+This endpoint (if available) contains HTML documentation for the other endpoints. Its path
 can be "/docs" (if there is an existing home page) or "/" (otherwise, including if the
 HAL browser is not active).
 

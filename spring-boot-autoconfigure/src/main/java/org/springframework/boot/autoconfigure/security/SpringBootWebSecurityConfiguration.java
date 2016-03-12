@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,10 +36,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -49,6 +49,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 import org.springframework.security.web.header.writers.HstsHeaderWriter;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -60,8 +61,7 @@ import org.springframework.util.StringUtils;
  * externalized application properties (or via an bean definition of that type to set the
  * defaults). The user details for authentication are just placeholders
  * {@code (username=user, password=password)} but can easily be customized by providing a
- * bean definition of type {@link AuthenticationManager}. Also provides audit logging of
- * authentication events.
+ * an {@link AuthenticationManager}. Also provides audit logging of authentication events.
  * <p>
  * Some common simple customizations:
  * <ul>
@@ -69,12 +69,15 @@ import org.springframework.util.StringUtils;
  * classpath or {@link EnableAutoConfiguration#exclude() exclude} this configuration.</li>
  * <li>Switch off security temporarily (e.g. for a dev environment): set
  * {@code security.basic.enabled: false}</li>
- * <li>Customize the user details: add an AuthenticationManager bean</li>
+ * <li>Customize the user details: autowire an {@link AuthenticationManagerBuilder} into a
+ * method in one of your configuration classes or equivalently add a bean of type
+ * AuthenticationManager</li>
  * <li>Add form login for user facing resources: add a
  * {@link WebSecurityConfigurerAdapter} and use {@link HttpSecurity#formLogin()}</li>
  * </ul>
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Configuration
 @EnableConfigurationProperties
@@ -101,17 +104,17 @@ public class SpringBootWebSecurityConfiguration {
 			writer.setRequestMatcher(AnyRequestMatcher.INSTANCE);
 			configurer.addHeaderWriter(writer);
 		}
-		if (headers.isContentType()) {
-			configurer.contentTypeOptions();
+		if (!headers.isContentType()) {
+			configurer.contentTypeOptions().disable();
 		}
-		if (headers.isXss()) {
-			configurer.xssProtection();
+		if (!headers.isXss()) {
+			configurer.xssProtection().disable();
 		}
-		if (headers.isCache()) {
-			configurer.cacheControl();
+		if (!headers.isCache()) {
+			configurer.cacheControl().disable();
 		}
-		if (headers.isFrame()) {
-			configurer.frameOptions();
+		if (!headers.isFrame()) {
+			configurer.frameOptions().disable();
 		}
 	}
 
@@ -128,8 +131,8 @@ public class SpringBootWebSecurityConfiguration {
 
 	// Get the ignored paths in early
 	@Order(SecurityProperties.IGNORED_ORDER)
-	private static class IgnoredPathsWebSecurityConfigurerAdapter implements
-			WebSecurityConfigurer<WebSecurity> {
+	private static class IgnoredPathsWebSecurityConfigurerAdapter
+			implements WebSecurityConfigurer<WebSecurity> {
 
 		@Autowired(required = false)
 		private ErrorController errorController;
@@ -146,13 +149,14 @@ public class SpringBootWebSecurityConfiguration {
 
 		@Override
 		public void init(WebSecurity builder) throws Exception {
-			IgnoredRequestConfigurer ignoring = builder.ignoring();
 			List<String> ignored = getIgnored(this.security);
 			if (this.errorController != null) {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
 			String[] paths = this.server.getPathsArray(ignored);
-			ignoring.antMatchers(paths);
+			if (!ObjectUtils.isEmpty(paths)) {
+				builder.ignoring().antMatchers(paths);
+			}
 		}
 
 		private String normalizePath(String errorPath) {
@@ -168,8 +172,8 @@ public class SpringBootWebSecurityConfiguration {
 	@Configuration
 	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", havingValue = "false")
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	protected static class ApplicationNoWebSecurityConfigurerAdapter extends
-			WebSecurityConfigurerAdapter {
+	protected static class ApplicationNoWebSecurityConfigurerAdapter
+			extends WebSecurityConfigurerAdapter {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.requestMatcher(new RequestMatcher() {
@@ -184,11 +188,14 @@ public class SpringBootWebSecurityConfiguration {
 	@Configuration
 	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", matchIfMissing = true)
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	protected static class ApplicationWebSecurityConfigurerAdapter extends
-			WebSecurityConfigurerAdapter {
+	protected static class ApplicationWebSecurityConfigurerAdapter
+			extends WebSecurityConfigurerAdapter {
 
-		@Autowired
 		private SecurityProperties security;
+
+		protected ApplicationWebSecurityConfigurerAdapter(SecurityProperties security) {
+			this.security = security;
+		}
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {

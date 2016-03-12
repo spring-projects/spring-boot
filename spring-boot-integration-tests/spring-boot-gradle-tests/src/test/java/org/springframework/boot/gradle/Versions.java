@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,31 +33,34 @@ public final class Versions {
 	}
 
 	public static String getBootVersion() {
-		return evaluateExpression("/*[local-name()='project']/*[local-name()='version']"
-				+ "/text()");
+		return evaluateExpression(
+				"/*[local-name()='project']/*[local-name()='version']" + "/text()");
 	}
 
 	public static String getSpringLoadedVersion() {
-		return evaluateExpression("/*[local-name()='project']/*[local-name()='properties']"
-				+ "/*[local-name()='spring-loaded.version']/text()");
+		return evaluateExpression(
+				"/*[local-name()='project']/*[local-name()='properties']"
+						+ "/*[local-name()='spring-loaded.version']/text()");
 	}
 
 	public static String getSpringVersion() {
-		return evaluateExpression("/*[local-name()='project']/*[local-name()='properties']"
-				+ "/*[local-name()='spring.version']/text()");
+		return evaluateExpression(
+				"/*[local-name()='project']/*[local-name()='properties']"
+						+ "/*[local-name()='spring.version']/text()");
 	}
 
 	private static String evaluateExpression(String expression) {
 		try {
-			XPathFactory xPathfactory = XPathFactory.newInstance();
-			XPath xpath = xPathfactory.newXPath();
+			XPathFactory xPathFactory = XPathFactory.newInstance();
+			XPath xpath = xPathFactory.newXPath();
 			XPathExpression expr = xpath.compile(expression);
-			String version = expr.evaluate(new InputSource(new FileReader(
-					"target/dependencies-pom.xml")));
+			String version = expr.evaluate(
+					new InputSource(new FileReader("target/dependencies-pom.xml")));
 			return version;
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Failed to evaluate expression", ex);
 		}
 	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
@@ -39,7 +40,8 @@ public class AuthorizationAuditListenerTests {
 
 	private final AuthorizationAuditListener listener = new AuthorizationAuditListener();
 
-	private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
+	private final ApplicationEventPublisher publisher = mock(
+			ApplicationEventPublisher.class);
 
 	@Before
 	public void init() {
@@ -48,8 +50,8 @@ public class AuthorizationAuditListenerTests {
 
 	@Test
 	public void testAuthenticationSuccess() {
-		this.listener.onApplicationEvent(new AuthorizationFailureEvent(this, Arrays
-				.<ConfigAttribute>asList(new SecurityConfig("USER")),
+		this.listener.onApplicationEvent(new AuthorizationFailureEvent(this,
+				Arrays.<ConfigAttribute>asList(new SecurityConfig("USER")),
 				new UsernamePasswordAuthenticationToken("user", "password"),
 				new AccessDeniedException("Bad user")));
 		verify(this.publisher).publishEvent((ApplicationEvent) anyObject());

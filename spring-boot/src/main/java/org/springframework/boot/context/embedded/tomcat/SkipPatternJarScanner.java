@@ -28,6 +28,7 @@ import org.apache.tomcat.JarScanner;
 import org.apache.tomcat.JarScannerCallback;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.apache.tomcat.util.scan.StandardJarScanner;
+
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -65,9 +66,9 @@ class SkipPatternJarScanner extends StandardJarScanner {
 	// For Tomcat 7 compatibility
 	public void scan(ServletContext context, ClassLoader classloader,
 			JarScannerCallback callback, Set<String> jarsToSkip) {
-		Method scanMethod = ReflectionUtils.findMethod(this.jarScanner.getClass(),
-				"scan", ServletContext.class, ClassLoader.class,
-				JarScannerCallback.class, Set.class);
+		Method scanMethod = ReflectionUtils.findMethod(this.jarScanner.getClass(), "scan",
+				ServletContext.class, ClassLoader.class, JarScannerCallback.class,
+				Set.class);
 		Assert.notNull(scanMethod, "Unable to find scan method");
 		try {
 			scanMethod.invoke(this.jarScanner, context, classloader, callback,
@@ -84,8 +85,8 @@ class SkipPatternJarScanner extends StandardJarScanner {
 	 * @param pattern the jar skip pattern or {@code null} for defaults
 	 */
 	public static void apply(TomcatEmbeddedContext context, String pattern) {
-		SkipPatternJarScanner scanner = new SkipPatternJarScanner(
-				context.getJarScanner(), pattern);
+		SkipPatternJarScanner scanner = new SkipPatternJarScanner(context.getJarScanner(),
+				pattern);
 		context.setJarScanner(scanner);
 	}
 

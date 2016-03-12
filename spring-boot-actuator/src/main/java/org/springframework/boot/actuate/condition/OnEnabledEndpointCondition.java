@@ -37,8 +37,8 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(metadata
-				.getAnnotationAttributes(ANNOTATION_CLASS));
+		AnnotationAttributes annotationAttributes = AnnotationAttributes
+				.fromMap(metadata.getAnnotationAttributes(ANNOTATION_CLASS));
 		String endpointName = annotationAttributes.getString("value");
 		boolean enabledByDefault = annotationAttributes.getBoolean("enabledByDefault");
 		ConditionOutcome outcome = determineEndpointOutcome(endpointName,
@@ -66,8 +66,8 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 				context.getEnvironment(), "endpoints.");
 		boolean match = Boolean.valueOf(resolver.getProperty("enabled", "true"));
-		return new ConditionOutcome(match, "All endpoints are "
-				+ (match ? "enabled" : "disabled") + " by default");
+		return new ConditionOutcome(match,
+				"All endpoints are " + (match ? "enabled" : "disabled") + " by default");
 	}
 
 }

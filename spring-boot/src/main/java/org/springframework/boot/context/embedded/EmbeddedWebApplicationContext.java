@@ -32,6 +32,7 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.Scope;
@@ -94,7 +95,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 */
 	public static final String DISPATCHER_SERVLET_NAME = ServletContextInitializerBeans.DISPATCHER_SERVLET_NAME;
 
-	private EmbeddedServletContainer embeddedServletContainer;
+	private volatile EmbeddedServletContainer embeddedServletContainer;
 
 	private ServletConfig servletConfig;
 
@@ -106,9 +107,8 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 */
 	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-		beanFactory
-				.addBeanPostProcessor(new WebApplicationContextServletContextAwareProcessor(
-						this));
+		beanFactory.addBeanPostProcessor(
+				new WebApplicationContextServletContextAwareProcessor(this));
 		beanFactory.ignoreDependencyInterface(ServletContextAware.class);
 	}
 
@@ -138,32 +138,34 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	@Override
 	protected void finishRefresh() {
 		super.finishRefresh();
-		startEmbeddedServletContainer();
-		if (this.embeddedServletContainer != null) {
-			publishEvent(new EmbeddedServletContainerInitializedEvent(this,
-					this.embeddedServletContainer));
+		EmbeddedServletContainer localContainer = startEmbeddedServletContainer();
+		if (localContainer != null) {
+			publishEvent(
+					new EmbeddedServletContainerInitializedEvent(this, localContainer));
 		}
 	}
 
 	@Override
-	protected void doClose() {
-		super.doClose();
+	protected void onClose() {
+		super.onClose();
 		stopAndReleaseEmbeddedServletContainer();
 	}
 
-	private synchronized void createEmbeddedServletContainer() {
-		if (this.embeddedServletContainer == null && getServletContext() == null) {
+	private void createEmbeddedServletContainer() {
+		EmbeddedServletContainer localContainer = this.embeddedServletContainer;
+		ServletContext localServletContext = getServletContext();
+		if (localContainer == null && localServletContext == null) {
 			EmbeddedServletContainerFactory containerFactory = getEmbeddedServletContainerFactory();
 			this.embeddedServletContainer = containerFactory
 					.getEmbeddedServletContainer(getSelfInitializer());
 		}
-		else if (getServletContext() != null) {
+		else if (localServletContext != null) {
 			try {
-				getSelfInitializer().onStartup(getServletContext());
+				getSelfInitializer().onStartup(localServletContext);
 			}
 			catch (ServletException ex) {
-				throw new ApplicationContextException(
-						"Cannot initialize servlet context", ex);
+				throw new ApplicationContextException("Cannot initialize servlet context",
+						ex);
 			}
 		}
 		initPropertySources();
@@ -177,8 +179,8 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 */
 	protected EmbeddedServletContainerFactory getEmbeddedServletContainerFactory() {
 		// Use bean names so that we don't consider the hierarchy
-		String[] beanNames = getBeanFactory().getBeanNamesForType(
-				EmbeddedServletContainerFactory.class);
+		String[] beanNames = getBeanFactory()
+				.getBeanNamesForType(EmbeddedServletContainerFactory.class);
 		if (beanNames.length == 0) {
 			throw new ApplicationContextException(
 					"Unable to start EmbeddedWebApplicationContext due to missing "
@@ -243,8 +245,8 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 * @param servletContext the operational servlet context
 	 */
 	protected void prepareEmbeddedWebApplicationContext(ServletContext servletContext) {
-		Object rootContext = servletContext
-				.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+		Object rootContext = servletContext.getAttribute(
+				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 		if (rootContext != null) {
 			if (rootContext == this) {
 				throw new IllegalStateException(
@@ -259,9 +261,10 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			servletContext.setAttribute(
 					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this);
 			if (logger.isDebugEnabled()) {
-				logger.debug("Published root WebApplicationContext as ServletContext attribute with name ["
-						+ WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE
-						+ "]");
+				logger.debug(
+						"Published root WebApplicationContext as ServletContext attribute with name ["
+								+ WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE
+								+ "]");
 			}
 			setServletContext(servletContext);
 			if (logger.isInfoEnabled()) {
@@ -284,16 +287,19 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		}
 	}
 
-	private void startEmbeddedServletContainer() {
-		if (this.embeddedServletContainer != null) {
-			this.embeddedServletContainer.start();
+	private EmbeddedServletContainer startEmbeddedServletContainer() {
+		EmbeddedServletContainer localContainer = this.embeddedServletContainer;
+		if (localContainer != null) {
+			localContainer.start();
 		}
+		return localContainer;
 	}
 
-	private synchronized void stopAndReleaseEmbeddedServletContainer() {
-		if (this.embeddedServletContainer != null) {
+	private void stopAndReleaseEmbeddedServletContainer() {
+		EmbeddedServletContainer localContainer = this.embeddedServletContainer;
+		if (localContainer != null) {
 			try {
-				this.embeddedServletContainer.stop();
+				localContainer.stop();
 				this.embeddedServletContainer = null;
 			}
 			catch (Exception ex) {
@@ -347,6 +353,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	public static class ExistingWebApplicationScopes {
 
 		private static final Set<String> SCOPES;
+
 		static {
 			Set<String> scopes = new LinkedHashSet<String>();
 			scopes.add(WebApplicationContext.SCOPE_REQUEST);

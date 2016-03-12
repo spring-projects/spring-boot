@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.3.0.BUILD-SNAPSHOT</version>
+		<version>1.4.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-integration-tests</artifactId>
@@ -18,9 +18,11 @@
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
+		<java.version>1.8</java.version>
 	</properties>
 	<modules>
 		<module>spring-boot-gradle-tests</module>
+		<module>spring-boot-launch-script-tests</module>
 		<module>spring-boot-security-tests</module>
 	</modules>
 	<profiles>

@@ -31,6 +31,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @see ServletRegistrationBean
  * @see FilterRegistrationBean
+ * @see DelegatingFilterProxyRegistrationBean
  * @see ServletListenerRegistrationBean
  */
 public abstract class RegistrationBean implements ServletContextInitializer, Ordered {
@@ -136,7 +137,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 				"Registration is null. Was something already registered for name=["
 						+ this.name + "]?");
 		registration.setAsyncSupported(this.asyncSupported);
-		if (this.initParameters.size() > 0) {
+		if (!this.initParameters.isEmpty()) {
 			registration.setInitParameters(this.initParameters);
 		}
 	}

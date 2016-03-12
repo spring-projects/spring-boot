@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.3.0.BUILD-SNAPSHOT</version>
+		<version>1.4.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-starters/spring-boot-starter-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-samples</artifactId>
@@ -18,12 +18,12 @@
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
+		<java.version>1.8</java.version>
 	</properties>
 	<modules>
 		<module>spring-boot-sample-ant</module>
 		<module>spring-boot-sample-activemq</module>
 		<module>spring-boot-sample-actuator</module>
-		<module>spring-boot-sample-actuator-log4j</module>
 		<module>spring-boot-sample-actuator-log4j2</module>
 		<module>spring-boot-sample-actuator-noweb</module>
 		<module>spring-boot-sample-actuator-ui</module>
@@ -32,6 +32,8 @@
 		<module>spring-boot-sample-atmosphere</module>
 		<module>spring-boot-sample-batch</module>
 		<module>spring-boot-sample-cache</module>
+		<module>spring-boot-sample-data-cassandra</module>
+		<module>spring-boot-sample-data-couchbase</module>
 		<module>spring-boot-sample-data-elasticsearch</module>
 		<module>spring-boot-sample-data-gemfire</module>
 		<module>spring-boot-sample-data-jpa</module>
@@ -70,6 +72,7 @@
 		<module>spring-boot-sample-property-validation</module>
 		<module>spring-boot-sample-secure</module>
 		<module>spring-boot-sample-secure-oauth2</module>
+		<module>spring-boot-sample-secure-oauth2-resource</module>
 		<module>spring-boot-sample-servlet</module>
 		<module>spring-boot-sample-session-redis</module>
 		<module>spring-boot-sample-simple</module>
@@ -83,6 +86,7 @@
 		<module>spring-boot-sample-undertow</module>
 		<module>spring-boot-sample-undertow-ssl</module>
 		<module>spring-boot-sample-velocity</module>
+		<module>spring-boot-sample-war</module>
 		<module>spring-boot-sample-web-freemarker</module>
 		<module>spring-boot-sample-web-groovy-templates</module>
 		<module>spring-boot-sample-web-method-security</module>

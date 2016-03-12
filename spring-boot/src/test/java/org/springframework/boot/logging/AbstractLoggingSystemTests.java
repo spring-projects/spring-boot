@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -40,7 +41,7 @@ public abstract class AbstractLoggingSystemTests {
 	private String originalTempFolder;
 
 	@Before
-	public void configureTempdir() throws IOException {
+	public void configureTempDir() throws IOException {
 		this.originalTempFolder = System.getProperty(JAVA_IO_TMPDIR);
 		System.setProperty(JAVA_IO_TMPDIR, this.temp.newFolder().getAbsolutePath());
 	}
@@ -61,7 +62,9 @@ public abstract class AbstractLoggingSystemTests {
 	}
 
 	protected final LogFile getLogFile(String file, String path) {
-		return new LogFile(file, path);
+		LogFile logFile = new LogFile(file, path);
+		logFile.applyToSystemProperties();
+		return logFile;
 	}
 
 	protected final String tmpDir() {

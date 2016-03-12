@@ -95,7 +95,8 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	private String findConfig(String[] locations) {
 		for (String location : locations) {
-			ClassPathResource resource = new ClassPathResource(location, this.classLoader);
+			ClassPathResource resource = new ClassPathResource(location,
+					this.classLoader);
 			if (resource.exists()) {
 				return "classpath:" + location;
 			}
@@ -121,8 +122,8 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		for (int i = 0; i < locations.length; i++) {
 			String extension = StringUtils.getFilenameExtension(locations[i]);
 			locations[i] = locations[i].substring(0,
-					locations[i].length() - extension.length() - 1)
-					+ "-spring." + extension;
+					locations[i].length() - extension.length() - 1) + "-spring."
+					+ extension;
 		}
 		return locations;
 	}
@@ -148,7 +149,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	/**
 	 * Reinitialize the logging system if required. Called when
 	 * {@link #getSelfInitializationConfig()} is used and the log file hasn't changed. May
-	 * be used to reload configuration (for example to pickup additional System
+	 * be used to reload configuration (for example to pick up additional System
 	 * properties).
 	 * @param initializationContext the logging initialization context
 	 */

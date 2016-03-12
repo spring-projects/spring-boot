@@ -20,6 +20,7 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfigurationTests;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfigurationTests;
 import org.springframework.boot.autoconfigure.web.BasicErrorControllerDirectMockMvcTests;

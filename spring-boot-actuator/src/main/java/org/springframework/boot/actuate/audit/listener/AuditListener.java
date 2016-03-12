@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.audit.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.context.ApplicationListener;
 
@@ -30,7 +31,7 @@ import org.springframework.context.ApplicationListener;
  */
 public class AuditListener implements ApplicationListener<AuditApplicationEvent> {
 
-	private static Log logger = LogFactory.getLog(AuditListener.class);
+	private static final Log logger = LogFactory.getLog(AuditListener.class);
 
 	private final AuditEventRepository auditEventRepository;
 

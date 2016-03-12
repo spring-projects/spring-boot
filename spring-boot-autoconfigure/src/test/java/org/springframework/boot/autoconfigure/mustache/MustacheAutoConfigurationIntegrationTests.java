@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -41,11 +42,12 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link MustacheAutoConfiguration}.
@@ -53,6 +55,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 @SpringApplicationConfiguration(Application.class)
 @IntegrationTest({ "server.port:0",
 		"spring.mustache.prefix:classpath:/mustache-templates/" })
@@ -70,16 +73,16 @@ public class MustacheAutoConfigurationIntegrationTests {
 
 	@Test
 	public void testHomePage() throws Exception {
-		String body = new TestRestTemplate().getForObject(
-				"http://localhost:" + this.port, String.class);
-		assertTrue(body.contains("Hello World"));
+		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port,
+				String.class);
+		assertThat(body.contains("Hello World")).isTrue();
 	}
 
 	@Test
 	public void testPartialPage() throws Exception {
-		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port
-				+ "/partial", String.class);
-		assertTrue(body.contains("Hello World"));
+		String body = new TestRestTemplate()
+				.getForObject("http://localhost:" + this.port + "/partial", String.class);
+		assertThat(body.contains("Hello World")).isTrue();
 	}
 
 	@Target(ElementType.TYPE)

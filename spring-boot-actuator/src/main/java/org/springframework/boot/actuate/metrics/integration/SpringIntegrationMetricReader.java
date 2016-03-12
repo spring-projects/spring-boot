@@ -55,25 +55,25 @@ public class SpringIntegrationMetricReader implements MetricReader {
 			String prefix = "integration.channel." + name;
 			metrics.addAll(getStatistics(prefix + ".errorRate",
 					exporter.getChannelErrorRate(name)));
-			metrics.add(new Metric<Long>(prefix + ".sendCount", exporter
-					.getChannelSendCountLong(name)));
+			metrics.add(new Metric<Long>(prefix + ".sendCount",
+					exporter.getChannelSendCountLong(name)));
 			metrics.addAll(getStatistics(prefix + ".sendRate",
 					exporter.getChannelSendRate(name)));
-			metrics.add(new Metric<Long>(prefix + ".receiveCount", exporter
-					.getChannelReceiveCountLong(name)));
+			metrics.add(new Metric<Long>(prefix + ".receiveCount",
+					exporter.getChannelReceiveCountLong(name)));
 		}
 		for (String name : exporter.getHandlerNames()) {
 			metrics.addAll(getStatistics("integration.handler." + name + ".duration",
 					exporter.getHandlerDuration(name)));
 		}
-		metrics.add(new Metric<Integer>("integration.activeHandlerCount", exporter
-				.getActiveHandlerCount()));
-		metrics.add(new Metric<Integer>("integration.handlerCount", exporter
-				.getHandlerCount()));
-		metrics.add(new Metric<Integer>("integration.channelCount", exporter
-				.getChannelCount()));
-		metrics.add(new Metric<Integer>("integration.queuedMessageCount", exporter
-				.getQueuedMessageCount()));
+		metrics.add(new Metric<Integer>("integration.activeHandlerCount",
+				exporter.getActiveHandlerCount()));
+		metrics.add(new Metric<Integer>("integration.handlerCount",
+				exporter.getHandlerCount()));
+		metrics.add(new Metric<Integer>("integration.channelCount",
+				exporter.getChannelCount()));
+		metrics.add(new Metric<Integer>("integration.queuedMessageCount",
+				exporter.getQueuedMessageCount()));
 		return metrics;
 	}
 
@@ -83,7 +83,8 @@ public class SpringIntegrationMetricReader implements MetricReader {
 		metrics.add(new Metric<Double>(name + ".mean", statistic.getMean()));
 		metrics.add(new Metric<Double>(name + ".max", statistic.getMax()));
 		metrics.add(new Metric<Double>(name + ".min", statistic.getMin()));
-		metrics.add(new Metric<Double>(name + ".stdev", statistic.getStandardDeviation()));
+		metrics.add(
+				new Metric<Double>(name + ".stdev", statistic.getStandardDeviation()));
 		metrics.add(new Metric<Long>(name + ".count", statistic.getCountLong()));
 		return metrics;
 	}

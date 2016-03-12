@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,16 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import javax.cache.Caching;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.hazelcast.core.IMap;
+import com.hazelcast.spring.cache.HazelcastCache;
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.statistics.StatisticsGateway;
 import org.infinispan.spring.provider.SpringCache;
+
 import org.springframework.boot.actuate.cache.CacheStatistics;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
+import org.springframework.boot.actuate.cache.CaffeineCacheStatisticsProvider;
 import org.springframework.boot.actuate.cache.ConcurrentMapCacheStatisticsProvider;
 import org.springframework.boot.actuate.cache.DefaultCacheStatistics;
 import org.springframework.boot.actuate.cache.EhCacheStatisticsProvider;
@@ -35,16 +42,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.ehcache.EhCacheCache;
+import org.springframework.cache.guava.GuavaCache;
 import org.springframework.cache.jcache.JCacheCache;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.hazelcast.core.IMap;
-import com.hazelcast.spring.cache.HazelcastCache;
-
-import net.sf.ehcache.Ehcache;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link CacheStatisticsProvider}
@@ -52,6 +57,7 @@ import net.sf.ehcache.Ehcache;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @since 1.3.0
  */
 @Configuration
@@ -71,7 +77,7 @@ public class CacheStatisticsAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(Ehcache.class)
+	@ConditionalOnClass({ EhCacheCache.class, Ehcache.class, StatisticsGateway.class })
 	static class EhCacheCacheStatisticsProviderConfiguration {
 
 		@Bean
@@ -103,7 +109,18 @@ public class CacheStatisticsAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(com.google.common.cache.Cache.class)
+	@ConditionalOnClass({ Caffeine.class, CaffeineCacheManager.class })
+	static class CaffeineCacheStatisticsProviderConfiguration {
+
+		@Bean
+		public CaffeineCacheStatisticsProvider caffeineCacheStatisticsProvider() {
+			return new CaffeineCacheStatisticsProvider();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass({ com.google.common.cache.Cache.class, GuavaCache.class })
 	static class GuavaCacheStatisticsConfiguration {
 
 		@Bean

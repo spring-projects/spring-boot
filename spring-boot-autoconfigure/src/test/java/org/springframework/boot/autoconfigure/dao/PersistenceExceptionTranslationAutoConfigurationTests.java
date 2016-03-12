@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -33,10 +34,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.stereotype.Repository;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
@@ -61,8 +59,8 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 				PersistenceExceptionTranslationAutoConfiguration.class);
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
 				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
-		assertThat(beans.size(), is(equalTo(1)));
-		assertThat(beans.values().iterator().next().isProxyTargetClass(), equalTo(true));
+		assertThat(beans).hasSize(1);
+		assertThat(beans.values().iterator().next().isProxyTargetClass()).isTrue();
 	}
 
 	@Test
@@ -74,7 +72,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 		this.context.refresh();
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
 				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
-		assertThat(beans.entrySet(), empty());
+		assertThat(beans.entrySet()).isEmpty();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -106,14 +104,14 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 	@Repository
 	private static class TestRepository {
 
-		private final EntityManager entityManger;
+		private final EntityManager entityManager;
 
 		TestRepository(EntityManager entityManager) {
-			this.entityManger = entityManager;
+			this.entityManager = entityManager;
 		}
 
 		public void doSomething() {
-			this.entityManger.persist(null);
+			this.entityManager.persist(null);
 		}
 	}
 

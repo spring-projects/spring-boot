@@ -24,6 +24,7 @@ import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.RunProcess;
 
@@ -52,8 +53,8 @@ public class RunMojo extends AbstractRunMojo {
 	protected void runWithMavenJvm(String startClassName, String... arguments)
 			throws MojoExecutionException {
 		IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(startClassName);
-		Thread launchThread = new Thread(threadGroup, new LaunchRunner(startClassName,
-				arguments), "main");
+		Thread launchThread = new Thread(threadGroup,
+				new LaunchRunner(startClassName, arguments), "main");
 		launchThread.setContextClassLoader(new URLClassLoader(getClassPathUrls()));
 		launchThread.start();
 		join(threadGroup);

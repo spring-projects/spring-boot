@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-deployment-tests</artifactId>
-		<version>1.3.0.BUILD-SNAPSHOT</version>
+		<version>1.4.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-deployment-test-tomcat</artifactId>
 	<packaging>war</packaging>
@@ -19,7 +19,7 @@
 		<main.basedir>${basedir}/../..</main.basedir>
 		<cargo.container.id>tomcat8x</cargo.container.id>
 		<cargo.container.url>
-			http://mirrors.sonic.net/apache/tomcat/tomcat-8/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip
+			http://central.maven.org/maven2/org/apache/tomcat/tomcat/${tomcat.version}/tomcat-${tomcat.version}.zip
 		</cargo.container.url>
 	</properties>
 	<dependencies>
@@ -37,6 +37,11 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>

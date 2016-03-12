@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -57,7 +58,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractView;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -88,7 +89,7 @@ public class BasicErrorControllerMockMvcTests {
 		MvcResult response = this.mockMvc.perform(get("/error"))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("999"));
+		assertThat(content).contains("999");
 	}
 
 	@Test
@@ -98,7 +99,7 @@ public class BasicErrorControllerMockMvcTests {
 		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error"))
 				.andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("Expected!"));
+		assertThat(content).contains("Expected!");
 	}
 
 	@Test
@@ -113,16 +114,16 @@ public class BasicErrorControllerMockMvcTests {
 		// And the rendered status code is always wrong (but would be 400 in a real
 		// system)
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("Error count: 1"));
+		assertThat(content).contains("Error count: 1");
 	}
 
 	@Test
 	public void testDirectAccessForBrowserClient() throws Exception {
 		MvcResult response = this.mockMvc
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("ERROR_BEAN"));
+		assertThat(content).contains("ERROR_BEAN");
 	}
 
 	@Target(ElementType.TYPE)
@@ -132,8 +133,8 @@ public class BasicErrorControllerMockMvcTests {
 			EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 	}
 
@@ -152,7 +153,7 @@ public class BasicErrorControllerMockMvcTests {
 				@Override
 				protected void renderMergedOutputModel(Map<String, Object> model,
 						HttpServletRequest request, HttpServletResponse response)
-						throws Exception {
+								throws Exception {
 					response.getWriter().write("ERROR_BEAN");
 				}
 			};
@@ -213,6 +214,7 @@ public class BasicErrorControllerMockMvcTests {
 			request.setRequestURI(this.path);
 			return request;
 		}
+
 	}
 
 }

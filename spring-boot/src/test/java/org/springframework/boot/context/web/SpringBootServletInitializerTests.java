@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,12 @@
 
 package org.springframework.boot.context.web;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import javax.servlet.ServletContext;
 
-import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -33,9 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringBootServletInitializer}.
@@ -64,22 +58,22 @@ public class SpringBootServletInitializerTests {
 	public void withConfigurationAnnotation() throws Exception {
 		new WithConfigurationAnnotation()
 				.createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getSources(),
-				equalToSet(WithConfigurationAnnotation.class, ErrorPageFilter.class));
+		assertThat(this.application.getSources())
+				.containsOnly(WithConfigurationAnnotation.class, ErrorPageFilter.class);
 	}
 
 	@Test
 	public void withConfiguredSource() throws Exception {
 		new WithConfiguredSource().createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getSources(),
-				equalToSet(Config.class, ErrorPageFilter.class));
+		assertThat(this.application.getSources()).containsOnly(Config.class,
+				ErrorPageFilter.class);
 	}
 
 	@Test
 	public void applicationBuilderCanBeCustomized() throws Exception {
 		CustomSpringBootServletInitializer servletInitializer = new CustomSpringBootServletInitializer();
 		servletInitializer.createRootApplicationContext(this.servletContext);
-		assertThat(servletInitializer.applicationBuilder.built, equalTo(true));
+		assertThat(servletInitializer.applicationBuilder.built).isTrue();
 	}
 
 	@Test
@@ -89,22 +83,15 @@ public class SpringBootServletInitializerTests {
 				.createRootApplicationContext(this.servletContext);
 		Class mainApplicationClass = (Class<?>) new DirectFieldAccessor(this.application)
 				.getPropertyValue("mainApplicationClass");
-		assertThat(mainApplicationClass,
-				is(equalTo((Class) WithConfigurationAnnotation.class)));
+		assertThat(mainApplicationClass).isEqualTo(WithConfigurationAnnotation.class);
 	}
 
 	@Test
 	public void withErrorPageFilterNotRegistered() throws Exception {
 		new WithErrorPageFilterNotRegistered()
 				.createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getSources(),
-				equalToSet(WithErrorPageFilterNotRegistered.class));
-	}
-
-	private Matcher<? super Set<Object>> equalToSet(Object... items) {
-		Set<Object> set = new LinkedHashSet<Object>();
-		Collections.addAll(set, items);
-		return equalTo(set);
+		assertThat(this.application.getSources())
+				.containsOnly(WithErrorPageFilterNotRegistered.class);
 	}
 
 	private class MockSpringBootServletInitializer extends SpringBootServletInitializer {
@@ -117,8 +104,8 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	private class CustomSpringBootServletInitializer extends
-			MockSpringBootServletInitializer {
+	private class CustomSpringBootServletInitializer
+			extends MockSpringBootServletInitializer {
 
 		private final CustomSpringApplicationBuilder applicationBuilder = new CustomSpringApplicationBuilder();
 
@@ -128,7 +115,8 @@ public class SpringBootServletInitializerTests {
 		}
 
 		@Override
-		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		protected SpringApplicationBuilder configure(
+				SpringApplicationBuilder application) {
 			return application.sources(Config.class);
 		}
 	}
@@ -140,15 +128,16 @@ public class SpringBootServletInitializerTests {
 	public class WithConfiguredSource extends MockSpringBootServletInitializer {
 
 		@Override
-		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		protected SpringApplicationBuilder configure(
+				SpringApplicationBuilder application) {
 			return application.sources(Config.class);
 		}
 
 	}
 
 	@Configuration
-	public class WithErrorPageFilterNotRegistered extends
-			MockSpringBootServletInitializer {
+	public class WithErrorPageFilterNotRegistered
+			extends MockSpringBootServletInitializer {
 
 		public WithErrorPageFilterNotRegistered() {
 			setRegisterErrorPageFilter(false);

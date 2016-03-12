@@ -26,6 +26,7 @@ import com.google.gson.GsonBuilder;
  * Thin wrapper to adapt {@link Gson} to a {@link JsonParser}.
  *
  * @author Dave Syer
+ * @author Jean de Klerk
  * @since 1.2.0
  * @see JsonParserFactory
  */
@@ -34,17 +35,27 @@ public class GsonJsonParser implements JsonParser {
 	private Gson gson = new GsonBuilder().create();
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> parseMap(String json) {
-		@SuppressWarnings("unchecked")
-		Map<String, Object> value = this.gson.fromJson(json, Map.class);
-		return value;
+		if (json != null) {
+			json = json.trim();
+			if (json.startsWith("{")) {
+				return this.gson.fromJson(json, Map.class);
+			}
+		}
+		throw new IllegalArgumentException("Cannot parse JSON");
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<Object> parseList(String json) {
-		@SuppressWarnings("unchecked")
-		List<Object> value = this.gson.fromJson(json, List.class);
-		return value;
+		if (json != null) {
+			json = json.trim();
+			if (json.startsWith("[")) {
+				return this.gson.fromJson(json, List.class);
+			}
+		}
+		throw new IllegalArgumentException("Cannot parse JSON");
 	}
 
 }

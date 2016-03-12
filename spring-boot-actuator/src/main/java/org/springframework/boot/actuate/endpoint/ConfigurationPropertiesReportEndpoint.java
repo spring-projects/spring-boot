@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.BeansException;
-import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
-
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
@@ -45,6 +37,14 @@ import com.fasterxml.jackson.databind.ser.SerializerFactory;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
+import org.springframework.beans.BeansException;
+import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
+
 /**
  * {@link Endpoint} to expose application properties from {@link ConfigurationProperties}
  * annotated beans.
@@ -58,9 +58,9 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
  * @author Christian Dupuis
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "endpoints.configprops", ignoreUnknownFields = false)
-public class ConfigurationPropertiesReportEndpoint extends
-		AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
+@ConfigurationProperties(prefix = "endpoints.configprops")
+public class ConfigurationPropertiesReportEndpoint
+		extends AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
 
 	private static final String CGLIB_FILTER_ID = "cglibFilter";
 
@@ -101,7 +101,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	private Map<String, Object> extract(ApplicationContext context, ObjectMapper mapper) {
 		Map<String, Object> result = new HashMap<String, Object>();
-		ConfigurationBeanFactoryMetaData beanFactoryMetaData = getBeanFactoryMetaData(context);
+		ConfigurationBeanFactoryMetaData beanFactoryMetaData = getBeanFactoryMetaData(
+				context);
 		Map<String, Object> beans = getConfigurationPropertiesBeans(context,
 				beanFactoryMetaData);
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
@@ -110,7 +111,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 			Map<String, Object> root = new HashMap<String, Object>();
 			String prefix = extractPrefix(context, beanFactoryMetaData, beanName, bean);
 			root.put("prefix", prefix);
-			root.put("properties", sanitize(safeSerialize(mapper, bean, prefix)));
+			root.put("properties", sanitize(prefix, safeSerialize(mapper, bean, prefix)));
 			result.put(beanName, root);
 		}
 		if (context.getParent() != null) {
@@ -153,8 +154,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 			String prefix) {
 		try {
 			@SuppressWarnings("unchecked")
-			Map<String, Object> result = new HashMap<String, Object>(mapper.convertValue(
-					bean, Map.class));
+			Map<String, Object> result = new HashMap<String, Object>(
+					mapper.convertValue(bean, Map.class));
 			return result;
 		}
 		catch (Exception ex) {
@@ -192,7 +193,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 	 */
 	private void applyCglibFilters(ObjectMapper mapper) {
 		mapper.setAnnotationIntrospector(new CglibAnnotationIntrospector());
-		mapper.setFilters(new SimpleFilterProvider().addFilter(CGLIB_FILTER_ID,
+		mapper.setFilterProvider(new SimpleFilterProvider().addFilter(CGLIB_FILTER_ID,
 				new CglibBeanPropertyFilter()));
 	}
 
@@ -210,8 +211,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 		ConfigurationProperties annotation = context.findAnnotationOnBean(beanName,
 				ConfigurationProperties.class);
 		if (beanFactoryMetaData != null) {
-			ConfigurationProperties override = beanFactoryMetaData.findFactoryAnnotation(
-					beanName, ConfigurationProperties.class);
+			ConfigurationProperties override = beanFactoryMetaData
+					.findFactoryAnnotation(beanName, ConfigurationProperties.class);
 			if (override != null) {
 				// The @Bean-level @ConfigurationProperties overrides the one at type
 				// level when binding. Arguably we should render them both, but this one
@@ -226,19 +227,23 @@ public class ConfigurationPropertiesReportEndpoint extends
 	/**
 	 * Sanitize all unwanted configuration properties to avoid leaking of sensitive
 	 * information.
+	 * @param prefix the property prefix
 	 * @param map the source map
 	 * @return the sanitized map
 	 */
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> sanitize(Map<String, Object> map) {
+	private Map<String, Object> sanitize(String prefix, Map<String, Object> map) {
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
 			String key = entry.getKey();
+			String qualifiedKey = (prefix.length() == 0 ? prefix : prefix + ".") + key;
 			Object value = entry.getValue();
 			if (value instanceof Map) {
-				map.put(key, sanitize((Map<String, Object>) value));
+				map.put(key, sanitize(qualifiedKey, (Map<String, Object>) value));
 			}
 			else {
-				map.put(key, this.sanitizer.sanitize(key, value));
+				value = this.sanitizer.sanitize(key, value);
+				value = this.sanitizer.sanitize(qualifiedKey, value);
+				map.put(key, value);
 			}
 		}
 		return map;
@@ -249,8 +254,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 	 * properties.
 	 */
 	@SuppressWarnings("serial")
-	private static class CglibAnnotationIntrospector extends
-			JacksonAnnotationIntrospector {
+	private static class CglibAnnotationIntrospector
+			extends JacksonAnnotationIntrospector {
 
 		@Override
 		public Object findFilterId(Annotated a) {
@@ -305,22 +310,21 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
 			String parentType = beanDesc.getType().getRawClass().getName();
-			String type = writer.getPropertyType().getName();
+			String type = writer.getType().getTypeName();
 			AnnotatedMethod setter = findSetter(beanDesc, writer);
 			// If there's a setter, we assume it's OK to report on the value,
 			// similarly, if there's no setter but the package names match, we assume
 			// that its a nested class used solely for binding to config props, so it
 			// should be kosher. This filter is not used if there is JSON metadata for
 			// the property, so it's mainly for user-defined beans.
-			return (setter != null)
-					|| ClassUtils.getPackageName(parentType).equals(
-							ClassUtils.getPackageName(type));
+			return (setter != null) || ClassUtils.getPackageName(parentType)
+					.equals(ClassUtils.getPackageName(type));
 		}
 
 		private AnnotatedMethod findSetter(BeanDescription beanDesc,
 				BeanPropertyWriter writer) {
 			String name = "set" + StringUtils.capitalize(writer.getName());
-			Class<?> type = writer.getPropertyType();
+			Class<?> type = writer.getType().getRawClass();
 			AnnotatedMethod setter = beanDesc.findMethod(name, new Class<?>[] { type });
 			// The enabled property of endpoints returns a boolean primitive but is set
 			// using a Boolean class

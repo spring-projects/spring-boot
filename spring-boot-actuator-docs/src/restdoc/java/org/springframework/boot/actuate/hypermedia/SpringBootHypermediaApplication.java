@@ -16,12 +16,12 @@
 
 package org.springframework.boot.actuate.hypermedia;
 
+import groovy.text.GStringTemplateEngine;
+import groovy.text.TemplateEngine;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import groovy.text.GStringTemplateEngine;
-import groovy.text.TemplateEngine;
 
 @SpringBootApplication
 public class SpringBootHypermediaApplication {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,31 +18,35 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.io.IOException;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.EndpointProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 /**
  * Controller that provides an API for logfiles, i.e. downloading the main logfile
  * configured in environment property 'logging.file' that is standard, but optional
  * property for spring-boot applications.
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  * @author Phillip Webb
  * @since 1.3.0
  */
@@ -55,18 +59,18 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	 * Endpoint URL path.
 	 */
 	@NotNull
-	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
+	@Pattern(regexp = "/.*", message = "Path must start with /")
 	private String path = "/logfile";
-
-	/**
-	 * Enable security on the endpoint.
-	 */
-	private boolean sensitive = true;
 
 	/**
 	 * Enable the endpoint.
 	 */
 	private boolean enabled = true;
+
+	/**
+	 * Mark if the endpoint exposes sensitive information.
+	 */
+	private Boolean sensitive;
 
 	private Environment environment;
 
@@ -84,15 +88,6 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		this.path = path;
 	}
 
-	@Override
-	public boolean isSensitive() {
-		return this.sensitive;
-	}
-
-	public void setSensitive(boolean sensitive) {
-		this.sensitive = sensitive;
-	}
-
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -102,33 +97,29 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	}
 
 	@Override
+	public boolean isSensitive() {
+		return EndpointProperties.isSensitive(this.environment, this.sensitive, true);
+	}
+
+	public void setSensitive(Boolean sensitive) {
+		this.sensitive = sensitive;
+	}
+
+	@Override
 	@SuppressWarnings("rawtypes")
 	public Class<? extends Endpoint> getEndpointType() {
 		return null;
 	}
 
-	@RequestMapping(method = RequestMethod.HEAD)
-	@ResponseBody
-	public ResponseEntity<?> available() {
-		return getResponse(false);
-	}
-
-	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
-	public ResponseEntity<?> invoke() throws IOException {
-		return getResponse(true);
-	}
-
-	private ResponseEntity<?> getResponse(boolean includeBody) {
+	@RequestMapping(method = { RequestMethod.GET, RequestMethod.HEAD })
+	public void invoke(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		if (!isEnabled()) {
-			return (includeBody ? DISABLED_RESPONSE : ResponseEntity.notFound().build());
+			response.setStatus(HttpStatus.NOT_FOUND.value());
+			return;
 		}
 		Resource resource = getLogFileResource();
-		if (resource == null) {
-			return ResponseEntity.notFound().build();
-		}
-		BodyBuilder response = ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN);
-		return (includeBody ? response.body(resource) : response.build());
+		new Handler(resource).handleRequest(request, response);
 	}
 
 	private Resource getLogFileResource() {
@@ -139,12 +130,35 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		}
 		FileSystemResource resource = new FileSystemResource(logFile.toString());
 		if (!resource.exists()) {
-			if (logger.isWarnEnabled()) {
+			if (logger.isDebugEnabled()) {
 				logger.debug("Log file '" + resource + "' does not exist");
 			}
 			return null;
 		}
 		return resource;
+	}
+
+	/**
+	 * {@link ResourceHttpRequestHandler} to send the log file.
+	 */
+	private static class Handler extends ResourceHttpRequestHandler {
+
+		private final Resource resource;
+
+		Handler(Resource resource) {
+			this.resource = resource;
+		}
+
+		@Override
+		protected Resource getResource(HttpServletRequest request) throws IOException {
+			return this.resource;
+		}
+
+		@Override
+		protected MediaType getMediaType(Resource resource) {
+			return MediaType.TEXT_PLAIN;
+		}
+
 	}
 
 }

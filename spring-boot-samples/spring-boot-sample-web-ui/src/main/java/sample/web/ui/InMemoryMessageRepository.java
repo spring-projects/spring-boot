@@ -50,4 +50,9 @@ public class InMemoryMessageRepository implements MessageRepository {
 		return this.messages.get(id);
 	}
 
+	@Override
+	public void deleteMessage(Long id) {
+		this.messages.remove(id);
+	}
+
 }

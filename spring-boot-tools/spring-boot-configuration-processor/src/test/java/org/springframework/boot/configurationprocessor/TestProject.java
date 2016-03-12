@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.configurationprocessor.TestCompiler.TestCompilationTask;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
@@ -140,8 +141,8 @@ public class TestProject {
 		File targetFile = getSourceFile(target);
 		String contents = getContents(targetFile);
 		int insertAt = contents.lastIndexOf('}');
-		String additionalSource = FileCopyUtils.copyToString(new InputStreamReader(
-				snippetStream));
+		String additionalSource = FileCopyUtils
+				.copyToString(new InputStreamReader(snippetStream));
 		contents = contents.substring(0, insertAt) + additionalSource
 				+ contents.substring(insertAt);
 		putContents(targetFile, contents);
@@ -160,7 +161,7 @@ public class TestProject {
 	/**
 	 * Restore source code of given class to its original contents.
 	 * @param type the class to revert
-	 * @throws IOException in case of I/O errors
+	 * @throws IOException on IO error
 	 */
 	public void revert(Class<?> type) throws IOException {
 		Assert.assertTrue(getSourceFile(type).exists());
@@ -170,7 +171,7 @@ public class TestProject {
 	/**
 	 * Add source code of given class to this project.
 	 * @param type the class to add
-	 * @throws IOException in case of I/O errors
+	 * @throws IOException on IO error
 	 */
 	public void add(Class<?> type) throws IOException {
 		Assert.assertFalse(getSourceFile(type).exists());

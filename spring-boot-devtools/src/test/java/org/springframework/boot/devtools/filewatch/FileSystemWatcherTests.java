@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -33,13 +32,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -108,6 +105,25 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
+	public void sourceFolderMustExist() throws Exception {
+		File folder = new File("does/not/exist");
+		assertThat(folder.exists()).isFalse();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage(
+				"Folder '" + folder + "' must exist and must be a directory");
+		this.watcher.addSourceFolder(folder);
+	}
+
+	@Test
+	public void sourceFolderMustBeADirectory() throws Exception {
+		File folder = new File("pom.xml");
+		assertThat(folder.isFile()).isTrue();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Folder 'pom.xml' must exist and must be a directory");
+		this.watcher.addSourceFolder(new File("pom.xml"));
+	}
+
+	@Test
 	public void cannotAddSourceFolderToStartedListener() throws Exception {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("FileSystemWatcher already started");
@@ -122,7 +138,7 @@ public class FileSystemWatcherTests {
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
-		assertThat(changedFiles.getFiles(), contains(expected));
+		assertThat(changedFiles.getFiles()).contains(expected);
 	}
 
 	@Test
@@ -132,7 +148,7 @@ public class FileSystemWatcherTests {
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
-		assertThat(changedFiles.getFiles(), contains(expected));
+		assertThat(changedFiles.getFiles()).contains(expected);
 	}
 
 	@Test
@@ -144,7 +160,7 @@ public class FileSystemWatcherTests {
 		Thread.sleep(200);
 		touch(new File(folder, "test2.txt"));
 		this.watcher.stopAfter(1);
-		assertThat(this.changes.size(), equalTo(2));
+		assertThat(this.changes.size()).isEqualTo(2);
 	}
 
 	@Test
@@ -157,7 +173,7 @@ public class FileSystemWatcherTests {
 		}
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
-		assertThat(changedFiles.getFiles().size(), equalTo(10));
+		assertThat(changedFiles.getFiles().size()).isEqualTo(10);
 	}
 
 	@Test
@@ -170,7 +186,7 @@ public class FileSystemWatcherTests {
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
-		assertThat(changedFiles.getFiles(), contains(expected));
+		assertThat(changedFiles.getFiles()).contains(expected);
 	}
 
 	@Test
@@ -184,17 +200,15 @@ public class FileSystemWatcherTests {
 		File file2 = touch(new File(folder2, "test.txt"));
 		this.watcher.stopAfter(1);
 		Set<ChangedFiles> change = getSingleOnChange();
-		assertThat(change.size(), equalTo(2));
+		assertThat(change.size()).isEqualTo(2);
 		for (ChangedFiles changedFiles : change) {
 			if (changedFiles.getSourceFolder().equals(folder1)) {
 				ChangedFile file = new ChangedFile(folder1, file1, Type.ADD);
-				assertEquals(new HashSet<ChangedFile>(Arrays.asList(file)),
-						changedFiles.getFiles());
+				assertThat(changedFiles.getFiles()).containsOnly(file);
 			}
 			else {
 				ChangedFile file = new ChangedFile(folder2, file2, Type.ADD);
-				assertEquals(new HashSet<ChangedFile>(Arrays.asList(file)),
-						changedFiles.getFiles());
+				assertThat(changedFiles.getFiles()).containsOnly(file);
 			}
 		}
 	}
@@ -215,8 +229,8 @@ public class FileSystemWatcherTests {
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
-		assertThat(changedFiles.getFiles(), contains(expected));
-		assertEquals(this.changes.get(0), listener2Changes);
+		assertThat(changedFiles.getFiles()).contains(expected);
+		assertThat(listener2Changes).isEqualTo(this.changes.get(0));
 	}
 
 	@Test
@@ -236,7 +250,7 @@ public class FileSystemWatcherTests {
 		expected.add(new ChangedFile(folder, modify, Type.MODIFY));
 		expected.add(new ChangedFile(folder, delete, Type.DELETE));
 		expected.add(new ChangedFile(folder, add, Type.ADD));
-		assertEquals(expected, actual);
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
@@ -256,14 +270,14 @@ public class FileSystemWatcherTests {
 		this.watcher.start();
 		FileCopyUtils.copy("abc".getBytes(), file);
 		Thread.sleep(100);
-		assertThat(this.changes.size(), equalTo(0));
+		assertThat(this.changes.size()).isEqualTo(0);
 		FileCopyUtils.copy("abc".getBytes(), trigger);
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		Set<ChangedFile> actual = changedFiles.getFiles();
 		Set<ChangedFile> expected = new HashSet<ChangedFile>();
 		expected.add(new ChangedFile(folder, file, Type.MODIFY));
-		assertEquals(expected, actual);
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	private void setupWatcher(long pollingInterval, long quietPeriod) {
@@ -285,12 +299,12 @@ public class FileSystemWatcherTests {
 
 	private ChangedFiles getSingleChangedFiles() {
 		Set<ChangedFiles> singleChange = getSingleOnChange();
-		assertThat(singleChange.size(), equalTo(1));
+		assertThat(singleChange.size()).isEqualTo(1);
 		return singleChange.iterator().next();
 	}
 
 	private Set<ChangedFiles> getSingleOnChange() {
-		assertThat(this.changes.size(), equalTo(1));
+		assertThat(this.changes.size()).isEqualTo(1);
 		return this.changes.get(0);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockEnvironment;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DevToolsHomePropertiesPostProcessor}.
@@ -55,14 +54,14 @@ public class DevToolsHomePropertiesPostProcessorTests {
 	public void loadsHomeProperties() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
-		OutputStream out = new FileOutputStream(new File(this.home,
-				".spring-boot-devtools.properties"));
+		OutputStream out = new FileOutputStream(
+				new File(this.home, ".spring-boot-devtools.properties"));
 		properties.store(out, null);
 		out.close();
 		ConfigurableEnvironment environment = new MockEnvironment();
 		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
 		postProcessor.postProcessEnvironment(environment, null);
-		assertThat(environment.getProperty("abc"), equalTo("def"));
+		assertThat(environment.getProperty("abc")).isEqualTo("def");
 	}
 
 	@Test
@@ -70,11 +69,11 @@ public class DevToolsHomePropertiesPostProcessorTests {
 		ConfigurableEnvironment environment = new MockEnvironment();
 		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
 		postProcessor.postProcessEnvironment(environment, null);
-		assertThat(environment.getProperty("abc"), nullValue());
+		assertThat(environment.getProperty("abc")).isNull();
 	}
 
-	private class MockDevToolHomePropertiesPostProcessor extends
-			DevToolsHomePropertiesPostProcessor {
+	private class MockDevToolHomePropertiesPostProcessor
+			extends DevToolsHomePropertiesPostProcessor {
 
 		@Override
 		protected File getHomeFolder() {

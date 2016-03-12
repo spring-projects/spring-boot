@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
 
 /**
@@ -54,8 +55,8 @@ public class OptionalLiveReloadServer {
 				if (!this.server.isStarted()) {
 					this.server.start();
 				}
-				logger.info("LiveReload server is running on port "
-						+ this.server.getPort());
+				logger.info(
+						"LiveReload server is running on port " + this.server.getPort());
 			}
 			catch (Exception ex) {
 				logger.warn("Unable to start LiveReload server");

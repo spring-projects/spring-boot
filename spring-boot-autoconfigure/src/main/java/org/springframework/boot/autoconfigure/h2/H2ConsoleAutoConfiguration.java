@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.h2;
 
 import org.h2.server.web.WebServlet;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -50,8 +51,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 public class H2ConsoleAutoConfiguration {
 
-	@Autowired
-	private H2ConsoleProperties properties;
+	private final H2ConsoleProperties properties;
+
+	public H2ConsoleAutoConfiguration(H2ConsoleProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	public ServletRegistrationBean h2Console() {
@@ -72,8 +76,8 @@ public class H2ConsoleAutoConfiguration {
 		}
 
 		@Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
-		private static class H2ConsoleSecurityConfigurer extends
-				WebSecurityConfigurerAdapter {
+		private static class H2ConsoleSecurityConfigurer
+				extends WebSecurityConfigurerAdapter {
 
 			@Autowired
 			private H2ConsoleProperties console;

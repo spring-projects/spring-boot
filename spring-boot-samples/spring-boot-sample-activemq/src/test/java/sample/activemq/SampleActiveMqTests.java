@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,13 @@ import javax.jms.JMSException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for demo application.
@@ -47,7 +48,7 @@ public class SampleActiveMqTests {
 	public void sendSimpleMessage() throws InterruptedException, JMSException {
 		this.producer.send("Test message");
 		Thread.sleep(1000L);
-		assertTrue(this.outputCapture.toString().contains("Test message"));
+		assertThat(this.outputCapture.toString().contains("Test message")).isTrue();
 	}
 
 }

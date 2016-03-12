@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,14 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.Assert;
-
 import liquibase.changelog.StandardChangeLogHistoryService;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.integration.spring.SpringLiquibase;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose liquibase info.
@@ -36,7 +36,7 @@ import liquibase.integration.spring.SpringLiquibase;
  * @author Eddú Meléndez
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "endpoints.liquibase", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "endpoints.liquibase")
 public class LiquibaseEndpoint extends AbstractEndpoint<List<Map<String, ?>>> {
 
 	private final SpringLiquibase liquibase;

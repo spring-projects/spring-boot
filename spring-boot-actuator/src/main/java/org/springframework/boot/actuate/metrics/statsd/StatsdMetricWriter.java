@@ -18,15 +18,15 @@ package org.springframework.boot.actuate.metrics.statsd;
 
 import java.io.Closeable;
 
+import com.timgroup.statsd.NonBlockingStatsDClient;
+import com.timgroup.statsd.StatsDClientErrorHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.util.StringUtils;
-
-import com.timgroup.statsd.NonBlockingStatsDClient;
-import com.timgroup.statsd.StatsDClientErrorHandler;
 
 /**
  * A {@link MetricWriter} that pushes data to statsd. Statsd has the concept of counters
@@ -82,15 +82,18 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 			this.client.recordExecutionTime(name, value.getValue().longValue());
 		}
 		else {
-			this.client.gauge(name, value.getValue().longValue());
+			if (name.contains("counter.")) {
+				this.client.count(name, value.getValue().longValue());
+			}
+			else {
+				this.client.gauge(name, value.getValue().doubleValue());
+			}
 		}
 	}
 
 	@Override
 	public void reset(String name) {
-		if (name.contains("counter.")) {
-			this.client.gauge(name, 0L);
-		}
+		// Not implemented
 	}
 
 	@Override
@@ -98,8 +101,8 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 		this.client.stop();
 	}
 
-	private static final class LoggingStatsdErrorHandler implements
-			StatsDClientErrorHandler {
+	private static final class LoggingStatsdErrorHandler
+			implements StatsDClientErrorHandler {
 
 		@Override
 		public void handle(Exception e) {

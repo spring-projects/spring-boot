@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentation;
+import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -46,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class HealthEndpointDocumentation {
 
 	@Rule
-	public final RestDocumentation restDocumentation = new RestDocumentation(
+	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation(
 			"target/generated-snippets");
 
 	@Autowired
@@ -63,7 +64,7 @@ public class HealthEndpointDocumentation {
 	@Test
 	public void health() throws Exception {
 		this.mockMvc.perform(get("/health").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andDo(document("health/unsensitive"));
+				.andExpect(status().isOk()).andDo(document("health/insensitive"));
 	}
 
 }
