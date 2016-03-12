@@ -46,6 +46,9 @@ do as they were designed before this was clarified.
 | https://code.google.com/p/wro4j/[WRO4J]
 | https://github.com/sbuettner/spring-boot-autoconfigure-wro4j
 
+| http://alexo.github.io/wro4j/[Wro4j] (Advanced usage)
+| https://github.com/michael-simons/wro4j-spring-boot-starter
+
 | http://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
 
