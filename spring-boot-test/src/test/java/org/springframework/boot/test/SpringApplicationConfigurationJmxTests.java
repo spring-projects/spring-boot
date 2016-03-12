@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 @SpringApplicationConfiguration(Config.class)
 @IntegrationTest
+@Deprecated
 public class SpringApplicationConfigurationJmxTests {
 
 	@Value("${spring.jmx.enabled}")

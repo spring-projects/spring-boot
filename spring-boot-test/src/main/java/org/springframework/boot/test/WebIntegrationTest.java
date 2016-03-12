@@ -24,8 +24,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.context.web.LocalServerPort;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.BootstrapWith;
 
 /**
  * Test class annotation signifying that the tests are "web integration tests" and
@@ -39,12 +39,15 @@ import org.springframework.test.context.BootstrapWith;
  * @author Phillip Webb
  * @since 1.2.1
  * @see IntegrationTest
+ * @deprecated since 1.4.0 in favor of
+ * {@link org.springframework.boot.test.context.web.WebIntegrationTest}
  */
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@BootstrapWith(WebAppIntegrationTestContextBootstrapper.class)
+@org.springframework.boot.test.context.web.WebIntegrationTest
+@Deprecated
 public @interface WebIntegrationTest {
 
 	/**
@@ -52,6 +55,7 @@ public @interface WebIntegrationTest {
 	 * {@link Environment} before the test runs.
 	 * @return properties to add to the context
 	 */
+	@AliasFor(annotation = org.springframework.boot.test.context.web.WebIntegrationTest.class, attribute = "value")
 	String[] value() default {};
 
 	/**
@@ -61,6 +65,7 @@ public @interface WebIntegrationTest {
 	 * test.
 	 * @return if a random port should be used
 	 */
+	@AliasFor(annotation = org.springframework.boot.test.context.web.WebIntegrationTest.class, attribute = "randomPort")
 	boolean randomPort() default false;
 
 }

@@ -36,7 +36,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.test.ApplicationContextTestUtils;
+import org.springframework.boot.test.util.ApplicationContextTestUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;

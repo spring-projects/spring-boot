@@ -38,6 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringApplicationConfiguration
 @IntegrationTest("spring.config.name=enableother")
 @ActiveProfiles("override")
+@Deprecated
+@SuppressWarnings("deprecation")
 public class SpringApplicationConfigurationActiveProfileTests {
 
 	@Autowired

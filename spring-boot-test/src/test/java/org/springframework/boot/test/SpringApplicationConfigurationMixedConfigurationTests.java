@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 @SpringApplicationConfiguration(classes = Config.class, locations = "classpath:test.groovy")
+@Deprecated
 public class SpringApplicationConfigurationMixedConfigurationTests {
 
 	@Autowired

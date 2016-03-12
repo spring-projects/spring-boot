@@ -39,12 +39,15 @@ import org.springframework.test.context.ContextConfiguration;
  * @author Sam Brannen
  * @see SpringApplicationContextLoader
  * @see ContextConfiguration
+ * @deprecated since 1.4.0 in favor of
+ * {@link org.springframework.boot.test.context.SpringApplicationConfiguration}
  */
-@ContextConfiguration(loader = SpringApplicationContextLoader.class)
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@org.springframework.boot.test.context.SpringApplicationConfiguration
+@Deprecated
 public @interface SpringApplicationConfiguration {
 
 	/**
@@ -52,7 +55,7 @@ public @interface SpringApplicationConfiguration {
 	 * @see ContextConfiguration#classes()
 	 * @return the context configuration classes
 	 */
-	@AliasFor("classes")
+	@AliasFor(annotation = org.springframework.boot.test.context.SpringApplicationConfiguration.class, attribute = "value")
 	Class<?>[] value() default {};
 
 	/**
@@ -60,7 +63,7 @@ public @interface SpringApplicationConfiguration {
 	 * @see ContextConfiguration#locations()
 	 * @return the context configuration locations
 	 */
-	@AliasFor(annotation = ContextConfiguration.class, attribute = "locations")
+	@AliasFor(annotation = org.springframework.boot.test.context.SpringApplicationConfiguration.class, attribute = "locations")
 	String[] locations() default {};
 
 	/**
@@ -68,7 +71,7 @@ public @interface SpringApplicationConfiguration {
 	 * @see ContextConfiguration#classes()
 	 * @return the context configuration classes
 	 */
-	@AliasFor("value")
+	@AliasFor(annotation = org.springframework.boot.test.context.SpringApplicationConfiguration.class, attribute = "classes")
 	Class<?>[] classes() default {};
 
 	/**
@@ -76,7 +79,7 @@ public @interface SpringApplicationConfiguration {
 	 * @see ContextConfiguration#initializers()
 	 * @return the context configuration initializers
 	 */
-	@AliasFor(annotation = ContextConfiguration.class, attribute = "initializers")
+	@AliasFor(annotation = org.springframework.boot.test.context.SpringApplicationConfiguration.class, attribute = "initializers")
 	Class<? extends ApplicationContextInitializer<? extends ConfigurableApplicationContext>>[] initializers() default {};
 
 	/**
@@ -84,7 +87,7 @@ public @interface SpringApplicationConfiguration {
 	 * @see ContextConfiguration#inheritLocations()
 	 * @return {@code true} if context locations should be inherited
 	 */
-	@AliasFor(annotation = ContextConfiguration.class, attribute = "inheritLocations")
+	@AliasFor(annotation = org.springframework.boot.test.context.SpringApplicationConfiguration.class, attribute = "inheritLocations")
 	boolean inheritLocations() default true;
 
 	/**
@@ -92,7 +95,7 @@ public @interface SpringApplicationConfiguration {
 	 * @see ContextConfiguration#inheritInitializers()
 	 * @return {@code true} if context initializers should be inherited
 	 */
-	@AliasFor(annotation = ContextConfiguration.class, attribute = "inheritInitializers")
+	@AliasFor(annotation = org.springframework.boot.test.context.SpringApplicationConfiguration.class, attribute = "inheritInitializers")
 	boolean inheritInitializers() default true;
 
 	/**
@@ -100,7 +103,7 @@ public @interface SpringApplicationConfiguration {
 	 * @see ContextConfiguration#name()
 	 * @return the name of the context hierarchy level
 	 */
-	@AliasFor(annotation = ContextConfiguration.class, attribute = "name")
+	@AliasFor(annotation = org.springframework.boot.test.context.SpringApplicationConfiguration.class, attribute = "name")
 	String name() default "";
 
 }

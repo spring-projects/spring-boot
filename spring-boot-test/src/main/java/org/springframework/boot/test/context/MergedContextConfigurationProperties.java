@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test;
+package org.springframework.boot.test.context;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.springframework.boot.test.context.web.WebIntegrationTest;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -27,13 +28,14 @@ import org.springframework.test.util.ReflectionTestUtils;
  * Provides access to {@link MergedContextConfiguration} properties.
  *
  * @author Phillip Webb
- * @since 1.2.1
+ * @since 1.4.0
  */
-class MergedContextConfigurationProperties {
+public class MergedContextConfigurationProperties {
 
 	private final MergedContextConfiguration configuration;
 
-	MergedContextConfigurationProperties(MergedContextConfiguration configuration) {
+	public MergedContextConfigurationProperties(
+			MergedContextConfiguration configuration) {
 		this.configuration = configuration;
 	}
 
@@ -55,7 +57,7 @@ class MergedContextConfigurationProperties {
 	 * @param propertySourceProperties the property source properties
 	 */
 	private void addIntegrationTestProperty(Set<String> propertySourceProperties) {
-		propertySourceProperties.add(IntegrationTest.class.getName() + "=true");
+		propertySourceProperties.add(WebIntegrationTest.class.getName() + "=true");
 	}
 
 }

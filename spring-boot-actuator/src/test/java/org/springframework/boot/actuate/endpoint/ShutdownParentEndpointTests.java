@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.ApplicationContextTestUtils;
+import org.springframework.boot.test.util.ApplicationContextTestUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;

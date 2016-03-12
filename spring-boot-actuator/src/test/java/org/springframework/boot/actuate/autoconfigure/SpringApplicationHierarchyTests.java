@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRe
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.test.ApplicationContextTestUtils;
+import org.springframework.boot.test.util.ApplicationContextTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**

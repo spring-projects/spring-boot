@@ -51,6 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 @SpringApplicationConfiguration(Config.class)
 @WebIntegrationTest({ "server.port=0", "value=123" })
+@Deprecated
 public class SpringApplicationWebIntegrationTestTests {
 
 	@LocalServerPort

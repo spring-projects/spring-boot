@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test;
+package org.springframework.boot.test.web.client;
 
 import org.apache.http.client.config.RequestConfig;
 import org.junit.Test;
 
-import org.springframework.boot.test.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
-import org.springframework.boot.test.TestRestTemplate.HttpClientOption;
+import org.springframework.boot.test.web.client.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
+import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 

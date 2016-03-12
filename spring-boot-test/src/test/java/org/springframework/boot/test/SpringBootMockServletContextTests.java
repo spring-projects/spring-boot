@@ -45,6 +45,8 @@ import static org.hamcrest.Matchers.nullValue;
 @DirtiesContext
 @SpringApplicationConfiguration(SpringBootMockServletContextTests.Config.class)
 @WebAppConfiguration("src/test/webapp")
+@Deprecated
+@SuppressWarnings("deprecation")
 public class SpringBootMockServletContextTests implements ServletContextAware {
 
 	private ServletContext servletContext;

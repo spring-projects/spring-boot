@@ -50,6 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext
 @SpringApplicationConfiguration(classes = Config.class)
 @WebAppConfiguration
+@Deprecated
 public class SpringApplicationMockMvcTests {
 
 	@Autowired

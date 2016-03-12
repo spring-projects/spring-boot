@@ -53,6 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringApplicationConfiguration(Config.class)
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0", "value=123" })
+@Deprecated
 public class SpringApplicationIntegrationTestTests {
 
 	@LocalServerPort

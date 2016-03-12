@@ -33,6 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 @SpringApplicationConfiguration
+@Deprecated
+@SuppressWarnings("deprecation")
 public class SpringApplicationConfigurationXmlConventionConfigurationTests {
 
 	@Autowired

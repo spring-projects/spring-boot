@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test;
+package org.springframework.boot.test.context.web;
 
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.boot.test.context.MergedContextConfigurationProperties;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
@@ -35,7 +36,7 @@ class WebAppIntegrationTestContextBootstrapper extends DefaultTestContextBootstr
 	@Override
 	protected Class<? extends ContextLoader> getDefaultContextLoaderClass(
 			Class<?> testClass) {
-		if (AnnotationUtils.findAnnotation(testClass, WebIntegrationTest.class) != null) {
+		if (AnnotatedElementUtils.isAnnotated(testClass, WebIntegrationTest.class)) {
 			return WebDelegatingSmartContextLoader.class;
 		}
 		return super.getDefaultContextLoaderClass(testClass);
@@ -44,8 +45,8 @@ class WebAppIntegrationTestContextBootstrapper extends DefaultTestContextBootstr
 	@Override
 	protected MergedContextConfiguration processMergedContextConfiguration(
 			MergedContextConfiguration mergedConfig) {
-		WebIntegrationTest annotation = AnnotationUtils
-				.findAnnotation(mergedConfig.getTestClass(), WebIntegrationTest.class);
+		WebIntegrationTest annotation = AnnotatedElementUtils.findMergedAnnotation(
+				mergedConfig.getTestClass(), WebIntegrationTest.class);
 		if (annotation != null) {
 			mergedConfig = new WebMergedContextConfiguration(mergedConfig, null);
 			MergedContextConfigurationProperties properties = new MergedContextConfigurationProperties(

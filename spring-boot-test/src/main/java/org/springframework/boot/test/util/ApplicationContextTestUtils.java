@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test;
+package org.springframework.boot.test.util;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
