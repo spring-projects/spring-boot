@@ -1,4 +1,10 @@
-FROM ubuntu:14.04.3
+# this Dockerfile uses trusty-20160317 tag to ensure the tests are always executed using
+# the same image since release-named tags (such as 14.04.4) are actually updated over the
+# time, making the build not repeatable
+#
+# see gh-5397, https://hub.docker.com/r/library/ubuntu/tags/
+
+FROM ubuntu:trusty-20160317
 RUN apt-get install -y software-properties-common && \
     add-apt-repository ppa:webupd8team/java -y && \
     apt-get update && \
