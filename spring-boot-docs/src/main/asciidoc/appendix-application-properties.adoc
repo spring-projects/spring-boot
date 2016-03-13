@@ -780,6 +780,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.username= # Login user to authenticate to the broker.
 	spring.rabbitmq.virtual-host= # Virtual host to use when connecting to the broker.
 
+
 	# ----------------------------------------
 	# ACTUATOR PROPERTIES
 	# ----------------------------------------
