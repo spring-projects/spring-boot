@@ -1,4 +1,5 @@
-FROM centos:6.7
+# CentOS 6.7 from 22/03/2016
+FROM centos@sha256:4f6d8f794af3574eca603b965fc0b63fdf852be29c17d3ab4cad7ec2272b82bd
 RUN yum install -y wget && \
     yum install -y system-config-services && \
     yum install -y curl && \
