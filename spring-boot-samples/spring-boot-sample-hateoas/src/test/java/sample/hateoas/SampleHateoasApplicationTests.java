@@ -21,7 +21,7 @@ import java.net.URI;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebIntegrationTest(randomPort = true)
 public class SampleHateoasApplicationTests {
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port;
 
 	@Test

@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.context.ApplicationContext;
@@ -56,7 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 public class SampleTomcatTwoConnectorsApplicationTests {
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private String port;
 
 	@Autowired

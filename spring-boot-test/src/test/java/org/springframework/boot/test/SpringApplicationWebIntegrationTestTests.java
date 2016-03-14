@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.boot.test.SpringApplicationWebIntegrationTestTests.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebIntegrationTest({ "server.port=0", "value=123" })
 public class SpringApplicationWebIntegrationTestTests {
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port = 0;
 
 	@Value("${value}")

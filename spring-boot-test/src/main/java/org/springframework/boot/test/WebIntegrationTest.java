@@ -23,6 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
 
@@ -56,8 +57,8 @@ public @interface WebIntegrationTest {
 	/**
 	 * Convenience attribute that can be used to set a {@code server.port=0}
 	 * {@link Environment} property which usually triggers listening on a random port.
-	 * Often used in conjunction with a <code>&#064;Value("${local.server.port}")</code>
-	 * injected field on the test.
+	 * Often used in conjunction with a {@link LocalServerPort} injected field on the
+	 * test.
 	 * @return if a random port should be used
 	 */
 	boolean randomPort() default false;

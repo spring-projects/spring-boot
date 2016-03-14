@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServicesRefreshTokenTests.Application;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
@@ -32,6 +31,7 @@ import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoCo
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.context.annotation.Configuration;
@@ -71,7 +71,7 @@ public class UserInfoTokenServicesRefreshTokenTests {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port;
 
 	private UserInfoTokenServices services;

@@ -19,7 +19,7 @@ package sample.jersey;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebIntegrationTest(randomPort = true)
 public class SampleJerseyApplicationTests {
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port;
 
 	private RestTemplate restTemplate = new TestRestTemplate();
