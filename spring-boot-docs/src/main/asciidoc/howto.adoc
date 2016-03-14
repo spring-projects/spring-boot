@@ -454,7 +454,7 @@ that and be sure that it has initialized is to add a `@Bean` of type
 out of the event when it is published.
 
 A useful practice for use with `@WebIntegrationTest` is to set `server.port=0`
-and then inject the actual ('`local`') port as a `@Value`. For example:
+and then inject the actual port. For example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -466,7 +466,7 @@ and then inject the actual ('`local`') port as a `@Value`. For example:
 		@Autowired
 		EmbeddedWebApplicationContext server;
 
-		@Value("${local.server.port}")
+		@LocalServerPort
 		int port;
 
 		// ...
@@ -476,9 +476,10 @@ and then inject the actual ('`local`') port as a `@Value`. For example:
 
 [NOTE]
 ====
-Don't try to inject the port with `@Value` in a regular application. As we just saw, the
-value is only set once the container has initialized; contrary to a test, application code
-callbacks are processed early (i.e. before the value is actually available).
+`@LocalServerPort` is a meta-annotation for `@Value("${local.server.port}")`. Don't try
+to inject the port in a regular application. As we just saw, the value is only set once
+the container has initialized; contrary to a test, application code callbacks are
+processed early (i.e. before the value is actually available).
 ====
 
 

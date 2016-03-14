@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.boot.actuate.autoconfigure.MinimalActuatorHypermediaApplication;
 import org.springframework.boot.actuate.endpoint.mvc.HalBrowserMvcEndpointServerContextPathIntegrationTests.SpringBootHypermediaApplication;
-import org.springframework.boot.bind.LocalServerPort;
+import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;

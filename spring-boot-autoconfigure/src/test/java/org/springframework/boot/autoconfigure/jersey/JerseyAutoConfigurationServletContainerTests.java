@@ -33,8 +33,8 @@ import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationServ
 import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.bind.LocalServerPort;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.boot.test.SpringApplicationConfiguration;

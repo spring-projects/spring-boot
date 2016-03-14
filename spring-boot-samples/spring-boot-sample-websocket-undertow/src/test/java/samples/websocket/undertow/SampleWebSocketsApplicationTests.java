@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -53,7 +54,7 @@ public class SampleWebSocketsApplicationTests {
 
 	private static Log logger = LogFactory.getLog(SampleWebSocketsApplicationTests.class);
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port = 1234;
 
 	@Test

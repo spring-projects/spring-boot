@@ -21,7 +21,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 public class ManagementPathSampleActuatorApplicationTests {
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port;
 
 	@Test

@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
@@ -48,7 +49,7 @@ public class ManagementPortSampleActuatorApplicationTests {
 	@Autowired
 	private SecurityProperties security;
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port = 9010;
 
 	@Value("${local.management.port}")

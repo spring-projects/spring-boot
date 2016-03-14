@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package sample.ws;
 
 import java.io.StringReader;
@@ -25,7 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
@@ -44,7 +45,7 @@ public class SampleWsApplicationTests {
 
 	private WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int serverPort;
 
 	@Before

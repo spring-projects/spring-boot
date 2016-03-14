@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.bind;
+package org.springframework.boot.context.web;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.annotation.Value;
 
 /**
- * Meta annotation for replacement of property local.server.port. Can be used instead of
- * <code>@Value("${local.server.port}")</code>
+ * Annotation at the field or method/constructor parameter level
+ * that injects the HTTP port that got allocated at runtime.
+ * <p>
+ * Convenient meta-annotation replacing {@code @LocalServerPort}.
  *
  * @author Anand Shah
+ * @author Stephane Nicoll
+ * @since 1.4.0
  */
 @Value("${local.server.port}")
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LocalServerPort {
 
