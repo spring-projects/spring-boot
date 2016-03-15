@@ -117,8 +117,8 @@ The example above shows how `A.class` can be found in `myapp.jar` position `0063
 and `B.class` is at position `3980`.
 
 Armed with this information, we can load specific nested entries by simply seeking to
-appropriate part if the outer jar. We don't need to unpack the archive and we don't
-need to read all entry data into memory.
+the appropriate part of the outer jar. We don't need to unpack the archive and we
+don't need to read all entry data into memory.
 
 
 
