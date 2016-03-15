@@ -25,6 +25,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -70,6 +71,8 @@ public class H2ConsoleAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
 				.contains("/h2-console/*");
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).
+				doesNotContainKey("webAllowOthers");
 	}
 
 	@Test
@@ -102,6 +105,20 @@ public class H2ConsoleAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
 				.contains("/custom/*");
+	}
+
+	@Test
+	public void propertySetsWebAllowOthersInitParameter() {
+		this.context.register(H2ConsoleAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.h2.console.enabled:true", "spring.h2.console.web-allow-others=true");
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
+				.contains("/h2-console/*");
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).
+				containsEntry("webAllowOthers", "true");
+
 	}
 
 }

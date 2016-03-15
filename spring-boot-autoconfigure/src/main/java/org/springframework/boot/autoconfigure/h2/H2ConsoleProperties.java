@@ -42,6 +42,11 @@ public class H2ConsoleProperties {
 	 */
 	private boolean enabled = false;
 
+	/**
+	 * Allow remote access.
+	 */
+	private boolean webAllowOthers = false;
+
 	public String getPath() {
 		return this.path;
 	}
@@ -58,4 +63,11 @@ public class H2ConsoleProperties {
 		this.enabled = enabled;
 	}
 
+	public boolean getWebAllowOthers() {
+		return webAllowOthers;
+	}
+
+	public void setWebAllowOthers(boolean webAllowOthers) {
+		this.webAllowOthers = webAllowOthers;
+	}
 }
