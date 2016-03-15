@@ -26,7 +26,7 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
  *
  * @author Andy Wilkinson
  */
-class PortInUseFailureAnalyzer extends AbstractFailureAnalyzer<PortInUseException> {
+public class PortInUseFailureAnalyzer extends AbstractFailureAnalyzer<PortInUseException> {
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, PortInUseException cause) {

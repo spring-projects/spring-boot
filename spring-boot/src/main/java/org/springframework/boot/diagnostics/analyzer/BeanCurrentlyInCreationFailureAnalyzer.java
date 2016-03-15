@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-class BeanCurrentlyInCreationFailureAnalyzer
+public class BeanCurrentlyInCreationFailureAnalyzer
 		extends AbstractFailureAnalyzer<BeanCurrentlyInCreationException> {
 
 	@Override
