@@ -26,6 +26,7 @@
 		<module>spring-boot-starter-artemis</module>
 		<module>spring-boot-starter-batch</module>
 		<module>spring-boot-starter-cache</module>
+		<module>spring-boot-starter-camel</module>
 		<module>spring-boot-starter-cloud-connectors</module>
 		<module>spring-boot-starter-data-cassandra</module>
 		<module>spring-boot-starter-data-couchbase</module>

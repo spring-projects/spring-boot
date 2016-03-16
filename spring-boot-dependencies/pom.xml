@@ -52,6 +52,7 @@
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
 		<caffeine.version>2.2.2</caffeine.version>
+		<camel.version>2.16.2</camel.version>
 		<cassandra-driver.version>2.1.9</cassandra-driver.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
 		<commons-collections.version>3.2.2</commons-collections.version>
@@ -275,6 +276,11 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-cache</artifactId>
+				<version>1.4.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-camel</artifactId>
 				<version>1.4.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -1086,6 +1092,26 @@
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>artemis-jms-server</artifactId>
 				<version>${artemis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.camel</groupId>
+				<artifactId>camel-parent</artifactId>
+				<version>${camel.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.camel</groupId>
+				<artifactId>camel-core</artifactId>
+				<version>${camel.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.camel</groupId>
+				<artifactId>camel-spring</artifactId>
+				<version>${camel.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.camel</groupId>
+				<artifactId>camel-spring-boot</artifactId>
+				<version>${camel.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>

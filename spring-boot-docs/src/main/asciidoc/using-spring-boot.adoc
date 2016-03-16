@@ -399,6 +399,9 @@ The following application starters are provided by Spring Boot under the
 |`spring-boot-starter-cache`
 |Support for Spring's Cache abstraction.
 
+|`spring-boot-starter-camel`
+|Support for integration using Apache Camel.
+
 |`spring-boot-starter-cloud-connectors`
 |Support for "`Spring Cloud Connectors`" which simplifies connecting to services in cloud
 platforms like Cloud Foundry and Heroku.
