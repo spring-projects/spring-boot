@@ -1,0 +1,21 @@
+= Spring Boot Camel Sample
+
+This example shows how to work with a simple Apache Camel application using Spring Boot.
+
+The example generates messages using timer trigger, writes them to the standard output.
+
+== Camel routes
+
+The Camel route is located in the `SampleCamelRouter` class. In this class the route
+starts from a timer, that triggers every 2nd second and calls a Spring Bean `SampleBean`
+which returns a message, that is routed to a log endpoint which logs the message using the system logger.
+
+== Using Camel components
+
+Apache Camel provides 200+ components which you can use to integrate and route messages between many systems
+and data formats. To use any of these Camel components, add the component as a dependency to your project.
+
+== More information
+
+You can find more information about Apache Camel at the website: http://camel.apache.org/
+
