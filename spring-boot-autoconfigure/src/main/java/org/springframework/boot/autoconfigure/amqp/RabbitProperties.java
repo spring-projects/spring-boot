@@ -22,6 +22,7 @@ import java.util.Set;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -86,6 +87,8 @@ public class RabbitProperties {
 	 * Listener container configuration.
 	 */
 	private final Listener listener = new Listener();
+
+	private final Template template = new Template();
 
 	public String getHost() {
 		if (this.addresses == null) {
@@ -199,6 +202,10 @@ public class RabbitProperties {
 
 	public Listener getListener() {
 		return this.listener;
+	}
+
+	public Template getTemplate() {
+		return this.template;
 	}
 
 	public static class Ssl {
@@ -382,6 +389,17 @@ public class RabbitProperties {
 		 */
 		private Integer transactionSize;
 
+		/**
+		 * Whether rejected deliveries are requeued by default; default true.
+		 */
+		private Boolean defaultRequeueRejected;
+
+		/**
+		 * Optional properties for a retry interceptor.
+		 */
+		@NestedConfigurationProperty
+		private final ListenerRetry retry = new ListenerRetry();
+
 		public boolean isAutoStartup() {
 			return this.autoStartup;
 		}
@@ -429,6 +447,143 @@ public class RabbitProperties {
 		public void setTransactionSize(Integer transactionSize) {
 			this.transactionSize = transactionSize;
 		}
+
+		public Boolean getDefaultRequeueRejected() {
+			return this.defaultRequeueRejected;
+		}
+
+		public void setDefaultRequeueRejected(Boolean defaultRequeueRejected) {
+			this.defaultRequeueRejected = defaultRequeueRejected;
+		}
+
+		public ListenerRetry getRetry() {
+			return this.retry;
+		}
+
+	}
+
+	public static class Template {
+
+		@NestedConfigurationProperty
+		private final Retry retry = new Retry();
+
+		/**
+		 * Timeout for receive() operations.
+		 */
+		private Long receiveTimeout;
+
+		/**
+		 * Timeout for sendAndReceive() operations.
+		 */
+		private Long replyTimeout;
+
+		public Retry getRetry() {
+			return this.retry;
+		}
+
+		public Long getReceiveTimeout() {
+			return this.receiveTimeout;
+		}
+
+		public void setReceiveTimeout(Long receiveTimeout) {
+			this.receiveTimeout = receiveTimeout;
+		}
+
+		public Long getReplyTimeout() {
+			return this.replyTimeout;
+		}
+
+		public void setReplyTimeout(Long replyTimeout) {
+			this.replyTimeout = replyTimeout;
+		}
+
+	}
+
+	public static class Retry {
+
+		/**
+		 * Whether or not publishing retries are enabled.
+		 */
+		private boolean enabled;
+
+		/**
+		 * Maximum number of attempts to publish or deliver a message.
+		 */
+		private int maxAttempts = 3;
+
+		/**
+		 * Interval between the first and second attempt to publish or deliver
+		 * a message.
+		 */
+		private long initialInterval = 1000L;
+
+		/**
+		 * A multiplier to apply to the previous retry interval.
+		 */
+		private double multiplier = 1.0;
+
+		/**
+		 * Maximum interval between attempts.
+		 */
+		private long maxInterval = 10000L;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public int getMaxAttempts() {
+			return this.maxAttempts;
+		}
+
+		public void setMaxAttempts(int maxAttempts) {
+			this.maxAttempts = maxAttempts;
+		}
+
+		public long getInitialInterval() {
+			return this.initialInterval;
+		}
+
+		public void setInitialInterval(long initialInterval) {
+			this.initialInterval = initialInterval;
+		}
+
+		public double getMultiplier() {
+			return this.multiplier;
+		}
+
+		public void setMultiplier(double multiplier) {
+			this.multiplier = multiplier;
+		}
+
+		public long getMaxInterval() {
+			return this.maxInterval;
+		}
+
+		public void setMaxInterval(long maxInterval) {
+			this.maxInterval = maxInterval;
+		}
+
+	}
+
+	public static class ListenerRetry extends Retry {
+
+		/**
+		 * Whether or not retries are stateless or stateful.
+		 */
+		private boolean stateless = true;
+
+		public boolean isStateless() {
+			return this.stateless;
+		}
+
+		public void setStateless(boolean stateless) {
+			this.stateless = stateless;
+		}
+
 	}
 
 }

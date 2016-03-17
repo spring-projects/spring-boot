@@ -3801,7 +3801,8 @@ automatically to the auto-configured `AmqpTemplate`.
 Any `org.springframework.amqp.core.Queue` that is defined as a bean will be automatically
 used to declare a corresponding queue on the RabbitMQ instance if necessary.
 
-
+You can enable retries on the `AmqpTemplate` to retry operations, for example in the event
+the broker connection is lost. Retries are disabled by default.
 
 [[boot-features-using-amqp-receiving]]
 ==== Receiving a message
@@ -3868,6 +3869,16 @@ That you can use in any `@RabbitListener`-annotated method as follows:
 	}
 ----
 
+You can enable retries to handle situations where your listener throws an exception.
+When retries are exhausted, the message will be rejected and either dropped or routed to a dead-letter exchange
+if the broker is so configured.
+Retries are disabled by default.
+
+IMPORTANT: If retries are not enabled and the listener throws an exception, by default the delivery will be retried
+indefinitely.
+You can modify this behavior in two ways; set the `defaultRequeueRejected` property to `false` and zero redeliveries
+will be attempted; or, throw an `AmqpRejectAndDontRequeueException` to signal the message should be rejected.
+This is the mechanism used when retries are enabled and the maximum delivery attempts is reached.
 
 [[boot-features-email]]
 == Sending email
