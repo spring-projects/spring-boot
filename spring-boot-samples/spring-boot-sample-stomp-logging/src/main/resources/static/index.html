@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Stomp Logger</title>
+	<script src="/webjars/sockjs-client/1.0.2/dist/sockjs.js"></script>
+	<script src="/webjars/stomp-websocket/2.3.4/lib/stomp.js"></script>
+	<script src="/webjars/jquery/2.1.4/dist/jquery.js"></script>
+	<script type="text/javascript">
+		var stompClient = null;
+		var destination = window.location.hash.substring(1) || '/topic/log/root';
+
+		function setConnected(connected) {
+			document.getElementById('connect').disabled = connected;
+			document.getElementById('disconnect').disabled = !connected;
+			document.getElementById('logger').innerHTML = '';
+			showLogEntry('<span style="color: grey; font-style:italic;">' + (connected ? 'Connected to' : 'Disconnected from') + ' ' + destination + '...</span>');
+		}
+		var reconnectId;
+		var reconnectInterval = 500;
+		function connect() {
+			if (reconnectId) {
+				clearTimeout(reconnectId);
+				reconnectId = undefined;
+			}
+			// stompClient = Stomp.over(new SockJS('http://localhost:8080/stomp'));
+			stompClient = Stomp.client('ws://localhost:8080/stomp');
+			// stompClient.debug = undefined;
+			function successCallback(frame) {
+				reconnectInterval = 500;
+				setConnected(true);
+				console.log('Connected: ' + frame);
+				stompClient.subscribe(destination, function onReceive(message) {
+					showLogEntry(message.body);
+				}, {persistent: true});
+			}
+
+			function errorCallback(msg) {
+				console.log(msg);
+				setConnected(false);
+				console.log("Will try reconnect automatically in " + reconnectInterval + "ms");
+				reconnectId = setTimeout(connect, reconnectInterval);
+				reconnectInterval = 2 * reconnectInterval;
+				if (reconnectInterval > 30 * 1000) {
+					reconnectInterval = 30 * 1000;
+				}
+			}
+
+			stompClient.connect({}, successCallback, errorCallback);
+		}
+		function disconnect() {
+			if (reconnectId) {
+				clearTimeout(reconnectId);
+				reconnectId = undefined;
+				reconnectInterval = 500;
+			}
+			if (stompClient != null) {
+				stompClient.disconnect();
+			}
+			setConnected(false);
+			console.log("Disconnected");
+		}
+
+		function showLogEntry(message) {
+			var logOutput = document.getElementById('logOutput');
+			var div = document.createElement('div');
+			div.style.wordWrap = 'break-word';
+			div.innerHTML = message.replace(/\n/g, '<br />').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+			logOutput.appendChild(div);
+		}
+
+		function init() {
+			$("#logForm").submit(function (event) {
+				event.preventDefault();
+				$.post('/log', $(this).serialize());
+			});
+			connect();
+		}
+
+	</script>
+</head>
+<body onload="init()">
+<noscript><h2 style="color: red">Seems your browser doesn't support Java Script! WebSocket relies on Java Script being enabled. Please enable javascript and
+	reload this page!</h2></noscript>
+<div>
+	<div>
+		<button id="connect" onclick="connect();">Connect</button>
+		<button id="disconnect" onclick="disconnect();">Disconnect</button>
+	</div>
+	<div>
+		<form id="logForm">
+			<input type="submit" value="Log"/>
+			<input type="text" id="logger" name="logger" placeholder="logger name"/>
+			<input type="text" name="msg" placeholder="log message" />
+
+			<label for="error">Error:</label>
+			<input type="checkbox" id="error" name="error"/>
+
+			<label for="level">Level:</label>
+			<select id="level" name="level">
+				<option value="trace">trace</option>
+				<option value="debug">debug</option>
+				<option selected value="info">info</option>
+				<option value="warn">warn</option>
+				<option value="error">error</option>
+				<option value="fatal">fatal</option>
+			</select>
+		</form>
+		<div id="logOutput" style="background-color: black; color: white; font-family: monospace"></div>
+	</div>
+</div>
+</body>
+</html>
