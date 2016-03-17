@@ -4383,6 +4383,13 @@ knowledge of each other, you can also use `@AutoconfigureOrder`. That annotation
 same semantic as the regular `@Order` annotation but provides a dedicated order for
 auto-configuration classes.
 
+[NOTE]
+====
+Auto-configurations have to be loaded that way _only_. Make sure that they are defined in
+a specific package space and that they are never the target of component scan in
+particular.
+====
+
 
 
 [[boot-features-condition-annotations]]
