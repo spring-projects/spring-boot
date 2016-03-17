@@ -175,7 +175,7 @@ public class EndpointMBeanExportAutoConfigurationTests {
 
 	@Component
 	@ManagedResource
-	protected static class ManagedEndpoint extends AbstractEndpoint<Boolean> {
+	public static class ManagedEndpoint extends AbstractEndpoint<Boolean> {
 
 		public ManagedEndpoint() {
 			super("managed", true);
@@ -190,7 +190,7 @@ public class EndpointMBeanExportAutoConfigurationTests {
 
 	@Configuration
 	@ManagedResource
-	protected static class NestedInManagedEndpoint {
+	public static class NestedInManagedEndpoint {
 
 		@Bean
 		public Endpoint<Boolean> nested() {
