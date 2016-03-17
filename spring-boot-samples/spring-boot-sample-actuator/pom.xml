@@ -75,7 +75,7 @@
 					<execution>
 						<id>generate build info</id>
 						<goals>
-							<goal>generate-build-info</goal>
+							<goal>build-info</goal>
 						</goals>
 						<configuration>
 							<additionalProperties>

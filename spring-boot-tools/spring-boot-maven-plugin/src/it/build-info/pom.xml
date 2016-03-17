@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot.maven.it</groupId>
-	<artifactId>generate-build-info-custom-file</artifactId>
+	<artifactId>build-info</artifactId>
 	<version>0.0.1.BUILD-SNAPSHOT</version>
-	<name>Generate custom build info</name>
+	<name>Generate build info</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -18,11 +18,8 @@
 				<executions>
 					<execution>
 						<goals>
-							<goal>generate-build-info</goal>
+							<goal>build-info</goal>
 						</goals>
-						<configuration>
-							<outputFile>${project.build.directory}/build.info</outputFile>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>

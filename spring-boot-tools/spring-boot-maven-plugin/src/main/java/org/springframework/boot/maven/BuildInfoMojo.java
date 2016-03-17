@@ -34,13 +34,13 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 /**
- * Generate a {@code build.properties} file based the content of the {@link MavenProject}.
+ * Generate a {@code build.properties} file based the content of the current {@link MavenProject}.
  *
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@Mojo(name = "generate-build-info", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
-public class GenerateBuildInfoMojo extends AbstractMojo {
+@Mojo(name = "build-info", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
+public class BuildInfoMojo extends AbstractMojo {
 
 	/**
 	 * The Maven project.

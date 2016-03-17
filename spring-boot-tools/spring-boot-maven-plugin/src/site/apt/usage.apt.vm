@@ -19,6 +19,8 @@ Usage
   * <<<start>>> and <<<stop>>>: integrate your Spring Boot application to the <<<integration-test>>> phase so that
    the application starts before it.
 
+  * <<<build-info>>>: generate a build information that can be used by the Actuator.
+
    []
 
   Each goal is further described below.
