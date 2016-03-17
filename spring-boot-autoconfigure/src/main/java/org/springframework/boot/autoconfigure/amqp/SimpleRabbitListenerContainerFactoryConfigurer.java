@@ -16,16 +16,20 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties.ListenerRetry;
 import org.springframework.util.Assert;
 
 /**
  * Configure {@link RabbitListenerContainerFactory} with sensible defaults.
  *
  * @author Stephane Nicoll
+ * @author Gary Russell
  * @since 1.3.3
  */
 public final class SimpleRabbitListenerContainerFactoryConfigurer {
@@ -82,6 +86,25 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer {
 		}
 		if (listenerConfig.getTransactionSize() != null) {
 			factory.setTxSize(listenerConfig.getTransactionSize());
+		}
+		if (listenerConfig.getDefaultRequeueRejected() != null) {
+			factory.setDefaultRequeueRejected(listenerConfig.getDefaultRequeueRejected());
+		}
+		ListenerRetry retryConfig = listenerConfig.getRetry();
+		if (retryConfig.isEnable()) {
+			RetryInterceptorBuilder<?> builder;
+			if (retryConfig.isStateless()) {
+				builder = RetryInterceptorBuilder.stateless();
+			}
+			else {
+				builder = RetryInterceptorBuilder.stateful();
+			}
+			factory.setAdviceChain(builder
+					.maxAttempts(retryConfig.getMaxAttempts())
+					.backOffOptions(retryConfig.getInitialInterval(),
+							retryConfig.getMultiplier(), retryConfig.getMaxInterval())
+					.recoverer(new RejectAndDontRequeueRecoverer())
+					.build());
 		}
 	}
 
