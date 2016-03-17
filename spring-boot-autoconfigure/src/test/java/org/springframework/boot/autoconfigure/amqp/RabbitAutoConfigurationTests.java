@@ -147,11 +147,11 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	public void testRabbitTemplateRetry() {
-		load(TestConfiguration.class, "spring.rabbitmq.template.retry.enable:true",
-				"spring.rabbitmq.template.retry.max-attempts:4",
-				"spring.rabbitmq.template.retry.initial-interval:2000",
+		load(TestConfiguration.class, "spring.rabbitmq.template.retry.enabled:true",
+				"spring.rabbitmq.template.retry.maxAttempts:4",
+				"spring.rabbitmq.template.retry.initialInterval:2000",
 				"spring.rabbitmq.template.retry.multiplier:1.5",
-				"spring.rabbitmq.template.retry.max-interval:5000",
+				"spring.rabbitmq.template.retry.maxInterval:5000",
 				"spring.rabbitmq.template.receiveTimeout:123",
 				"spring.rabbitmq.template.replyTimeout:456");
 		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
@@ -248,17 +248,17 @@ public class RabbitAutoConfigurationTests {
 	@Test
 	public void testRabbitListenerContainerFactoryWithCustomSettings() {
 		load(MessageConvertersConfiguration.class,
-				"spring.rabbitmq.listener.retry.enable:true",
-				"spring.rabbitmq.listener.retry.max-attempts:4",
-				"spring.rabbitmq.listener.retry.initial-interval:2000",
+				"spring.rabbitmq.listener.retry.enabled:true",
+				"spring.rabbitmq.listener.retry.maxAttempts:4",
+				"spring.rabbitmq.listener.retry.initialInterval:2000",
 				"spring.rabbitmq.listener.retry.multiplier:1.5",
-				"spring.rabbitmq.listener.retry.max-interval:5000",
+				"spring.rabbitmq.listener.retry.maxInterval:5000",
 				"spring.rabbitmq.listener.autoStartup:false",
 				"spring.rabbitmq.listener.acknowledgeMode:manual",
 				"spring.rabbitmq.listener.concurrency:5",
 				"spring.rabbitmq.listener.maxConcurrency:10",
 				"spring.rabbitmq.listener.prefetch:40",
-				"spring.rabbitmq.listener.default-requeue-rejected:false",
+				"spring.rabbitmq.listener.defaultRequeueRejected:false",
 				"spring.rabbitmq.listener.transactionSize:20");
 		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
 				.getBean("rabbitListenerContainerFactory",

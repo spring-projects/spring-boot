@@ -107,7 +107,7 @@ public class RabbitAutoConfiguration {
 		}
 		Template template = config.getTemplate();
 		Retry retry = template.getRetry();
-		if (retry.isEnable()) {
+		if (retry.isEnabled()) {
 			RetryTemplate retryTemplate = new RetryTemplate();
 			SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
 			retryPolicy.setMaxAttempts(retry.getMaxAttempts());

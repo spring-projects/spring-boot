@@ -22,6 +22,7 @@ import java.util.Set;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -396,6 +397,7 @@ public class RabbitProperties {
 		/**
 		 * Optional properties for a retry interceptor.
 		 */
+		@NestedConfigurationProperty
 		private final ListenerRetry retry = new ListenerRetry();
 
 		public boolean isAutoStartup() {
@@ -462,6 +464,7 @@ public class RabbitProperties {
 
 	public static class Template {
 
+		@NestedConfigurationProperty
 		private final Retry retry = new Retry();
 
 		/**
@@ -501,16 +504,16 @@ public class RabbitProperties {
 		/**
 		 * Whether or not publishing retries are enabled.
 		 */
-		private boolean enable;
+		private boolean enabled;
 
 		/**
-		 * The maximum number of attempts to publish or deliver a message.
+		 * Maximum number of attempts to publish or deliver a message.
 		 */
 		private int maxAttempts = 3;
 
 		/**
-		 * The interval between the first and second attempt to publish
-		 * or deliver a message.
+		 * Interval between the first and second attempt to publish or deliver
+		 * a message.
 		 */
 		private long initialInterval = 1000L;
 
@@ -520,16 +523,16 @@ public class RabbitProperties {
 		private double multiplier = 1.0;
 
 		/**
-		 * The maximum interval between attempts.
+		 * Maximum interval between attempts.
 		 */
 		private long maxInterval = 10000L;
 
-		public boolean isEnable() {
-			return this.enable;
+		public boolean isEnabled() {
+			return this.enabled;
 		}
 
-		public void setEnable(boolean enable) {
-			this.enable = enable;
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
 		public int getMaxAttempts() {

@@ -91,14 +91,9 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer {
 			factory.setDefaultRequeueRejected(listenerConfig.getDefaultRequeueRejected());
 		}
 		ListenerRetry retryConfig = listenerConfig.getRetry();
-		if (retryConfig.isEnable()) {
-			RetryInterceptorBuilder<?> builder;
-			if (retryConfig.isStateless()) {
-				builder = RetryInterceptorBuilder.stateless();
-			}
-			else {
-				builder = RetryInterceptorBuilder.stateful();
-			}
+		if (retryConfig.isEnabled()) {
+			RetryInterceptorBuilder<?> builder = (retryConfig.isStateless() ?
+					RetryInterceptorBuilder.stateless() : RetryInterceptorBuilder.stateful());
 			factory.setAdviceChain(builder
 					.maxAttempts(retryConfig.getMaxAttempts())
 					.backOffOptions(retryConfig.getInitialInterval(),
@@ -106,6 +101,7 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer {
 					.recoverer(new RejectAndDontRequeueRecoverer())
 					.build());
 		}
+
 	}
 
 }
