@@ -46,6 +46,8 @@ public class CacheProperties {
 
 	private final Caffeine caffeine = new Caffeine();
 
+	private final Couchbase couchbase = new Couchbase();
+
 	private final EhCache ehcache = new EhCache();
 
 	private final Hazelcast hazelcast = new Hazelcast();
@@ -74,6 +76,10 @@ public class CacheProperties {
 
 	public Caffeine getCaffeine() {
 		return this.caffeine;
+	}
+
+	public Couchbase getCouchbase() {
+		return this.couchbase;
 	}
 
 	public EhCache getEhcache() {
@@ -129,6 +135,26 @@ public class CacheProperties {
 
 		public void setSpec(String spec) {
 			this.spec = spec;
+		}
+
+	}
+
+	/**
+	 * Couchbase specific cache properties.
+	 */
+	public static class Couchbase {
+
+		/**
+		 * Entry expiration in milliseconds. By default the entries never expire.
+		 */
+		private int expiration;
+
+		public int getExpiration() {
+			return this.expiration;
+		}
+
+		public void setExpiration(int expiration) {
+			this.expiration = expiration;
 		}
 
 	}

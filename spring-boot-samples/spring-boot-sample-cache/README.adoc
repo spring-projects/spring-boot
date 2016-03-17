@@ -7,6 +7,7 @@ abstraction is supported by many caching libraries, including:
 * `EhCache`
 * `Hazelcast`
 * `Infinispan`
+* `Couchbase`
 * `Redis`
 * `Guava`
 * Simple provider based on `ConcurrentHashMap`
@@ -75,6 +76,12 @@ Infinispan. There is no default location that Infinispan uses to look for a conf
 file so if you don't specify anything it will bootstrap on a hardcoded default. You
 can set the `spring.cache.infinispan.config` property to use the provided
 `infinispan.xml` configuration instead.
+
+
+
+=== Couchbase
+Add the `java-client` and `couchbase-spring-cache` dependencies and make sure that you
+have setup at least a `spring.couchbase.bootstrap-hosts` property.
 
 
 

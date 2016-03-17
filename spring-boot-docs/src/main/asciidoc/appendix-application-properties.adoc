@@ -64,6 +64,7 @@ content into your application; rather pick only the properties that you need.
 	# SPRING CACHE ({sc-spring-boot-autoconfigure}/cache/CacheProperties.{sc-ext}[CacheProperties])
 	spring.cache.cache-names= # Comma-separated list of cache names to create if supported by the underlying cache manager.
 	spring.cache.caffeine.spec= # The spec to use to create caches. Check CaffeineSpec for more details on the spec format.
+	spring.cache.couchbase.expiration=0 # Entry expiration in milliseconds. By default the entries never expire.
 	spring.cache.ehcache.config= # The location of the configuration file to use to initialize EhCache.
 	spring.cache.guava.spec= # The spec to use to create caches. Check CacheBuilderSpec for more details on the spec format.
 	spring.cache.hazelcast.config= # The location of the configuration file to use to initialize Hazelcast.

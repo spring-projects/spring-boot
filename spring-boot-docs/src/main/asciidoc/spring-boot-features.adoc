@@ -3311,6 +3311,7 @@ providers (in this order):
 * <<boot-features-caching-provider-ehcache2,EhCache 2.x>>
 * <<boot-features-caching-provider-hazelcast,Hazelcast>>
 * <<boot-features-caching-provider-infinispan,Infinispan>>
+* <<boot-features-caching-provider-couchbase,Couchbase>>
 * <<boot-features-caching-provider-redis,Redis>>
 * <<boot-features-caching-provider-caffeine,Caffeine>>
 * <<boot-features-caching-provider-guava,Guava>>
@@ -3320,8 +3321,8 @@ It is also possible to _force_ the cache provider to use via the `spring.cache.t
 property.
 
 If the `CacheManager` is auto-configured by Spring Boot, you can further tune its
-configuration before it is fully initialized by exposing a bean implementing  the
-`CacheManagerCustomizer` interface. The following set the cache names to use.
+configuration before it is fully initialized by exposing a bean implementing the
+`CacheManagerCustomizer` interface. The following sets the cache names to use.
 
 [source,java,indent=0]
 ----
@@ -3430,6 +3431,56 @@ Infinispan has no default configuration file location so it must be specified ex
 
 Caches can be created on startup via the `spring.cache.cache-names` property. If a custom
 `ConfigurationBuilder` bean is defined, it is used to customize them.
+
+
+
+[[boot-features-caching-provider-couchbase]]
+==== Couchbase
+If Couchbase is available and <<boot-features-couchbase,configured>>, a
+`CouchbaseCacheManager` is auto-configured. It is also possible to create additional
+caches on startup using the `spring.cache.cache-names` property. These will operate on
+the `Bucket` that was auto-configured. You can _also_ create additional caches on another
+`Bucket` using the customizer: assume you need two caches on the "main" `Bucket` (`foo`
+and `bar`) and one `biz` cache with a custom time to live of 2sec on the `another`
+`Bucket`. First, you can create the two first caches simply via configuration:
+
+[source,properties,indent=0]
+----
+	spring.cache.cache-names=foo,bar
+----
+
+Then define this extra `@Configuration` to configure the extra `Bucket` and the `biz`
+cache:
+
+
+[source,java,indent=0]
+----
+	@Configuration
+	public class CouchbaseCacheConfiguration {
+
+		private final Cluster cluster;
+
+		public CouchbaseCacheConfiguration(Cluster cluster) {
+			this.cluster = cluster;
+		}
+
+		@Bean
+		public Bucket anotherBucket() {
+			return this.cluster.openBucket("another", "secret");
+		}
+
+		@Bean
+		public CacheManagerCustomizer<CouchbaseCacheManager> cacheManagerCustomizer() {
+			return c -> {
+				c.prepareCache("biz", CacheBuilder.newInstance(anotherBucket())
+						.withExpirationInMillis(2000));
+			};
+		}
+
+	}
+----
+
+This sample configuration reuses the `Cluster` that was created via auto-configuration.
 
 
 

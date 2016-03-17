@@ -30,6 +30,10 @@ import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
 
+import com.couchbase.client.java.Bucket;
+import com.couchbase.client.java.bucket.BucketManager;
+import com.couchbase.client.spring.cache.CouchbaseCache;
+import com.couchbase.client.spring.cache.CouchbaseCacheManager;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import com.google.common.cache.CacheBuilder;
@@ -205,6 +209,43 @@ public class CacheAutoConfigurationTests {
 		assertThat(cacheManager.getCache("second"))
 				.isEqualTo(this.context.getBean("secondCache"));
 		assertThat(cacheManager.getCacheNames()).hasSize(2);
+	}
+
+	@Test
+	public void couchbaseCacheExplicit() {
+		load(CouchbaseCacheConfiguration.class, "spring.cache.type=couchbase");
+		CouchbaseCacheManager cacheManager = validateCacheManager(CouchbaseCacheManager.class);
+		assertThat(cacheManager.getCacheNames()).isEmpty();
+	}
+
+	@Test
+	public void couchbaseCacheWithCustomizers() {
+		testCustomizers(CouchbaseCacheAndCustomizersConfiguration.class, "couchbase",
+				"allCacheManagerCustomizer", "couchbaseCacheManagerCustomizer");
+	}
+
+	@Test
+	public void couchbaseCacheExplicitWithCaches() {
+		load(CouchbaseCacheConfiguration.class, "spring.cache.type=couchbase",
+				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
+		CouchbaseCacheManager cacheManager = validateCacheManager(CouchbaseCacheManager.class);
+		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+		Cache cache = cacheManager.getCache("foo");
+		assertThat(cache).isInstanceOf(CouchbaseCache.class);
+		assertThat(((CouchbaseCache) cache).getTtl()).isEqualTo(0);
+		assertThat(((CouchbaseCache) cache).getNativeCache()).isEqualTo(this.context.getBean("bucket"));
+	}
+
+	@Test
+	public void couchbaseCacheExplicitWithTtl() {
+		load(CouchbaseCacheConfiguration.class, "spring.cache.type=couchbase",
+				"spring.cache.cacheNames=foo,bar", "spring.cache.couchbase.expiration=2000");
+		CouchbaseCacheManager cacheManager = validateCacheManager(CouchbaseCacheManager.class);
+		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+		Cache cache = cacheManager.getCache("foo");
+		assertThat(cache).isInstanceOf(CouchbaseCache.class);
+		assertThat(((CouchbaseCache) cache).getTtl()).isEqualTo(2000);
+		assertThat(((CouchbaseCache) cache).getNativeCache()).isEqualTo(this.context.getBean("bucket"));
 	}
 
 	@Test
@@ -735,6 +776,26 @@ public class CacheAutoConfigurationTests {
 
 	@Configuration
 	@EnableCaching
+	static class CouchbaseCacheConfiguration {
+
+		@Bean
+		public Bucket bucket() {
+			BucketManager bucketManager = mock(BucketManager.class);
+			Bucket bucket = mock(Bucket.class);
+			given(bucket.bucketManager()).willReturn(bucketManager);
+			return bucket;
+		}
+
+	}
+
+	@Configuration
+	@Import({ CouchbaseCacheConfiguration.class, CacheManagerCustomizersConfiguration.class })
+	static class CouchbaseCacheAndCustomizersConfiguration {
+
+	}
+
+	@Configuration
+	@EnableCaching
 	static class RedisCacheConfiguration {
 
 		@Bean
@@ -952,6 +1013,12 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public CacheManagerCustomizer<SimpleCacheManager> genericCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<SimpleCacheManager>() {
+			};
+		}
+
+		@Bean
+		public CacheManagerCustomizer<CouchbaseCacheManager> couchbaseCacheManagerCustomizer() {
+			return new CacheManagerTestCustomizer<CouchbaseCacheManager>() {
 			};
 		}
 

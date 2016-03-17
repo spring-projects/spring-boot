@@ -61,6 +61,7 @@
 		<commons-pool.version>1.6</commons-pool.version>
 		<commons-pool2.version>2.4.2</commons-pool2.version>
 		<couchbase-client.version>2.2.3</couchbase-client.version>
+		<couchbase-cache-client.version>2.0.0</couchbase-cache-client.version>
 		<crashub.version>1.3.2</crashub.version>
 		<derby.version>10.12.1.1</derby.version>
 		<dropwizard-metrics.version>3.1.2</dropwizard-metrics.version>
@@ -524,6 +525,11 @@
 				<groupId>com.couchbase.client</groupId>
 				<artifactId>java-client</artifactId>
 				<version>${couchbase-client.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.couchbase.client</groupId>
+				<artifactId>couchbase-spring-cache</artifactId>
+				<version>${couchbase-cache-client.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.datastax.cassandra</groupId>

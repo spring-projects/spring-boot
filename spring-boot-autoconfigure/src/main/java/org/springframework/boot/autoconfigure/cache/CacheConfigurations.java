@@ -42,6 +42,7 @@ final class CacheConfigurations {
 		mappings.put(CacheType.HAZELCAST, HazelcastCacheConfiguration.class);
 		mappings.put(CacheType.INFINISPAN, InfinispanCacheConfiguration.class);
 		mappings.put(CacheType.JCACHE, JCacheCacheConfiguration.class);
+		mappings.put(CacheType.COUCHBASE, CouchbaseCacheConfiguration.class);
 		mappings.put(CacheType.REDIS, RedisCacheConfiguration.class);
 		mappings.put(CacheType.CAFFEINE, CaffeineCacheConfiguration.class);
 		mappings.put(CacheType.GUAVA, GuavaCacheConfiguration.class);
