@@ -104,4 +104,15 @@ public class H2ConsoleAutoConfigurationTests {
 				.contains("/custom/*");
 	}
 
+	@Test
+	public void customSettings() {
+		this.context.register(H2ConsoleAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.h2.console.enabled:true", "spring.h2.console.settings:webAllowOthers,webSSL");
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
+				.contains("/h2-console/*");
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).hasSize(2);
+	}
 }
