@@ -34,6 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link H2ConsoleAutoConfiguration}
  *
  * @author Andy Wilkinson
+ * @author Marten Deinum
+ * @author Stephane Nicoll
  */
 public class H2ConsoleAutoConfigurationTests {
 
@@ -70,6 +72,10 @@ public class H2ConsoleAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
 				.contains("/h2-console/*");
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).
+				doesNotContainKey("trace");
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).
+				doesNotContainKey("webAllowOthers");
 	}
 
 	@Test
@@ -102,6 +108,23 @@ public class H2ConsoleAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
 				.contains("/custom/*");
+	}
+
+	@Test
+	public void customInitParameters() {
+		this.context.register(H2ConsoleAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.h2.console.enabled:true",
+				"spring.h2.console.settings.trace=true",
+				"spring.h2.console.settings.webAllowOthers=true");
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
+				.contains("/h2-console/*");
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).
+				containsEntry("trace", "");
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).
+				containsEntry("webAllowOthers", "");
 	}
 
 }

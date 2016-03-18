@@ -573,6 +573,8 @@ content into your application; rather pick only the properties that you need.
 	# H2 Web Console ({sc-spring-boot-autoconfigure}/h2/H2ConsoleProperties.{sc-ext}[H2ConsoleProperties])
 	spring.h2.console.enabled=false # Enable the console.
 	spring.h2.console.path=/h2-console # Path at which the console will be available.
+	spring.h2.console.settings.trace=false # Enable trace output.
+	spring.h2.console.settings.web-allow-others=false # Enable remote access.
 
 	# JOOQ ({sc-spring-boot-autoconfigure}/jooq/JooqAutoConfiguration.{sc-ext}[JooqAutoConfiguration])
 	spring.jooq.sql-dialect= # SQLDialect JOOQ used when communicating with the configured datasource. For instance `POSTGRES`
