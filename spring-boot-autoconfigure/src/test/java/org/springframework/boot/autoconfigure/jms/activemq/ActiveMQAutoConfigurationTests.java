@@ -21,6 +21,7 @@ import javax.jms.JMSException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
+
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.mockingDetails;
  * Tests for {@link ActiveMQAutoConfiguration}
  *
  * @author Andy Wilkinson
+ * @author Aurélien Leboulanger
  */
 public class ActiveMQAutoConfigurationTests {
 
@@ -60,8 +62,29 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
+	public void custompooledConnectionFactoryConfiguration() {
+		load(EmptyConfiguration.class,
+			"spring.activemq.pool.enabled:true",
+			"spring.activemq.pool.max-connections:256",
+			"spring.activemq.pool.idle-time-millis:512",
+			"spring.activemq.pool.max-sessions-per-connection:1024",
+			"spring.activemq.pool.time-between-eviction-runs-millis:2048",
+			"spring.activemq.pool.expiry-time-millis:4096"
+		);
+		ConnectionFactory connectionFactory = this.context.getBean(ConnectionFactory.class);
+		assertThat(connectionFactory).isInstanceOf(PooledConnectionFactory.class);
+
+		PooledConnectionFactory pooledConnectionFactory = (PooledConnectionFactory) connectionFactory;
+		assertThat(pooledConnectionFactory.getMaxConnections()).isEqualTo(256);
+		assertThat(pooledConnectionFactory.getIdleTimeout()).isEqualTo(512);
+		assertThat(pooledConnectionFactory.getMaximumActiveSessionPerConnection()).isEqualTo(1024);
+		assertThat(pooledConnectionFactory.getTimeBetweenExpirationCheckMillis()).isEqualTo(2048);
+		assertThat(pooledConnectionFactory.getExpiryTimeout()).isEqualTo(4096);
+	}
+
+	@Test
 	public void pooledConnectionFactoryConfiguration() throws JMSException {
-		load(EmptyConfiguration.class, "spring.activemq.pooled:true");
+		load(EmptyConfiguration.class, "spring.activemq.pool.enabled:true");
 		ConnectionFactory connectionFactory = this.context
 				.getBean(ConnectionFactory.class);
 		assertThat(connectionFactory).isInstanceOf(PooledConnectionFactory.class);

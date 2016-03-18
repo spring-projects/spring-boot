@@ -23,6 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Greg Turnquist
  * @author Stephane Nicoll
+ * @author Aurélien Leboulanger
  */
 @ConfigurationProperties(prefix = "spring.activemq")
 public class ActiveMQProperties {
@@ -39,12 +40,6 @@ public class ActiveMQProperties {
 	private boolean inMemory = true;
 
 	/**
-	 * Specify if a PooledConnectionFactory should be created instead of a regular
-	 * ConnectionFactory.
-	 */
-	private boolean pooled;
-
-	/**
 	 * Login user of the broker.
 	 */
 	private String user;
@@ -53,6 +48,8 @@ public class ActiveMQProperties {
 	 * Login password of the broker.
 	 */
 	private String password;
+
+	private Pool pool = new Pool();
 
 	public String getBrokerUrl() {
 		return this.brokerUrl;
@@ -68,14 +65,6 @@ public class ActiveMQProperties {
 
 	public void setInMemory(boolean inMemory) {
 		this.inMemory = inMemory;
-	}
-
-	public boolean isPooled() {
-		return this.pooled;
-	}
-
-	public void setPooled(boolean pooled) {
-		this.pooled = pooled;
 	}
 
 	public String getUser() {
@@ -94,4 +83,93 @@ public class ActiveMQProperties {
 		this.password = password;
 	}
 
+	public Pool getPool() {
+		return this.pool;
+	}
+
+	public void setPool(Pool pool) {
+		this.pool = pool;
+	}
+
+	protected static class Pool {
+
+		/**
+		 * Specify if a PooledConnectionFactory should be created instead of a regular
+		 * ConnectionFactory.
+		 */
+		private boolean enabled;
+
+		/**
+		 * Sets the maximum number of pooled Connections.
+		 */
+		private int maxConnections = 1;
+
+		/**
+		 * Sets the idle timeout value for Connection's that are created by this pool in Milliseconds.
+		 */
+		private int idleTimeMillis = 30 * 1000;
+
+		/**
+		 * Allow connections to expire, irrespective of load or idle time.
+		 */
+		private long expiryTimeMillis = 0L;
+
+		/**
+		 * Sets the maximum number of active sessions per connection.
+		 */
+		private int maxSessionsPerConnection = 500;
+
+		/**
+		 * Sets the number of milliseconds to sleep between runs of the idle Connection eviction thread.
+		 */
+		private long timeBetweenEvictionRunsMillis = -1L;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public int getMaxConnections() {
+			return this.maxConnections;
+		}
+
+		public void setMaxConnections(int maxConnections) {
+			this.maxConnections = maxConnections;
+		}
+
+		public int getIdleTimeMillis() {
+			return this.idleTimeMillis;
+		}
+
+		public void setIdleTimeMillis(int idleTimeMillis) {
+			this.idleTimeMillis = idleTimeMillis;
+		}
+
+		public long getExpiryTimeMillis() {
+			return this.expiryTimeMillis;
+		}
+
+		public void setExpiryTimeMillis(long expiryTimeMillis) {
+			this.expiryTimeMillis = expiryTimeMillis;
+		}
+
+		public int getMaxSessionsPerConnection() {
+			return this.maxSessionsPerConnection;
+		}
+
+		public void setMaxSessionsPerConnection(int maxSessionsPerConnection) {
+			this.maxSessionsPerConnection = maxSessionsPerConnection;
+		}
+
+		public long getTimeBetweenEvictionRunsMillis() {
+			return this.timeBetweenEvictionRunsMillis;
+		}
+
+		public void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
+			this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+		}
+	}
 }
