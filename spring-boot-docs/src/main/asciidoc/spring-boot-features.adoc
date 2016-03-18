@@ -3217,6 +3217,20 @@ own `org.springframework.data.couchbase.config.CouchbaseConfigurer` `@Bean` to t
 control over the whole configuration.
 ====
 
+It is also possible to customize some of the `CouchbaseEnvironment` settings. For instance
+the following configuration changes the timeout to use to open a new `Bucket` and enable
+SSL support:
+
+[source,properties,indent=0]
+----
+	spring.couchbase.env.timeouts.connect=3000
+	spring.couchbase.env.ssl.key-store=/location/of/keystore.jks
+	spring.couchbase.env.ssl.key-store-password=secret
+----
+
+Check the `spring.couchbase.env.*` properties for more details.
+
+
 [[boot-features-spring-data-couchbase-repositories]]
 ==== Spring Data Couchbase repositories
 Spring Data includes repository support for Couchbase. For complete details of Spring

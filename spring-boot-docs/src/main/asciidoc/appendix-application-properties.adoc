@@ -478,6 +478,16 @@ content into your application; rather pick only the properties that you need.
 	spring.couchbase.bootstrap-hosts= # Couchbase nodes (host or IP address) to bootstrap from.
 	spring.couchbase.bucket.name=default # Name of the bucket to connect to.
 	spring.couchbase.bucket.password=  # Password of the bucket.
+	spring.couchbase.env.endpoints.key-value=1 # Number of sockets per node against the Key/value service.
+	spring.couchbase.env.endpoints.query=1 # Number of sockets per node against the Query (N1QL) service.
+	spring.couchbase.env.endpoints.view=1 # Number of sockets per node against the view service.
+	spring.couchbase.env.ssl.enabled= # Enable SSL support. Enabled automatically if a "keyStore" is provided unless specified otherwise.
+	spring.couchbase.env.ssl.key-store= # Path to the JVM key store that holds the certificates.
+	spring.couchbase.env.ssl.key-store-password= # Password used to access the key store.
+	spring.couchbase.env.timeouts.connect=5000 # Bucket connections timeout in milliseconds.
+	spring.couchbase.env.timeouts.key-value=2500 # Blocking operations performed on a specific key timeout in milliseconds.
+	spring.couchbase.env.timeouts.query=7500 # N1QL query operations timeout in milliseconds.
+	spring.couchbase.env.timeouts.view=7500 # Regular and geospatial view operations timeout in milliseconds.
 
 	# DAO ({sc-spring-boot-autoconfigure}/dao/PersistenceExceptionTranslationAutoConfiguration.{sc-ext}[PersistenceExceptionTranslationAutoConfiguration])
 	spring.dao.exceptiontranslation.enabled=true # Enable the PersistenceExceptionTranslationPostProcessor.

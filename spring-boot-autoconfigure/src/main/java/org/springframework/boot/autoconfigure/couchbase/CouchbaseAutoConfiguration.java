@@ -64,7 +64,7 @@ public class CouchbaseAutoConfiguration {
 		@Bean
 		@Primary
 		public CouchbaseEnvironment couchbaseEnvironment() throws Exception {
-			return DefaultCouchbaseEnvironment.create();
+			return createEnvironment(this.properties);
 		}
 
 		@Bean
@@ -86,6 +86,35 @@ public class CouchbaseAutoConfiguration {
 		public Bucket couchbaseClient() throws Exception {
 			return couchbaseCluster().openBucket(this.properties.getBucket().getName(),
 					this.properties.getBucket().getPassword());
+		}
+
+		/**
+		 * Create a {@link CouchbaseEnvironment} based on the specified settings.
+		 * @param properties the couchbase properties to use
+		 * @return a {@link CouchbaseEnvironment}
+		 */
+		protected CouchbaseEnvironment createEnvironment(CouchbaseProperties properties) {
+			CouchbaseProperties.Endpoints endpoints = properties.getEnv().getEndpoints();
+			CouchbaseProperties.Timeouts timeouts = properties.getEnv().getTimeouts();
+			DefaultCouchbaseEnvironment.Builder builder = DefaultCouchbaseEnvironment.builder()
+					.connectTimeout(timeouts.getConnect())
+					.kvEndpoints(endpoints.getKeyValue())
+					.kvTimeout(timeouts.getKeyValue())
+					.queryEndpoints(endpoints.getQuery())
+					.queryTimeout(timeouts.getQuery())
+					.viewEndpoints(endpoints.getView())
+					.viewTimeout(timeouts.getView());
+			CouchbaseProperties.Ssl ssl = properties.getEnv().getSsl();
+			if (ssl.getEnabled()) {
+				builder.sslEnabled(true);
+				if (ssl.getKeyStore() != null) {
+					builder.sslKeystoreFile(ssl.getKeyStore());
+				}
+				if (ssl.getKeyStorePassword() != null) {
+					builder.sslKeystorePassword(ssl.getKeyStorePassword());
+				}
+			}
+			return builder.build();
 		}
 
 	}
