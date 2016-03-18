@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import javax.transaction.TransactionManager;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQXAConnectionFactory;
-import org.apache.activemq.pool.PooledConnectionFactory;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -36,6 +35,7 @@ import org.springframework.context.annotation.Primary;
  * Configuration for ActiveMQ XA {@link ConnectionFactory}.
  *
  * @author Phillip Webb
+ * @author Aurélien Leboulanger
  * @since 1.2.0
  */
 @Configuration
@@ -45,7 +45,7 @@ import org.springframework.context.annotation.Primary;
 class ActiveMQXAConnectionFactoryConfiguration {
 
 	@Primary
-	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
+	@Bean(name = {"jmsConnectionFactory", "xaJmsConnectionFactory"})
 	public ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 			XAConnectionFactoryWrapper wrapper) throws Exception {
 		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
@@ -54,25 +54,11 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.activemq", name = "pooled", havingValue = "false", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false", matchIfMissing = true)
 	public ActiveMQConnectionFactory nonXaJmsConnectionFactory(
 			ActiveMQProperties properties) {
 		return new ActiveMQConnectionFactoryFactory(properties)
 				.createConnectionFactory(ActiveMQConnectionFactory.class);
-	}
-
-	@ConditionalOnClass(PooledConnectionFactory.class)
-	@ConditionalOnProperty(prefix = "spring.activemq", name = "pooled", havingValue = "true", matchIfMissing = false)
-	static class PooledConnectionFactoryConfiguration {
-
-		@Bean(destroyMethod = "stop")
-		public PooledConnectionFactory pooledNonXaJmsConnectionFactory(
-				ActiveMQProperties properties) {
-			return new PooledConnectionFactory(
-					new ActiveMQConnectionFactoryFactory(properties)
-							.createConnectionFactory(ActiveMQConnectionFactory.class));
-		}
-
 	}
 
 }
