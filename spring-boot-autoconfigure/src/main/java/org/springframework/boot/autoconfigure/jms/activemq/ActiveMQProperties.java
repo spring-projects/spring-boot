@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,35 +94,25 @@ public class ActiveMQProperties {
 	protected static class Pool {
 
 		/**
-		 * Specify if a PooledConnectionFactory should be created instead of a regular
+		 * Whether a PooledConnectionFactory should be created instead of a regular
 		 * ConnectionFactory.
 		 */
 		private boolean enabled;
 
 		/**
-		 * Sets the maximum number of pooled Connections.
+		 * Maximum number of pooled connections.
 		 */
 		private int maxConnections = 1;
 
 		/**
-		 * Sets the idle timeout value for Connection's that are created by this pool in Milliseconds.
+		 * Connection idle timeout in milliseconds.
 		 */
-		private int idleTimeMillis = 30 * 1000;
+		private int idleTimeout = 30000;
 
 		/**
-		 * Allow connections to expire, irrespective of load or idle time.
+		 * Connection expiration timeout in milliseconds.
 		 */
-		private long expiryTimeMillis = 0L;
-
-		/**
-		 * Sets the maximum number of active sessions per connection.
-		 */
-		private int maxSessionsPerConnection = 500;
-
-		/**
-		 * Sets the number of milliseconds to sleep between runs of the idle Connection eviction thread.
-		 */
-		private long timeBetweenEvictionRunsMillis = -1L;
+		private long expiryTimeout = 0;
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -140,36 +130,21 @@ public class ActiveMQProperties {
 			this.maxConnections = maxConnections;
 		}
 
-		public int getIdleTimeMillis() {
-			return this.idleTimeMillis;
+		public int getIdleTimeout() {
+			return this.idleTimeout;
 		}
 
-		public void setIdleTimeMillis(int idleTimeMillis) {
-			this.idleTimeMillis = idleTimeMillis;
+		public void setIdleTimeout(int idleTimeout) {
+			this.idleTimeout = idleTimeout;
 		}
 
-		public long getExpiryTimeMillis() {
-			return this.expiryTimeMillis;
+		public long getExpiryTimeout() {
+			return this.expiryTimeout;
 		}
 
-		public void setExpiryTimeMillis(long expiryTimeMillis) {
-			this.expiryTimeMillis = expiryTimeMillis;
+		public void setExpiryTimeout(long expiryTimeout) {
+			this.expiryTimeout = expiryTimeout;
 		}
 
-		public int getMaxSessionsPerConnection() {
-			return this.maxSessionsPerConnection;
-		}
-
-		public void setMaxSessionsPerConnection(int maxSessionsPerConnection) {
-			this.maxSessionsPerConnection = maxSessionsPerConnection;
-		}
-
-		public long getTimeBetweenEvictionRunsMillis() {
-			return this.timeBetweenEvictionRunsMillis;
-		}
-
-		public void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
-			this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-		}
 	}
 }

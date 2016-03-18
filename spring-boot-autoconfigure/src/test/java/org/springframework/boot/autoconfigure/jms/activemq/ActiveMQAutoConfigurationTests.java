@@ -39,6 +39,7 @@ import static org.mockito.Mockito.mockingDetails;
  *
  * @author Andy Wilkinson
  * @author Aurélien Leboulanger
+ * @author Stephane Nicoll
  */
 public class ActiveMQAutoConfigurationTests {
 
@@ -62,15 +63,14 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void custompooledConnectionFactoryConfiguration() {
+	public void customPooledConnectionFactoryConfiguration() {
 		load(EmptyConfiguration.class,
 			"spring.activemq.pool.enabled:true",
-			"spring.activemq.pool.max-connections:256",
-			"spring.activemq.pool.idle-time-millis:512",
-			"spring.activemq.pool.max-sessions-per-connection:1024",
-			"spring.activemq.pool.time-between-eviction-runs-millis:2048",
-			"spring.activemq.pool.expiry-time-millis:4096"
-		);
+			"spring.activemq.pool.maxConnections:256",
+			"spring.activemq.pool.idleTimeout:512",
+			"spring.activemq.pool.expiryTimeout:4096",
+			"spring.activemq.pool.configuration.maximumActiveSessionPerConnection:1024",
+			"spring.activemq.pool.configuration.timeBetweenExpirationCheckMillis:2048");
 		ConnectionFactory connectionFactory = this.context.getBean(ConnectionFactory.class);
 		assertThat(connectionFactory).isInstanceOf(PooledConnectionFactory.class);
 
@@ -89,8 +89,7 @@ public class ActiveMQAutoConfigurationTests {
 				.getBean(ConnectionFactory.class);
 		assertThat(connectionFactory).isInstanceOf(PooledConnectionFactory.class);
 		this.context.close();
-		assertThat(((PooledConnectionFactory) connectionFactory).createConnection())
-				.isNull();
+		assertThat(connectionFactory.createConnection()).isNull();
 	}
 
 	private void load(Class<?> config, String... environment) {
