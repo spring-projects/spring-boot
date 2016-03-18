@@ -98,7 +98,7 @@
 		<jaybird.version>2.2.9</jaybird.version>
 		<jboss-logging.version>3.3.0.Final</jboss-logging.version>
 		<jdom2.version>2.0.6</jdom2.version>
-		<jedis.version>2.8.0</jedis.version>
+		<jedis.version>2.8.1</jedis.version>
 		<jersey.version>2.22.2</jersey.version>
 		<jetty.version>9.2.15.v20160210</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
@@ -129,7 +129,7 @@
 		<simple-json.version>1.1.1</simple-json.version>
 		<slf4j.version>1.7.16</slf4j.version>
 		<snakeyaml.version>1.17</snakeyaml.version>
-		<solr.version>5.3.2</solr.version>
+		<solr.version>5.5.0</solr.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
 		<spring.version>4.3.0.BUILD-SNAPSHOT</spring.version>
 		<spring-amqp.version>1.6.0.M1</spring-amqp.version>
@@ -540,6 +540,24 @@
 				<groupId>com.datastax.cassandra</groupId>
 				<artifactId>cassandra-driver-dse</artifactId>
 				<version>${cassandra-driver.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>slf4j-log4j12</artifactId>
+						<groupId>org.slf4j</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>log4j</artifactId>
+						<groupId>log4j</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>guava</artifactId>
+						<groupId>com.google.guava</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>netty-handler</artifactId>
+						<groupId>io.netty</groupId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.datastax.cassandra</groupId>
