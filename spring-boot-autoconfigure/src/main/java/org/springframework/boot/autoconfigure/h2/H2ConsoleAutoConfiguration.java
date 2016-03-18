@@ -41,6 +41,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * {@link EnableAutoConfiguration Auto-configuration} for H2's web console.
  *
  * @author Andy Wilkinson
+ * @author Marten Deinum
+ * @author Stephane Nicoll
  * @since 1.3.0
  */
 @Configuration
@@ -62,8 +64,12 @@ public class H2ConsoleAutoConfiguration {
 		String path = this.properties.getPath();
 		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
 		ServletRegistrationBean registration = new ServletRegistrationBean(new WebServlet(), urlMapping);
-		if (properties.getWebAllowOthers()) {
-			registration.addInitParameter("webAllowOthers", "true");
+		H2ConsoleProperties.Settings settings = this.properties.getSettings();
+		if (settings.isTrace()) {
+			registration.addInitParameter("trace", "");
+		}
+		if (settings.isWebAllowOthers()) {
+			registration.addInitParameter("webAllowOthers", "");
 		}
 		return registration;
 	}

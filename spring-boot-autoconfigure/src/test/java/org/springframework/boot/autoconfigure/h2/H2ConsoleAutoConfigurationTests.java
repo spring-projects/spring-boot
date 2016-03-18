@@ -25,7 +25,6 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.test.EnvironmentTestUtils;
-import org.springframework.context.annotation.Bean;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -35,6 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link H2ConsoleAutoConfiguration}
  *
  * @author Andy Wilkinson
+ * @author Marten Deinum
+ * @author Stephane Nicoll
  */
 public class H2ConsoleAutoConfigurationTests {
 
@@ -72,6 +73,8 @@ public class H2ConsoleAutoConfigurationTests {
 		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
 				.contains("/h2-console/*");
 		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).
+				doesNotContainKey("trace");
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).
 				doesNotContainKey("webAllowOthers");
 	}
 
@@ -108,17 +111,20 @@ public class H2ConsoleAutoConfigurationTests {
 	}
 
 	@Test
-	public void propertySetsWebAllowOthersInitParameter() {
+	public void customInitParameters() {
 		this.context.register(H2ConsoleAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.h2.console.enabled:true", "spring.h2.console.web-allow-others=true");
+				"spring.h2.console.enabled:true",
+				"spring.h2.console.settings.trace=true",
+				"spring.h2.console.settings.webAllowOthers=true");
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
 				.contains("/h2-console/*");
 		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).
-				containsEntry("webAllowOthers", "true");
-
+				containsEntry("trace", "");
+		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).
+				containsEntry("webAllowOthers", "");
 	}
 
 }
