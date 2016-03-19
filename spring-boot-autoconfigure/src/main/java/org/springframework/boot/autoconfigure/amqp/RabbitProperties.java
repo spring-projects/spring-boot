@@ -79,6 +79,16 @@ public class RabbitProperties {
 	private Integer requestedHeartbeat;
 
 	/**
+	 * Enable publisher confirms.
+	 */
+	private boolean publisherConfirms = false;
+
+	/**
+	 * Enable publisher returns.
+	 */
+	private boolean publisherReturns = false;
+
+	/**
 	 * Cache configuration.
 	 */
 	private final Cache cache = new Cache();
@@ -194,6 +204,22 @@ public class RabbitProperties {
 
 	public void setRequestedHeartbeat(Integer requestedHeartbeat) {
 		this.requestedHeartbeat = requestedHeartbeat;
+	}
+
+	public boolean isPublisherConfirms() {
+		return this.publisherConfirms;
+	}
+
+	public void setPublisherConfirms(boolean publisherConfirms) {
+		this.publisherConfirms = publisherConfirms;
+	}
+
+	public boolean isPublisherReturns() {
+		return this.publisherReturns;
+	}
+
+	public void setPublisherReturns(boolean publisherReturns) {
+		this.publisherReturns = publisherReturns;
 	}
 
 	public Cache getCache() {
@@ -477,6 +503,12 @@ public class RabbitProperties {
 		 */
 		private Long replyTimeout;
 
+		/**
+		 * Whether or not unroutable messages should be returned. Default is false, but
+		 * will be set to true if publisherReturns enabled on the connection factory
+		 */
+		private boolean mandatory = false;
+
 		public Retry getRetry() {
 			return this.retry;
 		}
@@ -497,6 +529,14 @@ public class RabbitProperties {
 			this.replyTimeout = replyTimeout;
 		}
 
+		public boolean isMandatory() {
+			return this.mandatory;
+		}
+
+		public void setMandatory(boolean mandatory) {
+			this.mandatory = mandatory;
+		}
+
 	}
 
 	public static class Retry {
@@ -512,8 +552,7 @@ public class RabbitProperties {
 		private int maxAttempts = 3;
 
 		/**
-		 * Interval between the first and second attempt to publish or deliver
-		 * a message.
+		 * Interval between the first and second attempt to publish or deliver a message.
 		 */
 		private long initialInterval = 1000L;
 

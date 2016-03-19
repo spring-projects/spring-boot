@@ -121,6 +121,8 @@ public class RabbitAutoConfiguration {
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
 					factory.getObject());
 			connectionFactory.setAddresses(config.getAddresses());
+			connectionFactory.setPublisherConfirms(config.isPublisherConfirms());
+			connectionFactory.setPublisherReturns(config.isPublisherReturns());
 			if (config.getCache().getChannel().getSize() != null) {
 				connectionFactory
 						.setChannelCacheSize(config.getCache().getChannel().getSize());
@@ -181,6 +183,9 @@ public class RabbitAutoConfiguration {
 			if (template.getReplyTimeout() != null) {
 				rabbitTemplate.setReplyTimeout(template.getReplyTimeout());
 			}
+			if (template.isMandatory() || this.properties.isPublisherReturns()) {
+				rabbitTemplate.setMandatory(true);
+			}
 			return rabbitTemplate;
 		}
 
@@ -191,7 +196,6 @@ public class RabbitAutoConfiguration {
 		public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
 			return new RabbitAdmin(connectionFactory);
 		}
-
 
 	}
 
