@@ -1,21 +1,26 @@
 welcome = { ->
-	if (!crash.context.attributes['spring.environment'].getProperty("spring.main.show_banner", Boolean.class, Boolean.TRUE)) {
-		return ""
-	}
+    if (!crash.context.attributes['spring.environment'].getProperty("spring.main.show_banner", Boolean.class, Boolean.TRUE)) {
+        return ""
+    }
 
-	// Resolve hostname
-	def hostName;
-	try {
-		hostName = java.net.InetAddress.getLocalHost().getHostName();
-	}
-	catch (java.net.UnknownHostException ignore) {
-		hostName = "localhost";
-	}
+    def bannerText = crash.context.attributes['spring.beanfactory'].class.getResourceAsStream('/banner.txt')?.text
+    if( bannerText ){
+        return "${bannerText}\n"
 
-	// Get Spring Boot version from context
-	def version = crash.context.attributes.get("spring.boot.version")
+    } else {
+        // Resolve hostname
+        def hostName;
+        try {
+            hostName = java.net.InetAddress.getLocalHost().getHostName();
+        }
+        catch (java.net.UnknownHostException ignore) {
+            hostName = "localhost";
+        }
 
-	return """\
+        // Get Spring Boot version from context
+        def version = crash.context.attributes.get("spring.boot.version")
+
+        return """\
   .   ____          _            __ _ _
  /\\\\ / ___'_ __ _ _(_)_ __  __ _ \\ \\ \\ \\
 ( ( )\\___ | '_ | '_| | '_ \\/ _` | \\ \\ \\ \\
@@ -24,8 +29,9 @@ welcome = { ->
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::  (v$version) on $hostName
 """;
+    }
 }
 
 prompt = { ->
-	return "> ";
+    return "> ";
 }
