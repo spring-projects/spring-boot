@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.data.alt.neo4j.CityNeo4jRepository
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
 import org.springframework.boot.autoconfigure.data.neo4j.city.CityRepository;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;

@@ -24,10 +24,11 @@ import org.junit.Test;
 import org.neo4j.ogm.config.Configuration;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.neo4j.Neo4jAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
- * Tests for {@link org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration}.
+ * Tests for {@link Neo4jAutoConfiguration}.
  *
  * @author Dave Syer
  * @author Michael Hunger

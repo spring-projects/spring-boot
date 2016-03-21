@@ -647,33 +647,5 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- specific for ogm -->
-		<!-- temporary until SDN 4.1 brings this in transitively -->
-		<dependency>
-			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j-ogm-core</artifactId>
-		</dependency>
-
-		<!-- temporary until SDN 4.1 brings this in transitively -->
-		<dependency>
-			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j-ogm-api</artifactId>
-		</dependency>
-
-		<!-- the sdn driver we will use -->
-		<dependency>
-			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j-ogm-embedded-driver</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- neo4j-kernel doesn't bring lucene in, so we need to add it explicitly -->
-		<dependency>
-			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j-lucene-index</artifactId>
-			<version>2.3.2</version>
-			<scope>test</scope>
-		</dependency>
-
 	</dependencies>
 </project>

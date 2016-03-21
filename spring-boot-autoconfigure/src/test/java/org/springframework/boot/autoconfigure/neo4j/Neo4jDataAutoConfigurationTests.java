@@ -28,6 +28,7 @@ import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -36,7 +37,7 @@ import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.template.Neo4jOperations;
 
 /**
- * Tests for {@link org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration}.
+ * Tests for {@link Neo4jAutoConfiguration}.
  *
  * @author Josh Long
  * @author Oliver Gierke
