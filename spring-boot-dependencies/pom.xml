@@ -55,6 +55,7 @@
 		<cassandra-driver.version>2.1.9</cassandra-driver.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
 		<commons-collections.version>3.2.2</commons-collections.version>
+		<commons-codec.version>1.10</commons-codec.version>
 		<commons-dbcp.version>1.4</commons-dbcp.version>
 		<commons-dbcp2.version>2.1.1</commons-dbcp2.version>
 		<commons-digester.version>2.1</commons-digester.version>
@@ -768,6 +769,11 @@
 				<groupId>commons-collections</groupId>
 				<artifactId>commons-collections</artifactId>
 				<version>${commons-collections.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>${commons-codec.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-dbcp</groupId>
@@ -1907,11 +1913,6 @@
 				<version>${spring-data-releasetrain.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-neo4j</artifactId>
-				<version>${spring-data-neo4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.hateoas</groupId>
