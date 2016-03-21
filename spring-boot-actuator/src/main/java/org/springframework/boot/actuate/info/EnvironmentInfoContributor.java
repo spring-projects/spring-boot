@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.info;
 
+import org.springframework.boot.bind.PropertySourcesBinder;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 /**

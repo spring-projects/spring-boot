@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.info;
+package org.springframework.boot.bind;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.boot.bind.PropertiesConfigurationFactory;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
@@ -33,18 +36,48 @@ import org.springframework.validation.BindException;
  */
 public class PropertySourcesBinder {
 
-	private final PropertySources propertySources;
+	private PropertySources propertySources;
 
+	private ConversionService conversionService;
+
+	/**
+	 * Create a new instance.
+	 * @param propertySources the {@link PropertySources} to use
+	 */
 	public PropertySourcesBinder(PropertySources propertySources) {
 		this.propertySources = propertySources;
 	}
 
+	/**
+	 * Create a new instance from a single {@link PropertySource}.
+	 * @param propertySource the {@link PropertySource} to use
+	 */
+	public PropertySourcesBinder(PropertySource<?> propertySource) {
+		this(createPropertySources(propertySource));
+	}
+
+	/**
+	 * Create a new instance using the {@link Environment} as the property sources.
+	 * @param environment the environment
+	 */
 	public PropertySourcesBinder(ConfigurableEnvironment environment) {
 		this(environment.getPropertySources());
 	}
 
-	public final PropertySources getPropertySources() {
+	public void setPropertySources(PropertySources propertySources) {
+		this.propertySources = propertySources;
+	}
+
+	public PropertySources getPropertySources() {
 		return this.propertySources;
+	}
+
+	public void setConversionService(ConversionService conversionService) {
+		this.conversionService = conversionService;
+	}
+
+	public ConversionService getConversionService() {
+		return this.conversionService;
 	}
 
 	/**
@@ -74,6 +107,9 @@ public class PropertySourcesBinder {
 		if (StringUtils.hasText(prefix)) {
 			factory.setTargetName(prefix);
 		}
+		if (this.conversionService != null) {
+			factory.setConversionService(this.conversionService);
+		}
 		factory.setPropertySources(this.propertySources);
 		try {
 			factory.bindPropertiesToTarget();
@@ -81,6 +117,12 @@ public class PropertySourcesBinder {
 		catch (BindException ex) {
 			throw new IllegalStateException("Cannot bind to " + target, ex);
 		}
+	}
+
+	private static PropertySources createPropertySources(PropertySource<?> propertySource) {
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(propertySource);
+		return propertySources;
 	}
 
 }

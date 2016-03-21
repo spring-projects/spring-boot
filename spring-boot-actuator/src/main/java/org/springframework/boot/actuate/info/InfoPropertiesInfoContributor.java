@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import org.springframework.boot.bind.PropertySourcesBinder;
 import org.springframework.boot.info.InfoProperties;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
@@ -84,9 +84,7 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties> im
 	 * @return the raw content
 	 */
 	protected Map<String, Object> extractContent(PropertySource<?> propertySource) {
-		MutablePropertySources propertySources = new MutablePropertySources();
-		propertySources.addFirst(propertySource);
-		return new PropertySourcesBinder(propertySources).extractAll("");
+		return new PropertySourcesBinder(propertySource).extractAll("");
 	}
 
 	/**

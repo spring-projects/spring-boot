@@ -49,12 +49,13 @@ import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
 import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.boot.bind.PropertiesConfigurationFactory;
+import org.springframework.boot.bind.PropertySourcesBinder;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.validation.BindException;
@@ -262,18 +263,15 @@ public class EndpointAutoConfigurationTests {
 
 		private static class GitFullInfoContributor implements InfoContributor {
 
-			private final Map<String, Object> content;
+			private Map<String, Object> content = new LinkedHashMap<String, Object>();
 
 			GitFullInfoContributor(Resource location) throws BindException, IOException {
-				this.content = new LinkedHashMap<String, Object>();
 				if (location.exists()) {
-					PropertiesConfigurationFactory<Map<String, Object>> factory = new PropertiesConfigurationFactory<Map<String, Object>>(
-							this.content);
-					factory.setTargetName("git");
 					Properties gitInfoProperties = PropertiesLoaderUtils
 							.loadProperties(location);
-					factory.setProperties(gitInfoProperties);
-					factory.bindPropertiesToTarget();
+					PropertiesPropertySource gitPropertySource =
+							new PropertiesPropertySource("git", gitInfoProperties);
+					this.content = new PropertySourcesBinder(gitPropertySource).extractAll("git");
 				}
 			}
 
