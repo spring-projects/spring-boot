@@ -21,15 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 
 import org.springframework.context.annotation.Import;
 
-import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-
 @SpringBootApplication
-@Import(Neo4jAutoConfiguration.class)
-@EnableNeo4jRepositories(basePackages = "sample.data.neo4j")
 public class SampleNeo4jApplication implements CommandLineRunner {
 
 	@Autowired

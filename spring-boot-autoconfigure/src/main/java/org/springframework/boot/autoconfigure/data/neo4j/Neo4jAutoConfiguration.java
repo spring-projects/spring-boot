@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.neo4j;
+package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.neo4j.ogm.session.Neo4jSession;
 import org.neo4j.ogm.session.Session;

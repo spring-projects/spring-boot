@@ -19,17 +19,17 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 import org.neo4j.ogm.session.Neo4jSession;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import org.springframework.data.neo4j.repository.GraphRepository;
+
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.repository.config.Neo4jRepositoryConfigurationExtension;
 import org.springframework.data.neo4j.repository.support.GraphRepositoryFactoryBean;
@@ -57,10 +57,9 @@ import org.springframework.data.neo4j.repository.support.GraphRepositoryFactoryB
  */
 @Configuration
 @ConditionalOnClass({ Neo4jSession.class, GraphRepository.class })
-@ConditionalOnMissingBean({ GraphRepositoryFactoryBean.class,
-		Neo4jRepositoryConfigurationExtension.class })
+@ConditionalOnMissingBean({ GraphRepositoryFactoryBean.class, Neo4jRepositoryConfigurationExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.neo4j.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
-@Import(Neo4jRepositoriesAutoConfigureRegistrar.class)
+@Import({Neo4jRepositoriesAutoConfigureRegistrar.class})
 @AutoConfigureAfter(Neo4jAutoConfiguration.class)
 public class Neo4jRepositoriesAutoConfiguration {
 

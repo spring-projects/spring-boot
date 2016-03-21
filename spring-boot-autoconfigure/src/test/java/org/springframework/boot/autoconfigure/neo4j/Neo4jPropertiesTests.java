@@ -20,13 +20,14 @@ import org.assertj.core.api.Assertions;
 
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.data.neo4j.Neo4jProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Tests for {@link org.springframework.boot.autoconfigure.neo4j.Neo4jProperties}.
+ * Tests for {@link Neo4jProperties}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
