@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import org.springframework.util.ClassUtils;
  */
 class ArtemisConnectionFactoryFactory {
 
-	static final String EMBEDDED_JMS_CLASS = "org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ";
+	static final String EMBEDDED_JMS_CLASS = "org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS";
 
 	private final ArtemisProperties properties;
 

@@ -3393,7 +3393,9 @@ resolved against their provided names.
 Apache Artemis was formed in 2015 when HornetQ was donated to the Apache Foundation. All
 the features listed in the <<boot-features-hornetq>> section below can be applied to
 Artemis. Simply replace `+++spring.hornetq.*+++` properties with `+++spring.artemis.*+++`
-and use `spring-boot-starter-artemis` instead of `spring-boot-starter-hornetq`.
+and use `spring-boot-starter-artemis` instead of `spring-boot-starter-hornetq`. If you
+want to embed Artemis, make sure to add `org.apache.activemq:artemis-jms-server` to the
+dependencies of your application.
 
 NOTE: You should not try and use Artemis and HornetQ and the same time.
 
