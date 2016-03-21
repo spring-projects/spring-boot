@@ -533,6 +533,9 @@ content into your application; rather pick only the properties that you need.
 	spring.data.mongodb.uri=mongodb://localhost/test # Mongo database URI. When set, host and port are ignored.
 	spring.data.mongodb.username= # Login user of the mongo server.
 
+	# DATA REDIS
+	spring.data.redis.repositories.enabled=true # Enable Redis repositories.
+
 	# DATA REST ({sc-spring-boot-autoconfigure}/data/rest/RepositoryRestProperties.{sc-ext}[RepositoryRestProperties])
 	spring.data.rest.base-path= # Base path to be used by Spring Data REST to expose repository resources.
 	spring.data.rest.default-page-size= # Default size of pages.
