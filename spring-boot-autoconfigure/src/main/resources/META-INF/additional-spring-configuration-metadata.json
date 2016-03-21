@@ -91,6 +91,12 @@
     "defaultValue": true
   },
   {
+    "name": "spring.data.redis.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Redis repositories.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.data.solr.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Solr repositories.",

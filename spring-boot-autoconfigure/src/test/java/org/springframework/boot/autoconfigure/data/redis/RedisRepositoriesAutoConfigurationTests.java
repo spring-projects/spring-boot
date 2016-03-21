@@ -43,7 +43,8 @@ public class RedisRepositoriesAutoConfigurationTests {
 	@Rule
 	public RedisTestServer redis = new RedisTestServer();
 
-	private AnnotationConfigApplicationContext context;
+	private AnnotationConfigApplicationContext context
+			= new AnnotationConfigApplicationContext();
 
 	@After
 	public void close() {
@@ -52,7 +53,6 @@ public class RedisRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testDefaultRepositoryConfiguration() {
-		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class,
 				RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -62,7 +62,6 @@ public class RedisRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testNoRepositoryConfiguration() {
-		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(EmptyConfiguration.class,
 				RedisAutoConfiguration.class,
 				RedisRepositoriesAutoConfiguration.class,
@@ -73,7 +72,6 @@ public class RedisRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
-		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(CustomizedConfiguration.class,
 				RedisAutoConfiguration.class,
 				RedisRepositoriesAutoConfiguration.class,
