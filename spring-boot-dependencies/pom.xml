@@ -684,7 +684,6 @@
 				<groupId>com.googlecode.json-simple</groupId>
 				<artifactId>json-simple</artifactId>
 				<version>${simple-json.version}</version>
-				<optional>true</optional>
 			</dependency>
 			<dependency>
 				<groupId>com.h2database</groupId>
