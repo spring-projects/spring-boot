@@ -195,6 +195,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-test-autoconfigure</artifactId>
+				<version>1.4.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-test</artifactId>
 				<type>test-jar</type>
 				<version>1.4.0.BUILD-SNAPSHOT</version>
