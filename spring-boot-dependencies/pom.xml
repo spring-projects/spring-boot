@@ -84,6 +84,7 @@
 		<hikaricp-java6.version>2.3.13</hikaricp-java6.version>
 		<hornetq.version>2.4.7.Final</hornetq.version>
 		<hsqldb.version>2.3.3</hsqldb.version>
+		<htmlunit.version>2.19</htmlunit.version>
 		<httpasyncclient.version>4.1.1</httpasyncclient.version>
 		<httpclient.version>4.5.1</httpclient.version>
 		<httpcore.version>4.4.4</httpcore.version>
@@ -124,6 +125,7 @@
 		<postgresql.version>9.4.1208.jre7</postgresql.version>
 		<reactor.version>2.0.7.RELEASE</reactor.version>
 		<reactor-spring.version>2.0.7.RELEASE</reactor-spring.version>
+		<selenium.version>2.52.0</selenium.version>
 		<sendgrid.version>2.2.2</sendgrid.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
 		<simple-json.version>1.1.1</simple-json.version>
@@ -931,6 +933,11 @@
 				<groupId>net.sf.ehcache</groupId>
 				<artifactId>ehcache</artifactId>
 				<version>${ehcache.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.htmlunit</groupId>
+				<artifactId>htmlunit</artifactId>
+				<version>${htmlunit.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>net.sourceforge.jtds</groupId>
@@ -1757,6 +1764,11 @@
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
 				<version>${lombok.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.seleniumhq.selenium</groupId>
+				<artifactId>selenium-htmlunit-driver</artifactId>
+				<version>${selenium.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.skyscreamer</groupId>
