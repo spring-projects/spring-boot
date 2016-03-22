@@ -57,7 +57,6 @@ public class CouchbaseProperties {
 		return this.env;
 	}
 
-
 	public static class Bucket {
 
 		/**
@@ -175,7 +174,8 @@ public class CouchbaseProperties {
 		private String keyStorePassword;
 
 		public Boolean getEnabled() {
-			return (this.enabled != null ? this.enabled : StringUtils.hasText(this.keyStore));
+			return (this.enabled != null ? this.enabled
+					: StringUtils.hasText(this.keyStore));
 		}
 
 		public void setEnabled(Boolean enabled) {

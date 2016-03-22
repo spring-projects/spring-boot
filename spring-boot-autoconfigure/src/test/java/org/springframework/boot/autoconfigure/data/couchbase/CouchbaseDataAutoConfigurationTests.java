@@ -65,14 +65,15 @@ public class CouchbaseDataAutoConfigurationTests {
 	@Test
 	public void customConfiguration() {
 		load(CustomCouchbaseConfiguration.class);
-		CouchbaseTemplate couchbaseTemplate = this.context.getBean(CouchbaseTemplate.class);
-		assertThat(couchbaseTemplate.getDefaultConsistency()).isEqualTo(Consistency.STRONGLY_CONSISTENT);
+		CouchbaseTemplate couchbaseTemplate = this.context
+				.getBean(CouchbaseTemplate.class);
+		assertThat(couchbaseTemplate.getDefaultConsistency())
+				.isEqualTo(Consistency.STRONGLY_CONSISTENT);
 	}
 
 	@Test
 	public void validatorIsPresent() {
 		load(ValidatorConfiguration.class);
-
 		ValidatingCouchbaseEventListener listener = this.context
 				.getBean(ValidatingCouchbaseEventListener.class);
 		assertThat(new DirectFieldAccessor(listener).getPropertyValue("validator"))
@@ -90,8 +91,7 @@ public class CouchbaseDataAutoConfigurationTests {
 
 	@Test
 	public void enableAutoIndex() {
-		load(CouchbaseTestConfigurer.class,
-				"spring.data.couchbase.auto-index=true");
+		load(CouchbaseTestConfigurer.class, "spring.data.couchbase.auto-index=true");
 		IndexManager indexManager = this.context.getBean(IndexManager.class);
 		assertThat(indexManager.isIgnoreViews()).isFalse();
 		assertThat(indexManager.isIgnoreN1qlPrimary()).isFalse();
@@ -115,12 +115,10 @@ public class CouchbaseDataAutoConfigurationTests {
 			context.register(config);
 		}
 		context.register(PropertyPlaceholderAutoConfiguration.class,
-				CouchbaseAutoConfiguration.class,
-				CouchbaseDataAutoConfiguration.class);
+				CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
 	}
-
 
 	@Configuration
 	@Import(CouchbaseTestConfigurer.class)
@@ -145,6 +143,7 @@ public class CouchbaseDataAutoConfigurationTests {
 		protected Consistency getDefaultConsistency() {
 			return Consistency.STRONGLY_CONSISTENT;
 		}
+
 	}
 
 }

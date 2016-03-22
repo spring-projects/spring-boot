@@ -62,9 +62,12 @@ public class GitInfoContributor extends InfoPropertiesInfoContributor<GitPropert
 	 * are converted to {@link Date} instances.
 	 * @param content the content to expose
 	 */
+	@Override
 	protected void postProcessContent(Map<String, Object> content) {
-		replaceValue(getNestedMap(content, "commit"), "time", getProperties().getCommitTime());
-		replaceValue(getNestedMap(content, "build"), "time", getProperties().getDate("build.time"));
+		replaceValue(getNestedMap(content, "commit"), "time",
+				getProperties().getCommitTime());
+		replaceValue(getNestedMap(content, "build"), "time",
+				getProperties().getDate("build.time"));
 	}
 
 }

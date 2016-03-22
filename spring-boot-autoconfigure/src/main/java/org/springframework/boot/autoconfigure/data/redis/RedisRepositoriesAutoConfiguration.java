@@ -43,4 +43,5 @@ import org.springframework.data.redis.repository.support.RedisRepositoryFactoryB
 @Import(RedisRepositoriesAutoConfigureRegistrar.class)
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 public class RedisRepositoriesAutoConfiguration {
+
 }

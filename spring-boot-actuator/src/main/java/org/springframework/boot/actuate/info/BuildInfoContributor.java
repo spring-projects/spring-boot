@@ -23,7 +23,6 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 
-
 /**
  * An {@link InfoContributor} that exposes {@link BuildProperties}.
  *

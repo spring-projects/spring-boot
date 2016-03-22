@@ -14,34 +14,42 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testutil;
+package org.springframework.boot.context.web;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link FilteredClassPathRunner}
+ * Tests for {@link LocalServerPort}.
  *
- * @author Andy Wilkinson
+ * @author Anand Shah
+ * @author Phillip Webb
  */
-@RunWith(FilteredClassPathRunner.class)
-@ClassPathExclusions("hibernate-validator-*.jar")
-public class FilteredClassPathRunnerTests {
+@RunWith(SpringRunner.class)
+@TestPropertySource(properties = "local.server.port=8181")
+public class LocalServerPortTests {
 
-	private static final String EXCLUDED_RESOURCE = "META-INF/services/"
-			+ "javax.validation.spi.ValidationProvider";
+	@Value("${local.server.port}")
+	private String fromValue;
+
+	@LocalServerPort
+	private String fromAnnotation;
 
 	@Test
-	public void entriesAreFilteredFromTestClassClassLoader() {
-		assertThat(getClass().getClassLoader().getResource(EXCLUDED_RESOURCE)).isNull();
+	public void testLocalServerPortAnnotation() {
+		assertThat(this.fromAnnotation).isNotNull().isEqualTo(this.fromValue);
 	}
 
-	@Test
-	public void entriesAreFilteredFromThreadContextClassLoader() {
-		assertThat(Thread.currentThread().getContextClassLoader()
-				.getResource(EXCLUDED_RESOURCE)).isNull();
+	@Configuration
+	static class Config {
+
 	}
 
 }

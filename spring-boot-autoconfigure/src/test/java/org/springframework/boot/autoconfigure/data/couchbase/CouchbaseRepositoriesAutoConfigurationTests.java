@@ -82,8 +82,7 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 			context.register(config);
 		}
 		context.register(PropertyPlaceholderAutoConfiguration.class,
-				CouchbaseAutoConfiguration.class,
-				CouchbaseDataAutoConfiguration.class,
+				CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
 				CouchbaseRepositoriesAutoConfiguration.class);
 		context.refresh();
 		this.context = context;

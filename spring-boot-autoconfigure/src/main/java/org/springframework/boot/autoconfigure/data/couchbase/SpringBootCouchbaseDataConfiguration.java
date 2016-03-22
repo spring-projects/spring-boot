@@ -68,9 +68,7 @@ class SpringBootCouchbaseDataConfiguration extends AbstractCouchbaseDataConfigur
 		if (this.properties.isAutoIndex()) {
 			return new IndexManager(true, true, true);
 		}
-		else {
-			return new IndexManager(false, false, false);
-		}
+		return new IndexManager(false, false, false);
 	}
 
 }

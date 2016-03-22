@@ -84,7 +84,6 @@ public final class Verify {
 		return properties;
 	}
 
-
 	public static class ArchiveVerifier {
 
 		private final ZipFile zipFile;

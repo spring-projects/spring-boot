@@ -47,36 +47,15 @@ import org.springframework.util.StringUtils;
  */
 public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
 
-	public FilteredClassPathRunner(Class<?> klass) throws InitializationError {
-		super(klass);
+	public FilteredClassPathRunner(Class<?> testClass) throws InitializationError {
+		super(testClass);
 	}
 
 	@Override
 	protected TestClass createTestClass(Class<?> testClass) {
 		try {
-			final ClassLoader classLoader = createTestClassLoader(testClass);
-			return new TestClass(classLoader.loadClass(testClass.getName())) {
-
-				@SuppressWarnings("unchecked")
-				@Override
-				public List<FrameworkMethod> getAnnotatedMethods(
-						Class<? extends Annotation> annotationClass) {
-					List<FrameworkMethod> methods = new ArrayList<FrameworkMethod>();
-					try {
-						for (FrameworkMethod frameworkMethod : super.getAnnotatedMethods(
-								(Class<? extends Annotation>) classLoader
-										.loadClass(annotationClass.getName()))) {
-							methods.add(new CustomTcclFrameworkMethod(classLoader,
-									frameworkMethod.getMethod()));
-						}
-						return methods;
-					}
-					catch (ClassNotFoundException ex) {
-						throw new RuntimeException(ex);
-					}
-				}
-
-			};
+			ClassLoader classLoader = createTestClassLoader(testClass);
+			return new FilteredTestClass(classLoader, testClass.getName());
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
@@ -136,6 +115,9 @@ public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
 		return filteredUrls.toArray(new URL[filteredUrls.size()]);
 	}
 
+	/**
+	 * Filter for class path entries.
+	 */
 	private static final class ClassPathEntryFilter {
 
 		private final List<String> exclusions;
@@ -163,25 +145,75 @@ public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
 		}
 	}
 
-	private static final class CustomTcclFrameworkMethod extends FrameworkMethod {
+	/**
+	 * Filtered version of JUnit's {@link TestClass}.
+	 */
+	private static final class FilteredTestClass extends TestClass {
 
-		private final ClassLoader customTccl;
+		private final ClassLoader classLoader;
 
-		private CustomTcclFrameworkMethod(ClassLoader customTccl, Method method) {
+		FilteredTestClass(ClassLoader classLoader, String testClassName)
+				throws ClassNotFoundException {
+			super(classLoader.loadClass(testClassName));
+			this.classLoader = classLoader;
+		}
+
+		@Override
+		public List<FrameworkMethod> getAnnotatedMethods(
+				Class<? extends Annotation> annotationClass) {
+			try {
+				return getAnnotatedMethods(annotationClass.getName());
+			}
+			catch (ClassNotFoundException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		private List<FrameworkMethod> getAnnotatedMethods(String annotationClassName)
+				throws ClassNotFoundException {
+			Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) this.classLoader
+					.loadClass(annotationClassName);
+			List<FrameworkMethod> methods = super.getAnnotatedMethods(annotationClass);
+			return wrapFrameworkMethods(methods);
+		}
+
+		private List<FrameworkMethod> wrapFrameworkMethods(
+				List<FrameworkMethod> methods) {
+			List<FrameworkMethod> wrapped = new ArrayList<FrameworkMethod>(
+					methods.size());
+			for (FrameworkMethod frameworkMethod : methods) {
+				wrapped.add(new FilteredFrameworkMethod(this.classLoader,
+						frameworkMethod.getMethod()));
+			}
+			return wrapped;
+		}
+
+	}
+
+	/**
+	 * Filtered version of JUnit's {@link FrameworkMethod}.
+	 */
+	private static final class FilteredFrameworkMethod extends FrameworkMethod {
+
+		private final ClassLoader classLoader;
+
+		private FilteredFrameworkMethod(ClassLoader classLoader, Method method) {
 			super(method);
-			this.customTccl = customTccl;
+			this.classLoader = classLoader;
 		}
 
 		@Override
 		public Object invokeExplosively(Object target, Object... params)
 				throws Throwable {
-			ClassLoader originalTccl = Thread.currentThread().getContextClassLoader();
-			Thread.currentThread().setContextClassLoader(this.customTccl);
+			ClassLoader originalClassLoader = Thread.currentThread()
+					.getContextClassLoader();
+			Thread.currentThread().setContextClassLoader(this.classLoader);
 			try {
 				return super.invokeExplosively(target, params);
 			}
 			finally {
-				Thread.currentThread().setContextClassLoader(originalTccl);
+				Thread.currentThread().setContextClassLoader(originalClassLoader);
 			}
 		}
 

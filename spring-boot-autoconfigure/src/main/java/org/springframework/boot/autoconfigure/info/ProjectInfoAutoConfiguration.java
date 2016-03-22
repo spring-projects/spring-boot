@@ -66,7 +66,8 @@ public class ProjectInfoAutoConfiguration {
 	@ConditionalOnMissingBean
 	@Bean
 	public BuildProperties buildProperties() throws Exception {
-		return new BuildProperties(loadFrom(this.properties.getBuild().getLocation(), "build"));
+		return new BuildProperties(
+				loadFrom(this.properties.getBuild().getLocation(), "build"));
 	}
 
 	protected Properties loadFrom(Resource location, String prefix) throws IOException {
@@ -88,8 +89,10 @@ public class ProjectInfoAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			ResourceLoader loader = context.getResourceLoader() == null
-					? this.defaultResourceLoader : context.getResourceLoader();
+			ResourceLoader loader = context.getResourceLoader();
+			if (loader == null) {
+				loader = this.defaultResourceLoader;
+			}
 			PropertyResolver propertyResolver = context.getEnvironment();
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 					propertyResolver, "spring.info.git.");

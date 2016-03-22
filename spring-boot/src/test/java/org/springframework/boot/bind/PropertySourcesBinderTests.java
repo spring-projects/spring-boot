@@ -37,7 +37,8 @@ public class PropertySourcesBinderTests {
 	@Test
 	public void extractAllWithPrefix() {
 		EnvironmentTestUtils.addEnvironment(this.env, "foo.first=1", "foo.second=2");
-		Map<String, Object> content = new PropertySourcesBinder(this.env).extractAll("foo");
+		Map<String, Object> content = new PropertySourcesBinder(this.env)
+				.extractAll("foo");
 		assertThat(content.get("first")).isEqualTo("1");
 		assertThat(content.get("second")).isEqualTo("2");
 		assertThat(content).hasSize(2);
@@ -46,7 +47,8 @@ public class PropertySourcesBinderTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void extractNoPrefix() {
-		EnvironmentTestUtils.addEnvironment(this.env, "foo.ctx.first=1", "foo.ctx.second=2");
+		EnvironmentTestUtils.addEnvironment(this.env, "foo.ctx.first=1",
+				"foo.ctx.second=2");
 		Map<String, Object> content = new PropertySourcesBinder(this.env).extractAll("");
 		assertThat(content.get("foo")).isInstanceOf(Map.class);
 		Map<String, Object> foo = (Map<String, Object>) content.get("foo");
@@ -67,8 +69,9 @@ public class PropertySourcesBinderTests {
 		assertThat(bean.getCounter()).isEqualTo(42);
 	}
 
-
+	@SuppressWarnings("unused")
 	private static class TestBean {
+
 		private String name;
 
 		private Integer counter;

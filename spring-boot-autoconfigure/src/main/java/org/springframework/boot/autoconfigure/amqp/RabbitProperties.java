@@ -512,8 +512,7 @@ public class RabbitProperties {
 		private int maxAttempts = 3;
 
 		/**
-		 * Interval between the first and second attempt to publish or deliver
-		 * a message.
+		 * Interval between the first and second attempt to publish or deliver a message.
 		 */
 		private long initialInterval = 1000L;
 

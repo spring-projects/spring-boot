@@ -40,7 +40,7 @@ import org.springframework.data.couchbase.repository.CouchbaseRepository;
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({Bucket.class, CouchbaseRepository.class})
+@ConditionalOnClass({ Bucket.class, CouchbaseRepository.class })
 @AutoConfigureAfter(CouchbaseAutoConfiguration.class)
 @EnableConfigurationProperties(CouchbaseDataProperties.class)
 @Import({ CouchbaseConfigurerAdapterConfiguration.class,

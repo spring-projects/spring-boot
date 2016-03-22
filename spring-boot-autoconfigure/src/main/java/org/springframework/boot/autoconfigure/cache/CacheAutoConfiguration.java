@@ -65,7 +65,7 @@ import org.springframework.util.Assert;
 @ConditionalOnMissingBean(value = CacheManager.class, name = "cacheResolver")
 @EnableConfigurationProperties(CacheProperties.class)
 @AutoConfigureBefore(HibernateJpaAutoConfiguration.class)
-@AutoConfigureAfter({CouchbaseAutoConfiguration.class, HazelcastAutoConfiguration.class,
+@AutoConfigureAfter({ CouchbaseAutoConfiguration.class, HazelcastAutoConfiguration.class,
 		RedisAutoConfiguration.class })
 @Import({ CacheManagerCustomizers.class, CacheConfigurationImportSelector.class })
 public class CacheAutoConfiguration {

@@ -54,16 +54,18 @@ public class GitProperties extends InfoProperties {
 	 * @return the short commit id
 	 */
 	public String getShortCommitId() {
-		String commitId = getCommitId();
-		return commitId == null ? null
-				: (commitId.length() > 7 ? commitId.substring(0, 7) : commitId);
+		String id = getCommitId();
+		if (id == null) {
+			return null;
+		}
+		return (id.length() > 7 ? id.substring(0, 7) : id);
 	}
 
 	/**
 	 * Return the timestamp of the commit or {@code null}.
 	 * <p>
-	 * If the original value could not be parsed properly, it is still available with
-	 * the {@code commit.time} key.
+	 * If the original value could not be parsed properly, it is still available with the
+	 * {@code commit.time} key.
 	 * @return the commit time
 	 * @see #get(String)
 	 */
@@ -72,12 +74,12 @@ public class GitProperties extends InfoProperties {
 	}
 
 	private static Properties processEntries(Properties properties) {
-		coerceDate(properties, "commit.time");
-		coerceDate(properties, "build.time");
+		coercePropertyToEpoch(properties, "commit.time");
+		coercePropertyToEpoch(properties, "build.time");
 		return properties;
 	}
 
-	private static void coerceDate(Properties properties, String key) {
+	private static void coercePropertyToEpoch(Properties properties, String key) {
 		String value = properties.getProperty(key);
 		if (value != null) {
 			properties.setProperty(key, coerceToEpoch(value));
@@ -85,9 +87,9 @@ public class GitProperties extends InfoProperties {
 	}
 
 	/**
-	 * Attempt to convert the specified value to epoch time. Git properties
-	 * information are known to be specified either as epoch time in seconds
-	 * or using a specific date format.
+	 * Attempt to convert the specified value to epoch time. Git properties information
+	 * are known to be specified either as epoch time in seconds or using a specific date
+	 * format.
 	 * @param s the value to coerce to
 	 * @return the epoch time in milliseconds or the original value if it couldn't be
 	 * converted
@@ -110,7 +112,7 @@ public class GitProperties extends InfoProperties {
 		try {
 			return Long.parseLong(s) * 1000;
 		}
-		catch (NumberFormatException e) {
+		catch (NumberFormatException ex) {
 			return null;
 		}
 	}

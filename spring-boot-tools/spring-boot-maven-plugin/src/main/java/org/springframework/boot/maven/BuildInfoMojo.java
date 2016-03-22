@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -34,7 +35,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 /**
- * Generate a {@code build.properties} file based the content of the current {@link MavenProject}.
+ * Generate a {@code build.properties} file based the content of the current
+ * {@link MavenProject}.
  *
  * @author Stephane Nicoll
  * @since 1.4.0
@@ -64,27 +66,30 @@ public class BuildInfoMojo extends AbstractMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		Properties properties = createBuildInfo();
-		FileOutputStream fos = null;
 		try {
 			createFileIfNecessary(this.outputFile);
-			fos = new FileOutputStream(this.outputFile);
-			properties.store(fos, "Properties");
+			FileOutputStream outputStream = new FileOutputStream(this.outputFile);
+			try {
+				properties.store(outputStream, "Properties");
+			}
+			finally {
+				closeQuietly(outputStream);
+			}
 		}
-		catch (FileNotFoundException e) {
-			throw new MojoExecutionException(e.getMessage(), e);
+		catch (FileNotFoundException ex) {
+			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
 		catch (IOException e) {
 			throw new MojoExecutionException(e.getMessage(), e);
 		}
-		finally {
-			try {
-				if (fos != null) {
-					fos.close();
-				}
-			}
-			catch (IOException e) {
-				getLog().error("Error closing FileOutputStream: " + fos);
-			}
+	}
+
+	private void closeQuietly(OutputStream outputStream) {
+		try {
+			outputStream.close();
+		}
+		catch (IOException ex) {
+			getLog().error("Error closing FileOutputStream: " + outputStream);
 		}
 	}
 
@@ -108,7 +113,8 @@ public class BuildInfoMojo extends AbstractMojo {
 		return sdf.format(date);
 	}
 
-	private void createFileIfNecessary(File file) throws MojoExecutionException, IOException {
+	private void createFileIfNecessary(File file)
+			throws MojoExecutionException, IOException {
 		if (file.exists()) {
 			return;
 		}

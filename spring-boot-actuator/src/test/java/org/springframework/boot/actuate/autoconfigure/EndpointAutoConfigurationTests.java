@@ -269,9 +269,10 @@ public class EndpointAutoConfigurationTests {
 				if (location.exists()) {
 					Properties gitInfoProperties = PropertiesLoaderUtils
 							.loadProperties(location);
-					PropertiesPropertySource gitPropertySource =
-							new PropertiesPropertySource("git", gitInfoProperties);
-					this.content = new PropertySourcesBinder(gitPropertySource).extractAll("git");
+					PropertiesPropertySource gitPropertySource = new PropertiesPropertySource(
+							"git", gitInfoProperties);
+					this.content = new PropertySourcesBinder(gitPropertySource)
+							.extractAll("git");
 				}
 			}
 

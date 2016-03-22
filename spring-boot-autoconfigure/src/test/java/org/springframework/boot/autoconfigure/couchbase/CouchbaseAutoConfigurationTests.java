@@ -33,7 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-public class CouchbaseAutoConfigurationTests extends AbstractCouchbaseAutoConfigurationTests {
+public class CouchbaseAutoConfigurationTests
+		extends AbstractCouchbaseAutoConfigurationTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -47,8 +48,7 @@ public class CouchbaseAutoConfigurationTests extends AbstractCouchbaseAutoConfig
 	@Test
 	public void bootstrapHostsNotRequiredIfCouchbaseConfigurerIsSet() {
 		load(CouchbaseTestConfigurer.class);
-		assertThat(this.context.getBeansOfType(CouchbaseTestConfigurer.class))
-				.hasSize(1);
+		assertThat(this.context.getBeansOfType(CouchbaseTestConfigurer.class)).hasSize(1);
 		// No beans are going to be created
 		assertNoCouchbaseBeans();
 	}
@@ -56,8 +56,7 @@ public class CouchbaseAutoConfigurationTests extends AbstractCouchbaseAutoConfig
 	@Test
 	public void bootstrapHostsIgnoredIfCouchbaseConfigurerIsSet() {
 		load(CouchbaseTestConfigurer.class, "spring.couchbase.bootstrapHosts=localhost");
-		assertThat(this.context.getBeansOfType(CouchbaseTestConfigurer.class))
-				.hasSize(1);
+		assertThat(this.context.getBeansOfType(CouchbaseTestConfigurer.class)).hasSize(1);
 		assertNoCouchbaseBeans();
 	}
 
@@ -114,11 +113,12 @@ public class CouchbaseAutoConfigurationTests extends AbstractCouchbaseAutoConfig
 		assertThat(env.sslKeystorePassword()).isNull();
 	}
 
-	private DefaultCouchbaseEnvironment customizeEnv(String... environment) throws Exception {
+	private DefaultCouchbaseEnvironment customizeEnv(String... environment)
+			throws Exception {
 		load(CouchbaseTestConfigurer.class, environment);
 		CouchbaseProperties properties = this.context.getBean(CouchbaseProperties.class);
-		return (DefaultCouchbaseEnvironment) new CouchbaseAutoConfiguration.CouchbaseConfiguration(properties)
-				.couchbaseEnvironment();
+		return (DefaultCouchbaseEnvironment) new CouchbaseAutoConfiguration.CouchbaseConfiguration(
+				properties).couchbaseEnvironment();
 	}
 
 }

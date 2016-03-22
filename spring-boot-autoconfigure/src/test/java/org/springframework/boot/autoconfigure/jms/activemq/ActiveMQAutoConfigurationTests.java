@@ -21,7 +21,6 @@ import javax.jms.JMSException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
-
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
@@ -64,21 +63,22 @@ public class ActiveMQAutoConfigurationTests {
 
 	@Test
 	public void customPooledConnectionFactoryConfiguration() {
-		load(EmptyConfiguration.class,
-			"spring.activemq.pool.enabled:true",
-			"spring.activemq.pool.maxConnections:256",
-			"spring.activemq.pool.idleTimeout:512",
-			"spring.activemq.pool.expiryTimeout:4096",
-			"spring.activemq.pool.configuration.maximumActiveSessionPerConnection:1024",
-			"spring.activemq.pool.configuration.timeBetweenExpirationCheckMillis:2048");
-		ConnectionFactory connectionFactory = this.context.getBean(ConnectionFactory.class);
+		load(EmptyConfiguration.class, "spring.activemq.pool.enabled:true",
+				"spring.activemq.pool.maxConnections:256",
+				"spring.activemq.pool.idleTimeout:512",
+				"spring.activemq.pool.expiryTimeout:4096",
+				"spring.activemq.pool.configuration.maximumActiveSessionPerConnection:1024",
+				"spring.activemq.pool.configuration.timeBetweenExpirationCheckMillis:2048");
+		ConnectionFactory connectionFactory = this.context
+				.getBean(ConnectionFactory.class);
 		assertThat(connectionFactory).isInstanceOf(PooledConnectionFactory.class);
-
 		PooledConnectionFactory pooledConnectionFactory = (PooledConnectionFactory) connectionFactory;
 		assertThat(pooledConnectionFactory.getMaxConnections()).isEqualTo(256);
 		assertThat(pooledConnectionFactory.getIdleTimeout()).isEqualTo(512);
-		assertThat(pooledConnectionFactory.getMaximumActiveSessionPerConnection()).isEqualTo(1024);
-		assertThat(pooledConnectionFactory.getTimeBetweenExpirationCheckMillis()).isEqualTo(2048);
+		assertThat(pooledConnectionFactory.getMaximumActiveSessionPerConnection())
+				.isEqualTo(1024);
+		assertThat(pooledConnectionFactory.getTimeBetweenExpirationCheckMillis())
+				.isEqualTo(2048);
 		assertThat(pooledConnectionFactory.getExpiryTimeout()).isEqualTo(4096);
 	}
 
@@ -119,6 +119,7 @@ public class ActiveMQAutoConfigurationTests {
 		public ConnectionFactory connectionFactory() {
 			return mock(ConnectionFactory.class);
 		}
+
 	}
 
 }

@@ -32,7 +32,8 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-public abstract class InfoPropertiesInfoContributor<T extends InfoProperties> implements InfoContributor {
+public abstract class InfoPropertiesInfoContributor<T extends InfoProperties>
+		implements InfoContributor {
 
 	private final T properties;
 
@@ -103,9 +104,7 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties> im
 		if (this.mode.equals(Mode.FULL)) {
 			return this.properties.toPropertySource();
 		}
-		else {
-			return toSimplePropertySource();
-		}
+		return toSimplePropertySource();
 	}
 
 	/**
@@ -141,15 +140,12 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties> im
 	 */
 	@SuppressWarnings("unchecked")
 	protected Map<String, Object> getNestedMap(Map<String, Object> map, String key) {
-		Object o = map.get(key);
-		if (o == null) {
+		Object value = map.get(key);
+		if (value == null) {
 			return Collections.emptyMap();
 		}
-		else {
-			return (Map<String, Object>) o;
-		}
+		return (Map<String, Object>) value;
 	}
-
 
 	/**
 	 * Defines how properties should be exposed.

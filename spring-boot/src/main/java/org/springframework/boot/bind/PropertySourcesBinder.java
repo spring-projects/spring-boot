@@ -81,8 +81,7 @@ public class PropertySourcesBinder {
 	}
 
 	/**
-	 * Extract the keys using the specified {@code prefix}. The
-	 * prefix won't be included.
+	 * Extract the keys using the specified {@code prefix}. The prefix won't be included.
 	 * <p>
 	 * Any key that starts with the {@code prefix} will be included
 	 * @param prefix the prefix to use
@@ -119,7 +118,8 @@ public class PropertySourcesBinder {
 		}
 	}
 
-	private static PropertySources createPropertySources(PropertySource<?> propertySource) {
+	private static PropertySources createPropertySources(
+			PropertySource<?> propertySource) {
 		MutablePropertySources propertySources = new MutablePropertySources();
 		propertySources.addLast(propertySource);
 		return propertySources;

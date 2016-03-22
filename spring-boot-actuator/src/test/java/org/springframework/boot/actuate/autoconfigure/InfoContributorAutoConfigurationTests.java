@@ -85,8 +85,8 @@ public class InfoContributorAutoConfigurationTests {
 		Map<String, InfoContributor> beans = this.context
 				.getBeansOfType(InfoContributor.class);
 		assertThat(beans).containsKeys("gitInfoContributor");
-		Map<String, Object> content =
-				invokeContributor(this.context.getBean("gitInfoContributor", InfoContributor.class));
+		Map<String, Object> content = invokeContributor(
+				this.context.getBean("gitInfoContributor", InfoContributor.class));
 		Object git = content.get("git");
 		assertThat(git).isInstanceOf(Map.class);
 		Map<String, Object> gitInfo = (Map<String, Object>) git;
@@ -97,8 +97,8 @@ public class InfoContributorAutoConfigurationTests {
 	@Test
 	public void gitPropertiesFullMode() {
 		load(GitPropertiesConfiguration.class, "management.info.git.mode=full");
-		Map<String, Object> content =
-				invokeContributor(this.context.getBean("gitInfoContributor", InfoContributor.class));
+		Map<String, Object> content = invokeContributor(
+				this.context.getBean("gitInfoContributor", InfoContributor.class));
 		Object git = content.get("git");
 		assertThat(git).isInstanceOf(Map.class);
 		Map<String, Object> gitInfo = (Map<String, Object>) git;
@@ -120,8 +120,8 @@ public class InfoContributorAutoConfigurationTests {
 		Map<String, InfoContributor> beans = this.context
 				.getBeansOfType(InfoContributor.class);
 		assertThat(beans).containsKeys("buildInfoContributor");
-		Map<String, Object> content =
-				invokeContributor(this.context.getBean("buildInfoContributor", InfoContributor.class));
+		Map<String, Object> content = invokeContributor(
+				this.context.getBean("buildInfoContributor", InfoContributor.class));
 		Object build = content.get("build");
 		assertThat(build).isInstanceOf(Map.class);
 		Map<String, Object> gitInfo = (Map<String, Object>) build;
@@ -132,8 +132,8 @@ public class InfoContributorAutoConfigurationTests {
 	@Test
 	public void buildPropertiesFullMode() {
 		load(BuildPropertiesConfiguration.class, "management.info.build.mode=full");
-		Map<String, Object> content =
-				invokeContributor(this.context.getBean("buildInfoContributor", InfoContributor.class));
+		Map<String, Object> content = invokeContributor(
+				this.context.getBean("buildInfoContributor", InfoContributor.class));
 		Object build = content.get("build");
 		assertThat(build).isInstanceOf(Map.class);
 		Map<String, Object> gitInfo = (Map<String, Object>) build;

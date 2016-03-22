@@ -3231,6 +3231,7 @@ SSL support:
 Check the `spring.couchbase.env.*` properties for more details.
 
 
+
 [[boot-features-spring-data-couchbase-repositories]]
 ==== Spring Data Couchbase repositories
 Spring Data includes repository support for Couchbase. For complete details of Spring
@@ -3264,6 +3265,7 @@ implementation.
 
 If you add a `@Bean` of your own of type `CouchbaseTemplate` named `couchbaseTemplate` it
 will replace the default.
+
 
 
 [[boot-features-caching]]
@@ -3946,6 +3948,8 @@ indefinitely.
 You can modify this behavior in two ways; set the `defaultRequeueRejected` property to `false` and zero redeliveries
 will be attempted; or, throw an `AmqpRejectAndDontRequeueException` to signal the message should be rejected.
 This is the mechanism used when retries are enabled and the maximum delivery attempts is reached.
+
+
 
 [[boot-features-email]]
 == Sending email

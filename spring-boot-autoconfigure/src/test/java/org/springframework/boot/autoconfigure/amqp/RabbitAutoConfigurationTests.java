@@ -158,11 +158,14 @@ public class RabbitAutoConfigurationTests {
 		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitTemplate);
 		assertThat(dfa.getPropertyValue("receiveTimeout")).isEqualTo(123L);
 		assertThat(dfa.getPropertyValue("replyTimeout")).isEqualTo(456L);
-		RetryTemplate retryTemplate = (RetryTemplate) dfa.getPropertyValue("retryTemplate");
+		RetryTemplate retryTemplate = (RetryTemplate) dfa
+				.getPropertyValue("retryTemplate");
 		assertThat(retryTemplate).isNotNull();
 		dfa = new DirectFieldAccessor(retryTemplate);
-		SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) dfa.getPropertyValue("retryPolicy");
-		ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) dfa.getPropertyValue("backOffPolicy");
+		SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) dfa
+				.getPropertyValue("retryPolicy");
+		ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) dfa
+				.getPropertyValue("backOffPolicy");
 		assertThat(retryPolicy.getMaxAttempts()).isEqualTo(4);
 		assertThat(backOffPolicy.getInitialInterval()).isEqualTo(2000);
 		assertThat(backOffPolicy.getMultiplier()).isEqualTo(1.5);
@@ -182,8 +185,7 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	public void testConnectionFactoryCacheSettings() {
-		load(TestConfiguration.class,
-				"spring.rabbitmq.cache.channel.size=23",
+		load(TestConfiguration.class, "spring.rabbitmq.cache.channel.size=23",
 				"spring.rabbitmq.cache.channel.checkoutTimeout=1000",
 				"spring.rabbitmq.cache.connection.mode=CONNECTION",
 				"spring.rabbitmq.cache.connection.size=2");
@@ -273,16 +275,20 @@ public class RabbitAutoConfigurationTests {
 		assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
 		assertThat(dfa.getPropertyValue("messageConverter"))
 				.isSameAs(this.context.getBean("myMessageConverter"));
-		assertThat(dfa.getPropertyValue("defaultRequeueRejected")).isEqualTo(Boolean.FALSE);
+		assertThat(dfa.getPropertyValue("defaultRequeueRejected"))
+				.isEqualTo(Boolean.FALSE);
 		Advice[] adviceChain = (Advice[]) dfa.getPropertyValue("adviceChain");
 		assertThat(adviceChain).isNotNull();
 		assertThat(adviceChain.length).isEqualTo(1);
 		dfa = new DirectFieldAccessor(adviceChain[0]);
-		RetryTemplate retryTemplate = (RetryTemplate) dfa.getPropertyValue("retryOperations");
+		RetryTemplate retryTemplate = (RetryTemplate) dfa
+				.getPropertyValue("retryOperations");
 		assertThat(retryTemplate).isNotNull();
 		dfa = new DirectFieldAccessor(retryTemplate);
-		SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) dfa.getPropertyValue("retryPolicy");
-		ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) dfa.getPropertyValue("backOffPolicy");
+		SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) dfa
+				.getPropertyValue("retryPolicy");
+		ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) dfa
+				.getPropertyValue("backOffPolicy");
 		assertThat(retryPolicy.getMaxAttempts()).isEqualTo(4);
 		assertThat(backOffPolicy.getInitialInterval()).isEqualTo(2000);
 		assertThat(backOffPolicy.getMultiplier()).isEqualTo(1.5);
@@ -427,10 +433,12 @@ public class RabbitAutoConfigurationTests {
 	@Configuration
 	@EnableRabbit
 	protected static class EnableRabbitConfiguration {
+
 	}
 
 	@Configuration
 	protected static class NoEnableRabbitConfiguration {
+
 	}
 
 }

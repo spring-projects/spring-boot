@@ -59,7 +59,6 @@ public class CouchbaseAutoConfigurationIntegrationTests
 		assertThat(this.context.getBeansOfType(Bucket.class)).hasSize(2);
 	}
 
-
 	@Configuration
 	static class CustomConfiguration {
 

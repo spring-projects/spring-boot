@@ -65,7 +65,8 @@ public class JmsAutoConfiguration {
 		public JmsTemplate jmsTemplate(ConnectionFactory connectionFactory) {
 			JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
 			jmsTemplate.setPubSubDomain(this.properties.isPubSubDomain());
-			DestinationResolver destinationResolver = this.destinationResolver.getIfUnique();
+			DestinationResolver destinationResolver = this.destinationResolver
+					.getIfUnique();
 			if (destinationResolver != null) {
 				jmsTemplate.setDestinationResolver(destinationResolver);
 			}

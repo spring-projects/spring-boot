@@ -25,14 +25,14 @@ import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Assume;
+import org.junit.AssumptionViolatedException;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 /**
- * {@link TestRule} for working with an optional Couchbase server. Expects
- * a default {@link Bucket} with no password to be available on localhost.
+ * {@link TestRule} for working with an optional Couchbase server. Expects a default
+ * {@link Bucket} with no password to be available on localhost.
  *
  * @author Stephane Nicoll
  */
@@ -40,19 +40,20 @@ public class CouchbaseTestServer implements TestRule {
 
 	private static final Log logger = LogFactory.getLog(CouchbaseTestServer.class);
 
-	private CouchbaseEnvironment env;
+	private CouchbaseEnvironment environment;
 
 	private Cluster cluster;
 
 	@Override
 	public Statement apply(Statement base, Description description) {
 		try {
-			this.env = DefaultCouchbaseEnvironment.create();
-			this.cluster = CouchbaseCluster.create(this.env, "localhost");
+			this.environment = DefaultCouchbaseEnvironment.create();
+			this.cluster = CouchbaseCluster.create(this.environment,
+					"localhost");
 			testConnection(this.cluster);
-			return new CouchbaseStatement(base, this.env, this.cluster);
+			return new CouchbaseStatement(base, this.environment, this.cluster);
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
 			logger.info("No couchbase server available");
 			return new SkipStatement();
 		}
@@ -64,10 +65,10 @@ public class CouchbaseTestServer implements TestRule {
 	}
 
 	/**
-	 * @return the couchbase env if any
+	 * @return the Couchbase environment if any
 	 */
-	public CouchbaseEnvironment getEnv() {
-		return this.env;
+	public CouchbaseEnvironment getCouchbaseEnvironment() {
+		return this.environment;
 	}
 
 	/**
@@ -77,16 +78,18 @@ public class CouchbaseTestServer implements TestRule {
 		return this.cluster;
 	}
 
-
 	private static class CouchbaseStatement extends Statement {
+
 		private final Statement base;
-		private final CouchbaseEnvironment env;
+
+		private final CouchbaseEnvironment environment;
 
 		private final Cluster cluster;
 
-		CouchbaseStatement(Statement base, CouchbaseEnvironment env, Cluster cluster) {
+		CouchbaseStatement(Statement base, CouchbaseEnvironment environment,
+				Cluster cluster) {
 			this.base = base;
-			this.env = env;
+			this.environment = environment;
 			this.cluster = cluster;
 		}
 
@@ -98,10 +101,11 @@ public class CouchbaseTestServer implements TestRule {
 			finally {
 				try {
 					this.cluster.disconnect();
-					this.env.shutdownAsync();
+					this.environment.shutdownAsync();
 				}
 				catch (Exception ex) {
-					logger.warn("Exception while trying to cleanup couchbase resource", ex);
+					logger.warn("Exception while trying to cleanup couchbase resource",
+							ex);
 				}
 			}
 		}
@@ -111,8 +115,8 @@ public class CouchbaseTestServer implements TestRule {
 
 		@Override
 		public void evaluate() throws Throwable {
-			Assume.assumeTrue("Skipping test due to Couchbase "
-					+ "not being available", false);
+			throw new AssumptionViolatedException(
+					"Skipping test due to Couchbase not being available");
 		}
 
 	}

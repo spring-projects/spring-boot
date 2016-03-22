@@ -45,7 +45,7 @@ import org.springframework.context.annotation.Primary;
 class ActiveMQXAConnectionFactoryConfiguration {
 
 	@Primary
-	@Bean(name = {"jmsConnectionFactory", "xaJmsConnectionFactory"})
+	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
 	public ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 			XAConnectionFactoryWrapper wrapper) throws Exception {
 		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(

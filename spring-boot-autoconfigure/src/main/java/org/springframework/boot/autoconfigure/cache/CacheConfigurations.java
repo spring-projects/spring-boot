@@ -30,9 +30,6 @@ import org.springframework.util.Assert;
  */
 final class CacheConfigurations {
 
-	private CacheConfigurations() {
-	}
-
 	private static final Map<CacheType, Class<?>> MAPPINGS;
 
 	static {
@@ -49,6 +46,9 @@ final class CacheConfigurations {
 		mappings.put(CacheType.SIMPLE, SimpleCacheConfiguration.class);
 		mappings.put(CacheType.NONE, NoOpCacheConfiguration.class);
 		MAPPINGS = Collections.unmodifiableMap(mappings);
+	}
+
+	private CacheConfigurations() {
 	}
 
 	public static String getConfigurationClass(CacheType cacheType) {

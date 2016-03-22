@@ -50,6 +50,7 @@ class RedisRepositoriesAutoConfigureRegistrar
 
 	@EnableRedisRepositories
 	private static class EnableRedisRepositoriesConfiguration {
+
 	}
 
 }
