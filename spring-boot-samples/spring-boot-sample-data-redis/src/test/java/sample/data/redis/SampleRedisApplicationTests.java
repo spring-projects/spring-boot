@@ -39,7 +39,7 @@ public class SampleRedisApplicationTests {
 		try {
 			SampleRedisApplication.main(new String[0]);
 		}
-		catch (IllegalStateException ex) {
+		catch (Exception ex) {
 			if (!redisServerRunning(ex)) {
 				return;
 			}
