@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jms.activemq;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for ActiveMQ.
@@ -73,6 +74,7 @@ public class ActiveMQProperties {
 	 * @deprecated since 1.4 in favor of "spring.activemq.pool.enabled"
 	 */
 	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.activemq.pool.enabled")
 	public boolean isPooled() {
 		return getPool().isEnabled();
 	}
