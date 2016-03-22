@@ -36,18 +36,10 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- should these be here -->
-		<dependency>
-			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j-ogm-core</artifactId>
-			<version>${neo4j-ogm.version}</version>
-			<scope>test</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j-ogm-embedded-driver</artifactId>
-			<version>${neo4j-ogm.version}</version>
+			<version>2.0.0-M04</version>
 			<scope>test</scope>
 		</dependency>
 

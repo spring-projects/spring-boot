@@ -122,7 +122,6 @@
 		<mockito.version>1.10.19</mockito.version>
 		<mongodb.version>2.14.1</mongodb.version>
 		<mysql.version>5.1.38</mysql.version>
-		<neo4j-ogm.version>2.0.0-SNAPSHOT</neo4j-ogm.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<postgresql.version>9.4.1208.jre7</postgresql.version>
 		<reactor.version>2.0.7.RELEASE</reactor.version>
@@ -2148,25 +2147,6 @@
 				<version>${wsdl4j.version}</version>
 			</dependency>
 
-			<!-- neo4j ogm (temporary) -->
-			<dependency>
-				<groupId>org.neo4j</groupId>
-				<artifactId>neo4j-ogm-core</artifactId>
-		        <version>${neo4j-ogm.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.neo4j</groupId>
-				<artifactId>neo4j-ogm-api</artifactId>
-				<version>${neo4j-ogm.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.neo4j</groupId>
-				<artifactId>neo4j-ogm-embedded-driver</artifactId>
-				<version>${neo4j-ogm.version}</version>
-			</dependency>
-
 		</dependencies>
 	</dependencyManagement>
 	<build>
@@ -2385,17 +2365,6 @@
 						<enabled>true</enabled>
 					</snapshots>
 				</repository>
-
-				<!-- temporary until SDN 4.1 brings in the most recent dependencies -->
-
-				<repository>
-					<id>neo4j-snapshots</id>
-					<url>http://m2.neo4j.org/content/repositories/snapshots</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</repository>
-
 			</repositories>
 		</profile>
 		<profile>
