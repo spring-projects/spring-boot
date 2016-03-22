@@ -2805,9 +2805,9 @@ http://projects.spring.io/spring-data-redis/[Redis],
 http://projects.spring.io/spring-data-gemfire/[Gemfire],
 http://projects.spring.io/spring-data-couchbase/[Couchbase] and
 http://projects.spring.io/spring-data-cassandra/[Cassandra].
-Spring Boot provides auto-configuration for Redis, MongoDB, Elasticsearch, Solr and
-Cassandra; you can make use of the other projects, but you will need to configure them
-yourself. Refer to the appropriate reference documentation at
+Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Elasticsearch, Solr
+and Cassandra; you can make use of the other projects, but you will need to configure
+them yourself. Refer to the appropriate reference documentation at
 http://projects.spring.io/spring-data[projects.spring.io/spring-data].
 
 
@@ -3011,121 +3011,21 @@ Mongo instance's configuration and logging routing.
 
 [[boot-features-neo4j]]
 === Neo4j
-http://neo4j.com/[Neo4j] is an open-source NoSQL graph database that uses a
-rich data model of nodes related by first class relationships which is better 
-suited for connected big data than traditional rdbms approaches. 
-Spring Boot offers several conveniences for working with Neo4j, including the
-`spring-boot-starter-data-neo4j` '`Starter POM`'.
+http://neo4j.com/[Neo4j] is an open-source NoSQL graph database that uses a rich data
+model of nodes related by first class relationships which is better suited for connected
+big data than traditional rdbms approaches. Spring Boot offers several conveniences for
+working with Neo4j, including the `spring-boot-starter-data-neo4j` '`Starter POM`'.
+
+
 
 [[boot-features-connecting-to-neo4j]]
 ==== Connecting to a Neo4j database
-You can inject an auto-configured `org.neo4j.ogm.session.Neo4jSession` to
-access Neo4j databases.
-
-In your `application properties`, you can supply any domain packages to be scanned by the OGM at startup
-as well as the lifetime of the OGM session that will be established for web clients.
-
-By default your application will be configured to use an in-process embedded instance of Neo4j that will not persist any data when your application shuts down. You can also connect to a remote Neo4j server, or to an embedded instance that persists data between restarts of your application.
-
-The following sections show how you can configure your application for each of these scenarios.
-
-[[boot-features-neo4j-embedded]]
-==== Connecting to an embedded database
-[source,properties,indent=0]
-----
-        # embedded driver (optional: default is embedded driver)
-        spring.data.neo4j.driver=org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver
-
-        # database path (optional: default is in-memory)
-        spring.data.neo4j.URI=file://var/tmp/graph.db
-
-        # declare the domain packages for the OGM to scan at startup
-        # note: if you don't need to do any object mapping, you can omit this property
-        spring.data.neo4.domain.packages=my.app.domain.core, my.app.domain.external, ...
-
-        # OGM session lifetime for web clients
-        # options: session (httpSession), request (httpRequest)
-        # default: session
-        spring.data.neo4j.session.lifetime=session
-----
-
-[[boot-features-neo4j-remote]]
-==== Connecting to a remote database
-[source,properties,indent=0]
-----
-        # http driver
-        spring.data.neo4j.driver=org.neo4j.ogm.drivers.http.driver.HttpDriver
-
-        # database uri
-        spring.data.neo4j.URI=http://user:password@localhost:7474
-
-        # declare the domain packages for the OGM to scan at startup
-        # note: if you don't need to do any object mapping, you can omit this property
-        spring.data.neo4.domain.packages=my.app.domain.core, my.app.domain.external, ...
-
-        # OGM session lifetime for web clients
-        # options: session (httpSession), request (httpRequest)
-        # default: session
-        spring.data.neo4j.session.lifetime=session
-----
-
-[[boot-features-spring-data-neo4j-application]]
-==== Application
-[source,java,indent=0]]
-----
-    @SpringBootApplication
-    @Import(Neo4jAutoConfiguration.class)
-    public class Application {
-
-        public static void main(String[] args) {
-           new SpringApplication(Application.class).run(args);
-        }
-
-    }
-----
-
-[[boot-features-neo4j-ogm-session]]
-==== Neo4jSession
-[source,java,indent=0]
-----
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.stereotype.Component;
-
-	import org.neo4j.ogm.session.Neo4jSession;
-
-	@Component
-	public class MyBean {
-
-		private final Session session;
-
-		@Autowired
-		public MyBean(Session session) {
-			this.session = session;
-		}
-
-		// ...
-		public void example() {
-			Iterable result = session.query("MATCH (c:Customer) RETURN count(*)",null);
-			// ...
-		}
-
-	}
-----
-
-[[boot-features-spring-data-neo4j-template]]
-==== Neo4jTemplate
-Spring Data Neo4j provides a
-{spring-data-neo4j-javadoc}/core/Neo4jTemplate.html[`Neo4jTemplate`] class that is very
-similar in its design to Spring's `JdbcTemplate`. As with `JdbcTemplate` Spring Boot
-auto-configures a bean for you to simply inject:
+You can inject an auto-configured `Neo4jSession`, `Session` or `Neo4jOperations` instance
+as you would any other Spring Bean. By default the instance will attempt to connect to a
+Neo4j server using `localhost:7474`:
 
 [source,java,indent=0]
 ----
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.stereotype.Component;
-
-	import org.springframework.data.neo4j.template.Neo4jTemplate;
-
 	@Component
 	public class MyBean {
 
@@ -3141,7 +3041,47 @@ auto-configures a bean for you to simply inject:
 	}
 ----
 
-See the `Neo4jOperations` Javadoc for complete details.
+You can take full control of the configuration by adding a
+`org.neo4j.ogm.config.Configuration` `@Bean` of your own. Also, adding a `@Bean` of type
+`Neo4jOperations` disables the auto-configuration.
+
+You can configure the user and credentials to use via the `spring.data.couchbase.*`
+properties:
+
+[source,properties,indent=0]
+----
+	spring.data.neo4j.uri=http://my-server:7474
+	spring.data.neo4j.username=neo4j
+	spring.data.neo4j.password=secret
+----
+
+[[boot-features-connecting-to-neo4j-embedded]]
+==== Using the embedded mode
+
+NOTE: Neo4j's embedded mode is subject to a different licensing, make sure to review it
+before integrating the dependency in your application.
+
+If you add `org.neo4j:neo4j-ogm-embedded-driver` to the dependencies of your application,
+Spring Boot will automatically configure an in-process embedded instance of Neo4j that
+will not persist any data when your application shuts down. You can explicitly disable
+that mode using `spring.data.neo4j.embedded.enabled=false`. You can also enable
+persistence for the embedded mode:
+
+----
+	spring.data.neo4j.uri=file://var/tmp/graph.db
+----
+
+[[boot-features-neo4j-ogm-session]]
+==== Neo4jSession
+
+By default, the lifetime of the session is scope to the application. If you are running a
+web application you can change it to scope or request easily:
+
+----
+	spring.data.neo4j.session.scope=session
+----
+
+
 
 [[boot-features-spring-data-neo4j-repositories]]
 ==== Spring Data Neo4j repositories
@@ -3151,8 +3091,10 @@ In fact, both Spring Data JPA and Spring Data Neo4j share the same common
 infrastructure; so you could take the JPA example from earlier and, assuming that `City`
 is now a Neo4j OGM `@NodeEntity` rather than a JPA `@Entity`, it will work in the same way.
 
-To enable repository support (and optionally support for `@Transactional`), add the following two annotations to
-your Spring configuration:
+TIP: You can customize entity scanning locations using the `@NodeEntityScan` annotation.
+
+To enable repository support (and optionally support for `@Transactional`), add the following
+two annotations to your Spring configuration:
 
 [source,java,indent=0]
 ----
@@ -3180,6 +3122,7 @@ your Spring configuration:
 TIP: For complete details of Spring Data Neo4j, including its rich object mapping
 technologies, refer to their http://projects.spring.io/spring-data-neo4j/[reference
 documentation].
+
 
 
 [[boot-features-gemfire]]

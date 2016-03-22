@@ -59,7 +59,6 @@
 		<commons-dbcp.version>1.4</commons-dbcp.version>
 		<commons-dbcp2.version>2.1.1</commons-dbcp2.version>
 		<commons-digester.version>2.1</commons-digester.version>
-		<commons-lang3.version>3.4</commons-lang3.version>
 		<commons-pool.version>1.6</commons-pool.version>
 		<commons-pool2.version>2.4.2</commons-pool2.version>
 		<couchbase-client.version>2.2.3</couchbase-client.version>
@@ -124,6 +123,7 @@
 		<mongodb.version>2.14.1</mongodb.version>
 		<mysql.version>5.1.38</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
+		<neo4j-ogm.version>2.0.0-M04</neo4j-ogm.version>
 		<postgresql.version>9.4.1208.jre7</postgresql.version>
 		<reactor.version>2.0.7.RELEASE</reactor.version>
 		<reactor-spring.version>2.0.7.RELEASE</reactor-spring.version>
@@ -785,7 +785,6 @@
 				<artifactId>commons-dbcp</artifactId>
 				<version>${commons-dbcp.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>commons-digester</groupId>
 				<artifactId>commons-digester</artifactId>
@@ -1774,6 +1773,26 @@
 				<version>${mongodb.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.neo4j</groupId>
+				<artifactId>neo4j-ogm-api</artifactId>
+				<version>${neo4j-ogm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.neo4j</groupId>
+				<artifactId>neo4j-ogm-compiler</artifactId>
+				<version>${neo4j-ogm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.neo4j</groupId>
+				<artifactId>neo4j-ogm-core</artifactId>
+				<version>${neo4j-ogm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.neo4j</groupId>
+				<artifactId>neo4j-ogm-http-driver</artifactId>
+				<version>${neo4j-ogm.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
 				<version>${postgresql.version}</version>
@@ -2162,7 +2181,6 @@
 				<artifactId>wsdl4j</artifactId>
 				<version>${wsdl4j.version}</version>
 			</dependency>
-
 		</dependencies>
 	</dependencyManagement>
 	<build>

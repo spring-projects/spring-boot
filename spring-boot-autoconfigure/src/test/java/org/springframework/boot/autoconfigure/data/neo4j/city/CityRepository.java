@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,5 @@ import org.springframework.data.neo4j.repository.GraphRepository;
 public interface CityRepository extends GraphRepository<City> {
 
 	Page<City> findAll(Pageable pageable);
-
-// TODO: cannot resolve queries like this at the moment.
-//
-//	Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(String name, String country,
-//														   Pageable pageable);
-//
-//	City findByNameAndCountry(String name, String country);
 
 }

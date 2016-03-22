@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,35 +16,34 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import org.assertj.core.api.Assertions;
-
 import org.junit.After;
 import org.junit.Test;
-
 import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.alt.neo4j.CityNeo4jRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
 import org.springframework.boot.autoconfigure.data.neo4j.city.CityRepository;
-
+import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-
 import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
- * Tests for {@link org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration}.
+ * Tests for {@link Neo4jRepositoriesAutoConfiguration}.
  *
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Michael Hunger
  * @author Vince Bickers
+ * @author Stephane Nicoll
  */
 public class Neo4jRepositoriesAutoConfigurationTests {
 
@@ -57,27 +56,26 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
-
 		prepareApplicationContext(TestConfiguration.class);
 
-		Assertions.assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-
+		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 		Neo4jMappingContext mappingContext = this.context.getBean(Neo4jMappingContext.class);
-		Assertions.assertThat(mappingContext.getPersistentEntity(City.class)).isNotNull();
+		assertThat(mappingContext.getPersistentEntity(City.class)).isNotNull();
 
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
 		prepareApplicationContext(EmptyConfiguration.class);
-		Assertions.assertThat(this.context.getBean(SessionFactory.class)).isNotNull();
+
+		assertThat(this.context.getBean(SessionFactory.class)).isNotNull();
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		prepareApplicationContext(CustomizedConfiguration.class);
 
-		Assertions.assertThat(this.context.getBean(CityNeo4jRepository.class)).isNotNull();
+		assertThat(this.context.getBean(CityNeo4jRepository.class)).isNotNull();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -89,6 +87,8 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 
 	private void prepareApplicationContext(Class<?>... configurationClasses) {
 		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.neo4j.uri=http://localhost:9797");
 		this.context.register(configurationClasses);
 		this.context.register(Neo4jAutoConfiguration.class,
 				Neo4jRepositoriesAutoConfiguration.class,
@@ -122,4 +122,5 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 	protected static class SortOfInvalidCustomConfiguration {
 
 	}
+
 }

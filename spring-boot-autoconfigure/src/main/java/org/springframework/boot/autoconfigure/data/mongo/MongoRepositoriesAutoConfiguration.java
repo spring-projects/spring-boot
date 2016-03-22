@@ -53,7 +53,8 @@ import org.springframework.data.mongodb.repository.support.MongoRepositoryFactor
  */
 @Configuration
 @ConditionalOnClass({ Mongo.class, MongoRepository.class })
-@ConditionalOnMissingBean({ MongoRepositoryFactoryBean.class, MongoRepositoryConfigurationExtension.class })
+@ConditionalOnMissingBean({ MongoRepositoryFactoryBean.class,
+		MongoRepositoryConfigurationExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.mongodb.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(MongoRepositoriesAutoConfigureRegistrar.class)
 @AutoConfigureAfter(MongoDataAutoConfiguration.class)

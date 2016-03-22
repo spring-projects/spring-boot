@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,27 @@
 
 package org.springframework.boot.autoconfigure.neo4j;
 
-import org.assertj.core.api.Assertions;
-
 import org.junit.After;
 import org.junit.Test;
-
-import org.neo4j.ogm.config.Configuration;
+import org.neo4j.ogm.drivers.http.driver.HttpDriver;
+import org.neo4j.ogm.session.Session;
+import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.neo4j.Neo4jAutoConfiguration;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.neo4j.template.Neo4jOperations;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link Neo4jAutoConfiguration}.
+ * Tests for {@link Neo4jAutoConfiguration}. Tests can't use the embedded driver
+ * as we use lucene 4 and Neo4j still requires 3.
  *
- * @author Dave Syer
+ * @author Stephane Nicoll
  * @author Michael Hunger
  * @author Vince Bickers
  */
@@ -46,10 +52,74 @@ public class Neo4jAutoConfigurationTests {
 	}
 
 	@Test
-	public void configurationExists() {
-		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class, Neo4jAutoConfiguration.class);
-		Assertions.assertThat(this.context.getBeanNamesForType(Configuration.class).length).isEqualTo(1);
+	public void defaultConfiguration() {
+		load(null, "spring.data.neo4j.uri=http://localhost:8989");
+		assertThat(this.context.getBeansOfType(Neo4jOperations.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(SessionFactory.class)).hasSize(1);
+		assertThat(this.context.getBeanDefinition("scopedTarget.getSession").getScope()).isEqualTo("singleton");
+	}
+
+	@Test
+	public void customScope() {
+		load(null, "spring.data.neo4j.uri=http://localhost:8989",
+				"spring.data.neo4j.session.scope=prototype");
+		assertThat(this.context.getBeanDefinition("scopedTarget.getSession").getScope()).isEqualTo("prototype");
+	}
+
+	@Test
+	public void customNeo4jOperations() {
+		load(CustomNeo4jOperations.class);
+		assertThat(this.context.getBean(Neo4jOperations.class))
+				.isSameAs(this.context.getBean("myNeo4jOperations"));
+		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class)).hasSize(0);
+		assertThat(this.context.getBeansOfType(SessionFactory.class)).hasSize(0);
+		assertThat(this.context.getBeansOfType(Session.class)).hasSize(0);
+	}
+
+	@Test
+	public void customConfiguration() {
+		load(CustomConfiguration.class);
+		assertThat(this.context.getBean(org.neo4j.ogm.config.Configuration.class))
+				.isSameAs(this.context.getBean("myConfiguration"));
+		assertThat(this.context.getBeansOfType(Neo4jOperations.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(SessionFactory.class)).hasSize(1);
+	}
+
+	public void load(Class<?> config, String... environment) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		if (config != null) {
+			ctx.register(config);
+		}
+		ctx.register(PropertyPlaceholderAutoConfiguration.class,
+				Neo4jAutoConfiguration.class);
+		ctx.refresh();
+		this.context = ctx;
+	}
+
+	@Configuration
+	static class CustomNeo4jOperations {
+
+		@Bean
+		public Neo4jOperations myNeo4jOperations() {
+			return mock(Neo4jOperations.class);
+		}
+
+	}
+
+
+	@Configuration
+	static class CustomConfiguration {
+
+		@Bean
+		public org.neo4j.ogm.config.Configuration myConfiguration() {
+			org.neo4j.ogm.config.Configuration configuration = new org.neo4j.ogm.config.Configuration();
+			configuration.driverConfiguration().setDriverClassName(HttpDriver.class.getName());
+			return configuration;
+		}
+
 	}
 
 }

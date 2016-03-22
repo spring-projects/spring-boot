@@ -16,35 +16,46 @@
 
 package sample.data.neo4j;
 
-import org.junit.ClassRule;
+import java.net.ConnectException;
+
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.OutputCapture;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import org.springframework.boot.test.rule.OutputCapture;
 
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SampleNeo4jApplication}.
  *
- * @author Dave Syer
- * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(SampleNeo4jApplication.class)
-@IntegrationTest
 public class SampleNeo4jApplicationTests {
 
-	@ClassRule
-	public static OutputCapture outputCapture = new OutputCapture();
+	@Rule
+	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() throws Exception {
-		String output = SampleNeo4jApplicationTests.outputCapture.toString();
+		try {
+			SampleNeo4jApplication.main(new String[0]);
+		}
+		catch (Exception ex) {
+			if (!neo4jServerRunning(ex)) {
+				return;
+			}
+		}
+		String output = this.outputCapture.toString();
 		assertTrue("Wrong output: " + output,
 				output.contains("firstName='Alice', lastName='Smith'"));
+	}
+
+	private boolean neo4jServerRunning(Throwable ex) {
+		System.out.println(ex.getMessage());
+		if (ex instanceof ConnectException) {
+			return false;
+		}
+		return (ex.getCause() == null || neo4jServerRunning(ex.getCause()));
 	}
 
 }

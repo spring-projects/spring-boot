@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.alt.neo4j;
-
-import org.springframework.boot.autoconfigure.data.neo4j.city.City;
-import org.springframework.data.neo4j.repository.GraphRepository;
-
-public interface CityNeo4jRepository extends GraphRepository<City> {
-}
+/**
+ * Auto-configuration for Neo4j.
+ */
+package org.springframework.boot.autoconfigure.neo4j;

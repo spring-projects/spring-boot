@@ -97,6 +97,12 @@
     "defaultValue": true
   },
   {
+    "name": "spring.data.neo4j.session.scope",
+    "type": "java.lang.String",
+    "description": "Scope (lifetime) of the session.",
+    "defaultValue": "singleton"
+  },
+  {
     "name": "spring.data.redis.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Redis repositories.",
@@ -333,6 +339,36 @@
         "parameters": {
           "target": "org.springframework.data.mapping.model.FieldNamingStrategy"
         }
+      }
+    ]
+  },
+  {
+    "name": "spring.data.neo4j.compiler",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "org.neo4j.ogm.compiler.Compiler"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.data.neo4j.session.scope",
+    "values": [
+      {
+        "value": "singleton"
+      },
+      {
+        "value": "session"
+      },
+      {
+        "value": "request"
+      }
+    ],
+    "providers": [
+      {
+        "name": "any"
       }
     ]
   },
