@@ -25,7 +25,7 @@ import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.spring.provider.SpringEmbeddedCacheManager;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.CacheManager;
@@ -48,14 +48,20 @@ import org.springframework.util.CollectionUtils;
 @Conditional(CacheCondition.class)
 public class InfinispanCacheConfiguration {
 
-	@Autowired
-	private CacheProperties cacheProperties;
+	private final CacheProperties cacheProperties;
 
-	@Autowired
-	private CacheManagerCustomizers customizers;
+	private final CacheManagerCustomizers customizers;
 
-	@Autowired(required = false)
-	private ConfigurationBuilder defaultConfigurationBuilder;
+	private final ConfigurationBuilder defaultConfigurationBuilder;
+
+	public InfinispanCacheConfiguration(CacheProperties cacheProperties,
+			CacheManagerCustomizers customizers,
+			ObjectProvider<ConfigurationBuilder> defaultConfigurationBuilderProvider) {
+		this.cacheProperties = cacheProperties;
+		this.customizers = customizers;
+		this.defaultConfigurationBuilder = defaultConfigurationBuilderProvider
+				.getIfAvailable();
+	}
 
 	@Bean
 	public SpringEmbeddedCacheManager cacheManager(

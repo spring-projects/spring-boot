@@ -47,7 +47,6 @@ import de.flapdoodle.embed.process.store.ArtifactStoreBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -83,37 +82,21 @@ public class EmbeddedMongoAutoConfiguration {
 	private static final byte[] IP6_LOOPBACK_ADDRESS = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 			0, 0, 0, 0, 1 };
 
-	@Autowired
-	private MongoProperties properties;
+	private final MongoProperties properties;
 
-	@Autowired
-	private EmbeddedMongoProperties embeddedProperties;
+	private final EmbeddedMongoProperties embeddedProperties;
 
-	@Autowired
-	private ApplicationContext context;
+	private final ApplicationContext context;
 
-	@Autowired(required = false)
-	private IRuntimeConfig runtimeConfig;
+	private final IRuntimeConfig runtimeConfig;
 
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnClass(Logger.class)
-	public IRuntimeConfig embeddedMongoRuntimeConfig() {
-		Logger logger = LoggerFactory
-				.getLogger(getClass().getPackage().getName() + ".EmbeddedMongo");
-		ProcessOutput processOutput = new ProcessOutput(
-				Processors.logTo(logger, Slf4jLevel.INFO),
-				Processors.logTo(logger, Slf4jLevel.ERROR), Processors.named("[console>]",
-						Processors.logTo(logger, Slf4jLevel.DEBUG)));
-		return new RuntimeConfigBuilder().defaultsWithLogger(Command.MongoD, logger)
-				.processOutput(processOutput).artifactStore(getArtifactStore(logger))
-				.build();
-	}
-
-	private ArtifactStoreBuilder getArtifactStore(Logger logger) {
-		return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD)
-				.download(new DownloadConfigBuilder().defaultsForCommand(Command.MongoD)
-						.progressListener(new Slf4jProgressListener(logger)).build());
+	public EmbeddedMongoAutoConfiguration(MongoProperties properties,
+			EmbeddedMongoProperties embeddedProperties, ApplicationContext context,
+			IRuntimeConfig runtimeConfig) {
+		this.properties = properties;
+		this.embeddedProperties = embeddedProperties;
+		this.context = context;
+		this.runtimeConfig = runtimeConfig;
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")
@@ -192,6 +175,33 @@ public class EmbeddedMongoAutoConfiguration {
 			sources.addFirst(propertySource);
 		}
 		return (Map<String, Object>) propertySource.getSource();
+	}
+
+	@Configuration
+	@ConditionalOnClass(Logger.class)
+	@ConditionalOnMissingBean(IRuntimeConfig.class)
+	static class RuntimeConfigConfiguration {
+
+		@Bean
+		public IRuntimeConfig embeddedMongoRuntimeConfig() {
+			Logger logger = LoggerFactory
+					.getLogger(getClass().getPackage().getName() + ".EmbeddedMongo");
+			ProcessOutput processOutput = new ProcessOutput(
+					Processors.logTo(logger, Slf4jLevel.INFO),
+					Processors.logTo(logger, Slf4jLevel.ERROR), Processors.named(
+							"[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG)));
+			return new RuntimeConfigBuilder().defaultsWithLogger(Command.MongoD, logger)
+					.processOutput(processOutput).artifactStore(getArtifactStore(logger))
+					.build();
+		}
+
+		private ArtifactStoreBuilder getArtifactStore(Logger logger) {
+			return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD)
+					.download(new DownloadConfigBuilder()
+							.defaultsForCommand(Command.MongoD)
+							.progressListener(new Slf4jProgressListener(logger)).build());
+		}
+
 	}
 
 	/**

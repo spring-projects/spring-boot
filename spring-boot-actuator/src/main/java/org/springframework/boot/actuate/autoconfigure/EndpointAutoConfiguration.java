@@ -19,14 +19,13 @@ package org.springframework.boot.actuate.autoconfigure;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import liquibase.integration.spring.SpringLiquibase;
 import org.flywaydb.core.Flyway;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
 import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint;
@@ -82,20 +81,28 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 @EnableConfigurationProperties(EndpointProperties.class)
 public class EndpointAutoConfiguration {
 
-	@Autowired(required = false)
-	private HealthAggregator healthAggregator = new OrderedHealthAggregator();
+	private final HealthAggregator healthAggregator;
 
-	@Autowired(required = false)
-	private Map<String, HealthIndicator> healthIndicators = new HashMap<String, HealthIndicator>();
+	private final Map<String, HealthIndicator> healthIndicators;
 
-	@Autowired(required = false)
-	private List<InfoContributor> infoContributors = new ArrayList<InfoContributor>();
+	private final List<InfoContributor> infoContributors;
 
-	@Autowired(required = false)
-	private Collection<PublicMetrics> publicMetrics;
+	private final Collection<PublicMetrics> publicMetrics;
 
-	@Autowired(required = false)
-	private TraceRepository traceRepository = new InMemoryTraceRepository();
+	private final TraceRepository traceRepository;
+
+	public EndpointAutoConfiguration(
+			ObjectProvider<HealthAggregator> healthAggregatorProvider,
+			ObjectProvider<Map<String, HealthIndicator>> healthIndicatorsProvider,
+			ObjectProvider<List<InfoContributor>> infoContributorsProvider,
+			ObjectProvider<Collection<PublicMetrics>> publicMetricsProvider,
+			ObjectProvider<TraceRepository> traceRepositoryProvider) {
+		this.healthAggregator = healthAggregatorProvider.getIfAvailable();
+		this.healthIndicators = healthIndicatorsProvider.getIfAvailable();
+		this.infoContributors = infoContributorsProvider.getIfAvailable();
+		this.publicMetrics = publicMetricsProvider.getIfAvailable();
+		this.traceRepository = traceRepositoryProvider.getIfAvailable();
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -106,7 +113,12 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public HealthEndpoint healthEndpoint() {
-		return new HealthEndpoint(this.healthAggregator, this.healthIndicators);
+		return new HealthEndpoint(
+				this.healthAggregator == null ? new OrderedHealthAggregator()
+						: this.healthAggregator,
+				this.healthIndicators == null
+						? Collections.<String, HealthIndicator>emptyMap()
+						: this.healthIndicators);
 	}
 
 	@Bean
@@ -118,7 +130,8 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public InfoEndpoint infoEndpoint() throws Exception {
-		return new InfoEndpoint(this.infoContributors);
+		return new InfoEndpoint(this.infoContributors == null
+				? Collections.<InfoContributor>emptyList() : this.infoContributors);
 	}
 
 	@Bean
@@ -135,7 +148,8 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public TraceEndpoint traceEndpoint() {
-		return new TraceEndpoint(this.traceRepository);
+		return new TraceEndpoint(this.traceRepository == null
+				? new InMemoryTraceRepository() : this.traceRepository);
 	}
 
 	@Bean

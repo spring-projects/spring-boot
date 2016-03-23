@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.couchbase;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -38,11 +38,15 @@ import org.springframework.data.couchbase.repository.support.IndexManager;
 @ConditionalOnBean(CouchbaseConfigurer.class)
 class SpringBootCouchbaseDataConfiguration extends AbstractCouchbaseDataConfiguration {
 
-	@Autowired
-	private CouchbaseDataProperties properties;
+	private final CouchbaseDataProperties properties;
 
-	@Autowired(required = false)
-	private CouchbaseConfigurer couchbaseConfigurer;
+	private final CouchbaseConfigurer couchbaseConfigurer;
+
+	SpringBootCouchbaseDataConfiguration(CouchbaseDataProperties properties,
+			ObjectProvider<CouchbaseConfigurer> couchbaseConfigurerProvider) {
+		this.properties = properties;
+		this.couchbaseConfigurer = couchbaseConfigurerProvider.getIfAvailable();
+	}
 
 	@Override
 	protected CouchbaseConfigurer couchbaseConfigurer() {

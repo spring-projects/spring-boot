@@ -22,7 +22,6 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -39,11 +38,15 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(EnableRabbit.class)
 class RabbitAnnotationDrivenConfiguration {
 
-	@Autowired
-	private ObjectProvider<MessageConverter> messageConverter;
+	private final ObjectProvider<MessageConverter> messageConverter;
 
-	@Autowired
-	private RabbitProperties properties;
+	private final RabbitProperties properties;
+
+	RabbitAnnotationDrivenConfiguration(ObjectProvider<MessageConverter> messageConverter,
+			RabbitProperties properties) {
+		this.messageConverter = messageConverter;
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

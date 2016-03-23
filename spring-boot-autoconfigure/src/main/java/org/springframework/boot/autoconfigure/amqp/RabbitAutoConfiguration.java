@@ -27,7 +27,6 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -144,11 +143,16 @@ public class RabbitAutoConfiguration {
 	@Import(RabbitConnectionFactoryCreator.class)
 	protected static class RabbitTemplateConfiguration {
 
-		@Autowired
-		private ObjectProvider<MessageConverter> messageConverter;
+		private final ObjectProvider<MessageConverter> messageConverter;
 
-		@Autowired
-		private RabbitProperties properties;
+		private final RabbitProperties properties;
+
+		public RabbitTemplateConfiguration(
+				ObjectProvider<MessageConverter> messageConverter,
+				RabbitProperties properties) {
+			this.messageConverter = messageConverter;
+			this.properties = properties;
+		}
 
 		@Bean
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)

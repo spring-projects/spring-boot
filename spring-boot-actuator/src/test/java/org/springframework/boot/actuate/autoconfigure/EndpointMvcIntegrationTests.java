@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.EndpointMvcIntegrationTests.Application;
 import org.springframework.boot.actuate.endpoint.Endpoint;
@@ -120,6 +121,13 @@ public class EndpointMvcIntegrationTests {
 	@RestController
 	protected static class Application {
 
+		private final List<HttpMessageConverter<?>> converters;
+
+		public Application(
+				ObjectProvider<List<HttpMessageConverter<?>>> convertersProvider) {
+			this.converters = convertersProvider.getIfAvailable();
+		}
+
 		@RequestMapping("/{name}/{env}/{bar}")
 		public Map<String, Object> master(@PathVariable String name,
 				@PathVariable String env, @PathVariable String label) {
@@ -132,13 +140,11 @@ public class EndpointMvcIntegrationTests {
 			return Collections.singletonMap("foo", (Object) "bar");
 		}
 
-		@Autowired(required = false)
-		private final List<HttpMessageConverter<?>> converters = Collections.emptyList();
-
 		@Bean
 		@ConditionalOnMissingBean
 		public HttpMessageConverters messageConverters() {
-			return new HttpMessageConverters(this.converters);
+			return new HttpMessageConverters(this.converters == null
+					? Collections.<HttpMessageConverter<?>>emptyList() : this.converters);
 		}
 
 		@Bean

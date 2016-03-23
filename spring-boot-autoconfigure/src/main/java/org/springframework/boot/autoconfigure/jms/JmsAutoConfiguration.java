@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jms;
 import javax.jms.ConnectionFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -50,14 +49,19 @@ public class JmsAutoConfiguration {
 	@Configuration
 	protected static class JmsTemplateConfiguration {
 
-		@Autowired
-		private JmsProperties properties;
+		private final JmsProperties properties;
 
-		@Autowired
-		private ObjectProvider<DestinationResolver> destinationResolver;
+		private final ObjectProvider<DestinationResolver> destinationResolver;
 
-		@Autowired
-		private ObjectProvider<MessageConverter> messageConverter;
+		private final ObjectProvider<MessageConverter> messageConverter;
+
+		public JmsTemplateConfiguration(JmsProperties properties,
+				ObjectProvider<DestinationResolver> destinationResolver,
+				ObjectProvider<MessageConverter> messageConverter) {
+			this.properties = properties;
+			this.destinationResolver = destinationResolver;
+			this.messageConverter = messageConverter;
+		}
 
 		@Bean
 		@ConditionalOnMissingBean

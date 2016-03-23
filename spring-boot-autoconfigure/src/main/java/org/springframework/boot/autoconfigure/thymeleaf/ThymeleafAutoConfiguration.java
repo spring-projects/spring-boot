@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 
 import javax.annotation.PostConstruct;
@@ -37,7 +36,7 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -54,6 +53,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.MimeType;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 
@@ -79,11 +79,15 @@ public class ThymeleafAutoConfiguration {
 	@ConditionalOnMissingBean(name = "defaultTemplateResolver")
 	public static class DefaultTemplateResolverConfiguration {
 
-		@Autowired
-		private ThymeleafProperties properties;
+		private final ThymeleafProperties properties;
 
-		@Autowired
-		private ApplicationContext applicationContext;
+		private final ApplicationContext applicationContext;
+
+		public DefaultTemplateResolverConfiguration(ThymeleafProperties properties,
+				ApplicationContext applicationContext) {
+			this.properties = properties;
+			this.applicationContext = applicationContext;
+		}
 
 		@PostConstruct
 		public void checkTemplateLocationExists() {
@@ -127,12 +131,16 @@ public class ThymeleafAutoConfiguration {
 	@ConditionalOnMissingBean(SpringTemplateEngine.class)
 	protected static class ThymeleafDefaultConfiguration {
 
-		@Autowired
-		private final Collection<ITemplateResolver> templateResolvers = Collections
-				.emptySet();
+		private final Collection<ITemplateResolver> templateResolvers;
 
-		@Autowired(required = false)
-		private final Collection<IDialect> dialects = Collections.emptySet();
+		private final Collection<IDialect> dialects;
+
+		public ThymeleafDefaultConfiguration(
+				Collection<ITemplateResolver> templateResolvers,
+				ObjectProvider<Collection<IDialect>> dialectsProvider) {
+			this.templateResolvers = templateResolvers;
+			this.dialects = dialectsProvider.getIfAvailable();
+		}
 
 		@Bean
 		public SpringTemplateEngine templateEngine() {
@@ -140,8 +148,10 @@ public class ThymeleafAutoConfiguration {
 			for (ITemplateResolver templateResolver : this.templateResolvers) {
 				engine.addTemplateResolver(templateResolver);
 			}
-			for (IDialect dialect : this.dialects) {
-				engine.addDialect(dialect);
+			if (!CollectionUtils.isEmpty(this.dialects)) {
+				for (IDialect dialect : this.dialects) {
+					engine.addDialect(dialect);
+				}
 			}
 			return engine;
 		}

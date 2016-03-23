@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
@@ -40,8 +40,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AuditAutoConfiguration {
 
-	@Autowired(required = false)
-	private final AuditEventRepository auditEventRepository = new InMemoryAuditEventRepository();
+	private final AuditEventRepository auditEventRepository;
+
+	public AuditAutoConfiguration(
+			ObjectProvider<AuditEventRepository> auditEventRepositoryProvider) {
+		this.auditEventRepository = auditEventRepositoryProvider.getIfAvailable();
+	}
 
 	@Bean
 	public AuditListener auditListener() throws Exception {
@@ -64,10 +68,12 @@ public class AuditAutoConfiguration {
 
 	@ConditionalOnMissingBean(AuditEventRepository.class)
 	protected static class AuditEventRepositoryConfiguration {
+
 		@Bean
 		public InMemoryAuditEventRepository auditEventRepository() throws Exception {
 			return new InMemoryAuditEventRepository();
 		}
+
 	}
 
 }
