@@ -829,13 +829,16 @@ content into your application; rather pick only the properties that you need.
 	endpoints.actuator.sensitive=false # Enable security on the endpoint.
 	endpoints.autoconfig.enabled= # Enable the endpoint.
 	endpoints.autoconfig.id= # Endpoint identifier.
+	endpoints.autoconfig.path= # Endpoint path.
 	endpoints.autoconfig.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.beans.enabled= # Enable the endpoint.
 	endpoints.beans.id= # Endpoint identifier.
+	endpoints.beans.path= # Endpoint path.
 	endpoints.beans.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.configprops.enabled= # Enable the endpoint.
 	endpoints.configprops.id= # Endpoint identifier.
 	endpoints.configprops.keys-to-sanitize=password,secret,key,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.
+	endpoints.configprops.path= # Endpoint path.
 	endpoints.configprops.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.docs.curies.enabled=false # Enable the curie generation.
 	endpoints.docs.enabled=true # Enable actuator docs endpoint.
@@ -843,10 +846,12 @@ content into your application; rather pick only the properties that you need.
 	endpoints.docs.sensitive=false #
 	endpoints.dump.enabled= # Enable the endpoint.
 	endpoints.dump.id= # Endpoint identifier.
+	endpoints.dump.path= # Endpoint path.
 	endpoints.dump.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.env.enabled= # Enable the endpoint.
 	endpoints.env.id= # Endpoint identifier.
 	endpoints.env.keys-to-sanitize=password,secret,key,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.
+	endpoints.env.path= # Endpoint path.
 	endpoints.env.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.flyway.enabled= # Enable the endpoint.
 	endpoints.flyway.id= # Endpoint identifier.
@@ -854,10 +859,12 @@ content into your application; rather pick only the properties that you need.
 	endpoints.health.enabled= # Enable the endpoint.
 	endpoints.health.id= # Endpoint identifier.
 	endpoints.health.mapping.*= # Mapping of health statuses to HttpStatus codes. By default, registered health statuses map to sensible defaults (i.e. UP maps to 200).
+	endpoints.health.path= # Endpoint path.
 	endpoints.health.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.health.time-to-live=1000 # Time to live for cached result, in milliseconds.
 	endpoints.info.enabled= # Enable the endpoint.
 	endpoints.info.id= # Endpoint identifier.
+	endpoints.info.path= # Endpoint path.
 	endpoints.info.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.jolokia.enabled=true # Enable Jolokia endpoint.
 	endpoints.jolokia.path=/jolokia # Endpoint URL path.
@@ -870,16 +877,20 @@ content into your application; rather pick only the properties that you need.
 	endpoints.logfile.sensitive=true # Enable security on the endpoint.
 	endpoints.mappings.enabled= # Enable the endpoint.
 	endpoints.mappings.id= # Endpoint identifier.
+	endpoints.mappings.path= # Endpoint path.
 	endpoints.mappings.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.metrics.enabled= # Enable the endpoint.
 	endpoints.metrics.filter.enabled=true # Enable the metrics servlet filter.
 	endpoints.metrics.id= # Endpoint identifier.
+	endpoints.metrics.path= # Endpoint path.
 	endpoints.metrics.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.shutdown.enabled= # Enable the endpoint.
 	endpoints.shutdown.id= # Endpoint identifier.
+	endpoints.shutdown.path= # Endpoint path.
 	endpoints.shutdown.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.trace.enabled= # Enable the endpoint.
 	endpoints.trace.id= # Endpoint identifier.
+	endpoints.trace.path= # Endpoint path.
 	endpoints.trace.sensitive= # Mark if the endpoint exposes sensitive information.
 
 	# ENDPOINTS CORS CONFIGURATION ({sc-spring-boot-actuator}/autoconfigure/EndpointCorsProperties.{sc-ext}[EndpointCorsProperties])
