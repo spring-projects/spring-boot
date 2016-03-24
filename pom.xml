@@ -196,7 +196,7 @@
 	</xsl:template>
 
 	<xsl:template
-		match="m:properties/m:spring-boot.version/text()">
+		match="m:build/m:pluginManagement/m:plugins/m:plugin[m:groupId/text() = 'org.springframework.boot']/m:version/text()">
 		<xsl:value-of select="/m:project/m:version/text()"/>
 	</xsl:template>
 </xsl:stylesheet>
