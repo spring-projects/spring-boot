@@ -147,6 +147,12 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 
 		Handler(Resource resource) {
 			this.resource = resource;
+			try {
+				afterPropertiesSet();
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException(ex);
+			}
 		}
 
 		@Override
