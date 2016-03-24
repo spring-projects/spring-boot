@@ -467,7 +467,11 @@ public class ConfigFileApplicationListenerTests {
 
 	private String createLogForProfile(String profile) {
 		String suffix = profile != null ? "-" + profile : "";
-		return "Loaded config file 'classpath:/application" + suffix + ".properties'";
+		String string = ".properties)";
+		return "Loaded config file '"
+				+ new File("target/test-classes/application" + suffix + ".properties")
+						.getAbsoluteFile().toURI().toString()
+				+ "' (classpath:/application" + suffix + string;
 	}
 
 	@Test

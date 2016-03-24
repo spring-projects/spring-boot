@@ -473,15 +473,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 				msg.append("Skipped ");
 			}
 			msg.append("config file ");
-			String resourceDescription;
-			try {
-				resourceDescription = String.format("'%s' (%s)",
-						resource.getURI().toASCIIString(), location);
-			}
-			catch (IOException ex) {
-				resourceDescription = String.format("'%s'", location);
-			}
-			msg.append(resourceDescription);
+			msg.append(getResourceDescription(location, resource));
 			if (StringUtils.hasLength(profile)) {
 				msg.append(" for profile ").append(profile);
 			}
@@ -493,6 +485,25 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 				this.logger.debug(msg);
 			}
 			return propertySource;
+		}
+
+		/**
+		 * @param location
+		 * @param resource
+		 * @return
+		 */
+		private String getResourceDescription(String location, Resource resource) {
+			String resourceDescription = "'" + location + "'";
+			if (resource != null) {
+				try {
+					resourceDescription = String.format("'%s' (%s)",
+							resource.getURI().toASCIIString(), location);
+				}
+				catch (IOException ex) {
+					// Use the location as the description
+				}
+			}
+			return resourceDescription;
 		}
 
 		private void handleProfileProperties(PropertySource<?> propertySource) {
