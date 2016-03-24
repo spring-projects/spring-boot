@@ -47,7 +47,6 @@
 		<dependency>
 			<groupId>net.sourceforge.htmlunit</groupId>
 			<artifactId>htmlunit</artifactId>
-			<version>2.19</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -64,7 +63,6 @@
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-htmlunit-driver</artifactId>
-			<version>2.52.0</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
