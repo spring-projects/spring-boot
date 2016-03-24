@@ -487,11 +487,6 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			return propertySource;
 		}
 
-		/**
-		 * @param location
-		 * @param resource
-		 * @return
-		 */
 		private String getResourceDescription(String location, Resource resource) {
 			String resourceDescription = "'" + location + "'";
 			if (resource != null) {
