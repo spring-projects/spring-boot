@@ -4595,7 +4595,7 @@ controllers without needing to start a full HTTP server.
 ----
 
 TIP: If you need to configure elements of the auto-configuration (for example when servlet
-filters should be applied) you can use attributes in the `@AutoConfigureJsonTesters` annotation.
+filters should be applied) you can use attributes in the `@AutoConfigureMockMvc` annotation.
 
 If you use HtmlUnit or Selenium, auto-configuration will also provide a `WebClient` bean
 and/or a `WebDriver` bean. Here is an example that uses HtmlUnit:
