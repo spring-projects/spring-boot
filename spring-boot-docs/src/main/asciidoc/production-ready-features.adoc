@@ -371,145 +371,138 @@ if you access the health endpoint over HTTP. For example you could map `FATAL` t
 
 
 [[production-ready-application-info]]
-=== Custom application info information
+=== Application information
+Application information exposes various information collected from all
+{sc-spring-boot-actuator}/info/InfoContributor.{sc-ext}[`InfoContributor`] beans defined
+in your `ApplicationContext`. Spring Boot includes a number of auto-configured
+`InfoContributors` and you can also write your own.
+
+[[production-ready-application-info-autoconfigure]]
+==== Auto-configured InfoContributors
+
+The following `InfoContributors` are auto-configured by Spring Boot when appropriate:
+
+[cols="1,4"]
+|===
+|Name |Description
+
+|{sc-spring-boot-actuator}/info/EnvironmentInfoContributor.{sc-ext}[`EnvironmentInfoContributor`]
+|Expose any key from the `Environment` under the `info` key.
+
+|{sc-spring-boot-actuator}/info/GitInfoContributor.{sc-ext}[`GitInfoContributor`]
+|Expose git information if a `git.properties` file is available.
+
+|{sc-spring-boot-actuator}/info/BuildInfoContributor.{sc-ext}[`BuildInfoContributor`]
+|Expose build information if a `META-INF/boot/build.properties` file is available.
+|===
+
+TIP: It is possible to disable them all using the `management.info.defaults.enabled`
+property.
+
+[[production-ready-application-info-env]]
+==== Custom application info information
 You can customize the data exposed by the `info` endpoint by setting `+info.*+` Spring
 properties. All `Environment` properties under the info key will be automatically
 exposed. For example, you could add the following to your `application.properties`:
 
 [source,properties,indent=0]
 ----
-	info.app.name=MyService
-	info.app.description=My awesome service
-	info.app.version=1.0.0
+	info.app.encoding=UTF-8
+	info.app.java.source=1.8
+	info.app.java.target=1.8
 ----
 
+[TIP]
+====
+Rather than hardcoding those values you could also
+<<howto.adoc#howto-automatic-expansion,expand info properties at build time>>.
 
-
-[[production-ready-application-info-automatic-expansion]]
-==== Automatically expand info properties at build time
-Rather than hardcoding some properties that are also specified in your project's build
-configuration, you can automatically expand info properties using the existing build
-configuration instead. This is possible in both Maven and Gradle.
-
-
-
-[[production-ready-application-info-automatic-expansion-maven]]
-===== Automatic property expansion using Maven
-You can automatically expand info properties from the Maven project using resource
-filtering. If you use the `spring-boot-starter-parent` you can then refer to your
-Maven '`project properties`' via `@..@` placeholders, e.g.
+Assuming you are using Maven, you could rewrite the example above as follows:
 
 [source,properties,indent=0]
 ----
-	project.artifactId=myproject
-	project.name=Demo
-	project.version=X.X.X.X
-	project.description=Demo project for info endpoint
-	info.build.artifact=@project.artifactId@
-	info.build.name=@project.name@
-	info.build.description=@project.description@
-	info.build.version=@project.version@
+	info.app.encoding=@project.build.sourceEncoding@
+	info.app.java.source=@java.version@
+	info.app.java.target=@java.version@
 ----
-
-TIP: The `spring-boot:run` can add `src/main/resources` directly to the classpath
-(for hot reloading purposes) if you enable the `addResources` flag. This circumvents
-the resource filtering and this feature. You can use the `exec:java` goal instead
-or customize the plugin's configuration, see the
-{spring-boot-maven-plugin-site}/usage.html[plugin usage page] for more details.
-
-If you don't use the starter parent, in your `pom.xml` you need (inside the `<build/>`
-element):
-
-[source,xml,indent=0]
-----
-    <resources>
-        <resource>
-            <directory>src/main/resources</directory>
-            <filtering>true</filtering>
-        </resource>
-    </resources>
-----
-
-and (inside `<plugins/>`):
-
-[source,xml,indent=0]
-----
-	<plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-resources-plugin</artifactId>
-		<version>2.6</version>
-		<configuration>
-			<delimiters>
-				<delimiter>@</delimiter>
-			</delimiters>
-			<useDefaultDelimiters>false</useDefaultDelimiters>
-		</configuration>
-	</plugin>
-----
-
-NOTE: The `useDefaultDelimiters` property is important if you are using standard Spring
-placeholders in your configuration (e.g. `${foo}`). These may be expanded by the build if
-that property is not set to `false`.
+====
 
 
 
-[[production-ready-application-info-automatic-expansion-gradle]]
-===== Automatic property expansion using Gradle
-You can automatically expand info properties from the Gradle project by configuring
-the Java plugin's `processResources` task to do so:
-
-[source,groovy,indent=0]
-----
-	processResources {
-		expand(project.properties)
-	}
-----
-
-You can then refer to your Gradle project's properties via placeholders, e.g.
-
-[source,properties,indent=0]
-----
-	info.build.name=${name}
-	info.build.description=${description}
-	info.build.version=${version}
-----
-
-NOTE: Gradle's `expand` method uses Groovy's `SimpleTemplateEngine` which transforms
-`${..}` tokens. The `${..}` style conflicts with Spring's own property placeholder
-mechanism. To use Spring property placeholders together with automatic expansion
-the Spring property placeholders need to be escaped like `\${..}`.
-
-
-
-[[production-ready-git-commit-information]]
+[[production-ready-application-info-git]]
 ==== Git commit information
 Another useful feature of the `info` endpoint is its ability to publish information
 about the state of your `git` source code repository when the project was built. If a
-`git.properties` file is contained in your jar the `git.branch` and `git.commit`
-properties will be loaded.
+`GitProperties` bean is available, the `git.branch`, `git.commit.id` and
+`git.commit.time` properties will be exposed.
 
-For Maven users the `spring-boot-starter-parent` POM includes a pre-configured plugin to
-generate a `git.properties` file. Simply add the following declaration to your POM:
+TIP: A `GitProperties` bean is auto-configured if a `git.properties` file is available
+at the root of the classpath. See
+<<howto.adoc#howto-git-info,Generate git information>> for more details.
 
-[source,xml,indent=0]
+If you want to display the full git information (i.e. the full content of
+`git.properties`), use the `management.info.git.mode` property:
+
+[source,properties,indent=0]
 ----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>pl.project13.maven</groupId>
-				<artifactId>git-commit-id-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+	management.info.git.mode=full
 ----
 
-Gradle users can achieve the same result using the
-https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties[`gradle-git-properties`] plugin
 
-[source,groovy,indent=0]
+
+[[production-ready-application-info-build]]
+==== Build information
+The `info` endpoint can also publish information about your build if a `BuildProperties`
+bean is available. This happens if a `META-INF/boot/build.properties` file is available
+in the classpath.
+
+TIP: The Maven and Gradle plugins can both generate that file, see
+<<howto.adoc#howto-build-info,Generate build information>> for more details.
+
+If additional properties are present they are not exposed unless configured explicitly:
+
+[source,properties,indent=0]
 ----
-	plugins {
-		id "com.gorylenko.gradle-git-properties" version "1.4.6"
+	management.info.build.mode=full
+----
+
+
+[[production-ready-application-info-custom]]
+==== Writing custom InfoContributors
+To provide custom application information you can register Spring beans that implement
+the {sc-spring-boot-actuator}/info/InfoContributor.{sc-ext}[`InfoContributor`] interface.
+
+The example below contributes an `example` entry with a single value:
+
+[source,java,indent=0]
+----
+	import java.util.Collections;
+
+	import org.springframework.boot.actuate.info.Info;
+	import org.springframework.boot.actuate.info.InfoContributor;
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class ExampleInfoContributor implements InfoContributor {
+
+		@Override
+		public void contribute(Info.Builder builder) {
+			builder.withDetail("example",
+					Collections.singletonMap("key", "value"));
+		}
+
+	}
+----
+
+if you hit the `info` endpoint you should see a response that contains the following
+additional entry:
+
+[source,json,indent=0]
+----
+	{
+		"example": {
+			"key" : "value"
+		}
 	}
 ----
 
