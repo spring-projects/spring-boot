@@ -23,11 +23,15 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :sc-spring-boot-actuator: {github-code}/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
 :sc-spring-boot-cli: {github-code}/spring-boot-cli/src/main/java/org/springframework/boot/cli
 :sc-spring-boot-devtools: {github-code}/spring-boot-devtools/src/main/java/org/springframework/boot/devtools
+:sc-spring-boot-test: {github-code}/spring-boot-test/src/main/java/org/springframework/boot/test
+:sc-spring-boot-test-autoconfigure: {github-code}/spring-boot-test/src/main/java/org/springframework/boot/test/autoconfigure
 :dc-ext: html
 :dc-root: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/api
 :dc-spring-boot: {dc-root}/org/springframework/boot
 :dc-spring-boot-autoconfigure: {dc-root}/org/springframework/boot/autoconfigure
 :dc-spring-boot-actuator: {dc-root}/org/springframework/boot/actuate
+:dc-spring-boot-test: {dc-root}/spring-boot-test/src/main/java/org/springframework/boot/test
+:dc-spring-boot-test-autoconfigure: {dc-root}/spring-boot-test/src/main/java/org/springframework/boot/test/autoconfigure
 :dependency-management-plugin: https://github.com/spring-gradle-plugins/dependency-management-plugin
 :dependency-management-plugin-documentation: {dependency-management-plugin}/blob/master/README.md
 :spring-boot-maven-plugin-site: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/maven-plugin

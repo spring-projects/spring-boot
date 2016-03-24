@@ -4161,10 +4161,13 @@ class for more details.
 
 [[boot-features-testing]]
 == Testing
-Spring Boot provides a number of useful tools for testing your application. The
-`spring-boot-starter-test` POM provides Spring Test, JUnit, Hamcrest and Mockito
-dependencies. There are also useful test utilities in the core `spring-boot` module under
-the `org.springframework.boot.test` package.
+Spring Boot provides a number of utilities and annotations to help when testing your
+application. Test support is provided by two modules; `spring-boot-test` contains core
+items, and `spring-boot-test-autoconfigure` supports auto-configuration for tests.
+
+Most developers will just use the the `spring-boot-starter-test` '`Starter POM`' which
+imports both Spring Boot test modules as well has JUnit, AssertJ, Hamcrest and a number
+of other useful libraries.
 
 
 
@@ -4174,14 +4177,19 @@ If you use the
 `spring-boot-starter-test` '`Starter POM`' (in the `test` `scope`), you will find
 the following provided libraries:
 
-* Spring Test -- integration test support for Spring applications.
-* JUnit -- The de-facto standard for unit testing Java applications.
-* Hamcrest -- A library of matcher objects (also known as constraints or predicates)
-  allowing `assertThat` style JUnit assertions.
-* Mockito -- A Java mocking framework.
+* http://junit.org[JUnit] -- The de-facto standard for unit testing Java applications.
+* {spring-reference}/#integration-testing.html[Spring Test] & Spring Boot Test -- utilties and integration test support for Spring Boot
+  applications.
+* http://joel-costigliola.github.io/assertj/[AssertJ] - A fluent assertion library.
+* http://hamcrest.org/JavaHamcrest/[Hamcrest] -- A library of matcher objects (also known
+  as constraints or predicates).
+* http://mockito.org/[Mockito] -- A Java mocking framework.
+* https://github.com/skyscreamer/JSONassert[JSONassert] -- An assertion library for JSON.
+* https://github.com/jayway/JsonPath[JsonPath] -- XPath for JSON.
 
 These are common libraries that we generally find useful when writing tests. You are free
 to add additional test dependencies of your own if these don't suit your needs.
+
 
 
 [[boot-features-testing-spring-applications]]
@@ -4207,100 +4215,484 @@ documentation.
 
 [[boot-features-testing-spring-boot-applications]]
 === Testing Spring Boot applications
-A Spring Boot application is just a Spring `ApplicationContext` so nothing very special
+A Spring Boot application is just a Spring `ApplicationContext`, so nothing very special
 has to be done to test it beyond what you would normally do with a vanilla Spring context.
 One thing to watch out for though is that the external properties, logging and other
 features of Spring Boot are only installed in the context by default if you use
 `SpringApplication` to create it.
 
-Spring Boot provides a `@SpringApplicationConfiguration` annotation as an alternative
-to the standard `spring-test` `@ContextConfiguration` annotation. If you use
-`@SpringApplicationConfiguration` to configure the `ApplicationContext` used in your
-tests, it will be created via `SpringApplication` and you will get the additional Spring
-Boot features.
+Spring Boot provides three annotations which can be used as an alternative the standard
+`spring-test` `@ContextConfiguration` annotation when you need Spring Boot features. All
+three work by creating the `ApplicationContext` used in your tests via
+`SpringApplication`.
 
-For example:
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+The specific annotation that you choose will depend on the type of test that you are writing:
+
+* `@SpringApplicationTest` -- Loads an `ApplicationContext` or `WebApplicationContext`
+  (depending on your classpath) using `SpringApplication` and provides a mock servlet environment. Embedded servlet containers are not started
+  when using this annotation.
+* `@WebIntegrationTest` -- Loads an `EmbeddedWebApplicationContext` using
+  `SpringApplication` and provides a real servlet environment. Embedded servlet containers
+  are started and listening on a defined or random port.
+* `@IntegrationTest` -- Loads an `ApplicationContext` using `SpringApplication` but does
+  not provides _any_ servlet environment (mock or otherwise).
+
+NOTE: In addition to `@SpringApplicationTest`, `@WebIntegrationTest` and
+`@IntegrationTest` a number of other annotations are also provided for testing more
+specific slices of an application. See below for details.
+
+TIP: Don't forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise
+the annotations will be ignored.
+
+
+
+[[boot-features-testing-spring-boot-applications-detecting-config]]
+==== Detecting configuration
+If you're familiar with the Spring Test Framework, you may be used to using
+`@ContextConfiguration(classes=...)` in order to specify which Spring `@Configuration`
+to load. Alternatively, you might have often used nested `@Configuration` classes within
+your test.
+
+When testing Spring Boot applications this is often not required.
+Spring Boot's `@*Test` annotations will search for your primary configuration automatically
+whenever you don't explicitly defined one.
+
+The search algorithm works up from the package that contains the test until it finds a
+`@SpringBootApplication` or `@SpringBootConfiguration` annotated class. As long as you've
+<<using-boot-structuring-your-code, structure your code>> in a sensible way your main
+configuration is usually found.
+
+NOTE: Spring's test framework will cache application contexts between tests. Therefore, as
+long as your tests share the same configuration (no matter how it's discovered), the
+potentially time consuming process of loading the context will only happen once.
+
+
+
+[[boot-features-testing-spring-boot-applications-excluding-config]]
+==== Excluding test configuration
+If your application uses component scanning, for example if you use
+`@SpringBootApplication` or `@ComponentScan`, you may find components or configurations
+created only for specific tests accidentally get picked up everywhere.
+
+To help prevent this, Spring Boot provides `@TestComponent` and `@TestConfiguration`
+annotations that can be used on classes in `src/test/java` to indicate that they should
+not be picked up by scanning.
+
+NOTE: `@TestComponent` and `@TestConfiguration` are only needed on top level classes. If
+you define `@Configuration` or `@Component` as inner-classes within a test, they will be
+automatically filtered.
+
+NOTE: If you directly use `@ComponentScan` (i.e. not via `@SpringBootApplication`) you
+will need to register the `TypeExcludeFilter` with it. See
+{dc-spring-boot}/context/TypeExcludeFilter.{dc-ext}[the Javadoc] for details.
+
+
+
+[[boot-features-testing-spring-boot-applications-using-springapplicationtest]]
+==== Using @SpringApplicationTest
+Use the `@SpringApplicationTest` annotation to load a `ApplicationContext` or
+`WebApplicationContext` via `SpringApplication` and configure it with a mock
+servlet environment. Embedded servlet containers will not be started when using
+`@SpringApplicationTest`.
+
+A `WebApplicationContext` is created when Servlet API jars are present on your
+classpath. If you're developing a non-web application, the regular
+`ApplicationContext` is used.
+
+The `@Configuration` classes to load can either be explicitly defined using
+`@ContextConfiguration`, specified as inner-classes or
+<<boot-features-testing-spring-boot-applications-detecting-config, detected automatically>>
+
+[source,java,indent=0]
 ----
-	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationConfiguration(SampleDataJpaApplication.class)
-	public class CityRepositoryIntegrationTests {
+	import org.junit.*;
+	import org.junit.runner.*;
+	import org.springframework.beans.factory.annotation.*;
+	import org.springframework.boot.test.context.*;
+	import org.springframework.test.context.junit4.*;
+
+	@RunWith(SpringRunner.class)
+	@SpringApplicationTest
+	public class MySpringApplicationTests {
 
 		@Autowired
-		CityRepository repository;
+		private MyComponent component;
 
-		// ...
+		// ... tests
 
 	}
 ----
 
-TIP: The context loader guesses whether you want to test a web application or not (e.g.
-with `MockMvc`) by looking for the `@WebIntegrationTest` or `@WebAppConfiguration`
-annotations.  (`MockMvc` and `@WebAppConfiguration` are part of `spring-test`).
 
-If you want a web application to start up and listen on its normal port, so you can test
-it with HTTP (e.g. using `RestTemplate`), annotate your test class (or one of its
-superclasses) with `@WebIntegrationTest`. This can be very useful because it means you can
-test the full stack of your application, but also inject its components into the test
-class and use them to assert the internal state of the application after an HTTP
-interaction. For example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationConfiguration(SampleDataJpaApplication.class)
-	@WebIntegrationTest
-	public class CityRepositoryIntegrationTests {
+[[boot-features-testing-spring-boot-applications-using-webintegrationtest]]
+==== Using @WebIntegrationTest
+Use the `@WebIntegrationTest` annotation to load a `WebApplicationContext` via
+`SpringApplication` and configure it with fully running server listening on the appropriate
+port.
 
-		@Autowired
-		CityRepository repository;
+The `@Configuration` classes to load can either be explicitly defined using
+`@ContextConfiguration`, specified as inner-classes or
+<<boot-features-testing-spring-boot-applications-detecting-config, detected automatically>>
 
-		RestTemplate restTemplate = new TestRestTemplate();
-
-		// ... interact with the running server
-
-	}
-----
-
-NOTE: Spring's test framework will cache application contexts between tests. Therefore,
-as long as your tests share the same configuration, the time consuming process of starting
-and stopping the server will only happen once, regardless of the number of tests that
-actually run.
+For convenience, tests that need to make REST calls to the started server can additionally
+`@Autowire` a `TestRestTemplate` which will resolve relative links to the running server.
 
 To change the port you can add environment properties to `@WebIntegrationTest` as colon-
 or equals-separated name-value pairs, e.g. `@WebIntegrationTest("server.port:9000")`.
 Additionally you can set the `server.port` and `management.port` properties to `0`
-in order to run your integration tests using random ports. For example:
+or use the `randomPort` attribute in order to run your integration tests using
+random ports.
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0]
 ----
-	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationConfiguration(MyApplication.class)
-	@WebIntegrationTest({"server.port=0", "management.port=0"})
-	public class SomeIntegrationTests {
+	import org.junit.*;
+	import org.junit.runner.*;
+	import org.springframework.boot.test.context.web.*;
+	import org.springframework.boot.test.web.client.*;
+	import org.springframework.test.context.junit4.*;
 
-		// ...
+	import static org.assertj.core.api.Assertions.*
 
-	}
-----
+	@RunWith(SpringRunner.class)
+	@WebIntegrationTest(randomPort=true)
+	public class MyWebIntegrationTests {
 
-Alternatively, you can use the `randomPort` convenience attribute to set `server.port=0`.
-For example:
+		@Autowired
+		private TestRestTemplate restTemplate;
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationConfiguration(MyApplication.class)
-	@WebIntegrationTest(randomPort = true)
-	public class SomeIntegrationTests {
-
-		// ...
+		@Test
+		public void exampleTest() {
+			String body = this.restTemplate.getForObject("/", String.class);
+			assertThat(body).isEqualTo("Hello World");
+		}
 
 	}
 ----
 
 See <<howto-discover-the-http-port-at-runtime>> for a description of how you can discover
-the actual port that was allocated for the duration of the tests.
+the actual port that was allocated for the duration of the tests if you're not using the
+injected `TestRestTemplate`.
+
+
+
+[[boot-features-testing-spring-boot-applications-using-integrationtest]]
+==== Using @IntegrationTest
+Use the `@IntegrationTest` annotation to load an `ApplicationContext` via
+`SpringApplication` for non web-applications. Mock servlet support is explicitly disabled
+for tests annotated with `@IntegrationTest`.
+
+The `@Configuration` classes to load can either be explicitly defined using
+`@ContextConfiguration`, specified as inner-classes or
+<<boot-features-testing-spring-boot-applications-detecting-config, detected automatically>>
+
+[source,java,indent=0]
+----
+	import org.junit.*;
+	import org.junit.runner.*;
+	import org.springframework.beans.factory.annotation.*;
+	import org.springframework.boot.test.context.*;
+	import org.springframework.test.context.junit4.*;
+
+	@RunWith(SpringRunner.class)
+	@IntegrationTest
+	public class MyIntegrationTests {
+
+		@Autowired
+		private MyComponent component;
+
+		// ... tests
+
+	}
+----
+
+NOTE: Although it's possible to use the `@WebAppConfiguration` annotation in combination
+with `@IntegrationTest` if you want to start a full web server, the `@WebIntegrationTest`
+annotation is generally preferable.
+
+
+
+[[boot-features-testing-spring-boot-applications-mocking-beans]]
+==== Mocking Beans
+It's sometimes necessary to mock certain components within your application context when
+running tests. For example, you may have a facade over some remote service that's
+unavailable during development. Mocking can also be useful when you want to simulate
+failures that might be hard to trigger in a real environment.
+
+Spring Boot includes a `@MockBean` annotation that can be used to define a Mockito mock
+for a bean inside your `ApplicationContext`. You can use the annotation to add new beans,
+or replace a single existing bean definition. The annotation can be used directly on test
+classes, on fields within your test; or on `@Configuration` classes and fields. When used
+on a field the, instance of the created mock will also be injected. Mock beans are
+automatically reset after each test method.
+
+Here's a typical example where we replace an existing `RemoteService` bean with a mock
+implementation:
+
+[source,java,indent=0]
+----
+	import org.junit.*;
+	import org.junit.runner.*;
+	import org.springframework.beans.factory.annotation.*;
+	import org.springframework.boot.test.context.*;
+	import org.springframework.boot.test.mock.mockito.*;
+	import org.springframework.test.context.junit4.*;
+
+	import static org.assertj.core.api.Assertions.*;
+	import static org.mockito.BDDMockito.*;
+
+	@RunWith(SpringRunner.class)
+	@SpringApplicationTest
+	public class MyTests {
+
+		@MockBean
+		private RemoteService remoteService;
+
+		@Autowired
+		private Reverser reverser;
+
+		@Test
+		public void exampleTest() {
+			// RemoteService has been injected into the reverser bean
+			given(this.remoteService.someCall()).willReturn("mock");
+			String reverse = reverser.reverseSomeCall();
+			assertThat(reverse).isEqualTo("kcom");
+		}
+
+	}
+----
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-tests]]
+==== Auto-configured tests
+Spring Boot's auto-configuration system works well for applications, but can sometimes be
+a little too much for tests. It's often helpful to load only the parts of the
+configuration that are required to test a '`slice`' of your application. For example, you
+might want to test that Spring MVC controllers are mapping URLs correctly, and you don't
+want to involve and database calls in those tests; or you _might be wanting_ to test JPA
+entites, and you're not interested in web layer when those tests run.
+
+The `spring-boot-test-autoconfigure` module includes a number of annotations that can be
+used to automatically configure such '`slices`'. Each of them work in a similar way,
+providing a `@...Test` annotation that loads the `ApplicationContext` and one or
+more `@AutoConfigure...` annotations that can be used to customize auto-configuration
+settings.
+
+TIP: It's also possible to use the `@AutoConfigure...` annotations with the standard
+`@SpringApplicationTest` annotation. You can use this combination if you're not interested
+ in '`slicing`' your application but you want some of the auto-configured test beans.
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-json-tests]]
+==== Auto-configured JSON tests
+To test that Object JSON serilization and deserialization is working as expected you can
+use the `@JsonTest` annotation. `@JsonTest` will auto-configure Jackson ObjectMappers,
+any `@JsonComponent` beans and any Jackson `Modules`. It also configures `Gson`
+if you happen to be using that instead of, or as well as, Jackson. If you need to
+configure elements of the auto-configuration you can use the `@AutoConfigureJsonTesters`
+annotation.
+
+Spring Boot includes AssertJ based helpers that work with the JSONassert and JsonPath
+libraries to check that JSON is as expected. The `JacksonHelper`, `GsonHelper` and
+`BasicJsonHelper` classes can be used for Jackson, Gson and Strings respectively. Any
+helper fields on the test class will be automatically initialized when using `@JsonTest`.
+
+[source,java,indent=0]
+----
+	import org.junit.*;
+	import org.junit.runner.*;
+	import org.springframework.boot.test.autoconfigure.json.*;
+	import org.springframework.boot.test.context.*;
+	import org.springframework.boot.test.json.*;
+	import org.springframework.test.context.junit4.*;
+
+	import static org.assertj.core.api.Assertions.*;
+
+	@RunWith(SpringRunner.class)
+	@JsonTest
+	public class MyJsonTests {
+
+		private JacksonTester<VehicleDetails> json;
+
+		@Test
+		public void testSerialize() throws Exception {
+			VehicleDetails details = new VehicleDetails("Honda", "Civic");
+			// Assert against a `.json` file in the same package as the test
+			assertThat(this.json.write(details)).isEqualToJson("expected.json");
+			// Or use JSON path based assertions
+			assertThat(this.json.write(details)).hasJsonPathStringValue("@.make");
+			assertThat(this.json.write(details)).extractingJsonPathStringValue("@.make")
+					.isEqualTo("Honda");
+		}
+
+		@Test
+		public void testDeserialize() throws Exception {
+			String content = "{\"make\":\"Ford\",\"model\":\"Focus\"}";
+			assertThat(this.json.parse(content))
+					.isEqualTo(new VehicleDetails("Ford", "Focus"));
+			assertThat(this.json.parseObject(content).getMake()).isEqualTo("Ford");
+		}
+
+	}
+----
+
+
+NOTE: JSON helper classes can also be used directly in standard unit tests. Simply
+call the `initFields` method of the helper in your `@Before` method if you aren't using
+`@JsonTest`.
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-mvc-tests]]
+==== Auto-configured Spring MVC tests
+To test Spring MVC controllers are working as expected you can use the `@WebMvcTest`
+annotation. `@WebMvcTest` will auto-configure the Spring MVC infrastructure and limit
+scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Filter`,
+`WebMvcConfigurer` and `HandlerMethodArgumentResolver`. Regular `@Component` beans
+will not be scanned when using this annotation.
+
+Often `@WebMvcTest` will be limited to a single controller and used in combination with
+`@MockBean` to provide mock implementations for required collaborators.
+
+`@WebMvcTest` is meta-annotated with `@AutoConfigureMockMvc` which provides
+auto-configuration of `MockMvc`. Mock MVC offers a powerful way to quickly test MVC
+controllers without needing to start a full HTTP server.
+
+[source,java,indent=0]
+----
+	import org.junit.*;
+	import org.junit.runner.*;
+	import org.springframework.beans.factory.annotation.*;
+	import org.springframework.boot.test.autoconfigure.web.servlet.*;
+	import org.springframework.boot.test.mock.mockito.*;
+
+	import static org.assertj.core.api.Assertions.*;
+	import static org.mockito.BDDMockito.*;
+	import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+	import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+	@RunWith(SpringRunner.class)
+	@WebMvcTest(UserVehicleController.class)
+	public class MyControllerTests {
+
+		@Autowired
+		private MockMvc mvc;
+
+		@MockBean
+		private UserVehicleService userVehicleService;
+
+		@Test
+		public void testExample() throws Exception {
+			given(this.userVehicleService.getVehicleDetails("sboot"))
+					.willReturn(new VehicleDetails("Honda", "Civic"));
+			this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
+					.andExpect(status().isOk()).andExpect(content().string("Honda Civic"));
+		}
+
+	}
+----
+
+TIP: If you need to configure elements of the auto-configuration (for example when servlet
+filters should be applied) you can use attributes in the `@AutoConfigureJsonTesters` annotation.
+
+If you use HtmlUnit or Selenium, auto-configuration will also provide a `WebClient` bean
+and/or a `WebDriver` bean. Here is an example that uses HtmlUnit:
+
+
+[source,java,indent=0]
+----
+	import com.gargoylesoftware.htmlunit.*;
+	import org.junit.*;
+	import org.junit.runner.*;
+	import org.springframework.beans.factory.annotation.*;
+	import org.springframework.boot.test.autoconfigure.web.servlet.*;
+	import org.springframework.boot.test.mock.mockito.*;
+
+	import static org.assertj.core.api.Assertions.*;
+	import static org.mockito.BDDMockito.*;
+
+	@RunWith(SpringRunner.class)
+	@WebMvcTest(UserVehicleController.class)
+	public class MyHtmlUnitTests {
+
+		@Autowired
+		private WebClient webClient;
+
+		@MockBean
+		private UserVehicleService userVehicleService;
+
+		@Test
+		public void testExample() throws Exception {
+			given(this.userVehicleService.getVehicleDetails("sboot"))
+					.willReturn(new VehicleDetails("Honda", "Civic"));
+			HtmlPage page = this.webClient.getPage("/sboot/vehicle.html");
+			assertThat(page.getBody().getTextContent()).isEqualTo("Honda Civic");
+		}
+
+	}
+----
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test]]
+==== Auto-configured Data JPA tests
+The `@DataJpaTest` can be used if want to test JPA applications. By default it will
+configure an in-memory embedded database, scan for `@Entity` classes and configure Spring
+Data JPA repositories. Regular `@Component` beans will not be loaded into the
+`ApplicationContext`.
+
+Data JPA tests may also inject a
+{sc-spring-boot-test-autoconfigure}/orm/jpa/TestEntityManager.{sc-ext}[`TestEntityManager`]
+bean which provides an alternative to the standard JPA `EntityManager` specifically
+designed for tests. If you want to use `TestEntityManager` outside of `@DataJpaTests` you
+can also use the `@AutoConfigureTestEntityManager` annotation.
+
+[source,java,indent=0]
+----
+	import org.junit.*;
+	import org.junit.runner.*;
+	import org.springframework.boot.test.autoconfigure.orm.jpa.*;
+
+	import static org.assertj.core.api.Assertions.*;
+
+	@RunWith(SpringRunner.class)
+	@DataJpaTest
+	public class ExampleRepositoryTests {
+
+		@Autowired
+		private TestEntityManager entityManager;
+
+		@Autowired
+		private UserRepository repository;
+
+		@Test
+		public void testExample() throws Exception {
+			this.entityManager.persist(new User("sboot", "1234"));
+			User user = this.repository.findByUsername("sboot");
+			assertThat(user.getUsername()).isEqualTo("sboot");
+			assertThat(user.getVin()).isEqualTo("1234");
+		}
+
+	}
+----
+
+In-memory embedded databases generally work well for tests since they are fast and don't
+require any developer installation. If, however, you prefer to run tests against a real
+database you can use the `@AutoConfigureTestDatabase` annotation:
+
+[source,java,indent=0]
+----
+	@RunWith(SpringRunner.class)
+	@DataJpaTest
+	@AutoConfigureTestDatabase(replace=Replace.NONE)
+	public class ExampleRepositoryTests {
+
+		// ...
+
+	}
+----
 
 
 
@@ -4327,7 +4719,7 @@ useful when testing your application.
 ==== ConfigFileApplicationContextInitializer
 `ConfigFileApplicationContextInitializer` is an `ApplicationContextInitializer` that
 can apply to your tests to load Spring Boot `application.properties` files. You can use
-this when you don't need the full features provided by `@SpringApplicationConfiguration`.
+this when you don't need the full features provided by `@SpringApplicationTest`.
 
 [source,java,indent=0]
 ----
@@ -4360,7 +4752,7 @@ for assertions:
 ----
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -4381,7 +4773,6 @@ public class MyTest {
 
 [[boot-features-rest-templates-test-utility]]
 ==== TestRestTemplate
-
 `TestRestTemplate` is a convenience subclass of Spring's `RestTemplate` that is useful in
 integration tests. You can get a vanilla template or one that sends Basic HTTP
 authentication (with a username and password). In either case the template will behave
