@@ -30,6 +30,8 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.springframework.beans.factory.BeanCreationException;
+
 /**
  * {@link TestRule} for working with an optional Couchbase server. Expects a default
  * {@link Bucket} with no password to be available on localhost.
@@ -48,8 +50,7 @@ public class CouchbaseTestServer implements TestRule {
 	public Statement apply(Statement base, Description description) {
 		try {
 			this.environment = DefaultCouchbaseEnvironment.create();
-			this.cluster = CouchbaseCluster.create(this.environment,
-					"localhost");
+			this.cluster = CouchbaseCluster.create(this.environment, "localhost");
 			testConnection(this.cluster);
 			return new CouchbaseStatement(base, this.environment, this.cluster);
 		}
@@ -97,6 +98,13 @@ public class CouchbaseTestServer implements TestRule {
 		public void evaluate() throws Throwable {
 			try {
 				this.base.evaluate();
+			}
+			catch (BeanCreationException ex) {
+				if ("couchbaseClient".equals(ex.getBeanName())) {
+					throw new AssumptionViolatedException(
+							"Skipping test due to Couchbase error " + ex.getMessage(),
+							ex);
+				}
 			}
 			finally {
 				try {
