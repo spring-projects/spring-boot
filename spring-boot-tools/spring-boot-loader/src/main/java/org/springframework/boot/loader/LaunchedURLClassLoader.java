@@ -105,7 +105,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			String packageName = className.substring(0, lastDot);
 			if (getPackage(packageName) == null) {
 				try {
-					definePackage(packageName);
+					definePackage(className, packageName);
 				}
 				catch (IllegalArgumentException ex) {
 					// Tolerate race condition due to being parallel capable
@@ -122,17 +122,19 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	private void definePackage(final String packageName) {
+	private void definePackage(final String className, final String packageName) {
 		try {
 			AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
 				@Override
 				public Object run() throws ClassNotFoundException {
 					String packageEntryName = packageName.replace(".", "/") + "/";
+					String classEntryName = className.replace(".", "/") + ".class";
 					for (URL url : getURLs()) {
 						try {
 							if (url.getContent() instanceof JarFile) {
 								JarFile jarFile = (JarFile) url.getContent();
-								if (jarFile.getEntry(packageEntryName) != null
+								if (jarFile.getEntry(classEntryName) != null
+										&& jarFile.getEntry(packageEntryName) != null
 										&& jarFile.getManifest() != null) {
 									definePackage(packageName, jarFile.getManifest(),
 											url);
