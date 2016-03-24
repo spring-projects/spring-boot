@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import samples.websocket.undertow.client.GreetingService;
@@ -58,7 +57,6 @@ public class SampleWebSocketsApplicationTests {
 	private int port = 1234;
 
 	@Test
-	@Ignore("UNDERTOW-639")
 	public void echoEndpoint() throws Exception {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
