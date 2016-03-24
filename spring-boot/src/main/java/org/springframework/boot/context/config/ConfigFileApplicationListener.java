@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -473,7 +473,15 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 				msg.append("Skipped ");
 			}
 			msg.append("config file ");
-			msg.append("'").append(location).append("'");
+			String resourceDescription;
+			try {
+				resourceDescription = String.format("'%s' (%s)",
+						resource.getURI().toASCIIString(), location);
+			}
+			catch (IOException ex) {
+				resourceDescription = String.format("'%s'", location);
+			}
+			msg.append(resourceDescription);
 			if (StringUtils.hasLength(profile)) {
 				msg.append(" for profile ").append(profile);
 			}
