@@ -46,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@SuppressWarnings("deprecation")
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @WebIntegrationTest({ "server.port=0", "value=123" })
