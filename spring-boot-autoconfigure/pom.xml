@@ -381,6 +381,17 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-neo4j</artifactId>
+			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>jcl-over-slf4j</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-redis</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -635,5 +646,6 @@
 			<artifactId>tomcat-embed-jasper</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 </project>

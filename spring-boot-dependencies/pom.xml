@@ -55,6 +55,7 @@
 		<cassandra-driver.version>2.1.9</cassandra-driver.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
 		<commons-collections.version>3.2.2</commons-collections.version>
+		<commons-codec.version>1.10</commons-codec.version>
 		<commons-dbcp.version>1.4</commons-dbcp.version>
 		<commons-dbcp2.version>2.1.1</commons-dbcp2.version>
 		<commons-digester.version>2.1</commons-digester.version>
@@ -122,6 +123,7 @@
 		<mongodb.version>2.14.1</mongodb.version>
 		<mysql.version>5.1.38</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
+		<neo4j-ogm.version>2.0.0-M04</neo4j-ogm.version>
 		<postgresql.version>9.4.1208.jre7</postgresql.version>
 		<reactor.version>2.0.7.RELEASE</reactor.version>
 		<reactor-spring.version>2.0.7.RELEASE</reactor-spring.version>
@@ -323,6 +325,11 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-redis</artifactId>
+				<version>1.4.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-data-neo4j</artifactId>
 				<version>1.4.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -767,6 +774,11 @@
 				<groupId>commons-collections</groupId>
 				<artifactId>commons-collections</artifactId>
 				<version>${commons-collections.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>${commons-codec.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-dbcp</groupId>
@@ -1759,6 +1771,26 @@
 				<groupId>org.mongodb</groupId>
 				<artifactId>mongo-java-driver</artifactId>
 				<version>${mongodb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.neo4j</groupId>
+				<artifactId>neo4j-ogm-api</artifactId>
+				<version>${neo4j-ogm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.neo4j</groupId>
+				<artifactId>neo4j-ogm-compiler</artifactId>
+				<version>${neo4j-ogm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.neo4j</groupId>
+				<artifactId>neo4j-ogm-core</artifactId>
+				<version>${neo4j-ogm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.neo4j</groupId>
+				<artifactId>neo4j-ogm-http-driver</artifactId>
+				<version>${neo4j-ogm.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.postgresql</groupId>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.orm.jpa;
+package org.springframework.boot.neo4j;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,17 +22,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.neo4j.ogm.session.SessionFactory;
+
 import org.springframework.context.annotation.Import;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
- * Configures the {@link LocalContainerEntityManagerFactoryBean} to scan for entity
+ * Configures the {@link SessionFactory} to scan for node entity
  * classes in the classpath. This annotation provides an alternative to manually setting
- * {@link LocalContainerEntityManagerFactoryBean#setPackagesToScan(String...)} and is
+ * {@link SessionFactoryProvider#setPackagesToScan(String...)} and is
  * particularly useful if you want to configure entity scanning in a type-safe way, or if
- * your {@link LocalContainerEntityManagerFactoryBean} is auto-configured.
+ * your {@link SessionFactory} is auto-configured.
  * <p>
- * A {@link LocalContainerEntityManagerFactoryBean} must be configured within your Spring
+ * A {@link SessionFactoryProvider} must be configured within your Spring
  * ApplicationContext in order to use entity scanning. Furthermore, any existing
  * {@code packagesToScan} setting will be replaced.
  * <p>
@@ -42,23 +43,25 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * annotation.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
+ * @since 1.4.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(JpaEntityScanRegistrar.class)
-public @interface EntityScan {
+@Import(NodeEntityScanRegistrar.class)
+public @interface NodeEntityScan {
 
 	/**
 	 * Alias for the {@link #basePackages()} attribute. Allows for more concise annotation
-	 * declarations e.g.: {@code @EntityScan("org.my.pkg")} instead of
-	 * {@code @EntityScan(basePackages="org.my.pkg")}.
+	 * declarations e.g.: {@code @NodeEntityScan("org.my.pkg")} instead of
+	 * {@code @NodeEntityScan(basePackages="org.my.pkg")}.
 	 * @return the base packages to scan
 	 */
 	String[] value() default {};
 
 	/**
-	 * Base packages to scan for annotated entities. {@link #value()} is an alias for (and
+	 * Base packages to scan for node entities. {@link #value()} is an alias for (and
 	 * mutually exclusive with) this attribute.
 	 * <p>
 	 * Use {@link #basePackageClasses()} for a type-safe alternative to String-based
@@ -69,7 +72,7 @@ public @interface EntityScan {
 
 	/**
 	 * Type-safe alternative to {@link #basePackages()} for specifying the packages to
-	 * scan for annotated entities. The package of each class specified will be scanned.
+	 * scan for node entities. The package of each class specified will be scanned.
 	 * <p>
 	 * Consider creating a special no-op marker class or interface in each package that
 	 * serves no purpose other than being referenced by this attribute.

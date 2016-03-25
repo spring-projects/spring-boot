@@ -31,6 +31,7 @@ org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositor
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.solr.SolrRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration,\
@@ -68,6 +69,7 @@ org.springframework.boot.autoconfigure.mobile.SitePreferenceAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
+org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration,\

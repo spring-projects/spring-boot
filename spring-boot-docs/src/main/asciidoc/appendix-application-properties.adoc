@@ -536,6 +536,15 @@ content into your application; rather pick only the properties that you need.
 	# DATA REDIS
 	spring.data.redis.repositories.enabled=true # Enable Redis repositories.
 
+	# NEO4J ({sc-spring-boot-autoconfigure}/neo4j/Neo4jProperties.{sc-ext}[Neo4jProperties])
+    spring.data.neo4j.compiler= # Compiler to use.
+    spring.data.neo4j.embedded.enabled=true # Enable embedded mode if the embedded driver is available.
+    spring.data.neo4j.password= # Login password of the server.
+    spring.data.neo4j.repositories.enabled=true # Enable Neo4j repositories.
+    spring.data.neo4j.session.scope=singleton # Scope (lifetime) of the session.
+    spring.data.neo4j.uri= # URI used by the driver. Auto-detected by default.
+    spring.data.neo4j.username= # Login user of the server.
+
 	# DATA REST ({sc-spring-boot-autoconfigure}/data/rest/RepositoryRestProperties.{sc-ext}[RepositoryRestProperties])
 	spring.data.rest.base-path= # Base path to be used by Spring Data REST to expose repository resources.
 	spring.data.rest.default-page-size= # Default size of pages.
