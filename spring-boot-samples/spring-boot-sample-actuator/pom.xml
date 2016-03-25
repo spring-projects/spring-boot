@@ -61,7 +61,7 @@
 					<artifactId>commons-logging</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>-->
+		</dependency> -->
 	</dependencies>
 	<build>
 		<plugins>
