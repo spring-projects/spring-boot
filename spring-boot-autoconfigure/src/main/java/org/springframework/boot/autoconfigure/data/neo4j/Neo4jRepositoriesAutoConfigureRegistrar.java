@@ -50,6 +50,7 @@ class Neo4jRepositoriesAutoConfigureRegistrar
 
 	@EnableNeo4jRepositories
 	private static class EnableNeo4jRepositoriesConfiguration {
+
 	}
 
 }

@@ -34,7 +34,8 @@ import org.springframework.util.Assert;
 class JpaEntityScanRegistrar extends AbstractEntityScanRegistrar {
 
 	JpaEntityScanRegistrar() {
-		super(EntityScan.class, "entityScanBeanPostProcessor", JpaEntityScanBeanPostProcessor.class);
+		super(EntityScan.class, "entityScanBeanPostProcessor",
+				JpaEntityScanBeanPostProcessor.class);
 	}
 
 	/**
@@ -42,8 +43,8 @@ class JpaEntityScanRegistrar extends AbstractEntityScanRegistrar {
 	 * {@link LocalContainerEntityManagerFactoryBean#setPackagesToScan(String...)} based
 	 * on an {@link EntityScan} annotation.
 	 */
-	static class JpaEntityScanBeanPostProcessor extends AbstractEntityScanBeanPostProcessor
-			implements SmartInitializingSingleton {
+	static class JpaEntityScanBeanPostProcessor extends
+			AbstractEntityScanBeanPostProcessor implements SmartInitializingSingleton {
 
 		private boolean processed;
 

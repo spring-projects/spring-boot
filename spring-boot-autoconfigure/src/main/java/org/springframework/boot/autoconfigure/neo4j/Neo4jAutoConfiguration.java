@@ -72,8 +72,7 @@ public class Neo4jAutoConfiguration {
 
 		@Override
 		public SessionFactory getSessionFactory() {
-			SessionFactoryProvider provider = this.sessionFactoryProvider.getObject();
-			return provider.getSessionFactory();
+			return this.sessionFactoryProvider.getObject().getSessionFactory();
 		}
 
 		@Bean

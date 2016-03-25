@@ -22,16 +22,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.context.annotation.Import;
 
 /**
- * Configures the {@link SessionFactory} to scan for node entity
- * classes in the classpath. This annotation provides an alternative to manually setting
- * {@link SessionFactoryProvider#setPackagesToScan(String...)} and is
- * particularly useful if you want to configure entity scanning in a type-safe way, or if
- * your {@link SessionFactory} is auto-configured.
+ * Configures the {@link SessionFactory} to scan for Neo4J {@link NodeEntity} classes in
+ * the classpath. This annotation provides an alternative to manually setting
+ * {@link SessionFactoryProvider#setPackagesToScan(String...)} and is particularly useful
+ * if you want to configure entity scanning in a type-safe way, or if your
+ * {@link SessionFactory} is auto-configured.
  * <p>
  * A {@link SessionFactoryProvider} must be configured within your Spring
  * ApplicationContext in order to use entity scanning. Furthermore, any existing
@@ -42,7 +43,6 @@ import org.springframework.context.annotation.Import;
  * packages are not defined scanning will occur from the package of the class with this
  * annotation.
  *
- * @author Phillip Webb
  * @author Stephane Nicoll
  * @since 1.4.0
  */

@@ -32,16 +32,17 @@ import org.springframework.util.Assert;
 class NodeEntityScanRegistrar extends AbstractEntityScanRegistrar {
 
 	NodeEntityScanRegistrar() {
-		super(NodeEntityScan.class, "nodeEntityScanBeanPostProcessor", NodeEntityScanBeanPostProcessor.class);
+		super(NodeEntityScan.class, "nodeEntityScanBeanPostProcessor",
+				NodeEntityScanBeanPostProcessor.class);
 	}
 
 	/**
 	 * {@link BeanPostProcessor} to set
-	 * {@link SessionFactoryProvider#setPackagesToScan(String...)} based
-	 * on an {@link NodeEntityScan} annotation.
+	 * {@link SessionFactoryProvider#setPackagesToScan(String...)} based on an
+	 * {@link NodeEntityScan} annotation.
 	 */
-	static class NodeEntityScanBeanPostProcessor extends AbstractEntityScanBeanPostProcessor
-			implements SmartInitializingSingleton {
+	static class NodeEntityScanBeanPostProcessor extends
+			AbstractEntityScanBeanPostProcessor implements SmartInitializingSingleton {
 
 		private boolean processed;
 

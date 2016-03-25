@@ -21,15 +21,18 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
 
 /**
- * A base {@link BeanPostProcessor} implementation that holds the packages to
- * use for a given component. An implementation must implement
- * {@link #postProcessBeforeInitialization(Object, String)} and update the
- * component responsible to manage the packages to scan.
+ * A base {@link BeanPostProcessor} implementation that holds the packages to use for a
+ * given component. An implementation must implement
+ * {@link #postProcessBeforeInitialization(Object, String)} and update the component
+ * responsible to manage the packages to scan.
  *
+ * @author Phillip Webb
+ * @author Oliver Gierke
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-public abstract class AbstractEntityScanBeanPostProcessor implements BeanPostProcessor, Ordered {
+public abstract class AbstractEntityScanBeanPostProcessor
+		implements BeanPostProcessor, Ordered {
 
 	private final String[] packagesToScan;
 

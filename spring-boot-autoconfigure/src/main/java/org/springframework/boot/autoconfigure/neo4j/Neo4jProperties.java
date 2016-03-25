@@ -20,6 +20,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.neo4j.ogm.config.Configuration;
+import org.neo4j.ogm.config.DriverConfiguration;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -115,29 +116,29 @@ public class Neo4jProperties implements ApplicationContextAware {
 	 */
 	public Configuration createConfiguration() {
 		Configuration configuration = new Configuration();
-		if (this.uri == null) {
-			if (getEmbedded().isEnabled()
-					&& ClassUtils.isPresent(EMBEDDED_DRIVER, this.classLoader)) {
-				configuration.driverConfiguration().setDriverClassName(EMBEDDED_DRIVER);
-			}
-			else {
-				configuration.driverConfiguration().setDriverClassName(HTTP_DRIVER);
-				configuration.driverConfiguration().setURI(DEFAULT_HTTP_URI);
-			}
-		}
-		else {
-			configuration.driverConfiguration().setDriverClassName(deduceDriverFromUri());
-			configuration.driverConfiguration().setURI(this.uri);
-		}
-
-		if (this.username != null && this.password != null) {
-			configuration.driverConfiguration().setCredentials(this.username,
-					this.password);
-		}
+		configureDriver(configuration.driverConfiguration());
 		if (this.compiler != null) {
 			configuration.compilerConfiguration().setCompilerClassName(this.compiler);
 		}
 		return configuration;
+	}
+
+	private void configureDriver(DriverConfiguration driverConfiguration) {
+		if (this.uri != null) {
+			configureDriverFromUri(driverConfiguration, this.uri);
+		}
+		else {
+			configureDriverWithDefaults(driverConfiguration);
+		}
+		if (this.username != null && this.password != null) {
+			driverConfiguration.setCredentials(this.username, this.password);
+		}
+	}
+
+	private void configureDriverFromUri(DriverConfiguration driverConfiguration,
+			String uri) {
+		driverConfiguration.setDriverClassName(deduceDriverFromUri());
+		driverConfiguration.setURI(uri);
 	}
 
 	private String deduceDriverFromUri() {
@@ -147,18 +148,26 @@ public class Neo4jProperties implements ApplicationContextAware {
 			if (scheme == null || scheme.equals("file")) {
 				return EMBEDDED_DRIVER;
 			}
-			else if ("http".equals(scheme)) {
+			if ("http".equals(scheme)) {
 				return HTTP_DRIVER;
 			}
-			else {
-				throw new IllegalArgumentException(
-						"Could not deduce driver to use based on URI '" + uri + "'");
-			}
+			throw new IllegalArgumentException(
+					"Could not deduce driver to use based on URI '" + uri + "'");
 		}
 		catch (URISyntaxException ex) {
 			throw new IllegalArgumentException(
 					"Invalid URI for spring.data.neo4j.uri '" + this.uri + "'", ex);
 		}
+	}
+
+	private void configureDriverWithDefaults(DriverConfiguration driverConfiguration) {
+		if (getEmbedded().isEnabled()
+				&& ClassUtils.isPresent(EMBEDDED_DRIVER, this.classLoader)) {
+			driverConfiguration.setDriverClassName(EMBEDDED_DRIVER);
+			return;
+		}
+		driverConfiguration.setDriverClassName(HTTP_DRIVER);
+		driverConfiguration.setURI(DEFAULT_HTTP_URI);
 	}
 
 	public static class Embedded {
