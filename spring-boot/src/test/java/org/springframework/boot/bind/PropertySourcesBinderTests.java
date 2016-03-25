@@ -20,8 +20,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import org.springframework.boot.testutil.EnvironmentTestUtils;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +36,8 @@ public class PropertySourcesBinderTests {
 
 	@Test
 	public void extractAllWithPrefix() {
-		EnvironmentTestUtils.addEnvironment(this.env, "foo.first=1", "foo.second=2");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.env, "foo.first=1",
+				"foo.second=2");
 		Map<String, Object> content = new PropertySourcesBinder(this.env)
 				.extractAll("foo");
 		assertThat(content.get("first")).isEqualTo("1");
@@ -47,8 +48,8 @@ public class PropertySourcesBinderTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void extractNoPrefix() {
-		EnvironmentTestUtils.addEnvironment(this.env, "foo.ctx.first=1",
-				"foo.ctx.second=2");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.env,
+				"foo.ctx.first=1", "foo.ctx.second=2");
 		Map<String, Object> content = new PropertySourcesBinder(this.env).extractAll("");
 		assertThat(content.get("foo")).isInstanceOf(Map.class);
 		Map<String, Object> foo = (Map<String, Object>) content.get("foo");
@@ -62,7 +63,8 @@ public class PropertySourcesBinderTests {
 
 	@Test
 	public void bindToSimplePojo() {
-		EnvironmentTestUtils.addEnvironment(this.env, "test.name=foo", "test.counter=42");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.env,
+				"test.name=foo", "test.counter=42");
 		TestBean bean = new TestBean();
 		new PropertySourcesBinder(this.env).bindTo("test", bean);
 		assertThat(bean.getName()).isEqualTo("foo");

@@ -28,9 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.boot.logging.LoggingInitializationContext;
-import org.springframework.boot.testutil.EnvironmentTestUtils;
 import org.springframework.boot.testutil.OutputCapture;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -126,14 +126,16 @@ public class SpringBootJoranConfiguratorTests {
 
 	@Test
 	public void springProperty() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.environment, "my.example-property:test");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"my.example-property=test");
 		initialize("property.xml");
 		assertThat(this.context.getProperty("MINE")).isEqualTo("test");
 	}
 
 	@Test
 	public void relaxedSpringProperty() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.environment, "my.EXAMPLE_PROPERTY:test");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"my.EXAMPLE_PROPERTY=test");
 		initialize("property.xml");
 		assertThat(this.context.getProperty("MINE")).isEqualTo("test");
 	}

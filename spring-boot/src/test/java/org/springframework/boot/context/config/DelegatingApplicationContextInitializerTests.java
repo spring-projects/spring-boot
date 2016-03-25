@@ -20,13 +20,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.testutil.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,8 +46,9 @@ public class DelegatingApplicationContextInitializerTests {
 	@Test
 	public void orderedInitialize() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "context.initializer.classes:"
-				+ MockInitB.class.getName() + "," + MockInitA.class.getName());
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
+				"context.initializer.classes=" + MockInitB.class.getName() + ","
+						+ MockInitA.class.getName());
 		this.initializer.initialize(context);
 		assertThat(context.getBeanFactory().getSingleton("a")).isEqualTo("a");
 		assertThat(context.getBeanFactory().getSingleton("b")).isEqualTo("b");
@@ -62,15 +63,16 @@ public class DelegatingApplicationContextInitializerTests {
 	@Test
 	public void emptyInitializers() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "context.initializer.classes:");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
+				"context.initializer.classes:");
 		this.initializer.initialize(context);
 	}
 
 	@Test
 	public void noSuchInitializerClass() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"context.initializer.classes:missing.madeup.class");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
+				"context.initializer.classes=missing.madeup.class");
 		this.thrown.expect(ApplicationContextException.class);
 		this.initializer.initialize(context);
 	}
@@ -78,8 +80,8 @@ public class DelegatingApplicationContextInitializerTests {
 	@Test
 	public void notAnInitializerClass() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"context.initializer.classes:" + Object.class.getName());
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
+				"context.initializer.classes=" + Object.class.getName());
 		this.thrown.expect(IllegalArgumentException.class);
 		this.initializer.initialize(context);
 	}
@@ -87,8 +89,8 @@ public class DelegatingApplicationContextInitializerTests {
 	@Test
 	public void genericNotSuitable() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"context.initializer.classes:" + NotSuitableInit.class.getName());
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
+				"context.initializer.classes=" + NotSuitableInit.class.getName());
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("generic parameter");
 		this.initializer.initialize(context);

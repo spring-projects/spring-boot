@@ -23,13 +23,13 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.boot.testutil.EnvironmentTestUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,8 +56,9 @@ public class DelegatingApplicationListenerTests {
 
 	@Test
 	public void orderedInitialize() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "context.listener.classes:"
-				+ MockInitB.class.getName() + "," + MockInitA.class.getName());
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"context.listener.classes=" + MockInitB.class.getName() + ","
+						+ MockInitA.class.getName());
 		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
 				new SpringApplication(), new String[0], this.context.getEnvironment()));
 		this.context.getBeanFactory().registerSingleton("testListener", this.listener);
@@ -74,7 +75,8 @@ public class DelegatingApplicationListenerTests {
 
 	@Test
 	public void emptyInitializers() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "context.listener.classes:");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"context.listener.classes:");
 		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
 				new SpringApplication(), new String[0], this.context.getEnvironment()));
 	}
