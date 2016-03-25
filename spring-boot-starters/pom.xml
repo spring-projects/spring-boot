@@ -33,6 +33,7 @@
 		<module>spring-boot-starter-data-gemfire</module>
 		<module>spring-boot-starter-data-jpa</module>
 		<module>spring-boot-starter-data-mongodb</module>
+		<module>spring-boot-starter-data-neo4j</module>
 		<module>spring-boot-starter-data-redis</module>
 		<module>spring-boot-starter-data-rest</module>
 		<module>spring-boot-starter-data-solr</module>
@@ -69,6 +70,7 @@
 		<module>spring-boot-starter-websocket</module>
 		<module>spring-boot-starter-ws</module>
 	</modules>
+
 	<build>
 		<plugins>
 			<plugin>
