@@ -45,8 +45,7 @@ import org.springframework.data.neo4j.template.Neo4jTemplate;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Neo4j support.
  * <p>
- * Registers a {@link Neo4jTemplate} bean if no other bean of
- * the same type is configured.
+ * Registers a {@link Neo4jTemplate} bean if no other bean of the same type is configured.
  *
  * @author Michael Hunger
  * @author Josh Long
@@ -55,7 +54,7 @@ import org.springframework.data.neo4j.template.Neo4jTemplate;
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({Neo4jSession.class, Neo4jOperations.class})
+@ConditionalOnClass({ Neo4jSession.class, Neo4jOperations.class })
 @ConditionalOnMissingBean(Neo4jOperations.class)
 @EnableConfigurationProperties(Neo4jProperties.class)
 public class Neo4jAutoConfiguration {
@@ -66,7 +65,8 @@ public class Neo4jAutoConfiguration {
 
 		private final ObjectProvider<SessionFactoryProvider> sessionFactoryProvider;
 
-		public SpringBootNeo4jConfiguration(ObjectProvider<SessionFactoryProvider> sessionFactoryProvider) {
+		public SpringBootNeo4jConfiguration(
+				ObjectProvider<SessionFactoryProvider> sessionFactoryProvider) {
 			this.sessionFactoryProvider = sessionFactoryProvider;
 		}
 
@@ -77,8 +77,7 @@ public class Neo4jAutoConfiguration {
 		}
 
 		@Bean
-		@Scope(scopeName = "${spring.data.neo4j.session.scope:singleton}",
-				proxyMode = ScopedProxyMode.TARGET_CLASS)
+		@Scope(scopeName = "${spring.data.neo4j.session.scope:singleton}", proxyMode = ScopedProxyMode.TARGET_CLASS)
 		@Override
 		public Session getSession() throws Exception {
 			return getSessionFactory().openSession();
@@ -94,7 +93,8 @@ public class Neo4jAutoConfiguration {
 
 		private ConfigurableListableBeanFactory beanFactory;
 
-		SessionFactoryProviderConfiguration(org.neo4j.ogm.config.Configuration configuration) {
+		SessionFactoryProviderConfiguration(
+				org.neo4j.ogm.config.Configuration configuration) {
 			this.configuration = configuration;
 		}
 
@@ -114,7 +114,8 @@ public class Neo4jAutoConfiguration {
 
 		protected String[] getPackagesToScan() {
 			if (AutoConfigurationPackages.has(this.beanFactory)) {
-				List<String> basePackages = AutoConfigurationPackages.get(this.beanFactory);
+				List<String> basePackages = AutoConfigurationPackages
+						.get(this.beanFactory);
 				return basePackages.toArray(new String[basePackages.size()]);
 			}
 			return new String[0];

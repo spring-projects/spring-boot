@@ -3055,6 +3055,8 @@ properties:
 	spring.data.neo4j.password=secret
 ----
 
+
+
 [[boot-features-connecting-to-neo4j-embedded]]
 ==== Using the embedded mode
 
@@ -3070,6 +3072,8 @@ persistence for the embedded mode:
 ----
 	spring.data.neo4j.uri=file://var/tmp/graph.db
 ----
+
+
 
 [[boot-features-neo4j-ogm-session]]
 ==== Neo4jSession

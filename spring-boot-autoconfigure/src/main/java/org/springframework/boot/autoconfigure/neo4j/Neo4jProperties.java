@@ -131,7 +131,8 @@ public class Neo4jProperties implements ApplicationContextAware {
 		}
 
 		if (this.username != null && this.password != null) {
-			configuration.driverConfiguration().setCredentials(this.username, this.password);
+			configuration.driverConfiguration().setCredentials(this.username,
+					this.password);
 		}
 		if (this.compiler != null) {
 			configuration.compilerConfiguration().setCompilerClassName(this.compiler);
@@ -150,14 +151,15 @@ public class Neo4jProperties implements ApplicationContextAware {
 				return HTTP_DRIVER;
 			}
 			else {
-				throw new IllegalArgumentException("Could not deduce driver to use based on URI '" + uri + "'");
+				throw new IllegalArgumentException(
+						"Could not deduce driver to use based on URI '" + uri + "'");
 			}
 		}
 		catch (URISyntaxException ex) {
-			throw new IllegalArgumentException("Invalid URI for spring.data.neo4j.uri '" + this.uri + "'", ex);
+			throw new IllegalArgumentException(
+					"Invalid URI for spring.data.neo4j.uri '" + this.uri + "'", ex);
 		}
 	}
-
 
 	public static class Embedded {
 

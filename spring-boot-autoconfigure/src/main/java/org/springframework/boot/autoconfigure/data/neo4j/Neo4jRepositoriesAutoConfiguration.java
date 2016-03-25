@@ -55,7 +55,8 @@ import org.springframework.data.neo4j.repository.support.GraphRepositoryFactoryB
  */
 @Configuration
 @ConditionalOnClass({ Neo4jSession.class, GraphRepository.class })
-@ConditionalOnMissingBean({ GraphRepositoryFactoryBean.class, Neo4jRepositoryConfigurationExtension.class })
+@ConditionalOnMissingBean({ GraphRepositoryFactoryBean.class,
+		Neo4jRepositoryConfigurationExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.neo4j.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(Neo4jRepositoriesAutoConfigureRegistrar.class)
 @AutoConfigureAfter(Neo4jAutoConfiguration.class)

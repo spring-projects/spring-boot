@@ -68,8 +68,7 @@ public class Neo4jPropertiesTests {
 		Neo4jProperties properties = load(true,
 				"spring.data.neo4j.uri=http://localhost:7474");
 		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
-				"http://localhost:7474");
+		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "http://localhost:7474");
 	}
 
 	@Test
@@ -85,11 +84,9 @@ public class Neo4jPropertiesTests {
 	public void credentialsAreSet() {
 		Neo4jProperties properties = load(true,
 				"spring.data.neo4j.uri=http://localhost:7474",
-				"spring.data.neo4j.username=user",
-				"spring.data.neo4j.password=secret");
+				"spring.data.neo4j.username=user", "spring.data.neo4j.password=secret");
 		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
-				"http://localhost:7474");
+		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "http://localhost:7474");
 		assertCredentials(configuration, "user", "secret");
 	}
 
@@ -121,15 +118,15 @@ public class Neo4jPropertiesTests {
 				"target/neo4j/my.db");
 	}
 
-	private static void assertDriver(Configuration actual, String driver,
-			String uri) {
+	private static void assertDriver(Configuration actual, String driver, String uri) {
 		assertThat(actual).isNotNull();
 		DriverConfiguration driverConfig = actual.driverConfiguration();
 		assertThat(driverConfig.getDriverClassName()).isEqualTo(driver);
 		assertThat(driverConfig.getURI()).isEqualTo(uri);
 	}
 
-	private static void assertCredentials(Configuration actual, String username, String password) {
+	private static void assertCredentials(Configuration actual, String username,
+			String password) {
 		Credentials credentials = actual.driverConfiguration().getCredentials();
 		if (username == null & password == null) {
 			assertThat(credentials).isNull();
@@ -138,8 +135,8 @@ public class Neo4jPropertiesTests {
 			assertThat(credentials).isNotNull();
 			Object content = credentials.credentials();
 			assertThat(content).isInstanceOf(String.class);
-			String[] auth = new String(Base64.decode(((String) content)
-					.getBytes())).split(":");
+			String[] auth = new String(Base64.decode(((String) content).getBytes()))
+					.split(":");
 			assertThat(auth[0]).isEqualTo(username);
 			assertThat(auth[1]).isEqualTo(password);
 			assertThat(auth).hasSize(2);
@@ -148,24 +145,23 @@ public class Neo4jPropertiesTests {
 
 	public Neo4jProperties load(final boolean embeddedAvailable, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.setClassLoader(
-				new URLClassLoader(new URL[0], getClass().getClassLoader()) {
+		ctx.setClassLoader(new URLClassLoader(new URL[0], getClass().getClassLoader()) {
 
-					@Override
-					protected Class<?> loadClass(String name, boolean resolve)
-							throws ClassNotFoundException {
-						if (name.equals(Neo4jProperties.EMBEDDED_DRIVER)) {
-							if (embeddedAvailable) {
-								return TestEmbeddedDriver.class;
-							}
-							else {
-								throw new ClassNotFoundException();
-							}
-						}
-						return super.loadClass(name, resolve);
+			@Override
+			protected Class<?> loadClass(String name, boolean resolve)
+					throws ClassNotFoundException {
+				if (name.equals(Neo4jProperties.EMBEDDED_DRIVER)) {
+					if (embeddedAvailable) {
+						return TestEmbeddedDriver.class;
 					}
+					else {
+						throw new ClassNotFoundException();
+					}
+				}
+				return super.loadClass(name, resolve);
+			}
 
-				});
+		});
 		EnvironmentTestUtils.addEnvironment(ctx, environment);
 		ctx.register(TestConfiguration.class);
 		ctx.refresh();

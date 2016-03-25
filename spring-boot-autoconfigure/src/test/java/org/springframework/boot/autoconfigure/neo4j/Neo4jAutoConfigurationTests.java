@@ -33,8 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link Neo4jAutoConfiguration}. Tests can't use the embedded driver
- * as we use lucene 4 and Neo4j still requires 3.
+ * Tests for {@link Neo4jAutoConfiguration}. Tests can't use the embedded driver as we use
+ * lucene 4 and Neo4j still requires 3.
  *
  * @author Stephane Nicoll
  * @author Michael Hunger
@@ -55,16 +55,19 @@ public class Neo4jAutoConfigurationTests {
 	public void defaultConfiguration() {
 		load(null, "spring.data.neo4j.uri=http://localhost:8989");
 		assertThat(this.context.getBeansOfType(Neo4jOperations.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class))
+				.hasSize(1);
 		assertThat(this.context.getBeansOfType(SessionFactory.class)).hasSize(1);
-		assertThat(this.context.getBeanDefinition("scopedTarget.getSession").getScope()).isEqualTo("singleton");
+		assertThat(this.context.getBeanDefinition("scopedTarget.getSession").getScope())
+				.isEqualTo("singleton");
 	}
 
 	@Test
 	public void customScope() {
 		load(null, "spring.data.neo4j.uri=http://localhost:8989",
 				"spring.data.neo4j.session.scope=prototype");
-		assertThat(this.context.getBeanDefinition("scopedTarget.getSession").getScope()).isEqualTo("prototype");
+		assertThat(this.context.getBeanDefinition("scopedTarget.getSession").getScope())
+				.isEqualTo("prototype");
 	}
 
 	@Test
@@ -72,7 +75,8 @@ public class Neo4jAutoConfigurationTests {
 		load(CustomNeo4jOperations.class);
 		assertThat(this.context.getBean(Neo4jOperations.class))
 				.isSameAs(this.context.getBean("myNeo4jOperations"));
-		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class)).hasSize(0);
+		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class))
+				.hasSize(0);
 		assertThat(this.context.getBeansOfType(SessionFactory.class)).hasSize(0);
 		assertThat(this.context.getBeansOfType(Session.class)).hasSize(0);
 	}
@@ -83,7 +87,8 @@ public class Neo4jAutoConfigurationTests {
 		assertThat(this.context.getBean(org.neo4j.ogm.config.Configuration.class))
 				.isSameAs(this.context.getBean("myConfiguration"));
 		assertThat(this.context.getBeansOfType(Neo4jOperations.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class))
+				.hasSize(1);
 		assertThat(this.context.getBeansOfType(SessionFactory.class)).hasSize(1);
 	}
 
@@ -109,14 +114,14 @@ public class Neo4jAutoConfigurationTests {
 
 	}
 
-
 	@Configuration
 	static class CustomConfiguration {
 
 		@Bean
 		public org.neo4j.ogm.config.Configuration myConfiguration() {
 			org.neo4j.ogm.config.Configuration configuration = new org.neo4j.ogm.config.Configuration();
-			configuration.driverConfiguration().setDriverClassName(HttpDriver.class.getName());
+			configuration.driverConfiguration()
+					.setDriverClassName(HttpDriver.class.getName());
 			return configuration;
 		}
 

@@ -57,8 +57,7 @@ public class Neo4jDataAutoConfigurationTests {
 				City.class);
 	}
 
-
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static void assertDomainTypesDiscovered(Neo4jMappingContext mappingContext,
 			Class<?>... types) {
 		for (Class<?> type : types) {
