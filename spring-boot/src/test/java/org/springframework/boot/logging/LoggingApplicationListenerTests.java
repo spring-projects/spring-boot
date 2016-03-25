@@ -39,7 +39,7 @@ import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
-import org.springframework.boot.testutil.OutputCapture;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -68,7 +68,7 @@ public class LoggingApplicationListenerTests {
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public InternalOutputCapture outputCapture = new InternalOutputCapture();
 
 	private final LoggingApplicationListener initializer = new LoggingApplicationListener();
 

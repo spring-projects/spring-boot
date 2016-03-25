@@ -39,8 +39,8 @@ import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.testutil.Matched;
-import org.springframework.boot.testutil.OutputCapture;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
@@ -59,7 +59,7 @@ import static org.hamcrest.Matchers.not;
 public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public InternalOutputCapture output = new InternalOutputCapture();
 
 	private final LogbackLoggingSystem loggingSystem = new LogbackLoggingSystem(
 			getClass().getClassLoader());

@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.boot.logging.LoggingInitializationContext;
-import org.springframework.boot.testutil.OutputCapture;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
@@ -45,7 +45,7 @@ import static org.hamcrest.Matchers.not;
 public class SpringBootJoranConfiguratorTests {
 
 	@Rule
-	public OutputCapture out = new OutputCapture();
+	public InternalOutputCapture out = new InternalOutputCapture();
 
 	private MockEnvironment environment;
 
