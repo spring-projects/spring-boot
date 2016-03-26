@@ -117,6 +117,21 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	public void testFormatMessageDefault() throws Exception {
+		load("spring.messages.basename:test/messages");
+		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
+				.isAlwaysUseMessageFormat()).isFalse();
+	}
+
+	@Test
+	public void testFormatMessageOn() throws Exception {
+		load("spring.messages.basename:test/messages",
+				"spring.messages.always-use-message-format:true");
+		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
+				.isAlwaysUseMessageFormat()).isTrue();
+	}
+
+	@Test
 	public void existingMessageSourceIsPreferred() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(CustomMessageSource.class,
