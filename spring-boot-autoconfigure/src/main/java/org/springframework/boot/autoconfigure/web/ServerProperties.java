@@ -72,6 +72,7 @@ import org.springframework.util.StringUtils;
  * @author Ivan Sopov
  * @author Marcos Barbero
  * @author Eddú Meléndez
+ * @author Kazuki Shimizu
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties
@@ -590,6 +591,11 @@ public class ServerProperties
 		 */
 		private Charset uriEncoding;
 
+		/**
+		 * Indicate whether or not decode the URI using character encoding to decode body.
+		 */
+		private Boolean useBodyEncodingForURI;
+
 		public int getMaxThreads() {
 			return this.maxThreads;
 		}
@@ -674,6 +680,14 @@ public class ServerProperties
 			this.uriEncoding = uriEncoding;
 		}
 
+		public Boolean getUseBodyEncodingForURI() {
+			return this.useBodyEncodingForURI;
+		}
+
+		public void setUseBodyEncodingForURI(Boolean useBodyEncodingForURI) {
+			this.useBodyEncodingForURI = useBodyEncodingForURI;
+		}
+
 		void customizeTomcat(ServerProperties serverProperties,
 				TomcatEmbeddedServletContainerFactory factory) {
 			if (getBasedir() != null) {
@@ -692,6 +706,9 @@ public class ServerProperties
 			}
 			if (getUriEncoding() != null) {
 				factory.setUriEncoding(getUriEncoding());
+			}
+			if (getUseBodyEncodingForURI() != null) {
+				customizeUseBodyEncodingForURI(factory);
 			}
 		}
 
@@ -761,6 +778,15 @@ public class ServerProperties
 					}
 				}
 
+			});
+		}
+
+		private void customizeUseBodyEncodingForURI(TomcatEmbeddedServletContainerFactory factory) {
+			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+				@Override
+				public void customize(Connector connector) {
+					connector.setUseBodyEncodingForURI(Tomcat.this.useBodyEncodingForURI);
+				}
 			});
 		}
 

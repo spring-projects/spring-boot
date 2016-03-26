@@ -30,6 +30,7 @@ import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
 
 import org.apache.catalina.Valve;
+import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,8 +41,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.mock.env.MockEnvironment;
@@ -62,6 +65,7 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Kazuki Shimizu
  */
 public class ServerPropertiesTests {
 
@@ -251,6 +255,17 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void testCustomizeUseBodyEncodingForURI() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.useBodyEncodingForURI", "true");
+		bindProperties(map);
+		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(factory);
+		assertThat(this.properties.getTomcat().getUseBodyEncodingForURI()).isEqualTo(true);
+		assertThat(getTomcat(factory).getConnector().getUseBodyEncodingForURI()).isEqualTo(true);
+	}
+
+	@Test
 	public void testCustomizeTomcatHeaderSize() throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.maxHttpHeaderSize", "9999");
@@ -412,6 +427,11 @@ public class ServerPropertiesTests {
 	private void bindProperties(Map<String, String> map) {
 		new RelaxedDataBinder(this.properties, "server")
 				.bind(new MutablePropertyValues(map));
+	}
+
+	private Tomcat getTomcat(TomcatEmbeddedServletContainerFactory factory) {
+		EmbeddedServletContainer servletContainer = factory.getEmbeddedServletContainer();
+		return ((TomcatEmbeddedServletContainer) servletContainer).getTomcat();
 	}
 
 }
