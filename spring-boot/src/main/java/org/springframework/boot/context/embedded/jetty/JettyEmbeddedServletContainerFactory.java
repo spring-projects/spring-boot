@@ -91,6 +91,7 @@ import org.springframework.util.StringUtils;
  * @author Andrey Hihlovskiy
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Venil Noronha
  * @see #setPort(int)
  * @see #setConfigurations(Collection)
  * @see JettyEmbeddedServletContainer
@@ -109,6 +110,8 @@ public class JettyEmbeddedServletContainerFactory
 	private boolean useForwardHeaders;
 
 	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<JettyServerCustomizer>();
+
+	private List<JettySslContextFactoryCustomizer> sslContextFactoryCustomizers = new ArrayList<JettySslContextFactoryCustomizer>();
 
 	private ResourceLoader resourceLoader;
 
@@ -208,17 +211,24 @@ public class JettyEmbeddedServletContainerFactory
 	 */
 	protected void configureSsl(SslContextFactory factory, Ssl ssl) {
 		factory.setProtocol(ssl.getProtocol());
-		configureSslClientAuth(factory, ssl);
-		configureSslPasswords(factory, ssl);
-		factory.setCertAlias(ssl.getKeyAlias());
-		configureSslKeyStore(factory, ssl);
-		if (ssl.getCiphers() != null) {
-			factory.setIncludeCipherSuites(ssl.getCiphers());
+		if (this.sslContextFactoryCustomizers.isEmpty()) {
+			configureSslClientAuth(factory, ssl);
+			configureSslPasswords(factory, ssl);
+			factory.setCertAlias(ssl.getKeyAlias());
+			configureSslKeyStore(factory, ssl);
+			if (ssl.getCiphers() != null) {
+				factory.setIncludeCipherSuites(ssl.getCiphers());
+			}
+			if (ssl.getEnabledProtocols() != null) {
+				factory.setIncludeProtocols(ssl.getEnabledProtocols());
+			}
+			configureSslTrustStore(factory, ssl);
 		}
-		if (ssl.getEnabledProtocols() != null) {
-			factory.setIncludeProtocols(ssl.getEnabledProtocols());
+		else {
+			for (JettySslContextFactoryCustomizer customizer : this.sslContextFactoryCustomizers) {
+				customizer.customize(factory);
+			}
 		}
-		configureSslTrustStore(factory, ssl);
 	}
 
 	private void configureSslClientAuth(SslContextFactory factory, Ssl ssl) {
@@ -512,6 +522,36 @@ public class JettyEmbeddedServletContainerFactory
 	public void addServerCustomizers(JettyServerCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
+	}
+
+	/**
+	 * Set {@link JettySslContextFactoryCustomizer}s that should be applied to the {@link SslContextFactory}.
+	 * Calling this method will replace any existing customizers.
+	 * @param customizers the customizers to set.
+	 */
+	public void setSslContextFactoryCustomizers(
+			Collection<? extends JettySslContextFactoryCustomizer> customizers) {
+		Assert.notNull(customizers, "JettySslContextFactoryCustomizers must not be null");
+		this.sslContextFactoryCustomizers = new ArrayList<JettySslContextFactoryCustomizer>(customizers);
+	}
+
+	/**
+	 * Returns a mutable collection of the {@link JettySslContextFactoryCustomizer}s that will be
+	 * applied to the {@link SslContextFactory}.
+	 * @return the customizers that will be applied.
+	 */
+	public Collection<JettySslContextFactoryCustomizer> getSslContextFactoryCustomizers() {
+		return this.sslContextFactoryCustomizers;
+	}
+
+	/**
+	 * Add {@link JettySslContextFactoryCustomizer}s that should be used to customize the
+	 * {@link SslContextFactory}.
+	 * @param customizers the customizers to add.
+	 */
+	public void addSslContextFactoryCustomizers(JettySslContextFactoryCustomizer... customizers) {
+		Assert.notNull(customizers, "JettySslContextFactoryCustomizers must not be null");
+		this.sslContextFactoryCustomizers.addAll(Arrays.asList(customizers));
 	}
 
 	/**

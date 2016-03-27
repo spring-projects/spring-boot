@@ -34,6 +34,7 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Test;
@@ -58,6 +59,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Venil Noronha
  */
 public class JettyEmbeddedServletContainerFactoryTests
 		extends AbstractEmbeddedServletContainerFactoryTests {
@@ -96,6 +98,39 @@ public class JettyEmbeddedServletContainerFactoryTests
 		InOrder ordered = inOrder((Object[]) configurations);
 		for (JettyServerCustomizer configuration : configurations) {
 			ordered.verify(configuration).customize((Server) anyObject());
+		}
+	}
+
+	@Test
+	public void setNullSslContextFactoryCustomizersThrows() {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("JettySslContextFactoryCustomizers must not be null");
+		factory.setSslContextFactoryCustomizers(null);
+	}
+
+	@Test
+	public void addNullSslContextFactoryCustomizersThrows() {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("JettySslContextFactoryCustomizers must not be null");
+		factory.addSslContextFactoryCustomizers((JettySslContextFactoryCustomizer[]) null);
+	}
+
+	@Test
+	public void sslContextFactoryCustomizations() throws Exception {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		JettySslContextFactoryCustomizer[] customizers = new JettySslContextFactoryCustomizer[4];
+		for (int i = 0; i < customizers.length; i++) {
+			customizers[i] = mock(JettySslContextFactoryCustomizer.class);
+		}
+		factory.setSsl(new Ssl());
+		factory.setSslContextFactoryCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.addSslContextFactoryCustomizers(customizers[2], customizers[3]);
+		this.container = factory.getEmbeddedServletContainer();
+		InOrder ordered = inOrder((Object[]) customizers);
+		for (JettySslContextFactoryCustomizer customizer : customizers) {
+			ordered.verify(customizer).customize((SslContextFactory) anyObject());
 		}
 	}
 
