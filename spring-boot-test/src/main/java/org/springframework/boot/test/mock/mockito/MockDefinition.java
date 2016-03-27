@@ -21,11 +21,11 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.mockito.Answers;
 import org.mockito.MockSettings;
 import org.mockito.Mockito;
 
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -155,11 +155,11 @@ class MockDefinition {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("name", this.name)
+		return new ToStringCreator(this).append("name", this.name)
 				.append("classToMock", this.classToMock)
 				.append("extraInterfaces", this.extraInterfaces)
 				.append("answer", this.answer).append("serializable", this.serializable)
-				.append("reset", this.reset).build();
+				.append("reset", this.reset).toString();
 	}
 
 	public <T> T createMock() {
