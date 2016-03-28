@@ -830,6 +830,61 @@ content into your application; rather pick only the properties that you need.
 	spring.jms.listener.max-concurrency= # Maximum number of concurrent consumers.
 	spring.jms.pub-sub-domain=false # Specify if the default destination type is topic.
 
+	# KAFKA ({sc-spring-boot-autoconfigure}/kafka/KafkaProperties.{sc-ext}[KafkaProperties])
+	# Note that these properties (hyphenated or camelCase map directly to the Apache Kafka dotted properties, refer
+	# to the Apache Kafka documentation for details).
+	# Each of these properties apply to both producers and consumers, but can be specified at the producer or
+	# consumer level.
+	# Apache Kafka designates properties with an importance: HIGH, MEDIUM and LOW.
+	# Spring Boot auto configuration supports all HIGH importance properties, some selected MEDIUM and LOW,
+	# and any that do not have a default value.
+	spring.kafka.bootstrap-servers=
+	spring.kafka.client-id=
+	spring.kafka.ssl-key-password=
+	spring.kafka.ssl-keystore-location=
+	spring.kafka.ssl-keystore-password=
+	spring.kafka.ssl-truststore-location=
+	spring.kafka.ssl-truststore-password=
+	# Consumer-specific properties:
+	spring.kafka.consumer.auto-commit-interval-ms=
+	spring.kafka.consumer.auto-offset-reset=
+	spring.kafka.consumer.bootstrap-servers=
+	spring.kafka.consumer.client-id=
+	spring.kafka.consumer.enable-auto-commit=
+	spring.kafka.consumer.fetch-max-wait-ms=
+	spring.kafka.consumer.fetch-min-bytes=
+	spring.kafka.consumer.group-id=
+	spring.kafka.consumer.heartbeat-interval-ms=
+	spring.kafka.consumer.key-deserializer=
+	spring.kafka.consumer.ssl-key-password=
+	spring.kafka.consumer.ssl-keystore-location=
+	spring.kafka.consumer.ssl-keystore-password=
+	spring.kafka.consumer.ssl-truststore-location=
+	spring.kafka.consumer.ssl-truststore-password=
+	spring.kafka.consumer.value-deserializer=
+	# Listener properties - Refer to the Spring Kafka documentation
+	spring.kafka.listener.ackMode=BATCH
+	spring.kafka.listener.concurrency=1
+	spring.kafka.listener.pollTimeout=1000
+	# Producer-specific properties:
+	spring.kafka.producer.acks=
+	spring.kafka.producer.batch-size=
+	spring.kafka.producer.bootstrap-servers=
+	spring.kafka.producer.buffer-memory=
+	spring.kafka.producer.client-id=
+	spring.kafka.producer.compression-type=
+	spring.kafka.producer.key-serializer=
+	spring.kafka.producer.retries=
+	spring.kafka.producer.ssl-key-password=
+	spring.kafka.producer.ssl-keystore-location=
+	spring.kafka.producer.ssl-keystore-password=
+	spring.kafka.producer.ssl-truststore-location=
+	spring.kafka.producer.ssl-truststore-password=
+	spring.kafka.producer.timeout-ms=
+	spring.kafka.producer.value-serializer=
+	# template properties
+	spring.kafka.template.defaultTopic= # default topic to which messages are sent
+
 	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
 	spring.rabbitmq.addresses= # Comma-separated list of addresses to which the client should connect.
 	spring.rabbitmq.cache.channel.checkout-timeout= # Number of milliseconds to wait to obtain a channel if the cache size has been reached.
