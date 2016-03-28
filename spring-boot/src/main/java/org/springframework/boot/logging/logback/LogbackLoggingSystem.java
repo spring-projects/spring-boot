@@ -128,7 +128,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	protected void loadConfiguration(LoggingInitializationContext initializationContext,
 			String location, LogFile logFile) {
-		Assert.notNull(location, "Location must not be null");
+		super.loadConfiguration(initializationContext, location, logFile);
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
 		try {
