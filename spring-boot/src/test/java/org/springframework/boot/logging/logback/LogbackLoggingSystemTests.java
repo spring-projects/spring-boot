@@ -45,6 +45,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -73,11 +74,13 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private LoggingInitializationContext initializationContext;
 
+	private MockEnvironment environment;
+
 	@Before
 	public void setup() {
 		this.logger = new SLF4JLogFactory().getInstance(getClass().getName());
-		this.initializationContext = new LoggingInitializationContext(
-				new MockEnvironment());
+		this.environment = new MockEnvironment();
+		this.initializationContext = new LoggingInitializationContext(this.environment);
 	}
 
 	@Override
@@ -316,6 +319,18 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		finally {
 			System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");
 		}
+	}
+
+	@Test
+	public void reinitializeShouldSetSytemProperty() throws Exception {
+		// gh-5491
+		this.loggingSystem.beforeInitialize();
+		this.logger.info("Hidden");
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		LogFile logFile = getLogFile(tmpDir() + "/example.log", null, false);
+		this.loggingSystem.initialize(this.initializationContext,
+				"classpath:logback-nondefault.xml", logFile);
+		assertThat(System.getProperty("LOG_FILE"), endsWith("example.log"));
 	}
 
 	private String getLineWithText(File file, String outputSearch) throws Exception {
