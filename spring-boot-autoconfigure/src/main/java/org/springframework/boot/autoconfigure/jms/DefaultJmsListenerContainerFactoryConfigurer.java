@@ -68,7 +68,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	}
 
 	/**
-	 * Set the {@link JmsProperties to use}.
+	 * Set the {@link JmsProperties} to use.
 	 * @param jmsProperties the {@link JmsProperties}
 	 */
 	void setJmsProperties(JmsProperties jmsProperties) {

@@ -38,7 +38,7 @@ import org.springframework.test.context.ContextConfiguration;
  * {@link SpringApplicationConfiguration @SpringApplicationConfiguration} or
  * {@link ContextConfiguration @ContextConfiguration} if custom configuration is required.
  * <p>
- * A mock servlet environment will used when this annotation is used to a test web
+ * A mock servlet environment will be used when this annotation is used to a test web
  * application. If you want to start a real embedded servlet container in the same way as
  * a production application (listening on normal ports) the
  * {@link org.springframework.boot.test.context.web.WebIntegrationTest @WebIntegrationTest}
