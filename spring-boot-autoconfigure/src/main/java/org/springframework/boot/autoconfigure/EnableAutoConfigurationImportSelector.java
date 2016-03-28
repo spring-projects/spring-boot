@@ -140,8 +140,11 @@ public class EnableAutoConfigurationImportSelector
 	 */
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata,
 			AnnotationAttributes attributes) {
-		return SpringFactoriesLoader.loadFactoryNames(
+		List<String> configurations = SpringFactoriesLoader.loadFactoryNames(
 				getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader());
+		Assert.notEmpty(configurations,
+				"No auto configuration factories available. Please check your packaging to assure that the META-INF/spring.factories file is correct.");
+		return configurations;
 	}
 
 	/**
