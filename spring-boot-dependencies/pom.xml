@@ -156,6 +156,7 @@
 		<spring-hateoas.version>0.21.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.3.5.RELEASE</spring-integration.version>
 		<spring-integration-java-dsl.version>1.2.0.RELEASE</spring-integration-java-dsl.version>
+		<spring-kafka.version>1.1.1.RELEASE</spring-kafka.version>
 		<spring-loaded.version>1.2.6.RELEASE</spring-loaded.version>
 		<spring-mobile.version>1.1.5.RELEASE</spring-mobile.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
@@ -2122,6 +2123,11 @@
 				<groupId>org.springframework.hateoas</groupId>
 				<artifactId>spring-hateoas</artifactId>
 				<version>${spring-hateoas.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.kafka</groupId>
+				<artifactId>spring-kafka</artifactId>
+				<version>${spring-kafka.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.integration</groupId>
