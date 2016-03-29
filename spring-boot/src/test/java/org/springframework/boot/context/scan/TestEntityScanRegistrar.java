@@ -44,7 +44,8 @@ class TestEntityScanRegistrar extends AbstractEntityScanRegistrar {
 
 	}
 
-	static class TestEntityScanBeanPostProcessor extends AbstractEntityScanBeanPostProcessor {
+	static class TestEntityScanBeanPostProcessor
+			extends AbstractEntityScanBeanPostProcessor {
 
 		TestEntityScanBeanPostProcessor(String[] packagesToScan) {
 			super(packagesToScan);

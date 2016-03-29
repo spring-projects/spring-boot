@@ -34,22 +34,24 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
 /**
- * A base {@link ImportBeanDefinitionRegistrar} used to collect the packages to
- * scan for a given component.
+ * A base {@link ImportBeanDefinitionRegistrar} used to collect the packages to scan for a
+ * given component.
  * <p>
  * Expect to process an annotation type that defines a {@code basePackage} and
  * {@code basePackageClasses} attributes as well as a {@code value} alias of
  * {@code basePackage}.
  * <p>
  * The {@link ImportBeanDefinitionRegistrar} registers a single
- * {@link AbstractEntityScanBeanPostProcessor} implementation with the packages
- * to use.
+ * {@link AbstractEntityScanBeanPostProcessor} implementation with the packages to use.
  *
+ * @author Phillip Webb
+ * @author Oliver Gierke
  * @author Stephane Nicoll
  * @since 1.4.0
  * @see AbstractEntityScanBeanPostProcessor
  */
-public abstract class AbstractEntityScanRegistrar implements ImportBeanDefinitionRegistrar {
+public abstract class AbstractEntityScanRegistrar
+		implements ImportBeanDefinitionRegistrar {
 
 	private final Class<? extends Annotation> annotationType;
 
@@ -71,7 +73,6 @@ public abstract class AbstractEntityScanRegistrar implements ImportBeanDefinitio
 		this.beanPostProcessorType = beanPostProcessorType;
 	}
 
-
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			BeanDefinitionRegistry registry) {
@@ -91,9 +92,10 @@ public abstract class AbstractEntityScanRegistrar implements ImportBeanDefinitio
 		String[] basePackages = attributes.getStringArray("basePackages");
 		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
 		if (!ObjectUtils.isEmpty(value)) {
-			Assert.state(ObjectUtils.isEmpty(basePackages), String.format(
-					"@%s basePackages and value attributes are mutually exclusive",
-					this.annotationType.getSimpleName()));
+			Assert.state(ObjectUtils.isEmpty(basePackages),
+					String.format(
+							"@%s basePackages and value attributes are mutually exclusive",
+							this.annotationType.getSimpleName()));
 		}
 		Set<String> packagesToScan = new LinkedHashSet<String>();
 		packagesToScan.addAll(Arrays.asList(value));
@@ -123,9 +125,10 @@ public abstract class AbstractEntityScanRegistrar implements ImportBeanDefinitio
 
 	private void updateEntityScanBeanPostProcessor(BeanDefinitionRegistry registry,
 			Set<String> packagesToScan) {
-		BeanDefinition definition = registry.getBeanDefinition(this.beanPostProcessorName);
-		ConstructorArgumentValues.ValueHolder constructorArguments = definition.getConstructorArgumentValues()
-				.getGenericArgumentValue(String[].class);
+		BeanDefinition definition = registry
+				.getBeanDefinition(this.beanPostProcessorName);
+		ConstructorArgumentValues.ValueHolder constructorArguments = definition
+				.getConstructorArgumentValues().getGenericArgumentValue(String[].class);
 		Set<String> mergedPackages = new LinkedHashSet<String>();
 		mergedPackages.addAll(Arrays.asList((String[]) constructorArguments.getValue()));
 		mergedPackages.addAll(packagesToScan);

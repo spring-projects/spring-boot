@@ -19,9 +19,9 @@ package org.springframework.boot.cloud.cloudfoundry;
 import org.junit.Test;
 
 import org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor;
-import org.springframework.boot.testutil.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,8 +39,8 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 
 	@Test
 	public void testApplicationProperties() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"VCAP_APPLICATION:{\"application_users\":[],"
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"VCAP_APPLICATION={\"application_users\":[],"
 						+ "\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\","
 						+ "\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
 						+ "\"name\":\"foo\",\"uris\":[\"foo.cfapps.io\"],"
@@ -60,8 +60,8 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 
 	@Test
 	public void testApplicationUris() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"VCAP_APPLICATION:{\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\",\"instance_index\":0,\"uris\":[\"foo.cfapps.io\"]}");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"VCAP_APPLICATION={\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\",\"instance_index\":0,\"uris\":[\"foo.cfapps.io\"]}");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
 		assertThat(this.context.getEnvironment().getProperty("vcap.application.uris[0]"))
 				.isEqualTo("foo.cfapps.io");
@@ -69,15 +69,16 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 
 	@Test
 	public void testUnparseableApplicationProperties() {
-		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"VCAP_APPLICATION:");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
 		assertThat(getProperty("vcap")).isNull();
 	}
 
 	@Test
 	public void testNullApplicationProperties() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"VCAP_APPLICATION:{\"application_users\":null,"
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"VCAP_APPLICATION={\"application_users\":null,"
 						+ "\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\","
 						+ "\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
 						+ "\"name\":\"foo\",\"uris\":[\"foo.cfapps.io\"],"
@@ -95,8 +96,8 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 
 	@Test
 	public void testServiceProperties() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"VCAP_SERVICES:{\"rds-mysql-n/a\":[{"
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"VCAP_SERVICES={\"rds-mysql-n/a\":[{"
 						+ "\"name\":\"mysql\",\"label\":\"rds-mysql-n/a\","
 						+ "\"plan\":\"10mb\",\"credentials\":{"
 						+ "\"name\":\"d04fb13d27d964c62b267bbba1cffb9da\","
@@ -114,8 +115,8 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 
 	@Test
 	public void testServicePropertiesWithoutNA() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"VCAP_SERVICES:{\"rds-mysql\":[{"
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"VCAP_SERVICES={\"rds-mysql\":[{"
 						+ "\"name\":\"mysql\",\"label\":\"rds-mysql\",\"plan\":\"10mb\","
 						+ "\"credentials\":{\"name\":\"d04fb13d27d964c62b267bbba1cffb9da\","
 						+ "\"hostname\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\","

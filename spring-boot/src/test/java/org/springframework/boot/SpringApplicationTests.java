@@ -43,8 +43,7 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.boot.testutil.EnvironmentTestUtils;
-import org.springframework.boot.testutil.OutputCapture;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContextInitializer;
@@ -68,6 +67,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -99,7 +99,7 @@ public class SpringApplicationTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public InternalOutputCapture output = new InternalOutputCapture();
 
 	private ConfigurableApplicationContext context;
 
@@ -737,8 +737,8 @@ public class SpringApplicationTests {
 							ApplicationEnvironmentPreparedEvent event) {
 						assertThat(event.getEnvironment())
 								.isInstanceOf(StandardServletEnvironment.class);
-						EnvironmentTestUtils.addEnvironment(event.getEnvironment(),
-								"foo=bar");
+						TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
+								event.getEnvironment(), "foo=bar");
 						event.getSpringApplication().setWebEnvironment(false);
 					}
 
@@ -748,7 +748,8 @@ public class SpringApplicationTests {
 				.isNotInstanceOf(StandardServletEnvironment.class);
 		assertThat(this.context.getEnvironment().getProperty("foo"));
 		assertThat(this.context.getEnvironment().getPropertySources().iterator().next()
-				.getName()).isEqualTo("test");
+				.getName()).isEqualTo(
+						TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
 	}
 
 	@Test

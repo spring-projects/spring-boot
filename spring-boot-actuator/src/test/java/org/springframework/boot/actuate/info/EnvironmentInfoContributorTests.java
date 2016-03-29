@@ -18,14 +18,16 @@ package org.springframework.boot.actuate.info;
 
 import org.junit.Test;
 
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link EnvironmentInfoContributor}
+ * Tests for {@link EnvironmentInfoContributor}.
+ *
+ * @author Stephane Nicoll
  */
 public class EnvironmentInfoContributorTests {
 

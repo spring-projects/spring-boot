@@ -14,41 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testutil;
+package org.springframework.boot.loader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.hamcrest.Matcher;
-import org.junit.Assert;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-
-import org.springframework.boot.ansi.AnsiOutput;
-import org.springframework.boot.ansi.AnsiOutput.Enabled;
-
-import static org.hamcrest.Matchers.allOf;
 
 /**
  * Internal JUnit {@code @Rule} to capture output from System.out and System.err.
  *
  * @author Phillip Webb
- * @author Andy Wilkinson
  */
-public class OutputCapture implements TestRule {
+class InternalOutputCapture implements TestRule {
 
 	private CaptureOutputStream captureOut;
 
 	private CaptureOutputStream captureErr;
 
 	private ByteArrayOutputStream copy;
-
-	private List<Matcher<? super String>> matchers = new ArrayList<Matcher<? super String>>();
 
 	@Override
 	public Statement apply(final Statement base, Description description) {
@@ -60,22 +48,13 @@ public class OutputCapture implements TestRule {
 					base.evaluate();
 				}
 				finally {
-					try {
-						if (!OutputCapture.this.matchers.isEmpty()) {
-							String output = OutputCapture.this.toString();
-							Assert.assertThat(output, allOf(OutputCapture.this.matchers));
-						}
-					}
-					finally {
-						releaseOutput();
-					}
+					releaseOutput();
 				}
 			}
 		};
 	}
 
 	protected void captureOutput() {
-		AnsiOutput.setEnabled(Enabled.NEVER);
 		this.copy = new ByteArrayOutputStream();
 		this.captureOut = new CaptureOutputStream(System.out, this.copy);
 		this.captureErr = new CaptureOutputStream(System.err, this.copy);
@@ -84,7 +63,6 @@ public class OutputCapture implements TestRule {
 	}
 
 	protected void releaseOutput() {
-		AnsiOutput.setEnabled(Enabled.DETECT);
 		System.setOut(this.captureOut.getOriginal());
 		System.setErr(this.captureErr.getOriginal());
 		this.copy = null;
@@ -104,15 +82,6 @@ public class OutputCapture implements TestRule {
 	public String toString() {
 		flush();
 		return this.copy.toString();
-	}
-
-	/**
-	 * Verify that the output is matched by the supplied {@code matcher}. Verification is
-	 * performed after the test method has executed.
-	 * @param matcher the matcher
-	 */
-	public void expect(Matcher<? super String> matcher) {
-		this.matchers.add(matcher);
 	}
 
 	private static class CaptureOutputStream extends OutputStream {
@@ -153,7 +122,6 @@ public class OutputCapture implements TestRule {
 			this.copy.flush();
 			this.original.flush();
 		}
-
 	}
 
 }

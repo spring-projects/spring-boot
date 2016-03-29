@@ -103,9 +103,7 @@ public class TestEntityScanTests {
 	}
 
 	private void assertSetPackagesToScan(String... expected) {
-		String[] actual = this.context
-				.getBean(TestFactoryBean.class)
-				.getPackagesToScan();
+		String[] actual = this.context.getBean(TestFactoryBean.class).getPackagesToScan();
 		assertThat(actual).isEqualTo(expected);
 	}
 
@@ -121,38 +119,47 @@ public class TestEntityScanTests {
 
 	@TestEntityScan("com.mycorp.entity")
 	static class ValueConfig extends BaseConfig {
+
 	}
 
 	@TestEntityScan(basePackages = "com.mycorp.entity2")
 	static class BasePackagesConfig extends BaseConfig {
+
 	}
 
 	@TestEntityScan(basePackageClasses = TestEntityScanTests.class)
 	static class BasePackageClassesConfig extends BaseConfig {
+
 	}
 
 	@TestEntityScan
 	static class FromConfigConfig extends BaseConfig {
+
 	}
 
 	@TestEntityScan(value = "com.mycorp.entity", basePackages = "com.mycorp")
 	static class ValueAndBasePackages extends BaseConfig {
+
 	}
 
 	@TestEntityScan(value = "com.mycorp.entity", basePackageClasses = TestEntityScanTests.class)
 	static class ValueAndBasePackageClasses extends BaseConfig {
+
 	}
 
 	@TestEntityScan(basePackages = "com.mycorp.entity2", basePackageClasses = TestEntityScanTests.class)
 	static class BasePackagesAndBasePackageClasses extends BaseConfig {
+
 	}
 
 	@TestEntityScan(basePackages = "foo")
 	static class MultiScanFirst extends BaseConfig {
+
 	}
 
 	@TestEntityScan(basePackages = "bar")
 	static class MultiScanSecond extends BaseConfig {
+
 	}
 
 }

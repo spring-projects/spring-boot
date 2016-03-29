@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PropertiesLauncherTests {
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public InternalOutputCapture output = new InternalOutputCapture();
 
 	@Before
 	public void setup() throws IOException {

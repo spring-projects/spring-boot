@@ -3055,6 +3055,8 @@ properties:
 	spring.data.neo4j.password=secret
 ----
 
+
+
 [[boot-features-connecting-to-neo4j-embedded]]
 ==== Using the embedded mode
 
@@ -3070,6 +3072,8 @@ persistence for the embedded mode:
 ----
 	spring.data.neo4j.uri=file://var/tmp/graph.db
 ----
+
+
 
 [[boot-features-neo4j-ogm-session]]
 ==== Neo4jSession
@@ -3314,7 +3318,7 @@ dependencies in a convenient way.
 
 [[boot-features-connecting-to-couchbase]]
 ==== Connecting to Couchbase
-You can very easily get a a `Bucket` and `Cluster` by adding the couchbase SDK and some
+You can very easily get a `Bucket` and `Cluster` by adding the Couchbase SDK and some
 configuration. The `spring.couchbase.*` properties can be used to customize the
 connection. Generally you will provide the bootstrap hosts, bucket name and password:
 
@@ -3901,7 +3905,7 @@ For instance, the following exposes another factory that uses a specific `Messag
 	}
 ----
 
-That you can use in any `@JmsListener`-annotated method as follows:
+Then you can use in any `@JmsListener`-annotated method as follows:
 
 [source,java,indent=0]
 ----
@@ -4039,7 +4043,7 @@ For instance, the following exposes another factory that uses a specific `Messag
 	}
 ----
 
-That you can use in any `@RabbitListener`-annotated method as follows:
+Then you can use in any `@RabbitListener`-annotated method as follows:
 
 [source,java,indent=0]
 ----

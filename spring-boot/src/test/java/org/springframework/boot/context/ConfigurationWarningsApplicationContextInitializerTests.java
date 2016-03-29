@@ -33,7 +33,7 @@ import org.springframework.boot.context.configwarnings.dflt.InDefaultPackageWith
 import org.springframework.boot.context.configwarnings.orgspring.InOrgSpringPackageConfiguration;
 import org.springframework.boot.context.configwarnings.real.InRealButScanningProblemPackages;
 import org.springframework.boot.context.configwarnings.real.InRealPackageConfiguration;
-import org.springframework.boot.testutil.OutputCapture;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +52,7 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 			+ "start due to a @ComponentScan of 'org.springframework'.";
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public InternalOutputCapture output = new InternalOutputCapture();
 
 	@Test
 	public void logWarningInDefaultPackage() {

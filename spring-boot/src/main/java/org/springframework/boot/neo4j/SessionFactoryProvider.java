@@ -20,8 +20,8 @@ import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.session.SessionFactory;
 
 /**
- * Provide a a Neo4j {@link SessionFactory} instance based on a
- * configurable {@link Configuration} and custom packages to scan.
+ * Provide a a Neo4j {@link SessionFactory} instance based on a configurable
+ * {@link Configuration} and custom packages to scan.
  *
  * @author Stephane Nicoll
  * @since 1.4.0
@@ -45,7 +45,7 @@ public class SessionFactoryProvider {
 	 * Set the packages to scan.
 	 * @param packagesToScan the packages to scan
 	 */
-	public void setPackagesToScan(String[] packagesToScan) {
+	public void setPackagesToScan(String... packagesToScan) {
 		this.packagesToScan = packagesToScan;
 	}
 

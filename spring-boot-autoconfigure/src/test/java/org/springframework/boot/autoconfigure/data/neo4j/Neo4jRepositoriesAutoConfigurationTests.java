@@ -59,7 +59,8 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 		prepareApplicationContext(TestConfiguration.class);
 
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		Neo4jMappingContext mappingContext = this.context.getBean(Neo4jMappingContext.class);
+		Neo4jMappingContext mappingContext = this.context
+				.getBean(Neo4jMappingContext.class);
 		assertThat(mappingContext.getPersistentEntity(City.class)).isNotNull();
 
 	}

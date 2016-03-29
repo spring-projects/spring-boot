@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * An {@link AbstractFailureAnalyzer} the performs analysis of failures caused by a
+ * An {@link AbstractFailureAnalyzer} that performs analysis of failures caused by a
  * {@link NoUniqueBeanDefinitionException}.
  *
  * @author Andy Wilkinson

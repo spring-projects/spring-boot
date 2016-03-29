@@ -40,7 +40,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * Test class annotation signifying that the tests are "web integration tests" for a
  * {@link org.springframework.boot.SpringApplication Spring Boot Application} and
  * therefore require full startup in the same way as a production application (listening
- * on normal ports. By default will load nested {@code @Configuration} classes, or
+ * on normal ports). By default will load nested {@code @Configuration} classes, or
  * fallback an {@link SpringApplicationConfiguration @SpringApplicationConfiguration}
  * search. Unless otherwise configured, a {@link SpringApplicationContextLoader} will be
  * used to load the {@link ApplicationContext}. Use

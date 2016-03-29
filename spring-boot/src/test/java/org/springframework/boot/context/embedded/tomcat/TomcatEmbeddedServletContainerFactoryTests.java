@@ -45,7 +45,7 @@ import org.springframework.boot.context.embedded.AbstractEmbeddedServletContaine
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.Ssl;
-import org.springframework.boot.testutil.OutputCapture;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 
@@ -70,7 +70,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		extends AbstractEmbeddedServletContainerFactoryTests {
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public InternalOutputCapture outputCapture = new InternalOutputCapture();
 
 	@Override
 	protected TomcatEmbeddedServletContainerFactory getFactory() {

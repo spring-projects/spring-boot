@@ -23,7 +23,7 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.boot.testutil.OutputCapture;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SimpleMainTests {
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public InternalOutputCapture outputCapture = new InternalOutputCapture();
 
 	private static final String SPRING_STARTUP = "root of context hierarchy";
 
