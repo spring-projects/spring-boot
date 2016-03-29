@@ -16,10 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
@@ -36,13 +39,8 @@ import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.channel.FixedSubscriberChannel;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHandler;
-import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.SubscribableChannel;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MetricExportAutoConfiguration}.
@@ -50,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Simon Buettner
+ * @author Artem Bilan
  */
 public class MetricExportAutoConfigurationTests {
 
@@ -73,8 +72,24 @@ public class MetricExportAutoConfigurationTests {
 				MetricsChannelAutoConfiguration.class,
 				MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		MetricExporters exporter = this.context.getBean(MetricExporters.class);
+		MetricExporters exporters = this.context.getBean(MetricExporters.class);
+		assertThat(exporters).isNotNull();
+		GaugeService gaugeService = this.context.getBean(GaugeService.class);
+		assertThat(gaugeService).isNotNull();
+		gaugeService.submit("foo", 2.7);
+		MetricCopyExporter exporter = (MetricCopyExporter) exporters.getExporters().get("messageChannelMetricWriter");
 		assertThat(exporter).isNotNull();
+		exporter.setIgnoreTimestamps(true);
+		exporter.export();
+		SubscribableChannel metricsChannel = this.context.getBean("metricsChannel", SubscribableChannel.class);
+		@SuppressWarnings("rawtypes")
+		ArgumentCaptor<Message> argumentCaptor = ArgumentCaptor.forClass(Message.class);
+		Mockito.verify(metricsChannel, Mockito.atLeastOnce()).send(argumentCaptor.capture());
+		Message<?> message = argumentCaptor.getValue();
+		assertThat(message.getPayload()).isInstanceOf(Metric.class);
+		Metric payload = (Metric) message.getPayload();
+		assertThat(payload.getName()).isEqualTo("gauge.foo");
+		assertThat(payload.getValue()).isEqualTo(2.7);
 	}
 
 	@Test
@@ -138,13 +153,7 @@ public class MetricExportAutoConfigurationTests {
 
 		@Bean
 		public SubscribableChannel metricsChannel() {
-			return new FixedSubscriberChannel(new MessageHandler() {
-
-				@Override
-				public void handleMessage(Message<?> message) throws MessagingException {
-				}
-
-			});
+			return Mockito.mock(SubscribableChannel.class);
 		}
 
 	}
