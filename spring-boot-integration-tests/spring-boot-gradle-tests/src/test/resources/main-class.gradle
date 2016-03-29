@@ -14,9 +14,16 @@ apply plugin: 'spring-boot'
 group = 'installer'
 version = '0.0.0'
 
-bootRun {
-  main = 'org.springframework.boot.SpringApplication'
+if (project.hasProperty('bootRunMain')) {
+	bootRun {
+  		main = 'org.springframework.boot.SpringApplication'
+	}
 }
+
+if (project.hasProperty('nonJavaExecRun')) {
+	task run { }
+}
+
 
 jar {
 	baseName =  'installer'
