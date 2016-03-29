@@ -266,12 +266,12 @@ public class SpringBootPluginExtension {
 	}
 
 	public void buildInfo(Closure<?> taskConfigurer) {
-		BuildInfo buildInfo = this.project.getTasks().create("buildInfo",
+		BuildInfo bootBuildInfo = this.project.getTasks().create("bootBuildInfo",
 				BuildInfo.class);
 		this.project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME)
-				.dependsOn(buildInfo);
+				.dependsOn(bootBuildInfo);
 		if (taskConfigurer != null) {
-			taskConfigurer.setDelegate(buildInfo);
+			taskConfigurer.setDelegate(bootBuildInfo);
 			taskConfigurer.call();
 		}
 	}
