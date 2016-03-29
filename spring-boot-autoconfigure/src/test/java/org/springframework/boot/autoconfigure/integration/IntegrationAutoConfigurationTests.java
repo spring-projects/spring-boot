@@ -30,6 +30,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -92,6 +93,29 @@ public class IntegrationAutoConfigurationTests {
 		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
 		((ConfigurableApplicationContext) this.context.getParent()).close();
 		this.context.close();
+	}
+
+	@Test
+	public void jmxIntegrationEnabledByDefault() {
+		load();
+		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
+		assertDomains(mBeanServer, true, "org.springframework.integration",
+				"org.springframework.integration.monitor");
+	}
+
+	@Test
+	public void disableJmxIntegration() {
+		load("spring.jmx.enabled=false");
+		assertEquals(this.context.getBeansOfType(MBeanServer.class), hasSize(0));
+	}
+
+	@Test
+	public void customizeJmxDomain() {
+		load("spring.jmx.default-domain=org.foo");
+		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
+		assertDomains(mBeanServer, true, "org.foo");
+		assertDomains(mBeanServer, false, "org.springframework.integration",
+				"org.springframework.integration.monitor");
 	}
 
 	private static void assertDomains(MBeanServer mBeanServer, boolean expected,

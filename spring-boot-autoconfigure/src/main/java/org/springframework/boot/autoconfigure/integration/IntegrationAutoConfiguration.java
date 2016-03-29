@@ -39,7 +39,6 @@ import org.springframework.integration.monitor.IntegrationMBeanExporter;
 @Configuration
 @ConditionalOnClass(EnableIntegration.class)
 @AutoConfigureAfter(JmxAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class IntegrationAutoConfiguration {
 
 	@Configuration
@@ -50,6 +49,7 @@ public class IntegrationAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
 	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
+	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
 	@EnableIntegrationMBeanExport(defaultDomain = "${spring.jmx.default-domain:}", server = "${spring.jmx.server:mbeanServer}")
 	protected static class IntegrationJmxConfiguration {
 	}
