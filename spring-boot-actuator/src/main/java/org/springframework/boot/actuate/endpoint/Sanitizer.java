@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
  * @author Toshiaki Maki
  * @author Phillip Webb
  * @author Nicolas Lejeune
+ * @author Stephane Nicoll
  */
 class Sanitizer {
 
@@ -35,7 +36,7 @@ class Sanitizer {
 	private Pattern[] keysToSanitize;
 
 	Sanitizer() {
-		this("password", "secret", "key", ".*credentials.*", "vcap_services");
+		this("password", "secret", "key", "token", ".*credentials.*", "vcap_services");
 	}
 
 	Sanitizer(String... keysToSanitize) {

@@ -847,7 +847,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.beans.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.configprops.enabled= # Enable the endpoint.
 	endpoints.configprops.id= # Endpoint identifier.
-	endpoints.configprops.keys-to-sanitize=password,secret,key,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.
+	endpoints.configprops.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.
 	endpoints.configprops.path= # Endpoint path.
 	endpoints.configprops.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.docs.curies.enabled=false # Enable the curie generation.
@@ -860,7 +860,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.dump.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.env.enabled= # Enable the endpoint.
 	endpoints.env.id= # Endpoint identifier.
-	endpoints.env.keys-to-sanitize=password,secret,key,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.
+	endpoints.env.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.
 	endpoints.env.path= # Endpoint path.
 	endpoints.env.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.flyway.enabled= # Enable the endpoint.
