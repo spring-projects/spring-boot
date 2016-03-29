@@ -81,8 +81,8 @@ public class MessageSourceAutoConfiguration {
 	private boolean fallbackToSystemLocale = true;
 
 	/**
-	 * Set whether to always apply the MessageFormat rules, parsing even
-	 * messages without arguments.
+	 * Set whether to always apply the MessageFormat rules, parsing even messages without
+	 * arguments.
 	 */
 	private boolean alwaysUseMessageFormat = false;
 
