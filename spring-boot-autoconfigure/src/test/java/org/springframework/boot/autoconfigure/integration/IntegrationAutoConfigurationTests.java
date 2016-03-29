@@ -55,27 +55,8 @@ public class IntegrationAutoConfigurationTests {
 	@Test
 	public void integrationIsAvailable() {
 		load();
-		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
-		assertDomains(mBeanServer, true, "org.springframework.integration",
-				"org.springframework.integration.monitor");
 		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 	}
-
-	@Test
-	public void disableIntegration() {
-		load("spring.jmx.enabled=false");
-		assertThat(this.context.getBeansOfType(MBeanServer.class)).hasSize(0);
-	}
-
-	@Test
-	public void customizeDomain() {
-		load("spring.jmx.default-domain=org.foo");
-		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
-		assertDomains(mBeanServer, true, "org.foo");
-		assertDomains(mBeanServer, false, "org.springframework.integration",
-				"org.springframework.integration.monitor");
-	}
-
 
 	@Test
 	public void parentContext() {
@@ -90,6 +71,29 @@ public class IntegrationAutoConfigurationTests {
 		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 		((ConfigurableApplicationContext) this.context.getParent()).close();
 		this.context.close();
+	}
+
+	@Test
+	public void jmxIntegrationEnabledByDefault() {
+		load();
+		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
+		assertDomains(mBeanServer, true, "org.springframework.integration",
+				"org.springframework.integration.monitor");
+	}
+
+	@Test
+	public void disableJmxIntegration() {
+		load("spring.jmx.enabled=false");
+		assertThat(this.context.getBeansOfType(MBeanServer.class)).hasSize(0);
+	}
+
+	@Test
+	public void customizeJmxDomain() {
+		load("spring.jmx.default-domain=org.foo");
+		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
+		assertDomains(mBeanServer, true, "org.foo");
+		assertDomains(mBeanServer, false, "org.springframework.integration",
+				"org.springframework.integration.monitor");
 	}
 
 	private static void assertDomains(MBeanServer mBeanServer, boolean expected, String... domains) {
