@@ -140,6 +140,12 @@ public class SpringBootJoranConfiguratorTests {
 		assertThat(this.context.getProperty("MINE")).isEqualTo("test");
 	}
 
+	@Test
+	public void springPropertyWithDefaultValue() throws Exception {
+		initialize("property-defaultValue.xml");
+		assertThat(this.context.getProperty("MINE")).isEqualTo("foo");
+	}
+
 	private void doTestNestedProfile(boolean expected, String... profiles)
 			throws JoranException {
 		this.environment.setActiveProfiles(profiles);
