@@ -840,6 +840,9 @@ The following properties names can all be used:
 |`person.first-name`
 |Dashed notation, recommended for use in `.properties` and `.yml` files.
 
+|`person.first_name`
+|Underscore notation, alternative format for use in `.properties` and `.yml` files.
+
 |`PERSON_FIRST_NAME`
 |Upper case format. Recommended when using a system environment variables.
 |===
