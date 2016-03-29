@@ -41,6 +41,7 @@ import static org.hamcrest.Matchers.not;
  *
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 public class SpringBootJoranConfiguratorTests {
 
@@ -138,6 +139,30 @@ public class SpringBootJoranConfiguratorTests {
 				"my.EXAMPLE_PROPERTY=test");
 		initialize("property.xml");
 		assertThat(this.context.getProperty("MINE")).isEqualTo("test");
+	}
+
+	@Test
+	public void springPropertyNoValue() throws Exception {
+		initialize("property.xml");
+		assertThat(this.context.getProperty("SIMPLE")).isNull();
+	}
+
+	@Test
+	public void relaxedSpringPropertyNoValue() throws Exception {
+		initialize("property.xml");
+		assertThat(this.context.getProperty("MINE")).isNull();
+	}
+
+	@Test
+	public void springPropertyWithDefaultValue() throws Exception {
+		initialize("property-default-value.xml");
+		assertThat(this.context.getProperty("SIMPLE")).isEqualTo("foo");
+	}
+
+	@Test
+	public void relaxedSpringPropertyWithDefaultValue() throws Exception {
+		initialize("property-default-value.xml");
+		assertThat(this.context.getProperty("MINE")).isEqualTo("bar");
 	}
 
 	private void doTestNestedProfile(boolean expected, String... profiles)

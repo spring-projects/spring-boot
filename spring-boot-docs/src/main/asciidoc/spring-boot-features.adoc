@@ -1351,11 +1351,14 @@ for use within Logback. This can be useful if you want to access values from you
 `application.properties` file in your logback configuration. The tag works in a similar
 way to Logback's standard `<property>` tag, but rather than specifying a direct `value`
 you specify the `source` of the property (from the `Environment`). You can use the `scope`
-attribute if you need to store the property somewhere other than in `local` scope.
+attribute if you need to store the property somewhere other than in `local` scope. If
+you need a fallback value in case the property is not set in the `Environment`, you can
+use the `defaultValue` attribute.
 
 [source,xml,indent=0]
 ----
-	<springProperty scope="context" name="fluentHost" source="myapp.fluentd.host"/>
+	<springProperty scope="context" name="fluentHost" source="myapp.fluentd.host"
+			defaultValue="localhost"/>
 	<appender name="FLUENT" class="ch.qos.logback.more.appenders.DataFluentAppender">
 		<remoteHost>${fluentHost}</remoteHost>
 		...
