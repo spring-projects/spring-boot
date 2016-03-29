@@ -30,22 +30,20 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationObjectMapperProviderTests.Application;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.IntegrationTest;
 import org.springframework.boot.test.context.SpringApplicationConfiguration;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.context.web.WebIntegrationTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,19 +56,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringApplicationConfiguration(Application.class)
-@IntegrationTest({ "server.port=0", "spring.jackson.serialization-inclusion=non_null" })
-@WebAppConfiguration
+@WebIntegrationTest(randomPort = true, value = "spring.jackson.serialization-inclusion=non_null")
 public class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 
-	@LocalServerPort
-	private int port;
-
-	private RestTemplate restTemplate = new TestRestTemplate();
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Test
 	public void contextLoads() {
 		ResponseEntity<String> response = this.restTemplate.getForEntity(
-				"http://localhost:" + this.port + "/rest/message", String.class);
+				"/rest/message", String.class);
 		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
 		assertThat("{\"subject\":\"Jersey\"}").isEqualTo(response.getBody());
 	}
