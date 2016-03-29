@@ -109,6 +109,7 @@ content into your application; rather pick only the properties that you need.
 	spring.mandatory-file-encoding= # Expected character encoding the application must use.
 
 	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])
+    spring.messages.always-use-message-format=false # Set whether to always apply the MessageFormat rules, parsing even messages without arguments.
 	spring.messages.basename=messages # Comma-separated list of basenames, each following the ResourceBundle convention.
 	spring.messages.cache-seconds=-1 # Loaded resource bundle files cache expiration, in seconds. When set to -1, bundles are cached forever.
 	spring.messages.encoding=UTF-8 # Message bundles encoding.
