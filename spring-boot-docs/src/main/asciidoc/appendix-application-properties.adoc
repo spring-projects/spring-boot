@@ -284,6 +284,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jersey.application-path= # Path that serves as the base URI for the application. Overrides the value of "@ApplicationPath" if specified.
 	spring.jersey.filter.order=0 # Jersey filter chain order.
 	spring.jersey.init.*= # Init parameters to pass to Jersey via the servlet or filter.
+	spring.jersey.servlet.load-on-startup=-1 # Load on startup priority of the Jersey servlet.
 	spring.jersey.type=servlet # Jersey integration type. Can be either "servlet" or "filter".
 
 	# SPRING MOBILE DEVICE VIEWS ({sc-spring-boot-autoconfigure}/mobile/DeviceDelegatingViewResolverAutoConfiguration.{sc-ext}[DeviceDelegatingViewResolverAutoConfiguration])

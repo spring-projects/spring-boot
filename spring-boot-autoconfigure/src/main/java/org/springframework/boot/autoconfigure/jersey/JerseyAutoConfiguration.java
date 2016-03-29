@@ -75,6 +75,7 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass(name = { "org.glassfish.jersey.server.spring.SpringComponentProvider",
@@ -170,6 +171,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 				new ServletContainer(this.config), this.path);
 		addInitParameters(registration);
 		registration.setName(getServletRegistrationName());
+		registration.setLoadOnStartup(this.jersey.getServlet().getLoadOnStartup());
 		return registration;
 	}
 
