@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-web</artifactId>
 	<name>Spring Boot Web Starter</name>
-	<description>Spring Boot Web Starter</description>
+	<description>Starter for building web, including RESTful, applications using Spring
+		MVC. Uses Tomcat as the default embedded container</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

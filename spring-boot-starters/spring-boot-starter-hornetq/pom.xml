@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-hornetq</artifactId>
 	<name>Spring Boot HornetQ Starter</name>
-	<description>Spring Boot HornetQ Starter</description>
+	<description>Starter for JMS messaging using HornetQ</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-data-rest</artifactId>
 	<name>Spring Boot Data REST Starter</name>
-	<description>Spring Boot Data REST Starter</description>
+	<description>Starter for exposing Spring Data repositories over REST using Spring
+		Data REST</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

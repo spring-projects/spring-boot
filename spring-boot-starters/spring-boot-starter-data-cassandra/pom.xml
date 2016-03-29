@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-data-cassandra</artifactId>
 	<name>Spring Boot Data Cassandra Starter</name>
-	<description>Spring Boot Data Cassandra Starter</description>
+	<description>Starter for using Cassandra distributed database and Spring Data
+		Cassandra</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

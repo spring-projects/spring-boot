@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-artemis</artifactId>
 	<name>Spring Boot Artemis Starter</name>
-	<description>Spring Boot Artemis Starter</description>
+	<description>Starter for JMS messaging using Apache Artemis</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

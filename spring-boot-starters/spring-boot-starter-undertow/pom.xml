@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-undertow</artifactId>
 	<name>Spring Boot Undertow Starter</name>
-	<description>Spring Boot Undertow Starter</description>
+	<description>Starter for using Undertow as the embedded servlet container. An
+		alternative to spring-boot-starter-tomcat</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

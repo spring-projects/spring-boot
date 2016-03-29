@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-remote-shell</artifactId>
 	<name>Spring Boot Remote Shell Starter</name>
-	<description>Spring Boot Remote Shell Starter</description>
+	<description>Starter for using the CRaSH remote shell to monitor and manage your
+		application over SSH</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

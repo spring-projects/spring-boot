@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-data-mongodb</artifactId>
 	<name>Spring Boot Data MongoDB Starter</name>
-	<description>Spring Boot Data MongoDB Starter</description>
+	<description>Starter for using MongoDB document-oriented database and Spring Data
+		MongoDB</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

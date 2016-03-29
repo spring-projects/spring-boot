@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-social-linkedin</artifactId>
 	<name>Spring Boot Social LinkedIn Starter</name>
-	<description>Spring Boot Social LinkedIn Starter</description>
+	<description>Stater for using Spring Social LinkedIn</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

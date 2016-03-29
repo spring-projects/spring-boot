@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-data-gemfire</artifactId>
 	<name>Spring Boot Data GemFire Starter</name>
-	<description>Spring Data GemFire Starter</description>
+	<description>Starter for using GemFire distributed data store and Spring Data
+		GemFire</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

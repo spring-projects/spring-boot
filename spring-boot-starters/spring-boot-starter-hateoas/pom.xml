@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-hateoas</artifactId>
 	<name>Spring Boot HATEOAS Starter</name>
-	<description>Spring Boot HATEOAS Starter</description>
+	<description>Starter for building hypermedia-based RESTful web application with
+		Spring MVC and Spring HATEOAS</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

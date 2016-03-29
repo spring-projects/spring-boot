@@ -39,6 +39,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-loader-tools</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starters</artifactId>
+			<type>pom</type>
+			<version>${project.version}</version>
+		</dependency>
 		<!-- Optional deps required when generating Javadoc with Java 8 -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -610,6 +616,26 @@
 						<artifactId>maven-dependency-plugin</artifactId>
 						<executions>
 							<execution>
+								<id>copy-starters-pom</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>org.springframework.boot</groupId>
+											<artifactId>spring-boot-starters</artifactId>
+											<version>${project.version}</version>
+											<type>pom</type>
+											<overWrite>true</overWrite>
+											<outputDirectory>${project.build.directory}/external-resources</outputDirectory>
+											<destFileName>starters-effective-pom.xml</destFileName>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
+							<execution>
 								<id>unpack-maven-plugin</id>
 								<phase>generate-resources</phase>
 								<goals>
@@ -680,6 +706,25 @@
 									</artifactItems>
 								</configuration>
 							</execution>
+							<execution>
+								<id>unpack-starter-poms</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>org.springframework.boot</groupId>
+											<artifactId>spring-boot-starters</artifactId>
+											<version>${project.version}</version>
+											<type>zip</type>
+											<classifier>starter-poms</classifier>
+											<outputDirectory>${project.build.directory}/external-resources/starter-poms</outputDirectory>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
 						</executions>
 					</plugin>
 					<plugin>
@@ -697,6 +742,9 @@
 							<transformationSets>
 								<transformationSet>
 									<dir>${project.build.directory}/external-resources</dir>
+									<includes>
+										<include>effective-pom.xml</include>
+									</includes>
 									<stylesheet>src/main/xslt/dependencyVersions.xsl</stylesheet>
 									<fileMappers>
 										<fileMapper implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
@@ -722,6 +770,7 @@
 						<configuration>
 							<scripts>
 								<script>file:///${project.basedir}/src/main/groovy/generateAutoConfigurationClassTables.groovy</script>
+								<script>file:///${project.basedir}/src/main/groovy/generateStarterTables.groovy</script>
 							</scripts>
 						</configuration>
 						<dependencies>

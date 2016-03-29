@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-jta-bitronix</artifactId>
 	<name>Spring Boot Bitronix JTA Starter</name>
-	<description>Spring Boot Bitronix JTA Starter</description>
+	<description>Starter for JTA transactions using Bitronix</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

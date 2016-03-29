@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-data-solr</artifactId>
 	<name>Spring Boot Data Solr Starter</name>
-	<description>Spring Boot Data Solr Starter</description>
+	<description>Starter for using the Apache Solr search platform with Spring Data
+		Solr</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

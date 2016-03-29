@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-jdbc</artifactId>
 	<name>Spring Boot JDBC Starter</name>
-	<description>Spring Boot JDBC Starter</description>
+	<description>Starter for using JDBC with the Tomcat JDBC connection pool</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
