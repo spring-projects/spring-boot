@@ -62,9 +62,6 @@ class SpringPropertyAction extends Action {
 	private String getValue(String source, String defaultValue) {
 		if (this.environment == null) {
 			addWarn("No Spring Environment available to resolve " + source);
-			return null;
-		}
-		if (source == null) {
 			return defaultValue;
 		}
 		String value = this.environment.getProperty(source);
@@ -76,9 +73,9 @@ class SpringPropertyAction extends Action {
 			String prefix = source.substring(0, lastDot + 1);
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 					this.environment, prefix);
-			return resolver.getProperty(source.substring(lastDot + 1));
+			return resolver.getProperty(source.substring(lastDot + 1), defaultValue);
 		}
-		return null;
+		return defaultValue;
 	}
 
 	@Override
