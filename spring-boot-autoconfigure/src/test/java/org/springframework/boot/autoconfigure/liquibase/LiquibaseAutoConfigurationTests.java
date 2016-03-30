@@ -16,9 +16,14 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Scanner;
 
 import liquibase.integration.spring.SpringLiquibase;
+import org.assertj.core.api.Condition;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -190,6 +195,46 @@ public class LiquibaseAutoConfigurationTests {
 				.getField(liquibase, "parameters");
 		assertThat(parameters.containsKey("foo")).isTrue();
 		assertThat(parameters.get("foo")).isEqualTo("bar");
+	}
+
+	@Test
+	public void testRollbackFile() throws URISyntaxException {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"liquibase.rollbackFile:${java.io.tmpdir}/rollback-file.sql");
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+		File rollbackFile = (File) ReflectionTestUtils.getField(liquibase,
+				"rollbackFile");
+		assertThat(rollbackFile).isNotNull();
+		assertThat(rollbackFile).exists();
+		assertThat(rollbackFile).has(new Condition<File>() {
+
+			@Override
+			public boolean matches(File file) {
+				Scanner scanner = null;
+				try {
+					scanner = new Scanner(file);
+					while (scanner.hasNextLine()) {
+						String line = scanner.nextLine();
+						if (line.equalsIgnoreCase("DROP TABLE PUBLIC.customer;")) {
+							return true;
+						}
+					}
+					return false;
+				}
+				catch (FileNotFoundException e) {
+					return false;
+				}
+				finally {
+					if (null != scanner) {
+						scanner.close();
+					}
+				}
+			}
+		});
 	}
 
 }
