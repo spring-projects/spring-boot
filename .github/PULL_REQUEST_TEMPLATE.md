@@ -3,4 +3,4 @@ Thanks for contributing to Spring Boot. Please provide a brief description of yo
 --> 
 
 <!-- Please also confirm that you have signed the CLA by put an [X] in the box below: -->
-- [ ] I have signed the CLA
+- [] I have signed the CLA
