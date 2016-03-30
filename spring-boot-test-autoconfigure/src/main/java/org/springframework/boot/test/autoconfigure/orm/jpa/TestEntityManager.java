@@ -103,7 +103,7 @@ public class TestEntityManager {
 	 * {@link #getId(Object) entity ID}.
 	 * <p>
 	 * Helpful when ensuring that entity data is actually written and read from the
-	 * underling database correctly.
+	 * underlying database correctly.
 	 * @param <E> the entity type
 	 * @param entity the entity to persist
 	 * @return the entity found using the ID of the persisted entity
@@ -226,7 +226,7 @@ public class TestEntityManager {
 	@SuppressWarnings("unchecked")
 	public <T> T getId(Object entity, Class<T> idType) {
 		Object id = getId(entity);
-		Assert.isInstanceOf(idType, id, "ID missmatch");
+		Assert.isInstanceOf(idType, id, "ID mismatch");
 		return (T) id;
 	}
 
@@ -238,7 +238,7 @@ public class TestEntityManager {
 	public final EntityManager getEntityManager() {
 		EntityManager manager = EntityManagerFactoryUtils
 				.getTransactionalEntityManager(this.entityManagerFactory);
-		Assert.state(manager != null, "No transactional EnitiyManager found");
+		Assert.state(manager != null, "No transactional EntityManager found");
 		return manager;
 	}
 

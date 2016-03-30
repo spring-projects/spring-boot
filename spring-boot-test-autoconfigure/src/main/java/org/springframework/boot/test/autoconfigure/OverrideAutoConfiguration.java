@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 /**
  * Annotation that can be used to override
  * {@link EnableAutoConfiguration @EnableAutoConfiguration}. Often used in combination
- * with {@link ImportAutoConfiguration} to limit the auto-configutation classes that are
+ * with {@link ImportAutoConfiguration} to limit the auto-configuration classes that are
  * loaded.
  *
  * @author Phillip Webb

@@ -17,7 +17,7 @@
 package org.springframework.boot.test.autoconfigure;
 
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
-import org.springframework.boot.autoconfigure.logging.ConditionEvalutionReportMessage;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.TestContext;
@@ -50,7 +50,7 @@ class AutoConfigureReportTestExecutionListener extends AbstractTestExecutionList
 			if (context instanceof ConfigurableApplicationContext) {
 				ConditionEvaluationReport report = ConditionEvaluationReport
 						.get(((ConfigurableApplicationContext) context).getBeanFactory());
-				System.err.println(new ConditionEvalutionReportMessage(report));
+				System.err.println(new ConditionEvaluationReportMessage(report));
 			}
 			throw ex;
 		}

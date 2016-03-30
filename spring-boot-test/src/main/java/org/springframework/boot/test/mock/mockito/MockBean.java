@@ -103,7 +103,7 @@ public @interface MockBean {
 	 * When {@code @MockBean} also defines a {@code name} this attribute can only contain
 	 * a single value.
 	 * <p>
-	 * If this is the only attribute specified consider using the {@code value} alais
+	 * If this is the only attribute specified consider using the {@code value} alias
 	 * instead.
 	 */
 	@AliasFor("value")

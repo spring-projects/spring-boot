@@ -72,13 +72,13 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 		switch (filterType) {
 		case ANNOTATION:
 			Assert.isAssignable(Annotation.class, filterClass,
-					"An error occured while processing a ANNOTATION type filter: ");
+					"An error occurred while processing a ANNOTATION type filter: ");
 			return new AnnotationTypeFilter((Class<Annotation>) filterClass);
 		case ASSIGNABLE_TYPE:
 			return new AssignableTypeFilter(filterClass);
 		case CUSTOM:
 			Assert.isAssignable(TypeFilter.class, filterClass,
-					"An error occured while processing a CUSTOM type filter: ");
+					"An error occurred while processing a CUSTOM type filter: ");
 			return BeanUtils.instantiateClass(filterClass, TypeFilter.class);
 		}
 		throw new IllegalArgumentException(
