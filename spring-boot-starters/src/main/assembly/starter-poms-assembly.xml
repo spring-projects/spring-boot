@@ -8,7 +8,6 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<moduleSets>
 		<moduleSet>
-			<useAllReactorProjects>true</useAllReactorProjects>
 			<sources>
 				<fileSets>
 					<fileSet>
