@@ -47,10 +47,10 @@ public class ExampleJsonComponent {
 
 	}
 
-	public static class Deserialzer extends JsonObjectDeserializer<ExampleCustomObject> {
+	public static class Deserializer extends JsonObjectDeserializer<ExampleCustomObject> {
 
 		@Override
-		protected ExampleCustomObject deserializeObject(JsonParser jasonParser,
+		protected ExampleCustomObject deserializeObject(JsonParser jsonParser,
 				DeserializationContext context, ObjectCodec codec, JsonNode tree)
 						throws IOException {
 			return new ExampleCustomObject(

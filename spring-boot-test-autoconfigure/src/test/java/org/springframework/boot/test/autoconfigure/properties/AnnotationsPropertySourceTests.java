@@ -104,7 +104,7 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void propertiesWhenCountainsArryasShouldExpandNames() throws Exception {
+	public void propertiesWhenContainsArraysShouldExpandNames() throws Exception {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(Arrays.class);
 		assertThat(source.getPropertyNames()).contains("strings[0]", "strings[1]",
 				"classes[0]", "classes[1]", "ints[0]", "ints[1]", "longs[0]", "longs[1]",

@@ -73,7 +73,7 @@ class JsonExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	}
 
 	@Override
-	protected Set<Class<?>> getDefaultIncudes() {
+	protected Set<Class<?>> getDefaultIncludes() {
 		return DEFAULT_INCLUDES;
 	}
 

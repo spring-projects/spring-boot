@@ -304,7 +304,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void reinitializeShouldSetSytemProperty() throws Exception {
+	public void reinitializeShouldSetSystemProperty() throws Exception {
 		// gh-5491
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");

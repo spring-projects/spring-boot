@@ -48,7 +48,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * By default, tests annotated with {@code @WebMvcTest} will also auto-configure
  * {@link MockMvc} (include support for HtmlUnit WebDriver and Selenium WebClient). For
  * more fine-grained control of MockMVC that
- * {@link AutoConfigureMockMvc @AutoConfigureMockMvc} annotation cab be used.
+ * {@link AutoConfigureMockMvc @AutoConfigureMockMvc} annotation can be used.
  * <p>
  * Typically {@code @WebMvcTest} is used in combination with {@link MockBean @MockBean} or
  * {@link Import @Import} to create any collaborators required by your {@code @Controller}

@@ -35,11 +35,11 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 1.4.0
  */
-public class ConditionEvalutionReportMessage {
+public class ConditionEvaluationReportMessage {
 
 	private StringBuilder message;
 
-	public ConditionEvalutionReportMessage(ConditionEvaluationReport report) {
+	public ConditionEvaluationReportMessage(ConditionEvaluationReport report) {
 		this.message = getLogMessage(report);
 	}
 

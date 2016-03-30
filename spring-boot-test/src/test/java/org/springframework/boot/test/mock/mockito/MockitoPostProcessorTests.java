@@ -38,7 +38,7 @@ public class MockitoPostProcessorTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void cannotMockMulipleBeans() {
+	public void cannotMockMultipleBeans() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MultipleBeans.class);

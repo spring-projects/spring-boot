@@ -118,7 +118,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	 * differentiate regular tests and bootstrapped tests. Without this property a cached
 	 * context could be returned that wasn't created by this bootstrapper. By default uses
 	 * the bootstrapper class as a property.
-	 * @return the differentator or {@code null}
+	 * @return the differentiator or {@code null}
 	 */
 	protected String getDifferentiatorPropertySourceProperty() {
 		return getClass().getName() + "=true";
