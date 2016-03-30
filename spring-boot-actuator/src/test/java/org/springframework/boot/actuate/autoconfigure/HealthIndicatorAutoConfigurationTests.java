@@ -393,8 +393,6 @@ public class HealthIndicatorAutoConfigurationTests {
 	@Test
 	public void elasticSearchHealthIndicator() {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.elasticsearch.properties.path.data:target/data",
-				"spring.data.elasticsearch.properties.path.logs:target/logs",
 				"management.health.diskspace.enabled:false");
 		this.context.register(ElasticsearchAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
@@ -411,8 +409,6 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void notElasticSearchHealthIndicator() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.elasticsearch.enabled:false",
-				"spring.data.elasticsearch.properties.path.data:target/data",
-				"spring.data.elasticsearch.properties.path.logs:target/logs",
 				"management.health.diskspace.enabled:false");
 		this.context.register(ElasticsearchAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
