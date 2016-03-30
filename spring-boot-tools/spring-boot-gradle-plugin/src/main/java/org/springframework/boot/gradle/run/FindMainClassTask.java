@@ -136,4 +136,5 @@ public class FindMainClassTask extends DefaultTask {
 		}
 		return null;
 	}
+
 }
