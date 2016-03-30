@@ -54,7 +54,7 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 		archives.add(0, getArchive());
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		new JarLauncher().launch(args);
 	}
 
