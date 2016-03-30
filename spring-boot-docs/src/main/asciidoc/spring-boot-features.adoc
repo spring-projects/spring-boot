@@ -4306,7 +4306,7 @@ If you use the
 the following provided libraries:
 
 * http://junit.org[JUnit] -- The de-facto standard for unit testing Java applications.
-* {spring-reference}/#integration-testing.html[Spring Test] & Spring Boot Test -- utilties and integration test support for Spring Boot
+* {spring-reference}/#integration-testing.html[Spring Test] & Spring Boot Test -- utilities and integration test support for Spring Boot
   applications.
 * http://joel-costigliola.github.io/assertj/[AssertJ] - A fluent assertion library.
 * http://hamcrest.org/JavaHamcrest/[Hamcrest] -- A library of matcher objects (also known
@@ -4599,7 +4599,7 @@ a little too much for tests. It's often helpful to load only the parts of the
 configuration that are required to test a '`slice`' of your application. For example, you
 might want to test that Spring MVC controllers are mapping URLs correctly, and you don't
 want to involve and database calls in those tests; or you _might be wanting_ to test JPA
-entites, and you're not interested in web layer when those tests run.
+entities, and you're not interested in web layer when those tests run.
 
 The `spring-boot-test-autoconfigure` module includes a number of annotations that can be
 used to automatically configure such '`slices`'. Each of them work in a similar way,
@@ -4615,7 +4615,7 @@ TIP: It's also possible to use the `@AutoConfigure...` annotations with the stan
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-json-tests]]
 ==== Auto-configured JSON tests
-To test that Object JSON serilization and deserialization is working as expected you can
+To test that Object JSON serialization and deserialization is working as expected you can
 use the `@JsonTest` annotation. `@JsonTest` will auto-configure Jackson ObjectMappers,
 any `@JsonComponent` beans and any Jackson `Modules`. It also configures `Gson`
 if you happen to be using that instead of, or as well as, Jackson. If you need to

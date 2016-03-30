@@ -47,14 +47,14 @@ public class ImportAutoConfigurationTests {
 				config);
 		String shortName = ClassUtils.getShortName(ImportAutoConfigurationTests.class);
 		int beginIndex = shortName.length() + 1;
-		List<String> orderdConfigBeans = new ArrayList<String>();
+		List<String> orderedConfigBeans = new ArrayList<String>();
 		for (String bean : context.getBeanDefinitionNames()) {
 			if (bean.contains("$Config")) {
 				String shortBeanName = ClassUtils.getShortName(bean);
-				orderdConfigBeans.add(shortBeanName.substring(beginIndex));
+				orderedConfigBeans.add(shortBeanName.substring(beginIndex));
 			}
 		}
-		assertThat(orderdConfigBeans).containsExactly("ConfigA", "ConfigB", "ConfigC",
+		assertThat(orderedConfigBeans).containsExactly("ConfigA", "ConfigB", "ConfigC",
 				"ConfigD");
 		context.close();
 	}

@@ -49,14 +49,14 @@ public class JsonTesterInitializationTestExecutionListener
 
 	private static final String ASSERTJ_CLASS = "org.assertj.core.api.Assert";
 
-	private static final Map<String, Class<?>> INITALIZERS;
+	private static final Map<String, Class<?>> INITIALIZERS;
 
 	static {
 		Map<String, Class<?>> initializers = new LinkedHashMap<String, Class<?>>();
 		initializers.put("com.fasterxml.jackson.databind.ObjectMapper",
 				JacksonInitializer.class);
 		initializers.put("com.google.gson.Gson", GsonInitializer.class);
-		INITALIZERS = Collections.unmodifiableMap(initializers);
+		INITIALIZERS = Collections.unmodifiableMap(initializers);
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class JsonTesterInitializationTestExecutionListener
 
 	private void initializeJsonMarshalTesterFields(ClassLoader classLoader,
 			TestContext testContext) {
-		for (Map.Entry<String, Class<?>> entry : INITALIZERS.entrySet()) {
+		for (Map.Entry<String, Class<?>> entry : INITIALIZERS.entrySet()) {
 			if (ClassUtils.isPresent(entry.getKey(), classLoader)) {
 				initializeJsonMarshalTesterFields(classLoader, testContext,
 						entry.getKey(), entry.getValue());

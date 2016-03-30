@@ -26,7 +26,7 @@ import org.springframework.core.env.Environment;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class LoggingSytemProperties {
+class LoggingSystemProperties {
 
 	static final String PID_KEY = "PID";
 
@@ -40,7 +40,7 @@ class LoggingSytemProperties {
 
 	private final Environment environment;
 
-	LoggingSytemProperties(Environment environment) {
+	LoggingSystemProperties(Environment environment) {
 		this.environment = environment;
 	}
 

@@ -102,12 +102,12 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	/**
 	 * The name of the System property that contains the process ID.
 	 */
-	public static final String PID_KEY = LoggingSytemProperties.PID_KEY;
+	public static final String PID_KEY = LoggingSystemProperties.PID_KEY;
 
 	/**
 	 * The name of the System property that contains the exception conversion word.
 	 */
-	public static final String EXCEPTION_CONVERSION_WORD = LoggingSytemProperties.EXCEPTION_CONVERSION_WORD;
+	public static final String EXCEPTION_CONVERSION_WORD = LoggingSystemProperties.EXCEPTION_CONVERSION_WORD;
 
 	/**
 	 * The name of the System property that contains the log file.
@@ -122,17 +122,17 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	/**
 	 * The name of the System property that contains the console log pattern.
 	 */
-	public static final String CONSOLE_LOG_PATTERN = LoggingSytemProperties.CONSOLE_LOG_PATTERN;
+	public static final String CONSOLE_LOG_PATTERN = LoggingSystemProperties.CONSOLE_LOG_PATTERN;
 
 	/**
 	 * The name of the System property that contains the file log pattern.
 	 */
-	public static final String FILE_LOG_PATTERN = LoggingSytemProperties.FILE_LOG_PATTERN;
+	public static final String FILE_LOG_PATTERN = LoggingSystemProperties.FILE_LOG_PATTERN;
 
 	/**
 	 * The name of the System property that contains the log level pattern.
 	 */
-	public static final String LOG_LEVEL_PATTERN = LoggingSytemProperties.LOG_LEVEL_PATTERN;
+	public static final String LOG_LEVEL_PATTERN = LoggingSystemProperties.LOG_LEVEL_PATTERN;
 
 	/**
 	 * The name of the {@link LoggingSystem} bean.
@@ -247,7 +247,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 */
 	protected void initialize(ConfigurableEnvironment environment,
 			ClassLoader classLoader) {
-		new LoggingSytemProperties(environment).apply();
+		new LoggingSystemProperties(environment).apply();
 		LogFile logFile = LogFile.get(environment);
 		if (logFile != null) {
 			logFile.applyToSystemProperties();

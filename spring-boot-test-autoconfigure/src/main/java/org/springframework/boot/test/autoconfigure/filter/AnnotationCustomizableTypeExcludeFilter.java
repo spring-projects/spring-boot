@@ -70,7 +70,7 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 
 	protected boolean defaultInclude(MetadataReader metadataReader,
 			MetadataReaderFactory metadataReaderFactory) throws IOException {
-		for (Class<?> include : getDefaultIncudes()) {
+		for (Class<?> include : getDefaultIncludes()) {
 			if (isTypeOrAnnotated(metadataReader, metadataReaderFactory, include)) {
 				return true;
 			}
@@ -101,7 +101,7 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 
 	protected abstract boolean isUseDefaultFilters();
 
-	protected abstract Set<Class<?>> getDefaultIncudes();
+	protected abstract Set<Class<?>> getDefaultIncludes();
 
 	protected static enum FilterType {
 		INCLUDE, EXCLUDE

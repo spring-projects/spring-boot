@@ -26,7 +26,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link PropertyMapping @PropertyMapping} annotaions.
+ * Integration tests for {@link PropertyMapping @PropertyMapping} annotations.
  *
  * @author Phillip Webb
  */
