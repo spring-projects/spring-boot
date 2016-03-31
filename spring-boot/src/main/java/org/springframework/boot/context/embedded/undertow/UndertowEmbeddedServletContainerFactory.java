@@ -501,8 +501,7 @@ public class UndertowEmbeddedServletContainerFactory
 	protected UndertowEmbeddedServletContainer getUndertowEmbeddedServletContainer(
 			Builder builder, DeploymentManager manager, int port) {
 		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, isUseForwardHeaders(), port >= 0, getCompression(),
-				getServerHeader());
+				isUseForwardHeaders(), port >= 0, getCompression(), getServerHeader());
 	}
 
 	@Override
