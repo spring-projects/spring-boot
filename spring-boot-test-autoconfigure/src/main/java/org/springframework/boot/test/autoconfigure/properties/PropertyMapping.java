@@ -58,6 +58,7 @@ public @interface PropertyMapping {
 	 * Defines the property mapping. When used at the type-level, this value will be used
 	 * as a prefix for all mapped attributes. When used on an attribute, the value
 	 * overrides the generated (kebab case) name.
+	 * @return the property mapping
 	 */
 	String value() default "";
 
@@ -65,6 +66,7 @@ public @interface PropertyMapping {
 	 * Determines if mapping should occur. When specified at the type-level indicates if
 	 * mapping should occur by default or not. When used at the attribute-level, overrides
 	 * the type-level default.
+	 * @return if mapping should occur
 	 */
 	boolean map() default true;
 

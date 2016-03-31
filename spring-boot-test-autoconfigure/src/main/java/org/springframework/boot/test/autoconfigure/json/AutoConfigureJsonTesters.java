@@ -52,6 +52,7 @@ public @interface AutoConfigureJsonTesters {
 	/**
 	 * If {@link BasicJsonTester}, {@link JacksonTester} and {@link GsonTester} fields
 	 * should be initialized using marshallers from the {@link ApplicationContext}.
+	 * @return if JSON tester fields should be initialized
 	 */
 	boolean initFields() default true;
 

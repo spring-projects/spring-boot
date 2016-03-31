@@ -134,8 +134,8 @@ public class DataSourceAutoConfigurationTests {
 	public void hikariValidatesConnectionByDefault() throws Exception {
 		HikariDataSource dataSource = autoConfigureDataSource(HikariDataSource.class,
 				"org.apache.tomcat");
-		assertThat(dataSource.getConnectionTestQuery()).isNull(); // Use
-																	// Connection#isValid()
+		assertThat(dataSource.getConnectionTestQuery()).isNull();
+		// Use Connection#isValid()
 	}
 
 	@Test

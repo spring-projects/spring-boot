@@ -45,6 +45,7 @@ public @interface TypeExcludeFilters {
 	 * specified here can either have a no-arg constructor or accept a single
 	 * {@code Class<?>} argument if then need access to the {@code testClass}.
 	 * @see TypeExcludeFilter
+	 * @return the type exclude filters to apply
 	 */
 	Class<? extends TypeExcludeFilter>[] value();
 

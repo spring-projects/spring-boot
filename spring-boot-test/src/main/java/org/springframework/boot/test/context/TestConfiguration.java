@@ -45,6 +45,7 @@ public @interface TestConfiguration {
 	/**
 	 * Explicitly specify the name of the Spring bean definition associated with this
 	 * Configuration class. See {@link Configuration#value()} for details.
+	 * @return the specified bean name, if any
 	 */
 	String value() default "";
 

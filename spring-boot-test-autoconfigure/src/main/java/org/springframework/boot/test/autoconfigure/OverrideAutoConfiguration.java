@@ -43,6 +43,7 @@ public @interface OverrideAutoConfiguration {
 	/**
 	 * The value of the {@link EnableAutoConfiguration#ENABLED_OVERRIDE_PROPERTY enabled
 	 * property override}.
+	 * @return the override value
 	 */
 	boolean enabled();
 

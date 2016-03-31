@@ -141,10 +141,10 @@ public class FileSystemWatcher {
 			this.watchThread = new Thread() {
 				@Override
 				public void run() {
-					int remainingScans = FileSystemWatcher.this.remainingScans.get();
-					while (remainingScans > 0 || remainingScans == -1) {
+					int remaining = FileSystemWatcher.this.remainingScans.get();
+					while (remaining > 0 || remaining == -1) {
 						try {
-							if (remainingScans > 0) {
+							if (remaining > 0) {
 								FileSystemWatcher.this.remainingScans.decrementAndGet();
 							}
 							scan();
@@ -152,7 +152,7 @@ public class FileSystemWatcher {
 						catch (InterruptedException ex) {
 							// Ignore
 						}
-						remainingScans = FileSystemWatcher.this.remainingScans.get();
+						remaining = FileSystemWatcher.this.remainingScans.get();
 					}
 				};
 			};

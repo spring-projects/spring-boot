@@ -103,8 +103,10 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 
 	protected abstract Set<Class<?>> getDefaultIncludes();
 
-	protected static enum FilterType {
+	protected enum FilterType {
+
 		INCLUDE, EXCLUDE
+
 	};
 
 }

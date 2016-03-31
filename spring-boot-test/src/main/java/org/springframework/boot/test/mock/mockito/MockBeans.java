@@ -40,6 +40,7 @@ public @interface MockBeans {
 
 	/**
 	 * Return the contained {@link MockBean} annotations.
+	 * @return the mock beans
 	 */
 	MockBean[] value();
 

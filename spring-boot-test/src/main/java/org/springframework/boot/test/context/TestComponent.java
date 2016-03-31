@@ -48,6 +48,7 @@ public @interface TestComponent {
 	/**
 	 * The value may indicate a suggestion for a logical component name, to be turned into
 	 * a Spring bean in case of an auto-detected component.
+	 * @return the specified bean name, if any
 	 */
 	String value() default "";
 

@@ -85,12 +85,14 @@ public @interface MockBean {
 	 * The name of the bean that should be registered with the application context. If not
 	 * specified the name will either be generated or, if the mock replaces an existing
 	 * bean, the existing name will be used.
+	 * @return the name of the bean
 	 */
 	String name() default "";
 
 	/**
 	 * The classes to mock. This is an alias of {@link #classes()} which can be used for
 	 * brevity if no other attributes are defined. See {@link #classes()} for details.
+	 * @return the classes to mock
 	 */
 	@AliasFor("classes")
 	Class<?>[] value() default {};
@@ -105,6 +107,7 @@ public @interface MockBean {
 	 * <p>
 	 * If this is the only attribute specified consider using the {@code value} alias
 	 * instead.
+	 * @return the classes to mock
 	 */
 	@AliasFor("value")
 	Class<?>[] classes() default {};
@@ -112,23 +115,27 @@ public @interface MockBean {
 	/**
 	 * Any extra interfaces that should also be declared on the mock. See
 	 * {@link MockSettings#extraInterfaces(Class...)} for details.
+	 * @return any extra interfaces
 	 */
 	Class<?>[] extraInterfaces() default {};
 
 	/**
 	 * The {@link Answers} type to use on the mock.
+	 * @return the answer type
 	 */
 	Answers answer() default Answers.RETURNS_DEFAULTS;
 
 	/**
 	 * If the generated mock is serializable. See {@link MockSettings#serializable()} for
 	 * details.
+	 * @return if the mock is serializable
 	 */
 	boolean serializable() default false;
 
 	/**
 	 * The reset mode to apply to the mock bean. The default is {@link MockReset#AFTER}
 	 * meaning that mocks are automatically reset after each test method is invoked.
+	 * @return the reset mode
 	 */
 	MockReset reset() default MockReset.AFTER;
 
