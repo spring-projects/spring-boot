@@ -4120,6 +4120,9 @@ spring.kafka.bootstrap-servers=localhost:9092
 spring.kafka.consumer.group-id=myGroup
 ----
 
+See {sc-spring-boot-autoconfigure}/kafka/KafkaProperties.{sc-ext}[`KafkaProperties`]
+for more of the supported options.
+
 === Sending a Message
 
 Spring's `KafkaTemplate` is auto-configured and you can autowire them directly in your own beans:
