@@ -4349,25 +4349,29 @@ One thing to watch out for though is that the external properties, logging and o
 features of Spring Boot are only installed in the context by default if you use
 `SpringApplication` to create it.
 
-Spring Boot provides three annotations which can be used as an alternative the standard
-`spring-test` `@ContextConfiguration` annotation when you need Spring Boot features. All
-three work by creating the `ApplicationContext` used in your tests via
-`SpringApplication`.
+Spring Boot provides a `@SpringApplicationTest` annotation which can be used as an
+alternative the standard `spring-test` `@ContextConfiguration` annotation when you need
+Spring Boot features. The annotation works by creating the `ApplicationContext` used
+in your tests via `SpringApplication`.
 
-The specific annotation that you choose will depend on the type of test that you are writing:
+You can use the `webEnvironment` attribute of `@SpringApplicationTest` to further refine
+how your tests will run:
 
-* `@SpringApplicationTest` -- Loads an `ApplicationContext` or `WebApplicationContext`
-  (depending on your classpath) using `SpringApplication` and provides a mock servlet environment. Embedded servlet containers are not started
-  when using this annotation.
-* `@WebIntegrationTest` -- Loads an `EmbeddedWebApplicationContext` using
-  `SpringApplication` and provides a real servlet environment. Embedded servlet containers
-  are started and listening on a defined or random port.
-* `@IntegrationTest` -- Loads an `ApplicationContext` using `SpringApplication` but does
-  not provides _any_ servlet environment (mock or otherwise).
+* `MOCK` -- Loads a `WebApplicationContext` and provides a mock servlet environment.
+  Embedded servlet containers are not started when using this annotation. If servlet
+  APIs are not on your classpath this mode will transparantly fallback to creating a
+  regular non-web `ApplicationContext`.
+* `RANDOM_PORT` -- Loads an `EmbeddedWebApplicationContext` and provides a real
+  servlet environment. Embedded servlet containers are started and listening on a random
+  port.
+* `DEFINED_PORT` -- Loads an `EmbeddedWebApplicationContext` and provides a real
+  servlet environment. Embedded servlet containers are started and listening on a defined
+  port (i.e from your `application.properties` or on the default port `8080`).
+* `NONE` -- Loads an `ApplicationContext` using `SpringApplication` but does not provides
+  _any_ servlet environment (mock or otherwise).
 
-NOTE: In addition to `@SpringApplicationTest`, `@WebIntegrationTest` and
-`@IntegrationTest` a number of other annotations are also provided for testing more
-specific slices of an application. See below for details.
+NOTE: In addition to `@SpringApplicationTest` a number of other annotations are also
+provided for testing more specific slices of an application. See below for details.
 
 TIP: Don't forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise
 the annotations will be ignored.
@@ -4416,61 +4420,17 @@ will need to register the `TypeExcludeFilter` with it. See
 
 
 
-[[boot-features-testing-spring-boot-applications-using-springapplicationtest]]
-==== Using @SpringApplicationTest
-Use the `@SpringApplicationTest` annotation to load a `ApplicationContext` or
-`WebApplicationContext` via `SpringApplication` and configure it with a mock
-servlet environment. Embedded servlet containers will not be started when using
-`@SpringApplicationTest`.
 
-A `WebApplicationContext` is created when Servlet API jars are present on your
-classpath. If you're developing a non-web application, the regular
-`ApplicationContext` is used.
+[[boot-features-testing-spring-boot-applications-working-with-random-ports]]
+==== Working with random ports
+If you need to start a full running server for tests, we recommend that you use random
+ports. If you use `@SpringApplicationTest(webEnvironment=WebEnvironment.RANDOM_PORT)`
+an available port will be picked at random each time your test runs.
 
-The `@Configuration` classes to load can either be explicitly defined using
-`@ContextConfiguration`, specified as inner-classes or
-<<boot-features-testing-spring-boot-applications-detecting-config, detected automatically>>
-
-[source,java,indent=0]
-----
-	import org.junit.*;
-	import org.junit.runner.*;
-	import org.springframework.beans.factory.annotation.*;
-	import org.springframework.boot.test.context.*;
-	import org.springframework.test.context.junit4.*;
-
-	@RunWith(SpringRunner.class)
-	@SpringApplicationTest
-	public class MySpringApplicationTests {
-
-		@Autowired
-		private MyComponent component;
-
-		// ... tests
-
-	}
-----
-
-
-
-[[boot-features-testing-spring-boot-applications-using-webintegrationtest]]
-==== Using @WebIntegrationTest
-Use the `@WebIntegrationTest` annotation to load a `WebApplicationContext` via
-`SpringApplication` and configure it with fully running server listening on the appropriate
-port.
-
-The `@Configuration` classes to load can either be explicitly defined using
-`@ContextConfiguration`, specified as inner-classes or
-<<boot-features-testing-spring-boot-applications-detecting-config, detected automatically>>
-
+The `@LocalServerPort` annotation can be used to
+<<howto-discover-the-http-port-at-runtime,inject the actual port used>> into your test.
 For convenience, tests that need to make REST calls to the started server can additionally
 `@Autowire` a `TestRestTemplate` which will resolve relative links to the running server.
-
-To change the port you can add environment properties to `@WebIntegrationTest` as colon-
-or equals-separated name-value pairs, e.g. `@WebIntegrationTest("server.port:9000")`.
-Additionally you can set the `server.port` and `management.port` properties to `0`
-or use the `randomPort` attribute in order to run your integration tests using
-random ports.
 
 [source,java,indent=0]
 ----
@@ -4483,7 +4443,7 @@ random ports.
 	import static org.assertj.core.api.Assertions.*
 
 	@RunWith(SpringRunner.class)
-	@WebIntegrationTest(randomPort=true)
+	@SpringApplicationTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 	public class MyWebIntegrationTests {
 
 		@Autowired
@@ -4497,46 +4457,6 @@ random ports.
 
 	}
 ----
-
-See <<howto-discover-the-http-port-at-runtime>> for a description of how you can discover
-the actual port that was allocated for the duration of the tests if you're not using the
-injected `TestRestTemplate`.
-
-
-
-[[boot-features-testing-spring-boot-applications-using-integrationtest]]
-==== Using @IntegrationTest
-Use the `@IntegrationTest` annotation to load an `ApplicationContext` via
-`SpringApplication` for non web-applications. Mock servlet support is explicitly disabled
-for tests annotated with `@IntegrationTest`.
-
-The `@Configuration` classes to load can either be explicitly defined using
-`@ContextConfiguration`, specified as inner-classes or
-<<boot-features-testing-spring-boot-applications-detecting-config, detected automatically>>
-
-[source,java,indent=0]
-----
-	import org.junit.*;
-	import org.junit.runner.*;
-	import org.springframework.beans.factory.annotation.*;
-	import org.springframework.boot.test.context.*;
-	import org.springframework.test.context.junit4.*;
-
-	@RunWith(SpringRunner.class)
-	@IntegrationTest
-	public class MyIntegrationTests {
-
-		@Autowired
-		private MyComponent component;
-
-		// ... tests
-
-	}
-----
-
-NOTE: Although it's possible to use the `@WebAppConfiguration` annotation in combination
-with `@IntegrationTest` if you want to start a full web server, the `@WebIntegrationTest`
-annotation is generally preferable.
 
 
 
@@ -4832,7 +4752,7 @@ Spring's test framework into Spock.
 
 NOTE: The annotations <<boot-features-testing-spring-boot-applications,described above>>
 can be used with Spock, i.e. you can annotate your `Specification` with
-`@WebIntegrationTest` to suit the needs of your tests.
+`@SpringApplicationTest` to suit the needs of your tests.
 
 
 
