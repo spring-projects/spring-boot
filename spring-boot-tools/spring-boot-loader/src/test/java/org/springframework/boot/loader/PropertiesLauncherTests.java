@@ -116,6 +116,25 @@ public class PropertiesLauncherTests {
 	}
 
 	@Test
+	public void testUserSpecifiedJarFileWithNestedArchives() throws Exception {
+		System.setProperty("loader.path", "nested-jars/app.jar");
+		System.setProperty("loader.main", "demo.Application");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		launcher.launch(new String[0]);
+		waitFor("Hello World");
+	}
+
+	@Test
+	public void testUserSpecifiedDirectoryContainingJarFileWithNestedArchives()
+			throws Exception {
+		System.setProperty("loader.path", "nested-jars");
+		System.setProperty("loader.main", "demo.Application");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		launcher.launch(new String[0]);
+		waitFor("Hello World");
+	}
+
+	@Test
 	public void testUserSpecifiedJarPathWithDot() throws Exception {
 		System.setProperty("loader.path", "./jars/app.jar");
 		System.setProperty("loader.main", "demo.Application");
