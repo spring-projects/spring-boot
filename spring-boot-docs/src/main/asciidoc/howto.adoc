@@ -59,6 +59,9 @@ rules of thumb:
 * Look for `@ConditionalOnExpression` annotations that switch features on and off in
   response to SpEL expressions, normally evaluated with placeholders resolved from the
   `Environment`.
+* Configure logging for boot to be TRACE via `logging.level.org.springframework.boot=TRACE`.
+  In cases where the application doesn't startup due to autoconfiguration issues, this
+  provides similar feedback to the `autoconfig` report previously mentioned via logging.
 
 
 
