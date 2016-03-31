@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringApplicationConfiguration
-@IntegrationTest("spring.config.name=enableother")
+@SpringApplicationTest("spring.config.name=enableother")
 @ActiveProfiles("override")
 public class SpringApplicationConfigurationActiveProfileTests {
 

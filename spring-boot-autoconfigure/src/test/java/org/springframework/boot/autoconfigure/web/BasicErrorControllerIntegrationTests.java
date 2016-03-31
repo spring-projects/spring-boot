@@ -34,8 +34,9 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.web.BasicErrorControllerIntegrationTests.TestConfiguration;
 import org.springframework.boot.autoconfigure.web.BasicErrorControllerMockMvcTests.MinimalWebConfiguration;
-import org.springframework.boot.test.context.IntegrationTest;
 import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -46,7 +47,6 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,9 +68,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringApplicationConfiguration(TestConfiguration.class)
-@WebAppConfiguration
 @DirtiesContext
-@IntegrationTest("server.port=0")
+@SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class BasicErrorControllerIntegrationTests {
 
 	private ConfigurableApplicationContext context;

@@ -19,42 +19,33 @@ package org.springframework.boot.test.context;
 import javax.servlet.ServletContext;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.test.context.SpringApplicationIntegrationTestTests.Config;
+import org.springframework.boot.context.web.LocalServerPort;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link IntegrationTest}
+ * Base class for {@link SpringApplicationTest} tests configured to start an embedded
+ * servlet container
  *
- * @author Dave Syer
+ * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
-@DirtiesContext
-@SpringApplicationConfiguration(Config.class)
-@WebAppConfiguration
-@IntegrationTest({ "server.port=0", "value=123" })
-public class SpringApplicationIntegrationTestTests {
+public abstract class AbstractSpringApplicationTestWebEnvironmentEmbeddedTests {
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port = 0;
 
 	@Value("${value}")
@@ -66,11 +57,20 @@ public class SpringApplicationIntegrationTestTests {
 	@Autowired
 	private ServletContext servletContext;
 
+	@Autowired
+	private TestRestTemplate restTemplate;
+
 	@Test
 	public void runAndTestHttpEndpoint() {
 		assertThat(this.port).isNotEqualTo(8080).isNotEqualTo(0);
 		String body = new RestTemplate()
 				.getForObject("http://localhost:" + this.port + "/", String.class);
+		assertThat(body).isEqualTo("Hello World");
+	}
+
+	@Test
+	public void injectTestRestTemplate() {
+		String body = this.restTemplate.getForObject("/", String.class);
 		assertThat(body).isEqualTo("Hello World");
 	}
 
@@ -85,10 +85,7 @@ public class SpringApplicationIntegrationTestTests {
 				WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
 	}
 
-	@Configuration
-	@EnableWebMvc
-	@RestController
-	protected static class Config {
+	protected static class AbstractConfig {
 
 		@Value("${server.port:8080}")
 		private int port = 8080;

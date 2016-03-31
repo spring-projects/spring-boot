@@ -46,6 +46,13 @@ public class SpringApplicationContextLoaderTests {
 	}
 
 	@Test
+	public void environmentPropertiesSimpleNonAlias() throws Exception {
+		Map<String, Object> config = getEnvironmentProperties(SimpleConfigNonAlias.class);
+		assertKey(config, "key", "myValue");
+		assertKey(config, "anotherKey", "anotherValue");
+	}
+
+	@Test
 	public void environmentPropertiesOverrideDefaults() throws Exception {
 		Map<String, Object> config = getEnvironmentProperties(OverrideConfig.class);
 		assertKey(config, "server.port", "2345");
@@ -97,37 +104,43 @@ public class SpringApplicationContextLoaderTests {
 		assertThat(actual.get(key)).isEqualTo(value);
 	}
 
-	@IntegrationTest({ "key=myValue", "anotherKey:anotherValue" })
+	@SpringApplicationTest({ "key=myValue", "anotherKey:anotherValue" })
 	@ContextConfiguration(classes = Config.class)
 	static class SimpleConfig {
 
 	}
 
-	@IntegrationTest({ "server.port=2345" })
+	@SpringApplicationTest(properties = { "key=myValue", "anotherKey:anotherValue" })
+	@ContextConfiguration(classes = Config.class)
+	static class SimpleConfigNonAlias {
+
+	}
+
+	@SpringApplicationTest("server.port=2345")
 	@ContextConfiguration(classes = Config.class)
 	static class OverrideConfig {
 
 	}
 
-	@IntegrationTest({ "key=myValue", "otherKey=otherValue" })
+	@SpringApplicationTest({ "key=myValue", "otherKey=otherValue" })
 	@ContextConfiguration(classes = Config.class)
 	static class AppendConfig {
 
 	}
 
-	@IntegrationTest({ "key=my=Value", "anotherKey:another:Value" })
+	@SpringApplicationTest({ "key=my=Value", "anotherKey:another:Value" })
 	@ContextConfiguration(classes = Config.class)
 	static class SameSeparatorInValue {
 
 	}
 
-	@IntegrationTest({ "key=my:Value", "anotherKey:another=Value" })
+	@SpringApplicationTest({ "key=my:Value", "anotherKey:another=Value" })
 	@ContextConfiguration(classes = Config.class)
 	static class AnotherSeparatorInValue {
 
 	}
 
-	@IntegrationTest({ "key=myValue", "variables=foo=FOO\n bar=BAR" })
+	@SpringApplicationTest({ "key=myValue", "variables=foo=FOO\n bar=BAR" })
 	@ContextConfiguration(classes = Config.class)
 	static class NewLineInValue {
 

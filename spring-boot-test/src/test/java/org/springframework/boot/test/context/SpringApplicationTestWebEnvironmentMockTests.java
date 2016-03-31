@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test;
+package org.springframework.boot.test.context;
 
 import javax.servlet.ServletContext;
 
@@ -23,39 +23,30 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.SpringApplicationWebIntegrationTestTests.Config;
+import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link IntegrationTest}
+ * Tests for {@link SpringApplicationTest} configured with {@link WebEnvironment#MOCK}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-@SuppressWarnings("deprecation")
 @RunWith(SpringRunner.class)
+@SpringApplicationTest("value=123")
 @DirtiesContext
-@SpringApplicationConfiguration(Config.class)
-@WebIntegrationTest({ "server.port=0", "value=123" })
-public class SpringApplicationWebIntegrationTestTests {
-
-	@LocalServerPort
-	private int port = 0;
+public class SpringApplicationTestWebEnvironmentMockTests {
 
 	@Value("${value}")
 	private int value = 0;
@@ -67,52 +58,30 @@ public class SpringApplicationWebIntegrationTestTests {
 	private ServletContext servletContext;
 
 	@Test
-	public void runAndTestHttpEndpoint() {
-		assertThat(this.port).isNotEqualTo(8080).isNotEqualTo(0);
-		String body = new RestTemplate()
-				.getForObject("http://localhost:" + this.port + "/", String.class);
-		assertThat(body).isEqualTo("Hello World");
-	}
-
-	@Test
 	public void annotationAttributesOverridePropertiesFile() throws Exception {
 		assertThat(this.value).isEqualTo(123);
 	}
 
 	@Test
 	public void validateWebApplicationContextIsSet() {
-		assertThat(this.context).isSameAs(
-				WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
+		WebApplicationContext fromServletContext = WebApplicationContextUtils
+				.getWebApplicationContext(this.servletContext);
+		assertThat(fromServletContext).isSameAs(this.context);
+	}
+
+	@Test
+	public void setsRequestContextHolder() throws Exception {
+		RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+		assertThat(attributes).isNotNull();
 	}
 
 	@Configuration
 	@EnableWebMvc
-	@RestController
 	protected static class Config {
-
-		@Value("${server.port:8080}")
-		private int port = 8080;
-
-		@Bean
-		public DispatcherServlet dispatcherServlet() {
-			return new DispatcherServlet();
-		}
-
-		@Bean
-		public EmbeddedServletContainerFactory embeddedServletContainer() {
-			TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
-			factory.setPort(this.port);
-			return factory;
-		}
 
 		@Bean
 		public static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
 			return new PropertySourcesPlaceholderConfigurer();
-		}
-
-		@RequestMapping("/")
-		public String home() {
-			return "Hello World";
 		}
 
 	}

@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context.web;
+package org.springframework.boot.test.context;
 
 import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.web.client.RestTemplate;
 
 /**
- * {@link ContextCustomizer} for {@link WebIntegrationTest} that provides a
- * {@link TestRestTemplate} bean that can automatically resolve
- * {@literal local.server.port}.
+ * {@link ContextCustomizer} for {@link SpringApplicationTest}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-class WebIntegrationTestContextCustomizer implements ContextCustomizer {
+class SpringApplicationTestContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
-		TestRestTemplate restTemplate = getRestTemplate(context.getEnvironment());
-		context.getBeanFactory().registerSingleton("testRestTemplate", restTemplate);
-	}
-
-	private TestRestTemplate getRestTemplate(Environment environment) {
-		TestRestTemplate template = new TestRestTemplate();
-		template.setUriTemplateHandler(new LocalHostUriTemplateHandler(environment));
-		return template;
+		SpringApplicationTest annotation = AnnotatedElementUtils.getMergedAnnotation(
+				mergedContextConfiguration.getTestClass(), SpringApplicationTest.class);
+		if (annotation.webEnvironment().isEmbedded()) {
+			RestTemplate restTemplate = TestRestTemplateFactory
+					.createRestTemplate(context.getEnvironment());
+			context.getBeanFactory().registerSingleton("testRestTemplate", restTemplate);
+		}
 	}
 
 	@Override
@@ -56,6 +56,17 @@ class WebIntegrationTestContextCustomizer implements ContextCustomizer {
 			return false;
 		}
 		return true;
+	}
+
+	// Inner class to avoid references to web classes that may not be on the classpath
+	private static class TestRestTemplateFactory {
+
+		private static TestRestTemplate createRestTemplate(Environment environment) {
+			TestRestTemplate template = new TestRestTemplate();
+			template.setUriTemplateHandler(new LocalHostUriTemplateHandler(environment));
+			return template;
+		}
+
 	}
 
 }

@@ -23,33 +23,36 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Test class annotation signifying that the tests are for a
  * {@link org.springframework.boot.SpringApplication Spring Boot Application}. By default
- * will load nested {@code @Configuration} classes, or fallback an
+ * will load nested {@code @Configuration} classes, or fall back on
  * {@link SpringApplicationConfiguration @SpringApplicationConfiguration} search. Unless
  * otherwise configured, a {@link SpringApplicationContextLoader} will be used to load the
  * {@link ApplicationContext}. Use
  * {@link SpringApplicationConfiguration @SpringApplicationConfiguration} or
  * {@link ContextConfiguration @ContextConfiguration} if custom configuration is required.
  * <p>
- * A mock servlet environment will be used when this annotation is used to a test web
- * application. If you want to start a real embedded servlet container in the same way as
- * a production application (listening on normal ports) the
- * {@link org.springframework.boot.test.context.web.WebIntegrationTest @WebIntegrationTest}
- * annotation should be used instead. If you are testing a non-web application, and you
- * don't need a mock servlet environment you should switch to
- * {@link IntegrationTest @IntegrationTest}.
+ * The environment that will be used can be configured using the {@code mode} attribute.
+ * By default, a mock servlet environment will be used when this annotation is used to a
+ * test web application. If you want to start a real embedded servlet container in the
+ * same way as a production application (listening on normal ports) configure
+ * {@code mode=EMBEDDED_SERVLET}. If want to disable the creation of the mock servlet
+ * environment, configure {@code mode=STANDARD}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.4.0
- * @see IntegrationTest
- * @see org.springframework.boot.test.context.web.WebIntegrationTest
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -59,10 +62,72 @@ import org.springframework.test.context.ContextConfiguration;
 public @interface SpringApplicationTest {
 
 	/**
+	 * Alias for {@link #properties()}.
+	 * @return the properties to apply
+	 */
+	@AliasFor("properties")
+	String[] value() default {};
+
+	/**
 	 * Properties in form {@literal key=value} that should be added to the Spring
 	 * {@link Environment} before the test runs.
 	 * @return the properties to add
 	 */
-	String[] value() default {};
+	@AliasFor("value")
+	String[] properties() default {};
+
+	/**
+	 * The type of web environment to create when applicable. Defaults to
+	 * {@link WebEnvironment#MOCK}.
+	 * @return the type of web environment
+	 */
+	WebEnvironment webEnvironment() default WebEnvironment.MOCK;
+
+	/**
+	 * An enumeration web environment modes.
+	 */
+	enum WebEnvironment {
+
+		/**
+		 * Creates a {@link WebApplicationContext} with a mock servlet environment or a
+		 * regular {@link ApplicationContext} if servlet APIs are not on the classpath.
+		 */
+		MOCK(false),
+
+		/**
+		 * Creates an {@link EmbeddedWebApplicationContext} and sets a
+		 * {@code server.port=0} {@link Environment} property (which usually triggers
+		 * listening on a random port). Often used in conjunction with a
+		 * {@link LocalServerPort} injected field on the test.
+		 */
+		RANDOM_PORT(true),
+
+		/**
+		 * Creates an {@link EmbeddedWebApplicationContext} without defining any
+		 * {@code server.port=0} {@link Environment} property.
+		 */
+		DEFINED_PORT(true),
+
+		/**
+		 * Creates an {@link ApplicationContext} and sets
+		 * {@link SpringApplication#setWebEnvironment(boolean)} to {@code false}.
+		 */
+		NONE(false);
+
+		private final boolean embedded;
+
+		WebEnvironment(boolean embedded) {
+			this.embedded = embedded;
+		}
+
+		/**
+		 * Return if the environment uses an {@link EmbeddedWebApplicationContext}.
+		 * @return if an {@link EmbeddedWebApplicationContext} is used.
+		 */
+		public boolean isEmbedded() {
+			return this.embedded;
+		}
+
+	}
 
 }

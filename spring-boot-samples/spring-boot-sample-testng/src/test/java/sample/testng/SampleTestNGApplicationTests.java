@@ -19,7 +19,8 @@ package sample.testng;
 import org.testng.annotations.Test;
 
 import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.web.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@WebIntegrationTest("server.port:0")
+@SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class SampleTestNGApplicationTests extends AbstractTestNGSpringContextTests {
 

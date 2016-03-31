@@ -14,41 +14,36 @@
  * limitations under the License.
  */
 
-package sample.jsp;
+package org.springframework.boot.test.context;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
- * Basic integration tests for JSP application.
+ * Tests for {@link SpringApplicationTest} configured with
+ * {@link WebEnvironment#DEFINED_PORT}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-public class SampleWebJspApplicationTests {
+@SpringApplicationTest(webEnvironment = WebEnvironment.DEFINED_PORT, properties = {
+		"server.port=0", "value=123" })
+public class SpringApplicationTestWebEnvironmentDefinedPortTests
+		extends AbstractSpringApplicationTestWebEnvironmentEmbeddedTests {
 
-	@LocalServerPort
-	private int port;
+	@Configuration
+	@EnableWebMvc
+	@RestController
+	protected static class Config extends AbstractConfig {
 
-	@Test
-	public void testJspWithEl() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate()
-				.getForEntity("http://localhost:" + this.port, String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("/resources/text.txt");
 	}
 
 }

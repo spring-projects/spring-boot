@@ -31,7 +31,8 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.boot.test.context.SpringApplicationConfiguration;
-import org.springframework.boot.test.context.web.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringApplicationConfiguration(SampleAtmosphereApplication.class)
-@WebIntegrationTest(randomPort = true)
+@SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class SampleAtmosphereApplicationTests {
 

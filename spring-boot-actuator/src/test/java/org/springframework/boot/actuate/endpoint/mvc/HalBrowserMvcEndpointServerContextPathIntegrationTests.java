@@ -24,8 +24,9 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.actuate.autoconfigure.MinimalActuatorHypermediaApplication;
 import org.springframework.boot.actuate.endpoint.mvc.HalBrowserMvcEndpointServerContextPathIntegrationTests.SpringBootHypermediaApplication;
 import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.IntegrationTest;
 import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpEntity;
@@ -36,7 +37,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,8 +52,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
  */
 @RunWith(SpringRunner.class)
 @SpringApplicationConfiguration(SpringBootHypermediaApplication.class)
-@WebAppConfiguration
-@IntegrationTest({ "server.port=0", "server.contextPath=/spring" })
+@SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
+		"server.contextPath=/spring" })
 @DirtiesContext
 public class HalBrowserMvcEndpointServerContextPathIntegrationTests {
 

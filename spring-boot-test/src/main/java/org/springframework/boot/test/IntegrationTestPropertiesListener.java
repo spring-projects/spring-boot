@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test;
 
-import org.springframework.boot.test.context.IntegrationTest;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;

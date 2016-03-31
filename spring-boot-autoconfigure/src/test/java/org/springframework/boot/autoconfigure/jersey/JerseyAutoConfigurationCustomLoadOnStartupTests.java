@@ -33,7 +33,8 @@ import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationCust
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.test.context.SpringApplicationConfiguration;
-import org.springframework.boot.test.context.web.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
@@ -48,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringApplicationConfiguration(Application.class)
-@WebIntegrationTest(randomPort = true, value = "spring.jersey.servlet.load-on-startup=5")
+@SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.servlet.load-on-startup=5")
 public class JerseyAutoConfigurationCustomLoadOnStartupTests {
 
 	@Autowired
@@ -56,8 +57,9 @@ public class JerseyAutoConfigurationCustomLoadOnStartupTests {
 
 	@Test
 	public void contextLoads() {
-		assertThat(new DirectFieldAccessor(this.context.getBean("jerseyServletRegistration"))
-				.getPropertyValue("loadOnStartup")).isEqualTo(5);
+		assertThat(
+				new DirectFieldAccessor(this.context.getBean("jerseyServletRegistration"))
+						.getPropertyValue("loadOnStartup")).isEqualTo(5);
 	}
 
 	@MinimalWebConfiguration
@@ -72,9 +74,9 @@ public class JerseyAutoConfigurationCustomLoadOnStartupTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class, JerseyAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class})
+			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 	}
 

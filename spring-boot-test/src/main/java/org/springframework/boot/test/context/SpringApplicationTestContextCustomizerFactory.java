@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context.web;
+package org.springframework.boot.test.context;
 
 import java.util.List;
 
@@ -24,19 +24,19 @@ import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
 
 /**
- * {@link ContextCustomizerFactory} for {@link WebIntegrationTest}.
+ * {@link ContextCustomizerFactory} for {@link SpringApplicationTest}.
  *
- * @author Phillip Webb
- * @see WebIntegrationTestContextCustomizer
+ * @author Andy Wilkinson
+ * @see SpringApplicationTestContextCustomizer
  */
-class WebIntegrationTestContextCustomizerFactory implements ContextCustomizerFactory {
+class SpringApplicationTestContextCustomizerFactory implements ContextCustomizerFactory {
 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		if (AnnotatedElementUtils.findMergedAnnotation(testClass,
-				WebIntegrationTest.class) != null) {
-			return new WebIntegrationTestContextCustomizer();
+				SpringApplicationTest.class) != null) {
+			return new SpringApplicationTestContextCustomizer();
 		}
 		return null;
 	}

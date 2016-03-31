@@ -19,7 +19,8 @@ package sample.metrics.opentsdb;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.test.context.web.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -29,7 +30,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@WebIntegrationTest(randomPort = true)
+@SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class SampleOpenTsdbExportApplicationTests {
 

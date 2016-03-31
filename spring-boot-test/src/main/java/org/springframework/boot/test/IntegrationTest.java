@@ -23,8 +23,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.core.annotation.AliasFor;
+import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.core.env.Environment;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 /**
  * Test class annotation signifying that the tests are "integration tests" and therefore
@@ -36,14 +41,18 @@ import org.springframework.core.env.Environment;
  *
  * @author Dave Syer
  * @see WebIntegrationTest
- * @deprecated since 1.4.0 in favor of
- * {@link org.springframework.boot.test.context.IntegrationTest}
+ * @deprecated since 1.4.0 in favor of {@link SpringApplicationTest}
  */
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@org.springframework.boot.test.context.IntegrationTest
+// Leave out the ServletTestExecutionListener because it only deals with Mock* servlet
+// stuff. A real embedded application will not need the mocks.
+@TestExecutionListeners(listeners = { IntegrationTestPropertiesListener.class,
+		DependencyInjectionTestExecutionListener.class,
+		DirtiesContextTestExecutionListener.class,
+		TransactionalTestExecutionListener.class, SqlScriptsTestExecutionListener.class })
 @Deprecated
 public @interface IntegrationTest {
 
@@ -52,7 +61,6 @@ public @interface IntegrationTest {
 	 * {@link Environment} before the test runs.
 	 * @return the environment properties
 	 */
-	@AliasFor(annotation = org.springframework.boot.test.context.IntegrationTest.class, attribute = "value")
 	String[] value() default {};
 
 }

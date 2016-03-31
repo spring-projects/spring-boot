@@ -26,15 +26,15 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.IntegrationTest;
 import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
@@ -45,8 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringApplicationConfiguration(TestConfiguration.class)
 @RunWith(SpringRunner.class)
-@WebAppConfiguration
-@IntegrationTest({ "server.servletPath:/spring/*", "server.port:0" })
+@SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "server.servletPath:/spring/*")
 @DirtiesContext
 public class RemappedErrorViewIntegrationTests {
 

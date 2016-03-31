@@ -54,21 +54,12 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 /**
  * A {@link ContextLoader} that can be used to test Spring Boot applications (those that
  * normally startup using {@link SpringApplication}). Although this loader can be used
- * directly, most test will instead want to use one of the following annotations:
- * <ul>
- * <li>{@link SpringApplicationTest @SpringApplicationTest} - For non-web applications, or
- * web-applications running under a mock servlet environment</li>
- * <li>{@link IntegrationTest @IntegrationTest} - To integration test non-web applications
- * </li>
- * <li>
- * {@link org.springframework.boot.test.context.web.WebIntegrationTest @WebIntegrationTest}
- * - To integration test web applications (i.e. listening on normal ports).</li>
- * </ul>
+ * directly, most test will instead want to use it with {@link SpringApplicationTest}.
+ * <p>
  * The loader supports both standard {@link MergedContextConfiguration} as well as
  * {@link WebMergedContextConfiguration}. If {@link WebMergedContextConfiguration} is used
  * the context will either use a mock servlet environment, or start the full embedded
- * servlet container (depending on the result of {@link #isIntegrationTest
- * isIntegrationTest(...)}).
+ * servlet container.
  * <p>
  * If {@code @ActiveProfiles} are provided in the test class they will be used to create
  * the application context.
@@ -77,8 +68,6 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @see SpringApplicationTest
- * @see IntegrationTest
- * @see org.springframework.boot.test.context.web.WebIntegrationTest
  */
 public class SpringApplicationContextLoader extends AbstractContextLoader {
 
@@ -86,8 +75,6 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 
 	static {
 		Set<String> annotations = new LinkedHashSet<String>();
-		annotations.add("org.springframework.boot.test.context.IntegrationTest");
-		annotations.add("org.springframework.boot.test.context.web.WebIntegrationTest");
 		annotations.add("org.springframework.boot.test.IntegrationTest");
 		annotations.add("org.springframework.boot.test.WebIntegrationTest");
 		INTEGRATION_TEST_ANNOTATIONS = Collections.unmodifiableSet(annotations);
@@ -110,8 +97,9 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 				application);
 		if (config instanceof WebMergedContextConfiguration) {
 			application.setWebEnvironment(true);
-			WebConfigurer configurer = new WebConfigurer(isIntegrationTest(config));
-			configurer.configure(config, application, initializers);
+			if (!isEmbeddedWebEnvironment(config)) {
+				new WebConfigurer().configure(config, application, initializers);
+			}
 		}
 		else {
 			application.setWebEnvironment(false);
@@ -154,18 +142,14 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		disableJmx(properties);
 		properties.putAll(TestPropertySourceUtils
 				.convertInlinedPropertiesToMap(config.getPropertySourceProperties()));
-		if (!isIntegrationTest(config)) {
-			properties.putAll(getDefaultEnvironmentProperties());
+		if (!isEmbeddedWebEnvironment(config)) {
+			properties.put("server.port", "-1");
 		}
 		return properties;
 	}
 
 	private void disableJmx(Map<String, Object> properties) {
 		properties.put("spring.jmx.enabled", "false");
-	}
-
-	private Map<String, String> getDefaultEnvironmentProperties() {
-		return Collections.singletonMap("server.port", "-1");
 	}
 
 	private void addProperties(ConfigurableEnvironment environment,
@@ -192,17 +176,16 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		return initializers;
 	}
 
-	/**
-	 * Return if the test is a full integration test or not. By default this method checks
-	 * for well known integration test annotations.
-	 * @param config the merged context configuration
-	 * @return if the test is an integration test
-	 */
-	protected boolean isIntegrationTest(MergedContextConfiguration config) {
+	private boolean isEmbeddedWebEnvironment(MergedContextConfiguration config) {
 		for (String annotation : INTEGRATION_TEST_ANNOTATIONS) {
 			if (AnnotatedElementUtils.isAnnotated(config.getTestClass(), annotation)) {
 				return true;
 			}
+		}
+		SpringApplicationTest annotation = AnnotatedElementUtils
+				.findMergedAnnotation(config.getTestClass(), SpringApplicationTest.class);
+		if (annotation != null && annotation.webEnvironment().isEmbedded()) {
+			return true;
 		}
 		return false;
 	}
@@ -255,20 +238,12 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 
 		private static final Class<GenericWebApplicationContext> WEB_CONTEXT_CLASS = GenericWebApplicationContext.class;
 
-		private final boolean integrationTest;
-
-		WebConfigurer(boolean integrationTest) {
-			this.integrationTest = integrationTest;
-		}
-
 		void configure(MergedContextConfiguration configuration,
 				SpringApplication application,
 				List<ApplicationContextInitializer<?>> initializers) {
-			if (!this.integrationTest) {
-				WebMergedContextConfiguration webConfiguration = (WebMergedContextConfiguration) configuration;
-				addMockServletContext(initializers, webConfiguration);
-				application.setApplicationContextClass(WEB_CONTEXT_CLASS);
-			}
+			WebMergedContextConfiguration webConfiguration = (WebMergedContextConfiguration) configuration;
+			addMockServletContext(initializers, webConfiguration);
+			application.setApplicationContextClass(WEB_CONTEXT_CLASS);
 		}
 
 		private void addMockServletContext(

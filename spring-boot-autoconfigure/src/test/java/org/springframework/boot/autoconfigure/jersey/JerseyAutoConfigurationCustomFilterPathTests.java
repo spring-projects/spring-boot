@@ -38,7 +38,8 @@ import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationCust
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.test.context.SpringApplicationConfiguration;
-import org.springframework.boot.test.context.web.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringApplicationConfiguration(Application.class)
-@WebIntegrationTest(randomPort = true, value = "spring.jersey.type=filter")
+@SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.type=filter")
 public class JerseyAutoConfigurationCustomFilterPathTests {
 
 	@Autowired
@@ -64,8 +65,8 @@ public class JerseyAutoConfigurationCustomFilterPathTests {
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity(
-				"/rest/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/rest/hello",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 

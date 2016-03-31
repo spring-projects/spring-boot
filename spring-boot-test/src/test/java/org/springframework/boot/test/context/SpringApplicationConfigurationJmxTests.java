@@ -36,8 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
+@SpringApplicationTest
 @SpringApplicationConfiguration(Config.class)
-@IntegrationTest
 public class SpringApplicationConfigurationJmxTests {
 
 	@Value("${spring.jmx.enabled}")

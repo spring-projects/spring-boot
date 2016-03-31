@@ -23,29 +23,29 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringApplicationIntegrationTestPropertyLocationTests.MoreConfig;
-import org.springframework.boot.test.context.SpringApplicationIntegrationTestTests.Config;
+import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
+import org.springframework.boot.test.context.SpringApplicationTestPropertyLocationTests.Config;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link IntegrationTest} with {@link TestPropertySource} locations.
+ * Tests for {@link SpringApplicationTest} with {@link TestPropertySource} locations.
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringApplicationConfiguration({ Config.class, MoreConfig.class })
-@WebAppConfiguration
-@IntegrationTest({ "server.port=0", "value1=123" })
+@SpringApplicationConfiguration(Config.class)
+@SpringApplicationTest(webEnvironment = WebEnvironment.NONE, properties = "value1=123")
 @TestPropertySource(properties = "value2=456", locations = "classpath:/test-property-source-annotation.properties")
-public class SpringApplicationIntegrationTestPropertyLocationTests {
+public class SpringApplicationTestPropertyLocationTests {
 
 	@Autowired
 	private Environment environment;
@@ -59,7 +59,7 @@ public class SpringApplicationIntegrationTestPropertyLocationTests {
 	}
 
 	@Configuration
-	static class MoreConfig {
+	static class Config {
 
 		@Value("${value1}")
 		private String value1;
@@ -75,6 +75,11 @@ public class SpringApplicationIntegrationTestPropertyLocationTests {
 			assertThat(this.value1).isEqualTo("123");
 			assertThat(this.value2).isEqualTo("456");
 			assertThat(this.annotationReferenced).isEqualTo("fromfile");
+		}
+
+		@Bean
+		public static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
+			return new PropertySourcesPlaceholderConfigurer();
 		}
 
 	}

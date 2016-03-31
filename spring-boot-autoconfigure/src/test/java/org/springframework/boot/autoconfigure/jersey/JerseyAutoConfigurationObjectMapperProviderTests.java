@@ -38,7 +38,8 @@ import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationObje
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.test.context.SpringApplicationConfiguration;
-import org.springframework.boot.test.context.web.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringApplicationConfiguration(Application.class)
-@WebIntegrationTest(randomPort = true)
+@SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class JerseyAutoConfigurationObjectMapperProviderTests {
 
 	@Autowired
@@ -64,8 +65,8 @@ public class JerseyAutoConfigurationObjectMapperProviderTests {
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> response = this.restTemplate.getForEntity(
-				"/rest/message", String.class);
+		ResponseEntity<String> response = this.restTemplate.getForEntity("/rest/message",
+				String.class);
 		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
 		assertThat("{\"subject\":\"Jersey\",\"body\":null}")
 				.isEqualTo(response.getBody());

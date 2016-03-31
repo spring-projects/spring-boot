@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.springframework.boot.test.context.web.WebIntegrationTest;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 

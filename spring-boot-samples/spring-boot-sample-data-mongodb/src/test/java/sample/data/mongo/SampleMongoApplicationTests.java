@@ -20,7 +20,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.test.context.IntegrationTest;
+import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
-@IntegrationTest
+@SpringApplicationTest
 public class SampleMongoApplicationTests {
 
 	@ClassRule

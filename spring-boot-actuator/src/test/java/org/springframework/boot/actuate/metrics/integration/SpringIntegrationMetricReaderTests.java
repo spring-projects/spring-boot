@@ -23,8 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetricReaderTests.TestConfiguration;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
-import org.springframework.boot.test.context.IntegrationTest;
 import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringApplicationConfiguration(TestConfiguration.class)
-@IntegrationTest("spring.jmx.enabled=true")
+@SpringApplicationTest("spring.jmx.enabled=true")
 @DirtiesContext
 public class SpringIntegrationMetricReaderTests {
 
