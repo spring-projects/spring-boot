@@ -48,13 +48,6 @@ def addStarterCrossLinks(String input) {
 	input.replaceAll('(spring-boot-starter[A-Za-z-]*)', '<<$1,`$1`>>')
 }
 
-def addBackTicksIfNecessary(String input) {
-	if (!input.contains('`')) {
-		return "`${input}`"
-	}
-	input
-}
-
 def getDependencies(def pom) {
 	dependencies = []
 	pom.dependencies.dependency.each { dependency ->

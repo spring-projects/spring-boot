@@ -556,20 +556,20 @@
 				<version>${cassandra-driver.version}</version>
 				<exclusions>
 					<exclusion>
-						<artifactId>slf4j-log4j12</artifactId>
 						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-log4j12</artifactId>
 					</exclusion>
 					<exclusion>
-						<artifactId>log4j</artifactId>
 						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
 					</exclusion>
 					<exclusion>
-						<artifactId>guava</artifactId>
 						<groupId>com.google.guava</groupId>
+						<artifactId>guava</artifactId>
 					</exclusion>
 					<exclusion>
-						<artifactId>netty-handler</artifactId>
 						<groupId>io.netty</groupId>
+						<artifactId>netty-handler</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>

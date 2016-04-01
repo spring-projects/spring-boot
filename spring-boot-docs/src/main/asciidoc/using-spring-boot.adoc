@@ -378,7 +378,7 @@ The following application starters are provided by Spring Boot under the
 include::../../../target/generated-resources/application-starters.adoc[]
 
 In addition to the application starters, the following starters can be used to add
-_<<production-ready-featyres.adoc#production-ready, production ready>>_ features:
+_<<production-ready-features.adoc#production-ready, production ready>>_ features:
 
 .Spring Boot production starters
 include::../../../target/generated-resources/production-starters.adoc[]
