@@ -1215,7 +1215,7 @@ root of the classpath, or in a location specified by the Spring `Environment` pr
 You can force Spring Boot to use a particular logging system using the
 `org.springframework.boot.logging.LoggingSystem` system property. The value should be
 the fully-qualified class name of a `LoggingSystem` implementation. You can also disable
-Spring Boot's logging configuration entirely by used a value of `none`.
+Spring Boot's logging configuration entirely by using a value of `none`.
 
 NOTE: Since logging is initialized *before* the `ApplicationContext` is created, it isn't
 possible to control logging from `@PropertySources` in Spring `@Configuration` files.
@@ -4359,7 +4359,7 @@ how your tests will run:
 
 * `MOCK` -- Loads a `WebApplicationContext` and provides a mock servlet environment.
   Embedded servlet containers are not started when using this annotation. If servlet
-  APIs are not on your classpath this mode will transparantly fallback to creating a
+  APIs are not on your classpath this mode will transparently fallback to creating a
   regular non-web `ApplicationContext`.
 * `RANDOM_PORT` -- Loads an `EmbeddedWebApplicationContext` and provides a real
   servlet environment. Embedded servlet containers are started and listening on a random
