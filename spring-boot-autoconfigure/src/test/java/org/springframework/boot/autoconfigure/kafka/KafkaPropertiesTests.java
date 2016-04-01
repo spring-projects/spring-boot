@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -31,8 +32,8 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.IntegrationTest;
 import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
@@ -52,13 +53,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(KafkaPropertiesTests.Config.class)
-@IntegrationTest({
+@SpringApplicationTest({
 	"spring.kafka.bootstrap-servers=foo:1234",
 	"spring.kafka.clientId=cid",
 	"spring.kafka.ssl-key-password=p1",
-	"spring.kafka.ssl-keystore-location=/tmp/foo",
+	"spring.kafka.ssl-keystore-location=classpath:ksLoc",
 	"spring.kafka.ssl-keystore-password=p2",
-	"spring.kafka.ssl-truststore-location=/tmp/bar",
+	"spring.kafka.ssl-truststore-location=classpath:tsLoc",
 	"spring.kafka.ssl-truststore-password=p3",
 
 	"spring.kafka.consumer.auto-commit-interval-ms=123",
@@ -80,9 +81,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 	"spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.LongSerializer",
 	"spring.kafka.producer.retries=2",
 	"spring.kafka.producer.ssl-key-password=p4",
-	"spring.kafka.producer.ssl-keystore-location=/tmp/fooP",
+	"spring.kafka.producer.ssl-keystore-location=classpath:ksLocP",
 	"spring.kafka.producer.ssl-keystore-password=p5",
-	"spring.kafka.producer.ssl-truststore-location=/tmp/barP",
+	"spring.kafka.producer.ssl-truststore-location=classpath:tsLocP",
 	"spring.kafka.producer.ssl-truststore-password=p6",
 	"spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.IntegerSerializer",
 
@@ -116,9 +117,11 @@ public class KafkaPropertiesTests {
 		assertThat(consumerProps.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))
 			.isEqualTo(Arrays.asList(new String[] { "foo:1234" }));
 		assertThat(consumerProps.get(SslConfigs.SSL_KEY_PASSWORD_CONFIG)).isEqualTo("p1");
-		assertThat(consumerProps.get(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG)).isEqualTo("/tmp/foo");
+		assertThat((String) consumerProps.get(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG))
+			.endsWith(File.separator + "ksLoc");
 		assertThat(consumerProps.get(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG)).isEqualTo("p2");
-		assertThat(consumerProps.get(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG)).isEqualTo("/tmp/bar");
+		assertThat((String) consumerProps.get(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG))
+			.endsWith(File.separator + "tsLoc");
 		assertThat(consumerProps.get(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG)).isEqualTo("p3");
 		// consumer
 		assertThat(consumerProps.get(ConsumerConfig.CLIENT_ID_CONFIG)).isEqualTo("ccid"); // override
@@ -148,9 +151,11 @@ public class KafkaPropertiesTests {
 		assertThat(producerProps.get(ProducerConfig.COMPRESSION_TYPE_CONFIG)).isEqualTo("gzip");
 		assertThat(producerProps.get(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG)).isEqualTo(LongSerializer.class);
 		assertThat(producerProps.get(SslConfigs.SSL_KEY_PASSWORD_CONFIG)).isEqualTo("p4");
-		assertThat(producerProps.get(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG)).isEqualTo("/tmp/fooP");
+		assertThat((String) producerProps.get(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG))
+			.endsWith(File.separator + "ksLocP");
 		assertThat(producerProps.get(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG)).isEqualTo("p5");
-		assertThat(producerProps.get(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG)).isEqualTo("/tmp/barP");
+		assertThat((String) producerProps.get(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG))
+			.endsWith(File.separator + "tsLocP");
 		assertThat(producerProps.get(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG)).isEqualTo("p6");
 		assertThat(producerProps.get(ProducerConfig.RETRIES_CONFIG)).isEqualTo(2);
 		assertThat(producerProps.get(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG)).isEqualTo(IntegerSerializer.class);
