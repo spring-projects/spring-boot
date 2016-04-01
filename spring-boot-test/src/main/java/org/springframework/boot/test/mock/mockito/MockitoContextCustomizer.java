@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -30,10 +31,10 @@ import org.springframework.test.context.MergedContextConfiguration;
  */
 class MockitoContextCustomizer implements ContextCustomizer {
 
-	private final Set<MockDefinition> definitions;
+	private final Set<Definition> definitions;
 
-	MockitoContextCustomizer(Set<MockDefinition> definitions) {
-		this.definitions = definitions;
+	MockitoContextCustomizer(Set<? extends Definition> definitions) {
+		this.definitions = new LinkedHashSet<Definition>(definitions);
 	}
 
 	@Override

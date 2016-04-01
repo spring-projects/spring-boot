@@ -38,10 +38,11 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  *
  * @author Phillip Webb
  */
-class MockitoInitializeTestExecutionListener extends AbstractTestExecutionListener {
+class MockitoTestExecutionListener extends AbstractTestExecutionListener {
 
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
+		System.out.println("Prepare");
 		if (hasMockitoAnnotations(testContext)) {
 			MockitoAnnotations.initMocks(testContext.getTestInstance());
 		}
@@ -55,18 +56,18 @@ class MockitoInitializeTestExecutionListener extends AbstractTestExecutionListen
 	}
 
 	private void injectFields(TestContext testContext) {
-		MockDefinitionsParser parser = new MockDefinitionsParser();
+		DefinitionsParser parser = new DefinitionsParser();
 		parser.parse(testContext.getTestClass());
 		if (!parser.getDefinitions().isEmpty()) {
 			injectFields(testContext, parser);
 		}
 	}
 
-	private void injectFields(TestContext testContext, MockDefinitionsParser parser) {
+	private void injectFields(TestContext testContext, DefinitionsParser parser) {
 		ApplicationContext applicationContext = testContext.getApplicationContext();
 		MockitoPostProcessor postProcessor = applicationContext
 				.getBean(MockitoPostProcessor.class);
-		for (MockDefinition definition : parser.getDefinitions()) {
+		for (Definition definition : parser.getDefinitions()) {
 			Field field = parser.getField(definition);
 			if (field != null) {
 				postProcessor.inject(field, testContext.getTestInstance(), definition);

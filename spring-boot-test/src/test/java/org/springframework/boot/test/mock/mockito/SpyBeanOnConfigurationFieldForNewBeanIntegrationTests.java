@@ -20,24 +20,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller;
-import org.springframework.boot.test.mock.mockito.example.FailingExampleService;
+import org.springframework.boot.test.mock.mockito.example.SimpleExampleService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 /**
- * Test {@link MockBean} on a field on a {@code @Configuration} class can be used to
- * replace existing beans.
+ * Test {@link SpyBean} on a field on a {@code @Configuration} class can be used to inject
+ * new spy instances.
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-public class OnConfigurationFieldForExistingBeanIntegrationTests {
+public class SpyBeanOnConfigurationFieldForNewBeanIntegrationTests {
 
 	@Autowired
 	private Config config;
@@ -46,17 +45,17 @@ public class OnConfigurationFieldForExistingBeanIntegrationTests {
 	private ExampleServiceCaller caller;
 
 	@Test
-	public void testMocking() throws Exception {
-		given(this.config.exampleService.greeting()).willReturn("Boot");
-		assertThat(this.caller.sayGreeting()).isEqualTo("I say Boot");
+	public void testSpying() throws Exception {
+		assertThat(this.caller.sayGreeting()).isEqualTo("I say simple");
+		verify(this.config.exampleService).greeting();
 	}
 
 	@Configuration
-	@Import({ ExampleServiceCaller.class, FailingExampleService.class })
+	@Import(ExampleServiceCaller.class)
 	static class Config {
 
-		@MockBean
-		private ExampleService exampleService;
+		@SpyBean
+		private SimpleExampleService exampleService;
 
 	}
 

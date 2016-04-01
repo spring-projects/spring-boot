@@ -31,26 +31,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Test {@link MockBean} on a configuration class can be used to replace existing beans.
+ * Test {@link MockBean} on a field on a {@code @Configuration} class can be used to
+ * replace existing beans.
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-public class OnConfigurationClassForExistingBeanIntegrationTests {
+public class MockBeanOnConfigurationFieldForExistingBeanIntegrationTests {
+
+	@Autowired
+	private Config config;
 
 	@Autowired
 	private ExampleServiceCaller caller;
 
 	@Test
 	public void testMocking() throws Exception {
-		given(this.caller.getService().greeting()).willReturn("Boot");
+		given(this.config.exampleService.greeting()).willReturn("Boot");
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say Boot");
 	}
 
 	@Configuration
-	@MockBean(ExampleService.class)
 	@Import({ ExampleServiceCaller.class, FailingExampleService.class })
 	static class Config {
+
+		@MockBean
+		private ExampleService exampleService;
 
 	}
 

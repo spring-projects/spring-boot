@@ -37,13 +37,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link MockitoInitializeTestExecutionListener}.
+ * Tests for {@link MockitoTestExecutionListener}.
  *
  * @author Phillip Webb
  */
 public class MockitoInitializeTestExecutionListenerTests {
 
-	private MockitoInitializeTestExecutionListener listener = new MockitoInitializeTestExecutionListener();
+	private MockitoTestExecutionListener listener = new MockitoTestExecutionListener();
 
 	@Mock
 	private ApplicationContext applicationContext;

@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.mock.mockito;
-
-import org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+package org.springframework.boot.test.mock.mockito.example;
 
 /**
- * Config for {@link OnTestFieldForExistingBeanIntegrationTests} and
- * {@link OnTestFieldForExistingBeanCacheIntegrationTests}. Extracted to a shared config
- * to trigger caching.
+ * Example service implementation for spy tests.
  *
  * @author Phillip Webb
  */
-@Configuration
-@Import(ExampleServiceCaller.class)
-public class OnTestFieldForExistingBeanConfig {
+public class SimpleExampleService extends RealExampleService {
+
+	public SimpleExampleService() {
+		super("simple");
+	}
 
 }

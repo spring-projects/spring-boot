@@ -36,7 +36,7 @@ import static org.mockito.BDDMockito.given;
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-public class OnConfigurationFieldForNewBeanIntegrationTests {
+public class MockBeanOnConfigurationFieldForNewBeanIntegrationTests {
 
 	@Autowired
 	private Config config;

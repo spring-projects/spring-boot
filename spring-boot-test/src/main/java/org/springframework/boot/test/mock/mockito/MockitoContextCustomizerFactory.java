@@ -34,7 +34,7 @@ class MockitoContextCustomizerFactory implements ContextCustomizerFactory {
 			List<ContextConfigurationAttributes> configAttributes) {
 		// We gather the explicit mock definitions here since they form part of the
 		// MergedContextConfiguration key. Different mocks need to have a different key
-		MockDefinitionsParser parser = new MockDefinitionsParser();
+		DefinitionsParser parser = new DefinitionsParser();
 		parser.parse(testClass);
 		return new MockitoContextCustomizer(parser.getDefinitions());
 	}

@@ -33,24 +33,25 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
 import org.springframework.util.StringUtils;
 
 /**
- * Parser to create {@link MockDefinition} from {@link MockBean @MockBean} annotations
- * declared on or in a class.
+ * Parser to create {@link MockDefinition} and {@link SpyDefinition} instances from
+ * {@link MockBean @MockBean} and {@link SpyBean @SpyBean} annotations declared on or in a
+ * class.
  *
  * @author Phillip Webb
  */
-class MockDefinitionsParser {
+class DefinitionsParser {
 
-	private final Set<MockDefinition> definitions;
+	private final Set<Definition> definitions;
 
-	private final Map<MockDefinition, Field> fields;
+	private final Map<Definition, Field> definitionFields;
 
-	MockDefinitionsParser() {
-		this(Collections.<MockDefinition>emptySet());
+	DefinitionsParser() {
+		this(Collections.<Definition>emptySet());
 	}
 
-	MockDefinitionsParser(Collection<? extends MockDefinition> existing) {
-		this.definitions = new LinkedHashSet<MockDefinition>();
-		this.fields = new LinkedHashMap<MockDefinition, Field>();
+	DefinitionsParser(Collection<? extends Definition> existing) {
+		this.definitions = new LinkedHashSet<Definition>();
+		this.definitionFields = new LinkedHashMap<Definition, Field>();
 		if (existing != null) {
 			this.definitions.addAll(existing);
 		}
@@ -72,12 +73,16 @@ class MockDefinitionsParser {
 	private void parseElement(AnnotatedElement element) {
 		for (MockBean annotation : AnnotationUtils.getRepeatableAnnotations(element,
 				MockBean.class, MockBeans.class)) {
-			parseAnnotation(annotation, element);
+			parseMockBeanAnnotation(annotation, element);
+		}
+		for (SpyBean annotation : AnnotationUtils.getRepeatableAnnotations(element,
+				SpyBean.class, SpyBeans.class)) {
+			parseSpyBeanAnnotation(annotation, element);
 		}
 	}
 
-	private void parseAnnotation(MockBean annotation, AnnotatedElement element) {
-		Set<Class<?>> classesToMock = getOrDeduceClassesToMock(annotation, element);
+	private void parseMockBeanAnnotation(MockBean annotation, AnnotatedElement element) {
+		Set<Class<?>> classesToMock = getOrDeduceClasses(element, annotation.value());
 		Assert.state(!classesToMock.isEmpty(),
 				"Unable to deduce class to mock from " + element);
 		if (StringUtils.hasLength(annotation.name())) {
@@ -88,30 +93,50 @@ class MockDefinitionsParser {
 			MockDefinition definition = new MockDefinition(annotation.name(), classToMock,
 					annotation.extraInterfaces(), annotation.answer(),
 					annotation.serializable(), annotation.reset());
-			boolean isNewDefinition = this.definitions.add(definition);
-			Assert.state(isNewDefinition, "Duplicate mock definition " + definition);
-			if (element instanceof Field) {
-				this.fields.put(definition, (Field) element);
-			}
+			addDefinition(element, definition, "mock");
 		}
 	}
 
-	private Set<Class<?>> getOrDeduceClassesToMock(MockBean annotation,
-			AnnotatedElement element) {
+	private void parseSpyBeanAnnotation(SpyBean annotation, AnnotatedElement element) {
+		Set<Class<?>> classesToSpy = getOrDeduceClasses(element, annotation.value());
+		Assert.state(!classesToSpy.isEmpty(),
+				"Unable to deduce class to spy from " + element);
+		if (StringUtils.hasLength(annotation.name())) {
+			Assert.state(classesToSpy.size() == 1,
+					"The name attribute can only be used when spying a single class");
+		}
+		for (Class<?> classToSpy : classesToSpy) {
+			SpyDefinition definition = new SpyDefinition(annotation.name(), classToSpy,
+					annotation.reset());
+			addDefinition(element, definition, "spy");
+		}
+	}
+
+	private void addDefinition(AnnotatedElement element, Definition definition,
+			String type) {
+		boolean isNewDefinition = this.definitions.add(definition);
+		Assert.state(isNewDefinition, "Duplicate " + type + " definition " + definition);
+		if (element instanceof Field) {
+			Field field = (Field) element;
+			this.definitionFields.put(definition, field);
+		}
+	}
+
+	private Set<Class<?>> getOrDeduceClasses(AnnotatedElement element, Class<?>[] value) {
 		Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
-		classes.addAll(Arrays.asList(annotation.value()));
+		classes.addAll(Arrays.asList(value));
 		if (classes.isEmpty() && element instanceof Field) {
 			classes.add(((Field) element).getType());
 		}
 		return classes;
 	}
 
-	public Set<MockDefinition> getDefinitions() {
+	public Set<Definition> getDefinitions() {
 		return Collections.unmodifiableSet(this.definitions);
 	}
 
-	public Field getField(MockDefinition definition) {
-		return this.fields.get(definition);
+	public Field getField(Definition definition) {
+		return this.definitionFields.get(definition);
 	}
 
 }

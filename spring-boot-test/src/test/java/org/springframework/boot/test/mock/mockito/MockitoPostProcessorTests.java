@@ -27,8 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Test for {@link MockitoPostProcessor}. See also the integration tests in the
- * {@code runner} package.
+ * Test for {@link MockitoPostProcessor}. See also the integration tests.
  *
  * @author Phillip Webb
  */

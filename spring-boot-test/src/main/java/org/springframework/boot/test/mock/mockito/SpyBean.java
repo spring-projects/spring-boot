@@ -24,29 +24,28 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
-import org.mockito.MockSettings;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- * Annotation that can be used to add mocks to a Spring {@link ApplicationContext}. Can be
- * used as a class level annotation or on fields in either {@code @Configuration} classes,
- * or test classes that are {@link RunWith @RunWith} the {@link SpringRunner}.
+ * Annotation that can be used to appy Mockto spies to a Spring
+ * {@link ApplicationContext}. Can be used as a class level annotation or on fields in
+ * either {@code @Configuration} classes, or test classes that are
+ * {@link RunWith @RunWith} the {@link SpringRunner}.
  * <p>
- * Mocks can be registered by type or by {@link #name() bean name}. Any existing single
- * bean of the same type defined in the context will be replaced by the mock, if no
- * existing bean is defined a new one will be added.
+ * Spies can be applied by type or by {@link #name() bean name}. All beans in the context
+ * of the same type will be wrapped with the spy, if no existing bean is defined a new one
+ * will be added.
  * <p>
- * When {@code @MockBean} is used on a field, as well as being registered in the
- * application context, the mock will also be injected into the field. Typical usage might
+ * When {@code @SpyBean} is used on a field, as well as being registered in the
+ * application context, the spy will also be injected into the field. Typical usage might
  * be: <pre class="code">
  * &#064;RunWith(SpringRunner.class)
  * public class ExampleTests {
  *
- *     &#064;MockBean
+ *     &#064;SpyBean
  *     private ExampleService service;
  *
  *     &#064;Autowired
@@ -54,9 +53,9 @@ import org.springframework.test.context.junit4.SpringRunner;
  *
  *     &#064;Test
  *     public void testUserOfService() {
- *         given(this.service.greet()).willReturn("Hello");
  *         String actual = this.userOfService.makeUse();
  *         assertEquals("Was: Hello", actual);
+ *         verify(this.service).greet();
  *     }
  *
  *     &#064;Configuration
@@ -69,7 +68,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * </pre>
  * <p>
  * This annotation is {@code @Repeatable} and may be specified multiple times when working
- * with Java 8 or contained within an {@link MockBeans @MockBeans} annotation.
+ * with Java 8 or contained within an {@link SpyBeans @SpyBeans} annotation.
  *
  * @author Phillip Webb
  * @since 1.4.0
@@ -78,19 +77,18 @@ import org.springframework.test.context.junit4.SpringRunner;
 @Target({ ElementType.TYPE, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Repeatable(MockBeans.class)
-public @interface MockBean {
+@Repeatable(SpyBeans.class)
+public @interface SpyBean {
 
 	/**
-	 * The name of the bean to register or replace. If not specified the name will either
-	 * be generated or, if the mock replaces an existing bean, the existing name will be
-	 * used.
+	 * The name of the bean to spy. If not specified the name will either be generated or,
+	 * if the spy is for an existing bean, the existing name will be used.
 	 * @return the name of the bean
 	 */
 	String name() default "";
 
 	/**
-	 * The classes to mock. This is an alias of {@link #classes()} which can be used for
+	 * The classes to spy. This is an alias of {@link #classes()} which can be used for
 	 * brevity if no other attributes are defined. See {@link #classes()} for details.
 	 * @return the classes to mock
 	 */
@@ -98,9 +96,8 @@ public @interface MockBean {
 	Class<?>[] value() default {};
 
 	/**
-	 * The classes to mock. Each class specified here will result in a mock being created
-	 * and registered with the application context. Classes can be omitted when the
-	 * annotation is used on a field.
+	 * The classes to spy. Each class specified here will result in a spy being applied.
+	 * Classes can be omitted when the annotation is used on a field.
 	 * <p>
 	 * When {@code @MockBean} also defines a {@code name} this attribute can only contain
 	 * a single value.
@@ -113,28 +110,8 @@ public @interface MockBean {
 	Class<?>[] classes() default {};
 
 	/**
-	 * Any extra interfaces that should also be declared on the mock. See
-	 * {@link MockSettings#extraInterfaces(Class...)} for details.
-	 * @return any extra interfaces
-	 */
-	Class<?>[] extraInterfaces() default {};
-
-	/**
-	 * The {@link Answers} type to use on the mock.
-	 * @return the answer type
-	 */
-	Answers answer() default Answers.RETURNS_DEFAULTS;
-
-	/**
-	 * If the generated mock is serializable. See {@link MockSettings#serializable()} for
-	 * details.
-	 * @return if the mock is serializable
-	 */
-	boolean serializable() default false;
-
-	/**
-	 * The reset mode to apply to the mock bean. The default is {@link MockReset#AFTER}
-	 * meaning that mocks are automatically reset after each test method is invoked.
+	 * The reset mode to apply to the spied bean. The default is {@link MockReset#AFTER}
+	 * meaning that spies are automatically reset after each test method is invoked.
 	 * @return the reset mode
 	 */
 	MockReset reset() default MockReset.AFTER;
