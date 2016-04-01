@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -71,7 +72,7 @@ public class SpringBootJoranConfiguratorTests {
 	@After
 	public void reset() {
 		this.context.stop();
-		BasicConfigurator.configureDefaultContext();
+		new BasicConfigurator().configure((LoggerContext) LoggerFactory.getILoggerFactory());
 	}
 
 	@Test

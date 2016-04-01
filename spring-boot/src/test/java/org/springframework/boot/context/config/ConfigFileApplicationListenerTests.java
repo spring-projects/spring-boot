@@ -95,7 +95,7 @@ public class ConfigFileApplicationListenerTests {
 		LoggerContext loggerContext = ((Logger) LoggerFactory.getLogger(getClass()))
 				.getLoggerContext();
 		loggerContext.reset();
-		BasicConfigurator.configure(loggerContext);
+		new BasicConfigurator().configure(loggerContext);
 	}
 
 	@After

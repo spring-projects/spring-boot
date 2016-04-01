@@ -96,7 +96,8 @@ public class IntegrationAutoConfigurationTests {
 				"org.springframework.integration.monitor");
 	}
 
-	private static void assertDomains(MBeanServer mBeanServer, boolean expected, String... domains) {
+	private static void assertDomains(MBeanServer mBeanServer, boolean expected,
+			String... domains) {
 		List<String> actual = Arrays.asList(mBeanServer.getDomains());
 		for (String domain : domains) {
 			assertThat(actual.contains(domain)).isEqualTo(expected);
