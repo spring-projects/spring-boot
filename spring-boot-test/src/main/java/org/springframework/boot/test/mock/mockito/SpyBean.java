@@ -30,7 +30,7 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- * Annotation that can be used to appy Mockto spies to a Spring
+ * Annotation that can be used to apply Mockito spies to a Spring
  * {@link ApplicationContext}. Can be used as a class level annotation or on fields in
  * either {@code @Configuration} classes, or test classes that are
  * {@link RunWith @RunWith} the {@link SpringRunner}.
