@@ -37,7 +37,7 @@ import org.springframework.test.web.servlet.MvcResult;
  * @author Phillip Webb
  * @since 1.4.0
  * @see MockMvcAutoConfiguration
- * @see SpringBootMockMvcConfigurer
+ * @see SpringBootMockMvcBuilderCustomizer
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
