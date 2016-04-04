@@ -7,4 +7,5 @@ org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCus
 # Test Execution Listeners
 org.springframework.test.context.TestExecutionListener=\
 org.springframework.boot.test.autoconfigure.AutoConfigureReportTestExecutionListener,\
-org.springframework.boot.test.autoconfigure.json.JsonTesterInitializationTestExecutionListener
+org.springframework.boot.test.autoconfigure.json.JsonTesterInitializationTestExecutionListener,\
+org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener
