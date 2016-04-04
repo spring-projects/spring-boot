@@ -126,8 +126,8 @@ public class DataSourceAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(NamedParameterJdbcOperations.class)
-		public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
-			return new NamedParameterJdbcTemplate(this.dataSource);
+		public NamedParameterJdbcTemplate namedParameterJdbcTemplate(JdbcTemplate jdbcTemplate) {
+			return new NamedParameterJdbcTemplate(jdbcTemplate);
 		}
 	}
 
