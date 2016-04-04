@@ -73,6 +73,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Eddú Meléndez
  */
 public class ConfigFileApplicationListenerTests {
 
@@ -527,6 +528,39 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(names).contains(
 				"applicationConfig: [classpath:/testsetprofiles.yml]#dev",
 				"applicationConfig: [classpath:/testsetprofiles.yml]");
+	}
+
+	@Test
+	public void yamlSetsMultiProfiles() throws Exception {
+		this.initializer.setSearchNames("testsetmultiprofiles");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles()).containsExactly("dev", "healthcheck");
+		String property = this.environment.getProperty("my.property");
+		String property2 = this.environment.getProperty("my.property2");
+		assertThat(property).isEqualTo("fromdevprofile");
+		assertThat(property2).isEqualTo("fromhealthcheckprofile");
+		ConfigurationPropertySources propertySource = (ConfigurationPropertySources) this.environment
+				.getPropertySources()
+				.get(ConfigFileApplicationListener.APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME);
+		Collection<org.springframework.core.env.PropertySource<?>> sources = propertySource
+				.getSource();
+		assertThat(sources).hasSize(3);
+		List<String> names = new ArrayList<String>();
+		for (org.springframework.core.env.PropertySource<?> source : sources) {
+			if (source instanceof EnumerableCompositePropertySource) {
+				for (org.springframework.core.env.PropertySource<?> nested : ((EnumerableCompositePropertySource) source)
+						.getSource()) {
+					names.add(nested.getName());
+				}
+			}
+			else {
+				names.add(source.getName());
+			}
+		}
+		assertThat(names).contains(
+				"applicationConfig: [classpath:/testsetmultiprofiles.yml]#healthcheck",
+				"applicationConfig: [classpath:/testsetmultiprofiles.yml]#dev",
+				"applicationConfig: [classpath:/testsetmultiprofiles.yml]");
 	}
 
 	@Test
