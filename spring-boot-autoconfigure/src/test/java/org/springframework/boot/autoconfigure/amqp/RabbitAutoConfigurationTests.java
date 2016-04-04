@@ -37,6 +37,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.support.ValueExpression;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -89,18 +90,24 @@ public class RabbitAutoConfigurationTests {
 		assertThat(connectionFactory.getHost()).isEqualTo("localhost");
 		assertThat(this.context.containsBean("rabbitListenerContainerFactory"))
 				.as("Listener container factory should be created by default").isTrue();
+		assertThat(connectionFactory.isPublisherConfirms()).isFalse();
+		assertThat(connectionFactory.isPublisherReturns()).isFalse();
 	}
 
 	@Test
 	public void testConnectionFactoryWithOverrides() {
 		load(TestConfiguration.class, "spring.rabbitmq.host:remote-server",
 				"spring.rabbitmq.port:9000", "spring.rabbitmq.username:alice",
-				"spring.rabbitmq.password:secret", "spring.rabbitmq.virtual_host:/vhost");
+				"spring.rabbitmq.password:secret", "spring.rabbitmq.virtual_host:/vhost",
+				"spring.rabbitmq.publisherConfirms:true",
+				"spring.rabbitmq.publisherReturns:true");
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
 		assertThat(connectionFactory.getHost()).isEqualTo("remote-server");
 		assertThat(connectionFactory.getPort()).isEqualTo(9000);
 		assertThat(connectionFactory.getVirtualHost()).isEqualTo("/vhost");
+		assertThat(connectionFactory.isPublisherConfirms()).isTrue();
+		assertThat(connectionFactory.isPublisherReturns()).isTrue();
 	}
 
 	@Test
@@ -170,6 +177,33 @@ public class RabbitAutoConfigurationTests {
 		assertThat(backOffPolicy.getInitialInterval()).isEqualTo(2000);
 		assertThat(backOffPolicy.getMultiplier()).isEqualTo(1.5);
 		assertThat(backOffPolicy.getMaxInterval()).isEqualTo(5000);
+	}
+
+	@Test
+	public void testRabbitTemplateMandatoryDefault() {
+		load(TestConfiguration.class);
+		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitTemplate);
+		assertThat(((ValueExpression<?>) dfa.getPropertyValue("mandatoryExpression"))
+				.getValue()).isEqualTo(false);
+	}
+
+	@Test
+	public void testRabbitTemplateMandatoryOverride() {
+		load(TestConfiguration.class, "spring.rabbitmq.template.mandatory:true");
+		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitTemplate);
+		assertThat(((ValueExpression<?>) dfa.getPropertyValue("mandatoryExpression"))
+				.getValue()).isEqualTo(true);
+	}
+
+	@Test
+	public void testRabbitTemplateMandatoryPublisherReturns() {
+		load(TestConfiguration.class, "spring.rabbitmq.publisherReturns:true");
+		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitTemplate);
+		assertThat(((ValueExpression<?>) dfa.getPropertyValue("mandatoryExpression"))
+				.getValue()).isEqualTo(true);
 	}
 
 	@Test
