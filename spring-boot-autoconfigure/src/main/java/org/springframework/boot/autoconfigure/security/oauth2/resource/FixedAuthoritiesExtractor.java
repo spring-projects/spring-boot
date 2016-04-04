@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +48,40 @@ public class FixedAuthoritiesExtractor implements AuthoritiesExtractor {
 	}
 
 	private String asAuthorities(Object object) {
+		List<Object> authorities = new ArrayList<>();
 		if (object instanceof Collection) {
-			return StringUtils.collectionToCommaDelimitedString((Collection<?>) object);
+			Collection<?> collection = (Collection<?>) object;
+			object = collection.toArray(new Object[0]);
 		}
 		if (ObjectUtils.isArray(object)) {
-			return StringUtils.arrayToCommaDelimitedString((Object[]) object);
+			Object[] array = (Object[]) object;
+			for (Object value : array) {
+				if (value instanceof String) {
+					authorities.add(value);
+				}
+				else if (value instanceof Map) {
+					Map<?, ?> map = (Map<?, ?>) value;
+					if (map.size() == 1) {
+						authorities.add(map.values().iterator().next());
+					}
+					else if (map.containsKey("authority")) {
+						authorities.add(map.get("authority"));
+					}
+					else if (map.containsKey("role")) {
+						authorities.add(map.get("role"));
+					}
+					else if (map.containsKey("value")) {
+						authorities.add(map.get("value"));
+					}
+					else {
+						authorities.add(map);
+					}
+				}
+				else {
+					authorities.add(value);
+				}
+			}
+			return StringUtils.collectionToCommaDelimitedString(authorities);
 		}
 		return object.toString();
 	}
