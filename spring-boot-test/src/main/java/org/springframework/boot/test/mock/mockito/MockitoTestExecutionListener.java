@@ -42,7 +42,6 @@ class MockitoTestExecutionListener extends AbstractTestExecutionListener {
 
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
-		System.out.println("Prepare");
 		if (hasMockitoAnnotations(testContext)) {
 			MockitoAnnotations.initMocks(testContext.getTestInstance());
 		}
