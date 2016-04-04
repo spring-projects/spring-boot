@@ -259,6 +259,14 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void testCustomizeTomcatMinSpareThreads() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.min-spare-threads", "10");
+		bindProperties(map);
+		assertThat(this.properties.getTomcat().getMinSpareThreads()).isEqualTo(10);
+	}
+
+	@Test
 	public void customizeTomcatDisplayName() throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.display-name", "MyBootApp");
