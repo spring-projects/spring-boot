@@ -91,7 +91,7 @@ public class FixedAuthoritiesExtractorTests {
 
 	@Test
 	public void authoritiesAsListOfMapsWithMultipleNonStandardKeys() {
-		Map<String, String> map = new HashMap<>();
+		Map<String, String> map = new HashMap<String, String>();
 		map.put("any", "ROLE_ADMIN");
 		map.put("foo", "bar");
 		this.map.put("authorities", Arrays.asList(map));
