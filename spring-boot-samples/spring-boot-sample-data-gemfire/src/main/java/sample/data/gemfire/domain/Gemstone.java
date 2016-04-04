@@ -89,7 +89,7 @@ public class Gemstone implements Serializable {
 	@Override
 	public String toString() {
 		return String.format("{ @type = %1$s, id = %2$d, name = %3$s }",
-				getClass().getName(), getId(), getName());
+			getClass().getName(), getId(), getName());
 	}
 
 }

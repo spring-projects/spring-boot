@@ -19,15 +19,14 @@ package sample.data.gemfire.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
-
-import sample.data.gemfire.domain.Gemstone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import sample.data.gemfire.domain.Gemstone;
 
 /**
  * The GemstoneServiceImpl class is a Service object implementing the GemstoneService
@@ -40,17 +39,17 @@ import org.springframework.util.Assert;
 public class GemstoneServiceImpl implements GemstoneService {
 
 	protected static final List<String> APPROVED_GEMS = new ArrayList<String>(
-			Arrays.asList("ALEXANDRITE", "AQUAMARINE", "DIAMOND", "OPAL", "PEARL", "RUBY",
-					"SAPPHIRE", "SPINEL", "TOPAZ"));
+		Arrays.asList("ALEXANDRITE", "AQUAMARINE", "DIAMOND", "OPAL", "PEARL", "RUBY",
+			"SAPPHIRE", "SPINEL", "TOPAZ"));
 
 	@Autowired
-	private GemstoneRepository gemstoneRepo;
+	@SuppressWarnings("unused")
+	private GemstoneRepository gemstoneRepository;
 
 	@PostConstruct
 	public void init() {
-		Assert.notNull(this.gemstoneRepo,
-				"A reference to the 'GemstoneRepository' was not properly configured!");
-		System.out.printf("%1$s initialized!%n", getClass().getSimpleName());
+		Assert.notNull(gemstoneRepository, "'gemstoneRepository' was not properly initialized");
+		System.out.printf("[%1$s] initialized!%n", getClass().getSimpleName());
 	}
 
 	/**
@@ -62,7 +61,7 @@ public class GemstoneServiceImpl implements GemstoneService {
 	@Override
 	@Transactional(readOnly = true)
 	public long count() {
-		return this.gemstoneRepo.count();
+		return this.gemstoneRepository.count();
 	}
 
 	/**
@@ -75,8 +74,8 @@ public class GemstoneServiceImpl implements GemstoneService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Gemstone get(final Long id) {
-		return this.gemstoneRepo.findOne(id);
+	public Gemstone get(Long id) {
+		return this.gemstoneRepository.findOne(id);
 	}
 
 	/**
@@ -89,8 +88,8 @@ public class GemstoneServiceImpl implements GemstoneService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Gemstone get(final String name) {
-		return this.gemstoneRepo.findByName(name);
+	public Gemstone get(String name) {
+		return this.gemstoneRepository.findByName(name);
 	}
 
 	/**
@@ -105,7 +104,7 @@ public class GemstoneServiceImpl implements GemstoneService {
 	@Override
 	@Transactional(readOnly = true)
 	public Iterable<Gemstone> list() {
-		return this.gemstoneRepo.findAll();
+		return this.gemstoneRepository.findAll();
 	}
 
 	/**
@@ -118,37 +117,36 @@ public class GemstoneServiceImpl implements GemstoneService {
 	 */
 	@Override
 	@Transactional
-	public Gemstone save(final Gemstone gemstone) {
+	public Gemstone save(Gemstone gemstone) {
 		Assert.notNull(gemstone, "The Gemstone to save must not be null!");
 		Assert.notNull(gemstone.getName(), "The name of the Gemstone must be specified!");
 
-		// NOTE deliberately (naively) validate the Gemstone after mutating data access in
-		// GemFire rather than before
-		// to demonstrate transactions in GemFire.
-		Gemstone savedGemstone = validate(this.gemstoneRepo.save(gemstone));
+		// NOTE deliberately (& naively) validate the Gemstone after mutating data access in
+		// GemFire rather than before to demonstrate transactions in GemFire.
+		Gemstone savedGemstone = validate(this.gemstoneRepository.save(gemstone));
 
-		Assert.state(savedGemstone.equals(get(gemstone.getId())),
-				String.format(
-						"Failed to find Gemstone (%1$s) in GemFire's Cache Region 'Gemstones'!",
-						gemstone));
+		Assert.state(savedGemstone.equals(get(gemstone.getId())), String.format(
+			"Failed to find Gemstone (%1$s) in GemFire's Cache Region 'Gemstones'!",
+				gemstone));
 
-		System.out.printf("Saved Gemstone (%1$s)%n", savedGemstone.getName());
+		System.out.printf("Saved Gemstone [%1$s]%n", savedGemstone.getName());
 
 		return gemstone;
 	}
 
-	private Gemstone validate(final Gemstone gemstone) {
+	Gemstone validate(Gemstone gemstone) {
 		if (!APPROVED_GEMS.contains(gemstone.getName().toUpperCase())) {
-			// NOTE if the Gemstone is not valid, blow chunks (should cause transaction to
-			// rollback in GemFire)!
-			System.err.printf("Illegal Gemstone (%1$s)!%n", gemstone.getName());
+			// NOTE if the Gemstone is not valid, throw error...
+			// Should cause transaction to rollback in GemFire!
+			System.err.printf("Illegal Gemstone [%1$s]!%n", gemstone.getName());
 			throw new IllegalGemstoneException(
-					String.format("'%1$s' is not a valid Gemstone!", gemstone.getName()));
+					String.format("[%1$s] is not a valid Gemstone!", gemstone.getName()));
 		}
 
 		return gemstone;
 	}
 
+	@SuppressWarnings("unused")
 	public static final class IllegalGemstoneException extends IllegalArgumentException {
 
 		public IllegalGemstoneException() {
