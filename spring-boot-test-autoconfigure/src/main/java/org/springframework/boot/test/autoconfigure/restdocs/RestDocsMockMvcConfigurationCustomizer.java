@@ -32,7 +32,7 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentationConfigurer;
 public interface RestDocsMockMvcConfigurationCustomizer {
 
 	/**
-	 * Customize the given {@configurer}.
+	 * Customize the given {@code configurer}.
 	 * @param configurer the configurer
 	 */
 	void customize(MockMvcRestDocumentationConfigurer configurer);
