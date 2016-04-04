@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -41,6 +42,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -53,6 +55,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Josh Long
  * @author Manuel Doninger
+ * @author Quinten De Swaef
  */
 @Configuration
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
@@ -85,8 +88,9 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 
 	private final DataSource dataSource;
 
-	public HibernateJpaAutoConfiguration(JpaProperties properties,
-			DataSource dataSource) {
+	public HibernateJpaAutoConfiguration(JpaProperties properties, DataSource dataSource,
+			ObjectProvider<PersistenceUnitManager> persistenceUnitManagerProvider) {
+		super(properties, dataSource, persistenceUnitManagerProvider);
 		this.properties = properties;
 		this.dataSource = dataSource;
 	}

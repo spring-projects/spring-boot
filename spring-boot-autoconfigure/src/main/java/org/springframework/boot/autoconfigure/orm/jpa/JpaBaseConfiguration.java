@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
@@ -57,6 +58,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Phillip Webb
  * @author Dave Syer
  * @author Oliver Gierke
+ * @author Quinten De Swaef
  */
 @EnableConfigurationProperties(JpaProperties.class)
 @Import(DataSourceInitializedPublisher.Registrar.class)
@@ -66,14 +68,18 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	private ConfigurableListableBeanFactory beanFactory;
 
-	@Autowired
 	private DataSource dataSource;
 
-	@Autowired(required = false)
 	private PersistenceUnitManager persistenceUnitManager;
 
-	@Autowired
 	private JpaProperties jpaProperties;
+
+	JpaBaseConfiguration(JpaProperties jpaProperties, DataSource dataSource,
+			ObjectProvider<PersistenceUnitManager> persistenceUnitManagerProvider) {
+		this.jpaProperties = jpaProperties;
+		this.dataSource = dataSource;
+		this.persistenceUnitManager = persistenceUnitManagerProvider.getIfAvailable();
+	}
 
 	@Autowired(required = false)
 	private JtaTransactionManager jtaTransactionManager;
