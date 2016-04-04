@@ -16,7 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -35,6 +36,7 @@ import org.springframework.web.context.WebApplicationContext;
  * Auto-configuration for {@link MockMvc}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see ImportWebMvcAutoConfiguration
  */
 @Configuration
@@ -43,20 +45,27 @@ import org.springframework.web.context.WebApplicationContext;
 @EnableConfigurationProperties
 class MockMvcAutoConfiguration {
 
-	@Autowired
-	private WebApplicationContext context;
+	private final WebApplicationContext context;
+
+	MockMvcAutoConfiguration(WebApplicationContext context) {
+		this.context = context;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(MockMvcBuilder.class)
-	public DefaultMockMvcBuilder mockMvcBuilder() {
-		return MockMvcBuilders.webAppContextSetup(this.context)
-				.apply(mockMvcConfigurer());
+	public DefaultMockMvcBuilder mockMvcBuilder(
+			List<MockMvcBuilderCustomizer> customizers) {
+		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.context);
+		for (MockMvcBuilderCustomizer customizer : customizers) {
+			customizer.customize(builder);
+		}
+		return builder;
 	}
 
 	@Bean
 	@ConfigurationProperties("spring.test.mockmvc")
-	public SpringBootMockMvcConfigurer mockMvcConfigurer() {
-		return new SpringBootMockMvcConfigurer(this.context);
+	public SpringBootMockMvcBuilderCustomizer springBootMockMvcBuilderCustomizer() {
+		return new SpringBootMockMvcBuilderCustomizer(this.context);
 	}
 
 	@Bean

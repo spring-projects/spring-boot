@@ -24,22 +24,21 @@ import org.springframework.boot.context.embedded.DelegatingFilterProxyRegistrati
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.ServletContextInitializerBeans;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.ConfigurableMockMvcBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcConfigurer;
 import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * {@link MockMvcConfigurer} for a typical Spring Boot application. Usually applied
+ * {@link MockMvcBuilderCustomizer} for a typical Spring Boot application. Usually applied
  * automatically via {@link AutoConfigureMockMvc @AutoConfigureMockMvc}, but may also be
  * used directly.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.4.0
  */
-public class SpringBootMockMvcConfigurer implements MockMvcConfigurer {
+public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomizer {
 
 	private final WebApplicationContext context;
 
@@ -48,28 +47,22 @@ public class SpringBootMockMvcConfigurer implements MockMvcConfigurer {
 	private boolean alwaysPrint = true;
 
 	/**
-	 * Create a new {@link SpringBootMockMvcConfigurer} instance.
+	 * Create a new {@link SpringBootMockMvcBuilderCustomizer} instance.
 	 * @param context the source application context
 	 */
-	public SpringBootMockMvcConfigurer(WebApplicationContext context) {
+	public SpringBootMockMvcBuilderCustomizer(WebApplicationContext context) {
 		Assert.notNull(context, "Context must not be null");
 		this.context = context;
 	}
 
 	@Override
-	public void afterConfigurerAdded(ConfigurableMockMvcBuilder<?> builder) {
+	public void customize(ConfigurableMockMvcBuilder<?> builder) {
 		if (this.addFilters) {
 			addFilters(builder);
 		}
 		if (this.alwaysPrint) {
 			builder.alwaysDo(MockMvcResultHandlers.print(System.out));
 		}
-	}
-
-	@Override
-	public RequestPostProcessor beforeMockMvcCreated(
-			ConfigurableMockMvcBuilder<?> builder, WebApplicationContext context) {
-		return null;
 	}
 
 	private void addFilters(ConfigurableMockMvcBuilder<?> builder) {
