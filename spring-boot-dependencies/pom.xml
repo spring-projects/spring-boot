@@ -70,7 +70,7 @@
 		<embedded-mongo.version>1.50.2</embedded-mongo.version>
 		<flyway.version>3.2.1</flyway.version>
 		<freemarker.version>2.3.23</freemarker.version>
-		<elasticsearch.version>2.2.0</elasticsearch.version>
+		<elasticsearch.version>2.2.2</elasticsearch.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<gradle.version>1.12</gradle.version>
 		<groovy.version>2.4.6</groovy.version>
