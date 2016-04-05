@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,14 +43,15 @@ public class GemstoneServiceImpl implements GemstoneService {
 			Arrays.asList("ALEXANDRITE", "AQUAMARINE", "DIAMOND", "OPAL", "PEARL", "RUBY",
 					"SAPPHIRE", "SPINEL", "TOPAZ"));
 
-	@Autowired
-	private GemstoneRepository gemstoneRepo;
+	private final GemstoneRepository gemstoneRepository;
+
+	public GemstoneServiceImpl(GemstoneRepository gemstoneRepository) {
+		this.gemstoneRepository = gemstoneRepository;
+	}
 
 	@PostConstruct
 	public void init() {
-		Assert.notNull(this.gemstoneRepo,
-				"A reference to the 'GemstoneRepository' was not properly configured!");
-		System.out.printf("%1$s initialized!%n", getClass().getSimpleName());
+		System.out.printf("[%1$s] initialized!%n", getClass().getSimpleName());
 	}
 
 	/**
@@ -62,7 +63,7 @@ public class GemstoneServiceImpl implements GemstoneService {
 	@Override
 	@Transactional(readOnly = true)
 	public long count() {
-		return this.gemstoneRepo.count();
+		return this.gemstoneRepository.count();
 	}
 
 	/**
@@ -75,8 +76,8 @@ public class GemstoneServiceImpl implements GemstoneService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Gemstone get(final Long id) {
-		return this.gemstoneRepo.findOne(id);
+	public Gemstone get(Long id) {
+		return this.gemstoneRepository.findOne(id);
 	}
 
 	/**
@@ -89,8 +90,8 @@ public class GemstoneServiceImpl implements GemstoneService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Gemstone get(final String name) {
-		return this.gemstoneRepo.findByName(name);
+	public Gemstone get(String name) {
+		return this.gemstoneRepository.findByName(name);
 	}
 
 	/**
@@ -105,7 +106,7 @@ public class GemstoneServiceImpl implements GemstoneService {
 	@Override
 	@Transactional(readOnly = true)
 	public Iterable<Gemstone> list() {
-		return this.gemstoneRepo.findAll();
+		return this.gemstoneRepository.findAll();
 	}
 
 	/**
@@ -118,32 +119,30 @@ public class GemstoneServiceImpl implements GemstoneService {
 	 */
 	@Override
 	@Transactional
-	public Gemstone save(final Gemstone gemstone) {
+	public Gemstone save(Gemstone gemstone) {
 		Assert.notNull(gemstone, "The Gemstone to save must not be null!");
 		Assert.notNull(gemstone.getName(), "The name of the Gemstone must be specified!");
 
-		// NOTE deliberately (naively) validate the Gemstone after mutating data access in
-		// GemFire rather than before
-		// to demonstrate transactions in GemFire.
-		Gemstone savedGemstone = validate(this.gemstoneRepo.save(gemstone));
+		// NOTE deliberately (& naively) validate the Gemstone after mutating data access in
+		// GemFire rather than before to demonstrate transactions in GemFire.
+		Gemstone savedGemstone = validate(this.gemstoneRepository.save(gemstone));
 
-		Assert.state(savedGemstone.equals(get(gemstone.getId())),
-				String.format(
-						"Failed to find Gemstone (%1$s) in GemFire's Cache Region 'Gemstones'!",
-						gemstone));
+		Assert.state(savedGemstone.equals(get(gemstone.getId())), String.format(
+				"Failed to find Gemstone (%1$s) in GemFire's Cache Region 'Gemstones'!",
+				gemstone));
 
-		System.out.printf("Saved Gemstone (%1$s)%n", savedGemstone.getName());
+		System.out.printf("Saved Gemstone [%1$s]%n", savedGemstone.getName());
 
 		return gemstone;
 	}
 
-	private Gemstone validate(final Gemstone gemstone) {
+	Gemstone validate(Gemstone gemstone) {
 		if (!APPROVED_GEMS.contains(gemstone.getName().toUpperCase())) {
-			// NOTE if the Gemstone is not valid, blow chunks (should cause transaction to
-			// rollback in GemFire)!
-			System.err.printf("Illegal Gemstone (%1$s)!%n", gemstone.getName());
+			// NOTE if the Gemstone is not valid, throw error...
+			// Should cause transaction to rollback in GemFire!
+			System.err.printf("Illegal Gemstone [%1$s]!%n", gemstone.getName());
 			throw new IllegalGemstoneException(
-					String.format("'%1$s' is not a valid Gemstone!", gemstone.getName()));
+					String.format("[%1$s] is not a valid Gemstone!", gemstone.getName()));
 		}
 
 		return gemstone;
@@ -151,19 +150,8 @@ public class GemstoneServiceImpl implements GemstoneService {
 
 	public static final class IllegalGemstoneException extends IllegalArgumentException {
 
-		public IllegalGemstoneException() {
-		}
-
-		public IllegalGemstoneException(final String message) {
+		public IllegalGemstoneException(String message) {
 			super(message);
-		}
-
-		public IllegalGemstoneException(final Throwable cause) {
-			super(cause);
-		}
-
-		public IllegalGemstoneException(final String message, final Throwable cause) {
-			super(message, cause);
 		}
 
 	}
