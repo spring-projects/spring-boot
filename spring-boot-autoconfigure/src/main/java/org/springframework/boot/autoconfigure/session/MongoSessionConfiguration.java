@@ -22,29 +22,27 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.session.data.redis.RedisOperationsSessionRepository;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.config.annotation.web.http.EnableMongoHttpSession;
 
 /**
- * Redis backed session auto-configuration.
+ * Mongo backed session auto-configuration.
  *
- * @author Andy Wilkinson
- * @author Tommy Ludwig
  * @author Eddú Meléndez
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnBean({RedisTemplate.class})
-@EnableRedisHttpSession
+@ConditionalOnBean(MongoOperations.class)
+@EnableMongoHttpSession
 @Conditional(SessionCondition.class)
-class RedisSessionConfiguration {
+class MongoSessionConfiguration {
 
 	private ServerProperties serverProperties;
 
-	private RedisOperationsSessionRepository sessionRepository;
+	private MongoOperationsSessionRepository sessionRepository;
 
-	RedisSessionConfiguration(ServerProperties serverProperties, RedisOperationsSessionRepository sessionRepository) {
+	MongoSessionConfiguration(ServerProperties serverProperties, MongoOperationsSessionRepository sessionRepository) {
 		this.serverProperties = serverProperties;
 		this.sessionRepository = sessionRepository;
 	}
@@ -53,7 +51,7 @@ class RedisSessionConfiguration {
 	public void applyConfigurationProperties() {
 		Integer timeout = this.serverProperties.getSession().getTimeout();
 		if (timeout != null) {
-			this.sessionRepository.setDefaultMaxInactiveInterval(timeout);
+			this.sessionRepository.setMaxInactiveIntervalInSeconds(timeout);
 		}
 	}
 

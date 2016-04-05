@@ -44,13 +44,13 @@ public class SessionProperties {
 		/**
 		 * Session data store type, auto-detected according to the environment by default.
 		 */
-		private SessionStoreType type;
+		private StoreType type;
 
-		public SessionStoreType getType() {
+		public StoreType getType() {
 			return this.type;
 		}
 
-		public void setType(SessionStoreType type) {
+		public void setType(StoreType type) {
 			this.type = type;
 		}
 	}

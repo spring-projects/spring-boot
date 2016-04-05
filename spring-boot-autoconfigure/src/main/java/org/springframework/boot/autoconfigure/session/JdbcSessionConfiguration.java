@@ -17,34 +17,33 @@
 package org.springframework.boot.autoconfigure.session;
 
 import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.session.data.redis.RedisOperationsSessionRepository;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
+import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 
 /**
- * Redis backed session auto-configuration.
+ * JDBC backed session auto-configuration.
  *
- * @author Andy Wilkinson
- * @author Tommy Ludwig
  * @author Eddú Meléndez
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnBean({RedisTemplate.class})
-@EnableRedisHttpSession
+@ConditionalOnBean(DataSource.class)
+@EnableJdbcHttpSession
 @Conditional(SessionCondition.class)
-class RedisSessionConfiguration {
+class JdbcSessionConfiguration {
 
 	private ServerProperties serverProperties;
 
-	private RedisOperationsSessionRepository sessionRepository;
+	private JdbcOperationsSessionRepository sessionRepository;
 
-	RedisSessionConfiguration(ServerProperties serverProperties, RedisOperationsSessionRepository sessionRepository) {
+	JdbcSessionConfiguration(ServerProperties serverProperties,
+			JdbcOperationsSessionRepository sessionRepository) {
 		this.serverProperties = serverProperties;
 		this.sessionRepository = sessionRepository;
 	}

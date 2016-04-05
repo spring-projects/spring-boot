@@ -20,9 +20,20 @@ package org.springframework.boot.autoconfigure.session;
  * Supported Spring Session data store types.
  *
  * @author Tommy Ludwig
+ * @author Eddú Meléndez
  * @since 1.4.0
  */
-public enum SessionStoreType {
+public enum StoreType {
+
+	/**
+	 * JDBC backed sessions.
+	 */
+	JDBC,
+
+	/**
+	 * Mongo backed sessions.
+	 */
+	MONGO,
 
 	/**
 	 * Redis backed sessions.
@@ -37,7 +48,7 @@ public enum SessionStoreType {
 	/**
 	 * Simple in-memory map of sessions.
 	 */
-	SIMPLE,
+	HASH_MAP,
 
 	/**
 	 * No session datastore.

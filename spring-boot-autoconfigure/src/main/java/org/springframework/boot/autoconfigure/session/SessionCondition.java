@@ -38,7 +38,7 @@ class SessionCondition extends SpringBootCondition {
 		if (!resolver.containsProperty("type")) {
 			return ConditionOutcome.match("Automatic session store type");
 		}
-		SessionStoreType sessionStoreType = SessionStoreMappings
+		StoreType sessionStoreType = SessionStoreMappings
 				.getType(((AnnotationMetadata) metadata).getClassName());
 		String value = resolver.getProperty("type").replace("-", "_").toUpperCase();
 		if (value.equals(sessionStoreType.name())) {

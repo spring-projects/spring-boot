@@ -24,8 +24,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -39,13 +42,16 @@ import org.springframework.session.SessionRepository;
  *
  * @author Andy Wilkinson
  * @author Tommy Ludwig
+ * @author Eddú Meléndez
  * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass(Session.class)
 @ConditionalOnWebApplication
 @ConditionalOnMissingBean(SessionRepository.class)
-@AutoConfigureAfter({ HazelcastAutoConfiguration.class, RedisAutoConfiguration.class })
+@EnableConfigurationProperties(SessionProperties.class)
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
+		MongoAutoConfiguration.class, RedisAutoConfiguration.class })
 @Import(SessionConfigurationImportSelector.class)
 public class SessionAutoConfiguration {
 
@@ -63,13 +69,13 @@ public class SessionAutoConfiguration {
 	}
 
 	/**
-	 * {@link ImportSelector} to add {@link SessionStoreType} configuration classes.
+	 * {@link ImportSelector} to add {@link StoreType} configuration classes.
 	 */
 	static class SessionConfigurationImportSelector implements ImportSelector {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			SessionStoreType[] types = SessionStoreType.values();
+			StoreType[] types = StoreType.values();
 			String[] imports = new String[types.length];
 			for (int i = 0; i < types.length; i++) {
 				imports[i] = SessionStoreMappings.getConfigurationClass(types[i]);

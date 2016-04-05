@@ -356,6 +356,9 @@ content into your application; rather pick only the properties that you need.
 	spring.resources.chain.strategy.fixed.version= # Version string to use for the Version Strategy.
 	spring.resources.static-locations=classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/ # Locations of static resources.
 
+    # SPRING SESSION ({sc-spring-boot-autoconfigure}/session/SocialWebAutoConfiguration.{sc-ext}[SessionAutoConfiguration])
+    spring.session.store.store-type= # Session store type
+
 	# SPRING SOCIAL ({sc-spring-boot-autoconfigure}/social/SocialWebAutoConfiguration.{sc-ext}[SocialWebAutoConfiguration])
 	spring.social.auto-connection-views=false # Enable the connection status view for supported providers.
 

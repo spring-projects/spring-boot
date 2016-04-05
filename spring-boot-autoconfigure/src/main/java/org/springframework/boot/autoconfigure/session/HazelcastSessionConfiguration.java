@@ -20,32 +20,29 @@ import javax.annotation.PostConstruct;
 
 import com.hazelcast.core.HazelcastInstance;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.MapSessionRepository;
-import org.springframework.session.SessionRepository;
 import org.springframework.session.hazelcast.config.annotation.web.http.EnableHazelcastHttpSession;
-import org.springframework.session.hazelcast.config.annotation.web.http.HazelcastHttpSessionConfiguration;
 
 /**
  * Hazelcast backed session auto-configuration.
  *
  * @author Tommy Ludwig
+ * @author Eddú Meléndez
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({ HazelcastInstance.class, HazelcastHttpSessionConfiguration.class })
-@ConditionalOnMissingBean({ SessionRepository.class, HazelcastHttpSessionConfiguration.class })
+@ConditionalOnBean({ HazelcastInstance.class })
 @EnableHazelcastHttpSession
 @Conditional(SessionCondition.class)
 class HazelcastSessionConfiguration {
 
-	private final ServerProperties serverProperties;
+	private ServerProperties serverProperties;
 
-	private final MapSessionRepository sessionRepository;
+	private MapSessionRepository sessionRepository;
 
 	HazelcastSessionConfiguration(ServerProperties serverProperties, MapSessionRepository sessionRepository) {
 		this.serverProperties = serverProperties;

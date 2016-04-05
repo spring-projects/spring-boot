@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -33,7 +32,6 @@ import org.springframework.session.config.annotation.web.http.EnableSpringHttpSe
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnMissingBean(SessionRepository.class)
 @EnableSpringHttpSession
 @Conditional(SessionCondition.class)
 class SimpleSessionConfiguration {
