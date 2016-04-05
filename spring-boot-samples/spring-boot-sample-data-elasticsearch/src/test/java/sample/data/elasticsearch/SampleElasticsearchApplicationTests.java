@@ -33,19 +33,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Artur Konczak
  */
 public class SampleElasticsearchApplicationTests {
-
-	private static final String[] PROPERTIES = {
-			"spring.data.elasticsearch.properties.path.data:target/data",
-			"spring.data.elasticsearch.properties.path.logs:target/logs" };
-
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() throws Exception {
 		try {
-			new SpringApplicationBuilder(SampleElasticsearchApplication.class)
-					.properties(PROPERTIES).run();
+			new SpringApplicationBuilder(SampleElasticsearchApplication.class).run();
 		}
 		catch (IllegalStateException ex) {
 			if (serverNotRunning(ex)) {
