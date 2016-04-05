@@ -56,15 +56,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		Class<?>[] classes = getOrFindConfigurationClasses(mergedConfig);
 		List<String> propertySourceProperties = getAndProcessPropertySourceProperties(
 				mergedConfig);
-		return new MergedContextConfiguration(mergedConfig.getTestClass(),
-				mergedConfig.getLocations(), classes,
-				mergedConfig.getContextInitializerClasses(),
-				mergedConfig.getActiveProfiles(),
-				mergedConfig.getPropertySourceLocations(),
-				propertySourceProperties
-						.toArray(new String[propertySourceProperties.size()]),
-				mergedConfig.getContextCustomizers(), mergedConfig.getContextLoader(),
-				getCacheAwareContextLoaderDelegate(), mergedConfig.getParent());
+		return createModifiedConfig(mergedConfig, classes, propertySourceProperties
+				.toArray(new String[propertySourceProperties.size()]));
 	}
 
 	protected Class<?>[] getOrFindConfigurationClasses(
@@ -133,6 +126,38 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	protected void processPropertySourceProperties(
 			MergedContextConfiguration mergedConfig,
 			List<String> propertySourceProperties) {
+	}
+
+	/**
+	 * Create a new {@link MergedContextConfiguration} with different classes.
+	 * @param mergedConfig the source config
+	 * @param classes the replacement classes
+	 * @return a new {@link MergedContextConfiguration}
+	 */
+	protected final MergedContextConfiguration createModifiedConfig(
+			MergedContextConfiguration mergedConfig, Class<?>[] classes) {
+		return createModifiedConfig(mergedConfig, classes,
+				mergedConfig.getPropertySourceProperties());
+	}
+
+	/**
+	 * Create a new {@link MergedContextConfiguration} with different classes and
+	 * properties.
+	 * @param mergedConfig the source config
+	 * @param classes the replacement classes
+	 * @param propertySourceProperties the replacement properties
+	 * @return a new {@link MergedContextConfiguration}
+	 */
+	protected final MergedContextConfiguration createModifiedConfig(
+			MergedContextConfiguration mergedConfig, Class<?>[] classes,
+			String[] propertySourceProperties) {
+		return new MergedContextConfiguration(mergedConfig.getTestClass(),
+				mergedConfig.getLocations(), classes,
+				mergedConfig.getContextInitializerClasses(),
+				mergedConfig.getActiveProfiles(),
+				mergedConfig.getPropertySourceLocations(), propertySourceProperties,
+				mergedConfig.getContextCustomizers(), mergedConfig.getContextLoader(),
+				getCacheAwareContextLoaderDelegate(), mergedConfig.getParent());
 	}
 
 }

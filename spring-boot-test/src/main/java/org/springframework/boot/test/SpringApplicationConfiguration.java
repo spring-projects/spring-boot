@@ -23,6 +23,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.test.context.SpringApplicationContextLoader;
+import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.AliasFor;
@@ -39,8 +41,8 @@ import org.springframework.test.context.ContextConfiguration;
  * @author Sam Brannen
  * @see SpringApplicationContextLoader
  * @see ContextConfiguration
- * @deprecated since 1.4.0 in favor of
- * {@link org.springframework.boot.test.context.SpringApplicationConfiguration}
+ * @deprecated since 1.4.0 in favor of {@link SpringApplicationTest} or direct use of
+ * {@link SpringApplicationContextLoader}.
  */
 @ContextConfiguration(loader = SpringApplicationContextLoader.class)
 @Documented

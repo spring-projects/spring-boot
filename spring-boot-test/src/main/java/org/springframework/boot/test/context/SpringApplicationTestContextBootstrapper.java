@@ -16,16 +16,20 @@
 
 package org.springframework.boot.test.context;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.test.context.ContextConfigurationAttributes;
+import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 
 /**
  * {@link TestContextBootstrapper} for {@link SpringApplicationTest}.
@@ -53,6 +57,29 @@ class SpringApplicationTestContextBootstrapper extends SpringBootTestContextBoot
 			context.setAttribute(ACTIVATE_SERVLET_LISTENER, false);
 		}
 		return context;
+	}
+
+	@Override
+	protected ContextLoader resolveContextLoader(Class<?> testClass,
+			List<ContextConfigurationAttributes> configAttributesList) {
+		SpringApplicationTest annotation = AnnotatedElementUtils
+				.getMergedAnnotation(testClass, SpringApplicationTest.class);
+		if (!ObjectUtils.isEmpty(annotation.classes())) {
+			for (ContextConfigurationAttributes configAttributes : configAttributesList) {
+				addConfigAttriubtesClasses(configAttributes, annotation.classes());
+			}
+		}
+		return super.resolveContextLoader(testClass, configAttributesList);
+	}
+
+	private void addConfigAttriubtesClasses(
+			ContextConfigurationAttributes configAttributes, Class<?>[] classes) {
+		List<Class<?>> combined = new ArrayList<Class<?>>();
+		combined.addAll(Arrays.asList(classes));
+		if (configAttributes.getClasses() != null) {
+			combined.addAll(Arrays.asList(configAttributes.getClasses()));
+		}
+		configAttributes.setClasses(combined.toArray(new Class<?>[combined.size()]));
 	}
 
 	@Override

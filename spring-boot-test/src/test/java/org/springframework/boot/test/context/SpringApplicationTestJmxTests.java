@@ -19,38 +19,40 @@ package org.springframework.boot.test.context;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringApplicationContextLoader} with active profiles. See gh-1469.
+ * Tests for disabling JMX by default
  *
- * @author Phillip Webb
+ * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringApplicationConfiguration
-@SpringApplicationTest("spring.config.name=enableother")
-@ActiveProfiles("override")
-public class SpringApplicationConfigurationActiveProfileTests {
+@SpringApplicationTest
+public class SpringApplicationTestJmxTests {
 
-	@Autowired
-	private ApplicationContext context;
+	@Value("${spring.jmx.enabled}")
+	private boolean jmx;
 
 	@Test
-	public void profiles() throws Exception {
-		assertThat(this.context.getEnvironment().getActiveProfiles())
-				.containsExactly("override");
+	public void disabledByDefault() {
+		assertThat(this.jmx).isFalse();
 	}
 
 	@Configuration
 	protected static class Config {
+
+		@Bean
+		public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+			return new PropertySourcesPlaceholderConfigurer();
+		}
 
 	}
 

@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
-import org.springframework.boot.test.context.SpringApplicationTestPropertyLocationTests.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -42,7 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringApplicationConfiguration(Config.class)
 @SpringApplicationTest(webEnvironment = WebEnvironment.NONE, properties = "value1=123")
 @TestPropertySource(properties = "value2=456", locations = "classpath:/test-property-source-annotation.properties")
 public class SpringApplicationTestPropertyLocationTests {

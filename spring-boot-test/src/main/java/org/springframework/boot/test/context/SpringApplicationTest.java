@@ -24,35 +24,43 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Test class annotation signifying that the tests are for a
- * {@link org.springframework.boot.SpringApplication Spring Boot Application}. By default
- * will load nested {@code @Configuration} classes, or fall back on
- * {@link SpringApplicationConfiguration @SpringApplicationConfiguration} search. Unless
- * otherwise configured, a {@link SpringApplicationContextLoader} will be used to load the
- * {@link ApplicationContext}. Use
- * {@link SpringApplicationConfiguration @SpringApplicationConfiguration} or
- * {@link ContextConfiguration @ContextConfiguration} if custom configuration is required.
- * <p>
- * The environment that will be used can be configured using the {@code mode} attribute.
- * By default, a mock servlet environment will be used when this annotation is used to a
- * test web application. If you want to start a real embedded servlet container in the
- * same way as a production application (listening on normal ports) configure
- * {@code mode=EMBEDDED_SERVLET}. If want to disable the creation of the mock servlet
- * environment, configure {@code mode=STANDARD}.
+ * Annotation that can be specified on a test class that runs Spring Boot based tests.
+ * Provides the following features over and above the regular
+ * <em>Spring TestContext Framework</em>:
+ * <ul>
+ * <li>Uses {@link SpringApplicationContextLoader} as the default {@link ContextLoader}
+ * when no specific
+ * {@link ContextConfiguration#loader() @ContextConfiguration(loader=...)} is defined.
+ * </li>
+ * <li>Automatically searches for a
+ * {@link SpringBootConfiguration @SpringBootConfiguration} when nested
+ * {@code @Configuration} is not used, and no explicit {@link #classes() classes} are
+ * specified.</li>
+ * <li>Allows custom {@link Environment} properties to be defined using the
+ * {@link #properties() properties attribute}.</li>
+ * <li>Provides support for different {@link #webEnvironment() webEnvironment} modes,
+ * including the ability to start a fully running container listening on a
+ * {@link WebEnvironment#DEFINED_PORT defined} or {@link WebEnvironment#RANDOM_PORT
+ * random} port.</li>
+ * </ul>
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 1.4.0
+ * @see ContextConfiguration
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -75,6 +83,19 @@ public @interface SpringApplicationTest {
 	 */
 	@AliasFor("value")
 	String[] properties() default {};
+
+	/**
+	 * The <em>annotated classes</em> to use for loading an
+	 * {@link org.springframework.context.ApplicationContext ApplicationContext}. Can also
+	 * be specified using
+	 * {@link ContextConfiguration#classes() @ContextConfiguration(classes=...)}. If no
+	 * explicit classes are defined the test will look for nested
+	 * {@link Configuration @Configuration} classes, before falling back to a
+	 * {@link SpringBootConfiguration} search.
+	 * @see ContextConfiguration#classes()
+	 * @return the annotated classes used to load the application context
+	 */
+	Class<?>[] classes() default {};
 
 	/**
 	 * The type of web environment to create when applicable. Defaults to

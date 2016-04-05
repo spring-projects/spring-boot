@@ -26,20 +26,20 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringApplicationContextLoader} finding XML config.
+ * Tests for {@link SpringApplicationTest} finding groovy config.
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
+@SpringApplicationTest
 @DirtiesContext
-@SpringApplicationConfiguration
-public class SpringApplicationConfigurationXmlConventionConfigurationTests {
+public class SpringApplicationTestGroovyConventionConfigurationTests {
 
 	@Autowired
 	private String foo;
 
 	@Test
-	public void xmlConfigLoaded() {
+	public void groovyConfigLoaded() {
 		assertThat(this.foo).isEqualTo("World");
 	}
 

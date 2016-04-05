@@ -27,14 +27,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringApplicationContextLoader} (detectDefaultConfigurationClasses).
+ * Tests for {@link SpringApplicationTest} (detectDefaultConfigurationClasses).
  *
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringApplicationConfiguration
-public class SpringApplicationConfigurationDefaultConfigurationTests {
+public class SpringApplicationTestDefaultConfigurationTests {
 
 	@Autowired
 	private Config config;
