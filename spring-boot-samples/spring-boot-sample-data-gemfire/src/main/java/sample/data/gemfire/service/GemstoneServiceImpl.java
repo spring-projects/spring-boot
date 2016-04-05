@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,15 @@ package sample.data.gemfire.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
+
+import sample.data.gemfire.domain.Gemstone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
-import sample.data.gemfire.domain.Gemstone;
 
 /**
  * The GemstoneServiceImpl class is a Service object implementing the GemstoneService
@@ -39,16 +40,17 @@ import sample.data.gemfire.domain.Gemstone;
 public class GemstoneServiceImpl implements GemstoneService {
 
 	protected static final List<String> APPROVED_GEMS = new ArrayList<String>(
-		Arrays.asList("ALEXANDRITE", "AQUAMARINE", "DIAMOND", "OPAL", "PEARL", "RUBY",
-			"SAPPHIRE", "SPINEL", "TOPAZ"));
+			Arrays.asList("ALEXANDRITE", "AQUAMARINE", "DIAMOND", "OPAL", "PEARL", "RUBY",
+					"SAPPHIRE", "SPINEL", "TOPAZ"));
 
-	@Autowired
-	@SuppressWarnings("unused")
-	private GemstoneRepository gemstoneRepository;
+	private final GemstoneRepository gemstoneRepository;
+
+	public GemstoneServiceImpl(GemstoneRepository gemstoneRepository) {
+		this.gemstoneRepository = gemstoneRepository;
+	}
 
 	@PostConstruct
 	public void init() {
-		Assert.notNull(gemstoneRepository, "'gemstoneRepository' was not properly initialized");
 		System.out.printf("[%1$s] initialized!%n", getClass().getSimpleName());
 	}
 
@@ -126,7 +128,7 @@ public class GemstoneServiceImpl implements GemstoneService {
 		Gemstone savedGemstone = validate(this.gemstoneRepository.save(gemstone));
 
 		Assert.state(savedGemstone.equals(get(gemstone.getId())), String.format(
-			"Failed to find Gemstone (%1$s) in GemFire's Cache Region 'Gemstones'!",
+				"Failed to find Gemstone (%1$s) in GemFire's Cache Region 'Gemstones'!",
 				gemstone));
 
 		System.out.printf("Saved Gemstone [%1$s]%n", savedGemstone.getName());
@@ -146,22 +148,10 @@ public class GemstoneServiceImpl implements GemstoneService {
 		return gemstone;
 	}
 
-	@SuppressWarnings("unused")
 	public static final class IllegalGemstoneException extends IllegalArgumentException {
 
-		public IllegalGemstoneException() {
-		}
-
-		public IllegalGemstoneException(final String message) {
+		public IllegalGemstoneException(String message) {
 			super(message);
-		}
-
-		public IllegalGemstoneException(final Throwable cause) {
-			super(cause);
-		}
-
-		public IllegalGemstoneException(final String message, final Throwable cause) {
-			super(message, cause);
 		}
 
 	}

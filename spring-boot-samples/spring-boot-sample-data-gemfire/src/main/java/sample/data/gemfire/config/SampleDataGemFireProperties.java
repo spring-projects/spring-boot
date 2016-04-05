@@ -1,11 +1,11 @@
 /*
- * Copyright 2010-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,27 +17,22 @@
 package sample.data.gemfire.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.StringUtils;
 
 /**
- * The SampleDataGemFireApplicationProperties class...
+ * Configuration properties for Gemfire sample.
  *
  * @author John Blum
- * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "sample.data.gemfire")
-public class SampleDataGemFireApplicationProperties {
+public class SampleDataGemFireProperties {
 
-	protected static final String DEFAULT_LOG_LEVEL = "config";
-
-	private String logLevel = DEFAULT_LOG_LEVEL;
-
-	protected String defaultIfEmpty(String value, String defaultValue) {
-		return (StringUtils.hasText(value) ? value : defaultValue);
-	}
+	/**
+	 * Caching log level.
+	 */
+	private String logLevel = "config";
 
 	public String getLogLevel() {
-		return defaultIfEmpty(this.logLevel, DEFAULT_LOG_LEVEL);
+		return this.logLevel;
 	}
 
 	public void setLogLevel(String logLevel) {
