@@ -48,7 +48,7 @@
 		<appengine.version>1.9.34</appengine.version>
 		<artemis.version>1.2.0</artemis.version>
 		<aspectj.version>1.8.9</aspectj.version>
-		<assertj.version>2.3.0</assertj.version>
+		<assertj.version>2.4.0</assertj.version>
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
 		<caffeine.version>2.2.6</caffeine.version>
