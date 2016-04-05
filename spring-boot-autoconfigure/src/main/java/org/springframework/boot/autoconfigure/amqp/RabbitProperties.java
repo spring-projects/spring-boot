@@ -79,6 +79,16 @@ public class RabbitProperties {
 	private Integer requestedHeartbeat;
 
 	/**
+	 * Enable publisher confirms.
+	 */
+	private boolean publisherConfirms;
+
+	/**
+	 * Enable publisher returns.
+	 */
+	private boolean publisherReturns;
+
+	/**
 	 * Cache configuration.
 	 */
 	private final Cache cache = new Cache();
@@ -194,6 +204,22 @@ public class RabbitProperties {
 
 	public void setRequestedHeartbeat(Integer requestedHeartbeat) {
 		this.requestedHeartbeat = requestedHeartbeat;
+	}
+
+	public boolean isPublisherConfirms() {
+		return this.publisherConfirms;
+	}
+
+	public void setPublisherConfirms(boolean publisherConfirms) {
+		this.publisherConfirms = publisherConfirms;
+	}
+
+	public boolean isPublisherReturns() {
+		return this.publisherReturns;
+	}
+
+	public void setPublisherReturns(boolean publisherReturns) {
+		this.publisherReturns = publisherReturns;
 	}
 
 	public Cache getCache() {
@@ -468,6 +494,12 @@ public class RabbitProperties {
 		private final Retry retry = new Retry();
 
 		/**
+		 * Enable mandatory messages. If a mandatory message cannot be routed to a queue
+		 * by the server, it will return an unroutable message with a Return method.
+		 */
+		private Boolean mandatory;
+
+		/**
 		 * Timeout for receive() operations.
 		 */
 		private Long receiveTimeout;
@@ -479,6 +511,14 @@ public class RabbitProperties {
 
 		public Retry getRetry() {
 			return this.retry;
+		}
+
+		public Boolean getMandatory() {
+			return this.mandatory;
+		}
+
+		public void setMandatory(Boolean mandatory) {
+			this.mandatory = mandatory;
 		}
 
 		public Long getReceiveTimeout() {

@@ -812,12 +812,15 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.listener.transaction-size= # Number of messages to be processed in a transaction. For best results it should be less than or equal to the prefetch count.
 	spring.rabbitmq.password= # Login to authenticate against the broker.
 	spring.rabbitmq.port=5672 # RabbitMQ port.
+	spring.rabbitmq.publisher-confirms=false # Enable publisher confirms.
+	spring.rabbitmq.publisher-returns=false # Enable publisher returns.
 	spring.rabbitmq.requested-heartbeat= # Requested heartbeat timeout, in seconds; zero for none.
 	spring.rabbitmq.ssl.enabled=false # Enable SSL support.
 	spring.rabbitmq.ssl.key-store= # Path to the key store that holds the SSL certificate.
 	spring.rabbitmq.ssl.key-store-password= # Password used to access the key store.
 	spring.rabbitmq.ssl.trust-store= # Trust store that holds SSL certificates.
 	spring.rabbitmq.ssl.trust-store-password= # Password used to access the trust store.
+	spring.rabbitmq.template.mandatory=false # Enable mandatory messages.
 	spring.rabbitmq.template.receive-timeout=0 # Timeout for `receive()` methods.
 	spring.rabbitmq.template.reply-timeout=5000 # Timeout for `sendAndReceive()` methods.
 	spring.rabbitmq.template.retry.enabled= # Set to true to enable retries in the `RabbitTemplate`.
