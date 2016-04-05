@@ -45,6 +45,7 @@
 		<module>spring-boot-sample-devtools</module>
 		<module>spring-boot-sample-flyway</module>
 		<module>spring-boot-sample-hateoas</module>
+		<module>spring-boot-sample-hibernate4</module>
 		<module>spring-boot-sample-hornetq</module>
 		<module>spring-boot-sample-hypermedia</module>
 		<module>spring-boot-sample-hypermedia-gson</module>
