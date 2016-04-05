@@ -120,7 +120,7 @@
 		<lombok.version>1.16.8</lombok.version>
 		<mariadb.version>1.4.0</mariadb.version>
 		<mockito.version>1.10.19</mockito.version>
-		<mongodb.version>2.14.1</mongodb.version>
+		<mongodb.version>2.14.2</mongodb.version>
 		<mysql.version>5.1.38</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>2.0.0-M04</neo4j-ogm.version>
