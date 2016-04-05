@@ -61,6 +61,7 @@ import org.springframework.util.StringUtils;
  * @author Ivan Sopov
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Christoph Dreis
  * @since 1.2.0
  * @see UndertowEmbeddedServletContainerFactory
  */
@@ -87,20 +88,104 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	private boolean started = false;
 
+	/**
+	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
+	 * @param builder the builder
+	 * @param manager the deployment manager
+	 * @param contextPath root the context path
+	 * @param port the port to listen on (not used)
+	 * @param autoStart if the server should be started
+	 * @param compression compression configuration
+	 * @deprecated as of 1.4 in favor of
+	 * {@link #UndertowEmbeddedServletContainer(Builder, DeploymentManager, String, boolean, Compression)}
+	 */
+	@Deprecated
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
 			String contextPath, int port, boolean autoStart, Compression compression) {
-		this(builder, manager, contextPath, port, false, autoStart, compression);
+		this(builder, manager, contextPath, false, autoStart, compression);
 	}
 
+	/**
+	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
+	 * @param builder the builder
+	 * @param manager the deployment manager
+	 * @param contextPath root the context path
+	 * @param port the port to listen on (not used)
+	 * @param useForwardHeaders if x-forward headers should be used
+	 * @param autoStart if the server should be started
+	 * @param compression compression configuration
+	 * @deprecated as of 1.4 in favor of
+	 * {@link #UndertowEmbeddedServletContainer(Builder, DeploymentManager, String, boolean, boolean, Compression)}
+	 */
+	@Deprecated
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
 			String contextPath, int port, boolean useForwardHeaders, boolean autoStart,
 			Compression compression) {
-		this(builder, manager, contextPath, port, useForwardHeaders, autoStart,
-				compression, null);
+		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression);
 	}
 
+	/**
+	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
+	 * @param builder the builder
+	 * @param manager the deployment manager
+	 * @param contextPath root the context path
+	 * @param port the port to listen on (not used)
+	 * @param useForwardHeaders if x-forward headers should be used
+	 * @param autoStart if the server should be started
+	 * @param compression compression configuration
+	 * @param serverHeader string to be used in http header
+	 * @deprecated as of 1.4 in favor of
+	 * {@link #UndertowEmbeddedServletContainer(Builder, DeploymentManager, String, boolean, boolean, Compression, String)}
+	 */
+	@Deprecated
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
 			String contextPath, int port, boolean useForwardHeaders, boolean autoStart,
+			Compression compression, String serverHeader) {
+		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression,
+				serverHeader);
+	}
+
+	/**
+	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
+	 * @param builder the builder
+	 * @param manager the deployment manager
+	 * @param contextPath root the context path
+	 * @param autoStart if the server should be started
+	 * @param compression compression configuration
+	 */
+	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
+			String contextPath, boolean autoStart, Compression compression) {
+		this(builder, manager, contextPath, false, autoStart, compression);
+	}
+
+	/**
+	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
+	 * @param builder the builder
+	 * @param manager the deployment manager
+	 * @param contextPath root the context path
+	 * @param useForwardHeaders if x-forward headers should be used
+	 * @param autoStart if the server should be started
+	 * @param compression compression configuration
+	 */
+	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
+			String contextPath, boolean useForwardHeaders, boolean autoStart,
+			Compression compression) {
+		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression,
+				null);
+	}
+
+	/**
+	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
+	 * @param builder the builder
+	 * @param manager the deployment manager
+	 * @param contextPath root the context path
+	 * @param useForwardHeaders if x-forward headers should be used
+	 * @param autoStart if the server should be started
+	 * @param compression compression configuration
+	 * @param serverHeader string to be used in http header
+	 */
+	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
+			String contextPath, boolean useForwardHeaders, boolean autoStart,
 			Compression compression, String serverHeader) {
 		this.builder = builder;
 		this.manager = manager;
@@ -231,10 +316,10 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	}
 
 	private Port getPortFromChannel(BoundChannel channel) {
-		String protocol = ReflectionUtils.findField(channel.getClass(), "ssl") != null
-				? "https" : "http";
 		SocketAddress socketAddress = channel.getLocalAddress();
 		if (socketAddress instanceof InetSocketAddress) {
+			String protocol = ReflectionUtils.findField(channel.getClass(), "ssl") != null
+					? "https" : "http";
 			return new Port(((InetSocketAddress) socketAddress).getPort(), protocol);
 		}
 		return null;

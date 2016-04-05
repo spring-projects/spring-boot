@@ -72,6 +72,7 @@ import org.springframework.util.StringUtils;
  * @author Ivan Sopov
  * @author Marcos Barbero
  * @author Eddú Meléndez
+ * @author Quinten De Swaef
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties
@@ -581,6 +582,11 @@ public class ServerProperties
 		private int maxThreads = 0; // Number of threads in protocol handler
 
 		/**
+		 * Minimum amount of worker threads.
+		 */
+		private int minSpareThreads = 0; // Minimum spare threads in protocol handler
+
+		/**
 		 * Maximum size in bytes of the HTTP message header.
 		 */
 		private int maxHttpHeaderSize = 0; // bytes
@@ -596,6 +602,14 @@ public class ServerProperties
 
 		public void setMaxThreads(int maxThreads) {
 			this.maxThreads = maxThreads;
+		}
+
+		public int getMinSpareThreads() {
+			return this.minSpareThreads;
+		}
+
+		public void setMinSpareThreads(int minSpareThreads) {
+			this.minSpareThreads = minSpareThreads;
 		}
 
 		public int getMaxHttpHeaderSize() {
@@ -684,6 +698,9 @@ public class ServerProperties
 			if (this.maxThreads > 0) {
 				customizeMaxThreads(factory);
 			}
+			if (this.minSpareThreads > 0) {
+				customizeMinThreads(factory);
+			}
 			if (this.maxHttpHeaderSize > 0) {
 				customizeMaxHttpHeaderSize(factory);
 			}
@@ -741,6 +758,22 @@ public class ServerProperties
 					if (handler instanceof AbstractProtocol) {
 						AbstractProtocol protocol = (AbstractProtocol) handler;
 						protocol.setMaxThreads(Tomcat.this.maxThreads);
+					}
+
+				}
+			});
+		}
+
+		@SuppressWarnings("rawtypes")
+		private void customizeMinThreads(TomcatEmbeddedServletContainerFactory factory) {
+			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+				@Override
+				public void customize(Connector connector) {
+
+					ProtocolHandler handler = connector.getProtocolHandler();
+					if (handler instanceof AbstractProtocol) {
+						AbstractProtocol protocol = (AbstractProtocol) handler;
+						protocol.setMinSpareThreads(Tomcat.this.minSpareThreads);
 					}
 
 				}

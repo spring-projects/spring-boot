@@ -64,7 +64,6 @@ class NoUniqueBeanDefinitionExceptionFailureAnalyzer
 		message.append(String.format("%s required a single bean, but %d were found:%n",
 				getConsumerDescription(unsatisfiedDependency), beanNames.length));
 		for (String beanName : beanNames) {
-			unsatisfiedDependency.getInjectionPoint();
 			try {
 				BeanDefinition beanDefinition = this.beanFactory
 						.getMergedBeanDefinition(beanName);
