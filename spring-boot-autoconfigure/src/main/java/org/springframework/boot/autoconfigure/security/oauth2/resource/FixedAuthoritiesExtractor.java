@@ -38,6 +38,8 @@ public class FixedAuthoritiesExtractor implements AuthoritiesExtractor {
 
 	private static final String AUTHORITIES = "authorities";
 
+	private static final String[] AUTHORITY_KEYS = { "authority", "role", "value" };
+
 	@Override
 	public List<GrantedAuthority> extractAuthorities(Map<String, Object> map) {
 		String authorities = "ROLE_USER";
@@ -60,22 +62,7 @@ public class FixedAuthoritiesExtractor implements AuthoritiesExtractor {
 					authorities.add(value);
 				}
 				else if (value instanceof Map) {
-					Map<?, ?> map = (Map<?, ?>) value;
-					if (map.size() == 1) {
-						authorities.add(map.values().iterator().next());
-					}
-					else if (map.containsKey("authority")) {
-						authorities.add(map.get("authority"));
-					}
-					else if (map.containsKey("role")) {
-						authorities.add(map.get("role"));
-					}
-					else if (map.containsKey("value")) {
-						authorities.add(map.get("value"));
-					}
-					else {
-						authorities.add(map);
-					}
+					authorities.add(asAuthority((Map<?, ?>) value));
 				}
 				else {
 					authorities.add(value);
@@ -84,6 +71,18 @@ public class FixedAuthoritiesExtractor implements AuthoritiesExtractor {
 			return StringUtils.collectionToCommaDelimitedString(authorities);
 		}
 		return object.toString();
+	}
+
+	private Object asAuthority(Map<?, ?> map) {
+		if (map.size() == 1) {
+			return map.values().iterator().next();
+		}
+		for (String key : AUTHORITY_KEYS) {
+			if (map.containsKey(key)) {
+				return map.get(map);
+			}
+		}
+		return map;
 	}
 
 }
