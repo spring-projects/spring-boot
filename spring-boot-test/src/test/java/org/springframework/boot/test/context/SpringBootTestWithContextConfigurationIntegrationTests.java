@@ -16,35 +16,52 @@
 
 package org.springframework.boot.test.context;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringApplicationTest} (detectDefaultConfigurationClasses).
+ * Tests for {@link SpringBootTest} configured with {@link ContextConfiguration}.
  *
- * @author Dave Syer
+ * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-public class SpringApplicationTestDefaultConfigurationTests {
+@SpringBootTest
+@ContextConfiguration(classes = SpringBootTestWithContextConfigurationIntegrationTests.Config.class)
+public class SpringBootTestWithContextConfigurationIntegrationTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Autowired
-	private Config config;
+	private ApplicationContext context;
 
 	@Test
-	public void nestedConfigClasses() {
-		assertThat(this.config).isNotNull();
+	public void injectsOnlyConfig() throws Exception {
+		assertThat(this.context.getBean(Config.class)).isNotNull();
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(AdditionalConfig.class);
 	}
 
 	@Configuration
-	protected static class Config {
+	static class Config {
+
+	}
+
+	@Configuration
+	static class AdditionalConfig {
 
 	}
 

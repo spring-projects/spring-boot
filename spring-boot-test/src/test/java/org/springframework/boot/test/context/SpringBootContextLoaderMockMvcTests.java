@@ -48,9 +48,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@ContextConfiguration(loader = SpringApplicationContextLoader.class)
+@ContextConfiguration(loader = SpringBootContextLoader.class)
 @WebAppConfiguration
-public class SpringApplicationContextLoaderMockMvcTests {
+public class SpringBootContextLoaderMockMvcTests {
 
 	@Autowired
 	private WebApplicationContext context;

@@ -54,7 +54,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 /**
  * A {@link ContextLoader} that can be used to test Spring Boot applications (those that
  * normally startup using {@link SpringApplication}). Although this loader can be used
- * directly, most test will instead want to use it with {@link SpringApplicationTest}.
+ * directly, most test will instead want to use it with {@link SpringBootTest}.
  * <p>
  * The loader supports both standard {@link MergedContextConfiguration} as well as
  * {@link WebMergedContextConfiguration}. If {@link WebMergedContextConfiguration} is used
@@ -67,9 +67,9 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @see SpringApplicationTest
+ * @see SpringBootTest
  */
-public class SpringApplicationContextLoader extends AbstractContextLoader {
+public class SpringBootContextLoader extends AbstractContextLoader {
 
 	private static final Set<String> INTEGRATION_TEST_ANNOTATIONS;
 
@@ -182,8 +182,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 				return true;
 			}
 		}
-		SpringApplicationTest annotation = AnnotatedElementUtils
-				.findMergedAnnotation(config.getTestClass(), SpringApplicationTest.class);
+		SpringBootTest annotation = AnnotatedElementUtils
+				.findMergedAnnotation(config.getTestClass(), SpringBootTest.class);
 		if (annotation != null && annotation.webEnvironment().isEmbedded()) {
 			return true;
 		}

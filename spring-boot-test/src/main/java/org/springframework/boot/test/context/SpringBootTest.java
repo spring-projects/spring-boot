@@ -41,10 +41,9 @@ import org.springframework.web.context.WebApplicationContext;
  * Provides the following features over and above the regular
  * <em>Spring TestContext Framework</em>:
  * <ul>
- * <li>Uses {@link SpringApplicationContextLoader} as the default {@link ContextLoader}
- * when no specific
- * {@link ContextConfiguration#loader() @ContextConfiguration(loader=...)} is defined.
- * </li>
+ * <li>Uses {@link SpringBootContextLoader} as the default {@link ContextLoader} when no
+ * specific {@link ContextConfiguration#loader() @ContextConfiguration(loader=...)} is
+ * defined.</li>
  * <li>Automatically searches for a
  * {@link SpringBootConfiguration @SpringBootConfiguration} when nested
  * {@code @Configuration} is not used, and no explicit {@link #classes() classes} are
@@ -66,8 +65,8 @@ import org.springframework.web.context.WebApplicationContext;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@BootstrapWith(SpringApplicationTestContextBootstrapper.class)
-public @interface SpringApplicationTest {
+@BootstrapWith(SpringBootTestContextBootstrapper.class)
+public @interface SpringBootTest {
 
 	/**
 	 * Alias for {@link #properties()}.

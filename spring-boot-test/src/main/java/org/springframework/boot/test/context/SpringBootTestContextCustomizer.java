@@ -26,18 +26,18 @@ import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * {@link ContextCustomizer} for {@link SpringApplicationTest}.
+ * {@link ContextCustomizer} for {@link SpringBootTest}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class SpringApplicationTestContextCustomizer implements ContextCustomizer {
+class SpringBootTestContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
-		SpringApplicationTest annotation = AnnotatedElementUtils.getMergedAnnotation(
-				mergedContextConfiguration.getTestClass(), SpringApplicationTest.class);
+		SpringBootTest annotation = AnnotatedElementUtils.getMergedAnnotation(
+				mergedContextConfiguration.getTestClass(), SpringBootTest.class);
 		if (annotation.webEnvironment().isEmbedded()) {
 			RestTemplate restTemplate = TestRestTemplateFactory
 					.createRestTemplate(context.getEnvironment());

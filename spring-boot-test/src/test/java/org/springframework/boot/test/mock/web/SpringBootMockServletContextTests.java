@@ -27,7 +27,7 @@ import javax.servlet.ServletContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.test.context.SpringApplicationContextLoader;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -45,7 +45,7 @@ import static org.hamcrest.Matchers.nullValue;
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@ContextConfiguration(loader = SpringApplicationContextLoader.class)
+@ContextConfiguration(loader = SpringBootContextLoader.class)
 @WebAppConfiguration("src/test/webapp")
 public class SpringBootMockServletContextTests implements ServletContextAware {
 

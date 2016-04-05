@@ -29,7 +29,7 @@ import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpointContextPa
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -53,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationTest
+@SpringBootTest
 @ContextConfiguration(classes = {
 		Config.class }, initializers = ContextPathListener.class)
 @DirtiesContext

@@ -16,50 +16,40 @@
 
 package org.springframework.boot.test.context;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringApplicationTest} configured with specific classes.
+ * Tests for {@link SpringBootTest} with active profiles. See gh-1469.
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringApplicationTest(classes = SpringApplicationTestWithClassesIntegrationTests.Config.class)
-public class SpringApplicationTestWithClassesIntegrationTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+@SpringBootTest("spring.config.name=enableother")
+@ActiveProfiles("override")
+public class SpringBootTestActiveProfileTests {
 
 	@Autowired
 	private ApplicationContext context;
 
 	@Test
-	public void injectsOnlyConfig() throws Exception {
-		assertThat(this.context.getBean(Config.class)).isNotNull();
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(AdditionalConfig.class);
+	public void profiles() throws Exception {
+		assertThat(this.context.getEnvironment().getActiveProfiles())
+				.containsExactly("override");
 	}
 
 	@Configuration
-	static class Config {
-
-	}
-
-	@Configuration
-	static class AdditionalConfig {
+	protected static class Config {
 
 	}
 

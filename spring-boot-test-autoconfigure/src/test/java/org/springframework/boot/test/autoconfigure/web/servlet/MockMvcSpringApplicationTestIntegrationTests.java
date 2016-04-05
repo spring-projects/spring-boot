@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -32,13 +32,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link SpringApplicationTest} with {@link AutoConfigureMockMvc} (i.e. full
+ * Tests for {@link SpringBootTest} with {@link AutoConfigureMockMvc} (i.e. full
  * integration test).
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationTest
+@SpringBootTest
 @AutoConfigureMockMvc(alwaysPrint = false)
 public class MockMvcSpringApplicationTestIntegrationTests {
 

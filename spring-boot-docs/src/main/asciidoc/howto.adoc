@@ -543,14 +543,14 @@ that and be sure that it has initialized is to add a `@Bean` of type
 `ApplicationListener<EmbeddedServletContainerInitializedEvent>` and pull the container
 out of the event when it is published.
 
-Tests that use `@SpringApplicationTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can
+Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can
 also inject the actual port into a field using the `@LocalServerPort` annotation. For
 example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationTest(webEnvironment=WebEnvironment.RANDOM_PORT)
+	@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 	public class MyWebIntegrationTests {
 
 		@Autowired

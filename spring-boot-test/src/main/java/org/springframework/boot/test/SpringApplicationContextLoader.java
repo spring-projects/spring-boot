@@ -29,7 +29,7 @@ import java.util.Set;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.web.ServletContextApplicationContextInitializer;
-import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -67,12 +67,12 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @see org.springframework.boot.test.context.SpringApplicationTest
+ * @see org.springframework.boot.test.context.SpringBootTest
  * @see org.springframework.boot.test.IntegrationTest
  * @see org.springframework.boot.test.WebIntegrationTest
  * @deprecated since 1.4.0 in favor of
- * {@link SpringApplicationTest @SpringApplicationTest}
- * {@link org.springframework.boot.test.context.SpringApplicationContextLoader} can also
+ * {@link SpringBootTest @SpringApplicationTest}
+ * {@link org.springframework.boot.test.context.SpringBootContextLoader} can also
  * be considered if absolutely necessary.
  */
 @Deprecated

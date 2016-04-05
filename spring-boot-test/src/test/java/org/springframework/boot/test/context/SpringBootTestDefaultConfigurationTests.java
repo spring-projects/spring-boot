@@ -16,33 +16,35 @@
 
 package org.springframework.boot.test.context;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringApplicationTest} configured with
- * {@link WebEnvironment#DEFINED_PORT}.
+ * Tests for {@link SpringBootTest} (detectDefaultConfigurationClasses).
  *
- * @author Phillip Webb
- * @author Andy Wilkinson
+ * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"value=123" })
-public class SpringApplicationTestWebEnvironmentRandomPortTests
-		extends AbstractSpringApplicationTestWebEnvironmentEmbeddedTests {
+public class SpringBootTestDefaultConfigurationTests {
+
+	@Autowired
+	private Config config;
+
+	@Test
+	public void nestedConfigClasses() {
+		assertThat(this.config).isNotNull();
+	}
 
 	@Configuration
-	@EnableWebMvc
-	@RestController
-	protected static class Config extends AbstractConfig {
+	protected static class Config {
 
 	}
 

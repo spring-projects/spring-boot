@@ -16,68 +16,64 @@
 
 package org.springframework.boot.test.context;
 
-import javax.servlet.ServletContext;
+import javax.annotation.PostConstruct;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.env.Environment;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringApplicationTest} configured with {@link WebEnvironment#MOCK}.
+ * Tests for {@link SpringBootTest} with {@link TestPropertySource} locations.
  *
  * @author Phillip Webb
- * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationTest("value=123")
 @DirtiesContext
-public class SpringApplicationTestWebEnvironmentMockTests {
-
-	@Value("${value}")
-	private int value = 0;
-
-	@Autowired
-	private WebApplicationContext context;
+@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = "value1=123")
+@TestPropertySource(properties = "value2=456", locations = "classpath:/test-property-source-annotation.properties")
+public class SpringBootTestPropertyLocationTests {
 
 	@Autowired
-	private ServletContext servletContext;
+	private Environment environment;
 
 	@Test
-	public void annotationAttributesOverridePropertiesFile() throws Exception {
-		assertThat(this.value).isEqualTo(123);
-	}
-
-	@Test
-	public void validateWebApplicationContextIsSet() {
-		WebApplicationContext fromServletContext = WebApplicationContextUtils
-				.getWebApplicationContext(this.servletContext);
-		assertThat(fromServletContext).isSameAs(this.context);
-	}
-
-	@Test
-	public void setsRequestContextHolder() throws Exception {
-		RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
-		assertThat(attributes).isNotNull();
+	public void loadedProperties() throws Exception {
+		assertThat(this.environment.getProperty("value1")).isEqualTo("123");
+		assertThat(this.environment.getProperty("value2")).isEqualTo("456");
+		assertThat(this.environment.getProperty("annotation-referenced"))
+				.isEqualTo("fromfile");
 	}
 
 	@Configuration
-	@EnableWebMvc
-	protected static class Config {
+	static class Config {
+
+		@Value("${value1}")
+		private String value1;
+
+		@Value("${value2}")
+		private String value2;
+
+		@Value("${annotation-referenced}")
+		private String annotationReferenced;
+
+		@PostConstruct
+		void checkValues() {
+			assertThat(this.value1).isEqualTo("123");
+			assertThat(this.value2).isEqualTo("456");
+			assertThat(this.annotationReferenced).isEqualTo("fromfile");
+		}
 
 		@Bean
 		public static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {

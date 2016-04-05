@@ -32,11 +32,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringApplicationContextLoader}
+ * Tests for {@link SpringBootContextLoader}
  *
  * @author Stephane Nicoll
  */
-public class SpringApplicationContextLoaderTests {
+public class SpringBootContextLoaderTests {
 
 	@Test
 	public void environmentPropertiesSimple() throws Exception {
@@ -104,43 +104,43 @@ public class SpringApplicationContextLoaderTests {
 		assertThat(actual.get(key)).isEqualTo(value);
 	}
 
-	@SpringApplicationTest({ "key=myValue", "anotherKey:anotherValue" })
+	@SpringBootTest({ "key=myValue", "anotherKey:anotherValue" })
 	@ContextConfiguration(classes = Config.class)
 	static class SimpleConfig {
 
 	}
 
-	@SpringApplicationTest(properties = { "key=myValue", "anotherKey:anotherValue" })
+	@SpringBootTest(properties = { "key=myValue", "anotherKey:anotherValue" })
 	@ContextConfiguration(classes = Config.class)
 	static class SimpleConfigNonAlias {
 
 	}
 
-	@SpringApplicationTest("server.port=2345")
+	@SpringBootTest("server.port=2345")
 	@ContextConfiguration(classes = Config.class)
 	static class OverrideConfig {
 
 	}
 
-	@SpringApplicationTest({ "key=myValue", "otherKey=otherValue" })
+	@SpringBootTest({ "key=myValue", "otherKey=otherValue" })
 	@ContextConfiguration(classes = Config.class)
 	static class AppendConfig {
 
 	}
 
-	@SpringApplicationTest({ "key=my=Value", "anotherKey:another:Value" })
+	@SpringBootTest({ "key=my=Value", "anotherKey:another:Value" })
 	@ContextConfiguration(classes = Config.class)
 	static class SameSeparatorInValue {
 
 	}
 
-	@SpringApplicationTest({ "key=my:Value", "anotherKey:another=Value" })
+	@SpringBootTest({ "key=my:Value", "anotherKey:another=Value" })
 	@ContextConfiguration(classes = Config.class)
 	static class AnotherSeparatorInValue {
 
 	}
 
-	@SpringApplicationTest({ "key=myValue", "variables=foo=FOO\n bar=BAR" })
+	@SpringBootTest({ "key=myValue", "variables=foo=FOO\n bar=BAR" })
 	@ContextConfiguration(classes = Config.class)
 	static class NewLineInValue {
 

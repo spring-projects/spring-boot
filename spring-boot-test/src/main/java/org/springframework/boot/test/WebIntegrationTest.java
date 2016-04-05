@@ -40,7 +40,7 @@ import org.springframework.test.context.BootstrapWith;
  * @since 1.2.1
  * @see IntegrationTest
  * @deprecated since 1.4.0 in favor of
- * {@link org.springframework.boot.test.context.SpringApplicationTest} with
+ * {@link org.springframework.boot.test.context.SpringBootTest} with
  * {@code webEnvironment=RANDOM_PORT} or {@code webEnvironment=DEFINED_PORT}.
  */
 @Documented

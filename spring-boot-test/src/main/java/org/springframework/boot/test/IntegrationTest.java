@@ -23,7 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener;
@@ -41,7 +41,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
  *
  * @author Dave Syer
  * @see WebIntegrationTest
- * @deprecated since 1.4.0 in favor of {@link SpringApplicationTest}
+ * @deprecated since 1.4.0 in favor of {@link SpringBootTest}
  */
 @Documented
 @Inherited

@@ -4349,12 +4349,12 @@ One thing to watch out for though is that the external properties, logging and o
 features of Spring Boot are only installed in the context by default if you use
 `SpringApplication` to create it.
 
-Spring Boot provides a `@SpringApplicationTest` annotation which can be used as an
+Spring Boot provides a `@SpringBootTest` annotation which can be used as an
 alternative the standard `spring-test` `@ContextConfiguration` annotation when you need
 Spring Boot features. The annotation works by creating the `ApplicationContext` used
 in your tests via `SpringApplication`.
 
-You can use the `webEnvironment` attribute of `@SpringApplicationTest` to further refine
+You can use the `webEnvironment` attribute of `@SpringBootTest` to further refine
 how your tests will run:
 
 * `MOCK` -- Loads a `WebApplicationContext` and provides a mock servlet environment.
@@ -4370,7 +4370,7 @@ how your tests will run:
 * `NONE` -- Loads an `ApplicationContext` using `SpringApplication` but does not provides
   _any_ servlet environment (mock or otherwise).
 
-NOTE: In addition to `@SpringApplicationTest` a number of other annotations are also
+NOTE: In addition to `@SpringBootTest` a number of other annotations are also
 provided for testing more specific slices of an application. See below for details.
 
 TIP: Don't forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise
@@ -4424,7 +4424,7 @@ will need to register the `TypeExcludeFilter` with it. See
 [[boot-features-testing-spring-boot-applications-working-with-random-ports]]
 ==== Working with random ports
 If you need to start a full running server for tests, we recommend that you use random
-ports. If you use `@SpringApplicationTest(webEnvironment=WebEnvironment.RANDOM_PORT)`
+ports. If you use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`
 an available port will be picked at random each time your test runs.
 
 The `@LocalServerPort` annotation can be used to
@@ -4443,7 +4443,7 @@ For convenience, tests that need to make REST calls to the started server can ad
 	import static org.assertj.core.api.Assertions.*
 
 	@RunWith(SpringRunner.class)
-	@SpringApplicationTest(webEnvironment=WebEnvironment.RANDOM_PORT)
+	@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 	public class MyWebIntegrationTests {
 
 		@Autowired
@@ -4490,7 +4490,7 @@ implementation:
 	import static org.mockito.BDDMockito.*;
 
 	@RunWith(SpringRunner.class)
-	@SpringApplicationTest
+	@SpringBootTest
 	public class MyTests {
 
 		@MockBean
@@ -4528,7 +4528,7 @@ more `@AutoConfigure...` annotations that can be used to customize auto-configur
 settings.
 
 TIP: It's also possible to use the `@AutoConfigure...` annotations with the standard
-`@SpringApplicationTest` annotation. You can use this combination if you're not interested
+`@SpringBootTest` annotation. You can use this combination if you're not interested
  in '`slicing`' your application but you want some of the auto-configured test beans.
 
 
@@ -4830,7 +4830,7 @@ Spring's test framework into Spock.
 
 NOTE: The annotations <<boot-features-testing-spring-boot-applications,described above>>
 can be used with Spock, i.e. you can annotate your `Specification` with
-`@SpringApplicationTest` to suit the needs of your tests.
+`@SpringBootTest` to suit the needs of your tests.
 
 
 
@@ -4845,7 +4845,7 @@ useful when testing your application.
 ==== ConfigFileApplicationContextInitializer
 `ConfigFileApplicationContextInitializer` is an `ApplicationContextInitializer` that
 can apply to your tests to load Spring Boot `application.properties` files. You can use
-this when you don't need the full features provided by `@SpringApplicationTest`.
+this when you don't need the full features provided by `@SpringBootTest`.
 
 [source,java,indent=0]
 ----

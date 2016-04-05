@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
-import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.test.context.BootstrapWith;
@@ -47,7 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
  * override these settings.
  * <p>
  * If you are looking to load your full application configuration, but use an embedded
- * database, you should consider {@link SpringApplicationTest @SpringApplicationTest}
+ * database, you should consider {@link SpringBootTest @SpringApplicationTest}
  * combined with {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} rather than
  * this annotation.
  *

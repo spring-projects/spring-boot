@@ -37,13 +37,13 @@ import org.springframework.web.servlet.DispatcherServlet;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Base class for {@link SpringApplicationTest} tests configured to start an embedded
+ * Base class for {@link SpringBootTest} tests configured to start an embedded
  * servlet container
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public abstract class AbstractSpringApplicationTestWebEnvironmentEmbeddedTests {
+public abstract class AbstractSpringBootTestEmbeddedWebEnvironmentTests {
 
 	@LocalServerPort
 	private int port = 0;

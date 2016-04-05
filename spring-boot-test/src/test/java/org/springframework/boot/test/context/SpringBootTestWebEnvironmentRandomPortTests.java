@@ -16,43 +16,33 @@
 
 package org.springframework.boot.test.context;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
- * Tests for disabling JMX by default
+ * Tests for {@link SpringBootTest} configured with
+ * {@link WebEnvironment#DEFINED_PORT}.
  *
- * @author Dave Syer
+ * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringApplicationTest
-public class SpringApplicationTestJmxTests {
-
-	@Value("${spring.jmx.enabled}")
-	private boolean jmx;
-
-	@Test
-	public void disabledByDefault() {
-		assertThat(this.jmx).isFalse();
-	}
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
+		"value=123" })
+public class SpringBootTestWebEnvironmentRandomPortTests
+		extends AbstractSpringBootTestEmbeddedWebEnvironmentTests {
 
 	@Configuration
-	protected static class Config {
-
-		@Bean
-		public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-			return new PropertySourcesPlaceholderConfigurer();
-		}
+	@EnableWebMvc
+	@RestController
+	protected static class Config extends AbstractConfig {
 
 	}
 

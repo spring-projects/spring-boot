@@ -20,32 +20,35 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.test.context.SpringBootTestMixedConfigurationTests.Config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringApplicationTest} with active profiles. See gh-1469.
+ * Tests for {@link SpringBootTest}.
  *
- * @author Phillip Webb
+ * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringApplicationTest("spring.config.name=enableother")
-@ActiveProfiles("override")
-public class SpringApplicationTestActiveProfileTests {
+@SpringBootTest
+@ContextConfiguration(classes = Config.class, locations = "classpath:test.groovy")
+public class SpringBootTestMixedConfigurationTests {
 
 	@Autowired
-	private ApplicationContext context;
+	private String foo;
+
+	@Autowired
+	private Config config;
 
 	@Test
-	public void profiles() throws Exception {
-		assertThat(this.context.getEnvironment().getActiveProfiles())
-				.containsExactly("override");
+	public void mixedConfigClasses() {
+		assertThat(this.foo).isNotNull();
+		assertThat(this.config).isNotNull();
 	}
 
 	@Configuration

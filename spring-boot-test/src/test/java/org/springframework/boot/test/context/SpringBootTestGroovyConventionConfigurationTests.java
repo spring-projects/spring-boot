@@ -26,14 +26,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringApplicationTest} finding groovy config.
+ * Tests for {@link SpringBootTest} finding groovy config.
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationTest
+@SpringBootTest
 @DirtiesContext
-public class SpringApplicationTestGroovyConventionConfigurationTests {
+public class SpringBootTestGroovyConventionConfigurationTests {
 
 	@Autowired
 	private String foo;

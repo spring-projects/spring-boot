@@ -16,43 +16,50 @@
 
 package org.springframework.boot.test.context;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringApplicationTestMixedConfigurationTests.Config;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringApplicationTest}.
+ * Tests for {@link SpringBootTest} configured with specific classes.
  *
- * @author Dave Syer
+ * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringApplicationTest
-@ContextConfiguration(classes = Config.class, locations = "classpath:test.groovy")
-public class SpringApplicationTestMixedConfigurationTests {
+@SpringBootTest(classes = SpringBootTestWithClassesIntegrationTests.Config.class)
+public class SpringBootTestWithClassesIntegrationTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Autowired
-	private String foo;
-
-	@Autowired
-	private Config config;
+	private ApplicationContext context;
 
 	@Test
-	public void mixedConfigClasses() {
-		assertThat(this.foo).isNotNull();
-		assertThat(this.config).isNotNull();
+	public void injectsOnlyConfig() throws Exception {
+		assertThat(this.context.getBean(Config.class)).isNotNull();
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(AdditionalConfig.class);
 	}
 
 	@Configuration
-	protected static class Config {
+	static class Config {
+
+	}
+
+	@Configuration
+	static class AdditionalConfig {
 
 	}
 

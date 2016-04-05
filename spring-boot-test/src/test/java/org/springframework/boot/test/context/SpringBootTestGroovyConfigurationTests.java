@@ -21,26 +21,28 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringApplicationTest} finding XML config.
+ * Tests for {@link SpringBootTest} (detectDefaultConfigurationClasses).
  *
- * @author Phillip Webb
+ * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringApplicationTest
-public class SpringApplicationTestXmlConventionConfigurationTests {
+@SpringBootTest
+@ContextConfiguration(locations = "classpath:test.groovy")
+public class SpringBootTestGroovyConfigurationTests {
 
 	@Autowired
 	private String foo;
 
 	@Test
-	public void xmlConfigLoaded() {
-		assertThat(this.foo).isEqualTo("World");
+	public void groovyConfigLoaded() {
+		assertThat(this.foo).isNotNull();
 	}
 
 }
