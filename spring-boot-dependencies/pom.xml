@@ -43,7 +43,7 @@
 		</developer>
 	</developers>
 	<properties>
-		<activemq.version>5.13.1</activemq.version>
+		<activemq.version>5.13.2</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
 		<appengine.version>1.9.34</appengine.version>
 		<artemis.version>1.1.0</artemis.version>
