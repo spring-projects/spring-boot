@@ -34,12 +34,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationCustomFilterContextPathTests.Application;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,10 +54,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@DirtiesContext
-@SpringApplicationConfiguration(Application.class)
 @SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
 		"spring.jersey.type=filter", "server.contextPath=/app" })
+@DirtiesContext
 public class JerseyAutoConfigurationCustomFilterContextPathTests {
 
 	@Autowired
@@ -97,6 +95,7 @@ public class JerseyAutoConfigurationCustomFilterContextPathTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
+	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class, JerseyAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })

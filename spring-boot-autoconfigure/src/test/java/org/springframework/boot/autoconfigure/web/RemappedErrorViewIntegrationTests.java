@@ -20,13 +20,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.RemappedErrorViewIntegrationTests.TestConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -41,9 +39,10 @@ import org.springframework.web.client.RestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Integration tests for remapped error pages.
+ *
  * @author Dave Syer
  */
-@SpringApplicationConfiguration(TestConfiguration.class)
 @RunWith(SpringRunner.class)
 @SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "server.servletPath:/spring/*")
 @DirtiesContext

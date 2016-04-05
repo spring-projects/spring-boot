@@ -22,9 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.actuate.autoconfigure.MinimalActuatorHypermediaApplication;
-import org.springframework.boot.actuate.endpoint.mvc.HalBrowserMvcEndpointServerContextPathIntegrationTests.SpringBootHypermediaApplication;
 import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -51,7 +49,6 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
  * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SpringBootHypermediaApplication.class)
 @SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
 		"server.contextPath=/spring" })
 @DirtiesContext

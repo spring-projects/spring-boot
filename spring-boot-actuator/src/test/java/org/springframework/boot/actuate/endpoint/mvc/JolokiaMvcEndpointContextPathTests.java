@@ -29,15 +29,15 @@ import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpointContextPa
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -53,10 +53,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@DirtiesContext
-@SpringApplicationConfiguration(classes = {
+@SpringApplicationTest
+@ContextConfiguration(classes = {
 		Config.class }, initializers = ContextPathListener.class)
-@WebAppConfiguration
+@DirtiesContext
 public class JolokiaMvcEndpointContextPathTests {
 
 	@Autowired

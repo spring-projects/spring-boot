@@ -19,12 +19,12 @@ package sample.hypermedia.jpa;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SampleHypermediaJpaApplication.class)
+@SpringApplicationTest
 @WebAppConfiguration
 public class SampleHypermediaJpaApplicationTests {
 

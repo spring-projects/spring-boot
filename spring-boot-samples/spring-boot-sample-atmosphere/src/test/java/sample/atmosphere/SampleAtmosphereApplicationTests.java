@@ -30,7 +30,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -47,8 +46,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SampleAtmosphereApplication.class)
-@SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringApplicationTest(classes = SampleAtmosphereApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class SampleAtmosphereApplicationTests {
 

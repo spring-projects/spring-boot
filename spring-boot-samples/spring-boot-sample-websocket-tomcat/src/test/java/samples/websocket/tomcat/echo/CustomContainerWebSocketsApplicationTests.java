@@ -36,7 +36,6 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -51,9 +50,8 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration({ SampleTomcatWebSocketApplication.class,
-		CustomContainerConfiguration.class })
-@SpringApplicationTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@SpringApplicationTest(classes = { SampleTomcatWebSocketApplication.class,
+		CustomContainerConfiguration.class }, webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext
 public class CustomContainerWebSocketsApplicationTests {
 

@@ -34,12 +34,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationObjectMapperProviderTests.Application;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,9 +54,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  */
 @RunWith(SpringRunner.class)
-@DirtiesContext
-@SpringApplicationConfiguration(Application.class)
 @SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jackson.serialization-inclusion=non_null")
+@DirtiesContext
 public class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 
 	@Autowired
@@ -123,6 +121,7 @@ public class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
+	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			JacksonAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
 			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })

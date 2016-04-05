@@ -35,7 +35,6 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.EndpointMvcIntegrationTests.Application;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
@@ -49,7 +48,6 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -73,7 +71,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(Application.class)
 @SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class EndpointMvcIntegrationTests {
@@ -98,18 +95,6 @@ public class EndpointMvcIntegrationTests {
 				.getForObject("http://localhost:" + this.port + "/health", String.class);
 		assertThat(body).isNotNull().contains("status");
 		assertThat(this.interceptor.invoked()).isTrue();
-	}
-
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			JacksonAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
-	protected @interface MinimalWebConfiguration {
-
 	}
 
 	@Configuration
@@ -162,6 +147,18 @@ public class EndpointMvcIntegrationTests {
 		protected TestInterceptor interceptor() {
 			return new TestInterceptor();
 		}
+
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			JacksonAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
+	protected @interface MinimalWebConfiguration {
 
 	}
 

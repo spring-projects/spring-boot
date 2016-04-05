@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationServ
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.boot.test.rule.OutputCapture;
@@ -53,9 +52,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
+@SpringApplicationTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-@SpringApplicationConfiguration(Application.class)
-@SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class JerseyAutoConfigurationServletContainerTests {
 
 	@ClassRule

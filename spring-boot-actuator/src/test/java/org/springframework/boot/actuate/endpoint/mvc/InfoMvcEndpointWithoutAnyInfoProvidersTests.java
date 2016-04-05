@@ -26,17 +26,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.InfoMvcEndpointWithoutAnyInfoProvidersTests.TestConfiguration;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -50,8 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Meang Akira Tanaka
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(classes = { TestConfiguration.class })
-@WebAppConfiguration
+@SpringApplicationTest
 public class InfoMvcEndpointWithoutAnyInfoProvidersTests {
 
 	@Autowired

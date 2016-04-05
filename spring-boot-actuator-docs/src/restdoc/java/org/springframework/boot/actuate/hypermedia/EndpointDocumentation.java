@@ -36,10 +36,11 @@ import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringApplicationContextLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -53,7 +54,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SpringBootHypermediaApplication.class)
+@ContextConfiguration(classes = SpringBootHypermediaApplication.class, loader = SpringApplicationContextLoader.class)
 @WebAppConfiguration
 @TestPropertySource(properties = { "spring.jackson.serialization.indent_output=true",
 		"endpoints.health.sensitive=true", "endpoints.actuator.enabled=false" })
@@ -143,7 +144,9 @@ public class EndpointDocumentation {
 	public static class EndpointDoc {
 
 		private String path;
+
 		private String custom;
+
 		private String title;
 
 		public EndpointDoc(File rootDir, String path) {

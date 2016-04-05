@@ -29,13 +29,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationCustomLoadOnStartupTests.Application;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.SpringApplicationTest;
 import org.springframework.boot.test.context.SpringApplicationTest.WebEnvironment;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -47,9 +46,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@DirtiesContext
-@SpringApplicationConfiguration(Application.class)
 @SpringApplicationTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.servlet.load-on-startup=5")
+@DirtiesContext
 public class JerseyAutoConfigurationCustomLoadOnStartupTests {
 
 	@Autowired
@@ -74,6 +72,7 @@ public class JerseyAutoConfigurationCustomLoadOnStartupTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
+	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class, JerseyAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
