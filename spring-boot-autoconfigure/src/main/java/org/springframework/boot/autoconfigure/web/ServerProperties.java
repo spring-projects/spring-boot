@@ -72,6 +72,7 @@ import org.springframework.util.StringUtils;
  * @author Ivan Sopov
  * @author Marcos Barbero
  * @author Eddú Meléndez
+ * @author Quinten De Swaef
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties
@@ -583,7 +584,7 @@ public class ServerProperties
 		/**
 		 * Minimum amount of worker threads.
 		 */
-		private int minSpareThreads = 0; //Number of minimum spare threads in protocol handler
+		private int minSpareThreads = 0; // Minimum spare threads in protocol handler
 
 		/**
 		 * Maximum size in bytes of the HTTP message header.
@@ -604,7 +605,7 @@ public class ServerProperties
 		}
 
 		public int getMinSpareThreads() {
-			return minSpareThreads;
+			return this.minSpareThreads;
 		}
 
 		public void setMinSpareThreads(int minSpareThreads) {

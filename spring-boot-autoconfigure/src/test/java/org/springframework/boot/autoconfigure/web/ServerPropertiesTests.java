@@ -62,6 +62,7 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Quinten De Swaef
  */
 public class ServerPropertiesTests {
 
