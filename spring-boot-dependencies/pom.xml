@@ -61,7 +61,7 @@
 		<commons-digester.version>2.1</commons-digester.version>
 		<commons-pool.version>1.6</commons-pool.version>
 		<commons-pool2.version>2.4.2</commons-pool2.version>
-		<couchbase-client.version>2.2.3</couchbase-client.version>
+		<couchbase-client.version>2.2.5</couchbase-client.version>
 		<couchbase-cache-client.version>2.0.0</couchbase-cache-client.version>
 		<crashub.version>1.3.2</crashub.version>
 		<derby.version>10.12.1.1</derby.version>
