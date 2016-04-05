@@ -1,0 +1,17 @@
+---
+spring:
+  profiles:
+    active: dev, healthcheck
+my:
+  property: fromyamlfile
+  property2: fromyamlfile
+---
+spring:
+  profiles: dev
+my:
+  property: fromdevprofile
+---
+spring:
+  profiles: healthcheck
+my:
+  property2: fromhealthcheckprofile
