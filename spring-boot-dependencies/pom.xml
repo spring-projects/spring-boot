@@ -49,7 +49,7 @@
 		<activemq.version>5.12.3</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
 		<artemis.version>1.1.0</artemis.version>
-		<aspectj.version>1.8.8</aspectj.version>
+		<aspectj.version>1.8.9</aspectj.version>
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
 		<cassandra-driver.version>2.1.9</cassandra-driver.version>
