@@ -61,6 +61,7 @@ import org.springframework.util.StringUtils;
  * @author Ivan Sopov
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Christoph Dreis
  * @since 1.2.0
  * @see UndertowEmbeddedServletContainerFactory
  */
@@ -95,7 +96,8 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * @param port the port to listen on (not used)
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
-	 * @deprecated as of 1.4 in favor of using constructors without port argument
+	 * @deprecated as of 1.4 in favor of
+	 * {@link #UndertowEmbeddedServletContainer(Builder, DeploymentManager, String, boolean, Compression)}
 	 */
 	@Deprecated
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
@@ -112,13 +114,14 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * @param useForwardHeaders if x-forward headers should be used
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
-	 * @deprecated as of 1.4 in favor of using constructors without port argument
+	 * @deprecated as of 1.4 in favor of
+	 * {@link #UndertowEmbeddedServletContainer(Builder, DeploymentManager, String, boolean, boolean, Compression)}
 	 */
 	@Deprecated
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
 			String contextPath, int port, boolean useForwardHeaders, boolean autoStart,
 			Compression compression) {
-		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression, null);
+		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression);
 	}
 
 	/**
@@ -131,13 +134,15 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 * @param serverHeader string to be used in http header
-	 * @deprecated as of 1.4 in favor of using constructors without port argument
+	 * @deprecated as of 1.4 in favor of
+	 * {@link #UndertowEmbeddedServletContainer(Builder, DeploymentManager, String, boolean, boolean, Compression, String)}
 	 */
 	@Deprecated
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
 			String contextPath, int port, boolean useForwardHeaders, boolean autoStart,
 			Compression compression, String serverHeader) {
-		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression, serverHeader);
+		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression,
+				serverHeader);
 	}
 
 	/**
@@ -165,8 +170,8 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
 			String contextPath, boolean useForwardHeaders, boolean autoStart,
 			Compression compression) {
-		this(builder, manager, contextPath, useForwardHeaders, autoStart,
-				compression, null);
+		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression,
+				null);
 	}
 
 	/**
