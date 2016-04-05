@@ -71,6 +71,7 @@
 		<flyway.version>3.2.1</flyway.version>
 		<freemarker.version>2.3.23</freemarker.version>
 		<elasticsearch.version>2.2.2</elasticsearch.version>
+		<gemfire.version>8.2.0</gemfire.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<gradle.version>1.12</gradle.version>
 		<groovy.version>2.4.6</groovy.version>
@@ -667,6 +668,11 @@
 				<groupId>com.fasterxml.jackson.module</groupId>
 				<artifactId>jackson-module-parameter-names</artifactId>
 				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.gemstone.gemfire</groupId>
+				<artifactId>gemfire</artifactId>
+				<version>${gemfire.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.github.ben-manes.caffeine</groupId>
