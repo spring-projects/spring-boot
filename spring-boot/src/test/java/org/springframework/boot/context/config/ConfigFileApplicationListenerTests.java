@@ -73,6 +73,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Eddú Meléndez
  */
 public class ConfigFileApplicationListenerTests {
 
@@ -527,6 +528,20 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(names).contains(
 				"applicationConfig: [classpath:/testsetprofiles.yml]#dev",
 				"applicationConfig: [classpath:/testsetprofiles.yml]");
+	}
+
+	@Test
+	public void yamlSetsMultiProfiles() throws Exception {
+		this.initializer.setSearchNames("testsetmultiprofiles");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles()).containsExactly("dev", "healthcheck");
+	}
+
+	@Test
+	public void yamlSetsMultiProfilesWithWithespace() throws Exception {
+		this.initializer.setSearchNames("testsetmultiprofileswhitespace");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles()).containsExactly("dev", "healthcheck");
 	}
 
 	@Test
