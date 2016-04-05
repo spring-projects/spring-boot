@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -63,7 +62,7 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 		Map<String, String> defaults = new LinkedHashMap<String, String>();
 		defaults.put("http.enabled", String.valueOf(false));
 		defaults.put("node.local", String.valueOf(true));
-		defaults.put("path.home", new File(System.getProperty("java.io.tmpdir"), "elastic-home").getAbsolutePath());
+		defaults.put("path.home", System.getProperty("user.dir"));
 		DEFAULTS = Collections.unmodifiableMap(defaults);
 	}
 

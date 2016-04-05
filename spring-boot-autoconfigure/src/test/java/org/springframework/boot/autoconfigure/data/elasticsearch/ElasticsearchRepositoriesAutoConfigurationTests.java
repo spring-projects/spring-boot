@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.data.alt.elasticsearch.CityElastic
 import org.springframework.boot.autoconfigure.data.elasticsearch.city.City;
 import org.springframework.boot.autoconfigure.data.elasticsearch.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
@@ -49,6 +50,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
+		addElasticsearchProperties(this.context);
 		this.context.register(TestConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchRepositoriesAutoConfiguration.class,
@@ -62,6 +64,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
+		addElasticsearchProperties(this.context);
 		this.context.register(EmptyConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchRepositoriesAutoConfiguration.class,
@@ -74,6 +77,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		this.context = new AnnotationConfigApplicationContext();
+		addElasticsearchProperties(this.context);
 		this.context.register(CustomizedConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchRepositoriesAutoConfiguration.class,
@@ -81,6 +85,11 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityElasticsearchDbRepository.class)).isNotNull();
+	}
+
+	private void addElasticsearchProperties(AnnotationConfigApplicationContext context) {
+		EnvironmentTestUtils.addEnvironment(context,
+				"spring.data.elasticsearch.properties.path.home:target");
 	}
 
 	@Configuration
