@@ -62,6 +62,7 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Quinten De Swaef
  */
 public class ServerPropertiesTests {
 
@@ -256,6 +257,14 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.maxHttpHeaderSize", "9999");
 		bindProperties(map);
 		assertThat(this.properties.getTomcat().getMaxHttpHeaderSize()).isEqualTo(9999);
+	}
+
+	@Test
+	public void testCustomizeTomcatMinSpareThreads() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.min-spare-threads", "10");
+		bindProperties(map);
+		assertThat(this.properties.getTomcat().getMinSpareThreads()).isEqualTo(10);
 	}
 
 	@Test
