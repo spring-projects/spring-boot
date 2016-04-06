@@ -90,7 +90,7 @@ public @interface ConfigurationProperties {
 	 * defined in the environment.
 	 * @return the path (or paths) of resources to bind to
 	 * @see #merge()
-	 * @deprecated since 1.4 in favor of configuring the environment directly with
+	 * @deprecated as of 1.4 in favor of configuring the environment directly with
 	 * additional locations
 	 */
 	@Deprecated
@@ -101,7 +101,7 @@ public @interface ConfigurationProperties {
 	 * merged with the default configuration.
 	 * @return the flag value (default true)
 	 * @see #locations()
-	 * @deprecated since 1.4 along with {@link #locations()} in favor of configuring the
+	 * @deprecated as of 1.4 along with {@link #locations()} in favor of configuring the
 	 * environment directly with additional locations
 	 */
 	@Deprecated

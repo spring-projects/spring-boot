@@ -70,10 +70,9 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @see org.springframework.boot.test.context.SpringBootTest
  * @see org.springframework.boot.test.IntegrationTest
  * @see org.springframework.boot.test.WebIntegrationTest
- * @deprecated since 1.4.0 in favor of
- * {@link SpringBootTest @SpringApplicationTest}
- * {@link org.springframework.boot.test.context.SpringBootContextLoader} can also
- * be considered if absolutely necessary.
+ * @deprecated as of 1.4 in favor of {@link SpringBootTest @SpringApplicationTest}
+ * {@link org.springframework.boot.test.context.SpringBootContextLoader} can also be
+ * considered if absolutely necessary.
  */
 @Deprecated
 public class SpringApplicationContextLoader extends AbstractContextLoader {

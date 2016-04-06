@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test;
+package sample.data.gemfire.service;
 
 /**
- * JUnit {@code @Rule} to capture output from System.out and System.err.
+ * Exception thrown from {@link GemstoneService}.
  *
- * @author Phillip Webb
- * @author Andy Wilkinson
- * @deprecated as of 1.4 in favor of
- * {@link org.springframework.boot.test.rule.OutputCapture}
+ * @author John Blum
  */
-@Deprecated
-public class OutputCapture extends org.springframework.boot.test.rule.OutputCapture {
+public class IllegalGemstoneException extends IllegalArgumentException {
+
+	public IllegalGemstoneException(String message) {
+		super(message);
+	}
+
 }

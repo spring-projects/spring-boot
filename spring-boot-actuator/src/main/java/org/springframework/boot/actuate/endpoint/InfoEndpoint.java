@@ -60,7 +60,8 @@ public class InfoEndpoint extends AbstractEndpoint<Info> {
 	/**
 	 * Return additional information to include in the output.
 	 * @return additional information
-	 * @deprecated define an additional {@link InfoContributor} bean instead.
+	 * @deprecated as of 1.4 in favor of defining an additional {@link InfoContributor}
+	 * bean.
 	 */
 	@Deprecated
 	protected Map<String, Object> getAdditionalInfo() {

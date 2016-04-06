@@ -384,8 +384,8 @@ public class RabbitAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	private boolean getMandatory(RabbitTemplate rabbitTemplate) {
-		ValueExpression<Boolean> expression = (ValueExpression<Boolean>)
-				new DirectFieldAccessor(rabbitTemplate).getPropertyValue("mandatoryExpression");
+		ValueExpression<Boolean> expression = (ValueExpression<Boolean>) new DirectFieldAccessor(
+				rabbitTemplate).getPropertyValue("mandatoryExpression");
 		return expression.getValue();
 	}
 

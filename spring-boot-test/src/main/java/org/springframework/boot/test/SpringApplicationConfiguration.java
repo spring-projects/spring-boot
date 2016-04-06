@@ -41,7 +41,7 @@ import org.springframework.test.context.ContextConfiguration;
  * @author Sam Brannen
  * @see SpringBootContextLoader
  * @see ContextConfiguration
- * @deprecated since 1.4.0 in favor of {@link SpringBootTest} or direct use of
+ * @deprecated as of 1.4 in favor of {@link SpringBootTest} or direct use of
  * {@link SpringBootContextLoader}.
  */
 @ContextConfiguration(loader = SpringBootContextLoader.class)

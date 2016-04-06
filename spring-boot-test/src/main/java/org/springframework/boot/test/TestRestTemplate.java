@@ -26,7 +26,7 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Dave Syer
  * @author Phillip Webb
- * @deprecated since 1.4.0 in favor of
+ * @deprecated as of 1.4 in favor of
  * {@link org.springframework.boot.test.web.client.TestRestTemplate}
  */
 @Deprecated

@@ -41,7 +41,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
  *
  * @author Dave Syer
  * @see WebIntegrationTest
- * @deprecated since 1.4.0 in favor of {@link SpringBootTest}
+ * @deprecated as of 1.4 in favor of {@link SpringBootTest}
  */
 @Documented
 @Inherited

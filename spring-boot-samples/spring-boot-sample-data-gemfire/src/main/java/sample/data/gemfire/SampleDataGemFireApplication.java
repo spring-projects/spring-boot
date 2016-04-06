@@ -47,71 +47,61 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableConfigurationProperties(SampleDataGemFireProperties.class)
 public class SampleDataGemFireApplication {
 
-	protected static final String GEMSTONES_REGION_NAME = "Gemstones";
+	private static final String GEMSTONES_REGION_NAME = "Gemstones";
 
-	private final SampleDataGemFireProperties applicationProperties;
+	private final SampleDataGemFireProperties properties;
 
-	public SampleDataGemFireApplication(SampleDataGemFireProperties applicationProperties) {
-		this.applicationProperties = applicationProperties;
+	public SampleDataGemFireApplication(
+			SampleDataGemFireProperties applicationProperties) {
+		this.properties = applicationProperties;
+	}
+
+	@Bean
+	public CacheFactoryBean gemfireCache() {
+		CacheFactoryBean cache = new CacheFactoryBean();
+		cache.setClose(true);
+		cache.setProperties(getCacheProperties());
+		return cache;
+	}
+
+	private Properties getCacheProperties() {
+		Properties properties = new Properties();
+		properties.setProperty("name",
+				SampleDataGemFireApplication.class.getSimpleName());
+		properties.setProperty("mcast-port", "0");
+		properties.setProperty("locators", "");
+		properties.setProperty("log-level", this.properties.getLogLevel());
+		return properties;
+	}
+
+	@Bean(name = GEMSTONES_REGION_NAME)
+	public ReplicatedRegionFactoryBean<Long, Gemstone> gemstonesRegion(Cache cache,
+			RegionAttributes<Long, Gemstone> attributes) {
+		ReplicatedRegionFactoryBean<Long, Gemstone> region = new ReplicatedRegionFactoryBean<Long, Gemstone>();
+		region.setAttributes(attributes);
+		region.setClose(false);
+		region.setCache(cache);
+		region.setName(GEMSTONES_REGION_NAME);
+		region.setPersistent(false);
+		return region;
+	}
+
+	@Bean
+	@SuppressWarnings({ "unchecked", "deprecation" })
+	public RegionAttributesFactoryBean gemstonesRegionAttributes() {
+		RegionAttributesFactoryBean attributes = new RegionAttributesFactoryBean();
+		attributes.setKeyConstraint(Long.class);
+		attributes.setValueConstraint(Gemstone.class);
+		return attributes;
+	}
+
+	@Bean
+	public GemfireTransactionManager gemfireTransactionManager(Cache gemfireCache) {
+		return new GemfireTransactionManager(gemfireCache);
 	}
 
 	public static void main(final String[] args) {
 		SpringApplication.run(SampleDataGemFireApplication.class, args);
-	}
-
-
-	@Bean
-	CacheFactoryBean gemfireCache() {
-		CacheFactoryBean gemfireCache = new CacheFactoryBean();
-
-		gemfireCache.setClose(true);
-		gemfireCache.setProperties(gemfireProperties());
-
-		return gemfireCache;
-	}
-
-	private Properties gemfireProperties() {
-		Properties gemfireProperties = new Properties();
-
-		gemfireProperties.setProperty("name", SampleDataGemFireApplication.class.getSimpleName());
-		gemfireProperties.setProperty("mcast-port", "0");
-		gemfireProperties.setProperty("locators", "");
-		gemfireProperties.setProperty("log-level", this.applicationProperties.getLogLevel());
-
-		return gemfireProperties;
-	}
-
-	@Bean(name = GEMSTONES_REGION_NAME)
-	ReplicatedRegionFactoryBean<Long, Gemstone> gemstonesRegion(Cache gemfireCache,
-			RegionAttributes<Long, Gemstone> gemstonesRegionAttributes) {
-
-		ReplicatedRegionFactoryBean<Long, Gemstone> gemstonesRegion =
-				new ReplicatedRegionFactoryBean<Long, Gemstone>();
-
-		gemstonesRegion.setAttributes(gemstonesRegionAttributes);
-		gemstonesRegion.setClose(false);
-		gemstonesRegion.setCache(gemfireCache);
-		gemstonesRegion.setName(GEMSTONES_REGION_NAME);
-		gemstonesRegion.setPersistent(false);
-
-		return gemstonesRegion;
-	}
-
-	@Bean
-	@SuppressWarnings("unchecked")
-	RegionAttributesFactoryBean gemstonesRegionAttributes() {
-		RegionAttributesFactoryBean gemstonesRegionAttributes =
-				new RegionAttributesFactoryBean();
-
-		gemstonesRegionAttributes.setKeyConstraint(Long.class);
-		gemstonesRegionAttributes.setValueConstraint(Gemstone.class);
-
-		return gemstonesRegionAttributes;
-	}
-
-	@Bean
-	GemfireTransactionManager gemfireTransactionManager(Cache gemfireCache) {
-		return new GemfireTransactionManager(gemfireCache);
 	}
 
 }

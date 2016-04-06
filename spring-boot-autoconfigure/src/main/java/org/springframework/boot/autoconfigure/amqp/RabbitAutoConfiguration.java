@@ -181,8 +181,8 @@ public class RabbitAutoConfiguration {
 		}
 
 		private boolean determineMandatoryFlag() {
-			Boolean flag = this.properties.getTemplate().getMandatory();
-			return (flag != null ? flag : this.properties.isPublisherReturns());
+			Boolean mandatory = this.properties.getTemplate().getMandatory();
+			return (mandatory != null ? mandatory : this.properties.isPublisherReturns());
 		}
 
 		private RetryTemplate createRetryTemplate(RabbitProperties.Retry properties) {

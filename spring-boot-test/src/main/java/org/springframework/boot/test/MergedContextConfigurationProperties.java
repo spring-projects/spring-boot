@@ -27,7 +27,7 @@ import org.springframework.test.util.ReflectionTestUtils;
  * Provides access to {@link MergedContextConfiguration} properties.
  *
  * @author Phillip Webb
- * @deprecated since 1.4.0 along with {@link IntegrationTestPropertiesListener}
+ * @deprecated as of 1.4 along with {@link IntegrationTestPropertiesListener}
  */
 @Deprecated
 class MergedContextConfigurationProperties {

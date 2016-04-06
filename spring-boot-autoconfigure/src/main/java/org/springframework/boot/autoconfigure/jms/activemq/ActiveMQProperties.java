@@ -71,7 +71,7 @@ public class ActiveMQProperties {
 	/**
 	 * Get if pooling is enabled.
 	 * @return if pooling is enabled
-	 * @deprecated since 1.4 in favor of "spring.activemq.pool.enabled"
+	 * @deprecated as of 1.4 in favor of "spring.activemq.pool.enabled"
 	 */
 	@Deprecated
 	@DeprecatedConfigurationProperty(replacement = "spring.activemq.pool.enabled")
@@ -82,7 +82,7 @@ public class ActiveMQProperties {
 	/**
 	 * Set if pooling is enabled.
 	 * @param pooled the pooling enabled value
-	 * @deprecated since 1.4 in favor of "spring.activemq.pool.enabled"
+	 * @deprecated as of 1.4 in favor of "spring.activemq.pool.enabled"
 	 */
 	@Deprecated
 	public void setPooled(boolean pooled) {
