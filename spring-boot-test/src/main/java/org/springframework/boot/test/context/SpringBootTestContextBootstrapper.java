@@ -87,13 +87,13 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		Class<?>[] classes = getClasses(testClass);
 		if (!ObjectUtils.isEmpty(classes)) {
 			for (ContextConfigurationAttributes configAttributes : configAttributesList) {
-				addConfigAttriubtesClasses(configAttributes, classes);
+				addConfigAttributesClasses(configAttributes, classes);
 			}
 		}
 		return super.resolveContextLoader(testClass, configAttributesList);
 	}
 
-	private void addConfigAttriubtesClasses(
+	private void addConfigAttributesClasses(
 			ContextConfigurationAttributes configAttributes, Class<?>[] classes) {
 		List<Class<?>> combined = new ArrayList<Class<?>>();
 		combined.addAll(Arrays.asList(classes));
