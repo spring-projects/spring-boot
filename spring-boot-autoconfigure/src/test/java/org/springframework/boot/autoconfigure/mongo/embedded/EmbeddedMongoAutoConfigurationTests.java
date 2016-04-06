@@ -20,6 +20,7 @@ import java.net.UnknownHostException;
 
 import com.mongodb.CommandResult;
 import com.mongodb.MongoClient;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.distribution.Feature;
 import org.junit.After;
 import org.junit.Test;
@@ -106,6 +107,30 @@ public class EmbeddedMongoAutoConfigurationTests {
 			this.context.refresh();
 			assertThat(parent.getEnvironment().getProperty("local.mongo.port"))
 					.isNotNull();
+		}
+		finally {
+			parent.close();
+		}
+	}
+
+	/**
+	 * test dbpath configuration is loaded for mongodb process.
+	 */
+	@Test
+	public void dbPathIsAvailableInMongoConfiguration() {
+		ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext();
+		parent.refresh();
+		try {
+			this.context = new AnnotationConfigApplicationContext();
+			this.context.setParent(parent);
+			EnvironmentTestUtils.addEnvironment(this.context, "spring.data.mongodb.port=0",
+					"spring.mongodb.embedded.storage.databaseDir=/Users/yogeshlo/db",
+					"spring.mongodb.embedded.storage.oplogSize=0");
+			this.context.register(EmbeddedMongoAutoConfiguration.class, MongoClientConfiguration.class,
+					PropertyPlaceholderAutoConfiguration.class);
+			this.context.refresh();
+			IMongodConfig mongoConfig = this.context.getBean(IMongodConfig.class);
+			assertThat(mongoConfig.replication().getDatabaseDir()).isEqualTo("/Users/yogeshlo/db");
 		}
 		finally {
 			parent.close();

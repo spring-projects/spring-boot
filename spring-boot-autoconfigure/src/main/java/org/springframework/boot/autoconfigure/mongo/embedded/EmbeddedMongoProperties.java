@@ -38,6 +38,8 @@ public class EmbeddedMongoProperties {
 	 */
 	private String version = "2.6.10";
 
+	private Storage storage;
+
 	/**
 	 * Comma-separated list of features to enable.
 	 */
@@ -58,6 +60,46 @@ public class EmbeddedMongoProperties {
 
 	public void setFeatures(Set<Feature> features) {
 		this.features = features;
+	}
+
+	public Storage getStorage() {
+		return storage;
+	}
+
+	public void setStorage(Storage storage) {
+		this.storage = storage;
+	}
+
+	public static class Storage extends de.flapdoodle.embed.mongo.config.Storage {
+
+		private int oplogSize;
+		private String replSetName;
+		private String databaseDir;
+
+		public int getOplogSize() {
+			return oplogSize;
+		}
+
+		public void setOplogSize(int oplogSize) {
+			this.oplogSize = oplogSize;
+		}
+
+		public String getReplSetName() {
+			return replSetName;
+		}
+
+		public void setReplSetName(String replSetName) {
+			this.replSetName = replSetName;
+		}
+
+		public String getDatabaseDir() {
+			return databaseDir;
+		}
+
+		public void setDatabaseDir(String databaseDir) {
+			this.databaseDir = databaseDir;
+		}
+
 	}
 
 }
