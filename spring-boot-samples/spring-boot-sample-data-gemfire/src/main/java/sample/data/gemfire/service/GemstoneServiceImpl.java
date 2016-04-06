@@ -42,8 +42,8 @@ public class GemstoneServiceImpl implements GemstoneService {
 
 	static {
 		APPROVED_GEMS = Collections.unmodifiableList(
-				Arrays.asList("ALEXANDRITE,AQUAMARINE,DIAMOND,OPAL,PEARL,"
-						+ "RUBY,SAPPHIRE,SPINEL,TOPAZ".split(",")));
+				Arrays.asList(("ALEXANDRITE,AQUAMARINE,DIAMOND,OPAL,PEARL,"
+						+ "RUBY,SAPPHIRE,SPINEL,TOPAZ").split(",")));
 	}
 
 	private final GemstoneRepository repository;
