@@ -2590,31 +2590,42 @@ details.
 [[howto-build-an-executable-archive-with-ant]]
 === Build an executable archive from Ant without using spring-boot-antlib
 To build with Ant you need to grab dependencies, compile and then create a jar or war
-archive as normal. To make it executable you can either use the `spring-boot-antlib`
+archive. To make it executable you can either use the `spring-boot-antlib`
 module, or you can follow these instructions:
 
-. Use the appropriate launcher as a `Main-Class`, e.g. `JarLauncher` for a jar file, and
-  specify the other properties it needs as manifest entries, principally a `Start-Class`.
-
-. Add the runtime dependencies in a nested '`lib`' directory (for a jar) and the
-  `provided` (embedded container) dependencies in a nested `lib-provided` directory.
-  Remember *not* to compress the entries in the archive.
-
+. If you are building a jar, package the application's classes and resources in a nested
+  `BOOT-INF/classes` directory. If you are building a war, package the application's
+  classes in a nested `WEB-INF/classes` directory as usual.
+. Add the runtime dependencies in a nested `BOOT-INF/lib` directory for a jar or
+  `WEB-INF/lib` for a war. Remember *not* to compress the entries in the archive.
+. Add the `provided` (embedded container) dependencies in a nested `BOOT-INF/lib`
+  directory for jar or `WEB-INF/lib-provided` for a war. Remember *not* to compress the
+  entries in the archive.
 . Add the `spring-boot-loader` classes at the root of the archive (so the `Main-Class`
   is available).
+. Use the appropriate launcher, e.g. `JarLauncher` for a jar file, as a `Main-Class`
+  attribute in the manifest and specify the other properties it needs as manifest entries,
+  principally a `Start-Class`.
 
 Example:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0]
 ----
 	<target name="build" depends="compile">
-		<copy todir="target/classes/lib">
-			<fileset dir="lib/runtime" />
-		</copy>
-		<jar destfile="target/spring-boot-sample-actuator-${spring-boot.version}.jar" compress="false">
-			<fileset dir="target/classes" />
-			<fileset dir="src/main/resources" />
-			<zipfileset src="lib/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
+		<jar destfile="target/${ant.project.name}-${spring-boot.version}.jar" compress="false">
+			<mappedresources>
+				<fileset dir="target/classes" />
+				<globmapper from="*" to="BOOT-INF/classes/*"/>
+			</mappedresources>
+			<mappedresources>
+				<fileset dir="src/main/resources" erroronmissingdir="false"/>
+				<globmapper from="*" to="BOOT-INF/classes/*"/>
+			</mappedresources>
+			<mappedresources>
+				<fileset dir="${lib.dir}/runtime" />
+				<globmapper from="*" to="BOOT-INF/lib/*"/>
+			</mappedresources>
+			<zipfileset src="${lib.dir}/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
 			<manifest>
 				<attribute name="Main-Class" value="org.springframework.boot.loader.JarLauncher" />
 				<attribute name="Start-Class" value="${start-class}" />
@@ -2623,11 +2634,12 @@ Example:
 	</target>
 ----
 
-The Actuator Sample has a `build.xml` that should work if you run it with
+The {github-code}/spring-boot-samples/spring-boot-sample-ant[Ant Sample] has a
+`build.xml` with a `manual` task that should work if you run it with
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	$ ant -lib <folder containing ivy-2.2.jar>
+	$ ant -lib <folder containing ivy-2.2.jar> clean manual
 ----
 
 after which you can run the application with

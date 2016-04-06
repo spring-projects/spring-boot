@@ -13,6 +13,7 @@
 
 	<property name="spring-boot.version" value="1.4.0.BUILD-SNAPSHOT" />
 	<property name="lib.dir" location="${basedir}/target/lib" />
+	<property name="start-class" value="sample.ant.SampleAntApplication" />
 
 	<target name="resolve" description="--> retrieve dependencies with ivy">
 		<ivy:retrieve pattern="${lib.dir}/[conf]/[artifact]-[type]-[revision].[ext]" />
@@ -32,12 +33,8 @@
 		<javac srcdir="src/main/java" destdir="target/classes" classpathref="compile.classpath" />
 	</target>
 
-	<target name="clean-all" description="cleans all created files/dirs" depends="clean">
-		<delete dir="${lib.dir}" />
-	</target>
-
-	<target name="clean" description="cleans all class files">
-		<delete dir="target/classes" />
+	<target name="clean" description="cleans all created files/dirs">
+		<delete dir="target" />
 	</target>
 
 	<target name="build" depends="compile">
@@ -46,5 +43,27 @@
 				<fileset dir="${lib.dir}/runtime" />
 			</spring-boot:lib>
 		</spring-boot:exejar>
+	</target>
+	<!-- Manual equivalent of the build target -->
+	<target name="manual" depends="compile">
+		<jar destfile="target/${ant.project.name}-${spring-boot.version}.jar" compress="false">
+			<mappedresources>
+				<fileset dir="target/classes" />
+				<globmapper from="*" to="BOOT-INF/classes/*"/>
+			</mappedresources>
+			<mappedresources>
+				<fileset dir="src/main/resources" erroronmissingdir="false"/>
+				<globmapper from="*" to="BOOT-INF/classes/*"/>
+			</mappedresources>
+			<mappedresources>
+				<fileset dir="${lib.dir}/runtime" />
+				<globmapper from="*" to="BOOT-INF/lib/*"/>
+			</mappedresources>
+			<zipfileset src="${lib.dir}/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="org.springframework.boot.loader.JarLauncher" />
+				<attribute name="Start-Class" value="${start-class}" />
+			</manifest>
+		</jar>
 	</target>
 </project>
