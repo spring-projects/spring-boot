@@ -64,6 +64,7 @@ import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
@@ -80,6 +81,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Stephane Nicoll
  */
 public class MetricFilterAutoConfigurationTests {
+
+	@Test
+	public void defaultMetricFilterAutoConfigurationProperties() {
+		MetricFilterProperties properties = new MetricFilterProperties();
+		assertThat(properties.getGaugeSubmissions())
+				.containsExactly(MetricsFilterSubmission.MERGED);
+		assertThat(properties.getCounterSubmissions())
+				.containsExactly(MetricsFilterSubmission.MERGED);
+	}
 
 	@Test
 	public void recordsHttpInteractions() throws Exception {
@@ -292,6 +302,66 @@ public class MetricFilterAutoConfigurationTests {
 				.increment("status.503.unmapped");
 		verify(context.getBean(GaugeService.class), times(2))
 				.submit(eq("response.unmapped"), anyDouble());
+		context.close();
+	}
+
+	@Test
+	public void additionallyRecordsMetricsWithHttpMethodNameIfConfigured()
+			throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(Config.class, MetricFilterAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(context,
+				"endpoints.metrics.filter.gauge-submissions=merged,per-http-method",
+				"endpoints.metrics.filter.counter-submissions=merged,per-http-method");
+		context.refresh();
+		Filter filter = context.getBean(Filter.class);
+		final MockHttpServletRequest request = new MockHttpServletRequest("PUT",
+				"/test/path");
+		final MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain chain = mock(FilterChain.class);
+		willAnswer(new Answer<Object>() {
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				response.setStatus(200);
+				return null;
+			}
+		}).given(chain).doFilter(request, response);
+		filter.doFilter(request, response, chain);
+		verify(context.getBean(GaugeService.class)).submit(eq("response.test.path"),
+				anyDouble());
+		verify(context.getBean(GaugeService.class)).submit(eq("response.PUT.test.path"),
+				anyDouble());
+		verify(context.getBean(CounterService.class))
+				.increment(eq("status.200.test.path"));
+		verify(context.getBean(CounterService.class))
+				.increment(eq("status.PUT.200.test.path"));
+		context.close();
+	}
+
+	@Test
+	public void doesNotRecordRolledUpMetricsIfConfigured() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(Config.class, MetricFilterAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(context,
+				"endpoints.metrics.filter.gauge-submissions=",
+				"endpoints.metrics.filter.counter-submissions=");
+		context.refresh();
+		Filter filter = context.getBean(Filter.class);
+		final MockHttpServletRequest request = new MockHttpServletRequest("PUT",
+				"/test/path");
+		final MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain chain = mock(FilterChain.class);
+		willAnswer(new Answer<Object>() {
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				response.setStatus(200);
+				return null;
+			}
+		}).given(chain).doFilter(request, response);
+		filter.doFilter(request, response, chain);
+		verify(context.getBean(GaugeService.class), never()).submit(anyString(),
+				anyDouble());
+		verify(context.getBean(CounterService.class), never()).increment(anyString());
 		context.close();
 	}
 
