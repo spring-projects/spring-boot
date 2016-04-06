@@ -1,4 +1,4 @@
-FROM ubuntu:14.04.3
+FROM ubuntu:trusty-20160317
 RUN apt-get install -y software-properties-common && \
     add-apt-repository ppa:webupd8team/java -y && \
     apt-get update && \
