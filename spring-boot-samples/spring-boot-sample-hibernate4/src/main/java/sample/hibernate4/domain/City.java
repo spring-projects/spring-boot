@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.orm.jpa.test;
+package sample.hibernate4.domain;
 
 import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
@@ -29,7 +30,7 @@ public class City implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(nullable = false)
@@ -47,12 +48,10 @@ public class City implements Serializable {
 	protected City() {
 	}
 
-	public City(String name, String state, String country, String map) {
+	public City(String name, String country) {
 		super();
 		this.name = name;
-		this.state = state;
 		this.country = country;
-		this.map = map;
 	}
 
 	public String getName() {

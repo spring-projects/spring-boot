@@ -16,7 +16,9 @@
 
 package org.springframework.boot.orm.jpa.hibernate;
 
+import org.hibernate.Hibernate;
 import org.hibernate.cfg.ImprovedNamingStrategy;
+import org.hibernate.cfg.NamingStrategy;
 import org.hibernate.internal.util.StringHelper;
 
 import org.springframework.util.Assert;
@@ -31,7 +33,10 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @see "http://stackoverflow.com/questions/7689206/ejb3namingstrategy-vs-improvednamingstrategy-foreign-key-naming"
  * @since 1.2.0
+ * @deprecated since 1.4.0 since {@link NamingStrategy} is no longer used by
+ * {@link Hibernate}. Consider using {@link SpringPhysicalNamingStrategy}
  */
+@Deprecated
 @SuppressWarnings("serial")
 public class SpringNamingStrategy extends ImprovedNamingStrategy {
 
