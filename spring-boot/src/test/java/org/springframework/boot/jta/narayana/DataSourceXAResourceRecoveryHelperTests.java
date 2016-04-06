@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,14 +27,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.mock;
-import static org.mockito.BDDMockito.times;
-import static org.mockito.BDDMockito.verify;
-import static org.mockito.BDDMockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
- * @author <a href="mailto:gytis@redhat.com">Gytis Trikleris</a>
+ * Tests for {@link DataSourceXAResourceRecoveryHelper}.
+ *
+ * @author Gytis Trikleris
  */
 public class DataSourceXAResourceRecoveryHelperTests {
 
@@ -53,8 +55,8 @@ public class DataSourceXAResourceRecoveryHelperTests {
 		this.xaResource = mock(XAResource.class);
 		this.recoveryHelper = new DataSourceXAResourceRecoveryHelper(this.xaDataSource);
 
-		when(this.xaDataSource.getXAConnection()).thenReturn(this.xaConnection);
-		when(this.xaConnection.getXAResource()).thenReturn(this.xaResource);
+		given(this.xaDataSource.getXAConnection()).willReturn(this.xaConnection);
+		given(this.xaConnection.getXAResource()).willReturn(this.xaResource);
 	}
 
 	@Test
@@ -67,10 +69,12 @@ public class DataSourceXAResourceRecoveryHelperTests {
 	}
 
 	@Test
-	public void shouldCreateConnectionWithCredentialsAndGetXAResource() throws SQLException {
-		when(this.xaDataSource.getXAConnection(anyString(), anyString())).thenReturn(this.xaConnection);
-		this.recoveryHelper = new DataSourceXAResourceRecoveryHelper(this.xaDataSource, "username", "password");
-
+	public void shouldCreateConnectionWithCredentialsAndGetXAResource()
+			throws SQLException {
+		given(this.xaDataSource.getXAConnection(anyString(), anyString()))
+				.willReturn(this.xaConnection);
+		this.recoveryHelper = new DataSourceXAResourceRecoveryHelper(this.xaDataSource,
+				"username", "password");
 		XAResource[] xaResources = this.recoveryHelper.getXAResources();
 		assertThat(xaResources.length).isEqualTo(1);
 		assertThat(xaResources[0]).isSameAs(this.recoveryHelper);
@@ -80,10 +84,9 @@ public class DataSourceXAResourceRecoveryHelperTests {
 
 	@Test
 	public void shouldFailToCreateConnectionAndNotGetXAResource() throws SQLException {
-		when(this.xaDataSource.getXAConnection()).thenThrow(new SQLException("Test exception"));
-
+		given(this.xaDataSource.getXAConnection())
+				.willThrow(new SQLException("Test exception"));
 		XAResource[] xaResources = this.recoveryHelper.getXAResources();
-
 		assertThat(xaResources.length).isEqualTo(0);
 		verify(this.xaDataSource, times(1)).getXAConnection();
 		verify(this.xaConnection, times(0)).getXAResource();
@@ -93,15 +96,14 @@ public class DataSourceXAResourceRecoveryHelperTests {
 	public void shouldDelegateRecoverCall() throws XAException {
 		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.recover(XAResource.TMSTARTRSCAN);
-
 		verify(this.xaResource, times(1)).recover(XAResource.TMSTARTRSCAN);
 	}
 
 	@Test
-	public void shouldDelegateRecoverCallAndCloseConnection() throws XAException, SQLException {
+	public void shouldDelegateRecoverCallAndCloseConnection()
+			throws XAException, SQLException {
 		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.recover(XAResource.TMENDRSCAN);
-
 		verify(this.xaResource, times(1)).recover(XAResource.TMENDRSCAN);
 		verify(this.xaConnection, times(1)).close();
 	}
@@ -110,7 +112,6 @@ public class DataSourceXAResourceRecoveryHelperTests {
 	public void shouldDelegateStartCall() throws XAException {
 		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.start(null, 0);
-
 		verify(this.xaResource, times(1)).start(null, 0);
 	}
 
@@ -118,7 +119,6 @@ public class DataSourceXAResourceRecoveryHelperTests {
 	public void shouldDelegateEndCall() throws XAException {
 		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.end(null, 0);
-
 		verify(this.xaResource, times(1)).end(null, 0);
 	}
 
@@ -126,7 +126,6 @@ public class DataSourceXAResourceRecoveryHelperTests {
 	public void shouldDelegatePrepareCall() throws XAException {
 		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.prepare(null);
-
 		verify(this.xaResource, times(1)).prepare(null);
 	}
 
@@ -134,7 +133,6 @@ public class DataSourceXAResourceRecoveryHelperTests {
 	public void shouldDelegateCommitCall() throws XAException {
 		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.commit(null, true);
-
 		verify(this.xaResource, times(1)).commit(null, true);
 	}
 
@@ -142,7 +140,6 @@ public class DataSourceXAResourceRecoveryHelperTests {
 	public void shouldDelegateRollbackCall() throws XAException {
 		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.rollback(null);
-
 		verify(this.xaResource, times(1)).rollback(null);
 	}
 
@@ -150,7 +147,6 @@ public class DataSourceXAResourceRecoveryHelperTests {
 	public void shouldDelegateIsSameRMCall() throws XAException {
 		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.isSameRM(null);
-
 		verify(this.xaResource, times(1)).isSameRM(null);
 	}
 
@@ -158,7 +154,6 @@ public class DataSourceXAResourceRecoveryHelperTests {
 	public void shouldDelegateForgetCall() throws XAException {
 		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.forget(null);
-
 		verify(this.xaResource, times(1)).forget(null);
 	}
 
@@ -166,7 +161,6 @@ public class DataSourceXAResourceRecoveryHelperTests {
 	public void shouldDelegateGetTransactionTimeoutCall() throws XAException {
 		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.getTransactionTimeout();
-
 		verify(this.xaResource, times(1)).getTransactionTimeout();
 	}
 
@@ -174,9 +168,7 @@ public class DataSourceXAResourceRecoveryHelperTests {
 	public void shouldDelegateSetTransactionTimeoutCall() throws XAException {
 		this.recoveryHelper.getXAResources();
 		this.recoveryHelper.setTransactionTimeout(0);
-
 		verify(this.xaResource, times(1)).setTransactionTimeout(0);
 	}
 
 }
-

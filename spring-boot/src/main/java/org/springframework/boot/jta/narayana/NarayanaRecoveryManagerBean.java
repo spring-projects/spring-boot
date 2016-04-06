@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,17 +24,20 @@ import com.arjuna.ats.jta.recovery.XAResourceRecoveryHelper;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * Bean to set up Narayana recovery manager.
  *
- * @author <a href="mailto:gytis@redhat.com">Gytis Trikleris</a>
+ * @author Gytis Trikleris
+ * @since 1.4.0
  */
 public class NarayanaRecoveryManagerBean implements InitializingBean, DisposableBean {
 
 	private final RecoveryManagerService recoveryManagerService;
 
 	public NarayanaRecoveryManagerBean(RecoveryManagerService recoveryManagerService) {
+		Assert.notNull(recoveryManagerService, "RecoveryManagerService must not be null");
 		this.recoveryManagerService = recoveryManagerService;
 	}
 
@@ -50,8 +53,10 @@ public class NarayanaRecoveryManagerBean implements InitializingBean, Disposable
 		this.recoveryManagerService.destroy();
 	}
 
-	void registerXAResourceRecoveryHelper(XAResourceRecoveryHelper xaResourceRecoveryHelper) {
-		getXARecoveryModule(RecoveryManager.manager()).addXAResourceRecoveryHelper(xaResourceRecoveryHelper);
+	void registerXAResourceRecoveryHelper(
+			XAResourceRecoveryHelper xaResourceRecoveryHelper) {
+		getXARecoveryModule(RecoveryManager.manager())
+				.addXAResourceRecoveryHelper(xaResourceRecoveryHelper);
 	}
 
 	private XARecoveryModule getXARecoveryModule(RecoveryManager recoveryManager) {
@@ -60,8 +65,8 @@ public class NarayanaRecoveryManagerBean implements InitializingBean, Disposable
 				return (XARecoveryModule) recoveryModule;
 			}
 		}
-
-		throw new IllegalStateException("XARecoveryModule is not registered with recovery manager");
+		throw new IllegalStateException(
+				"XARecoveryModule is not registered with recovery manager");
 	}
 
 }

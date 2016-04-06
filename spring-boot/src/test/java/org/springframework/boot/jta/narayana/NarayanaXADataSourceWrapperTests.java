@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,48 +22,49 @@ import javax.sql.XADataSource;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.mock;
-import static org.mockito.BDDMockito.times;
-import static org.mockito.BDDMockito.verify;
-import static org.mockito.BDDMockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
- * @author <a href="mailto:gytis@redhat.com">Gytis Trikleris</a>
+ * Tests for {@link NarayanaXADataSourceWrapper}.
+ *
+ * @author Gytis Trikleris
  */
 public class NarayanaXADataSourceWrapperTests {
 
 	private XADataSource dataSource = mock(XADataSource.class);
 
-	private NarayanaRecoveryManagerBean narayanaRecoveryManagerBean = mock(NarayanaRecoveryManagerBean.class);
+	private NarayanaRecoveryManagerBean recoveryManager = mock(
+			NarayanaRecoveryManagerBean.class);
 
-	private NarayanaProperties narayanaProperties = mock(NarayanaProperties.class);
+	private NarayanaProperties properties = mock(NarayanaProperties.class);
 
-	private NarayanaXADataSourceWrapper wrapper = new NarayanaXADataSourceWrapper(this.narayanaRecoveryManagerBean,
-			this.narayanaProperties);
+	private NarayanaXADataSourceWrapper wrapper = new NarayanaXADataSourceWrapper(
+			this.recoveryManager, this.properties);
 
 	@Test
 	public void wrap() {
 		DataSource wrapped = this.wrapper.wrapDataSource(this.dataSource);
-
 		assertThat(wrapped).isInstanceOf(NarayanaDataSourceBean.class);
-		verify(this.narayanaRecoveryManagerBean, times(1))
-				.registerXAResourceRecoveryHelper(any(DataSourceXAResourceRecoveryHelper.class));
-		verify(this.narayanaProperties, times(1)).getRecoveryDbUser();
-		verify(this.narayanaProperties, times(1)).getRecoveryDbPass();
+		verify(this.recoveryManager, times(1)).registerXAResourceRecoveryHelper(
+				any(DataSourceXAResourceRecoveryHelper.class));
+		verify(this.properties, times(1)).getRecoveryDbUser();
+		verify(this.properties, times(1)).getRecoveryDbPass();
 	}
 
 	@Test
 	public void wrapWithCredentials() {
-		when(this.narayanaProperties.getRecoveryDbUser()).thenReturn("userName");
-		when(this.narayanaProperties.getRecoveryDbPass()).thenReturn("password");
+		given(this.properties.getRecoveryDbUser()).willReturn("userName");
+		given(this.properties.getRecoveryDbPass()).willReturn("password");
 		DataSource wrapped = this.wrapper.wrapDataSource(this.dataSource);
-
 		assertThat(wrapped).isInstanceOf(NarayanaDataSourceBean.class);
-		verify(this.narayanaRecoveryManagerBean, times(1))
-				.registerXAResourceRecoveryHelper(any(DataSourceXAResourceRecoveryHelper.class));
-		verify(this.narayanaProperties, times(2)).getRecoveryDbUser();
-		verify(this.narayanaProperties, times(1)).getRecoveryDbPass();
+		verify(this.recoveryManager, times(1)).registerXAResourceRecoveryHelper(
+				any(DataSourceXAResourceRecoveryHelper.class));
+		verify(this.properties, times(2)).getRecoveryDbUser();
+		verify(this.properties, times(1)).getRecoveryDbPass();
 	}
 
 }

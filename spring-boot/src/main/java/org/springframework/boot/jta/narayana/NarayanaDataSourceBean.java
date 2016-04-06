@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,16 +29,26 @@ import javax.sql.XADataSource;
 import com.arjuna.ats.internal.jdbc.ConnectionManager;
 import com.arjuna.ats.jdbc.TransactionalDriver;
 
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+
 /**
- * {@link DataSource} implementation wrapping {@link XADataSource} and using {@link ConnectionManager} to acquire connections.
+ * {@link DataSource} implementation wrapping {@link XADataSource} and using
+ * {@link ConnectionManager} to acquire connections.
  *
- * @author <a href="mailto:gytis@redhat.com">Gytis Trikleris</a>
+ * @author Gytis Trikleris
+ * @since 1.4.0
  */
 public class NarayanaDataSourceBean implements DataSource {
 
 	private final XADataSource xaDataSource;
 
+	/**
+	 * Create a new {@link NarayanaDataSourceBean} instance.
+	 * @param xaDataSource the XA DataSource
+	 */
 	public NarayanaDataSourceBean(XADataSource xaDataSource) {
+		Assert.notNull(xaDataSource, "XADataSource must not be null");
 		this.xaDataSource = xaDataSource;
 	}
 
@@ -46,17 +56,16 @@ public class NarayanaDataSourceBean implements DataSource {
 	public Connection getConnection() throws SQLException {
 		Properties properties = new Properties();
 		properties.put(TransactionalDriver.XADataSource, this.xaDataSource);
-
 		return ConnectionManager.create(null, properties);
 	}
 
 	@Override
-	public Connection getConnection(String username, String password) throws SQLException {
+	public Connection getConnection(String username, String password)
+			throws SQLException {
 		Properties properties = new Properties();
 		properties.put(TransactionalDriver.XADataSource, this.xaDataSource);
 		properties.put(TransactionalDriver.userName, username);
 		properties.put(TransactionalDriver.password, password);
-
 		return ConnectionManager.create(null, properties);
 	}
 
@@ -91,20 +100,15 @@ public class NarayanaDataSourceBean implements DataSource {
 		if (isWrapperFor(iface)) {
 			return (T) this;
 		}
-		else if (isWrapperFor(iface, this.xaDataSource.getClass())) {
+		if (ClassUtils.isAssignableValue(iface, this.xaDataSource)) {
 			return (T) this.xaDataSource;
 		}
-
 		throw new SQLException(getClass() + " is not a wrapper for " + iface);
 	}
 
 	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		return isWrapperFor(iface, getClass());
-	}
-
-	private boolean isWrapperFor(Class<?> iface, Class<?> wrapperIface) {
-		return iface.isAssignableFrom(wrapperIface);
+		return iface.isAssignableFrom(getClass());
 	}
 
 }

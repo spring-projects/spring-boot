@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.jta.narayana;
 
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,34 +25,34 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * @author <a href="mailto:gytis@redhat.com">Gytis Trikleris</a>
+ * Tests for {@link NarayanaRecoveryManagerBean}.
+ *
+ * @author Gytis Trikleris
  */
 public class NarayanaRecoveryManagerBeanTests {
 
-	private RecoveryManagerService recoveryManagerService;
+	private RecoveryManagerService service;
 
-	private NarayanaRecoveryManagerBean narayanaRecoveryManagerBean;
+	private NarayanaRecoveryManagerBean recoveryManager;
 
 	@Before
 	public void before() {
-		this.recoveryManagerService = mock(RecoveryManagerService.class);
-		this.narayanaRecoveryManagerBean = new NarayanaRecoveryManagerBean(this.recoveryManagerService);
+		this.service = mock(RecoveryManagerService.class);
+		this.recoveryManager = new NarayanaRecoveryManagerBean(this.service);
 	}
 
 	@Test
 	public void shouldCreateAndStartRecoveryManagerService() throws Exception {
-		this.narayanaRecoveryManagerBean.afterPropertiesSet();
-
-		verify(this.recoveryManagerService, times(1)).create();
-		verify(this.recoveryManagerService, times(1)).start();
+		this.recoveryManager.afterPropertiesSet();
+		verify(this.service, times(1)).create();
+		verify(this.service, times(1)).start();
 	}
 
 	@Test
 	public void shouldStopAndDestroyRecoveryManagerService() throws Exception {
-		this.narayanaRecoveryManagerBean.destroy();
-
-		verify(this.recoveryManagerService, times(1)).stop();
-		verify(this.recoveryManagerService, times(1)).destroy();
+		this.recoveryManager.destroy();
+		verify(this.service, times(1)).stop();
+		verify(this.service, times(1)).destroy();
 	}
 
 }

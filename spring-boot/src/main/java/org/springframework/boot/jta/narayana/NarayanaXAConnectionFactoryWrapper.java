@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,41 +26,57 @@ import org.jboss.narayana.jta.jms.JmsXAResourceRecoveryHelper;
 import org.jboss.narayana.jta.jms.TransactionHelperImpl;
 
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
+import org.springframework.util.Assert;
 
 /**
- * {@link XAConnectionFactoryWrapper} that uses {@link ConnectionFactoryProxy} to wrap an {@link XAConnectionFactory}.
+ * {@link XAConnectionFactoryWrapper} that uses {@link ConnectionFactoryProxy} to wrap an
+ * {@link XAConnectionFactory}.
  *
- * @author <a href="mailto:gytis@redhat.com">Gytis Trikleris</a>
+ * @author Gytis Trikleris
+ * @since 1.4.0
  */
 public class NarayanaXAConnectionFactoryWrapper implements XAConnectionFactoryWrapper {
 
 	private final TransactionManager transactionManager;
 
-	private final NarayanaRecoveryManagerBean narayanaRecoveryManagerBean;
+	private final NarayanaRecoveryManagerBean recoveryManager;
 
-	private final NarayanaProperties narayanaProperties;
+	private final NarayanaProperties properties;
 
+	/**
+	 * Create a new {@link NarayanaXAConnectionFactoryWrapper} instance.
+	 * @param transactionManager the underlying transaction manager
+	 * @param recoveryManager the underlying recovery manager
+	 * @param properties the Narayana properties
+	 */
 	public NarayanaXAConnectionFactoryWrapper(TransactionManager transactionManager,
-			NarayanaRecoveryManagerBean narayanaRecoveryManagerBean, NarayanaProperties narayanaProperties) {
+			NarayanaRecoveryManagerBean recoveryManager, NarayanaProperties properties) {
+		Assert.notNull(transactionManager, "TransactionManager must not be null");
+		Assert.notNull(recoveryManager, "RecoveryManager must not be null");
+		Assert.notNull(properties, "Properties must not be null");
 		this.transactionManager = transactionManager;
-		this.narayanaRecoveryManagerBean = narayanaRecoveryManagerBean;
-		this.narayanaProperties = narayanaProperties;
+		this.recoveryManager = recoveryManager;
+		this.properties = properties;
 	}
 
 	@Override
-	public ConnectionFactory wrapConnectionFactory(XAConnectionFactory xaConnectionFactory) {
-		this.narayanaRecoveryManagerBean.registerXAResourceRecoveryHelper(getRecoveryHelper(xaConnectionFactory));
-
-		return new ConnectionFactoryProxy(xaConnectionFactory, new TransactionHelperImpl(this.transactionManager));
+	public ConnectionFactory wrapConnectionFactory(
+			XAConnectionFactory xaConnectionFactory) {
+		XAResourceRecoveryHelper recoveryHelper = getRecoveryHelper(xaConnectionFactory);
+		this.recoveryManager.registerXAResourceRecoveryHelper(recoveryHelper);
+		return new ConnectionFactoryProxy(xaConnectionFactory,
+				new TransactionHelperImpl(this.transactionManager));
 	}
 
-	private XAResourceRecoveryHelper getRecoveryHelper(XAConnectionFactory xaConnectionFactory) {
-		if (this.narayanaProperties.getRecoveryJmsUser() == null && this.narayanaProperties.getRecoveryJmsPass() == null) {
+	private XAResourceRecoveryHelper getRecoveryHelper(
+			XAConnectionFactory xaConnectionFactory) {
+		if (this.properties.getRecoveryJmsUser() == null
+				&& this.properties.getRecoveryJmsPass() == null) {
 			return new JmsXAResourceRecoveryHelper(xaConnectionFactory);
 		}
-
-		return new JmsXAResourceRecoveryHelper(xaConnectionFactory, this.narayanaProperties.getRecoveryJmsUser(),
-				this.narayanaProperties.getRecoveryJmsPass());
+		return new JmsXAResourceRecoveryHelper(xaConnectionFactory,
+				this.properties.getRecoveryJmsUser(),
+				this.properties.getRecoveryJmsPass());
 	}
 
 }

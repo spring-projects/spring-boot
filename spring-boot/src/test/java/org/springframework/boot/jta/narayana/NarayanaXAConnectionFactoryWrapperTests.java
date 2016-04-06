@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,16 @@ import org.jboss.narayana.jta.jms.JmsXAResourceRecoveryHelper;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.mock;
-import static org.mockito.BDDMockito.times;
-import static org.mockito.BDDMockito.verify;
-import static org.mockito.BDDMockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
- * @author <a href="mailto:gytis@redhat.com">Gytis Trikleris</a>
+ * Tests for {@link NarayanaXAConnectionFactoryWrapper}.
+ *
+ * @author Gytis Trikleris
  */
 public class NarayanaXAConnectionFactoryWrapperTests {
 
@@ -40,34 +42,36 @@ public class NarayanaXAConnectionFactoryWrapperTests {
 
 	private TransactionManager transactionManager = mock(TransactionManager.class);
 
-	private NarayanaRecoveryManagerBean narayanaRecoveryManagerBean = mock(NarayanaRecoveryManagerBean.class);
+	private NarayanaRecoveryManagerBean recoveryManager = mock(
+			NarayanaRecoveryManagerBean.class);
 
-	private NarayanaProperties narayanaProperties = mock(NarayanaProperties.class);
+	private NarayanaProperties properties = mock(NarayanaProperties.class);
 
-	private NarayanaXAConnectionFactoryWrapper wrapper = new NarayanaXAConnectionFactoryWrapper(this.transactionManager,
-			this.narayanaRecoveryManagerBean, this.narayanaProperties);
+	private NarayanaXAConnectionFactoryWrapper wrapper = new NarayanaXAConnectionFactoryWrapper(
+			this.transactionManager, this.recoveryManager, this.properties);
 
 	@Test
 	public void wrap() {
-		ConnectionFactory wrapped = this.wrapper.wrapConnectionFactory(this.connectionFactory);
+		ConnectionFactory wrapped = this.wrapper
+				.wrapConnectionFactory(this.connectionFactory);
 		assertThat(wrapped).isInstanceOf(ConnectionFactoryProxy.class);
-		verify(this.narayanaRecoveryManagerBean, times(1))
+		verify(this.recoveryManager, times(1))
 				.registerXAResourceRecoveryHelper(any(JmsXAResourceRecoveryHelper.class));
-		verify(this.narayanaProperties, times(1)).getRecoveryJmsUser();
-		verify(this.narayanaProperties, times(1)).getRecoveryJmsPass();
+		verify(this.properties, times(1)).getRecoveryJmsUser();
+		verify(this.properties, times(1)).getRecoveryJmsPass();
 	}
 
 	@Test
 	public void wrapWithCredentials() {
-		when(this.narayanaProperties.getRecoveryJmsUser()).thenReturn("userName");
-		when(this.narayanaProperties.getRecoveryJmsPass()).thenReturn("password");
-		ConnectionFactory wrapped = this.wrapper.wrapConnectionFactory(this.connectionFactory);
-
+		given(this.properties.getRecoveryJmsUser()).willReturn("userName");
+		given(this.properties.getRecoveryJmsPass()).willReturn("password");
+		ConnectionFactory wrapped = this.wrapper
+				.wrapConnectionFactory(this.connectionFactory);
 		assertThat(wrapped).isInstanceOf(ConnectionFactoryProxy.class);
-		verify(this.narayanaRecoveryManagerBean, times(1))
+		verify(this.recoveryManager, times(1))
 				.registerXAResourceRecoveryHelper(any(JmsXAResourceRecoveryHelper.class));
-		verify(this.narayanaProperties, times(2)).getRecoveryJmsUser();
-		verify(this.narayanaProperties, times(1)).getRecoveryJmsPass();
+		verify(this.properties, times(2)).getRecoveryJmsUser();
+		verify(this.properties, times(1)).getRecoveryJmsPass();
 	}
 
 }

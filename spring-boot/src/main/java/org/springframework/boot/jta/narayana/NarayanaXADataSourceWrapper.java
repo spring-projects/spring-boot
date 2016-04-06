@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,38 +22,48 @@ import javax.sql.XADataSource;
 import com.arjuna.ats.jta.recovery.XAResourceRecoveryHelper;
 
 import org.springframework.boot.jta.XADataSourceWrapper;
+import org.springframework.util.Assert;
 
 /**
- * {@link XADataSourceWrapper} that uses {@link NarayanaDataSourceBean} to wrap an {@link XADataSource}.
+ * {@link XADataSourceWrapper} that uses {@link NarayanaDataSourceBean} to wrap an
+ * {@link XADataSource}.
  *
- * @author <a href="mailto:gytis@redhat.com">Gytis Trikleris</a>
+ * @author Gytis Trikleris
+ * @since 1.4.0
  */
 public class NarayanaXADataSourceWrapper implements XADataSourceWrapper {
 
-	private final NarayanaRecoveryManagerBean narayanaRecoveryManagerBean;
+	private final NarayanaRecoveryManagerBean recoveryManager;
 
-	private final NarayanaProperties narayanaProperties;
+	private final NarayanaProperties properties;
 
-	public NarayanaXADataSourceWrapper(NarayanaRecoveryManagerBean narayanaRecoveryManagerBean,
-			NarayanaProperties narayanaProperties) {
-		this.narayanaRecoveryManagerBean = narayanaRecoveryManagerBean;
-		this.narayanaProperties = narayanaProperties;
+	/**
+	 * Create a new {@link NarayanaXADataSourceWrapper} instance.
+	 * @param recoveryManager the underlying recovery manager
+	 * @param properties the Narayana properties
+	 */
+	public NarayanaXADataSourceWrapper(NarayanaRecoveryManagerBean recoveryManager,
+			NarayanaProperties properties) {
+		Assert.notNull(recoveryManager, "RecoveryManager must not be null");
+		Assert.notNull(properties, "Properties must not be null");
+		this.recoveryManager = recoveryManager;
+		this.properties = properties;
 	}
 
 	@Override
 	public DataSource wrapDataSource(XADataSource dataSource) {
-		this.narayanaRecoveryManagerBean.registerXAResourceRecoveryHelper(getRecoveryHelper(dataSource));
-
+		XAResourceRecoveryHelper recoveryHelper = getRecoveryHelper(dataSource);
+		this.recoveryManager.registerXAResourceRecoveryHelper(recoveryHelper);
 		return new NarayanaDataSourceBean(dataSource);
 	}
 
 	private XAResourceRecoveryHelper getRecoveryHelper(XADataSource dataSource) {
-		if (this.narayanaProperties.getRecoveryDbUser() == null && this.narayanaProperties.getRecoveryDbPass() == null) {
+		if (this.properties.getRecoveryDbUser() == null
+				&& this.properties.getRecoveryDbPass() == null) {
 			return new DataSourceXAResourceRecoveryHelper(dataSource);
 		}
-
-		return new DataSourceXAResourceRecoveryHelper(dataSource, this.narayanaProperties.getRecoveryDbUser(),
-				this.narayanaProperties.getRecoveryDbPass());
+		return new DataSourceXAResourceRecoveryHelper(dataSource,
+				this.properties.getRecoveryDbUser(), this.properties.getRecoveryDbPass());
 	}
 
 }

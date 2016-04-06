@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.mockito.BDDMockito.mock;
-import static org.mockito.BDDMockito.spy;
-import static org.mockito.BDDMockito.verify;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 /**
- * @author <a href="mailto:gytis@redhat.com">Gytis Trikleris</a>
+ * Tests for {@link NarayanaBeanFactoryPostProcessor}.
+ *
+ * @author Gytis Trikleris
  */
 public class NarayanaBeanFactoryPostProcessorTests {
 
@@ -41,16 +43,17 @@ public class NarayanaBeanFactoryPostProcessorTests {
 	@Test
 	public void setsDependsOn() {
 		DefaultListableBeanFactory beanFactory = spy(new DefaultListableBeanFactory());
-
 		this.context = new AnnotationConfigApplicationContext(beanFactory);
 		this.context.register(Config.class);
 		this.context.refresh();
-
-		verify(beanFactory).registerDependentBean("narayanaTransactionManager", "dataSource");
-		verify(beanFactory).registerDependentBean("narayanaTransactionManager", "connectionFactory");
-		verify(beanFactory).registerDependentBean("narayanaRecoveryManagerBean", "dataSource");
-		verify(beanFactory).registerDependentBean("narayanaRecoveryManagerBean", "connectionFactory");
-
+		verify(beanFactory).registerDependentBean("narayanaTransactionManager",
+				"dataSource");
+		verify(beanFactory).registerDependentBean("narayanaTransactionManager",
+				"connectionFactory");
+		verify(beanFactory).registerDependentBean("narayanaRecoveryManagerBean",
+				"dataSource");
+		verify(beanFactory).registerDependentBean("narayanaRecoveryManagerBean",
+				"connectionFactory");
 		this.context.close();
 	}
 

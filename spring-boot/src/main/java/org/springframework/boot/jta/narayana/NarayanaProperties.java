@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,11 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Subset of Narayana properties which can be configured via Spring configuration. Use jbossts-properties.xml for complete
- * configuration.
+ * Subset of Narayana properties which can be configured via Spring configuration. Use
+ * jbossts-properties.xml for complete configuration.
  *
- * @author <a href="mailto:gytis@redhat.com">Gytis Trikleris</a>
+ * @author Gytis Trikleris
+ * @since 1.4.0
  */
 @ConfigurationProperties(prefix = NarayanaProperties.PROPERTIES_PREFIX)
 public class NarayanaProperties {
@@ -56,12 +57,14 @@ public class NarayanaProperties {
 	private int defaultTimeout = 60;
 
 	/**
-	 * Interval in which periodic recovery scans are performed in seconds. Default: <code>120</code>
+	 * Interval in which periodic recovery scans are performed in seconds. Default:
+	 * <code>120</code>
 	 */
 	private int periodicRecoveryPeriod = 120;
 
 	/**
-	 * Back off period between first and second phases of the recovery scan in seconds. Default: <code>10</code>
+	 * Back off period between first and second phases of the recovery scan in seconds.
+	 * Default: <code>10</code>
 	 */
 	private int recoveryBackoffPeriod = 10;
 
@@ -88,8 +91,11 @@ public class NarayanaProperties {
 	/**
 	 * List of orphan filters. Default:
 	 * <ul>
-	 * <li>com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter</li>
-	 * <li>com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter</li>
+	 * <li>com.arjuna.ats.internal.jta.recovery.arjunacore.
+	 * JTATransactionLogXAResourceOrphanFilter</li>
+	 * <li>
+	 * com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter
+	 * </li>
 	 * </ul>
 	 */
 	private List<String> xaResourceOrphanFilters = Arrays.asList(
@@ -103,17 +109,19 @@ public class NarayanaProperties {
 	 * <li>com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule</li>
 	 * </ul>
 	 */
-	private List<String> recoveryModules = Arrays.asList("com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule",
+	private List<String> recoveryModules = Arrays.asList(
+			"com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule",
 			"com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule");
 
 	/**
 	 * List of expiry scanners. Default:
 	 * <ul>
-	 * <li>com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner</li>
+	 * <li>com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner
+	 * </li>
 	 * </ul>
 	 */
-	private List<String> expiryScanners = Arrays
-			.asList("com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner");
+	private List<String> expiryScanners = Arrays.asList(
+			"com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner");
 
 	public String getLogDir() {
 		return this.logDir;
@@ -218,4 +226,5 @@ public class NarayanaProperties {
 	public void setRecoveryJmsPass(String recoveryJmsPass) {
 		this.recoveryJmsPass = recoveryJmsPass;
 	}
+
 }

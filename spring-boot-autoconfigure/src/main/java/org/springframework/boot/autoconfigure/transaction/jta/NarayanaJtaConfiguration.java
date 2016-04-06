@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import javax.transaction.UserTransaction;
 
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
@@ -42,15 +41,20 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 /**
  * JTA Configuration for <a href="http://narayana.io/">Narayana</a>.
  *
- * @author <a href="mailto:gytis@redhat.com">Gytis Trikleris</a>
+ * @author Gytis Trikleris
+ * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({ JtaTransactionManager.class, com.arjuna.ats.jta.UserTransaction.class })
+@ConditionalOnClass({ JtaTransactionManager.class,
+		com.arjuna.ats.jta.UserTransaction.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 public class NarayanaJtaConfiguration {
 
-	@Autowired
-	private JtaProperties jtaProperties;
+	private final JtaProperties jtaProperties;
+
+	public NarayanaJtaConfiguration(JtaProperties jtaProperties) {
+		this.jtaProperties = jtaProperties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -60,53 +64,57 @@ public class NarayanaJtaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public NarayanaConfigurationBean narayanaConfigurationBean(NarayanaProperties narayanaProperties) {
+	public NarayanaConfigurationBean narayanaConfiguration(
+			NarayanaProperties properties) {
 		if (this.jtaProperties.getLogDir() != null) {
-			narayanaProperties.setLogDir(this.jtaProperties.getLogDir());
+			properties.setLogDir(this.jtaProperties.getLogDir());
 		}
-
 		if (this.jtaProperties.getTransactionManagerId() != null) {
-			narayanaProperties.setTransactionManagerId(this.jtaProperties.getTransactionManagerId());
+			properties.setTransactionManagerId(
+					this.jtaProperties.getTransactionManagerId());
 		}
-
-		return new NarayanaConfigurationBean(narayanaProperties);
+		return new NarayanaConfigurationBean(properties);
 	}
 
 	@Bean
-	@DependsOn("narayanaConfigurationBean")
+	@DependsOn("narayanaConfiguration")
 	@ConditionalOnMissingBean
 	public UserTransaction narayanaUserTransaction() {
 		return com.arjuna.ats.jta.UserTransaction.userTransaction();
 	}
 
 	@Bean
-	@DependsOn("narayanaConfigurationBean")
+	@DependsOn("narayanaConfiguration")
 	@ConditionalOnMissingBean
 	public TransactionManager narayanaTransactionManager() {
 		return com.arjuna.ats.jta.TransactionManager.transactionManager();
 	}
 
 	@Bean
-	@DependsOn("narayanaConfigurationBean")
+	@DependsOn("narayanaConfiguration")
 	public RecoveryManagerService narayanaRecoveryManagerService() {
 		return new RecoveryManagerService();
 	}
 
 	@Bean
-	public NarayanaRecoveryManagerBean narayanaRecoveryManagerBean(RecoveryManagerService recoveryManagerService) {
+	public NarayanaRecoveryManagerBean narayanaRecoveryManager(
+			RecoveryManagerService recoveryManagerService) {
 		return new NarayanaRecoveryManagerBean(recoveryManagerService);
 	}
 
 	@Bean
-	public JtaTransactionManager transactionManager(UserTransaction userTransaction, TransactionManager transactionManager) {
+	public JtaTransactionManager transactionManager(UserTransaction userTransaction,
+			TransactionManager transactionManager) {
 		return new JtaTransactionManager(userTransaction, transactionManager);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(XADataSourceWrapper.class)
-	public XADataSourceWrapper xaDataSourceWrapper(NarayanaRecoveryManagerBean narayanaRecoveryManagerBean,
+	public XADataSourceWrapper xaDataSourceWrapper(
+			NarayanaRecoveryManagerBean narayanaRecoveryManagerBean,
 			NarayanaProperties narayanaProperties) {
-		return new NarayanaXADataSourceWrapper(narayanaRecoveryManagerBean, narayanaProperties);
+		return new NarayanaXADataSourceWrapper(narayanaRecoveryManagerBean,
+				narayanaProperties);
 	}
 
 	@Bean
@@ -121,9 +129,12 @@ public class NarayanaJtaConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(XAConnectionFactoryWrapper.class)
-		public NarayanaXAConnectionFactoryWrapper xaConnectionFactoryWrapper(TransactionManager transactionManager,
-				NarayanaRecoveryManagerBean narayanaRecoveryManagerBean, NarayanaProperties narayanaProperties) {
-			return new NarayanaXAConnectionFactoryWrapper(transactionManager, narayanaRecoveryManagerBean, narayanaProperties);
+		public NarayanaXAConnectionFactoryWrapper xaConnectionFactoryWrapper(
+				TransactionManager transactionManager,
+				NarayanaRecoveryManagerBean narayanaRecoveryManagerBean,
+				NarayanaProperties narayanaProperties) {
+			return new NarayanaXAConnectionFactoryWrapper(transactionManager,
+					narayanaRecoveryManagerBean, narayanaProperties);
 		}
 
 	}
