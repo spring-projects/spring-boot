@@ -93,6 +93,16 @@ public class MongoProperties {
 	 */
 	private Class<?> fieldNamingStrategy;
 
+	private String dbpath;
+
+	public String getDbpath() {
+		return dbpath;
+	}
+
+	public void setDbpath(String dbpath) {
+		this.dbpath = dbpath;
+	}
+
 	public String getHost() {
 		return this.host;
 	}
