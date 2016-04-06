@@ -65,6 +65,7 @@
 		<couchbase-cache-client.version>2.0.0</couchbase-cache-client.version>
 		<crashub.version>1.3.2</crashub.version>
 		<derby.version>10.12.1.1</derby.version>
+		<dom4j.version>1.6.1</dom4j.version>
 		<dropwizard-metrics.version>3.1.2</dropwizard-metrics.version>
 		<ehcache.version>2.10.1</ehcache.version>
 		<embedded-mongo.version>1.50.2</embedded-mongo.version>
@@ -79,7 +80,7 @@
 		<h2.version>1.4.191</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
 		<hazelcast.version>3.6.1</hazelcast.version>
-		<hibernate.version>4.3.11.Final</hibernate.version>
+		<hibernate.version>5.1.0.Final</hibernate.version>
 		<hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
 		<hikaricp.version>2.4.5</hikaricp.version>
 		<hikaricp-java6.version>2.3.13</hikaricp-java6.version>
@@ -805,6 +806,11 @@
 				<groupId>de.flapdoodle.embed</groupId>
 				<artifactId>de.flapdoodle.embed.mongo</artifactId>
 				<version>${embedded-mongo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>dom4j</groupId>
+				<artifactId>dom4j</artifactId>
+				<version>${dom4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.dropwizard.metrics</groupId>

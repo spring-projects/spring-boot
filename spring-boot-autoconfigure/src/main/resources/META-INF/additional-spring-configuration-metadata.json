@@ -447,7 +447,29 @@
     ]
   },
   {
-    "name": "spring.jpa.hibernate.naming-strategy",
+    "name": "spring.jpa.hibernate.naming.implicit-strategy",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "org.hibernate.boot.model.naming.ImplicitNamingStrategy"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.jpa.hibernate.naming.physical-strategy",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "org.hibernate.boot.model.naming.PhysicalNamingStrategy"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.jpa.hibernate.naming.strategy",
     "providers": [
       {
         "name": "class-reference",
