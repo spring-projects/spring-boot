@@ -9,7 +9,7 @@
 	<artifactId>spring-boot-starter-tomcat</artifactId>
 	<name>Spring Boot Tomcat Starter</name>
 	<description>Starter for using Tomcat as the embedded servlet container. Default
-		servlet container starter using by spring-boot-starter-web</description>
+		servlet container starter used by spring-boot-starter-web</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
