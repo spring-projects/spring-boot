@@ -37,9 +37,9 @@ public class NarayanaProperties {
 	public static final String PROPERTIES_PREFIX = "spring.jta.narayana";
 
 	/**
-	 * Transaction object store directory. Default: target/tx-object-store.
+	 * Transaction object store directory.
 	 */
-	private String logDir = "target/tx-object-store";
+	private String logDir;
 
 	/**
 	 * Unique transaction manager id. Default: 1.

@@ -16,12 +16,15 @@
 
 package org.springframework.boot.autoconfigure.transaction.jta;
 
+import java.io.File;
+
 import javax.jms.Message;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
 
+import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
@@ -37,6 +40,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
+import org.springframework.util.StringUtils;
 
 /**
  * JTA Configuration for <a href="http://narayana.io/">Narayana</a>.
@@ -66,14 +70,20 @@ public class NarayanaJtaConfiguration {
 	@ConditionalOnMissingBean
 	public NarayanaConfigurationBean narayanaConfiguration(
 			NarayanaProperties properties) {
-		if (this.jtaProperties.getLogDir() != null) {
-			properties.setLogDir(this.jtaProperties.getLogDir());
-		}
+		properties.setLogDir(getLogDir().getAbsolutePath());
 		if (this.jtaProperties.getTransactionManagerId() != null) {
 			properties.setTransactionManagerId(
 					this.jtaProperties.getTransactionManagerId());
 		}
 		return new NarayanaConfigurationBean(properties);
+	}
+
+	private File getLogDir() {
+		if (StringUtils.hasLength(this.jtaProperties.getLogDir())) {
+			return new File(this.jtaProperties.getLogDir());
+		}
+		File home = new ApplicationHome().getDir();
+		return new File(home, "transaction-logs");
 	}
 
 	@Bean

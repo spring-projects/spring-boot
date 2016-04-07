@@ -18,6 +18,7 @@ package org.springframework.boot.jta.narayana;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.arjuna.ats.arjuna.common.CoordinatorEnvironmentBean;
 import com.arjuna.ats.arjuna.common.CoreEnvironmentBean;
@@ -25,7 +26,10 @@ import com.arjuna.ats.arjuna.common.ObjectStoreEnvironmentBean;
 import com.arjuna.ats.arjuna.common.RecoveryEnvironmentBean;
 import com.arjuna.ats.jta.common.JTAEnvironmentBean;
 import com.arjuna.common.internal.util.propertyservice.BeanPopulator;
+import org.junit.After;
 import org.junit.Test;
+
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +39,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Gytis Trikleris
  */
 public class NarayanaConfigurationBeanTests {
+
+	@After
+	@SuppressWarnings("unchecked")
+	public void cleanup() {
+		((Map<String, Object>) ReflectionTestUtils.getField(BeanPopulator.class,
+				"beanInstances")).clear();
+	}
 
 	@Test
 	public void shouldSetDefaultProperties() throws Exception {
@@ -46,13 +57,13 @@ public class NarayanaConfigurationBeanTests {
 		assertThat(BeanPopulator.getDefaultInstance(CoreEnvironmentBean.class)
 				.getNodeIdentifier()).isEqualTo("1");
 		assertThat(BeanPopulator.getDefaultInstance(ObjectStoreEnvironmentBean.class)
-				.getObjectStoreDir()).isEqualTo("target/tx-object-store");
+				.getObjectStoreDir()).endsWith("ObjectStore");
 		assertThat(BeanPopulator
 				.getNamedInstance(ObjectStoreEnvironmentBean.class, "communicationStore")
-				.getObjectStoreDir()).isEqualTo("target/tx-object-store");
+				.getObjectStoreDir()).endsWith("ObjectStore");
 		assertThat(BeanPopulator
 				.getNamedInstance(ObjectStoreEnvironmentBean.class, "stateStore")
-				.getObjectStoreDir()).isEqualTo("target/tx-object-store");
+				.getObjectStoreDir()).endsWith("ObjectStore");
 		assertThat(BeanPopulator.getDefaultInstance(CoordinatorEnvironmentBean.class)
 				.isCommitOnePhase()).isTrue();
 		assertThat(BeanPopulator.getDefaultInstance(CoordinatorEnvironmentBean.class)

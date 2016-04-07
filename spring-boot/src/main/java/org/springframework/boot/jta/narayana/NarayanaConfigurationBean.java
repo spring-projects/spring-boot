@@ -71,11 +71,14 @@ public class NarayanaConfigurationBean implements InitializingBean {
 	}
 
 	private void setObjectStoreDir(String objectStoreDir) {
-		getPopulator(ObjectStoreEnvironmentBean.class).setObjectStoreDir(objectStoreDir);
-		getPopulator(ObjectStoreEnvironmentBean.class, "communicationStore")
-				.setObjectStoreDir(objectStoreDir);
-		getPopulator(ObjectStoreEnvironmentBean.class, "stateStore")
-				.setObjectStoreDir(objectStoreDir);
+		if (objectStoreDir != null) {
+			getPopulator(ObjectStoreEnvironmentBean.class)
+					.setObjectStoreDir(objectStoreDir);
+			getPopulator(ObjectStoreEnvironmentBean.class, "communicationStore")
+					.setObjectStoreDir(objectStoreDir);
+			getPopulator(ObjectStoreEnvironmentBean.class, "stateStore")
+					.setObjectStoreDir(objectStoreDir);
+		}
 	}
 
 	private void setCommitOnePhase(boolean isCommitOnePhase) {
