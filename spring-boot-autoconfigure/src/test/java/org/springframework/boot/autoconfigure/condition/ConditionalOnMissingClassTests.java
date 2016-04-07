@@ -59,7 +59,7 @@ public class ConditionalOnMissingClassTests {
 	}
 
 	@Configuration
-	@ConditionalOnMissingClass("FOO")
+	@ConditionalOnMissingClass(name = "FOO")
 	protected static class MissingConfiguration {
 		@Bean
 		public String bar() {
