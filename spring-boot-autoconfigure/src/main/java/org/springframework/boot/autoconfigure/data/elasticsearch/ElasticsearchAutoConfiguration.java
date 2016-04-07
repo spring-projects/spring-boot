@@ -78,7 +78,7 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(Client.class)
 	public Client elasticsearchClient() {
 		try {
 			return createClient();
