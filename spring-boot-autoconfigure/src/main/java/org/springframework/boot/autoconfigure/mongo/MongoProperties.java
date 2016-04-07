@@ -93,16 +93,6 @@ public class MongoProperties {
 	 */
 	private Class<?> fieldNamingStrategy;
 
-	private String dbpath;
-
-	public String getDbpath() {
-		return dbpath;
-	}
-
-	public void setDbpath(String dbpath) {
-		this.dbpath = dbpath;
-	}
-
 	public String getHost() {
 		return this.host;
 	}
@@ -189,21 +179,6 @@ public class MongoProperties {
 			return this.database;
 		}
 		return new MongoClientURI(this.uri).getDatabase();
-	}
-
-	/**
-	 * Creates a {@link MongoClient} using the given {@code options}.
-	 *
-	 * @param options the options
-	 * @return the Mongo client
-	 * @throws UnknownHostException if the configured host is unknown
-	 * @deprecated Since 1.3.0 in favour of
-	 * {@link #createMongoClient(MongoClientOptions, Environment)}
-	 */
-	@Deprecated
-	public MongoClient createMongoClient(MongoClientOptions options)
-			throws UnknownHostException {
-		return this.createMongoClient(options, null);
 	}
 
 	/**

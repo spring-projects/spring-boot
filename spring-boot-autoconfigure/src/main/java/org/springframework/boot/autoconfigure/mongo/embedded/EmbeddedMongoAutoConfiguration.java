@@ -35,7 +35,6 @@ import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
-import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
 import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
@@ -126,8 +125,8 @@ public class EmbeddedMongoAutoConfiguration {
 				this.embeddedProperties.getFeatures());
 		MongodConfigBuilder builder = new MongodConfigBuilder()
 				.version(featureAwareVersion);
-		if (getDbpath() != null) {
-			builder.replication(new Storage(getDbpath(), null, 0));
+		if (this.embeddedProperties.getStorage() != null) {
+			builder.replication(this.embeddedProperties.getStorage());
 		}
 		if (getPort() > 0) {
 			builder.net(new Net(getHost().getHostAddress(), getPort(),
@@ -140,9 +139,6 @@ public class EmbeddedMongoAutoConfiguration {
 		return builder.build();
 	}
 
-	private String getDbpath() {
-		return this.properties.getDbpath();
-	}
 
 	private int getPort() {
 		if (this.properties.getPort() == null) {

@@ -124,7 +124,8 @@ public class EmbeddedMongoAutoConfigurationTests {
 			this.context = new AnnotationConfigApplicationContext();
 			this.context.setParent(parent);
 			EnvironmentTestUtils.addEnvironment(this.context, "spring.data.mongodb.port=0",
-					"spring.data.mongodb.dbpath=/Users/yogeshlo/db");
+					"spring.mongodb.embedded.storage.databaseDir=/Users/yogeshlo/db",
+					"spring.mongodb.embedded.storage.oplogSize=0");
 			this.context.register(EmbeddedMongoAutoConfiguration.class, MongoClientConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class);
 			this.context.refresh();
