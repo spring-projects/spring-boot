@@ -267,18 +267,32 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			collect(attributes, "annotation", this.annotations);
 			collect(attributes, "ignored", this.ignoredTypes);
 			collect(attributes, "ignoredType", this.ignoredTypes);
-			if (this.types.isEmpty() && this.names.isEmpty()) {
-				addDeducedBeanType(context, metadata, this.types);
-			}
 			this.strategy = (SearchStrategy) metadata
 					.getAnnotationAttributes(annotationType.getName()).get("search");
-			validate();
+			BeanTypeDeductionException deductionException = null;
+			try {
+				if (this.types.isEmpty() && this.names.isEmpty()) {
+					addDeducedBeanType(context, metadata, this.types);
+				}
+			}
+			catch (BeanTypeDeductionException ex) {
+				deductionException = ex;
+			}
+			validate(deductionException);
 		}
 
-		protected void validate() {
-			Assert.isTrue(hasAtLeastOne(this.types, this.names, this.annotations),
-					annotationName() + " annotations must "
-							+ "specify at least one bean (type, name or annotation)");
+		protected void validate(BeanTypeDeductionException ex) {
+			if (!hasAtLeastOne(this.types, this.names, this.annotations)) {
+				String message = annotationName()
+						+ " did not specify a bean using type, name or annotation";
+				if (ex == null) {
+					throw new IllegalStateException(message);
+				}
+				else {
+					throw new IllegalStateException(message + " and the attempt to deduce"
+							+ " the bean's type failed", ex);
+				}
+			}
 		}
 
 		private boolean hasAtLeastOne(List<?>... lists) {
@@ -337,12 +351,9 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 				});
 			}
 			catch (Throwable ex) {
-				// swallow exception and continue
-				if (logger.isDebugEnabled()) {
-					logger.debug("Unable to deduce bean type for "
-							+ methodMetadata.getDeclaringClassName() + "."
-							+ methodMetadata.getMethodName(), ex);
-				}
+				throw new BeanTypeDeductionException(
+						methodMetadata.getDeclaringClassName(),
+						methodMetadata.getMethodName(), ex);
 			}
 		}
 
@@ -404,11 +415,20 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 		}
 
 		@Override
-		protected void validate() {
+		protected void validate(BeanTypeDeductionException ex) {
 			Assert.isTrue(getTypes().size() == 1, annotationName() + " annotations must "
 					+ "specify only one type (got " + getTypes() + ")");
-
 		}
+	}
+
+	static final class BeanTypeDeductionException extends RuntimeException {
+
+		private BeanTypeDeductionException(String className, String beanMethodName,
+				Throwable cause) {
+			super("Failed to deduce bean type for " + className + "." + beanMethodName,
+					cause);
+		}
+
 	}
 
 }
