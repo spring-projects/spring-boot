@@ -715,6 +715,19 @@ content into your application; rather pick only the properties that you need.
     spring.jta.bitronix.properties.skip-corrupted-logs=false # Skip corrupted transactions log entries.
     spring.jta.bitronix.properties.warn-about-zero-resource-transaction=true # Log a warning for transactions executed without a single enlisted resource.
 
+    # NARAYANA
+    spring.jta.narayana.default-timeout=60 # Set default transaction timeout in seconds
+    spring.jta.narayana.expiry-scanners=com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner # List of ExpiryScanner implementations
+    spring.jta.narayana.one-phase-commit=true # Enable or disable one phase commit optimisation
+    spring.jta.narayana.periodic-recovery-period=120 # Set interval in which periodic recovery scans are performed in seconds
+    spring.jta.narayana.recovery-backoff-period=10 # Set back off period between first and second phases of the recovery scan in seconds
+    spring.jta.narayana.recovery-db-user= # Database username to be used by recovery manager
+    spring.jta.narayana.recovery-db-pass= # Database password to be used by recovery manager
+    spring.jta.narayana.recovery-jms-user= # JMS username to be used by recovery manager
+    spring.jta.narayana.recovery-jms-pass= # JMS password to be used by recovery manager
+    spring.jta.narayana.recovery-modules=com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule,com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule # List of RecoveryModule implementations
+    spring.jta.narayana.xa-resource-orphan-filters=com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter,com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter # List of XAResourceOrphanFilter implementations
+
 	# EMBEDDED MONGODB ({sc-spring-boot-autoconfigure}/mongo/embedded/EmbeddedMongoProperties.{sc-ext}[EmbeddedMongoProperties])
 	spring.mongodb.embedded.features=SYNC_DELAY # Comma-separated list of features to enable.
 	spring.mongodb.embedded.version=2.6.10 # Version of Mongo to use.
