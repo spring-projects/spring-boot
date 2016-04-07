@@ -143,7 +143,7 @@
 		<spring-amqp.version>1.6.0.M2</spring-amqp.version>
 		<spring-cloud-connectors.version>1.2.2.RELEASE</spring-cloud-connectors.version>
 		<spring-batch.version>3.0.6.RELEASE</spring-batch.version>
-		<spring-data-releasetrain.version>Hopper-RC1</spring-data-releasetrain.version>
+		<spring-data-releasetrain.version>Hopper-SR1</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.19.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.3.0.M1</spring-integration.version>
 		<spring-loaded.version>1.2.5.RELEASE</spring-loaded.version>
