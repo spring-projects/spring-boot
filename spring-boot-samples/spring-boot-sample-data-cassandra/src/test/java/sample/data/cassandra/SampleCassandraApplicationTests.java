@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @TestExecutionListeners(mergeMode = MergeMode.MERGE_WITH_DEFAULTS, listeners = {
 		OrderedCassandraTestExecutionListener.class })
-@SpringBootTest("spring.data.cassandra.port=9142")
+@SpringBootTest
 @CassandraDataSet(keyspace = "mykeyspace", value = "setup.cql")
 @EmbeddedCassandra(timeout = 60000)
 public class SampleCassandraApplicationTests {

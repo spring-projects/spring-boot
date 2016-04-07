@@ -53,7 +53,8 @@
 						<phase>process-resources</phase>
 						<configuration>
 							<portNames>
-								<portName>cassandra.port</portName>
+								<portName>cassandra.port.native-transport</portName>
+								<portName>cassandra.port.storage</portName>
 							</portNames>
 						</configuration>
 					</execution>
@@ -64,8 +65,9 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<systemPropertyVariables>
-						<spring.data.cassandra.port>${cassandra.port}</spring.data.cassandra.port>
-						<cassandra.native_transport_port>${cassandra.port}</cassandra.native_transport_port>
+						<spring.data.cassandra.port>${cassandra.port.native-transport}</spring.data.cassandra.port>
+						<cassandra.native_transport_port>${cassandra.port.native-transport}</cassandra.native_transport_port>
+						<cassandra.storage_port>${cassandra.port.storage}</cassandra.storage_port>
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
