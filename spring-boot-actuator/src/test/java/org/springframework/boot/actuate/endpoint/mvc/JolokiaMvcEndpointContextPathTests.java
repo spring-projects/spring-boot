@@ -49,6 +49,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
+ * Tests for {@link JolokiaMvcEndpoint} with a custom management context path.
+ *
  * @author Christian Dupuis
  * @author Dave Syer
  */

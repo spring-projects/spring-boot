@@ -219,15 +219,15 @@ public final class Health {
 		}
 
 		/**
-		 * Record detail using {@code key} and {@code value}.
+		 * Record detail using key and value.
 		 * @param key the detail key
-		 * @param data the detail data
+		 * @param value the detail value
 		 * @return this {@link Builder} instance
 		 */
-		public Builder withDetail(String key, Object data) {
+		public Builder withDetail(String key, Object value) {
 			Assert.notNull(key, "Key must not be null");
-			Assert.notNull(data, "Data must not be null");
-			this.details.put(key, data);
+			Assert.notNull(value, "Value must not be null");
+			this.details.put(key, value);
 			return this;
 		}
 
