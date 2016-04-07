@@ -125,6 +125,9 @@ public class EmbeddedMongoAutoConfiguration {
 				this.embeddedProperties.getFeatures());
 		MongodConfigBuilder builder = new MongodConfigBuilder()
 				.version(featureAwareVersion);
+		if (this.embeddedProperties.getStorage() != null) {
+			builder.replication(this.embeddedProperties.getStorage());
+		}
 		if (getPort() > 0) {
 			builder.net(new Net(getHost().getHostAddress(), getPort(),
 					Network.localhostIsIPv6()));
@@ -135,6 +138,7 @@ public class EmbeddedMongoAutoConfiguration {
 		}
 		return builder.build();
 	}
+
 
 	private int getPort() {
 		if (this.properties.getPort() == null) {
