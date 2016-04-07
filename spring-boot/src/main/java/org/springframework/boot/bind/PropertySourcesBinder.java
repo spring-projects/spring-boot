@@ -83,7 +83,7 @@ public class PropertySourcesBinder {
 	/**
 	 * Extract the keys using the specified {@code prefix}. The prefix won't be included.
 	 * <p>
-	 * Any key that starts with the {@code prefix} will be included
+	 * Any key that starts with the {@code prefix} will be included.
 	 * @param prefix the prefix to use
 	 * @return the keys matching the prefix
 	 */
