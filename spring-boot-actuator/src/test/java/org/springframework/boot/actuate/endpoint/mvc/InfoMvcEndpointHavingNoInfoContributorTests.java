@@ -43,13 +43,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link InfoMvcEndpointWithoutAnyInfoProvidersTests}
+ * Tests for {@link InfoEndpoint} having no info contributor with {@link MockMvc}.
  *
  * @author Meang Akira Tanaka
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class InfoMvcEndpointWithoutAnyInfoProvidersTests {
+public class InfoMvcEndpointHavingNoInfoContributorTests {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -58,7 +58,6 @@ public class InfoMvcEndpointWithoutAnyInfoProvidersTests {
 
 	@Before
 	public void setUp() {
-
 		this.context.getBean(InfoEndpoint.class).setEnabled(true);
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 	}

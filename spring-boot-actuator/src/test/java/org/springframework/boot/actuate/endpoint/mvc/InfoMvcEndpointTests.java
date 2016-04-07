@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link InfoMvcEndpointTests}
+ * Tests for {@link InfoEndpoint} with {@link MockMvc}.
  *
  * @author Meang Akira Tanaka
  * @author Stephane Nicoll

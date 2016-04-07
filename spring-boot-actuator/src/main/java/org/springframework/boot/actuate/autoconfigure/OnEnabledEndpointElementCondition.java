@@ -24,7 +24,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Base endpoint element condition. An element can be disabled globally via the `defaults`
+ * Base endpoint element condition. An element can be disabled globally via the {@code defaults}
  * name or individually via the name of the element.
  *
  * @author Stephane Nicoll

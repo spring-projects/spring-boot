@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure;
 import org.springframework.context.annotation.Condition;
 
 /**
- * {@link Condition} that checks if a info indicator is enabled.
+ * {@link Condition} that checks if an info indicator is enabled.
  *
  * @author Stephane Nicoll
  */

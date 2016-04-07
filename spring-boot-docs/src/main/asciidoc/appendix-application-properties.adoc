@@ -969,12 +969,12 @@ content into your application; rather pick only the properties that you need.
 	# INFO CONTRIBUTORS
 	management.info.build.enabled=true # Enable build info.
 	management.info.build.mode=simple # Mode to use to expose build information.
-	management.info.defaults.enabled=true # Enable default health indicators.
+	management.info.defaults.enabled=true # Enable default info contributors.
 	management.info.env.enabled=true # Enable environment info.
 	management.info.git.enabled=true # Enable git info.
 	management.info.git.mode=simple # Mode to use to expose git information.
 
-	# TRACING (({sc-spring-boot-actuator}/trace/TraceProperties.{sc-ext}[TraceProperties])
+	# TRACING ({sc-spring-boot-actuator}/trace/TraceProperties.{sc-ext}[TraceProperties])
 	management.trace.include=request-headers,response-headers,errors # Items to be included in the trace.
 
 	# REMOTE SHELL
