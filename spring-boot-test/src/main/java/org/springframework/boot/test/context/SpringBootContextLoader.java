@@ -19,10 +19,8 @@ package org.springframework.boot.test.context;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
@@ -36,7 +34,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.SpringVersion;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
@@ -90,8 +87,6 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
 			setActiveProfiles(environment, config.getActiveProfiles());
 		}
-		Map<String, Object> properties = getEnvironmentProperties(config);
-		addProperties(environment, properties);
 		application.setEnvironment(environment);
 		List<ApplicationContextInitializer<?>> initializers = getInitializers(config,
 				application);
@@ -135,29 +130,19 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 				+ StringUtils.arrayToCommaDelimitedString(profiles));
 	}
 
-	protected Map<String, Object> getEnvironmentProperties(
-			MergedContextConfiguration config) {
-		Map<String, Object> properties = new LinkedHashMap<String, Object>();
+	protected String[] getInlinedProperties(MergedContextConfiguration config) {
+		ArrayList<String> properties = new ArrayList<String>();
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		disableJmx(properties);
-		properties.putAll(TestPropertySourceUtils
-				.convertInlinedPropertiesToMap(config.getPropertySourceProperties()));
+		properties.addAll(Arrays.asList(config.getPropertySourceProperties()));
 		if (!isEmbeddedWebEnvironment(config)) {
-			properties.put("server.port", "-1");
+			properties.add("server.port=-1");
 		}
-		return properties;
+		return properties.toArray(new String[properties.size()]);
 	}
 
-	private void disableJmx(Map<String, Object> properties) {
-		properties.put("spring.jmx.enabled", "false");
-	}
-
-	private void addProperties(ConfigurableEnvironment environment,
-			Map<String, Object> properties) {
-		// @IntegrationTest properties go before external configuration and after system
-		environment.getPropertySources().addAfter(
-				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-				new MapPropertySource("integrationTest", properties));
+	private void disableJmx(List<String> properties) {
+		properties.add("spring.jmx.enabled=false");
 	}
 
 	private List<ApplicationContextInitializer<?>> getInitializers(
@@ -166,8 +151,8 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		for (ContextCustomizer contextCustomizer : config.getContextCustomizers()) {
 			initializers.add(new ContextCustomizerAdapter(contextCustomizer, config));
 		}
-		initializers.add(new PropertySourceLocationsInitializer(
-				config.getPropertySourceLocations()));
+		initializers.add(new TestPropertySourcesInitializer(
+				config.getPropertySourceLocations(), getInlinedProperties(config)));
 		initializers.addAll(application.getInitializers());
 		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : config
 				.getContextInitializerClasses()) {
@@ -258,21 +243,27 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	/**
-	 * {@link ApplicationContextInitializer} to setup test property source locations.
+	 * {@link ApplicationContextInitializer} to set up test property sources.
 	 */
-	private static class PropertySourceLocationsInitializer
+	private static class TestPropertySourcesInitializer
 			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		private final String[] propertySourceLocations;
 
-		PropertySourceLocationsInitializer(String[] propertySourceLocations) {
+		private final String[] inlinedProperties;
+
+		TestPropertySourcesInitializer(String[] propertySourceLocations,
+				String[] inlinedProperties) {
 			this.propertySourceLocations = propertySourceLocations;
+			this.inlinedProperties = inlinedProperties;
 		}
 
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
 			TestPropertySourceUtils.addPropertiesFilesToEnvironment(applicationContext,
 					this.propertySourceLocations);
+			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(applicationContext,
+					this.inlinedProperties);
 		}
 
 	}

@@ -206,7 +206,9 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		Class<?> testClass = mergedConfig.getTestClass();
 		String[] properties = getProperties(testClass);
 		if (!ObjectUtils.isEmpty(properties)) {
-			propertySourceProperties.addAll(Arrays.asList(properties));
+			// Added first so that inlined properties from @TestPropertySource take
+			// precedence
+			propertySourceProperties.addAll(0, Arrays.asList(properties));
 		}
 		if (getWebEnvironment(testClass) == WebEnvironment.RANDOM_PORT) {
 			propertySourceProperties.add("server.port=0");
