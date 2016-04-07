@@ -288,10 +288,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 				if (ex == null) {
 					throw new IllegalStateException(message);
 				}
-				else {
-					throw new IllegalStateException(message + " and the attempt to deduce"
-							+ " the bean's type failed", ex);
-				}
+				throw new IllegalStateException(message + " and the attempt to deduce"
+						+ " the bean's type failed", ex);
 			}
 		}
 
