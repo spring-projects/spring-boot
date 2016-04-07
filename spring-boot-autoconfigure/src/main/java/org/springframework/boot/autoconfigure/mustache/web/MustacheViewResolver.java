@@ -29,7 +29,7 @@ import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.view.UrlBasedViewResolver;
+import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 
 /**
  * Spring MVC {@link ViewResolver} for Mustache.
@@ -39,7 +39,7 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
  * @author Phillip Webb
  * @since 1.2.2
  */
-public class MustacheViewResolver extends UrlBasedViewResolver {
+public class MustacheViewResolver extends AbstractTemplateViewResolver {
 
 	private Compiler compiler = Mustache.compiler();
 
