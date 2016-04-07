@@ -67,6 +67,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -196,29 +197,26 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void textBannerTakesPrecedence() throws Exception {
+	public void imageBannerAndTextBanner() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		BannerResourceLoaderStub resourceLoader = new BannerResourceLoaderStub();
-		resourceLoader.addResource("banner.gif", "banners/black-and-white.gif");
-		resourceLoader.addResource("banner.txt", "banners/foobar.txt");
-
+		MockResourceLoader resourceLoader = new MockResourceLoader();
+		resourceLoader.addResource("banner.gif", "black-and-white.gif");
+		resourceLoader.addResource("banner.txt", "foobar.txt");
 		application.setWebEnvironment(false);
 		application.setResourceLoader(resourceLoader);
 		application.run();
-
-		assertThat(this.output.toString()).startsWith("Foo Bar");
+		assertThat(this.output.toString()).contains("@@@@").contains("Foo Bar");
 	}
 
 	@Test
 	public void imageBannerLoads() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		BannerResourceLoaderStub resourceLoader = new BannerResourceLoaderStub();
-		resourceLoader.addResource("banner.gif", "banners/black-and-white.gif");
+		MockResourceLoader resourceLoader = new MockResourceLoader();
+		resourceLoader.addResource("banner.gif", "black-and-white.gif");
 		application.setWebEnvironment(false);
 		application.setResourceLoader(resourceLoader);
 		application.run();
-
-		assertThat(this.output.toString()).startsWith("@");
+		assertThat(this.output.toString()).contains("@@@@@@");
 	}
 
 	@Test
@@ -1120,28 +1118,23 @@ public class SpringApplicationTests {
 
 	}
 
-	private static class BannerResourceLoaderStub extends DefaultResourceLoader {
+	private static class MockResourceLoader implements ResourceLoader {
 
-		private Map<String, String> resources = new HashMap<String, String>();
-		Resource notFoundResource;
+		private final Map<String, Resource> resources = new HashMap<String, Resource>();
 
-		BannerResourceLoaderStub() {
-			this.notFoundResource = super.getResource("classpath:foo/bar/foobar");
-			assert !this.notFoundResource.exists();
-		}
-
-		public void addResource(String file, String realPath) {
-			this.resources.put(file, realPath);
+		public void addResource(String source, String path) {
+			this.resources.put(source, new ClassPathResource(path, getClass()));
 		}
 
 		@Override
-		public Resource getResource(String s) {
-			if (this.resources.containsKey(s)) {
-				return super.getResource("classpath:" + this.resources.get(s));
-			}
-			else {
-				return this.notFoundResource;
-			}
+		public Resource getResource(String path) {
+			Resource resource = this.resources.get(path);
+			return (resource == null ? new ClassPathResource("doesnotexit") : resource);
+		}
+
+		@Override
+		public ClassLoader getClassLoader() {
+			return getClass().getClassLoader();
 		}
 
 	}

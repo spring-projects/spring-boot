@@ -18,219 +18,171 @@ package org.springframework.boot;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.ansi.AnsiBackground;
 import org.springframework.boot.ansi.AnsiColor;
-import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiOutput;
+import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
-
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ImageBanner}.
  *
  * @author Craig Burke
+ * @author Phillip Webb
  */
 public class ImageBannerTests {
 
-	private static final String IMAGE_BANNER_BLACK_AND_WHITE = "banners/black-and-white.gif";
-	private static final String IMAGE_BANNER_LARGE = "banners/large.gif";
-	private static final String IMAGE_BANNER_ALL_COLORS = "banners/colors.gif";
-	private static final String IMAGE_BANNER_GRADIENT = "banners/gradient.gif";
-
-	private static final String BACKGROUND_DEFAULT_ANSI = getAnsiOutput(AnsiBackground.DEFAULT);
-	private static final String BACKGROUND_DARK_ANSI = getAnsiOutput(AnsiBackground.BLACK);
+	private static final String NEW_LINE = System.getProperty("line.separator");
 
 	private static final char HIGH_LUMINANCE_CHARACTER = ' ';
+
 	private static final char LOW_LUMINANCE_CHARACTER = '@';
 
-	private static Map<String, Object> properties;
+	private static final String INVERT_TRUE = "banner.image.invert=true";
 
 	@Before
 	public void setup() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
-		properties = new HashMap<String, Object>();
+	}
+
+	@After
+	public void cleanup() {
+		AnsiOutput.setEnabled(Enabled.DETECT);
 	}
 
 	@Test
-	public void renderDefaultBackground() {
-		String banner = printBanner(IMAGE_BANNER_BLACK_AND_WHITE);
-
-		assertThat(banner, startsWith(BACKGROUND_DEFAULT_ANSI));
+	public void printBannerShouldResetForegroundAndBackground() {
+		String banner = printBanner("black-and-white.gif");
+		String expected = AnsiOutput.encode(AnsiColor.DEFAULT)
+				+ AnsiOutput.encode(AnsiBackground.DEFAULT);
+		assertThat(banner).startsWith(expected);
 	}
 
 	@Test
-	public void renderDarkBackground() {
-		setDark(true);
-		String banner = printBanner(IMAGE_BANNER_BLACK_AND_WHITE);
-
-		assertThat(banner, startsWith(BACKGROUND_DARK_ANSI));
+	public void printBannerWhenInvertedShouldResetForegroundAndBackground() {
+		String banner = printBanner("black-and-white.gif", INVERT_TRUE);
+		String expected = AnsiOutput.encode(AnsiColor.DEFAULT)
+				+ AnsiOutput.encode(AnsiBackground.BLACK);
+		assertThat(banner).startsWith(expected);
 	}
 
 	@Test
-	public void renderWhiteCharactersWithColors() {
-		String banner = printBanner(IMAGE_BANNER_BLACK_AND_WHITE);
-		String expectedFirstLine = getAnsiOutput(AnsiColor.BRIGHT_WHITE)
+	public void printBannerShouldPrintWhiteAsBrightWhiteHighLuminance() {
+		String banner = printBanner("black-and-white.gif");
+		String expected = AnsiOutput.encode(AnsiColor.BRIGHT_WHITE)
 				+ HIGH_LUMINANCE_CHARACTER;
-
-		assertThat(banner, containsString(expectedFirstLine));
+		assertThat(banner).contains(expected);
 	}
 
 	@Test
-	public void renderWhiteCharactersOnDarkBackground() {
-		setDark(true);
-		String banner = printBanner(IMAGE_BANNER_BLACK_AND_WHITE);
-		String expectedFirstLine = getAnsiOutput(AnsiColor.BRIGHT_WHITE)
+	public void printBannerWhenInvertedShouldPrintWhiteAsBrightWhiteLowLuminance() {
+		String banner = printBanner("black-and-white.gif", INVERT_TRUE);
+		String expected = AnsiOutput.encode(AnsiColor.BRIGHT_WHITE)
 				+ LOW_LUMINANCE_CHARACTER;
-
-		assertThat(banner, containsString(expectedFirstLine));
+		assertThat(banner).contains(expected);
 	}
 
 	@Test
-	public void renderBlackCharactersOnDefaultBackground() {
-		String banner = printBanner(IMAGE_BANNER_BLACK_AND_WHITE);
-		String blackCharacter = getAnsiOutput(AnsiColor.BLACK) + LOW_LUMINANCE_CHARACTER;
-
-		assertThat(banner, containsString(blackCharacter));
+	public void printBannerShouldPrintBlackAsBlackLowLuminance() {
+		String banner = printBanner("black-and-white.gif");
+		String expected = AnsiOutput.encode(AnsiColor.BLACK) + LOW_LUMINANCE_CHARACTER;
+		assertThat(banner).contains(expected);
 	}
 
 	@Test
-	public void renderBlackCharactersOnDarkBackground() {
-		setDark(true);
-		String banner = printBanner(IMAGE_BANNER_BLACK_AND_WHITE);
-		String blackCharacter = getAnsiOutput(AnsiColor.BLACK) + HIGH_LUMINANCE_CHARACTER;
-
-		assertThat(banner, containsString(blackCharacter));
+	public void printBannerWhenInvertedShouldPrintBlackAsBlackHighLuminance() {
+		String banner = printBanner("black-and-white.gif", INVERT_TRUE);
+		String expected = AnsiOutput.encode(AnsiColor.BLACK) + HIGH_LUMINANCE_CHARACTER;
+		assertThat(banner).contains(expected);
 	}
 
 	@Test
-	public void renderBannerWithAllColors() {
-		String banner = printBanner(IMAGE_BANNER_ALL_COLORS);
-
-		assertThat("Banner contains BLACK", banner,
-				containsString(getAnsiOutput(AnsiColor.BLACK)));
-		assertThat("Banner contains RED", banner,
-				containsString(getAnsiOutput(AnsiColor.RED)));
-		assertThat("Banner contains GREEN", banner,
-				containsString(getAnsiOutput(AnsiColor.GREEN)));
-		assertThat("Banner contains YELLOW", banner,
-				containsString(getAnsiOutput(AnsiColor.YELLOW)));
-		assertThat("Banner contains BLUE", banner,
-				containsString(getAnsiOutput(AnsiColor.BLUE)));
-		assertThat("Banner contains MAGENTA", banner,
-				containsString(getAnsiOutput(AnsiColor.MAGENTA)));
-		assertThat("Banner contains CYAN", banner,
-				containsString(getAnsiOutput(AnsiColor.CYAN)));
-		assertThat("Banner contains WHITE", banner,
-				containsString(getAnsiOutput(AnsiColor.WHITE)));
-
-		assertThat("Banner contains BRIGHT_BLACK", banner,
-				containsString(getAnsiOutput(AnsiColor.BRIGHT_BLACK)));
-		assertThat("Banner contains BRIGHT_RED", banner,
-				containsString(getAnsiOutput(AnsiColor.BRIGHT_RED)));
-		assertThat("Banner contains BRIGHT_GREEN", banner,
-				containsString(getAnsiOutput(AnsiColor.BRIGHT_GREEN)));
-		assertThat("Banner contains BRIGHT_YELLOW", banner,
-				containsString(getAnsiOutput(AnsiColor.BRIGHT_YELLOW)));
-		assertThat("Banner contains BRIGHT_BLUE", banner,
-				containsString(getAnsiOutput(AnsiColor.BRIGHT_BLUE)));
-		assertThat("Banner contains BRIGHT_MAGENTA", banner,
-				containsString(getAnsiOutput(AnsiColor.BRIGHT_MAGENTA)));
-		assertThat("Banner contains BRIGHT_CYAN", banner,
-				containsString(getAnsiOutput(AnsiColor.BRIGHT_CYAN)));
-		assertThat("Banner contains BRIGHT_WHITE", banner,
-				containsString(getAnsiOutput(AnsiColor.BRIGHT_WHITE)));
+	public void printBannerWhenShouldPrintAllColors() {
+		String banner = printBanner("colors.gif");
+		for (AnsiColor color : AnsiColor.values()) {
+			if (color != AnsiColor.DEFAULT) {
+				assertThat(banner).contains(AnsiOutput.encode(color));
+			}
+		}
 	}
 
 	@Test
-	public void renderSimpleGradient() {
+	public void printBannerShouldRenderGradient() throws Exception {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
-		String banner = printBanner(IMAGE_BANNER_GRADIENT);
-		String expectedResult = "@#8&o:*. ";
-
-		assertThat(banner, startsWith(expectedResult));
+		String banner = printBanner("gradient.gif", "banner.image.width=10",
+				"banner.image.margin=0");
+		System.out.println(banner);
+		assertThat(banner).contains("@#8&o:*.  ");
 	}
 
 	@Test
-	public void renderBannerWithDefaultAspectRatio() {
-		String banner = printBanner(IMAGE_BANNER_BLACK_AND_WHITE);
-		int bannerHeight = getBannerHeight(banner);
-
-		assertThat(bannerHeight, equalTo(2));
+	public void printBannerShouldCalculateHeight() throws Exception {
+		String banner = printBanner("large.gif", "banner.image.width=20");
+		assertThat(getBannerHeight(banner)).isEqualTo(10);
 	}
 
 	@Test
-	public void renderBannerWithCustomAspectRatio() {
-		setAspectRatio(1.0d);
-		String banner = printBanner(IMAGE_BANNER_BLACK_AND_WHITE);
-		int bannerHeight = getBannerHeight(banner);
-
-		assertThat(bannerHeight, equalTo(4));
+	public void printBannerWhenHasHeightPropertyShouldSetHeight() throws Exception {
+		String banner = printBanner("large.gif", "banner.image.width=20",
+				"banner.image.height=30");
+		assertThat(getBannerHeight(banner)).isEqualTo(30);
 	}
 
 	@Test
-	public void renderLargeBanner() {
-		String banner = printBanner(IMAGE_BANNER_LARGE);
-		int bannerWidth = getBannerWidth(banner);
-
-		assertThat(bannerWidth, equalTo(72));
+	public void printBannerShouldCapWidthAndCalculateHeight() throws Exception {
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
+		String banner = printBanner("large.gif", "banner.image.margin=0");
+		assertThat(getBannerWidth(banner)).isEqualTo(76);
+		assertThat(getBannerHeight(banner)).isEqualTo(37);
 	}
 
 	@Test
-	public void renderLargeBannerWithACustomWidth() {
-		setMaxWidth(60);
-		String banner = printBanner(IMAGE_BANNER_LARGE);
-		int bannerWidth = getBannerWidth(banner);
+	public void printBannerShouldPrintMargin() throws Exception {
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
+		String banner = printBanner("large.gif");
+		String[] lines = banner.split(NEW_LINE);
+		for (int i = 2; i < lines.length - 1; i++) {
+			assertThat(lines[i]).startsWith("  @");
+		}
+	}
 
-		assertThat(bannerWidth, equalTo(60));
+	@Test
+	public void printBannerWhenHasMarginPropertShouldPrintSizedMargin() throws Exception {
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
+		String banner = printBanner("large.gif", "banner.image.margin=4");
+		String[] lines = banner.split(NEW_LINE);
+		for (int i = 2; i < lines.length - 1; i++) {
+			assertThat(lines[i]).startsWith("    @");
+		}
 	}
 
 	private int getBannerHeight(String banner) {
-		return banner.split("\n").length;
+		return banner.split(NEW_LINE).length - 3;
 	}
 
 	private int getBannerWidth(String banner) {
-		String strippedBanner = banner.replaceAll("\u001B\\[.*?m", "");
-		String firstLine = strippedBanner.split("\n")[0];
-		return firstLine.length();
+		int width = 0;
+		for (String line : banner.split(NEW_LINE)) {
+			width = Math.max(width, line.length());
+		}
+		return width;
 	}
 
-	private static String getAnsiOutput(AnsiElement ansi) {
-		return "\u001B[" + ansi.toString() + "m";
-	}
-
-	private void setDark(boolean dark) {
-		properties.put("banner.image.dark", dark);
-	}
-
-	private void setMaxWidth(int maxWidth) {
-		properties.put("banner.image.max-width", maxWidth);
-	}
-
-	private void setAspectRatio(double aspectRatio) {
-		properties.put("banner.image.aspect-ratio", aspectRatio);
-	}
-
-	private String printBanner(String imagePath) {
-		Resource image = new ClassPathResource(imagePath);
-		ImageBanner banner = new ImageBanner(image);
+	private String printBanner(String path, String... properties) {
+		ImageBanner banner = new ImageBanner(new ClassPathResource(path, getClass()));
 		ConfigurableEnvironment environment = new MockEnvironment();
-		environment.getPropertySources().addLast(
-				new MapPropertySource("testConfig", properties));
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment,
+				properties);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		banner.printBanner(environment, getClass(), new PrintStream(out));
 		return out.toString();
