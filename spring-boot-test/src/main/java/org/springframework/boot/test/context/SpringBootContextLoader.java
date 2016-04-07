@@ -31,6 +31,7 @@ import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.core.SpringVersion;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -245,8 +246,9 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	/**
 	 * {@link ApplicationContextInitializer} to set up test property sources.
 	 */
-	private static class TestPropertySourcesInitializer
-			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+	private static class TestPropertySourcesInitializer implements
+			ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
 		private final String[] propertySourceLocations;
 
@@ -264,6 +266,11 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 					this.propertySourceLocations);
 			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(applicationContext,
 					this.inlinedProperties);
+		}
+
+		@Override
+		public int getOrder() {
+			return Ordered.HIGHEST_PRECEDENCE + 10;
 		}
 
 	}
