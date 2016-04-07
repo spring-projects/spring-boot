@@ -16,10 +16,13 @@
 
 package org.springframework.boot.autoconfigure.mongo.embedded;
 
+import java.io.File;
 import java.net.UnknownHostException;
 
 import com.mongodb.CommandResult;
 import com.mongodb.MongoClient;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
 import org.junit.After;
 import org.junit.Test;
@@ -34,6 +37,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -110,6 +114,63 @@ public class EmbeddedMongoAutoConfigurationTests {
 		finally {
 			parent.close();
 		}
+	}
+
+	@Test
+	public void defaultStorageConfiguration() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.data.mongodb.port=0");
+		this.context.register(EmbeddedMongoAutoConfiguration.class,
+				MongoClientConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		Storage replication = this.context.getBean(IMongodConfig.class).replication();
+		assertThat(replication.getOplogSize()).isEqualTo(0);
+		assertThat(replication.getDatabaseDir()).isNull();
+		assertThat(replication.getReplSetName()).isNull();
+	}
+
+	@Test
+	public void mongoWritesToCustomDatabaseDir() {
+		File customDatabaseDir = new File("target/custom-database-dir");
+		FileSystemUtils.deleteRecursively(customDatabaseDir);
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.data.mongodb.port=0",
+				"spring.mongodb.embedded.storage.databaseDir="
+						+ customDatabaseDir.getPath());
+		this.context.register(EmbeddedMongoAutoConfiguration.class,
+				MongoClientConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(customDatabaseDir).isDirectory();
+		assertThat(customDatabaseDir.listFiles()).isNotEmpty();
+	}
+
+	@Test
+	public void customOpLogSizeIsAppliedToConfiguration() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.data.mongodb.port=0",
+				"spring.mongodb.embedded.storage.oplogSize=10");
+		this.context.register(EmbeddedMongoAutoConfiguration.class,
+				MongoClientConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(IMongodConfig.class).replication().getOplogSize())
+				.isEqualTo(10);
+	}
+
+	@Test
+	public void customReplicaSetNameIsAppliedToConfiguration() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.data.mongodb.port=0",
+				"spring.mongodb.embedded.storage.replSetName=testing");
+		this.context.register(EmbeddedMongoAutoConfiguration.class,
+				MongoClientConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(
+				this.context.getBean(IMongodConfig.class).replication().getReplSetName())
+						.isEqualTo("testing");
 	}
 
 	private void assertVersionConfiguration(String configuredVersion,

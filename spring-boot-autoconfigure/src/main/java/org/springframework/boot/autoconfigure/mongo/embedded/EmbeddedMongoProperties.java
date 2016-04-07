@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for Embedded Mongo.
  *
  * @author Andy Wilkinson
+ * @author Yogesh Lonkar
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.mongodb.embedded")
@@ -37,6 +38,8 @@ public class EmbeddedMongoProperties {
 	 * Version of Mongo to use.
 	 */
 	private String version = "2.6.10";
+
+	private Storage storage;
 
 	/**
 	 * Comma-separated list of features to enable.
@@ -58,6 +61,57 @@ public class EmbeddedMongoProperties {
 
 	public void setFeatures(Set<Feature> features) {
 		this.features = features;
+	}
+
+	public Storage getStorage() {
+		return this.storage;
+	}
+
+	public void setStorage(Storage storage) {
+		this.storage = storage;
+	}
+
+	public static class Storage {
+
+		/**
+		 * Maximum size of the oplog in megabytes.
+		 */
+		private Integer oplogSize;
+
+		/**
+		 * Name of the replica set.
+		 */
+		private String replSetName;
+
+		/**
+		 * Directory used for data storage.
+		 */
+		private String databaseDir;
+
+		public Integer getOplogSize() {
+			return this.oplogSize;
+		}
+
+		public void setOplogSize(Integer oplogSize) {
+			this.oplogSize = oplogSize;
+		}
+
+		public String getReplSetName() {
+			return this.replSetName;
+		}
+
+		public void setReplSetName(String replSetName) {
+			this.replSetName = replSetName;
+		}
+
+		public String getDatabaseDir() {
+			return this.databaseDir;
+		}
+
+		public void setDatabaseDir(String databaseDir) {
+			this.databaseDir = databaseDir;
+		}
+
 	}
 
 }
