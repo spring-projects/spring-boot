@@ -46,6 +46,30 @@ public class EmbeddedMongoProperties {
 	private Set<Feature> features = new HashSet<Feature>(
 			Arrays.asList(Feature.SYNC_DELAY));
 
+	public String getVersion() {
+		return this.version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public Set<Feature> getFeatures() {
+		return this.features;
+	}
+
+	public void setFeatures(Set<Feature> features) {
+		this.features = features;
+	}
+
+	public Storage getStorage() {
+		return storage;
+	}
+
+	public void setStorage(Storage storage) {
+		this.storage = storage;
+	}
+
 	public static class Storage extends de.flapdoodle.embed.mongo.config.Storage {
 
 		private int oplogSize;
@@ -76,30 +100,6 @@ public class EmbeddedMongoProperties {
 			this.databaseDir = databaseDir;
 		}
 
-	}
-
-	public String getVersion() {
-		return this.version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
-	public Set<Feature> getFeatures() {
-		return this.features;
-	}
-
-	public void setFeatures(Set<Feature> features) {
-		this.features = features;
-	}
-
-	public Storage getStorage() {
-		return storage;
-	}
-
-	public void setStorage(Storage storage) {
-		this.storage = storage;
 	}
 
 }
