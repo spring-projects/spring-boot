@@ -4126,6 +4126,7 @@ disable the JTA auto-configuration.
 
 
 
+[[boot-features-jta-atomikos]]
 === Using an Atomikos transaction manager
 Atomikos is a popular open source transaction manager which can be embedded into your
 Spring Boot application. You can use the `spring-boot-starter-jta-atomikos` Starter POM to
@@ -4149,6 +4150,7 @@ property with a different value for each instance of your application.
 
 
 
+[[boot-features-jta-bitronix]]
 === Using a Bitronix transaction manager
 Bitronix is another popular open source JTA transaction manager implementation. You can
 use the `spring-boot-starter-jta-bitronix` starter POM to add the appropriate Bitronix
@@ -4172,6 +4174,7 @@ property with a different value for each instance of your application.
 
 
 
+[[boot-features-jta-javaee]]
 === Using a Java EE managed transaction manager
 If you are packaging your Spring Boot application as a `war` or `ear` file and deploying
 it to a Java EE application server, you can use your application servers built-in
@@ -4187,6 +4190,7 @@ to configure your `DataSource`.
 
 
 
+[[boot-features-jta-mixed-jms]]
 === Mixing XA and non-XA JMS connections
 When using JTA, the primary JMS `ConnectionFactory` bean will be XA aware and participate
 in distributed transactions. In some situations you might want to process certain JMS
@@ -4219,6 +4223,7 @@ For example:
 
 
 
+[[boot-features-jta-supporting-alternative-embedded]]
 === Supporting an alternative embedded transaction manager
 The {sc-spring-boot}/jta/XAConnectionFactoryWrapper.{sc-ext}[`XAConnectionFactoryWrapper`]
 and {sc-spring-boot}/jta/XADataSourceWrapper.{sc-ext}[`XADataSourceWrapper`] interfaces
