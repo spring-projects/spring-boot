@@ -69,7 +69,7 @@ public class InfoContributorAutoConfigurationTests {
 
 	@Test
 	public void defaultInfoContributorsDisabledWithCustomOne() {
-		load(CustomInfoProviderConfiguration.class,
+		load(CustomInfoContributorConfiguration.class,
 				"management.info.defaults.enabled:false");
 		Map<String, InfoContributor> beans = this.context
 				.getBeansOfType(InfoContributor.class);
@@ -108,7 +108,7 @@ public class InfoContributorAutoConfigurationTests {
 
 	@Test
 	public void customGitInfoContributor() {
-		load(CustomGitInfoProviderConfiguration.class);
+		load(CustomGitInfoContributorConfiguration.class);
 		assertThat(this.context.getBean(GitInfoContributor.class))
 				.isSameAs(this.context.getBean("customGitInfoContributor"));
 	}
@@ -143,7 +143,7 @@ public class InfoContributorAutoConfigurationTests {
 
 	@Test
 	public void customBuildInfoContributor() {
-		load(CustomBuildInfoProviderConfiguration.class);
+		load(CustomBuildInfoContributorConfiguration.class);
 		assertThat(this.context.getBean(BuildInfoContributor.class))
 				.isSameAs(this.context.getBean("customBuildInfoContributor"));
 	}
@@ -198,7 +198,7 @@ public class InfoContributorAutoConfigurationTests {
 	}
 
 	@Configuration
-	static class CustomInfoProviderConfiguration {
+	static class CustomInfoContributorConfiguration {
 
 		@Bean
 		public InfoContributor customInfoContributor() {
@@ -212,7 +212,7 @@ public class InfoContributorAutoConfigurationTests {
 	}
 
 	@Configuration
-	static class CustomGitInfoProviderConfiguration {
+	static class CustomGitInfoContributorConfiguration {
 
 		@Bean
 		public GitInfoContributor customGitInfoContributor() {
@@ -222,7 +222,7 @@ public class InfoContributorAutoConfigurationTests {
 	}
 
 	@Configuration
-	static class CustomBuildInfoProviderConfiguration {
+	static class CustomBuildInfoContributorConfiguration {
 
 		@Bean
 		public BuildInfoContributor customBuildInfoContributor() {
