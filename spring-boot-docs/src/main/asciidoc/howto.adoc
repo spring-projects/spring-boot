@@ -1619,18 +1619,16 @@ configuration properties. The most common options to set are:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.jpa.hibernate.ddl-auto: create-drop
-	spring.jpa.hibernate.naming_strategy: org.hibernate.cfg.ImprovedNamingStrategy
-	spring.jpa.database: H2
-	spring.jpa.show-sql: true
+	spring.jpa.hibernate.ddl-auto=create-drop
+	spring.jpa.hibernate.naming.physical-strategy=com.example.MyPhysicalNamingStrategy
+	spring.jpa.database=H2
+	spring.jpa.show-sql=true
 ----
 
-(Because of relaxed data binding hyphens or underscores should work equally well as
-property keys.) The `ddl-auto` setting is a special case in that it has different
-defaults depending on whether you are using an embedded database (`create-drop`) or not
-(`none`). In addition all properties in `+spring.jpa.properties.*+` are passed through as
-normal JPA properties (with the prefix stripped) when the local `EntityManagerFactory` is
-created.
+The `ddl-auto` setting is a special case in that it has different defaults depending on
+whether you are using an embedded database (`create-drop`) or not (`none`). In addition
+all properties in `+spring.jpa.properties.*+` are passed through as normal JPA properties
+(with the prefix stripped) when the local `EntityManagerFactory` is created.
 
 See {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[`HibernateJpaAutoConfiguration`]
 and {sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[`JpaBaseConfiguration`]

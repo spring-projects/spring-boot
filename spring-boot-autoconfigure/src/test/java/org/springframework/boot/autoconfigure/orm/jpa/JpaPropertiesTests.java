@@ -26,6 +26,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -51,6 +52,18 @@ public class JpaPropertiesTests {
 		if (this.context != null) {
 			this.context.close();
 		}
+	}
+
+	@Test
+	public void hibernate4NoCustomNamingStrategy() throws Exception {
+		JpaProperties properties = load(HibernateVersion.V4);
+		Map<String, String> hibernateProperties = properties
+				.getHibernateProperties(mockStandaloneDataSource());
+		assertThat(hibernateProperties).contains(entry("hibernate.ejb.naming_strategy",
+				SpringNamingStrategy.class.getName()));
+		assertThat(hibernateProperties).doesNotContainKeys(
+				"hibernate.implicit_naming_strategy",
+				"hibernate.physical_naming_strategy");
 	}
 
 	@Test
@@ -163,8 +176,7 @@ public class JpaPropertiesTests {
 		ctx.register(TestConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
-		JpaProperties properties = this.context.getBean(JpaProperties.class);
-		return properties;
+		return this.context.getBean(JpaProperties.class);
 	}
 
 	@Configuration
