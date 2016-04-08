@@ -139,6 +139,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Stephane Nicoll
  * @author Jeremy Rickard
  * @author Craig Burke
+ * @author Michael Simons
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -171,6 +172,11 @@ public class SpringApplication {
 	 * Banner location property key.
 	 */
 	public static final String BANNER_LOCATION_PROPERTY = SpringApplicationBannerPrinter.BANNER_LOCATION_PROPERTY;
+
+	/**
+	 * Banner bean name property key.
+	 */
+	public static final String BANNER_BEAN_NAME_PROPERTY = "banner.bean.name";
 
 	private static final String CONFIGURABLE_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
 
@@ -304,11 +310,12 @@ public class SpringApplication {
 					args);
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
+			Banner printedBanner = null;
 			if (this.bannerMode != Banner.Mode.OFF) {
-				printBanner(environment);
+				printedBanner = printBanner(environment);
 			}
 			context = createApplicationContext();
-			prepareContext(context, environment, listeners, applicationArguments);
+			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			listeners.finished(context, null);
@@ -340,7 +347,8 @@ public class SpringApplication {
 
 	private void prepareContext(ConfigurableApplicationContext context,
 			ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
-			ApplicationArguments applicationArguments) {
+			ApplicationArguments applicationArguments,
+			Banner printedBanner) {
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
 		applyInitializers(context);
@@ -353,6 +361,10 @@ public class SpringApplication {
 		// Add boot specific singleton beans
 		context.getBeanFactory().registerSingleton("springApplicationArguments",
 				applicationArguments);
+		String bannerBeanName = environment.getProperty(BANNER_BEAN_NAME_PROPERTY, String.class, "springBanner").trim();
+		if (printedBanner != null && bannerBeanName.length() != 0) {
+			context.getBeanFactory().registerSingleton(bannerBeanName, banner);
+		}
 
 		// Load the sources
 		Set<Object> sources = getSources();
@@ -536,19 +548,22 @@ public class SpringApplication {
 	 * banner.location=classpath:banner.txt, banner.charset=UTF-8. If the banner file does
 	 * not exist or cannot be printed, a simple default is created.
 	 * @param environment the environment
+	 * @return The banner that was printed to the console
 	 * @see #setBannerMode
 	 */
-	protected void printBanner(Environment environment) {
+	protected Banner printBanner(Environment environment) {
 		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
 				: new DefaultResourceLoader(getClassLoader());
-		SpringApplicationBannerPrinter banner = new SpringApplicationBannerPrinter(resourceLoader,
+		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(resourceLoader,
 				this.banner);
+		Banner banner;
 		if (this.bannerMode == Mode.LOG) {
-			banner.print(environment, this.mainApplicationClass, logger);
+			banner = bannerPrinter.print(environment, this.mainApplicationClass, logger);
 		}
 		else {
-			banner.print(environment, this.mainApplicationClass, System.out);
+			banner = bannerPrinter.print(environment, this.mainApplicationClass, System.out);
 		}
+		return banner;
 	}
 
 	/**
