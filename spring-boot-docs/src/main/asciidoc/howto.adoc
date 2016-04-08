@@ -212,8 +212,8 @@ might have.
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.main.web_environment=false
-	spring.main.banner_mode=off
+	spring.main.web-environment=false
+	spring.main.banner-mode=off
 ----
 
 and then the Spring Boot banner will not be printed on startup, and the application will
@@ -239,7 +239,7 @@ used with the following configuration:
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.main.sources=com.acme.Config,com.acme.ExtraConfig
-	spring.main.banner_mode=console
+	spring.main.banner-mode=console
 ----
 
 The actual application will _now_ show the banner (as overridden by configuration) and use
