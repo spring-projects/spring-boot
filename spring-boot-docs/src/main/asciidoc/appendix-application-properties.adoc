@@ -36,6 +36,7 @@ content into your application; rather pick only the properties that you need.
 	banner.image.hight= # Height of the banner image in chars (default based on image height)
 	banner.image.margin= # Left hand image margin in chars (default 2)
 	banner.image.invert= # If images should be inverted for dark terminal themes (default false)
+    banner.bean.name=springBanner # The of the bean under which the banner is registered, an empty property disables registration of the bean.
 
 	# LOGGING
 	logging.config= # Location of the logging configuration file. For instance `classpath:logback.xml` for Logback
