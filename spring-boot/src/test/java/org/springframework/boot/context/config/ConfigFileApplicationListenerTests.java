@@ -606,7 +606,8 @@ public class ConfigFileApplicationListenerTests {
 		String location = new File("src/test/resources/specificlocation.properties")
 				.getAbsolutePath();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"spring.config.location=" + location);
+				// java.util.Properties needs the values escaped
+				"spring.config.location=" + location.replaceAll("\\\\", "\\\\\\\\"));
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment)
 				.has(matchingPropertySource("applicationConfig: [file:"
