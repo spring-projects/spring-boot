@@ -52,8 +52,11 @@ such as the user that launched the application.
 The banner that is printed on start up can be changed by adding a `banner.txt` file
 to your classpath, or by setting `banner.location` to the location of such a file.
 If the file has an unusual encoding you can set `banner.charset` (default is `UTF-8`).
+In addition a text file, you can also add a `banner.gif`, `banner.jpg` or `banner.png`
+image file to your classpath, or set a `banner.image.location` property. Images will be
+converted into an ASCII art representation and printed above any text banner.
 
-You can use the following variables inside your `banner.txt` file:
+Inside your `banner.txt` file you can use any of the following placeholders:
 
 .Banner variables
 |===

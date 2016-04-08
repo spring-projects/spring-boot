@@ -31,6 +31,11 @@ content into your application; rather pick only the properties that you need.
 	# BANNER
 	banner.charset=UTF-8 # Banner file encoding.
 	banner.location=classpath:banner.txt # Banner file location.
+	banner.image.location=classpath:banner.gif # (Banner image file location, jpg/png can also be used).
+	banner.image.width= # Width of the banner image in chars (default 76)
+	banner.image.hight= # Height of the banner image in chars (default based on image height)
+	banner.image.margin= # Left hand image margin in chars (default 2)
+	banner.image.invert= # If images should be inverted for dark terminal themes (default false)
 
 	# LOGGING
 	logging.config= # Location of the logging configuration file. For instance `classpath:logback.xml` for Logback

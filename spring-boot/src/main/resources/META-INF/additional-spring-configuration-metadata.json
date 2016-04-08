@@ -13,8 +13,35 @@
   {
     "name": "banner.location",
     "type": "org.springframework.core.io.Resource",
-    "description": "Banner file location.",
+    "description": "Banner text resource location.",
     "defaultValue": "classpath:banner.txt"
+  },
+  {
+    "name": "banner.image.location",
+    "type": "org.springframework.core.io.Resource",
+    "description": "Banner image file location.",
+    "defaultValue": "banner.gif"
+  },
+  {
+    "name": "banner.image.width",
+    "type": "java.lang.Integer",
+    "description": "Banner image width (in chars)."
+  },
+  {
+    "name": "banner.image.height",
+    "type": "java.lang.Integer",
+    "description": "Banner image height (in chars)."
+  },
+  {
+    "name": "banner.image.margin",
+    "type": "java.lang.Integer",
+    "description": "Left hand image height (in chars)."
+  },
+  {
+    "name": "banner.image.invert",
+    "type": "java.lang.Boolean",
+    "description": "Invert images for dark console themes.",
+    "defaultValue": false
   },
   {
     "name": "debug",

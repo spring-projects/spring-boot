@@ -19,8 +19,10 @@ package org.springframework.boot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -65,7 +67,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.StringUtils;
@@ -90,6 +94,7 @@ import static org.mockito.Mockito.verify;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  * @author Jeremy Rickard
+ * @author Craig Burke
  */
 public class SpringApplicationTests {
 
@@ -189,6 +194,29 @@ public class SpringApplicationTests {
 				"--test.property=123456");
 		assertThat(this.output.toString())
 				.startsWith(String.format("Running a Test!%n%n123456"));
+	}
+
+	@Test
+	public void imageBannerAndTextBanner() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		MockResourceLoader resourceLoader = new MockResourceLoader();
+		resourceLoader.addResource("banner.gif", "black-and-white.gif");
+		resourceLoader.addResource("banner.txt", "foobar.txt");
+		application.setWebEnvironment(false);
+		application.setResourceLoader(resourceLoader);
+		application.run();
+		assertThat(this.output.toString()).contains("@@@@").contains("Foo Bar");
+	}
+
+	@Test
+	public void imageBannerLoads() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		MockResourceLoader resourceLoader = new MockResourceLoader();
+		resourceLoader.addResource("banner.gif", "black-and-white.gif");
+		application.setWebEnvironment(false);
+		application.setResourceLoader(resourceLoader);
+		application.run();
+		assertThat(this.output.toString()).contains("@@@@@@");
 	}
 
 	@Test
@@ -1089,4 +1117,26 @@ public class SpringApplicationTests {
 		}
 
 	}
+
+	private static class MockResourceLoader implements ResourceLoader {
+
+		private final Map<String, Resource> resources = new HashMap<String, Resource>();
+
+		public void addResource(String source, String path) {
+			this.resources.put(source, new ClassPathResource(path, getClass()));
+		}
+
+		@Override
+		public Resource getResource(String path) {
+			Resource resource = this.resources.get(path);
+			return (resource == null ? new ClassPathResource("doesnotexit") : resource);
+		}
+
+		@Override
+		public ClassLoader getClassLoader() {
+			return getClass().getClassLoader();
+		}
+
+	}
+
 }

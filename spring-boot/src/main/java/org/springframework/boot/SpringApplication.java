@@ -16,9 +16,6 @@
 
 package org.springframework.boot;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.security.AccessControlException;
 import java.util.ArrayList;
@@ -41,6 +38,7 @@ import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.diagnostics.FailureAnalyzers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -140,6 +138,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  * @author Jeremy Rickard
+ * @author Craig Burke
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -166,18 +165,16 @@ public class SpringApplication {
 	/**
 	 * Default banner location.
 	 */
-	public static final String BANNER_LOCATION_PROPERTY_VALUE = "banner.txt";
+	public static final String BANNER_LOCATION_PROPERTY_VALUE = SpringApplicationBannerPrinter.DEFAULT_BANNER_LOCATION;
 
 	/**
 	 * Banner location property key.
 	 */
-	public static final String BANNER_LOCATION_PROPERTY = "banner.location";
+	public static final String BANNER_LOCATION_PROPERTY = SpringApplicationBannerPrinter.BANNER_LOCATION_PROPERTY;
 
 	private static final String CONFIGURABLE_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
 
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
-
-	private static final Banner DEFAULT_BANNER = new SpringBootBanner();
 
 	private static final Set<String> SERVLET_ENVIRONMENT_SOURCE_NAMES;
 
@@ -542,42 +539,16 @@ public class SpringApplication {
 	 * @see #setBannerMode
 	 */
 	protected void printBanner(Environment environment) {
-		Banner selectedBanner = selectBanner(environment);
-		if (this.bannerMode == Banner.Mode.LOG) {
-			try {
-				logger.info(createStringFromBanner(selectedBanner, environment));
-			}
-			catch (UnsupportedEncodingException ex) {
-				logger.warn("Failed to create String for banner", ex);
-			}
-		}
-		else {
-			selectedBanner.printBanner(environment, this.mainApplicationClass,
-					System.out);
-		}
-	}
-
-	private Banner selectBanner(Environment environment) {
-		String location = environment.getProperty(BANNER_LOCATION_PROPERTY,
-				BANNER_LOCATION_PROPERTY_VALUE);
 		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
 				: new DefaultResourceLoader(getClassLoader());
-		Resource resource = resourceLoader.getResource(location);
-		if (resource.exists()) {
-			return new ResourceBanner(resource);
+		SpringApplicationBannerPrinter banner = new SpringApplicationBannerPrinter(resourceLoader,
+				this.banner);
+		if (this.bannerMode == Mode.LOG) {
+			banner.print(environment, this.mainApplicationClass, logger);
 		}
-		if (this.banner != null) {
-			return this.banner;
+		else {
+			banner.print(environment, this.mainApplicationClass, System.out);
 		}
-		return DEFAULT_BANNER;
-	}
-
-	private String createStringFromBanner(Banner banner, Environment environment)
-			throws UnsupportedEncodingException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		banner.printBanner(environment, this.mainApplicationClass, new PrintStream(baos));
-		String charset = environment.getProperty("banner.charset", "UTF-8");
-		return baos.toString(charset);
 	}
 
 	/**
