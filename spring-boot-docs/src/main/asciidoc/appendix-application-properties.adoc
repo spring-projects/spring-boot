@@ -229,6 +229,11 @@ content into your application; rather pick only the properties that you need.
 	server.undertow.io-threads= # Number of I/O threads to create for the worker.
 	server.undertow.worker-threads= # Number of worker threads.
 
+	# CXF ({sc-spring-boot-autoconfigure}/cxf/CxfProperties.{sc-ext}[CxfProperties])
+	spring.cxf.path=/services # Path that serves as the base URI for the services.
+	spring.cxf.servlet.init= # Servlet init parameters to pass to Apache CXF.
+	spring.cxf.servlet.load-on-startup=-1 # Load on startup priority of the Apache CXF servlet.
+
 	# FREEMARKER ({sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[FreeMarkerAutoConfiguration])
 	spring.freemarker.allow-request-override=false # Set whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
 	spring.freemarker.allow-session-override=false # Set whether HttpSession attributes are allowed to override (hide) controller generated model attributes of the same name.

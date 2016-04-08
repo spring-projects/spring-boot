@@ -1,0 +1,11 @@
+== Spring Boot - Samples - Apache CXF
+
+This sample project demonstrates Apache CXF auto-configuration with Spring Boot.
+
+The sample uses Maven. It can be built and run from the command line:
+
+----
+$ mvn spring-boot:run
+----
+
+http://localhost:8080/services will now display the list of available services and their WSDL's.
