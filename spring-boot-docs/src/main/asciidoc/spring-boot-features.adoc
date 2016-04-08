@@ -3458,6 +3458,9 @@ materialized by the `org.springframework.cache.Cache` and
 suitable `CacheManager` according to the implementation as long as the caching support is
 enabled via the `@EnableCaching` annotation.
 
+NOTE: If you are using the cache infrastructure with beans that are not interface-based,
+make sure to enable the `proxyTargetClass` attribute of `@EnableCaching`.
+
 TIP: Use the `spring-boot-starter-cache` "`Starter POM`" to quickly add required caching
 dependencies. If you are adding dependencies manually you should note that certain
 implementations are only provided by the `spring-context-support` jar.
