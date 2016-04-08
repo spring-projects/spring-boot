@@ -17,12 +17,12 @@
 package org.springframework.boot;
 
 import java.io.PrintStream;
-import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
+import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -81,7 +81,7 @@ public class BannerTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		this.context = application.run();
-		assertThat(this.context.containsBean("springBanner")).isTrue();
+		assertThat(this.context.containsBean("springBootBanner")).isTrue();
 	}
 
 	@Test
@@ -91,29 +91,16 @@ public class BannerTests {
 		final DummyBanner dummyBanner = new DummyBanner();
 		application.setBanner(dummyBanner);
 		this.context = application.run();
-		assertThat(this.context.getBean("springBanner")).isEqualTo(dummyBanner);
-	}
-
-	@Test
-	public void testChangeBannerBeanNameInContext() throws Exception {
-		final Properties properties = new Properties();
-		properties.put(SpringApplication.BANNER_BEAN_NAME_PROPERTY, "foobar");
-		SpringApplication application = new SpringApplication(Config.class);
-		application.setDefaultProperties(properties);
-		application.setWebEnvironment(false);
-		this.context = application.run();
-		assertThat(this.context.containsBean("foobar")).isTrue();
+		assertThat(this.context.getBean("springBootBanner")).isEqualTo(dummyBanner);
 	}
 
 	@Test
 	public void testDisableBannerInContext() throws Exception {
-		final Properties properties = new Properties();
-		properties.put(SpringApplication.BANNER_BEAN_NAME_PROPERTY, "");
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setDefaultProperties(properties);
+		application.setBannerMode(Mode.OFF);
 		application.setWebEnvironment(false);
 		this.context = application.run();
-		assertThat(this.context.containsBean("springBanner")).isFalse();
+		assertThat(this.context.containsBean("springBootBanner")).isFalse();
 	}
 
 	static class DummyBanner implements Banner {

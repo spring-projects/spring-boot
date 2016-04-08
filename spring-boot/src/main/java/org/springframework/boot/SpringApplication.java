@@ -173,11 +173,6 @@ public class SpringApplication {
 	 */
 	public static final String BANNER_LOCATION_PROPERTY = SpringApplicationBannerPrinter.BANNER_LOCATION_PROPERTY;
 
-	/**
-	 * Banner bean name property key.
-	 */
-	public static final String BANNER_BEAN_NAME_PROPERTY = "banner.bean.name";
-
 	private static final String CONFIGURABLE_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
 
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
@@ -361,9 +356,8 @@ public class SpringApplication {
 		// Add boot specific singleton beans
 		context.getBeanFactory().registerSingleton("springApplicationArguments",
 				applicationArguments);
-		String bannerBeanName = environment.getProperty(BANNER_BEAN_NAME_PROPERTY, String.class, "springBanner").trim();
-		if (printedBanner != null && bannerBeanName.length() != 0) {
-			context.getBeanFactory().registerSingleton(bannerBeanName, banner);
+		if (printedBanner != null) {
+			context.getBeanFactory().registerSingleton("springBootBanner", banner);
 		}
 
 		// Load the sources
