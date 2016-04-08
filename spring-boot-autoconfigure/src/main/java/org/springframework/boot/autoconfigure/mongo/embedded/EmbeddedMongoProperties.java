@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.mongo.embedded;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,13 +39,13 @@ public class EmbeddedMongoProperties {
 	 */
 	private String version = "2.6.10";
 
-	private Storage storage;
+	private final Storage storage = new Storage();
 
 	/**
 	 * Comma-separated list of features to enable.
 	 */
 	private Set<Feature> features = new HashSet<Feature>(
-			Arrays.asList(Feature.SYNC_DELAY));
+			Collections.singletonList(Feature.SYNC_DELAY));
 
 	public String getVersion() {
 		return this.version;
@@ -65,10 +65,6 @@ public class EmbeddedMongoProperties {
 
 	public Storage getStorage() {
 		return this.storage;
-	}
-
-	public void setStorage(Storage storage) {
-		this.storage = storage;
 	}
 
 	public static class Storage {
