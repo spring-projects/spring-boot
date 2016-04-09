@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PropertiesLauncherTests {
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public InternalOutputCapture output = new InternalOutputCapture();
 
 	@Before
 	public void setup() throws IOException {
@@ -111,6 +111,25 @@ public class PropertiesLauncherTests {
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertThat(ReflectionTestUtils.getField(launcher, "paths").toString())
 				.isEqualTo("[jars/app.jar]");
+		launcher.launch(new String[0]);
+		waitFor("Hello World");
+	}
+
+	@Test
+	public void testUserSpecifiedJarFileWithNestedArchives() throws Exception {
+		System.setProperty("loader.path", "nested-jars/app.jar");
+		System.setProperty("loader.main", "demo.Application");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		launcher.launch(new String[0]);
+		waitFor("Hello World");
+	}
+
+	@Test
+	public void testUserSpecifiedDirectoryContainingJarFileWithNestedArchives()
+			throws Exception {
+		System.setProperty("loader.path", "nested-jars");
+		System.setProperty("loader.main", "demo.Application");
+		PropertiesLauncher launcher = new PropertiesLauncher();
 		launcher.launch(new String[0]);
 		waitFor("Hello World");
 	}

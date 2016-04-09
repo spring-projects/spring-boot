@@ -27,10 +27,7 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Retry;
-import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Template;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -121,6 +118,8 @@ public class RabbitAutoConfiguration {
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
 					factory.getObject());
 			connectionFactory.setAddresses(config.getAddresses());
+			connectionFactory.setPublisherConfirms(config.isPublisherConfirms());
+			connectionFactory.setPublisherReturns(config.isPublisherReturns());
 			if (config.getCache().getChannel().getSize() != null) {
 				connectionFactory
 						.setChannelCacheSize(config.getCache().getChannel().getSize());
@@ -146,11 +145,16 @@ public class RabbitAutoConfiguration {
 	@Import(RabbitConnectionFactoryCreator.class)
 	protected static class RabbitTemplateConfiguration {
 
-		@Autowired
-		private ObjectProvider<MessageConverter> messageConverter;
+		private final ObjectProvider<MessageConverter> messageConverter;
 
-		@Autowired
-		private RabbitProperties properties;
+		private final RabbitProperties properties;
+
+		public RabbitTemplateConfiguration(
+				ObjectProvider<MessageConverter> messageConverter,
+				RabbitProperties properties) {
+			this.messageConverter = messageConverter;
+			this.properties = properties;
+		}
 
 		@Bean
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
@@ -161,27 +165,37 @@ public class RabbitAutoConfiguration {
 			if (messageConverter != null) {
 				rabbitTemplate.setMessageConverter(messageConverter);
 			}
-			Template template = this.properties.getTemplate();
-			Retry retry = template.getRetry();
-			if (retry.isEnabled()) {
-				RetryTemplate retryTemplate = new RetryTemplate();
-				SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
-				retryPolicy.setMaxAttempts(retry.getMaxAttempts());
-				retryTemplate.setRetryPolicy(retryPolicy);
-				ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-				backOffPolicy.setInitialInterval(retry.getInitialInterval());
-				backOffPolicy.setMultiplier(retry.getMultiplier());
-				backOffPolicy.setMaxInterval(retry.getMaxInterval());
-				retryTemplate.setBackOffPolicy(backOffPolicy);
-				rabbitTemplate.setRetryTemplate(retryTemplate);
+			rabbitTemplate.setMandatory(determineMandatoryFlag());
+			RabbitProperties.Template templateProperties = this.properties.getTemplate();
+			RabbitProperties.Retry retryProperties = templateProperties.getRetry();
+			if (retryProperties.isEnabled()) {
+				rabbitTemplate.setRetryTemplate(createRetryTemplate(retryProperties));
 			}
-			if (template.getReceiveTimeout() != null) {
-				rabbitTemplate.setReceiveTimeout(template.getReceiveTimeout());
+			if (templateProperties.getReceiveTimeout() != null) {
+				rabbitTemplate.setReceiveTimeout(templateProperties.getReceiveTimeout());
 			}
-			if (template.getReplyTimeout() != null) {
-				rabbitTemplate.setReplyTimeout(template.getReplyTimeout());
+			if (templateProperties.getReplyTimeout() != null) {
+				rabbitTemplate.setReplyTimeout(templateProperties.getReplyTimeout());
 			}
 			return rabbitTemplate;
+		}
+
+		private boolean determineMandatoryFlag() {
+			Boolean mandatory = this.properties.getTemplate().getMandatory();
+			return (mandatory != null ? mandatory : this.properties.isPublisherReturns());
+		}
+
+		private RetryTemplate createRetryTemplate(RabbitProperties.Retry properties) {
+			RetryTemplate template = new RetryTemplate();
+			SimpleRetryPolicy policy = new SimpleRetryPolicy();
+			policy.setMaxAttempts(properties.getMaxAttempts());
+			template.setRetryPolicy(policy);
+			ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+			backOffPolicy.setInitialInterval(properties.getInitialInterval());
+			backOffPolicy.setMultiplier(properties.getMultiplier());
+			backOffPolicy.setMaxInterval(properties.getMaxInterval());
+			template.setBackOffPolicy(backOffPolicy);
+			return template;
 		}
 
 		@Bean
@@ -191,7 +205,6 @@ public class RabbitAutoConfiguration {
 		public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
 			return new RabbitAdmin(connectionFactory);
 		}
-
 
 	}
 

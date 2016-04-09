@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,6 +95,7 @@ import org.springframework.validation.BindException;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		ApplicationListener<ApplicationEvent>, Ordered {
@@ -473,7 +474,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 				msg.append("Skipped ");
 			}
 			msg.append("config file ");
-			msg.append("'").append(location).append("'");
+			msg.append(getResourceDescription(location, resource));
 			if (StringUtils.hasLength(profile)) {
 				msg.append(" for profile ").append(profile);
 			}
@@ -485,6 +486,20 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 				this.logger.debug(msg);
 			}
 			return propertySource;
+		}
+
+		private String getResourceDescription(String location, Resource resource) {
+			String resourceDescription = "'" + location + "'";
+			if (resource != null) {
+				try {
+					resourceDescription = String.format("'%s' (%s)",
+							resource.getURI().toASCIIString(), location);
+				}
+				catch (IOException ex) {
+					// Use the location as the description
+				}
+			}
+			return resourceDescription;
 		}
 
 		private void handleProfileProperties(PropertySource<?> propertySource) {
@@ -567,9 +582,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		}
 
 		private Set<String> asResolvedSet(String value, String fallback) {
-			List<String> list = Arrays
-					.asList(StringUtils.commaDelimitedListToStringArray(value != null
-							? this.environment.resolvePlaceholders(value) : fallback));
+			List<String> list = Arrays.asList(StringUtils.trimArrayElements(
+					StringUtils.commaDelimitedListToStringArray(value != null
+							? this.environment.resolvePlaceholders(value) : fallback)));
 			Collections.reverse(list);
 			return new LinkedHashSet<String>(list);
 		}

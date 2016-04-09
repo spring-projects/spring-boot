@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-freemarker</artifactId>
 	<name>Spring Boot FreeMarker Starter</name>
-	<description>Spring Boot FreeMarker Starter</description>
+	<description>Starter for building MVC web applications using Freemarker views</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

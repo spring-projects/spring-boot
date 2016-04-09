@@ -38,7 +38,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.jdbc.DatabaseDriver;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -134,8 +134,8 @@ public class DataSourceAutoConfigurationTests {
 	public void hikariValidatesConnectionByDefault() throws Exception {
 		HikariDataSource dataSource = autoConfigureDataSource(HikariDataSource.class,
 				"org.apache.tomcat");
-		assertThat(dataSource.getConnectionTestQuery()).isNull(); // Use
-																	// Connection#isValid()
+		assertThat(dataSource.getConnectionTestQuery()).isNull();
+		// Use Connection#isValid()
 	}
 
 	@Test

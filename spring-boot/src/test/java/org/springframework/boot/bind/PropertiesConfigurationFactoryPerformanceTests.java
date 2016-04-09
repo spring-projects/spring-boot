@@ -26,9 +26,9 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.testutil.EnvironmentTestUtils;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.validation.Validator;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,7 +56,8 @@ public class PropertiesConfigurationFactoryPerformanceTests {
 
 	@BeforeClass
 	public static void init() {
-		EnvironmentTestUtils.addEnvironment(environment, "name: blah", "bar: blah");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment,
+				"name=blah", "bar=blah");
 	}
 
 	@Theory

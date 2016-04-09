@@ -152,6 +152,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	protected void loadConfiguration(LoggingInitializationContext initializationContext,
 			String location, LogFile logFile) {
+		super.loadConfiguration(initializationContext, location, logFile);
 		loadConfiguration(location, logFile);
 	}
 

@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-jetty</artifactId>
 	<name>Spring Boot Jetty Starter</name>
-	<description>Spring Boot Jetty Starter</description>
+	<description>Starter for using Jetty as the embedded servlet container. An
+		alternative to spring-boot-starter-tomcat</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-jta-atomikos</artifactId>
 	<name>Spring Boot Atomikos JTA Starter</name>
-	<description>Spring Boot Atomikos JTA Starter</description>
+	<description>Starter for JTA transactions using Atomikos</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

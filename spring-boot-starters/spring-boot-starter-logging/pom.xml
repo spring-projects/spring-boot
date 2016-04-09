@@ -7,8 +7,8 @@
 		<version>1.4.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-logging</artifactId>
-	<name>Spring Boot Logger Starter</name>
-	<description>Spring Boot Logger Starter</description>
+	<name>Spring Boot Logging Starter</name>
+	<description>Starter for logging using Logback. Default logging starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

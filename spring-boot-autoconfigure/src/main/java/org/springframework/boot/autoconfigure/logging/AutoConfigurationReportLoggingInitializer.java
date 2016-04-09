@@ -16,19 +16,10 @@
 
 package org.springframework.boot.autoconfigure.logging;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
-import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
-import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.ApplicationContextInitializer;
@@ -40,8 +31,6 @@ import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link ApplicationContextInitializer} that writes the {@link ConditionEvaluationReport}
@@ -114,97 +103,9 @@ public class AutoConfigurationReportLoggingInitializer
 						+ "debug logging (start with --debug)%n%n"));
 			}
 			if (this.logger.isDebugEnabled()) {
-				this.logger.debug(getLogMessage(this.report));
+				this.logger.debug(new ConditionEvaluationReportMessage(this.report));
 			}
 		}
-	}
-
-	private StringBuilder getLogMessage(ConditionEvaluationReport report) {
-		StringBuilder message = new StringBuilder();
-		message.append(String.format("%n%n%n"));
-		message.append(String.format("=========================%n"));
-		message.append(String.format("AUTO-CONFIGURATION REPORT%n"));
-		message.append(String.format("=========================%n%n%n"));
-		message.append(String.format("Positive matches:%n"));
-		message.append(String.format("-----------------%n"));
-		Map<String, ConditionAndOutcomes> shortOutcomes = orderByName(
-				report.getConditionAndOutcomesBySource());
-		for (Map.Entry<String, ConditionAndOutcomes> entry : shortOutcomes.entrySet()) {
-			if (entry.getValue().isFullMatch()) {
-				addLogMessage(message, entry.getKey(), entry.getValue());
-			}
-		}
-		message.append(String.format("%n%n"));
-		message.append(String.format("Negative matches:%n"));
-		message.append(String.format("-----------------%n"));
-		for (Map.Entry<String, ConditionAndOutcomes> entry : shortOutcomes.entrySet()) {
-			if (!entry.getValue().isFullMatch()) {
-				addLogMessage(message, entry.getKey(), entry.getValue());
-			}
-		}
-		message.append(String.format("%n%n"));
-		message.append(String.format("Exclusions:%n"));
-		message.append(String.format("-----------%n"));
-		if (report.getExclusions().isEmpty()) {
-			message.append(String.format("%n    None%n"));
-		}
-		else {
-			for (String exclusion : report.getExclusions()) {
-				message.append(String.format("%n    %s%n", exclusion));
-			}
-		}
-		message.append(String.format("%n%n"));
-		message.append(String.format("Unconditional classes:%n"));
-		message.append(String.format("----------------------%n"));
-		if (report.getUnconditionalClasses().isEmpty()) {
-			message.append(String.format("%n    None%n"));
-		}
-		else {
-			for (String unconditionalClass : report.getUnconditionalClasses()) {
-				message.append(String.format("%n    %s%n", unconditionalClass));
-			}
-		}
-		message.append(String.format("%n%n"));
-		return message;
-	}
-
-	private Map<String, ConditionAndOutcomes> orderByName(
-			Map<String, ConditionAndOutcomes> outcomes) {
-		Map<String, ConditionAndOutcomes> result = new LinkedHashMap<String, ConditionAndOutcomes>();
-		List<String> names = new ArrayList<String>();
-		Map<String, String> classNames = new HashMap<String, String>();
-		for (String name : outcomes.keySet()) {
-			String shortName = ClassUtils.getShortName(name);
-			names.add(shortName);
-			classNames.put(shortName, name);
-		}
-		Collections.sort(names);
-		for (String shortName : names) {
-			result.put(shortName, outcomes.get(classNames.get(shortName)));
-		}
-		return result;
-	}
-
-	private void addLogMessage(StringBuilder message, String source,
-			ConditionAndOutcomes conditionAndOutcomes) {
-		message.append(String.format("%n   %s", source));
-		message.append(conditionAndOutcomes.isFullMatch() ? " matched" : " did not match")
-				.append(String.format("%n"));
-		for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
-			message.append("      - ");
-			if (StringUtils.hasLength(conditionAndOutcome.getOutcome().getMessage())) {
-				message.append(conditionAndOutcome.getOutcome().getMessage());
-			}
-			else {
-				message.append(conditionAndOutcome.getOutcome().isMatch() ? "matched"
-						: "did not match");
-			}
-			message.append(" (");
-			message.append(ClassUtils
-					.getShortName(conditionAndOutcome.getCondition().getClass()));
-			message.append(String.format(")%n"));
-		}
-
 	}
 
 	private class AutoConfigurationReportListener implements GenericApplicationListener {

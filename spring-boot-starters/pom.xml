@@ -33,6 +33,7 @@
 		<module>spring-boot-starter-data-gemfire</module>
 		<module>spring-boot-starter-data-jpa</module>
 		<module>spring-boot-starter-data-mongodb</module>
+		<module>spring-boot-starter-data-neo4j</module>
 		<module>spring-boot-starter-data-redis</module>
 		<module>spring-boot-starter-data-rest</module>
 		<module>spring-boot-starter-data-solr</module>
@@ -47,6 +48,7 @@
 		<module>spring-boot-starter-jooq</module>
 		<module>spring-boot-starter-jta-atomikos</module>
 		<module>spring-boot-starter-jta-bitronix</module>
+		<module>spring-boot-starter-jta-narayana</module>
 		<module>spring-boot-starter-logging</module>
 		<module>spring-boot-starter-log4j2</module>
 		<module>spring-boot-starter-mail</module>
@@ -69,6 +71,7 @@
 		<module>spring-boot-starter-websocket</module>
 		<module>spring-boot-starter-ws</module>
 	</modules>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -95,6 +98,47 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.6</version>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>assemble-starter-poms</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/starter-poms-assembly.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- <plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>attach-artifacts</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attach-artifact</goal>
+						</goals>
+						<configuration>
+							<artifacts>
+								<artifact>
+									<file>${project.build.directory}/spring-boot-starters-${project.version}-poms.zip</file>
+									<type>starter-poms</type>
+								</artifact>
+							</artifacts>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin> -->
 		</plugins>
 	</build>
 </project>

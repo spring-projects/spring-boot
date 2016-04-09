@@ -39,7 +39,6 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.DeferredImportSelector;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
@@ -58,12 +57,14 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
- * @see EnableAutoConfiguration
  * @since 1.3.0
+ * @see EnableAutoConfiguration
  */
-@Order(Ordered.LOWEST_PRECEDENCE - 1)
-public class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
-		BeanClassLoaderAware, ResourceLoaderAware, BeanFactoryAware, EnvironmentAware {
+public class EnableAutoConfigurationImportSelector
+		implements DeferredImportSelector, BeanClassLoaderAware, ResourceLoaderAware,
+		BeanFactoryAware, EnvironmentAware, Ordered {
+
+	private static final String[] NO_IMPORTS = {};
 
 	private ConfigurableListableBeanFactory beanFactory;
 
@@ -75,6 +76,9 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
+		if (!isEnabled(metadata)) {
+			return NO_IMPORTS;
+		}
 		try {
 			AnnotationAttributes attributes = getAttributes(metadata);
 			List<String> configurations = getCandidateConfigurations(metadata,
@@ -89,6 +93,15 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	protected boolean isEnabled(AnnotationMetadata metadata) {
+		if (getClass().equals(EnableAutoConfigurationImportSelector.class)) {
+			return this.environment.getProperty(
+					EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, Boolean.class,
+					true);
+		}
+		return true;
 	}
 
 	/**
@@ -127,8 +140,12 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 	 */
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata,
 			AnnotationAttributes attributes) {
-		return SpringFactoriesLoader.loadFactoryNames(
+		List<String> configurations = SpringFactoriesLoader.loadFactoryNames(
 				getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader());
+		Assert.notEmpty(configurations,
+				"No auto configuration classes found in META-INF/spring.factories. If you" +
+						"are using a custom packaging, make sure that file is correct.");
+		return configurations;
 	}
 
 	/**
@@ -240,6 +257,11 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 
 	protected final ResourceLoader getResourceLoader() {
 		return this.resourceLoader;
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.LOWEST_PRECEDENCE - 1;
 	}
 
 	/**

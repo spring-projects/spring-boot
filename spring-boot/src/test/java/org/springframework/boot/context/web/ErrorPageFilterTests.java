@@ -29,7 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.context.embedded.ErrorPage;
-import org.springframework.boot.testutil.OutputCapture;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockFilterConfig;
@@ -65,7 +65,7 @@ public class ErrorPageFilterTests {
 	private MockFilterChain chain = new MockFilterChain();
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public InternalOutputCapture output = new InternalOutputCapture();
 
 	@Test
 	public void notAnError() throws Exception {

@@ -45,11 +45,10 @@ import org.springframework.data.couchbase.config.CouchbaseConfigurer;
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({CouchbaseBucket.class, Cluster.class})
+@ConditionalOnClass({ CouchbaseBucket.class, Cluster.class })
 @Conditional(CouchbaseAutoConfiguration.CouchbaseCondition.class)
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class CouchbaseAutoConfiguration {
-
 
 	@Configuration
 	@ConditionalOnMissingBean(CouchbaseConfigurer.class)
@@ -77,8 +76,10 @@ public class CouchbaseAutoConfiguration {
 		@Bean
 		@Primary
 		public ClusterInfo couchbaseClusterInfo() throws Exception {
-			return couchbaseCluster().clusterManager(this.properties.getBucket().getName(),
-					this.properties.getBucket().getPassword()).info();
+			return couchbaseCluster()
+					.clusterManager(this.properties.getBucket().getName(),
+							this.properties.getBucket().getPassword())
+					.info();
 		}
 
 		@Bean
@@ -96,13 +97,12 @@ public class CouchbaseAutoConfiguration {
 		protected CouchbaseEnvironment createEnvironment(CouchbaseProperties properties) {
 			CouchbaseProperties.Endpoints endpoints = properties.getEnv().getEndpoints();
 			CouchbaseProperties.Timeouts timeouts = properties.getEnv().getTimeouts();
-			DefaultCouchbaseEnvironment.Builder builder = DefaultCouchbaseEnvironment.builder()
-					.connectTimeout(timeouts.getConnect())
+			DefaultCouchbaseEnvironment.Builder builder = DefaultCouchbaseEnvironment
+					.builder().connectTimeout(timeouts.getConnect())
 					.kvEndpoints(endpoints.getKeyValue())
 					.kvTimeout(timeouts.getKeyValue())
 					.queryEndpoints(endpoints.getQuery())
-					.queryTimeout(timeouts.getQuery())
-					.viewEndpoints(endpoints.getView())
+					.queryTimeout(timeouts.getQuery()).viewEndpoints(endpoints.getView())
 					.viewTimeout(timeouts.getView());
 			CouchbaseProperties.Ssl ssl = properties.getEnv().getSsl();
 			if (ssl.getEnabled()) {
@@ -121,8 +121,8 @@ public class CouchbaseAutoConfiguration {
 
 	/**
 	 * Determine if Couchbase should be configured. This happens if either the
-	 * user-configuration defines a {@link CouchbaseConfigurer} or if at least
-	 * the "bootstrapHosts" property is specified.
+	 * user-configuration defines a {@link CouchbaseConfigurer} or if at least the
+	 * "bootstrapHosts" property is specified.
 	 */
 	static class CouchbaseCondition extends AnyNestedCondition {
 

@@ -26,6 +26,7 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
+import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -33,7 +34,7 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -48,6 +49,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HibernateJpaAutoConfigurationTests
 		extends AbstractJpaAutoConfigurationTests {
+
+	@After
+	public void cleanup() {
+		HibernateVersion.setRunning(null);
+	}
 
 	@Override
 	protected Class<?> getAutoConfigureClass() {
@@ -80,6 +86,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testCustomNamingStrategy() throws Exception {
+		HibernateVersion.setRunning(HibernateVersion.V4);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jpa.hibernate.namingStrategy:"
 						+ "org.hibernate.cfg.EJB3NamingStrategy");
@@ -94,6 +101,7 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testCustomNamingStrategyViaJpaProperties() throws Exception {
+		HibernateVersion.setRunning(HibernateVersion.V4);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jpa.properties.hibernate.ejb.naming_strategy:"
 						+ "org.hibernate.cfg.EJB3NamingStrategy");

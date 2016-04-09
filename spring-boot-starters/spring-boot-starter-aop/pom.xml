@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-aop</artifactId>
 	<name>Spring Boot AOP Starter</name>
-	<description>Spring Boot AOP Starter</description>
+	<description>Starter for aspect-oriented programming with Spring AOP and AspectJ</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

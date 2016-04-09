@@ -84,6 +84,7 @@
 				<module>spring-boot</module>
 				<module>spring-boot-test</module>
 				<module>spring-boot-autoconfigure</module>
+				<module>spring-boot-test-autoconfigure</module>
 				<module>spring-boot-actuator</module>
 				<module>spring-boot-devtools</module>
 				<module>spring-boot-docs</module>
@@ -195,7 +196,7 @@
 	</xsl:template>
 
 	<xsl:template
-		match="m:properties/m:spring-boot.version/text()">
+		match="m:build/m:pluginManagement/m:plugins/m:plugin[m:groupId/text() = 'org.springframework.boot']/m:version/text()">
 		<xsl:value-of select="/m:project/m:version/text()"/>
 	</xsl:template>
 </xsl:stylesheet>

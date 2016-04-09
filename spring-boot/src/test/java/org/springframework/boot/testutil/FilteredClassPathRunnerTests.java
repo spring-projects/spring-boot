@@ -30,18 +30,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ClassPathExclusions("hibernate-validator-*.jar")
 public class FilteredClassPathRunnerTests {
 
+	private static final String EXCLUDED_RESOURCE = "META-INF/services/"
+			+ "javax.validation.spi.ValidationProvider";
+
 	@Test
 	public void entriesAreFilteredFromTestClassClassLoader() {
-		assertThat(getClass().getClassLoader()
-				.getResource("META-INF/services/javax.validation.spi.ValidationProvider"))
-						.isNull();
+		assertThat(getClass().getClassLoader().getResource(EXCLUDED_RESOURCE)).isNull();
 	}
 
 	@Test
 	public void entriesAreFilteredFromThreadContextClassLoader() {
 		assertThat(Thread.currentThread().getContextClassLoader()
-				.getResource("META-INF/services/javax.validation.spi.ValidationProvider"))
-						.isNull();
+				.getResource(EXCLUDED_RESOURCE)).isNull();
 	}
 
 }

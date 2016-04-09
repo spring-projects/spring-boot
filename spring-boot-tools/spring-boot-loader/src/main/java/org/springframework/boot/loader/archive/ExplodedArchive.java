@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,6 +38,7 @@ import java.util.jar.Manifest;
  * {@link Archive} implementation backed by an exploded archive directory.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class ExplodedArchive implements Archive {
 
@@ -136,6 +138,8 @@ public class ExplodedArchive implements Archive {
 	 */
 	private static class FileEntryIterator implements Iterator<Entry> {
 
+		private final Comparator<File> entryComparator = new EntryComparator();
+
 		private final File root;
 
 		private final boolean recursive;
@@ -177,6 +181,7 @@ public class ExplodedArchive implements Archive {
 			if (files == null) {
 				return Collections.<File>emptyList().iterator();
 			}
+			Arrays.sort(files, this.entryComparator);
 			return Arrays.asList(files).iterator();
 		}
 
@@ -196,6 +201,18 @@ public class ExplodedArchive implements Archive {
 		@Override
 		public void remove() {
 			throw new UnsupportedOperationException("remove");
+		}
+
+		/**
+		 * {@link Comparator} that orders {@link File} entries by their absolute paths.
+		 */
+		private static class EntryComparator implements Comparator<File> {
+
+			@Override
+			public int compare(File o1, File o2) {
+				return o1.getAbsolutePath().compareTo(o2.getAbsolutePath());
+			}
+
 		}
 
 	}

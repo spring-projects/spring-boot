@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import org.springframework.boot.bind.PropertySourcesBinder;
 import org.springframework.boot.info.InfoProperties;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
@@ -32,7 +32,8 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-public abstract class InfoPropertiesInfoContributor<T extends InfoProperties> implements InfoContributor {
+public abstract class InfoPropertiesInfoContributor<T extends InfoProperties>
+		implements InfoContributor {
 
 	private final T properties;
 
@@ -84,9 +85,7 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties> im
 	 * @return the raw content
 	 */
 	protected Map<String, Object> extractContent(PropertySource<?> propertySource) {
-		MutablePropertySources propertySources = new MutablePropertySources();
-		propertySources.addFirst(propertySource);
-		return new PropertySourcesBinder(propertySources).extractAll("");
+		return new PropertySourcesBinder(propertySource).extractAll("");
 	}
 
 	/**
@@ -105,9 +104,7 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties> im
 		if (this.mode.equals(Mode.FULL)) {
 			return this.properties.toPropertySource();
 		}
-		else {
-			return toSimplePropertySource();
-		}
+		return toSimplePropertySource();
 	}
 
 	/**
@@ -143,15 +140,12 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties> im
 	 */
 	@SuppressWarnings("unchecked")
 	protected Map<String, Object> getNestedMap(Map<String, Object> map, String key) {
-		Object o = map.get(key);
-		if (o == null) {
+		Object value = map.get(key);
+		if (value == null) {
 			return Collections.emptyMap();
 		}
-		else {
-			return (Map<String, Object>) o;
-		}
+		return (Map<String, Object>) value;
 	}
-
 
 	/**
 	 * Defines how properties should be exposed.

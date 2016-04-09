@@ -20,11 +20,9 @@ import javax.validation.Validation;
 
 import org.apache.catalina.mbeans.MBeanFactory;
 
-import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.logging.LoggingApplicationListener;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 
@@ -37,21 +35,11 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
  * @since 1.3.0
  */
 @Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
-public class BackgroundPreinitializer implements ApplicationListener<ApplicationEvent> {
-
-	private volatile Thread initializationThread;
+public class BackgroundPreinitializer
+		implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
 	@Override
-	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationStartedEvent) {
-			performInitialization();
-		}
-		else if (event instanceof ContextRefreshedEvent) {
-			awaitInitialization();
-		}
-	}
-
-	private void performInitialization() {
+	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		try {
 			Thread thread = new Thread(new Runnable() {
 
@@ -73,27 +61,11 @@ public class BackgroundPreinitializer implements ApplicationListener<Application
 
 			}, "background-preinit");
 			thread.start();
-			this.initializationThread = thread;
 		}
 		catch (Exception ex) {
 			// This will fail on GAE where creating threads is prohibited. We can safely
 			// continue but startup will be slightly slower as the initialization will now
 			// happen on the main thread.
-		}
-	}
-
-	private void awaitInitialization() {
-		Thread thread = this.initializationThread;
-		if (thread != null) {
-			try {
-				thread.join();
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-			finally {
-				this.initializationThread = null;
-			}
 		}
 	}
 
@@ -132,4 +104,5 @@ public class BackgroundPreinitializer implements ApplicationListener<Application
 		}
 
 	}
+
 }

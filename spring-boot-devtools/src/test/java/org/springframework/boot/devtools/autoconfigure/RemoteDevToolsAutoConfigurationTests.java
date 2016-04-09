@@ -35,7 +35,7 @@ import org.springframework.boot.devtools.tunnel.server.HttpTunnelServer;
 import org.springframework.boot.devtools.tunnel.server.RemoteDebugPortProvider;
 import org.springframework.boot.devtools.tunnel.server.SocketTargetServerConnection;
 import org.springframework.boot.devtools.tunnel.server.TargetServerConnection;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

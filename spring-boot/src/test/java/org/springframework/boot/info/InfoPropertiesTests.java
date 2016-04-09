@@ -86,6 +86,7 @@ public class InfoPropertiesTests {
 		MyInfoProperties(Properties entries) {
 			super(entries);
 		}
+
 	}
 
 }

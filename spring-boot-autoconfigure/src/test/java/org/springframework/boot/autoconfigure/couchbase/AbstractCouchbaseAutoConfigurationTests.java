@@ -19,10 +19,12 @@ package org.springframework.boot.autoconfigure.couchbase;
 import org.junit.After;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
+ * Base class for {@link CouchbaseAutoConfiguration} tests.
+ *
  * @author Stephane Nicoll
  */
 public abstract class AbstractCouchbaseAutoConfigurationTests {

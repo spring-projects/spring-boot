@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -46,19 +45,27 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 public class DataSourceTransactionManagerAutoConfiguration {
 
-	@Autowired(required = false)
-	private DataSource dataSource;
-
-	@Bean
-	@ConditionalOnMissingBean(PlatformTransactionManager.class)
+	@Configuration
 	@ConditionalOnBean(DataSource.class)
-	public DataSourceTransactionManager transactionManager() {
-		return new DataSourceTransactionManager(this.dataSource);
+	static class DataSourceTransactionManagerConfiguration {
+
+		private final DataSource dataSource;
+
+		DataSourceTransactionManagerConfiguration(DataSource dataSource) {
+			this.dataSource = dataSource;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(PlatformTransactionManager.class)
+		public DataSourceTransactionManager transactionManager() {
+			return new DataSourceTransactionManager(this.dataSource);
+		}
+
 	}
 
 	@ConditionalOnMissingBean(AbstractTransactionManagementConfiguration.class)
 	@Configuration
-	@EnableTransactionManagement
+	@EnableTransactionManagement(proxyTargetClass = true)
 	protected static class TransactionManagementConfiguration {
 
 	}

@@ -53,7 +53,6 @@ public class ProjectInfoProperties {
 		getGit().setLocation(defaultGitLocation);
 	}
 
-
 	/**
 	 * Build specific info properties.
 	 */
@@ -62,7 +61,8 @@ public class ProjectInfoProperties {
 		/**
 		 * Location of the generated build.properties file.
 		 */
-		private Resource location = new ClassPathResource("META-INF/boot/build.properties");
+		private Resource location = new ClassPathResource(
+				"META-INF/boot/build.properties");
 
 		public Resource getLocation() {
 			return this.location;

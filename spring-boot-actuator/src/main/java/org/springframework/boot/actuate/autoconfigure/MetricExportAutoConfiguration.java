@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.MetricsEndpointMetricReader;
 import org.springframework.boot.actuate.metrics.export.Exporter;
@@ -55,22 +55,27 @@ import org.springframework.util.CollectionUtils;
 @EnableConfigurationProperties
 public class MetricExportAutoConfiguration {
 
-	@Autowired
-	private MetricExportProperties properties;
+	private final MetricExportProperties properties;
 
-	@Autowired(required = false)
-	private MetricsEndpointMetricReader endpointReader;
+	private final MetricsEndpointMetricReader endpointReader;
 
-	@Autowired(required = false)
-	@ExportMetricReader
-	private List<MetricReader> readers;
+	private final List<MetricReader> readers;
 
-	@Autowired(required = false)
-	@ExportMetricWriter
-	private Map<String, GaugeWriter> writers = Collections.emptyMap();
+	private final Map<String, GaugeWriter> writers;
 
-	@Autowired(required = false)
-	private Map<String, Exporter> exporters = Collections.emptyMap();
+	private final Map<String, Exporter> exporters;
+
+	public MetricExportAutoConfiguration(MetricExportProperties properties,
+			ObjectProvider<MetricsEndpointMetricReader> endpointReaderProvider,
+			@ExportMetricReader ObjectProvider<List<MetricReader>> readersProvider,
+			@ExportMetricWriter ObjectProvider<Map<String, GaugeWriter>> writersProvider,
+			ObjectProvider<Map<String, Exporter>> exportersProvider) {
+		this.properties = properties;
+		this.endpointReader = endpointReaderProvider.getIfAvailable();
+		this.readers = readersProvider.getIfAvailable();
+		this.writers = writersProvider.getIfAvailable();
+		this.exporters = exportersProvider.getIfAvailable();
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "metricWritersMetricExporter")
@@ -81,16 +86,19 @@ public class MetricExportAutoConfiguration {
 			reader = new CompositeMetricReader(
 					this.readers.toArray(new MetricReader[this.readers.size()]));
 		}
-		if (reader == null && this.exporters.isEmpty()) {
+		if (reader == null && CollectionUtils.isEmpty(this.exporters)) {
 			return new NoOpSchedulingConfigurer();
 		}
 		MetricExporters exporters = new MetricExporters(this.properties);
 		if (reader != null) {
-			writers.putAll(this.writers);
+			if (!CollectionUtils.isEmpty(this.writers)) {
+				writers.putAll(this.writers);
+			}
 			exporters.setReader(reader);
 			exporters.setWriters(writers);
 		}
-		exporters.setExporters(this.exporters);
+		exporters.setExporters(this.exporters == null
+				? Collections.<String, Exporter>emptyMap() : this.exporters);
 		return exporters;
 	}
 

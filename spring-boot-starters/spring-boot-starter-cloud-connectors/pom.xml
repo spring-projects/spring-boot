@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-cloud-connectors</artifactId>
 	<name>Spring Boot Spring Cloud Connectors Starter</name>
-	<description>Spring Boot Starter for Spring Cloud Connectors</description>
+	<description>Starter for using Spring Cloud Connectors which simplifies connecting
+		to services in cloud platforms like Cloud Foundry and Heroku</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

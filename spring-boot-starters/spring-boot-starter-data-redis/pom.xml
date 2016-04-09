@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-data-redis</artifactId>
 	<name>Spring Boot Data Redis Starter</name>
-	<description>Spring Boot Data Redis Starter</description>
+	<description>Starter for using Redis key-value data store with Spring Data Redis and
+		the Jedis client</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

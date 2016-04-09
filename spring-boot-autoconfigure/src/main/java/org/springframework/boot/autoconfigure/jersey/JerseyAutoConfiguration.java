@@ -39,6 +39,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -74,6 +75,7 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass(name = { "org.glassfish.jersey.server.spring.SpringComponentProvider",
@@ -88,16 +90,20 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	private static final Log logger = LogFactory.getLog(JerseyAutoConfiguration.class);
 
-	@Autowired
-	private JerseyProperties jersey;
+	private final JerseyProperties jersey;
 
-	@Autowired
-	private ResourceConfig config;
+	private final ResourceConfig config;
 
-	@Autowired(required = false)
-	private List<ResourceConfigCustomizer> customizers;
+	private final List<ResourceConfigCustomizer> customizers;
 
 	private String path;
+
+	public JerseyAutoConfiguration(JerseyProperties jersey, ResourceConfig config,
+			ObjectProvider<List<ResourceConfigCustomizer>> customizersProvider) {
+		this.jersey = jersey;
+		this.config = config;
+		this.customizers = customizersProvider.getIfAvailable();
+	}
 
 	@PostConstruct
 	public void path() {
@@ -165,6 +171,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 				new ServletContainer(this.config), this.path);
 		addInitParameters(registration);
 		registration.setName(getServletRegistrationName());
+		registration.setLoadOnStartup(this.jersey.getServlet().getLoadOnStartup());
 		return registration;
 	}
 

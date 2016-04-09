@@ -22,7 +22,7 @@ import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.CacheManager;
@@ -45,20 +45,27 @@ import org.springframework.util.StringUtils;
 @Conditional({ CacheCondition.class })
 class CaffeineCacheConfiguration {
 
-	@Autowired
-	private CacheProperties cacheProperties;
+	private final CacheProperties cacheProperties;
 
-	@Autowired
-	private CacheManagerCustomizers customizers;
+	private final CacheManagerCustomizers customizers;
 
-	@Autowired(required = false)
-	private Caffeine<Object, Object> caffeine;
+	private final Caffeine<Object, Object> caffeine;
 
-	@Autowired(required = false)
-	private CaffeineSpec caffeineSpec;
+	private final CaffeineSpec caffeineSpec;
 
-	@Autowired(required = false)
-	private CacheLoader<Object, Object> cacheLoader;
+	private final CacheLoader<Object, Object> cacheLoader;
+
+	CaffeineCacheConfiguration(CacheProperties cacheProperties,
+			CacheManagerCustomizers customizers,
+			ObjectProvider<Caffeine<Object, Object>> caffeineProvider,
+			ObjectProvider<CaffeineSpec> caffeineSpecProvider,
+			ObjectProvider<CacheLoader<Object, Object>> cacheLoaderProvider) {
+		this.cacheProperties = cacheProperties;
+		this.customizers = customizers;
+		this.caffeine = caffeineProvider.getIfAvailable();
+		this.caffeineSpec = caffeineSpecProvider.getIfAvailable();
+		this.cacheLoader = cacheLoaderProvider.getIfAvailable();
+	}
 
 	@Bean
 	public CaffeineCacheManager caffeineCacheManager() {

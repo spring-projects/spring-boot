@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({Bucket.class, CouchbaseCacheManager.class})
+@ConditionalOnClass({ Bucket.class, CouchbaseCacheManager.class })
 @ConditionalOnMissingBean(CacheManager.class)
 @ConditionalOnSingleCandidate(Bucket.class)
 @Conditional(CacheCondition.class)
@@ -60,8 +60,8 @@ public class CouchbaseCacheConfiguration {
 	public CouchbaseCacheManager cacheManager() {
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		CouchbaseCacheManager cacheManager = new CouchbaseCacheManager(
-				CacheBuilder.newInstance(this.bucket)
-						.withExpirationInMillis(this.cacheProperties.getCouchbase().getExpiration()),
+				CacheBuilder.newInstance(this.bucket).withExpirationInMillis(
+						this.cacheProperties.getCouchbase().getExpiration()),
 				cacheNames.toArray(new String[cacheNames.size()]));
 		return this.customizers.customize(cacheManager);
 	}

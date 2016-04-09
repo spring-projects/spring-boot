@@ -18,14 +18,13 @@ package sample.data.rest.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import sample.data.rest.SampleDataRestApplication;
 import sample.data.rest.domain.City;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,8 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Oliver Gierke
  * @author Andy Wilkinson
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(SampleDataRestApplication.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class CityRepositoryIntegrationTests {
 
 	@Autowired

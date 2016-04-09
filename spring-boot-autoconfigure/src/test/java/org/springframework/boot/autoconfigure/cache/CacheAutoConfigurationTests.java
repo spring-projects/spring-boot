@@ -52,10 +52,10 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
-import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -214,7 +214,8 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void couchbaseCacheExplicit() {
 		load(CouchbaseCacheConfiguration.class, "spring.cache.type=couchbase");
-		CouchbaseCacheManager cacheManager = validateCacheManager(CouchbaseCacheManager.class);
+		CouchbaseCacheManager cacheManager = validateCacheManager(
+				CouchbaseCacheManager.class);
 		assertThat(cacheManager.getCacheNames()).isEmpty();
 	}
 
@@ -228,24 +229,29 @@ public class CacheAutoConfigurationTests {
 	public void couchbaseCacheExplicitWithCaches() {
 		load(CouchbaseCacheConfiguration.class, "spring.cache.type=couchbase",
 				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		CouchbaseCacheManager cacheManager = validateCacheManager(CouchbaseCacheManager.class);
+		CouchbaseCacheManager cacheManager = validateCacheManager(
+				CouchbaseCacheManager.class);
 		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
 		Cache cache = cacheManager.getCache("foo");
 		assertThat(cache).isInstanceOf(CouchbaseCache.class);
 		assertThat(((CouchbaseCache) cache).getTtl()).isEqualTo(0);
-		assertThat(((CouchbaseCache) cache).getNativeCache()).isEqualTo(this.context.getBean("bucket"));
+		assertThat(((CouchbaseCache) cache).getNativeCache())
+				.isEqualTo(this.context.getBean("bucket"));
 	}
 
 	@Test
 	public void couchbaseCacheExplicitWithTtl() {
 		load(CouchbaseCacheConfiguration.class, "spring.cache.type=couchbase",
-				"spring.cache.cacheNames=foo,bar", "spring.cache.couchbase.expiration=2000");
-		CouchbaseCacheManager cacheManager = validateCacheManager(CouchbaseCacheManager.class);
+				"spring.cache.cacheNames=foo,bar",
+				"spring.cache.couchbase.expiration=2000");
+		CouchbaseCacheManager cacheManager = validateCacheManager(
+				CouchbaseCacheManager.class);
 		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
 		Cache cache = cacheManager.getCache("foo");
 		assertThat(cache).isInstanceOf(CouchbaseCache.class);
 		assertThat(((CouchbaseCache) cache).getTtl()).isEqualTo(2000);
-		assertThat(((CouchbaseCache) cache).getNativeCache()).isEqualTo(this.context.getBean("bucket"));
+		assertThat(((CouchbaseCache) cache).getNativeCache())
+				.isEqualTo(this.context.getBean("bucket"));
 	}
 
 	@Test
@@ -789,7 +795,8 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ CouchbaseCacheConfiguration.class, CacheManagerCustomizersConfiguration.class })
+	@Import({ CouchbaseCacheConfiguration.class,
+			CacheManagerCustomizersConfiguration.class })
 	static class CouchbaseCacheAndCustomizersConfiguration {
 
 	}

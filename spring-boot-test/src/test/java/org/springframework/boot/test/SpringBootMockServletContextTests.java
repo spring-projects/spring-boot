@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.ServletContextAware;
 
@@ -41,10 +41,12 @@ import static org.hamcrest.Matchers.nullValue;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringApplicationConfiguration(SpringBootMockServletContextTests.Config.class)
 @WebAppConfiguration("src/test/webapp")
+@Deprecated
+@SuppressWarnings("deprecation")
 public class SpringBootMockServletContextTests implements ServletContextAware {
 
 	private ServletContext servletContext;

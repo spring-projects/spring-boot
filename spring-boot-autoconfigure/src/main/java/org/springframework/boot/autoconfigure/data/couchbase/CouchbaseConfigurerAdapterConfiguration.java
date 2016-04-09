@@ -25,8 +25,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 
 /**
- * Adapt the core Couchbase configuration to an expected {@link CouchbaseConfigurer}
- * if necessary.
+ * Adapt the core Couchbase configuration to an expected {@link CouchbaseConfigurer} if
+ * necessary.
  *
  * @author Stephane Nicoll
  */
@@ -44,8 +44,10 @@ class CouchbaseConfigurerAdapterConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public CouchbaseConfigurer springBootCouchbaseConfigurer() throws Exception {
-		return new SpringBootCouchbaseConfigurer(this.configuration.couchbaseEnvironment(),
-				this.configuration.couchbaseCluster(), this.configuration.couchbaseClusterInfo(),
+		return new SpringBootCouchbaseConfigurer(
+				this.configuration.couchbaseEnvironment(),
+				this.configuration.couchbaseCluster(),
+				this.configuration.couchbaseClusterInfo(),
 				this.configuration.couchbaseClient());
 	}
 

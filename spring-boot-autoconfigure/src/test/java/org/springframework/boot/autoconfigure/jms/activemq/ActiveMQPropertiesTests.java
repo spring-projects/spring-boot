@@ -21,7 +21,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ActiveMQProperties} and ActiveMQConnectionFactoryFactory.
+ * Tests for {@link ActiveMQProperties} and {@link ActiveMQConnectionFactoryFactory}.
  *
  * @author Stephane Nicoll
  * @author Aurélien Leboulanger

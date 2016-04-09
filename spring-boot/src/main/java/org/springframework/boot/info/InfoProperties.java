@@ -17,8 +17,8 @@
 package org.springframework.boot.info;
 
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import org.springframework.core.env.PropertiesPropertySource;
@@ -26,8 +26,8 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
 
 /**
- * Base class for components exposing unstructured data with dedicated methods for
- * well known keys.
+ * Base class for components exposing unstructured data with dedicated methods for well
+ * known keys.
  *
  * @author Stephane Nicoll
  * @since 1.4.0
@@ -55,10 +55,8 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 	}
 
 	/**
-	 * Return the value of the specified property as a {@link Date} or {@code null}
-	 * <p>
-	 * Return {@code null} if the value is not a valid {@link Long} representing an
-	 * epoch time.
+	 * Return the value of the specified property as a {@link Date} or {@code null} if the
+	 * value is not a valid {@link Long} representation of an epoch time.
 	 * @param key the id of the property
 	 * @return the property value
 	 */
@@ -66,10 +64,9 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 		String s = get(key);
 		if (s != null) {
 			try {
-				long epoch = Long.parseLong(s);
-				return new Date(epoch);
+				return new Date(Long.parseLong(s));
 			}
-			catch (NumberFormatException e) {
+			catch (NumberFormatException ex) {
 				// Not valid epoch time
 			}
 		}
@@ -86,13 +83,40 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 	 * @return a {@link PropertySource}
 	 */
 	public PropertySource<?> toPropertySource() {
-		return new PropertiesPropertySource(getClass().getSimpleName(), copy(this.entries));
+		return new PropertiesPropertySource(getClass().getSimpleName(),
+				copy(this.entries));
 	}
 
-	private static Properties copy(Properties properties) {
+	private Properties copy(Properties properties) {
 		Properties copy = new Properties();
 		copy.putAll(properties);
 		return copy;
+	}
+
+	private final class PropertiesIterator implements Iterator<Entry> {
+
+		private final Iterator<Map.Entry<Object, Object>> iterator;
+
+		private PropertiesIterator(Properties properties) {
+			this.iterator = properties.entrySet().iterator();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return this.iterator.hasNext();
+		}
+
+		@Override
+		public Entry next() {
+			Map.Entry<Object, Object> entry = this.iterator.next();
+			return new Entry((String) entry.getKey(), (String) entry.getValue());
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("InfoProperties are immutable.");
+		}
+
 	}
 
 	/**
@@ -115,35 +139,6 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 
 		public String getValue() {
 			return this.value;
-		}
-
-	}
-
-	private final class PropertiesIterator implements Iterator<Entry> {
-
-		private final Properties properties;
-
-		private final Enumeration<Object> keys;
-
-		private PropertiesIterator(Properties properties) {
-			this.properties = properties;
-			this.keys = this.properties.keys();
-		}
-
-		@Override
-		public boolean hasNext() {
-			return this.keys.hasMoreElements();
-		}
-
-		@Override
-		public Entry next() {
-			String key = (String) this.keys.nextElement();
-			return new Entry(key, this.properties.getProperty(key));
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException("InfoProperties are immutable.");
 		}
 
 	}

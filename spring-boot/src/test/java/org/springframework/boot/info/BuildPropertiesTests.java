@@ -31,8 +31,8 @@ public class BuildPropertiesTests {
 
 	@Test
 	public void basicInfo() {
-		BuildProperties properties = new BuildProperties(createProperties(
-				"com.example", "demo", "0.0.1", "2016-03-04T14:36:33+0100"));
+		BuildProperties properties = new BuildProperties(createProperties("com.example",
+				"demo", "0.0.1", "2016-03-04T14:36:33+0100"));
 		assertThat(properties.getGroup()).isEqualTo("com.example");
 		assertThat(properties.getArtifact()).isEqualTo("demo");
 		assertThat(properties.getVersion()).isEqualTo("0.0.1");

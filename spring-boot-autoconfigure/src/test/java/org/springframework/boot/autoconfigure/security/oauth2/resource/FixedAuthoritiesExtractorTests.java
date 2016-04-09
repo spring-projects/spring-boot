@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -61,6 +63,40 @@ public class FixedAuthoritiesExtractorTests {
 		this.map.put("authorities", Arrays.asList("ROLE_USER", "ROLE_ADMIN"));
 		assertThat(this.extractor.extractAuthorities(this.map).toString())
 				.isEqualTo("[ROLE_USER, ROLE_ADMIN]");
+	}
+
+	@Test
+	public void authoritiesAsListOfMaps() {
+		this.map.put("authorities",
+				Arrays.asList(Collections.singletonMap("authority", "ROLE_ADMIN")));
+		assertThat(this.extractor.extractAuthorities(this.map).toString())
+				.isEqualTo("[ROLE_ADMIN]");
+	}
+
+	@Test
+	public void authoritiesAsListOfMapsWithStandardKey() {
+		this.map.put("authorities",
+				Arrays.asList(Collections.singletonMap("role", "ROLE_ADMIN")));
+		assertThat(this.extractor.extractAuthorities(this.map).toString())
+				.isEqualTo("[ROLE_ADMIN]");
+	}
+
+	@Test
+	public void authoritiesAsListOfMapsWithNonStandardKey() {
+		this.map.put("authorities",
+				Arrays.asList(Collections.singletonMap("any", "ROLE_ADMIN")));
+		assertThat(this.extractor.extractAuthorities(this.map).toString())
+				.isEqualTo("[ROLE_ADMIN]");
+	}
+
+	@Test
+	public void authoritiesAsListOfMapsWithMultipleNonStandardKeys() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("any", "ROLE_ADMIN");
+		map.put("foo", "bar");
+		this.map.put("authorities", Arrays.asList(map));
+		assertThat(this.extractor.extractAuthorities(this.map).toString())
+				.isEqualTo("[{foo=bar, any=ROLE_ADMIN}]");
 	}
 
 }

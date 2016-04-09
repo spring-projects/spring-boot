@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -54,13 +54,18 @@ public class HttpMessageConvertersAutoConfiguration {
 
 	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";
 
-	@Autowired(required = false)
-	private final List<HttpMessageConverter<?>> converters = Collections.emptyList();
+	private final List<HttpMessageConverter<?>> converters;
+
+	public HttpMessageConvertersAutoConfiguration(
+			ObjectProvider<List<HttpMessageConverter<?>>> convertersProvider) {
+		this.converters = convertersProvider.getIfAvailable();
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public HttpMessageConverters messageConverters() {
-		return new HttpMessageConverters(this.converters);
+		return new HttpMessageConverters(this.converters == null
+				? Collections.<HttpMessageConverter<?>>emptyList() : this.converters);
 	}
 
 	@Configuration

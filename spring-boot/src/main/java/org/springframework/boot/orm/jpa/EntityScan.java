@@ -46,7 +46,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(EntityScanRegistrar.class)
+@Import(JpaEntityScanRegistrar.class)
 public @interface EntityScan {
 
 	/**

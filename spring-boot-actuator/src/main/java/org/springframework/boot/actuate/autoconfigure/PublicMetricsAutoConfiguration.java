@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.Servlet;
@@ -24,7 +23,7 @@ import javax.sql.DataSource;
 
 import org.apache.catalina.startup.Tomcat;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.boot.actuate.endpoint.CachePublicMetrics;
 import org.springframework.boot.actuate.endpoint.DataSourcePublicMetrics;
@@ -71,9 +70,12 @@ import org.springframework.lang.UsesJava7;
 		IntegrationAutoConfiguration.class })
 public class PublicMetricsAutoConfiguration {
 
-	@Autowired(required = false)
-	@ExportMetricReader
-	private List<MetricReader> metricReaders = Collections.emptyList();
+	private final List<MetricReader> metricReaders;
+
+	public PublicMetricsAutoConfiguration(
+			@ExportMetricReader ObjectProvider<List<MetricReader>> metricReadersProvider) {
+		this.metricReaders = metricReadersProvider.getIfAvailable();
+	}
 
 	@Bean
 	public SystemPublicMetrics systemPublicMetrics() {
@@ -82,8 +84,10 @@ public class PublicMetricsAutoConfiguration {
 
 	@Bean
 	public MetricReaderPublicMetrics metricReaderPublicMetrics() {
-		return new MetricReaderPublicMetrics(new CompositeMetricReader(
-				this.metricReaders.toArray(new MetricReader[0])));
+		return new MetricReaderPublicMetrics(
+				new CompositeMetricReader(this.metricReaders == null ? new MetricReader[0]
+						: this.metricReaders
+								.toArray(new MetricReader[this.metricReaders.size()])));
 	}
 
 	@Bean

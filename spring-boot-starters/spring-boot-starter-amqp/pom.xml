@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-amqp</artifactId>
 	<name>Spring Boot AMPQ Starter</name>
-	<description>Spring Boot AMQP Starter</description>
+	<description>Starter for using Spring AMQP and Rabbit MQ</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

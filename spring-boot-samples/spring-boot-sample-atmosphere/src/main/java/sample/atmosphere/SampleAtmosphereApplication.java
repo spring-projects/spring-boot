@@ -25,6 +25,7 @@ import org.atmosphere.cpr.AtmosphereInitializer;
 import org.atmosphere.cpr.AtmosphereServlet;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
@@ -34,7 +35,7 @@ import org.springframework.core.Ordered;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-@Configuration
+@SpringBootConfiguration
 @EnableAutoConfiguration
 public class SampleAtmosphereApplication {
 

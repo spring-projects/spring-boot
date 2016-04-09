@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jms;
 import javax.jms.ConnectionFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -44,17 +43,23 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 @ConditionalOnClass(EnableJms.class)
 class JmsAnnotationDrivenConfiguration {
 
-	@Autowired
-	private ObjectProvider<DestinationResolver> destinationResolver;
+	private final ObjectProvider<DestinationResolver> destinationResolver;
 
-	@Autowired
-	private ObjectProvider<JtaTransactionManager> transactionManager;
+	private final ObjectProvider<JtaTransactionManager> transactionManager;
 
-	@Autowired
-	private ObjectProvider<MessageConverter> messageConverter;
+	private final ObjectProvider<MessageConverter> messageConverter;
 
-	@Autowired
-	private JmsProperties properties;
+	private final JmsProperties properties;
+
+	JmsAnnotationDrivenConfiguration(
+			ObjectProvider<DestinationResolver> destinationResolver,
+			ObjectProvider<JtaTransactionManager> transactionManager,
+			ObjectProvider<MessageConverter> messageConverter, JmsProperties properties) {
+		this.destinationResolver = destinationResolver;
+		this.transactionManager = transactionManager;
+		this.messageConverter = messageConverter;
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

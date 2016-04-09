@@ -221,7 +221,7 @@ run() {
   pushd "$(dirname "$jarfile")" > /dev/null
   $command
   result=$?
-  popd
+  popd > /dev/null
   return "$result"
 }
 

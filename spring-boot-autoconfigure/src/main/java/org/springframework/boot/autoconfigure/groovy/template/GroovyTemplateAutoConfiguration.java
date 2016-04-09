@@ -26,7 +26,7 @@ import groovy.text.markup.MarkupTemplateEngine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -69,14 +69,19 @@ public class GroovyTemplateAutoConfiguration {
 	@ConditionalOnClass(GroovyMarkupConfigurer.class)
 	public static class GroovyMarkupConfiguration {
 
-		@Autowired
-		private ApplicationContext applicationContext;
+		private final ApplicationContext applicationContext;
 
-		@Autowired
-		private GroovyTemplateProperties properties;
+		private final GroovyTemplateProperties properties;
 
-		@Autowired(required = false)
-		private MarkupTemplateEngine templateEngine;
+		private final MarkupTemplateEngine templateEngine;
+
+		public GroovyMarkupConfiguration(ApplicationContext applicationContext,
+				GroovyTemplateProperties properties,
+				ObjectProvider<MarkupTemplateEngine> templateEngineProvider) {
+			this.applicationContext = applicationContext;
+			this.properties = properties;
+			this.templateEngine = templateEngineProvider.getIfAvailable();
+		}
 
 		@PostConstruct
 		public void checkTemplateLocationExists() {

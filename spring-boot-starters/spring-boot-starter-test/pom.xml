@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-test</artifactId>
 	<name>Spring Boot Test Starter</name>
-	<description>Spring Boot Test Starter</description>
+	<description>Starter for testing Spring Boot applications with libraries including
+		JUnit, Hamcrest and Mockito</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
@@ -21,6 +22,14 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-test-autoconfigure</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -41,6 +50,10 @@
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-library</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.skyscreamer</groupId>
+			<artifactId>jsonassert</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>

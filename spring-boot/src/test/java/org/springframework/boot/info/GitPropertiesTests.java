@@ -81,7 +81,8 @@ public class GitPropertiesTests {
 		assertThat(properties.getShortCommitId()).isEqualTo("abc");
 	}
 
-	private static Properties createProperties(String branch, String commitId, String commitTime) {
+	private static Properties createProperties(String branch, String commitId,
+			String commitTime) {
 		Properties properties = new Properties();
 		properties.put("branch", branch);
 		properties.put("commit.id", commitId);

@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-velocity</artifactId>
 	<name>Spring Boot Velocity Starter</name>
-	<description>Spring Boot Velocity Starter</description>
+	<description>Starter for building MVC web applications using Velocity views.
+		Deprecated since 1.4</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

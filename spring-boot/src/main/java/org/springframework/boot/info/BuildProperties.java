@@ -72,8 +72,8 @@ public class BuildProperties extends InfoProperties {
 	/**
 	 * Return the timestamp of the build or {@code null}.
 	 * <p>
-	 * If the original value could not be parsed properly, it is still available with
-	 * the {@code time} key.
+	 * If the original value could not be parsed properly, it is still available with the
+	 * {@code time} key.
 	 * @return the build time
 	 * @see #get(String)
 	 */

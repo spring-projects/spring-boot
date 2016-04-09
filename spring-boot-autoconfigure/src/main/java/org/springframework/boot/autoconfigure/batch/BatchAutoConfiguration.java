@@ -28,7 +28,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.support.SimpleJobOperator;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -64,11 +64,15 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(BatchProperties.class)
 public class BatchAutoConfiguration {
 
-	@Autowired
-	private BatchProperties properties;
+	private final BatchProperties properties;
 
-	@Autowired(required = false)
-	private JobParametersConverter jobParametersConverter;
+	private final JobParametersConverter jobParametersConverter;
+
+	public BatchAutoConfiguration(BatchProperties properties,
+			ObjectProvider<JobParametersConverter> jobParametersConverterProvider) {
+		this.properties = properties;
+		this.jobParametersConverter = jobParametersConverterProvider.getIfAvailable();
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

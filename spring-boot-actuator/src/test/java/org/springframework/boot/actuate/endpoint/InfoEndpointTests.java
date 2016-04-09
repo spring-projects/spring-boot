@@ -52,7 +52,7 @@ public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
 	public static class Config {
 
 		@Bean
-		public InfoContributor infoProvider() {
+		public InfoContributor infoContributor() {
 			return new InfoContributor() {
 
 				@Override

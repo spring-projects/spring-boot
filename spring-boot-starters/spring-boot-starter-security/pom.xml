@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-security</artifactId>
 	<name>Spring Boot Security Starter</name>
-	<description>Spring Boot Security Starter</description>
+	<description>Starter for using Spring Security</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

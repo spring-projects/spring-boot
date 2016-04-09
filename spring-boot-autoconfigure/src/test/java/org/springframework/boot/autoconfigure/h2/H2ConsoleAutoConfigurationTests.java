@@ -24,7 +24,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -70,12 +70,12 @@ public class H2ConsoleAutoConfigurationTests {
 				"spring.h2.console.enabled:true");
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
-		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
-				.contains("/h2-console/*");
-		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).
-				doesNotContainKey("trace");
-		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).
-				doesNotContainKey("webAllowOthers");
+		ServletRegistrationBean registrationBean = this.context
+				.getBean(ServletRegistrationBean.class);
+		assertThat(registrationBean.getUrlMappings()).contains("/h2-console/*");
+		assertThat(registrationBean.getInitParameters()).doesNotContainKey("trace");
+		assertThat(registrationBean.getInitParameters())
+				.doesNotContainKey("webAllowOthers");
 	}
 
 	@Test
@@ -114,17 +114,16 @@ public class H2ConsoleAutoConfigurationTests {
 	public void customInitParameters() {
 		this.context.register(H2ConsoleAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.h2.console.enabled:true",
-				"spring.h2.console.settings.trace=true",
+				"spring.h2.console.enabled:true", "spring.h2.console.settings.trace=true",
 				"spring.h2.console.settings.webAllowOthers=true");
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
-		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
-				.contains("/h2-console/*");
-		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).
-				containsEntry("trace", "");
-		assertThat(this.context.getBean(ServletRegistrationBean.class).getInitParameters()).
-				containsEntry("webAllowOthers", "");
+		ServletRegistrationBean registrationBean = this.context
+				.getBean(ServletRegistrationBean.class);
+		assertThat(registrationBean.getUrlMappings()).contains("/h2-console/*");
+		assertThat(registrationBean.getInitParameters()).containsEntry("trace", "");
+		assertThat(registrationBean.getInitParameters()).containsEntry("webAllowOthers",
+				"");
 	}
 
 }

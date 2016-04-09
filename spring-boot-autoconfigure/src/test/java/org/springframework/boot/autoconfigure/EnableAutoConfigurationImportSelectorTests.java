@@ -150,11 +150,28 @@ public class EnableAutoConfigurationImportSelectorTests {
 						ThymeleafAutoConfiguration.class.getName());
 	}
 
+	@Test
+	public void propertyOverrideSetToTrue() throws Exception {
+		configureExclusions(new String[0], new String[0], new String[0]);
+		this.environment.setProperty(EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, "true");
+		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
+		assertThat(imports).isNotEmpty();
+	}
+
+	@Test
+	public void propertyOverrideSetToFalse() throws Exception {
+		configureExclusions(new String[0], new String[0], new String[0]);
+		this.environment.setProperty(EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, "false");
+		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
+		assertThat(imports).isEmpty();
+	}
+
 	private void configureExclusions(String[] classExclusion, String[] nameExclusion,
 			String[] propertyExclusion) {
-		given(this.annotationMetadata
-				.getAnnotationAttributes(EnableAutoConfiguration.class.getName(), true))
-						.willReturn(this.annotationAttributes);
+		String annotationName = EnableAutoConfiguration.class.getName();
+		given(this.annotationMetadata.isAnnotated(annotationName)).willReturn(true);
+		given(this.annotationMetadata.getAnnotationAttributes(annotationName, true))
+				.willReturn(this.annotationAttributes);
 		given(this.annotationAttributes.getStringArray("exclude"))
 				.willReturn(classExclusion);
 		given(this.annotationAttributes.getStringArray("excludeName"))

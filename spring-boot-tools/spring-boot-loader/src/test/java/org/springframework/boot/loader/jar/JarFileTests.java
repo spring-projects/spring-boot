@@ -313,8 +313,18 @@ public class JarFileTests {
 
 	@Test
 	public void createNonNestedUrlFromString() throws Exception {
+		nonNestedJarFileFromString(
+				"jar:file:" + this.rootJarFile.getAbsolutePath() + "!/2.dat");
+	}
+
+	@Test
+	public void createNonNestedUrlFromStringWithDoubleSlash() throws Exception {
+		nonNestedJarFileFromString(
+				"jar:file://" + this.rootJarFile.getAbsolutePath() + "!/2.dat");
+	}
+
+	private void nonNestedJarFileFromString(String spec) throws Exception {
 		JarFile.registerUrlProtocolHandler();
-		String spec = "jar:" + this.rootJarFile.toURI() + "!/2.dat";
 		URL url = new URL(spec);
 		assertThat(url.toString()).isEqualTo(spec);
 		InputStream inputStream = url.openStream();

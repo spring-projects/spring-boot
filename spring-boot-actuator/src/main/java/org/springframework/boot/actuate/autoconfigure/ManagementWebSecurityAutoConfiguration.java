@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
@@ -108,11 +109,16 @@ public class ManagementWebSecurityAutoConfiguration {
 	protected static class ManagementSecurityPropertiesConfiguration
 			implements SecurityPrerequisite {
 
-		@Autowired(required = false)
-		private SecurityProperties security;
+		private final SecurityProperties security;
 
-		@Autowired(required = false)
-		private ManagementServerProperties management;
+		private final ManagementServerProperties management;
+
+		public ManagementSecurityPropertiesConfiguration(
+				ObjectProvider<SecurityProperties> securityProvider,
+				ObjectProvider<ManagementServerProperties> managementProvider) {
+			this.security = securityProvider.getIfAvailable();
+			this.management = managementProvider.getIfAvailable();
+		}
 
 		@PostConstruct
 		public void init() {
@@ -232,14 +238,19 @@ public class ManagementWebSecurityAutoConfiguration {
 	protected static class ManagementWebSecurityConfigurerAdapter
 			extends WebSecurityConfigurerAdapter {
 
-		@Autowired
-		private SecurityProperties security;
+		private final SecurityProperties security;
 
-		@Autowired
-		private ManagementServerProperties management;
+		private final ManagementServerProperties management;
 
-		@Autowired(required = false)
-		private ManagementContextResolver contextResolver;
+		private final ManagementContextResolver contextResolver;
+
+		public ManagementWebSecurityConfigurerAdapter(SecurityProperties security,
+				ManagementServerProperties management,
+				ObjectProvider<ManagementContextResolver> contextResolverProvider) {
+			this.security = security;
+			this.management = management;
+			this.contextResolver = contextResolverProvider.getIfAvailable();
+		}
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
