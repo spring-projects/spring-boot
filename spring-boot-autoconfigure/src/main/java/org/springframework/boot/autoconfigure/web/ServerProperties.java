@@ -30,6 +30,9 @@ import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
 import javax.validation.constraints.NotNull;
 
+import io.undertow.Undertow.Builder;
+import io.undertow.UndertowOptions;
+
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
@@ -37,6 +40,13 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.HandlerWrapper;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties.Session.Cookie;
 import org.springframework.boot.cloud.CloudPlatform;
@@ -50,11 +60,14 @@ import org.springframework.boot.context.embedded.JspServlet;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowBuilderCustomizer;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
@@ -73,6 +86,7 @@ import org.springframework.util.StringUtils;
  * @author Marcos Barbero
  * @author Eddú Meléndez
  * @author Quinten De Swaef
+ * @author Venil Noronha
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties
@@ -121,6 +135,16 @@ public class ServerProperties
 	 * Value to use for the server header (uses servlet container default if empty).
 	 */
 	private String serverHeader;
+
+	/**
+	 * Maximum size in bytes of the HTTP message header.
+	 */
+	private int maxHttpHeaderSize = 0; // bytes
+
+	/**
+	 * Maximum size in bytes of the HTTP post content.
+	 */
+	private int maxHttpPostSize = 0; // bytes
 
 	private Session session = new Session();
 
@@ -317,6 +341,22 @@ public class ServerProperties
 
 	public void setServerHeader(String serverHeader) {
 		this.serverHeader = serverHeader;
+	}
+
+	public int getMaxHttpHeaderSize() {
+		return this.maxHttpHeaderSize;
+	}
+
+	public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
+		this.maxHttpHeaderSize = maxHttpHeaderSize;
+	}
+
+	public int getMaxHttpPostSize() {
+		return this.maxHttpPostSize;
+	}
+
+	public void setMaxHttpPostSize(int maxHttpPostSize) {
+		this.maxHttpPostSize = maxHttpPostSize;
 	}
 
 	protected final boolean getOrDeduceUseForwardHeaders() {
@@ -612,10 +652,23 @@ public class ServerProperties
 			this.minSpareThreads = minSpareThreads;
 		}
 
+		/**
+		 * Get the max http header size.
+		 * @return the max http header size.
+		 * @deprecated in favor of {@code server.maxHttpHeaderSize}
+		 */
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.maxHttpHeaderSize")
 		public int getMaxHttpHeaderSize() {
 			return this.maxHttpHeaderSize;
 		}
 
+		/**
+		 * Set the max http header size.
+		 * @param maxHttpHeaderSize the max http header size.
+		 * @deprecated in favor of {@code server.maxHttpHeaderSize}
+		 */
+		@Deprecated
 		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
 			this.maxHttpHeaderSize = maxHttpHeaderSize;
 		}
@@ -701,8 +754,14 @@ public class ServerProperties
 			if (this.minSpareThreads > 0) {
 				customizeMinThreads(factory);
 			}
-			if (this.maxHttpHeaderSize > 0) {
-				customizeMaxHttpHeaderSize(factory);
+			if (serverProperties.getMaxHttpHeaderSize() > 0) {
+				customizeMaxHttpHeaderSize(factory, serverProperties.getMaxHttpHeaderSize());
+			}
+			else if (this.maxHttpHeaderSize > 0) {
+				customizeMaxHttpHeaderSize(factory, this.maxHttpHeaderSize);
+			}
+			if (serverProperties.getMaxHttpPostSize() > 0) {
+				customizeMaxHttpPostSize(factory, serverProperties.getMaxHttpPostSize());
 			}
 			if (this.accesslog.enabled) {
 				customizeAccessLog(factory);
@@ -782,7 +841,7 @@ public class ServerProperties
 
 		@SuppressWarnings("rawtypes")
 		private void customizeMaxHttpHeaderSize(
-				TomcatEmbeddedServletContainerFactory factory) {
+				TomcatEmbeddedServletContainerFactory factory, final int maxHttpHeaderSize) {
 			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
 
 				@Override
@@ -790,10 +849,20 @@ public class ServerProperties
 					ProtocolHandler handler = connector.getProtocolHandler();
 					if (handler instanceof AbstractHttp11Protocol) {
 						AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
-						protocol.setMaxHttpHeaderSize(Tomcat.this.maxHttpHeaderSize);
+						protocol.setMaxHttpHeaderSize(maxHttpHeaderSize);
 					}
 				}
 
+			});
+		}
+
+		private void customizeMaxHttpPostSize(
+				TomcatEmbeddedServletContainerFactory factory, final int maxHttpPostSize) {
+			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+				@Override
+				public void customize(Connector connector) {
+					connector.setMaxPostSize(maxHttpPostSize);
+				}
 			});
 		}
 
@@ -882,6 +951,62 @@ public class ServerProperties
 		void customizeJetty(ServerProperties serverProperties,
 				JettyEmbeddedServletContainerFactory factory) {
 			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
+			if (serverProperties.getMaxHttpHeaderSize() > 0) {
+				customizeMaxHttpHeaderSize(factory, serverProperties.getMaxHttpHeaderSize());
+			}
+			if (serverProperties.getMaxHttpPostSize() > 0) {
+				customizeMaxHttpPostSize(factory, serverProperties.getMaxHttpPostSize());
+			}
+		}
+
+		private void customizeMaxHttpHeaderSize(
+				JettyEmbeddedServletContainerFactory factory, final int maxHttpHeaderSize) {
+			factory.addServerCustomizers(new JettyServerCustomizer() {
+				@Override
+				public void customize(Server server) {
+					org.eclipse.jetty.server.Connector[] connectors = server.getConnectors();
+					for (org.eclipse.jetty.server.Connector connector : connectors) {
+						for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
+							if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
+								HttpConfiguration httpConfig =
+									((HttpConfiguration.ConnectionFactory) connectionFactory)
+										.getHttpConfiguration();
+								httpConfig.setRequestHeaderSize(maxHttpHeaderSize);
+								httpConfig.setResponseHeaderSize(maxHttpHeaderSize);
+							}
+						}
+					}
+				}
+			});
+		}
+
+		private void customizeMaxHttpPostSize(
+				JettyEmbeddedServletContainerFactory factory, final int maxHttpPostSize) {
+			factory.addServerCustomizers(new JettyServerCustomizer() {
+
+				@Override
+				public void customize(Server server) {
+					setHandlerMaxHttpPostSize(maxHttpPostSize, server.getHandlers());
+				}
+
+				private void setHandlerMaxHttpPostSize(int maxHttpPostSize,
+						Handler... handlers) {
+					for (Handler handler : handlers) {
+						if (handler instanceof ContextHandler) {
+							((ContextHandler) handler).setMaxFormContentSize(maxHttpPostSize);
+						}
+						else if (handler instanceof HandlerWrapper) {
+							setHandlerMaxHttpPostSize(maxHttpPostSize,
+									((HandlerWrapper) handler).getHandler());
+						}
+						else if (handler instanceof HandlerCollection) {
+							setHandlerMaxHttpPostSize(maxHttpPostSize,
+									((HandlerCollection) handler).getHandlers());
+						}
+					}
+				}
+
+			});
 		}
 
 	}
@@ -986,6 +1111,32 @@ public class ServerProperties
 				factory.setAccessLogEnabled(this.accesslog.enabled);
 			}
 			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
+			if (serverProperties.getMaxHttpHeaderSize() > 0) {
+				customizeMaxHttpHeaderSize(factory, serverProperties.getMaxHttpHeaderSize());
+			}
+			if (serverProperties.getMaxHttpPostSize() > 0) {
+				customizeMaxHttpPostSize(factory, serverProperties.getMaxHttpPostSize());
+			}
+		}
+
+		private void customizeMaxHttpHeaderSize(
+				UndertowEmbeddedServletContainerFactory factory, final int maxHttpHeaderSize) {
+			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
+				@Override
+				public void customize(Builder builder) {
+					builder.setServerOption(UndertowOptions.MAX_HEADER_SIZE, maxHttpHeaderSize);
+				}
+			});
+		}
+
+		private void customizeMaxHttpPostSize(
+				UndertowEmbeddedServletContainerFactory factory, final int maxHttpPostSize) {
+			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
+				@Override
+				public void customize(Builder builder) {
+					builder.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, (long) maxHttpPostSize);
+				}
+			});
 		}
 
 		public static class Accesslog {
