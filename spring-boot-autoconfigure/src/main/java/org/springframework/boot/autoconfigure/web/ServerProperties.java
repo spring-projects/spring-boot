@@ -843,7 +843,7 @@ public class ServerProperties
 
 		@SuppressWarnings("rawtypes")
 		private void customizeMaxHttpHeaderSize(
-				TomcatEmbeddedServletContainerFactory factory, int maxHttpHeaderSize) {
+				TomcatEmbeddedServletContainerFactory factory, final int maxHttpHeaderSize) {
 			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
 
 				@Override
@@ -859,7 +859,7 @@ public class ServerProperties
 		}
 
 		private void customizeMaxHttpPostSize(
-				TomcatEmbeddedServletContainerFactory factory, int maxHttpPostSize) {
+				TomcatEmbeddedServletContainerFactory factory, final int maxHttpPostSize) {
 			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
 				@Override
 				public void customize(Connector connector) {
@@ -962,7 +962,7 @@ public class ServerProperties
 		}
 
 		private void customizeMaxHttpHeaderSize(
-				JettyEmbeddedServletContainerFactory factory, int maxHttpHeaderSize) {
+				JettyEmbeddedServletContainerFactory factory, final int maxHttpHeaderSize) {
 			factory.addServerCustomizers(new JettyServerCustomizer() {
 				@Override
 				public void customize(Server server) {
@@ -983,7 +983,7 @@ public class ServerProperties
 		}
 
 		private void customizeMaxHttpPostSize(
-				JettyEmbeddedServletContainerFactory factory, int maxHttpPostSize) {
+				JettyEmbeddedServletContainerFactory factory, final int maxHttpPostSize) {
 			factory.addServerCustomizers(new JettyServerCustomizer() {
 
 				@Override
@@ -1123,7 +1123,7 @@ public class ServerProperties
 		}
 
 		private void customizeMaxHttpHeaderSize(
-				UndertowEmbeddedServletContainerFactory factory, int maxHttpHeaderSize) {
+				UndertowEmbeddedServletContainerFactory factory, final int maxHttpHeaderSize) {
 			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
 				@Override
 				public void customize(Builder builder) {
@@ -1133,7 +1133,7 @@ public class ServerProperties
 		}
 
 		private void customizeMaxHttpPostSize(
-				UndertowEmbeddedServletContainerFactory factory, int maxHttpPostSize) {
+				UndertowEmbeddedServletContainerFactory factory, final int maxHttpPostSize) {
 			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
 				@Override
 				public void customize(Builder builder) {
