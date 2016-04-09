@@ -96,7 +96,8 @@ org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration,\
-org.springframework.boot.autoconfigure.websocket.WebSocketMessagingAutoConfiguration
+org.springframework.boot.autoconfigure.websocket.WebSocketMessagingAutoConfiguration,\
+org.springframework.boot.autoconfigure.ws.WsAutoConfiguration
 
 # Template availability providers
 org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
