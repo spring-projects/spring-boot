@@ -43,8 +43,6 @@ import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConfiguration.Customizer;
-import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -966,15 +964,15 @@ public class ServerProperties
 			factory.addServerCustomizers(new JettyServerCustomizer() {
 				@Override
 				public void customize(Server server) {
-					JettyMaxHttpHeaderSizeCustomizer customizer = new JettyMaxHttpHeaderSizeCustomizer(
-							maxHttpHeaderSize);
 					org.eclipse.jetty.server.Connector[] connectors = server.getConnectors();
 					for (org.eclipse.jetty.server.Connector connector : connectors) {
-						for (ConnectionFactory connectionFactory : connector
-								.getConnectionFactories()) {
+						for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
 							if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
-								((HttpConfiguration.ConnectionFactory) connectionFactory)
-										.getHttpConfiguration().addCustomizer(customizer);
+								HttpConfiguration httpConfig =
+									((HttpConfiguration.ConnectionFactory) connectionFactory)
+										.getHttpConfiguration();
+								httpConfig.setRequestHeaderSize(maxHttpHeaderSize);
+								httpConfig.setResponseHeaderSize(maxHttpHeaderSize);
 							}
 						}
 					}
@@ -1009,23 +1007,6 @@ public class ServerProperties
 				}
 
 			});
-		}
-
-	}
-
-	private static class JettyMaxHttpHeaderSizeCustomizer implements Customizer {
-
-		private int headerSize;
-
-		JettyMaxHttpHeaderSizeCustomizer(int headerSize) {
-			this.headerSize = headerSize;
-		}
-
-		@Override
-		public void customize(org.eclipse.jetty.server.Connector connector,
-				HttpConfiguration channelConfig, Request request) {
-			channelConfig.setRequestHeaderSize(this.headerSize);
-			channelConfig.setResponseHeaderSize(this.headerSize);
 		}
 
 	}
