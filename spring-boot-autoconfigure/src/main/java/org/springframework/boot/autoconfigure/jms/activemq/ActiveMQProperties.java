@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
@@ -25,6 +28,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Greg Turnquist
  * @author Stephane Nicoll
  * @author Aurélien Leboulanger
+ * @author Venil Noronha
  */
 @ConfigurationProperties(prefix = "spring.activemq")
 public class ActiveMQProperties {
@@ -51,6 +55,8 @@ public class ActiveMQProperties {
 	private String password;
 
 	private Pool pool = new Pool();
+
+	private Packages packages = new Packages();
 
 	public String getBrokerUrl() {
 		return this.brokerUrl;
@@ -113,6 +119,14 @@ public class ActiveMQProperties {
 		this.pool = pool;
 	}
 
+	public Packages getPackages() {
+		return this.packages;
+	}
+
+	public void setPackages(Packages packages) {
+		this.packages = packages;
+	}
+
 	public static class Pool {
 
 		/**
@@ -166,6 +180,32 @@ public class ActiveMQProperties {
 
 		public void setExpiryTimeout(long expiryTimeout) {
 			this.expiryTimeout = expiryTimeout;
+		}
+
+	}
+
+	public static class Packages {
+
+		/** Whether security check for trusted packages should be turned off. */
+		private boolean trustAll = false;
+
+		/** The packages to trust. */
+		private List<String> trusted = new ArrayList<String>();
+
+		public boolean isTrustAll() {
+			return this.trustAll;
+		}
+
+		public void setTrustAll(boolean trustAll) {
+			this.trustAll = trustAll;
+		}
+
+		public List<String> getTrusted() {
+			return this.trusted;
+		}
+
+		public void setTrusted(List<String> trusted) {
+			this.trusted = trusted;
 		}
 
 	}
