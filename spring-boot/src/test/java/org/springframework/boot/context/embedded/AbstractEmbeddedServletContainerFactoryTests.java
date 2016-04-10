@@ -341,10 +341,10 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory.getEmbeddedServletContainer(exampleServletRegistration(),
 				errorServletRegistration());
 		this.container.start();
-		assertThat(getResponse(getLocalUrl("/hello"), HttpMethod.PUT),
-				equalTo("Hello World"));
-		assertThat(getResponse(getLocalUrl("/bang"), HttpMethod.PUT),
-				equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/hello"), HttpMethod.PUT))
+				.isEqualTo("Hello World");
+		assertThat(getResponse(getLocalUrl("/bang"), HttpMethod.PUT))
+				.isEqualTo("Hello World");
 	}
 
 	@Test
