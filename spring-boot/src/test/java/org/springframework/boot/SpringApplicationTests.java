@@ -193,7 +193,7 @@ public class SpringApplicationTests {
 				"--banner.location=classpath:test-banner-with-placeholder.txt",
 				"--test.property=123456");
 		assertThat(this.output.toString())
-				.startsWith("Running a Test!\n\n123456");
+				.startsWith(String.format("Running a Test!%n%n123456"));
 	}
 
 	@Test
