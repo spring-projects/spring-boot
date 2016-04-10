@@ -253,11 +253,11 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
-	public void testCustomizeTomcatHeaderSize() throws Exception {
+	public void testCustomizeHeaderSize() throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("server.tomcat.maxHttpHeaderSize", "9999");
+		map.put("server.maxHttpHeaderSize", "9999");
 		bindProperties(map);
-		assertThat(this.properties.getTomcat().getMaxHttpHeaderSize()).isEqualTo(9999);
+		assertThat(this.properties.getMaxHttpHeaderSize()).isEqualTo(9999);
 	}
 
 	@Test
