@@ -407,11 +407,13 @@ public class JettyEmbeddedServletContainerFactory
 	 */
 	private Configuration getErrorPageConfiguration() {
 		return new AbstractConfiguration() {
+
 			@Override
 			public void configure(WebAppContext context) throws Exception {
 				ErrorHandler errorHandler = context.getErrorHandler();
 				addJettyErrorPages(errorHandler, getErrorPages());
 			}
+
 		};
 	}
 
@@ -421,6 +423,7 @@ public class JettyEmbeddedServletContainerFactory
 	 */
 	private Configuration getMimeTypeConfiguration() {
 		return new AbstractConfiguration() {
+
 			@Override
 			public void configure(WebAppContext context) throws Exception {
 				MimeTypes mimeTypes = context.getMimeTypes();
@@ -429,6 +432,7 @@ public class JettyEmbeddedServletContainerFactory
 							mapping.getMimeType());
 				}
 			}
+
 		};
 	}
 
