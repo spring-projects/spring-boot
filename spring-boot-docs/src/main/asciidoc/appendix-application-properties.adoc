@@ -770,6 +770,8 @@ content into your application; rather pick only the properties that you need.
     spring.activemq.pool.expiry-timeout=0 # Connection expiration timeout in milliseconds.
     spring.activemq.pool.idle-timeout=30000 # Connection idle timeout in milliseconds.
     spring.activemq.pool.max-connections=1 # Maximum number of pooled connections.
+    spring.activemq.packages.trust-all= # Trust all packages
+    spring.activemq.packages.trusted= # The specific packages to trust (when not trusting all packages).
 
 	# ARTEMIS ({sc-spring-boot-autoconfigure}/jms/artemis/ArtemisProperties.{sc-ext}[ArtemisProperties])
 	spring.artemis.embedded.cluster-password= # Cluster password. Randomly generated on startup by default.

@@ -123,10 +123,6 @@ public class ActiveMQProperties {
 		return this.packages;
 	}
 
-	public void setPackages(Packages packages) {
-		this.packages = packages;
-	}
-
 	public static class Pool {
 
 		/**
@@ -186,17 +182,21 @@ public class ActiveMQProperties {
 
 	public static class Packages {
 
-		/** Whether security check for trusted packages should be turned off. */
-		private boolean trustAll = false;
+		/**
+		 * Trust all packages.
+		 */
+		private Boolean trustAll;
 
-		/** The packages to trust. */
+		/**
+		 * The specific packages to trust (when not trusting all packages).
+		 */
 		private List<String> trusted = new ArrayList<String>();
 
-		public boolean isTrustAll() {
+		public Boolean getTrustAll() {
 			return this.trustAll;
 		}
 
-		public void setTrustAll(boolean trustAll) {
+		public void setTrustAll(Boolean trustAll) {
 			this.trustAll = trustAll;
 		}
 

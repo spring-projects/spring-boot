@@ -61,17 +61,21 @@ class ActiveMQConnectionFactoryFactory {
 		String password = this.properties.getPassword();
 		T activeMqConnectionFactory;
 		if (StringUtils.hasLength(user) && StringUtils.hasLength(password)) {
-			activeMqConnectionFactory =
-				factoryClass.getConstructor(String.class, String.class, String.class)
+			activeMqConnectionFactory = factoryClass
+					.getConstructor(String.class, String.class, String.class)
 					.newInstance(user, password, brokerUrl);
 		}
 		else {
-			activeMqConnectionFactory =
-				factoryClass.getConstructor(String.class).newInstance(brokerUrl);
+			activeMqConnectionFactory = factoryClass.getConstructor(String.class)
+					.newInstance(brokerUrl);
 		}
 		Packages packages = this.properties.getPackages();
-		activeMqConnectionFactory.setTrustAllPackages(packages.isTrustAll());
-		activeMqConnectionFactory.setTrustedPackages(packages.getTrusted());
+		if (packages.getTrustAll() != null) {
+			activeMqConnectionFactory.setTrustAllPackages(packages.getTrustAll());
+		}
+		if (!packages.getTrusted().isEmpty()) {
+			activeMqConnectionFactory.setTrustedPackages(packages.getTrusted());
+		}
 		return activeMqConnectionFactory;
 	}
 

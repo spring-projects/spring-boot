@@ -17,11 +17,9 @@
 package org.springframework.boot.autoconfigure.jms.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Tests for {@link ActiveMQProperties} and {@link ActiveMQConnectionFactoryFactory}.
@@ -67,7 +65,7 @@ public class ActiveMQPropertiesTests {
 	}
 
 	@Test
-	public void testPackagesTrustAllSetToTrue() {
+	public void setTrustAllPackages() {
 		this.properties.getPackages().setTrustAll(true);
 		assertThat(new ActiveMQConnectionFactoryFactory(this.properties)
 				.createConnectionFactory(ActiveMQConnectionFactory.class)
@@ -75,12 +73,11 @@ public class ActiveMQPropertiesTests {
 	}
 
 	@Test
-	public void testPackagesToTrust() {
+	public void setTrustedPackages() {
 		this.properties.getPackages().setTrustAll(false);
 		this.properties.getPackages().getTrusted().add("trusted.package");
-		ActiveMQConnectionFactory factory =
-			new ActiveMQConnectionFactoryFactory(this.properties)
-				.createConnectionFactory(ActiveMQConnectionFactory.class);
+		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactoryFactory(
+				this.properties).createConnectionFactory(ActiveMQConnectionFactory.class);
 		assertThat(factory.isTrustAllPackages()).isEqualTo(false);
 		assertThat(factory.getTrustedPackages().size()).isEqualTo(1);
 		assertThat(factory.getTrustedPackages().get(0)).isEqualTo("trusted.package");
