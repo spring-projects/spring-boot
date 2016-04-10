@@ -355,6 +355,7 @@ public class UndertowEmbeddedServletContainerFactory
 		deployment.setContextPath(getContextPath());
 		deployment.setDisplayName(getDisplayName());
 		deployment.setDeploymentName("spring-boot");
+		deployment.setDefaultEncoding(this.defaultEncoding);
 		if (isRegisterDefaultServlet()) {
 			deployment.addServlet(Servlets.servlet("default", DefaultServlet.class));
 		}
