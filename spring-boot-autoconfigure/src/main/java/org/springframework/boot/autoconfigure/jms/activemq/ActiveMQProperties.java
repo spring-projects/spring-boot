@@ -188,7 +188,7 @@ public class ActiveMQProperties {
 		private Boolean trustAll;
 
 		/**
-		 * The specific packages to trust (when not trusting all packages).
+		 * Comma-separated list of specific packages to trust (when not trusting all packages).
 		 */
 		private List<String> trusted = new ArrayList<String>();
 
