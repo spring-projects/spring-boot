@@ -961,14 +961,30 @@ public class ServerProperties
 
 		void customizeUndertow(ServerProperties serverProperties,
 				UndertowEmbeddedServletContainerFactory factory) {
-			factory.setBufferSize(this.bufferSize);
-			factory.setBuffersPerRegion(this.buffersPerRegion);
-			factory.setIoThreads(this.ioThreads);
-			factory.setWorkerThreads(this.workerThreads);
-			factory.setDirectBuffers(this.directBuffers);
-			factory.setAccessLogDirectory(this.accesslog.dir);
-			factory.setAccessLogPattern(this.accesslog.pattern);
-			factory.setAccessLogEnabled(this.accesslog.enabled);
+			if (this.bufferSize != null) {
+				factory.setBufferSize(this.bufferSize);
+			}
+			if (this.buffersPerRegion != null) {
+				factory.setBuffersPerRegion(this.buffersPerRegion);
+			}
+			if (this.ioThreads != null) {
+				factory.setIoThreads(this.ioThreads);
+			}
+			if (this.workerThreads != null) {
+				factory.setWorkerThreads(this.workerThreads);
+			}
+			if (this.directBuffers != null) {
+				factory.setDirectBuffers(this.directBuffers);
+			}
+			if (this.accesslog.dir != null) {
+				factory.setAccessLogDirectory(this.accesslog.dir);
+			}
+			if (this.accesslog.pattern != null) {
+				factory.setAccessLogPattern(this.accesslog.pattern);
+			}
+			if (this.accesslog.enabled != null) {
+				factory.setAccessLogEnabled(this.accesslog.enabled);
+			}
 			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
 		}
 
@@ -977,7 +993,7 @@ public class ServerProperties
 			/**
 			 * Enable access log.
 			 */
-			private boolean enabled = false;
+			private Boolean enabled;
 
 			/**
 			 * Format pattern for access logs.
@@ -989,11 +1005,11 @@ public class ServerProperties
 			 */
 			private File dir = new File("logs");
 
-			public boolean isEnabled() {
+			public Boolean getEnabled() {
 				return this.enabled;
 			}
 
-			public void setEnabled(boolean enabled) {
+			public void setEnabled(Boolean enabled) {
 				this.enabled = enabled;
 			}
 

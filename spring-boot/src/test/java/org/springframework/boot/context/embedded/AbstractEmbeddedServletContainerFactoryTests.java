@@ -335,6 +335,19 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
+	public void errorPageFromPutRequest() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.addErrorPages(new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/hello"));
+		this.container = factory.getEmbeddedServletContainer(exampleServletRegistration(),
+				errorServletRegistration());
+		this.container.start();
+		assertThat(getResponse(getLocalUrl("/hello"), HttpMethod.PUT),
+				equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/bang"), HttpMethod.PUT),
+				equalTo("Hello World"));
+	}
+
+	@Test
 	public void basicSslFromClassPath() throws Exception {
 		testBasicSslWithKeyStore("classpath:test.jks");
 	}
@@ -869,7 +882,12 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected String getResponse(String url, String... headers)
 			throws IOException, URISyntaxException {
-		ClientHttpResponse response = getClientResponse(url, headers);
+		return getResponse(url, HttpMethod.GET, headers);
+	}
+
+	protected String getResponse(String url, HttpMethod method, String... headers)
+			throws IOException, URISyntaxException {
+		ClientHttpResponse response = getClientResponse(url, method, headers);
 		try {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
 		}
@@ -881,7 +899,14 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	protected String getResponse(String url,
 			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
 					throws IOException, URISyntaxException {
-		ClientHttpResponse response = getClientResponse(url, requestFactory, headers);
+		return getResponse(url, HttpMethod.GET, requestFactory, headers);
+	}
+
+	protected String getResponse(String url, HttpMethod method,
+			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
+					throws IOException, URISyntaxException {
+		ClientHttpResponse response = getClientResponse(url, method, requestFactory,
+				headers);
 		try {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
 		}
@@ -892,21 +917,27 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected ClientHttpResponse getClientResponse(String url, String... headers)
 			throws IOException, URISyntaxException {
-		return getClientResponse(url, new HttpComponentsClientHttpRequestFactory() {
-
-			@Override
-			protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
-				return AbstractEmbeddedServletContainerFactoryTests.this.httpClientContext;
-			}
-
-		}, headers);
+		return getClientResponse(url, HttpMethod.GET, headers);
 	}
 
-	protected ClientHttpResponse getClientResponse(String url,
+	protected ClientHttpResponse getClientResponse(String url, HttpMethod method,
+			String... headers) throws IOException, URISyntaxException {
+		return getClientResponse(url, method,
+				new HttpComponentsClientHttpRequestFactory() {
+
+					@Override
+					protected HttpContext createHttpContext(HttpMethod httpMethod,
+							URI uri) {
+						return AbstractEmbeddedServletContainerFactoryTests.this.httpClientContext;
+					}
+
+				}, headers);
+	}
+
+	protected ClientHttpResponse getClientResponse(String url, HttpMethod method,
 			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
 					throws IOException, URISyntaxException {
-		ClientHttpRequest request = requestFactory.createRequest(new URI(url),
-				HttpMethod.GET);
+		ClientHttpRequest request = requestFactory.createRequest(new URI(url), method);
 		request.getHeaders().add("Cookie", "JSESSIONID=" + "123");
 		for (String header : headers) {
 			String[] parts = header.split(":");

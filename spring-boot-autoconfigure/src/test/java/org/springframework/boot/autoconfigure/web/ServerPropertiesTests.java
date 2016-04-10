@@ -48,6 +48,7 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -416,6 +417,14 @@ public class ServerPropertiesTests {
 				new JettyEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setSessionStoreDir(new File("myfolder"));
+	}
+
+	@Test
+	public void skipNullElementsForUndertow() throws Exception {
+		UndertowEmbeddedServletContainerFactory container = mock(
+				UndertowEmbeddedServletContainerFactory.class);
+		this.properties.customize(container);
+		verify(container, never()).setAccessLogEnabled(anyBoolean());
 	}
 
 	private void bindProperties(Map<String, String> map) {
