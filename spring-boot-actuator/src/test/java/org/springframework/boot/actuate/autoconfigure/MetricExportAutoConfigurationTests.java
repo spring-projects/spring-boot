@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ import org.springframework.messaging.SubscribableChannel;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link MetricExportAutoConfiguration}.
@@ -77,6 +78,7 @@ public class MetricExportAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		MetricExporters exporter = this.context.getBean(MetricExporters.class);
 		assertNotNull(exporter);
+		assertTrue(exporter.getExporters().containsKey("messageChannelMetricWriter"));
 	}
 
 	@Test
