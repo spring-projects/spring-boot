@@ -122,6 +122,8 @@ public class UndertowEmbeddedServletContainerFactory
 	private boolean accessLogEnabled = false;
 
 	private boolean useForwardHeaders;
+	
+	private String defaultEncoding = "UTF-8";
 
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainerFactory} instance.
@@ -547,6 +549,10 @@ public class UndertowEmbeddedServletContainerFactory
 
 	protected final boolean isUseForwardHeaders() {
 		return this.useForwardHeaders;
+	}
+	
+	public void setDefaultEncoding(String defaultEncoding){
+		this.defaultEncoding = defaultEncoding;
 	}
 
 	/**
