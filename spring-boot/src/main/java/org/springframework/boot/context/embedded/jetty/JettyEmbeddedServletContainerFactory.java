@@ -411,6 +411,7 @@ public class JettyEmbeddedServletContainerFactory
 			@Override
 			public void configure(WebAppContext context) throws Exception {
 				ErrorHandler errorHandler = context.getErrorHandler();
+				context.setErrorHandler(new JettyEmbeddedErrorHandler(errorHandler));
 				addJettyErrorPages(errorHandler, getErrorPages());
 			}
 
