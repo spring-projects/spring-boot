@@ -16,15 +16,19 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
+
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Tests for {@link ActiveMQProperties} and {@link ActiveMQConnectionFactoryFactory}.
  *
  * @author Stephane Nicoll
  * @author Aurélien Leboulanger
+ * @author Venil Noronha
  */
 public class ActiveMQPropertiesTests {
 
@@ -60,6 +64,26 @@ public class ActiveMQPropertiesTests {
 		this.properties.setInMemory(false);
 		assertThat(new ActiveMQConnectionFactoryFactory(this.properties)
 				.determineBrokerUrl()).isEqualTo("vm://foo-bar");
+	}
+
+	@Test
+	public void testPackagesTrustAllSetToTrue() {
+		this.properties.getPackages().setTrustAll(true);
+		assertThat(new ActiveMQConnectionFactoryFactory(this.properties)
+				.createConnectionFactory(ActiveMQConnectionFactory.class)
+				.isTrustAllPackages()).isEqualTo(true);
+	}
+
+	@Test
+	public void testPackagesToTrust() {
+		this.properties.getPackages().setTrustAll(false);
+		this.properties.getPackages().getTrusted().add("trusted.package");
+		ActiveMQConnectionFactory factory =
+			new ActiveMQConnectionFactoryFactory(this.properties)
+				.createConnectionFactory(ActiveMQConnectionFactory.class);
+		assertThat(factory.isTrustAllPackages()).isEqualTo(false);
+		assertThat(factory.getTrustedPackages().size()).isEqualTo(1);
+		assertThat(factory.getTrustedPackages().get(0)).isEqualTo("trusted.package");
 	}
 
 }

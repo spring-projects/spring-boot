@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jms.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
+import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQProperties.Packages;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -26,6 +27,7 @@ import org.springframework.util.StringUtils;
  * in {@link ActiveMQProperties}.
  *
  * @author Phillip Webb
+ * @author Venil Noronha
  * @since 1.2.0
  */
 class ActiveMQConnectionFactoryFactory {
@@ -57,11 +59,20 @@ class ActiveMQConnectionFactoryFactory {
 		String brokerUrl = determineBrokerUrl();
 		String user = this.properties.getUser();
 		String password = this.properties.getPassword();
+		T activeMqConnectionFactory;
 		if (StringUtils.hasLength(user) && StringUtils.hasLength(password)) {
-			return factoryClass.getConstructor(String.class, String.class, String.class)
+			activeMqConnectionFactory =
+				factoryClass.getConstructor(String.class, String.class, String.class)
 					.newInstance(user, password, brokerUrl);
 		}
-		return factoryClass.getConstructor(String.class).newInstance(brokerUrl);
+		else {
+			activeMqConnectionFactory =
+				factoryClass.getConstructor(String.class).newInstance(brokerUrl);
+		}
+		Packages packages = this.properties.getPackages();
+		activeMqConnectionFactory.setTrustAllPackages(packages.isTrustAll());
+		activeMqConnectionFactory.setTrustedPackages(packages.getTrusted());
+		return activeMqConnectionFactory;
 	}
 
 	String determineBrokerUrl() {
