@@ -321,14 +321,13 @@ public class JarFileTests {
 
 	@Test
 	public void createNonNestedUrlFromString() throws Exception {
-		nonNestedJarFileFromString(
-				"jar:file:" + this.rootJarFile.getAbsolutePath() + "!/2.dat");
+		nonNestedJarFileFromString("jar:" + this.rootJarFile.toURI() + "!/2.dat");
 	}
 
 	@Test
-	public void createNonNestedUrlFromStringWithDoubleSlash() throws Exception {
+	public void createNonNestedUrlFromPathString() throws Exception {
 		nonNestedJarFileFromString(
-				"jar:file://" + this.rootJarFile.getAbsolutePath() + "!/2.dat");
+				"jar:" + this.rootJarFile.toPath().toUri() + "!/2.dat");
 	}
 
 	private void nonNestedJarFileFromString(String spec) throws Exception {
