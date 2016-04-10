@@ -32,7 +32,6 @@ import javax.validation.constraints.NotNull;
 
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowOptions;
-
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
@@ -655,10 +654,11 @@ public class ServerProperties
 		/**
 		 * Get the max http header size.
 		 * @return the max http header size.
-		 * @deprecated in favor of {@code server.maxHttpHeaderSize}
+		 * @deprecated as of 1.4 in favor of
+		 * {@link ServerProperties#getMaxHttpHeaderSize()}
 		 */
 		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.maxHttpHeaderSize")
+		@DeprecatedConfigurationProperty(replacement = "server.max-http-header-size")
 		public int getMaxHttpHeaderSize() {
 			return this.maxHttpHeaderSize;
 		}
@@ -666,7 +666,8 @@ public class ServerProperties
 		/**
 		 * Set the max http header size.
 		 * @param maxHttpHeaderSize the max http header size.
-		 * @deprecated in favor of {@code server.maxHttpHeaderSize}
+		 * @deprecated as of 1.4 in favor of
+		 * {@link ServerProperties#setMaxHttpHeaderSize(int)}
 		 */
 		@Deprecated
 		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
@@ -754,11 +755,10 @@ public class ServerProperties
 			if (this.minSpareThreads > 0) {
 				customizeMinThreads(factory);
 			}
-			if (serverProperties.getMaxHttpHeaderSize() > 0) {
-				customizeMaxHttpHeaderSize(factory, serverProperties.getMaxHttpHeaderSize());
-			}
-			else if (this.maxHttpHeaderSize > 0) {
-				customizeMaxHttpHeaderSize(factory, this.maxHttpHeaderSize);
+			int maxHttpHeaderSize = (serverProperties.getMaxHttpHeaderSize() > 0
+					? serverProperties.getMaxHttpHeaderSize() : this.maxHttpHeaderSize);
+			if (maxHttpHeaderSize > 0) {
+				customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize);
 			}
 			if (serverProperties.getMaxHttpPostSize() > 0) {
 				customizeMaxHttpPostSize(factory, serverProperties.getMaxHttpPostSize());
@@ -841,7 +841,8 @@ public class ServerProperties
 
 		@SuppressWarnings("rawtypes")
 		private void customizeMaxHttpHeaderSize(
-				TomcatEmbeddedServletContainerFactory factory, final int maxHttpHeaderSize) {
+				TomcatEmbeddedServletContainerFactory factory,
+				final int maxHttpHeaderSize) {
 			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
 
 				@Override
@@ -857,12 +858,15 @@ public class ServerProperties
 		}
 
 		private void customizeMaxHttpPostSize(
-				TomcatEmbeddedServletContainerFactory factory, final int maxHttpPostSize) {
+				TomcatEmbeddedServletContainerFactory factory,
+				final int maxHttpPostSize) {
 			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+
 				@Override
 				public void customize(Connector connector) {
 					connector.setMaxPostSize(maxHttpPostSize);
 				}
+
 			});
 		}
 
@@ -952,7 +956,8 @@ public class ServerProperties
 				JettyEmbeddedServletContainerFactory factory) {
 			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
 			if (serverProperties.getMaxHttpHeaderSize() > 0) {
-				customizeMaxHttpHeaderSize(factory, serverProperties.getMaxHttpHeaderSize());
+				customizeMaxHttpHeaderSize(factory,
+						serverProperties.getMaxHttpHeaderSize());
 			}
 			if (serverProperties.getMaxHttpPostSize() > 0) {
 				customizeMaxHttpPostSize(factory, serverProperties.getMaxHttpPostSize());
@@ -960,23 +965,31 @@ public class ServerProperties
 		}
 
 		private void customizeMaxHttpHeaderSize(
-				JettyEmbeddedServletContainerFactory factory, final int maxHttpHeaderSize) {
+				JettyEmbeddedServletContainerFactory factory,
+				final int maxHttpHeaderSize) {
 			factory.addServerCustomizers(new JettyServerCustomizer() {
+
 				@Override
 				public void customize(Server server) {
-					org.eclipse.jetty.server.Connector[] connectors = server.getConnectors();
-					for (org.eclipse.jetty.server.Connector connector : connectors) {
-						for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
+					for (org.eclipse.jetty.server.Connector connector : server
+							.getConnectors()) {
+						for (ConnectionFactory connectionFactory : connector
+								.getConnectionFactories()) {
 							if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
-								HttpConfiguration httpConfig =
-									((HttpConfiguration.ConnectionFactory) connectionFactory)
-										.getHttpConfiguration();
-								httpConfig.setRequestHeaderSize(maxHttpHeaderSize);
-								httpConfig.setResponseHeaderSize(maxHttpHeaderSize);
+								customize(
+										(HttpConfiguration.ConnectionFactory) connectionFactory);
 							}
 						}
 					}
+
 				}
+
+				private void customize(HttpConfiguration.ConnectionFactory factory) {
+					HttpConfiguration configuration = factory.getHttpConfiguration();
+					configuration.setRequestHeaderSize(maxHttpHeaderSize);
+					configuration.setResponseHeaderSize(maxHttpHeaderSize);
+				}
+
 			});
 		}
 
@@ -993,7 +1006,8 @@ public class ServerProperties
 						Handler... handlers) {
 					for (Handler handler : handlers) {
 						if (handler instanceof ContextHandler) {
-							((ContextHandler) handler).setMaxFormContentSize(maxHttpPostSize);
+							((ContextHandler) handler)
+									.setMaxFormContentSize(maxHttpPostSize);
 						}
 						else if (handler instanceof HandlerWrapper) {
 							setHandlerMaxHttpPostSize(maxHttpPostSize,
@@ -1112,7 +1126,8 @@ public class ServerProperties
 			}
 			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
 			if (serverProperties.getMaxHttpHeaderSize() > 0) {
-				customizeMaxHttpHeaderSize(factory, serverProperties.getMaxHttpHeaderSize());
+				customizeMaxHttpHeaderSize(factory,
+						serverProperties.getMaxHttpHeaderSize());
 			}
 			if (serverProperties.getMaxHttpPostSize() > 0) {
 				customizeMaxHttpPostSize(factory, serverProperties.getMaxHttpPostSize());
@@ -1120,22 +1135,30 @@ public class ServerProperties
 		}
 
 		private void customizeMaxHttpHeaderSize(
-				UndertowEmbeddedServletContainerFactory factory, final int maxHttpHeaderSize) {
+				UndertowEmbeddedServletContainerFactory factory,
+				final int maxHttpHeaderSize) {
 			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
+
 				@Override
 				public void customize(Builder builder) {
-					builder.setServerOption(UndertowOptions.MAX_HEADER_SIZE, maxHttpHeaderSize);
+					builder.setServerOption(UndertowOptions.MAX_HEADER_SIZE,
+							maxHttpHeaderSize);
 				}
+
 			});
 		}
 
 		private void customizeMaxHttpPostSize(
-				UndertowEmbeddedServletContainerFactory factory, final int maxHttpPostSize) {
+				UndertowEmbeddedServletContainerFactory factory,
+				final int maxHttpPostSize) {
 			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
+
 				@Override
 				public void customize(Builder builder) {
-					builder.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, (long) maxHttpPostSize);
+					builder.setServerOption(UndertowOptions.MAX_ENTITY_SIZE,
+							(long) maxHttpPostSize);
 				}
+
 			});
 		}
 
