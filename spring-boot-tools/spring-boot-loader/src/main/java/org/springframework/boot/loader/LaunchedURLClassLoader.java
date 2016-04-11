@@ -50,7 +50,12 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	public URL findResource(String name) {
 		Handler.setUseFastConnectionExceptions(true);
 		try {
-			return super.findResource(name);
+			try {
+				return super.findResource(name);
+			}
+			catch (IllegalArgumentException ex) {
+				return null;
+			}
 		}
 		finally {
 			Handler.setUseFastConnectionExceptions(false);
