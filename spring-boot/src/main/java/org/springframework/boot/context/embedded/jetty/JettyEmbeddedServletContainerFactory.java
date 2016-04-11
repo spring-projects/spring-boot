@@ -91,6 +91,7 @@ import org.springframework.util.StringUtils;
  * @author Andrey Hihlovskiy
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Venil Noronha
  * @see #setPort(int)
  * @see #setConfigurations(Collection)
  * @see JettyEmbeddedServletContainer
@@ -107,6 +108,16 @@ public class JettyEmbeddedServletContainerFactory
 	private List<Configuration> configurations = new ArrayList<Configuration>();
 
 	private boolean useForwardHeaders;
+
+	/**
+	 * The number of acceptor threads to use.
+	 */
+	private int acceptors = -1;
+
+	/**
+	 * The number of selector threads to use.
+	 */
+	private int selectors = -1;
 
 	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<JettyServerCustomizer>();
 
@@ -143,7 +154,7 @@ public class JettyEmbeddedServletContainerFactory
 			ServletContextInitializer... initializers) {
 		JettyEmbeddedWebAppContext context = new JettyEmbeddedWebAppContext();
 		int port = (getPort() >= 0 ? getPort() : 0);
-		Server server = new Server(new InetSocketAddress(getAddress(), port));
+		Server server = createServer(port);
 		configureWebAppContext(context, initializers);
 		server.setHandler(addHandlerWrappers(context));
 		this.logger.info("Server initialized with port: " + port);
@@ -161,6 +172,21 @@ public class JettyEmbeddedServletContainerFactory
 			new ForwardHeadersCustomizer().customize(server);
 		}
 		return getJettyEmbeddedServletContainer(server);
+	}
+
+	private Server createServer(int port) {
+		Server server = new Server();
+		server.setConnectors(new Connector[] { createConnector(port, server) });
+		return server;
+	}
+
+	private ServerConnector createConnector(int port, Server server) {
+		ServerConnector connector = new ServerConnector(server, this.acceptors,
+				this.selectors);
+		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
+		connector.setHost(address.getHostName());
+		connector.setPort(address.getPort());
+		return connector;
 	}
 
 	private Handler addHandlerWrappers(Handler handler) {
@@ -487,6 +513,24 @@ public class JettyEmbeddedServletContainerFactory
 	 */
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
+	}
+
+	/**
+	 * Set the number of acceptor threads to use.
+	 * @param acceptors the number of acceptor threads to use
+	 * @since 1.4.0
+	 */
+	public void setAcceptors(int acceptors) {
+		this.acceptors = acceptors;
+	}
+
+	/**
+	 * Set the number of selector threads to use.
+	 * @param selectors the number of selector threads to use
+	 * @since 1.4.0
+	 */
+	public void setSelectors(int selectors) {
+		this.selectors = selectors;
 	}
 
 	/**

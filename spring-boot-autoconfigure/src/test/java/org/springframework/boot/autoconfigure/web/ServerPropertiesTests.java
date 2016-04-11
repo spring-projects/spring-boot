@@ -64,6 +64,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Quinten De Swaef
+ * @author Venil Noronha
  */
 public class ServerPropertiesTests {
 
@@ -258,6 +259,30 @@ public class ServerPropertiesTests {
 		map.put("server.maxHttpHeaderSize", "9999");
 		bindProperties(map);
 		assertThat(this.properties.getMaxHttpHeaderSize()).isEqualTo(9999);
+	}
+
+	@Test
+	public void testCustomizePostSize() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.maxHttpPostSize", "9999");
+		bindProperties(map);
+		assertThat(this.properties.getMaxHttpPostSize()).isEqualTo(9999);
+	}
+
+	@Test
+	public void testCustomizeJettyAcceptors() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.jetty.acceptors", "10");
+		bindProperties(map);
+		assertThat(this.properties.getJetty().getAcceptors()).isEqualTo(10);
+	}
+
+	@Test
+	public void testCustomizeJettySelectors() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.jetty.selectors", "10");
+		bindProperties(map);
+		assertThat(this.properties.getJetty().getSelectors()).isEqualTo(10);
 	}
 
 	@Test
