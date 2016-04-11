@@ -977,7 +977,7 @@ content into your application; rather pick only the properties that you need.
 	management.health.solr.enabled=true # Enable Solr health check.
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP # Comma-separated list of health statuses in order of severity.
 
-	# INFO CONTRIBUTORS
+	# INFO CONTRIBUTORS ({sc-spring-boot-actuator}/autoconfigure/InfoContributorProperties.{sc-ext}[InfoContributorProperties])
 	management.info.build.enabled=true # Enable build info.
 	management.info.build.mode=simple # Mode to use to expose build information.
 	management.info.defaults.enabled=true # Enable default info contributors.
