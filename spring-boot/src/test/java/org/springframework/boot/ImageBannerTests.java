@@ -157,7 +157,7 @@ public class ImageBannerTests {
 	}
 
 	@Test
-	public void printBannerWhenHasMarginPropertShouldPrintSizedMargin() throws Exception {
+	public void printBannerWhenHasMarginPropertyShouldPrintSizedMargin() throws Exception {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("large.gif", "banner.image.margin=4");
 		String[] lines = banner.split(NEW_LINE);

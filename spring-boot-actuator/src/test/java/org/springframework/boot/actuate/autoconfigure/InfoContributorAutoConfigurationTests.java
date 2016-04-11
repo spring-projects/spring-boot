@@ -124,8 +124,8 @@ public class InfoContributorAutoConfigurationTests {
 				this.context.getBean("buildInfoContributor", InfoContributor.class));
 		Object build = content.get("build");
 		assertThat(build).isInstanceOf(Map.class);
-		Map<String, Object> gitInfo = (Map<String, Object>) build;
-		assertThat(gitInfo).containsOnlyKeys("group", "artifact");
+		Map<String, Object> buildInfo = (Map<String, Object>) build;
+		assertThat(buildInfo).containsOnlyKeys("group", "artifact");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -136,9 +136,9 @@ public class InfoContributorAutoConfigurationTests {
 				this.context.getBean("buildInfoContributor", InfoContributor.class));
 		Object build = content.get("build");
 		assertThat(build).isInstanceOf(Map.class);
-		Map<String, Object> gitInfo = (Map<String, Object>) build;
-		assertThat(gitInfo).containsOnlyKeys("group", "artifact", "foo");
-		assertThat(gitInfo.get("foo")).isEqualTo("bar");
+		Map<String, Object> buildInfo = (Map<String, Object>) build;
+		assertThat(buildInfo).containsOnlyKeys("group", "artifact", "foo");
+		assertThat(buildInfo.get("foo")).isEqualTo("bar");
 	}
 
 	@Test
