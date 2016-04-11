@@ -505,6 +505,7 @@ content into your application; rather pick only the properties that you need.
 	spring.couchbase.env.timeouts.connect=5000 # Bucket connections timeout in milliseconds.
 	spring.couchbase.env.timeouts.key-value=2500 # Blocking operations performed on a specific key timeout in milliseconds.
 	spring.couchbase.env.timeouts.query=7500 # N1QL query operations timeout in milliseconds.
+	spring.couchbase.env.timeouts.socket-connect=1000 # Socket connect connections timeout in milliseconds.
 	spring.couchbase.env.timeouts.view=7500 # Regular and geospatial view operations timeout in milliseconds.
 
 	# DAO ({sc-spring-boot-autoconfigure}/dao/PersistenceExceptionTranslationAutoConfiguration.{sc-ext}[PersistenceExceptionTranslationAutoConfiguration])
