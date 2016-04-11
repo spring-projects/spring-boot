@@ -108,8 +108,6 @@ public class EndpointWebMvcAutoConfiguration
 	private static final Log logger = LogFactory
 			.getLog(EndpointWebMvcAutoConfiguration.class);
 
-	private static final ConfigurableListableBeanFactory BeanDefinitionRegistry = null;
-
 	private ApplicationContext applicationContext;
 
 	private BeanFactory beanFactory;

@@ -161,6 +161,7 @@ public class SpringApplicationTests {
 	}
 
 	@Test
+	@Deprecated
 	public void disableBannerWithMode() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
@@ -170,6 +171,7 @@ public class SpringApplicationTests {
 	}
 
 	@Test
+	@Deprecated
 	public void disableBannerViaBannerModeProperty() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
