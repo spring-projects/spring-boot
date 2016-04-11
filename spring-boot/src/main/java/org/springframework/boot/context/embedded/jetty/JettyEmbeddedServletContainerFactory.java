@@ -154,7 +154,8 @@ public class JettyEmbeddedServletContainerFactory
 			ServletContextInitializer... initializers) {
 		JettyEmbeddedWebAppContext context = new JettyEmbeddedWebAppContext();
 		int port = (getPort() >= 0 ? getPort() : 0);
-		Server server = createServer(port);
+		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
+		Server server = createServer(address);
 		configureWebAppContext(context, initializers);
 		server.setHandler(addHandlerWrappers(context));
 		this.logger.info("Server initialized with port: " + port);
@@ -174,19 +175,21 @@ public class JettyEmbeddedServletContainerFactory
 		return getJettyEmbeddedServletContainer(server);
 	}
 
-	private Server createServer(int port) {
+	private Server createServer(InetSocketAddress address) {
+		if (this.acceptors < 0 && this.selectors < 0) {
+			return new Server(address);
+		}
+		if (!ClassUtils.isPresent("org.eclipse.jetty.server.ServerConnector", null)) {
+			this.logger.warn("Acceptors and Selectors are not supported with Jetty 8");
+			return new Server(address);
+		}
 		Server server = new Server();
-		server.setConnectors(new Connector[] { createConnector(port, server) });
-		return server;
-	}
-
-	private ServerConnector createConnector(int port, Server server) {
 		ServerConnector connector = new ServerConnector(server, this.acceptors,
 				this.selectors);
-		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		connector.setHost(address.getHostName());
 		connector.setPort(address.getPort());
-		return connector;
+		server.setConnectors(new Connector[] { connector });
+		return server;
 	}
 
 	private Handler addHandlerWrappers(Handler handler) {
