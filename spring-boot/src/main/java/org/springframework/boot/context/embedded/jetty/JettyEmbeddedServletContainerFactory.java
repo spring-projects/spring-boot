@@ -105,6 +105,8 @@ public class JettyEmbeddedServletContainerFactory
 
 	private static final String GZIP_HANDLER_JETTY_9_3 = "org.eclipse.jetty.server.handler.gzip.GzipHandler";
 
+	private static final String CONNECTOR_JETTY_8 = "org.eclipse.jetty.server.nio.SelectChannelConnector";
+
 	private List<Configuration> configurations = new ArrayList<Configuration>();
 
 	private boolean useForwardHeaders;
@@ -176,20 +178,18 @@ public class JettyEmbeddedServletContainerFactory
 	}
 
 	private Server createServer(InetSocketAddress address) {
-		if (this.acceptors < 0 && this.selectors < 0) {
-			return new Server(address);
-		}
-		if (!ClassUtils.isPresent("org.eclipse.jetty.server.ServerConnector", null)) {
-			this.logger.warn("Acceptors and Selectors are not supported with Jetty 8");
-			return new Server(address);
-		}
 		Server server = new Server();
-		ServerConnector connector = new ServerConnector(server, this.acceptors,
-				this.selectors);
-		connector.setHost(address.getHostName());
-		connector.setPort(address.getPort());
-		server.setConnectors(new Connector[] { connector });
+		server.setConnectors(new Connector[] { createConnector(address, server) });
 		return server;
+	}
+
+	private AbstractConnector createConnector(InetSocketAddress address, Server server) {
+		if (ClassUtils.isPresent(CONNECTOR_JETTY_8, getClass().getClassLoader())) {
+			return new Jetty8ConnectorFactory().createConnector(server, address,
+					this.acceptors, this.selectors);
+		}
+		return new Jetty9ConnectorFactory().createConnector(server, address,
+				this.acceptors, this.selectors);
 	}
 
 	private Handler addHandlerWrappers(Handler handler) {
@@ -798,6 +798,62 @@ public class JettyEmbeddedServletContainerFactory
 				response.setHeader(SERVER_HEADER, this.value);
 			}
 			super.handle(target, baseRequest, request, response);
+		}
+
+	}
+
+	private interface ConnectorFactory {
+
+		AbstractConnector createConnector(Server server, InetSocketAddress address,
+				int acceptors, int selectors);
+
+	}
+
+	private static class Jetty8ConnectorFactory implements ConnectorFactory {
+
+		@Override
+		public AbstractConnector createConnector(Server server, InetSocketAddress address,
+				int acceptors, int selectors) {
+			try {
+				Class<?> connectorClass = ClassUtils.forName(CONNECTOR_JETTY_8,
+						getClass().getClassLoader());
+				AbstractConnector connector = (AbstractConnector) connectorClass
+						.newInstance();
+				ReflectionUtils.findMethod(connectorClass, "setPort", int.class)
+						.invoke(connector, address.getPort());
+				ReflectionUtils.findMethod(connectorClass, "setHost", String.class)
+						.invoke(connector, address.getHostName());
+				if (acceptors > 0) {
+					ReflectionUtils.findMethod(connectorClass, "setAcceptors", int.class)
+							.invoke(connector, acceptors);
+				}
+				if (selectors > 0) {
+					Object selectorManager = ReflectionUtils
+							.findMethod(connectorClass, "getSelectorManager")
+							.invoke(connector);
+					ReflectionUtils.findMethod(selectorManager.getClass(),
+							"setSelectSets", int.class)
+							.invoke(selectorManager, selectors);
+				}
+
+				return connector;
+			}
+			catch (Exception ex) {
+				throw new RuntimeException("Failed to configure Jetty 8 connector", ex);
+			}
+		}
+
+	}
+
+	private static class Jetty9ConnectorFactory implements ConnectorFactory {
+
+		@Override
+		public AbstractConnector createConnector(Server server, InetSocketAddress address,
+				int acceptors, int selectors) {
+			ServerConnector connector = new ServerConnector(server, acceptors, selectors);
+			connector.setHost(address.getHostName());
+			connector.setPort(address.getPort());
+			return connector;
 		}
 
 	}
