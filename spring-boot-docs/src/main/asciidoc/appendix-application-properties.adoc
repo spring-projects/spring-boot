@@ -196,6 +196,8 @@ content into your application; rather pick only the properties that you need.
 	server.ssl.trust-store-password= #
 	server.ssl.trust-store-provider= #
 	server.ssl.trust-store-type= #
+	server.jetty.acceptors=-1 # The number of acceptor threads to use.
+	server.jetty.selectors=-1 # The number of selector threads to use.
 	server.tomcat.accesslog.directory=logs # Directory in which log files are created. Can be relative to the tomcat base dir or absolute.
 	server.tomcat.accesslog.enabled=false # Enable access log.
 	server.tomcat.accesslog.pattern=common # Format pattern for access logs.
@@ -767,7 +769,7 @@ content into your application; rather pick only the properties that you need.
 	spring.activemq.password= # Login password of the broker.
 	spring.activemq.user= # Login user of the broker.
     spring.activemq.packages.trust-all=false # Trust all packages
-    spring.activemq.packages.trusted= # Comma-separated list of packages to trust (when not trusting all packages).
+    spring.activemq.packages.trusted= # Comma-separated list of specific packages to trust (when not trusting all packages).
 	spring.activemq.pool.configuration.*= # See PooledConnectionFactory
 	spring.activemq.pool.enabled=false # Whether a PooledConnectionFactory should be created instead of a regular ConnectionFactory.
     spring.activemq.pool.expiry-timeout=0 # Connection expiration timeout in milliseconds.
