@@ -124,10 +124,12 @@ public class CouchbaseAutoConfigurationTests
 
 	@Test
 	public void customizeEnvWithCustomCouchbaseConfiguration() {
-		load(CustomCouchbaseConfiguration.class, "spring.couchbase.bootstrap-hosts=localhost",
+		load(CustomCouchbaseConfiguration.class,
+				"spring.couchbase.bootstrap-hosts=localhost",
 				"spring.couchbase.env.timeouts.connect=100");
 		assertThat(this.context.getBeansOfType(CouchbaseConfiguration.class)).hasSize(1);
-		DefaultCouchbaseEnvironment env = this.context.getBean(DefaultCouchbaseEnvironment.class);
+		DefaultCouchbaseEnvironment env = this.context
+				.getBean(DefaultCouchbaseEnvironment.class);
 		assertThat(env.socketConnectTimeout()).isEqualTo(5000);
 		assertThat(env.connectTimeout()).isEqualTo(2000);
 	}
@@ -136,8 +138,7 @@ public class CouchbaseAutoConfigurationTests
 			throws Exception {
 		load(CouchbaseTestConfigurer.class, environment);
 		CouchbaseProperties properties = this.context.getBean(CouchbaseProperties.class);
-		return new CouchbaseConfiguration(
-				properties).couchbaseEnvironment();
+		return new CouchbaseConfiguration(properties).couchbaseEnvironment();
 	}
 
 	@Configuration
@@ -149,7 +150,8 @@ public class CouchbaseAutoConfigurationTests
 		}
 
 		@Override
-		protected DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties) {
+		protected DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(
+				CouchbaseProperties properties) {
 			return super.initializeEnvironmentBuilder(properties)
 					.socketConnectTimeout(5000).connectTimeout(2000);
 		}

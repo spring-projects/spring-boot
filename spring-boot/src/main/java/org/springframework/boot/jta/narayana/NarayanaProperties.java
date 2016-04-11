@@ -48,7 +48,7 @@ public class NarayanaProperties {
 	private String transactionManagerId = "1";
 
 	/**
-	 * Enable one phase commit optimisation.
+	 * Enable one phase commit optimization.
 	 */
 	private boolean onePhaseCommit = true;
 

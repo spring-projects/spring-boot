@@ -50,7 +50,7 @@ import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 public class CouchbaseAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnMissingBean({CouchbaseConfigurer.class, CouchbaseConfiguration.class})
+	@ConditionalOnMissingBean({ CouchbaseConfigurer.class, CouchbaseConfiguration.class })
 	public static class CouchbaseConfiguration {
 
 		private final CouchbaseProperties properties;
@@ -91,9 +91,10 @@ public class CouchbaseAutoConfiguration {
 		/**
 		 * Initialize an environment builder based on the specified settings.
 		 * @param properties the couchbase properties to use
-		 * @return a {@link DefaultCouchbaseEnvironment.Builder}
+		 * @return the {@link DefaultCouchbaseEnvironment} builder.
 		 */
-		protected DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties) {
+		protected DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(
+				CouchbaseProperties properties) {
 			CouchbaseProperties.Endpoints endpoints = properties.getEnv().getEndpoints();
 			CouchbaseProperties.Timeouts timeouts = properties.getEnv().getTimeouts();
 			DefaultCouchbaseEnvironment.Builder builder = DefaultCouchbaseEnvironment
