@@ -128,7 +128,7 @@ public class BuildInfo extends DefaultTask {
 
 	private Map<String, String> coerceToStringValues(Map<String, Object> input) {
 		Map<String, String> output = new HashMap<String, String>();
-		for (Entry<String, Object> entry : this.additionalProperties.entrySet()) {
+		for (Entry<String, Object> entry : input.entrySet()) {
 			output.put(entry.getKey(), entry.getValue().toString());
 		}
 		return output;
