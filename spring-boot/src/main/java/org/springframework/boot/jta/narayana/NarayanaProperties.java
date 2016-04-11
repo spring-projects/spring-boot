@@ -17,6 +17,7 @@
 package org.springframework.boot.jta.narayana;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -42,85 +43,68 @@ public class NarayanaProperties {
 	private String logDir;
 
 	/**
-	 * Unique transaction manager id. Default: 1.
+	 * Unique transaction manager id.
 	 */
 	private String transactionManagerId = "1";
 
 	/**
-	 * Enable one phase commit optimisation. Default: <code>true</code>.
+	 * Enable one phase commit optimisation.
 	 */
 	private boolean onePhaseCommit = true;
 
 	/**
-	 * Transaction timeout in seconds. Default: <code>60</code>.
+	 * Transaction timeout in seconds.
 	 */
 	private int defaultTimeout = 60;
 
 	/**
-	 * Interval in which periodic recovery scans are performed in seconds. Default:
-	 * <code>120</code>
+	 * Interval in which periodic recovery scans are performed in seconds.
 	 */
 	private int periodicRecoveryPeriod = 120;
 
 	/**
 	 * Back off period between first and second phases of the recovery scan in seconds.
-	 * Default: <code>10</code>
 	 */
 	private int recoveryBackoffPeriod = 10;
 
 	/**
-	 * Database username to be used by recovery manager. Default: <code>null</code>
+	 * Database username to be used by recovery manager.
 	 */
 	private String recoveryDbUser = null;
 
 	/**
-	 * Database password to be used by recovery manager. Default: <code>null</code>
+	 * Database password to be used by recovery manager.
 	 */
 	private String recoveryDbPass = null;
 
 	/**
-	 * JMS username to be used by recovery manager. Default: <code>null</code>
+	 * JMS username to be used by recovery manager.
 	 */
 	private String recoveryJmsUser = null;
 
 	/**
-	 * JMS password to be used by recovery manager. Default: <code>null</code>
+	 * JMS password to be used by recovery manager.
 	 */
 	private String recoveryJmsPass = null;
 
 	/**
-	 * List of orphan filters. Default:
-	 * <ul>
-	 * <li>com.arjuna.ats.internal.jta.recovery.arjunacore.
-	 * JTATransactionLogXAResourceOrphanFilter</li>
-	 * <li>
-	 * com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter
-	 * </li>
-	 * </ul>
+	 * Comma-separated list of of orphan filters.
 	 */
 	private List<String> xaResourceOrphanFilters = Arrays.asList(
 			"com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter",
 			"com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter");
 
 	/**
-	 * List of recovery modules. Default:
-	 * <ul>
-	 * <li>com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule</li>
-	 * <li>com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule</li>
-	 * </ul>
+	 * Comma-separated list of recovery modules.
 	 */
 	private List<String> recoveryModules = Arrays.asList(
 			"com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule",
 			"com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule");
 
 	/**
-	 * List of expiry scanners. Default:
-	 * <ul>
-	 * <li>com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner
-	 * </li>
-	 * </ul>
+	 * Comma-separated list of expiry scanners.
 	 */
-	private List<String> expiryScanners = Arrays.asList(
+	private List<String> expiryScanners = Collections.singletonList(
 			"com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner");
 
 	public String getLogDir() {

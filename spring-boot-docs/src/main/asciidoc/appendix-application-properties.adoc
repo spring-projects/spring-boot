@@ -114,7 +114,7 @@ content into your application; rather pick only the properties that you need.
 	spring.mandatory-file-encoding= # Expected character encoding the application must use.
 
 	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])
-    spring.messages.always-use-message-format=false # Set whether to always apply the MessageFormat rules, parsing even messages without arguments.
+	spring.messages.always-use-message-format=false # Set whether to always apply the MessageFormat rules, parsing even messages without arguments.
 	spring.messages.basename=messages # Comma-separated list of basenames, each following the ResourceBundle convention.
 	spring.messages.cache-seconds=-1 # Loaded resource bundle files cache expiration, in seconds. When set to -1, bundles are cached forever.
 	spring.messages.encoding=UTF-8 # Message bundles encoding.
@@ -184,18 +184,19 @@ content into your application; rather pick only the properties that you need.
 	server.session.tracking-modes= # Session tracking modes (one or more of the following: "cookie", "url", "ssl").
 	server.ssl.ciphers= # Supported SSL ciphers.
 	server.ssl.client-auth= # Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store.
-	server.ssl.enabled= #
-	server.ssl.key-alias= #
-	server.ssl.key-password= #
-	server.ssl.key-store= #
-	server.ssl.key-store-password= #
-	server.ssl.key-store-provider= #
-	server.ssl.key-store-type= #
-	server.ssl.protocol= #
-	server.ssl.trust-store= #
-	server.ssl.trust-store-password= #
-	server.ssl.trust-store-provider= #
-	server.ssl.trust-store-type= #
+	server.ssl.enabled= # Enable SSL support.
+	server.ssl.enabled-protocols= # Enabled SSL protocols.
+	server.ssl.key-alias= # Alias that identifies the key in the key store.
+	server.ssl.key-password= # Password used to access the key in the key store.
+	server.ssl.key-store= # Path to the key store that holds the SSL certificate (typically a jks file).
+	server.ssl.key-store-password= # Password used to access the key store.
+	server.ssl.key-store-provider= # Provider for the key store.
+	server.ssl.key-store-type= # Type of the key store.
+	server.ssl.protocol=TLS # SSL protocol to use.
+	server.ssl.trust-store= # Trust store that holds SSL certificates.
+	server.ssl.trust-store-password= # Password used to access the trust store.
+	server.ssl.trust-store-provider= # Provider for the trust store.
+	server.ssl.trust-store-type= # Type of the trust store.
 	server.tomcat.accesslog.directory=logs # Directory in which log files are created. Can be relative to the tomcat base dir or absolute.
 	server.tomcat.accesslog.enabled=false # Enable access log.
 	server.tomcat.accesslog.pattern=common # Format pattern for access logs.
@@ -276,6 +277,7 @@ content into your application; rather pick only the properties that you need.
 
 	# JACKSON ({sc-spring-boot-autoconfigure}/jackson/JacksonProperties.{sc-ext}[JacksonProperties])
 	spring.jackson.date-format= # Date format string or a fully-qualified date format class name. For instance `yyyy-MM-dd HH:mm:ss`.
+	spring.jackson.default-property-inclusion= # Controls the inclusion of properties during serialization.
 	spring.jackson.deserialization.*= # Jackson on/off features that affect the way Java objects are deserialized.
 	spring.jackson.generator.*= # Jackson on/off features for generators.
 	spring.jackson.joda-date-time-format= # Joda date time format string. If not configured, "date-format" will be used as a fallback if it is configured with a format string.
@@ -308,12 +310,18 @@ content into your application; rather pick only the properties that you need.
 	spring.mobile.sitepreference.enabled=true # Enable SitePreferenceHandler.
 
 	# MUSTACHE TEMPLATES ({sc-spring-boot-autoconfigure}/mustache/MustacheAutoConfiguration.{sc-ext}[MustacheAutoConfiguration])
-	spring.mustache.cache=false # Enable template caching.
-	spring.mustache.charset=UTF-8 # Template encoding.
-	spring.mustache.check-template-location=true # Check that the templates location exists.
-	spring.mustache.content-type=text/html # Content-Type value.
-	spring.mustache.enabled=true # Enable MVC view resolution for this technology.
+	spring.mustache.allow-request-override= # Set whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
+	spring.mustache.allow-session-override= # Set whether HttpSession attributes are allowed to override (hide) controller generated model attributes of the same name.
+	spring.mustache.cache= # Enable template caching.
+	spring.mustache.charset= # Template encoding.
+	spring.mustache.check-template-location= # Check that the templates location exists.
+	spring.mustache.content-type= # Content-Type value.
+	spring.mustache.enabled= # Enable MVC view resolution for this technology.
+	spring.mustache.expose-request-attributes= # Set whether all request attributes should be added to the model prior to merging with the template.
+	spring.mustache.expose-session-attributes= # Set whether all HttpSession attributes should be added to the model prior to merging with the template.
+	spring.mustache.expose-spring-macro-helpers= # Set whether to expose a RequestContext for use by Spring's macro library, under the name "springMacroRequestContext".
 	spring.mustache.prefix=classpath:/templates/ # Prefix to apply to template names.
+	spring.mustache.request-context-attribute= # Name of the RequestContext attribute for all views.
 	spring.mustache.suffix=.html # Suffix to apply to template names.
 	spring.mustache.view-names= # White list of view names that can be resolved.
 
@@ -480,6 +488,7 @@ content into your application; rather pick only the properties that you need.
 	liquibase.labels= # Comma-separated list of runtime labels to use.
 	liquibase.parameters.*= # Change log parameters.
 	liquibase.password= # Login password of the database to migrate.
+	liquibase.rollback-file= # File to which rollback SQL will be written when an update is performed.
 	liquibase.url= # JDBC url of the database to migrate. If not set, the primary configured data source is used.
 	liquibase.user= # Login user of the database to migrate.
 
@@ -521,8 +530,8 @@ content into your application; rather pick only the properties that you need.
 
 	# DATA COUCHBASE ({sc-spring-boot-autoconfigure}/data/couchbase/CouchbaseDataProperties.{sc-ext}[CouchbaseDataProperties])
 	spring.data.couchbase.auto-index=false # Automatically create views and indexes.
-    spring.data.couchbase.consistency=read-your-own-writes # Consistency to apply by default on generated queries.
-    spring.data.couchbase.repositories.enabled=true # Enable Couchbase repositories.
+	spring.data.couchbase.consistency=read-your-own-writes # Consistency to apply by default on generated queries.
+	spring.data.couchbase.repositories.enabled=true # Enable Couchbase repositories.
 
 	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties])
 	spring.data.elasticsearch.cluster-name=elasticsearch # Elasticsearch cluster name.
@@ -546,13 +555,13 @@ content into your application; rather pick only the properties that you need.
 	spring.data.redis.repositories.enabled=true # Enable Redis repositories.
 
 	# NEO4J ({sc-spring-boot-autoconfigure}/neo4j/Neo4jProperties.{sc-ext}[Neo4jProperties])
-    spring.data.neo4j.compiler= # Compiler to use.
-    spring.data.neo4j.embedded.enabled=true # Enable embedded mode if the embedded driver is available.
-    spring.data.neo4j.password= # Login password of the server.
-    spring.data.neo4j.repositories.enabled=true # Enable Neo4j repositories.
-    spring.data.neo4j.session.scope=singleton # Scope (lifetime) of the session.
-    spring.data.neo4j.uri= # URI used by the driver. Auto-detected by default.
-    spring.data.neo4j.username= # Login user of the server.
+	spring.data.neo4j.compiler= # Compiler to use.
+	spring.data.neo4j.embedded.enabled=true # Enable embedded mode if the embedded driver is available.
+	spring.data.neo4j.password= # Login password of the server.
+	spring.data.neo4j.repositories.enabled=true # Enable Neo4j repositories.
+	spring.data.neo4j.session.scope=singleton # Scope (lifetime) of the session.
+	spring.data.neo4j.uri= # URI used by the driver. Auto-detected by default.
+	spring.data.neo4j.username= # Login user of the server.
 
 	# DATA REST ({sc-spring-boot-autoconfigure}/data/rest/RepositoryRestProperties.{sc-ext}[RepositoryRestProperties])
 	spring.data.rest.base-path= # Base path to be used by Spring Data REST to expose repository resources.
@@ -606,15 +615,18 @@ content into your application; rather pick only the properties that you need.
 	spring.jpa.database-platform= # Name of the target database to operate on, auto-detected by default. Can be alternatively set using the "Database" enum.
 	spring.jpa.generate-ddl=false # Initialize the schema on startup.
 	spring.jpa.hibernate.ddl-auto= # DDL mode. This is actually a shortcut for the "hibernate.hbm2ddl.auto" property. Default to "create-drop" when using an embedded database, "none" otherwise.
-	spring.jpa.hibernate.naming-strategy= # Naming strategy fully qualified name.
+	spring.jpa.hibernate.naming.implicit-strategy= # Hibernate 5 implicit naming strategy fully qualified name.
+	spring.jpa.hibernate.naming.physical-strategy= # Hibernate 5 physical naming strategy fully qualified name.
+	spring.jpa.hibernate.naming.strategy= # Hibernate 4 naming strategy fully qualified name. Not supported with Hibernate 5.
+	spring.jpa.hibernate.use-new-id-generator-mappings= # Use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE.
 	spring.jpa.open-in-view=true # Register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the thread for the entire processing of the request.
 	spring.jpa.properties.*= # Additional native properties to set on the JPA provider.
 	spring.jpa.show-sql=false # Enable logging of SQL statements.
 
 	# JTA ({sc-spring-boot-autoconfigure}/transaction/jta/JtaAutoConfiguration.{sc-ext}[JtaAutoConfiguration])
 	spring.jta.enabled=true # Enable JTA support.
-    spring.jta.log-dir= # Transaction logs directory.
-    spring.jta.transaction-manager-id= # Transaction manager unique identifier.
+	spring.jta.log-dir= # Transaction logs directory.
+	spring.jta.transaction-manager-id= # Transaction manager unique identifier.
 
 	# ATOMIKOS
 	spring.jta.atomikos.connectionfactory.borrow-connection-timeout=30 # Timeout, in seconds, for borrowing connections from the pool.
@@ -699,40 +711,42 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.bitronix.datasource.unique-name=dataSource # The unique name used to identify the resource during recovery.
 	spring.jta.bitronix.datasource.use-tm-join=true Whether or not TMJOIN should be used when starting XAResources.
 	spring.jta.bitronix.properties.allow-multiple-lrc=false # Allow multiple LRC resources to be enlisted into the same transaction.
-    spring.jta.bitronix.properties.asynchronous2-pc=false # Enable asynchronously execution of two phase commit.
-    spring.jta.bitronix.properties.background-recovery-interval-seconds=60 # Interval in seconds at which to run the recovery process in the background.
-    spring.jta.bitronix.properties.current-node-only-recovery=true # Recover only the current node.
-    spring.jta.bitronix.properties.debug-zero-resource-transaction=false # Log the creation and commit call stacks of transactions executed without a single enlisted resource.
-    spring.jta.bitronix.properties.default-transaction-timeout=60 # Default transaction timeout in seconds.
-    spring.jta.bitronix.properties.disable-jmx=false # Enable JMX support.
-    spring.jta.bitronix.properties.exception-analyzer= # Set the fully qualified name of the exception analyzer implementation to use.
-    spring.jta.bitronix.properties.filter-log-status=false # Enable filtering of logs so that only mandatory logs are written.
-    spring.jta.bitronix.properties.force-batching-enabled=true #  Set if disk forces are batched.
-    spring.jta.bitronix.properties.forced-write-enabled=true # Set if logs are forced to disk.
-    spring.jta.bitronix.properties.graceful-shutdown-interval=60 # Maximum amount of seconds the TM will wait for transactions to get done before aborting them at shutdown time.
-    spring.jta.bitronix.properties.jndi-transaction-synchronization-registry-name= # JNDI name of the TransactionSynchronizationRegistry.
-    spring.jta.bitronix.properties.jndi-user-transaction-name= # JNDI name of the UserTransaction.
-    spring.jta.bitronix.properties.journal=disk # Name of the journal. Can be 'disk', 'null' or a class name.
-    spring.jta.bitronix.properties.log-part1-filename=btm1.tlog # Name of the first fragment of the journal.
-    spring.jta.bitronix.properties.log-part2-filename=btm2.tlog # Name of the second fragment of the journal.
-    spring.jta.bitronix.properties.max-log-size-in-mb=2 # Maximum size in megabytes of the journal fragments.
-    spring.jta.bitronix.properties.resource-configuration-filename= # ResourceLoader configuration file name.
-    spring.jta.bitronix.properties.server-id= # ASCII ID that must uniquely identify this TM instance. Default to the machine's IP address.
-    spring.jta.bitronix.properties.skip-corrupted-logs=false # Skip corrupted transactions log entries.
-    spring.jta.bitronix.properties.warn-about-zero-resource-transaction=true # Log a warning for transactions executed without a single enlisted resource.
+	spring.jta.bitronix.properties.asynchronous2-pc=false # Enable asynchronously execution of two phase commit.
+	spring.jta.bitronix.properties.background-recovery-interval-seconds=60 # Interval in seconds at which to run the recovery process in the background.
+	spring.jta.bitronix.properties.current-node-only-recovery=true # Recover only the current node.
+	spring.jta.bitronix.properties.debug-zero-resource-transaction=false # Log the creation and commit call stacks of transactions executed without a single enlisted resource.
+	spring.jta.bitronix.properties.default-transaction-timeout=60 # Default transaction timeout in seconds.
+	spring.jta.bitronix.properties.disable-jmx=false # Enable JMX support.
+	spring.jta.bitronix.properties.exception-analyzer= # Set the fully qualified name of the exception analyzer implementation to use.
+	spring.jta.bitronix.properties.filter-log-status=false # Enable filtering of logs so that only mandatory logs are written.
+	spring.jta.bitronix.properties.force-batching-enabled=true #  Set if disk forces are batched.
+	spring.jta.bitronix.properties.forced-write-enabled=true # Set if logs are forced to disk.
+	spring.jta.bitronix.properties.graceful-shutdown-interval=60 # Maximum amount of seconds the TM will wait for transactions to get done before aborting them at shutdown time.
+	spring.jta.bitronix.properties.jndi-transaction-synchronization-registry-name= # JNDI name of the TransactionSynchronizationRegistry.
+	spring.jta.bitronix.properties.jndi-user-transaction-name= # JNDI name of the UserTransaction.
+	spring.jta.bitronix.properties.journal=disk # Name of the journal. Can be 'disk', 'null' or a class name.
+	spring.jta.bitronix.properties.log-part1-filename=btm1.tlog # Name of the first fragment of the journal.
+	spring.jta.bitronix.properties.log-part2-filename=btm2.tlog # Name of the second fragment of the journal.
+	spring.jta.bitronix.properties.max-log-size-in-mb=2 # Maximum size in megabytes of the journal fragments.
+	spring.jta.bitronix.properties.resource-configuration-filename= # ResourceLoader configuration file name.
+	spring.jta.bitronix.properties.server-id= # ASCII ID that must uniquely identify this TM instance. Default to the machine's IP address.
+	spring.jta.bitronix.properties.skip-corrupted-logs=false # Skip corrupted transactions log entries.
+	spring.jta.bitronix.properties.warn-about-zero-resource-transaction=true # Log a warning for transactions executed without a single enlisted resource.
 
-    # NARAYANA
-    spring.jta.narayana.default-timeout=60 # Set default transaction timeout in seconds
-    spring.jta.narayana.expiry-scanners=com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner # List of ExpiryScanner implementations
-    spring.jta.narayana.one-phase-commit=true # Enable or disable one phase commit optimisation
-    spring.jta.narayana.periodic-recovery-period=120 # Set interval in which periodic recovery scans are performed in seconds
-    spring.jta.narayana.recovery-backoff-period=10 # Set back off period between first and second phases of the recovery scan in seconds
-    spring.jta.narayana.recovery-db-user= # Database username to be used by recovery manager
-    spring.jta.narayana.recovery-db-pass= # Database password to be used by recovery manager
-    spring.jta.narayana.recovery-jms-user= # JMS username to be used by recovery manager
-    spring.jta.narayana.recovery-jms-pass= # JMS password to be used by recovery manager
-    spring.jta.narayana.recovery-modules=com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule,com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule # List of RecoveryModule implementations
-    spring.jta.narayana.xa-resource-orphan-filters=com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter,com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter # List of XAResourceOrphanFilter implementations
+	# NARAYANA
+	spring.jta.narayana.default-timeout=60 # Transaction timeout in seconds.
+	spring.jta.narayana.expiry-scanners=com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner # Comma-separated list of expiry scanners.
+	spring.jta.narayana.log-dir= # Transaction object store directory.
+	spring.jta.narayana.one-phase-commit=true # Enable one phase commit optimisation.
+	spring.jta.narayana.periodic-recovery-period=120 # Interval in which periodic recovery scans are performed in seconds.
+	spring.jta.narayana.recovery-backoff-period=10 # Back off period between first and second phases of the recovery scan in seconds.
+	spring.jta.narayana.recovery-db-pass= # Database password to be used by recovery manager.
+	spring.jta.narayana.recovery-db-user= # Database username to be used by recovery manager.
+	spring.jta.narayana.recovery-jms-pass= # JMS password to be used by recovery manager.
+	spring.jta.narayana.recovery-jms-user= # JMS username to be used by recovery manager.
+	spring.jta.narayana.recovery-modules= # Comma-separated list of recovery modules.
+	spring.jta.narayana.transaction-manager-id=1 # Unique transaction manager id.
+	spring.jta.narayana.xa-resource-orphan-filters= # Comma-separated list of of orphan filters.
 
 	# EMBEDDED MONGODB ({sc-spring-boot-autoconfigure}/mongo/embedded/EmbeddedMongoProperties.{sc-ext}[EmbeddedMongoProperties])
 	spring.mongodb.embedded.features=SYNC_DELAY # Comma-separated list of features to enable.
@@ -766,13 +780,13 @@ content into your application; rather pick only the properties that you need.
 	spring.activemq.in-memory=true # Specify if the default broker URL should be in memory. Ignored if an explicit broker has been specified.
 	spring.activemq.password= # Login password of the broker.
 	spring.activemq.user= # Login user of the broker.
-    spring.activemq.packages.trust-all=false # Trust all packages
-    spring.activemq.packages.trusted= # Comma-separated list of packages to trust (when not trusting all packages).
+	spring.activemq.packages.trust-all=false # Trust all packages
+	spring.activemq.packages.trusted= # Comma-separated list of specific packages to trust (when not trusting all packages).
 	spring.activemq.pool.configuration.*= # See PooledConnectionFactory
 	spring.activemq.pool.enabled=false # Whether a PooledConnectionFactory should be created instead of a regular ConnectionFactory.
-    spring.activemq.pool.expiry-timeout=0 # Connection expiration timeout in milliseconds.
-    spring.activemq.pool.idle-timeout=30000 # Connection idle timeout in milliseconds.
-    spring.activemq.pool.max-connections=1 # Maximum number of pooled connections.
+	spring.activemq.pool.expiry-timeout=0 # Connection expiration timeout in milliseconds.
+	spring.activemq.pool.idle-timeout=30000 # Connection idle timeout in milliseconds.
+	spring.activemq.pool.max-connections=1 # Maximum number of pooled connections.
 
 	# ARTEMIS ({sc-spring-boot-autoconfigure}/jms/artemis/ArtemisProperties.{sc-ext}[ArtemisProperties])
 	spring.artemis.embedded.cluster-password= # Cluster password. Randomly generated on startup by default.

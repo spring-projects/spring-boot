@@ -92,7 +92,7 @@ public class LiquibaseProperties {
 	private Map<String, String> parameters;
 
 	/**
-	 * The file to which rollback SQL will be written when an update is performed.
+	 * File to which rollback SQL will be written when an update is performed.
 	 */
 	private File rollbackFile;
 
