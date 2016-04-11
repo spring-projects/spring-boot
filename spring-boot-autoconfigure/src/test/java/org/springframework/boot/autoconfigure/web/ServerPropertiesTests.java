@@ -260,7 +260,7 @@ public class ServerPropertiesTests {
 		bindProperties(map);
 		assertThat(this.properties.getMaxHttpHeaderSize()).isEqualTo(9999);
 	}
-	
+
 	@Test
 	public void testCustomizePostSize() throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
