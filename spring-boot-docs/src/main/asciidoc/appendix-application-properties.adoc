@@ -218,6 +218,8 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.protocol-header-https-value=https # Value of the protocol header that indicates that the incoming request uses SSL.
 	server.tomcat.remote-ip-header= # Name of the http header from which the remote ip is extracted. For instance `X-FORWARDED-FOR`
 	server.tomcat.uri-encoding=UTF-8 # Character encoding to use to decode the URI.
+	server.jetty.acceptors= # Number of acceptor threads to use.
+	server.jetty.selectors= # Number of selector threads to use.
 	server.undertow.accesslog.dir= # Undertow access log directory.
 	server.undertow.accesslog.enabled=false # Enable access log.
 	server.undertow.accesslog.pattern=common # Format pattern for access logs.
