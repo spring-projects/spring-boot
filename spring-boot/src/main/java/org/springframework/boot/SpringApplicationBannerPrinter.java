@@ -55,7 +55,7 @@ class SpringApplicationBannerPrinter {
 		this.fallbackBanner = fallbackBanner;
 	}
 
-	public void print(Environment environment, Class<?> sourceClass, Log logger) {
+	public Banner print(Environment environment, Class<?> sourceClass, Log logger) {
 		Banner banner = getBanner(environment, this.fallbackBanner);
 		try {
 			logger.info(createStringFromBanner(banner, environment, sourceClass));
@@ -63,11 +63,13 @@ class SpringApplicationBannerPrinter {
 		catch (UnsupportedEncodingException ex) {
 			logger.warn("Failed to create String for banner", ex);
 		}
+		return banner;
 	}
 
-	public void print(Environment environment, Class<?> sourceClass, PrintStream out) {
+	public Banner print(Environment environment, Class<?> sourceClass, PrintStream out) {
 		Banner banner = getBanner(environment, this.fallbackBanner);
 		banner.printBanner(environment, sourceClass, out);
+		return banner;
 	}
 
 	private Banner getBanner(Environment environment, Banner definedBanner) {
