@@ -536,10 +536,10 @@ public class SpringApplication {
 	}
 
 	private Banner printBanner(ConfigurableEnvironment environment) {
-		if (printBannerViaDeprecatedMethod(environment)) {
+		if (this.bannerMode == Banner.Mode.OFF) {
 			return null;
 		}
-		if (this.bannerMode == Banner.Mode.OFF) {
+		if (printBannerViaDeprecatedMethod(environment)) {
 			return null;
 		}
 		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
