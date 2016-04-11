@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
+import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Michael Stummvoll
+ * @author Michael Simons
  */
 public class BannerTests {
 
@@ -72,6 +74,49 @@ public class BannerTests {
 		application.setBanner(new DummyBanner());
 		this.context = application.run();
 		assertThat(this.out.toString()).contains("My Banner");
+	}
+
+	@Test
+	public void testBannerInContext() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		assertThat(this.context.containsBean("springBootBanner")).isTrue();
+	}
+
+	@Test
+	public void testCustomBannerInContext() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		final DummyBanner dummyBanner = new DummyBanner();
+		application.setBanner(dummyBanner);
+		this.context = application.run();
+		assertThat(this.context.getBean("springBootBanner")).isEqualTo(dummyBanner);
+	}
+
+	@Test
+	public void testDisableBannerInContext() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setBannerMode(Mode.OFF);
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		assertThat(this.context.containsBean("springBootBanner")).isFalse();
+	}
+
+	@Test
+	public void testDeprecatePrintBanner() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class) {
+
+			@Override
+			protected void printBanner(Environment environment) {
+				System.out.println("I printed a deprecated banner");
+			};
+
+		};
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		assertThat(this.out.toString()).contains("I printed a deprecated banner");
+		assertThat(this.context.containsBean("springBootBanner")).isFalse();
 	}
 
 	static class DummyBanner implements Banner {

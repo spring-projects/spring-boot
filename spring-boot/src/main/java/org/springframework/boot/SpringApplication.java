@@ -139,6 +139,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Stephane Nicoll
  * @author Jeremy Rickard
  * @author Craig Burke
+ * @author Michael Simons
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -199,6 +200,8 @@ public class SpringApplication {
 	private boolean addCommandLineProperties = true;
 
 	private Banner banner;
+
+	private boolean printedCustomBannerViaDeprecatedMethod;
 
 	private ResourceLoader resourceLoader;
 
@@ -304,11 +307,10 @@ public class SpringApplication {
 					args);
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
-			if (this.bannerMode != Banner.Mode.OFF) {
-				printBanner(environment);
-			}
+			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
-			prepareContext(context, environment, listeners, applicationArguments);
+			prepareContext(context, environment, listeners, applicationArguments,
+					printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			listeners.finished(context, null);
@@ -340,7 +342,7 @@ public class SpringApplication {
 
 	private void prepareContext(ConfigurableApplicationContext context,
 			ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
-			ApplicationArguments applicationArguments) {
+			ApplicationArguments applicationArguments, Banner printedBanner) {
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
 		applyInitializers(context);
@@ -353,6 +355,9 @@ public class SpringApplication {
 		// Add boot specific singleton beans
 		context.getBeanFactory().registerSingleton("springApplicationArguments",
 				applicationArguments);
+		if (printedBanner != null) {
+			context.getBeanFactory().registerSingleton("springBootBanner", printedBanner);
+		}
 
 		// Load the sources
 		Set<Object> sources = getSources();
@@ -530,6 +535,29 @@ public class SpringApplication {
 		environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
 	}
 
+	private Banner printBanner(ConfigurableEnvironment environment) {
+		if (printBannerViaDeprecatedMethod(environment)) {
+			return null;
+		}
+		if (this.bannerMode == Banner.Mode.OFF) {
+			return null;
+		}
+		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
+				: new DefaultResourceLoader(getClassLoader());
+		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(
+				resourceLoader, this.banner);
+		if (this.bannerMode == Mode.LOG) {
+			return bannerPrinter.print(environment, this.mainApplicationClass, logger);
+		}
+		return bannerPrinter.print(environment, this.mainApplicationClass, System.out);
+	}
+
+	private boolean printBannerViaDeprecatedMethod(Environment environment) {
+		this.printedCustomBannerViaDeprecatedMethod = true;
+		printBanner(environment);
+		return this.printedCustomBannerViaDeprecatedMethod;
+	}
+
 	/**
 	 * Print a custom banner message to the console, optionally extracting its location or
 	 * content from the Environment (banner.location and banner.charset). The defaults are
@@ -537,18 +565,11 @@ public class SpringApplication {
 	 * not exist or cannot be printed, a simple default is created.
 	 * @param environment the environment
 	 * @see #setBannerMode
+	 * @deprecated as of 1.4 in favor of @{@link #setBanner(Banner)}
 	 */
+	@Deprecated
 	protected void printBanner(Environment environment) {
-		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
-				: new DefaultResourceLoader(getClassLoader());
-		SpringApplicationBannerPrinter banner = new SpringApplicationBannerPrinter(resourceLoader,
-				this.banner);
-		if (this.bannerMode == Mode.LOG) {
-			banner.print(environment, this.mainApplicationClass, logger);
-		}
-		else {
-			banner.print(environment, this.mainApplicationClass, System.out);
-		}
+		this.printedCustomBannerViaDeprecatedMethod = false;
 	}
 
 	/**

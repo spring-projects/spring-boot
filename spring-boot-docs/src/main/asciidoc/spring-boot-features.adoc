@@ -94,6 +94,9 @@ You can also use the `spring.main.banner-mode` property to determine if the bann
 to be printed on `System.out` (`console`), using the configured logger (`log`) or not
 at all (`off`).
 
+The printed banner will be registered as a singleton bean under the name
+`springBootBanner`.
+
 [NOTE]
 ====
 YAML maps `off` to `false` so make sure to add quotes if you want to disable the
