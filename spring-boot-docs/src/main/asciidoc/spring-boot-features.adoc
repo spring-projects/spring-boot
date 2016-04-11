@@ -4442,13 +4442,18 @@ to load. Alternatively, you might have often used nested `@Configuration` classe
 your test.
 
 When testing Spring Boot applications this is often not required.
-Spring Boot's `@*Test` annotations will search for your primary configuration automatically
-whenever you don't explicitly defined one.
+Spring Boot's `@*Test` annotations will search for your primary configuration
+automatically whenever you don't explicitly define one.
 
 The search algorithm works up from the package that contains the test until it finds a
 `@SpringBootApplication` or `@SpringBootConfiguration` annotated class. As long as you've
 <<using-boot-structuring-your-code, structure your code>> in a sensible way your main
 configuration is usually found.
+
+If you want to customize the primary configuration, you can use a nested
+`@TestConfiguration` class. Unlike a nested `@Configuration` class which would be used
+instead of a your application's primary configuration, a nested `@TestConfiguration` class
+will be used in addition to your application's primary configuration.
 
 NOTE: Spring's test framework will cache application contexts between tests. Therefore, as
 long as your tests share the same configuration (no matter how it's discovered), the
