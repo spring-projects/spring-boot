@@ -678,10 +678,11 @@ profile, and it would have to be explicitly reset in all other profiles as neces
 	    password: weak
 ----
 
-Spring profiles designated using the "spring.profiles" element may optionally be
-negated using the {@code !} character. If both negated and non-negated profiles
-are specified for a single document, at least one non-negated profile must match
-and no negated profiles may match.
+Spring profiles designated using the "spring.profiles" element may optionally be negated
+using the {@code !} character. If both negated and non-negated profiles are specified for
+a single document, at least one non-negated profile must match and no negated profiles
+may match.
+
 
 
 [[boot-features-external-config-yaml-shortcomings]]

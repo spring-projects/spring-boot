@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,8 @@ package org.springframework.boot.yaml;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import org.springframework.beans.factory.config.YamlProcessor.DocumentMatcher;
 import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
@@ -39,10 +35,12 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Matt Benson
+ * @author Phillip Webb
  */
 public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
 	private static final String[] DEFAULT_PROFILES = new String[] { "^\\s*$" };
+
 	private static final String SPRING_PROFILES = "spring.profiles";
 
 	private String[] activeProfiles = new String[0];
@@ -63,62 +61,52 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
 	@Override
 	public MatchStatus matches(Properties properties) {
+		DocumentMatcher activeProfilesMatcher = getActiveProfilesDocumentMatcher();
+		String profiles = properties.getProperty(SPRING_PROFILES);
+		String negative = extractProfiles(profiles, ProfileType.NEGATIVE);
+		String positive = extractProfiles(profiles, ProfileType.POSITIVE);
+		if (StringUtils.hasLength(negative)) {
+			properties = new Properties(properties);
+			properties.setProperty(SPRING_PROFILES, negative);
+			switch (activeProfilesMatcher.matches(properties)) {
+			case FOUND:
+				return MatchStatus.NOT_FOUND;
+			case NOT_FOUND:
+				return MatchStatus.FOUND;
+			}
+			properties.setProperty(SPRING_PROFILES, positive);
+		}
+		return activeProfilesMatcher.matches(properties);
+	}
+
+	private DocumentMatcher getActiveProfilesDocumentMatcher() {
 		String[] profiles = this.activeProfiles;
 		if (profiles.length == 0) {
 			profiles = DEFAULT_PROFILES;
 		}
-		ArrayDocumentMatcher next = new ArrayDocumentMatcher(SPRING_PROFILES, profiles);
-
-		if (properties.containsKey(SPRING_PROFILES)) {
-			properties = new Properties(properties);
-
-			Map<Boolean, String> sortedProfiles = sortProfiles(
-					properties.getProperty(SPRING_PROFILES));
-
-			// handle negated profiles:
-			if (sortedProfiles.containsKey(Boolean.FALSE)) {
-				properties.setProperty(SPRING_PROFILES,
-						sortedProfiles.get(Boolean.FALSE));
-
-				MatchStatus matchStatus = next.matches(properties);
-				switch (matchStatus) {
-				case FOUND:
-					return MatchStatus.NOT_FOUND;
-				case NOT_FOUND:
-					return MatchStatus.FOUND;
-				default:
-					break;
-				}
-			}
-			properties.setProperty(SPRING_PROFILES, sortedProfiles.get(Boolean.TRUE));
-		}
-		return next.matches(properties);
+		return new ArrayDocumentMatcher(SPRING_PROFILES, profiles);
 	}
 
-	private Map<Boolean, String> sortProfiles(String value) {
-		if (value.indexOf('!') >= 0) {
-			Set<String> positive = new HashSet<String>();
-			Set<String> negative = new HashSet<String>();
-			for (String s : StringUtils.commaDelimitedListToSet(value)) {
-				if (s.charAt(0) == '!') {
-					negative.add(s.substring(1));
-				}
-				else {
-					positive.add(s);
-				}
+	private String extractProfiles(String profiles, ProfileType type) {
+		if (profiles == null) {
+			return null;
+		}
+		StringBuilder result = new StringBuilder();
+		for (String candidate : StringUtils.commaDelimitedListToSet(profiles)) {
+			ProfileType candidateType = ProfileType.POSITIVE;
+			if (candidate.startsWith("!")) {
+				candidateType = ProfileType.NEGATIVE;
 			}
-			if (!negative.isEmpty()) {
-				Map<Boolean, String> result = new HashMap<Boolean, String>();
-				result.put(Boolean.FALSE,
-						StringUtils.collectionToCommaDelimitedString(negative));
-				if (!positive.isEmpty()) {
-					result.put(Boolean.TRUE,
-							StringUtils.collectionToCommaDelimitedString(positive));
-				}
-				return result;
+			if (candidateType == type) {
+				result.append(result.length() > 0 ? "," : "");
+				result.append(candidate.substring(type == ProfileType.POSITIVE ? 0 : 1));
 			}
 		}
-		return Collections.singletonMap(Boolean.TRUE, value);
+		return result.toString();
+	}
+
+	enum ProfileType {
+		POSITIVE, NEGATIVE
 	}
 
 }
