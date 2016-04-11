@@ -402,7 +402,7 @@ public class ServerProperties
 		return this.tomcat;
 	}
 
-	private Jetty getJetty() {
+	public Jetty getJetty() {
 		return this.jetty;
 	}
 
@@ -950,11 +950,39 @@ public class ServerProperties
 
 	}
 
-	private static class Jetty {
+	public static class Jetty {
+
+		/**
+		 * The number of acceptor threads to use.
+		 */
+		private Integer acceptors = -1;
+
+		/**
+		 * The number of selector threads to use.
+		 */
+		private Integer selectors = -1;
+
+		public Integer getAcceptors() {
+			return this.acceptors;
+		}
+
+		public void setAcceptors(Integer acceptors) {
+			this.acceptors = acceptors;
+		}
+
+		public Integer getSelectors() {
+			return this.selectors;
+		}
+
+		public void setSelectors(Integer selectors) {
+			this.selectors = selectors;
+		}
 
 		void customizeJetty(ServerProperties serverProperties,
 				JettyEmbeddedServletContainerFactory factory) {
 			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
+			factory.setAcceptors(this.acceptors);
+			factory.setSelectors(this.selectors);
 			if (serverProperties.getMaxHttpHeaderSize() > 0) {
 				customizeMaxHttpHeaderSize(factory,
 						serverProperties.getMaxHttpHeaderSize());
