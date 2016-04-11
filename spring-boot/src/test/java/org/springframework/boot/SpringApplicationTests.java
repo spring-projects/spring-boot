@@ -1129,7 +1129,7 @@ public class SpringApplicationTests {
 		@Override
 		public Resource getResource(String path) {
 			Resource resource = this.resources.get(path);
-			return (resource == null ? new ClassPathResource("doesnotexit") : resource);
+			return (resource == null ? new ClassPathResource("doesnotexist") : resource);
 		}
 
 		@Override

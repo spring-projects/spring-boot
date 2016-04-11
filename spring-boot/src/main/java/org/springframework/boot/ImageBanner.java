@@ -94,18 +94,18 @@ public class ImageBanner implements Banner {
 		PropertyResolver properties = new RelaxedPropertyResolver(environment,
 				"banner.image.");
 		int width = properties.getProperty("width", Integer.class, 76);
-		int heigth = properties.getProperty("height", Integer.class, 0);
+		int height = properties.getProperty("height", Integer.class, 0);
 		int margin = properties.getProperty("margin", Integer.class, 2);
 		boolean invert = properties.getProperty("invert", Boolean.class, false);
-		BufferedImage image = readImage(width, heigth);
+		BufferedImage image = readImage(width, height);
 		printBanner(image, margin, invert, out);
 	}
 
-	private BufferedImage readImage(int width, int heigth) throws IOException {
+	private BufferedImage readImage(int width, int height) throws IOException {
 		InputStream inputStream = this.image.getInputStream();
 		try {
 			BufferedImage image = ImageIO.read(inputStream);
-			return resizeImage(image, width, heigth);
+			return resizeImage(image, width, height);
 		}
 		finally {
 			inputStream.close();
