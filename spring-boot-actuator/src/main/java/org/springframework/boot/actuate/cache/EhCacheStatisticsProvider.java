@@ -48,8 +48,8 @@ public class EhCacheStatisticsProvider implements CacheStatisticsProvider<EhCach
 
 	private double cacheHitRatio(StatisticsGateway stats) {
 		long hitCount = stats.cacheHitCount();
-		long cacheMissCount = stats.cacheMissCount();
-		return ((double) hitCount) / (hitCount + cacheMissCount);
+		long missCount = stats.cacheMissCount();
+		return ((double) hitCount) / (hitCount + missCount);
 	}
 
 }
