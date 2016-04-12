@@ -183,22 +183,13 @@ public class JettyEmbeddedServletContainerFactory
 
 	private Server createServer(InetSocketAddress address) {
 		Server server;
-		try {
-			server = new Server(getThreadPool());
-			server.setConnectors(new Connector[] { createConnector(address, server) });
+		if (ClassUtils.hasConstructor(Server.class, ThreadPool.class)) {
+			server = new Jetty9ServerFactory().createServer(getThreadPool());
 		}
-		catch (NoSuchMethodError e) {
-			// Jetty 8 has different API
-			server = new Server(address);
-			try {
-				ReflectionUtils.findMethod(Server.class, "setThreadPool", ThreadPool.class)
-						.invoke(server, getThreadPool());
-			}
-			catch (Exception e1) {
-				throw new RuntimeException("Failed to configure Jetty 8 ThreadPool", e);
-			}
+		else {
+			server = new Jetty8ServerFactory().createServer(getThreadPool());
 		}
-
+		server.setConnectors(new Connector[] { createConnector(address, server) });
 		return server;
 	}
 
@@ -891,6 +882,39 @@ public class JettyEmbeddedServletContainerFactory
 			connector.setHost(address.getHostName());
 			connector.setPort(address.getPort());
 			return connector;
+		}
+
+	}
+
+	private interface ServerFactory {
+
+		Server createServer(ThreadPool threadPool);
+
+	}
+
+	private static class Jetty8ServerFactory implements ServerFactory {
+
+		@Override
+		public Server createServer(ThreadPool threadPool) {
+			Server server = new Server();
+			try {
+				ReflectionUtils.findMethod(Server.class, "setThreadPool", ThreadPool.class)
+						.invoke(server, threadPool);
+			}
+			catch (Exception e) {
+				throw new RuntimeException("Failed to configure Jetty 8 ThreadPool", e);
+			}
+			return server;
+		}
+
+	}
+
+	private static class Jetty9ServerFactory implements ServerFactory {
+
+		@Override
+		public Server createServer(ThreadPool threadPool) {
+			Server server = new Server(threadPool);
+			return server;
 		}
 
 	}
