@@ -99,7 +99,7 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 		return new OAuth2Authentication(request, token);
 	}
 
-	private Object getPrincipal(Map<String, Object> map) {
+	protected Object getPrincipal(Map<String, Object> map) {
 		for (String key : PRINCIPAL_KEYS) {
 			if (map.containsKey(key)) {
 				return map.get(key);
