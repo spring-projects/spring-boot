@@ -763,18 +763,14 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	public void portClashOfPrimaryConnectorResultsInPortInUseException()
 			throws IOException {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-
-		final int port = SocketUtils.findAvailableTcpPort(40000);
-
-		factory.setPort(port);
-
-		this.container = factory.getEmbeddedServletContainer();
-
-		doWithBlockedPort(port, new Runnable() {
+		doWithBlockedPort(new BlockedPortAction() {
 
 			@Override
-			public void run() {
+			public void run(int port) {
 				try {
+					factory.setPort(port);
+					AbstractEmbeddedServletContainerFactoryTests.this.container = factory
+							.getEmbeddedServletContainer();
 					AbstractEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
@@ -784,25 +780,21 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			}
 
 		});
-
 	}
 
 	@Test
 	public void portClashOfSecondaryConnectorResultsInPortInUseException()
 			throws IOException {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		factory.setPort(SocketUtils.findAvailableTcpPort(40000));
-
-		final int port = SocketUtils.findAvailableTcpPort(40000);
-
-		addConnector(port, factory);
-		this.container = factory.getEmbeddedServletContainer();
-
-		doWithBlockedPort(port, new Runnable() {
+		doWithBlockedPort(new BlockedPortAction() {
 
 			@Override
-			public void run() {
+			public void run(int port) {
 				try {
+					AbstractEmbeddedServletContainerFactory factory = getFactory();
+					factory.setPort(SocketUtils.findAvailableTcpPort(40000));
+					addConnector(port, factory);
+					AbstractEmbeddedServletContainerFactoryTests.this.container = factory
+							.getEmbeddedServletContainer();
 					AbstractEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
@@ -998,12 +990,19 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		return bean;
 	}
 
-	protected final void doWithBlockedPort(final int port, Runnable action)
-			throws IOException {
+	protected final void doWithBlockedPort(BlockedPortAction action) throws IOException {
+		int port = SocketUtils.findAvailableTcpPort(40000);
 		ServerSocket serverSocket = new ServerSocket();
-		serverSocket.bind(new InetSocketAddress(port));
+		for (int i = 0; i < 10; i++) {
+			try {
+				serverSocket.bind(new InetSocketAddress(port));
+				break;
+			}
+			catch (Exception ex) {
+			}
+		}
 		try {
-			action.run();
+			action.run(port);
 		}
 		finally {
 			serverSocket.close();
@@ -1050,5 +1049,11 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}
 
 	};
+
+	public interface BlockedPortAction {
+
+		void run(int port);
+
+	}
 
 }
