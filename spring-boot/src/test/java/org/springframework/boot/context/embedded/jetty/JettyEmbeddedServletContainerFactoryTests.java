@@ -259,26 +259,23 @@ public class JettyEmbeddedServletContainerFactoryTests
 	}
 
 	@Test
-	public void threadPool() throws Exception {
+	public void defaultThreadPool() throws Exception {
 		JettyEmbeddedServletContainerFactory factory = getFactory();
-
-		ThreadPool threadPool = mock(ThreadPool.class);
-		factory.setThreadPool(threadPool);
-
-		JettyEmbeddedServletContainer servletContainer = (JettyEmbeddedServletContainer) factory.getEmbeddedServletContainer();
-		assertThat(servletContainer.getServer().getThreadPool()).isSameAs(threadPool);
+		factory.setThreadPool(null);
+		assertThat(factory.getThreadPool()).isNull();
+		JettyEmbeddedServletContainer servletContainer = (JettyEmbeddedServletContainer) factory
+				.getEmbeddedServletContainer();
+		assertThat(servletContainer.getServer().getThreadPool()).isNotNull();
 	}
 
 	@Test
-	public void nullThreadPool() throws Exception {
+	public void customThreadPool() throws Exception {
 		JettyEmbeddedServletContainerFactory factory = getFactory();
-
-		factory.setThreadPool(null);
-
-		assertThat(factory.getThreadPool()).isNull();
-
-		JettyEmbeddedServletContainer servletContainer = (JettyEmbeddedServletContainer) factory.getEmbeddedServletContainer();
-		assertThat(servletContainer.getServer().getThreadPool()).isNotNull();
+		ThreadPool threadPool = mock(ThreadPool.class);
+		factory.setThreadPool(threadPool);
+		JettyEmbeddedServletContainer servletContainer = (JettyEmbeddedServletContainer) factory
+				.getEmbeddedServletContainer();
+		assertThat(servletContainer.getServer().getThreadPool()).isSameAs(threadPool);
 	}
 
 	@Override

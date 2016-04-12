@@ -913,8 +913,7 @@ public class JettyEmbeddedServletContainerFactory
 
 		@Override
 		public Server createServer(ThreadPool threadPool) {
-			Server server = new Server(threadPool);
-			return server;
+			return new Server(threadPool);
 		}
 
 	}
