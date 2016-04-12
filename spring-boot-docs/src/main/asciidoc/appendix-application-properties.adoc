@@ -164,6 +164,8 @@ content into your application; rather pick only the properties that you need.
 	server.error.include-stacktrace=never # When to include a "stacktrace" attribute.
 	server.error.path=/error # Path of the error controller.
 	server.error.whitelabel.enabled=true # Enable the default error page displayed in browsers in case of a server error.
+	server.jetty.acceptors= # Number of acceptor threads to use.
+	server.jetty.selectors= # Number of selector threads to use.
 	server.jsp-servlet.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet.
 	server.jsp-servlet.init-parameters.*= # Init parameters used to configure the JSP servlet
 	server.jsp-servlet.registered=true # Whether or not the JSP servlet is registered
@@ -218,8 +220,6 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.protocol-header-https-value=https # Value of the protocol header that indicates that the incoming request uses SSL.
 	server.tomcat.remote-ip-header= # Name of the http header from which the remote ip is extracted. For instance `X-FORWARDED-FOR`
 	server.tomcat.uri-encoding=UTF-8 # Character encoding to use to decode the URI.
-	server.jetty.acceptors= # Number of acceptor threads to use.
-	server.jetty.selectors= # Number of selector threads to use.
 	server.undertow.accesslog.dir= # Undertow access log directory.
 	server.undertow.accesslog.enabled=false # Enable access log.
 	server.undertow.accesslog.pattern=common # Format pattern for access logs.
