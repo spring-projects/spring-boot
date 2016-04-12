@@ -56,6 +56,7 @@ import org.eclipse.jetty.servlets.gzip.GzipHandler;
 import org.eclipse.jetty.util.resource.JarResource;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -92,6 +93,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Venil Noronha
+ * @author Henri Kerola
  * @see #setPort(int)
  * @see #setConfigurations(Collection)
  * @see JettyEmbeddedServletContainer
@@ -124,6 +126,8 @@ public class JettyEmbeddedServletContainerFactory
 	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<JettyServerCustomizer>();
 
 	private ResourceLoader resourceLoader;
+
+	private ThreadPool threadPool;
 
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainerFactory} instance.
@@ -178,7 +182,13 @@ public class JettyEmbeddedServletContainerFactory
 	}
 
 	private Server createServer(InetSocketAddress address) {
-		Server server = new Server();
+		Server server;
+		if (ClassUtils.hasConstructor(Server.class, ThreadPool.class)) {
+			server = new Jetty9ServerFactory().createServer(getThreadPool());
+		}
+		else {
+			server = new Jetty8ServerFactory().createServer(getThreadPool());
+		}
 		server.setConnectors(new Connector[] { createConnector(address, server) });
 		return server;
 	}
@@ -596,6 +606,24 @@ public class JettyEmbeddedServletContainerFactory
 		this.configurations.addAll(Arrays.asList(configurations));
 	}
 
+	/**
+	 * Returns a Jetty {@link ThreadPool} that should be used by the {@link Server}.
+	 * @return a Jetty {@link ThreadPool} or {@code null}
+	 */
+	public ThreadPool getThreadPool() {
+		return this.threadPool;
+	}
+
+	/**
+	 * Set a Jetty {@link ThreadPool} that should be used by the {@link Server}.
+	 * If set to {@code null} (default), the {@link Server} creates
+	 * a {@link ThreadPool} implicitly.
+	 * @param threadPool a Jetty ThreadPool to be used
+	 */
+	public void setThreadPool(ThreadPool threadPool) {
+		this.threadPool = threadPool;
+	}
+
 	private void addJettyErrorPages(ErrorHandler errorHandler,
 			Collection<ErrorPage> errorPages) {
 		if (errorHandler instanceof ErrorPageErrorHandler) {
@@ -854,6 +882,39 @@ public class JettyEmbeddedServletContainerFactory
 			connector.setHost(address.getHostName());
 			connector.setPort(address.getPort());
 			return connector;
+		}
+
+	}
+
+	private interface ServerFactory {
+
+		Server createServer(ThreadPool threadPool);
+
+	}
+
+	private static class Jetty8ServerFactory implements ServerFactory {
+
+		@Override
+		public Server createServer(ThreadPool threadPool) {
+			Server server = new Server();
+			try {
+				ReflectionUtils.findMethod(Server.class, "setThreadPool", ThreadPool.class)
+						.invoke(server, threadPool);
+			}
+			catch (Exception e) {
+				throw new RuntimeException("Failed to configure Jetty 8 ThreadPool", e);
+			}
+			return server;
+		}
+
+	}
+
+	private static class Jetty9ServerFactory implements ServerFactory {
+
+		@Override
+		public Server createServer(ThreadPool threadPool) {
+			Server server = new Server(threadPool);
+			return server;
 		}
 
 	}
