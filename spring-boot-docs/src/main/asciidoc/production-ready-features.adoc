@@ -494,7 +494,7 @@ The example below contributes an `example` entry with a single value:
 	}
 ----
 
-if you hit the `info` endpoint you should see a response that contains the following
+If you hit the `info` endpoint you should see a response that contains the following
 additional entry:
 
 [source,json,indent=0]
