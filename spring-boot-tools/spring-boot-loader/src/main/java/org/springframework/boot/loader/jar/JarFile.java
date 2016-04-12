@@ -259,6 +259,7 @@ public class JarFile extends java.util.jar.JarFile {
 	private JarFile createJarFileFromDirectoryEntry(JarEntry entry) throws IOException {
 		final AsciiBytes sourceName = new AsciiBytes(entry.getName());
 		JarEntryFilter filter = new JarEntryFilter() {
+
 			@Override
 			public AsciiBytes apply(AsciiBytes name) {
 				if (name.startsWith(sourceName) && !name.equals(sourceName)) {
@@ -266,6 +267,7 @@ public class JarFile extends java.util.jar.JarFile {
 				}
 				return null;
 			}
+
 		};
 		return new JarFile(this.rootFile,
 				this.pathFromRoot + "!/"
