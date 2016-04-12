@@ -343,7 +343,9 @@ public class RelaxedDataBinder extends DataBinder {
 			return;
 		}
 		Object extend = new LinkedHashMap<String, Object>();
-		if (!elementDescriptor.isMap() && path.isArrayIndex(index + 1)) {
+		if (!elementDescriptor.isMap() &&
+			(((path.size() > (index + 1)) && path.isArrayIndex(index + 1)) ||
+			((path.size() == (index + 1)) && path.isArrayIndex(index)))) {
 			extend = new ArrayList<Object>();
 		}
 		wrapper.setPropertyValue(path.prefix(index + 1), extend);
@@ -589,6 +591,10 @@ public class RelaxedDataBinder extends DataBinder {
 
 		public boolean isProperty(int index) {
 			return this.nodes.get(index) instanceof PropertyNode;
+		}
+
+		public int size() {
+			return this.nodes.size();
 		}
 
 		@Override
