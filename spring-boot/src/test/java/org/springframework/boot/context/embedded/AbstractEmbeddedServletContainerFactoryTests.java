@@ -762,12 +762,12 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void portClashOfPrimaryConnectorResultsInPortInUseException()
 			throws IOException {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		doWithBlockedPort(new BlockedPortAction() {
 
 			@Override
 			public void run(int port) {
 				try {
+					AbstractEmbeddedServletContainerFactory factory = getFactory();
 					factory.setPort(port);
 					AbstractEmbeddedServletContainerFactoryTests.this.container = factory
 							.getEmbeddedServletContainer();
