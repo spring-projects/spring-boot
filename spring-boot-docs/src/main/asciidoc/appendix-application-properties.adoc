@@ -844,7 +844,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.listener.default-requeue-rejected= # Whether or not to requeue delivery failures; default `true`.
 	spring.rabbitmq.listener.max-concurrency= # Maximum number of consumers.
 	spring.rabbitmq.listener.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
-	spring.rabbitmq.listener.retry.enabled= # Whether or not publishing retries are enabled.
+	spring.rabbitmq.listener.retry.enabled=false # Whether or not publishing retries are enabled.
 	spring.rabbitmq.listener.retry.initial-interval=1000 # Interval between the first and second attempt to deliver a message.
 	spring.rabbitmq.listener.retry.max-attempts=3 # Maximum number of attempts to deliver a message.
 	spring.rabbitmq.listener.retry.max-interval=10000 # Maximum number of attempts to deliver a message.
@@ -864,7 +864,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.template.mandatory=false # Enable mandatory messages.
 	spring.rabbitmq.template.receive-timeout=0 # Timeout for `receive()` methods.
 	spring.rabbitmq.template.reply-timeout=5000 # Timeout for `sendAndReceive()` methods.
-	spring.rabbitmq.template.retry.enabled= # Set to true to enable retries in the `RabbitTemplate`.
+	spring.rabbitmq.template.retry.enabled=false # Set to true to enable retries in the `RabbitTemplate`.
 	spring.rabbitmq.template.retry.initial-interval=1000 # Interval between the first and second attempt to publish a message.
 	spring.rabbitmq.template.retry.max-attempts=3 # Maximum number of attempts to publish a message.
 	spring.rabbitmq.template.retry.max-interval=10000 # Maximum number of attempts to publish a message.

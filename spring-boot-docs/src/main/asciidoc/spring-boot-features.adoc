@@ -3527,7 +3527,7 @@ Generic caching is used if the context defines _at least_ one
 [[boot-features-caching-provider-jcache]]
 ==== JCache
 JCache is bootstrapped via the presence of a `javax.cache.spi.CachingProvider` on the
-classpath (i.e. a JSR-107 compliant caching library). It might happen that more that one
+classpath (i.e. a JSR-107 compliant caching library). It might happen that more than one
 provider is present, in which case the provider must be explicitly specified. Even if the
 JSR-107 standard does not enforce a standardized way to define the location of the
 configuration file, Spring Boot does its best to accommodate with implementation details.
@@ -4095,14 +4095,14 @@ Then you can use in any `@RabbitListener`-annotated method as follows:
 
 You can enable retries to handle situations where your listener throws an exception.
 When retries are exhausted, the message will be rejected and either dropped or routed to a dead-letter exchange
-if the broker is so configured.
+if the broker is configured so.
 Retries are disabled by default.
 
 IMPORTANT: If retries are not enabled and the listener throws an exception, by default the delivery will be retried
 indefinitely.
 You can modify this behavior in two ways; set the `defaultRequeueRejected` property to `false` and zero redeliveries
 will be attempted; or, throw an `AmqpRejectAndDontRequeueException` to signal the message should be rejected.
-This is the mechanism used when retries are enabled and the maximum delivery attempts is reached.
+This is the mechanism used when retries are enabled and the maximum delivery attempts are reached.
 
 
 
