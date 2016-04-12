@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -40,8 +39,11 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @ConditionalOnProperty(prefix = "spring.http.encoding", value = "enabled", matchIfMissing = true)
 public class HttpEncodingAutoConfiguration {
 
-	@Autowired
-	private HttpEncodingProperties httpEncodingProperties;
+	private final HttpEncodingProperties httpEncodingProperties;
+
+	public HttpEncodingAutoConfiguration(HttpEncodingProperties httpEncodingProperties) {
+		this.httpEncodingProperties = httpEncodingProperties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(CharacterEncodingFilter.class)

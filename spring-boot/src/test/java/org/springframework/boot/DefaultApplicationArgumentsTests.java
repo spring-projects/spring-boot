@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,8 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DefaultApplicationArguments}.
@@ -51,47 +49,44 @@ public class DefaultApplicationArgumentsTests {
 	@Test
 	public void getArgs() throws Exception {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
-		assertThat(arguments.getSourceArgs(), equalTo(ARGS));
+		assertThat(arguments.getSourceArgs()).isEqualTo(ARGS);
 	}
 
 	@Test
 	public void optionNames() throws Exception {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
 		Set<String> expected = new HashSet<String>(Arrays.asList("foo", "debug"));
-		assertThat(arguments.getOptionNames(), equalTo(expected));
+		assertThat(arguments.getOptionNames()).isEqualTo(expected);
 	}
 
 	@Test
 	public void containsOption() throws Exception {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
-		assertThat(arguments.containsOption("foo"), equalTo(true));
-		assertThat(arguments.containsOption("debug"), equalTo(true));
-		assertThat(arguments.containsOption("spring"), equalTo(false));
+		assertThat(arguments.containsOption("foo")).isTrue();
+		assertThat(arguments.containsOption("debug")).isTrue();
+		assertThat(arguments.containsOption("spring")).isFalse();
 	}
 
 	@Test
 	public void getOptionValues() throws Exception {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
-		assertThat(arguments.getOptionValues("foo"),
-				equalTo(Arrays.asList("bar", "baz")));
-		assertThat(arguments.getOptionValues("debug"),
-				equalTo(Collections.<String>emptyList()));
-		assertThat(arguments.getOptionValues("spring"), equalTo(null));
+		assertThat(arguments.getOptionValues("foo"))
+				.isEqualTo(Arrays.asList("bar", "baz"));
+		assertThat(arguments.getOptionValues("debug")).isEmpty();
+		assertThat(arguments.getOptionValues("spring")).isNull();
 	}
 
 	@Test
 	public void getNonOptionArgs() throws Exception {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
-		assertThat(arguments.getNonOptionArgs(),
-				equalTo(Arrays.asList("spring", "boot")));
+		assertThat(arguments.getNonOptionArgs()).containsExactly("spring", "boot");
 	}
 
 	@Test
 	public void getNoNonOptionArgs() throws Exception {
 		ApplicationArguments arguments = new DefaultApplicationArguments(
 				new String[] { "--debug" });
-		assertThat(arguments.getNonOptionArgs(),
-				equalTo(Collections.<String>emptyList()));
+		assertThat(arguments.getNonOptionArgs()).isEmpty();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,7 @@ import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
 import org.springframework.util.FileSystemUtils;
 
-import static org.hamcrest.Matchers.hasItems;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link WarLauncher}
@@ -61,28 +59,23 @@ public class WarLauncherTests {
 		webInfLib.mkdirs();
 		File webInfLibFoo = new File(webInfLib, "foo.jar");
 		new JarOutputStream(new FileOutputStream(webInfLibFoo)).close();
-
 		WarLauncher launcher = new WarLauncher(new ExplodedArchive(warRoot, true));
 		List<Archive> archives = launcher.getClassPathArchives();
-		assertEquals(2, archives.size());
-
-		assertThat(getUrls(archives), hasItems(webInfClasses.toURI().toURL(),
-				new URL("jar:" + webInfLibFoo.toURI().toURL() + "!/")));
+		assertThat(archives).hasSize(2);
+		assertThat(getUrls(archives)).containsOnly(webInfClasses.toURI().toURL(),
+				new URL("jar:" + webInfLibFoo.toURI().toURL() + "!/"));
 	}
 
 	@Test
 	public void archivedWarHasOnlyWebInfClassesAndContentsOfWebInfLibOnClasspath()
 			throws Exception {
 		File warRoot = createWarArchive();
-
 		WarLauncher launcher = new WarLauncher(new JarFileArchive(warRoot));
 		List<Archive> archives = launcher.getClassPathArchives();
-		assertEquals(2, archives.size());
-
-		assertThat(getUrls(archives),
-				hasItems(new URL("jar:" + warRoot.toURI().toURL()
-						+ "!/WEB-INF/classes!/"),
-				new URL("jar:" + warRoot.toURI().toURL() + "!/WEB-INF/lib/foo.jar!/")));
+		assertThat(archives).hasSize(2);
+		assertThat(getUrls(archives)).containsOnly(
+				new URL("jar:" + warRoot.toURI().toURL() + "!/WEB-INF/classes!/"),
+				new URL("jar:" + warRoot.toURI().toURL() + "!/WEB-INF/lib/foo.jar!/"));
 	}
 
 	private Set<URL> getUrls(List<Archive> archives) throws MalformedURLException {
@@ -96,14 +89,11 @@ public class WarLauncherTests {
 	private File createWarArchive() throws IOException, FileNotFoundException {
 		File warRoot = new File("target/archive.war");
 		warRoot.delete();
-
 		JarOutputStream jarOutputStream = new JarOutputStream(
 				new FileOutputStream(warRoot));
-
 		jarOutputStream.putNextEntry(new JarEntry("WEB-INF/"));
 		jarOutputStream.putNextEntry(new JarEntry("WEB-INF/classes/"));
 		jarOutputStream.putNextEntry(new JarEntry("WEB-INF/lib/"));
-
 		JarEntry webInfLibFoo = new JarEntry("WEB-INF/lib/foo.jar");
 		webInfLibFoo.setMethod(ZipEntry.STORED);
 		ByteArrayOutputStream fooJarStream = new ByteArrayOutputStream();
@@ -114,7 +104,6 @@ public class WarLauncherTests {
 		webInfLibFoo.setCrc(crc32.getValue());
 		jarOutputStream.putNextEntry(webInfLibFoo);
 		jarOutputStream.write(fooJarStream.toByteArray());
-
 		jarOutputStream.close();
 		return warRoot;
 	}

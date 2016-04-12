@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,12 +37,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.StringUtils;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -50,7 +45,9 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ *
  */
+@SuppressWarnings("deprecation")
 @RunWith(MockitoJUnitRunner.class)
 public class EnableAutoConfigurationImportSelectorTests {
 
@@ -77,13 +74,10 @@ public class EnableAutoConfigurationImportSelectorTests {
 	public void importsAreSelected() {
 		configureExclusions(new String[0], new String[0], new String[0]);
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
-		assertThat(imports.length,
-				is(equalTo(SpringFactoriesLoader
-						.loadFactoryNames(EnableAutoConfiguration.class,
-								getClass().getClassLoader())
-						.size())));
-		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions(),
-				hasSize(0));
+		assertThat(imports).hasSameSizeAs(SpringFactoriesLoader.loadFactoryNames(
+				EnableAutoConfiguration.class, getClass().getClassLoader()));
+		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions())
+				.isEmpty();
 	}
 
 	@Test
@@ -91,10 +85,9 @@ public class EnableAutoConfigurationImportSelectorTests {
 		configureExclusions(new String[] { FreeMarkerAutoConfiguration.class.getName() },
 				new String[0], new String[0]);
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
-		assertThat(imports.length,
-				is(equalTo(getAutoConfigurationClassNames().size() - 1)));
-		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions(),
-				contains(FreeMarkerAutoConfiguration.class.getName()));
+		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
+		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions())
+				.contains(FreeMarkerAutoConfiguration.class.getName());
 	}
 
 	@Test
@@ -103,10 +96,9 @@ public class EnableAutoConfigurationImportSelectorTests {
 				new String[] { VelocityAutoConfiguration.class.getName() },
 				new String[0]);
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
-		assertThat(imports.length,
-				is(equalTo(getAutoConfigurationClassNames().size() - 1)));
-		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions(),
-				contains(VelocityAutoConfiguration.class.getName()));
+		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
+		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions())
+				.contains(VelocityAutoConfiguration.class.getName());
 	}
 
 	@Test
@@ -114,10 +106,9 @@ public class EnableAutoConfigurationImportSelectorTests {
 		configureExclusions(new String[0], new String[0],
 				new String[] { FreeMarkerAutoConfiguration.class.getName() });
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
-		assertThat(imports.length,
-				is(equalTo(getAutoConfigurationClassNames().size() - 1)));
-		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions(),
-				contains(FreeMarkerAutoConfiguration.class.getName()));
+		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
+		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions())
+				.contains(FreeMarkerAutoConfiguration.class.getName());
 	}
 
 	@Test
@@ -125,13 +116,11 @@ public class EnableAutoConfigurationImportSelectorTests {
 		configureExclusions(new String[0], new String[0],
 				new String[] { FreeMarkerAutoConfiguration.class.getName(),
 						VelocityAutoConfiguration.class.getName() });
-
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
-		assertThat(imports.length,
-				is(equalTo(getAutoConfigurationClassNames().size() - 2)));
-		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions(),
-				containsInAnyOrder(FreeMarkerAutoConfiguration.class.getName(),
-						VelocityAutoConfiguration.class.getName()));
+		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 2);
+		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions())
+				.contains(FreeMarkerAutoConfiguration.class.getName(),
+						VelocityAutoConfiguration.class.getName());
 	}
 
 	@Test
@@ -142,11 +131,10 @@ public class EnableAutoConfigurationImportSelectorTests {
 		this.environment.setProperty("spring.autoconfigure.exclude[1]",
 				VelocityAutoConfiguration.class.getName());
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
-		assertThat(imports.length,
-				is(equalTo(getAutoConfigurationClassNames().size() - 2)));
-		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions(),
-				containsInAnyOrder(FreeMarkerAutoConfiguration.class.getName(),
-						VelocityAutoConfiguration.class.getName()));
+		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 2);
+		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions())
+				.contains(FreeMarkerAutoConfiguration.class.getName(),
+						VelocityAutoConfiguration.class.getName());
 	}
 
 	@Test
@@ -155,19 +143,35 @@ public class EnableAutoConfigurationImportSelectorTests {
 				new String[] { FreeMarkerAutoConfiguration.class.getName() },
 				new String[] { ThymeleafAutoConfiguration.class.getName() });
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
-		assertThat(imports.length,
-				is(equalTo(getAutoConfigurationClassNames().size() - 3)));
-		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions(),
-				containsInAnyOrder(FreeMarkerAutoConfiguration.class.getName(),
+		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 3);
+		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions())
+				.contains(FreeMarkerAutoConfiguration.class.getName(),
 						VelocityAutoConfiguration.class.getName(),
-						ThymeleafAutoConfiguration.class.getName()));
+						ThymeleafAutoConfiguration.class.getName());
+	}
+
+	@Test
+	public void propertyOverrideSetToTrue() throws Exception {
+		configureExclusions(new String[0], new String[0], new String[0]);
+		this.environment.setProperty(EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, "true");
+		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
+		assertThat(imports).isNotEmpty();
+	}
+
+	@Test
+	public void propertyOverrideSetToFalse() throws Exception {
+		configureExclusions(new String[0], new String[0], new String[0]);
+		this.environment.setProperty(EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, "false");
+		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
+		assertThat(imports).isEmpty();
 	}
 
 	private void configureExclusions(String[] classExclusion, String[] nameExclusion,
 			String[] propertyExclusion) {
-		given(this.annotationMetadata
-				.getAnnotationAttributes(EnableAutoConfiguration.class.getName(), true))
-						.willReturn(this.annotationAttributes);
+		String annotationName = EnableAutoConfiguration.class.getName();
+		given(this.annotationMetadata.isAnnotated(annotationName)).willReturn(true);
+		given(this.annotationMetadata.getAnnotationAttributes(annotationName, true))
+				.willReturn(this.annotationAttributes);
 		given(this.annotationAttributes.getStringArray("exclude"))
 				.willReturn(classExclusion);
 		given(this.annotationAttributes.getStringArray("excludeName"))

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import javax.servlet.ServletRegistration;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.trace.TraceProperties;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
@@ -50,9 +49,6 @@ public class TraceWebFilterAutoConfiguration {
 	@Autowired(required = false)
 	private ErrorAttributes errorAttributes;
 
-	@Value("${management.dump_requests:false}")
-	private boolean dumpRequests;
-
 	@Autowired
 	TraceProperties traceProperties = new TraceProperties();
 
@@ -60,7 +56,6 @@ public class TraceWebFilterAutoConfiguration {
 	public WebRequestTraceFilter webRequestLoggingFilter(BeanFactory beanFactory) {
 		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository,
 				this.traceProperties);
-		filter.setDumpRequests(this.dumpRequests);
 
 		if (this.errorAttributes != null) {
 			filter.setErrorAttributes(this.errorAttributes);

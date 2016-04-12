@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import org.junit.Test;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests to reproduce reported issues.
@@ -51,8 +50,8 @@ public class ReproTests {
 		this.context = application.run(
 				"--spring.config.name=enableprofileviaapplicationproperties",
 				"--spring.profiles.active=dev");
-		assertThat(this.context.getEnvironment().acceptsProfiles("dev"), equalTo(true));
-		assertThat(this.context.getEnvironment().acceptsProfiles("a"), equalTo(true));
+		assertThat(this.context.getEnvironment().acceptsProfiles("dev")).isTrue();
+		assertThat(this.context.getEnvironment().acceptsProfiles("a")).isTrue();
 	}
 
 	@Test
@@ -167,10 +166,10 @@ public class ReproTests {
 
 	private void assertVersionProperty(ConfigurableApplicationContext context,
 			String expectedVersion, String... expectedActiveProfiles) {
-		assertThat(context.getEnvironment().getActiveProfiles(),
-				equalTo(expectedActiveProfiles));
-		assertThat("version mismatch", context.getEnvironment().getProperty("version"),
-				equalTo(expectedVersion));
+		assertThat(context.getEnvironment().getActiveProfiles())
+				.isEqualTo(expectedActiveProfiles);
+		assertThat(context.getEnvironment().getProperty("version")).as("version mismatch")
+				.isEqualTo(expectedVersion);
 		context.close();
 	}
 

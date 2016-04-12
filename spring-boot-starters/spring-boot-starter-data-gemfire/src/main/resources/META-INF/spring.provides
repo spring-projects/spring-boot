@@ -1,1 +1,1 @@
-provides: gemfire,spring-data-gemfire
+provides: spring-data-gemfire

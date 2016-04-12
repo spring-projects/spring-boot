@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Result;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -41,7 +40,6 @@ public class JooqExamples implements CommandLineRunner {
 
 	private final JdbcTemplate jdbc;
 
-	@Autowired
 	public JooqExamples(DSLContext dsl, JdbcTemplate jdbc) {
 		this.dsl = dsl;
 		this.jdbc = jdbc;

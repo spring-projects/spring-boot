@@ -32,10 +32,12 @@ import org.springframework.core.env.Environment;
  * properties to be sourced from the Spring environment.
  *
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 class SpringPropertyAction extends Action {
 
 	private static final String SOURCE_ATTRIBUTE = "source";
+	private static final String DEFAULT_VALUE_ATTRIBUTE = "defaultValue";
 
 	private final Environment environment;
 
@@ -49,17 +51,18 @@ class SpringPropertyAction extends Action {
 		String name = attributes.getValue(NAME_ATTRIBUTE);
 		String source = attributes.getValue(SOURCE_ATTRIBUTE);
 		Scope scope = ActionUtil.stringToScope(attributes.getValue(SCOPE_ATTRIBUTE));
+		String defaultValue = attributes.getValue(DEFAULT_VALUE_ATTRIBUTE);
 		if (OptionHelper.isEmpty(name) || OptionHelper.isEmpty(source)) {
 			addError(
 					"The \"name\" and \"source\" attributes of <springProperty> must be set");
 		}
-		ActionUtil.setProperty(ic, name, getValue(source), scope);
+		ActionUtil.setProperty(ic, name, getValue(source, defaultValue), scope);
 	}
 
-	private String getValue(String source) {
+	private String getValue(String source, String defaultValue) {
 		if (this.environment == null) {
 			addWarn("No Spring Environment available to resolve " + source);
-			return null;
+			return defaultValue;
 		}
 		String value = this.environment.getProperty(source);
 		if (value != null) {
@@ -70,9 +73,9 @@ class SpringPropertyAction extends Action {
 			String prefix = source.substring(0, lastDot + 1);
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 					this.environment, prefix);
-			return resolver.getProperty(source.substring(lastDot + 1));
+			return resolver.getProperty(source.substring(lastDot + 1), defaultValue);
 		}
-		return null;
+		return defaultValue;
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,30 +29,26 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.DefaultErrorViewIntegrationTests.TestConfiguration;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author Dave Syer
  */
-@SpringApplicationConfiguration(TestConfiguration.class)
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
+@RunWith(SpringRunner.class)
+@SpringBootTest
 @DirtiesContext
 public class DefaultErrorViewIntegrationTests {
 
@@ -72,8 +68,8 @@ public class DefaultErrorViewIntegrationTests {
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("<html>"));
-		assertTrue("Wrong content: " + content, content.contains("999"));
+		assertThat(content).contains("<html>");
+		assertThat(content).contains("999");
 	}
 
 	@Test
@@ -86,9 +82,9 @@ public class DefaultErrorViewIntegrationTests {
 						.accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("&lt;script&gt;"));
-		assertTrue("Wrong content: " + content, content.contains("Hello World"));
-		assertTrue("Wrong content: " + content, content.contains("999"));
+		assertThat(content).contains("&lt;script&gt;");
+		assertThat(content).contains("Hello World");
+		assertThat(content).contains("999");
 	}
 
 	@Test
@@ -102,8 +98,7 @@ public class DefaultErrorViewIntegrationTests {
 								.accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		System.out.println(content);
-		assertFalse("Wrong content: " + content, content.contains("injection"));
+		assertThat(content).doesNotContain("injection");
 	}
 
 	public static String injectCall() {

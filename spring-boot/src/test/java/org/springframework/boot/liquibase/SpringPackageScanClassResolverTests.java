@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import liquibase.logging.Logger;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for SpringPackageScanClassResolver.
@@ -39,7 +38,7 @@ public class SpringPackageScanClassResolverTests {
 		resolver.addClassLoader(getClass().getClassLoader());
 		Set<Class<?>> implementations = resolver.findImplementations(Logger.class,
 				"liquibase.logging.core");
-		assertThat(implementations.size(), greaterThan(0));
+		assertThat(implementations).isNotEmpty();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,19 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.test.OutputCapture;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for Velocity application with no web layer.
  *
  * @author Dave Syer
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(SampleVelocityApplication.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class SampleVelocityApplicationTests {
 
 	@ClassRule
@@ -41,7 +41,7 @@ public class SampleVelocityApplicationTests {
 	@Test
 	public void testVelocityTemplate() throws Exception {
 		String result = SampleVelocityApplicationTests.output.toString();
-		assertTrue("Wrong output: " + result, result.contains("Hello, Andy"));
+		assertThat(result).contains("Hello, Andy");
 	}
 
 }

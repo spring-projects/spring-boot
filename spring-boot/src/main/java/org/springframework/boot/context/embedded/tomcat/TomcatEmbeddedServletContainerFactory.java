@@ -321,8 +321,11 @@ public class TomcatEmbeddedServletContainerFactory
 		protocol.setKeyPass(ssl.getKeyPassword());
 		protocol.setKeyAlias(ssl.getKeyAlias());
 		configureSslKeyStore(protocol, ssl);
-		String ciphers = StringUtils.arrayToCommaDelimitedString(ssl.getCiphers());
-		protocol.setCiphers(ciphers);
+		protocol.setCiphers(StringUtils.arrayToCommaDelimitedString(ssl.getCiphers()));
+		if (ssl.getEnabledProtocols() != null) {
+			protocol.setProperty("sslEnabledProtocols",
+					StringUtils.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
+		}
 		configureSslTrustStore(protocol, ssl);
 	}
 
@@ -729,6 +732,7 @@ public class TomcatEmbeddedServletContainerFactory
 	 */
 	private static class StoreMergedWebXmlListener implements LifecycleListener {
 
+		@SuppressWarnings("deprecation")
 		private final String MERGED_WEB_XML = org.apache.tomcat.util.scan.Constants.MERGED_WEB_XML;
 
 		@Override

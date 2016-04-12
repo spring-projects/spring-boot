@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests to exercise the samples.
@@ -45,45 +42,40 @@ public class SampleIntegrationTests {
 	public void appSample() throws Exception {
 		String output = this.cli.run("app.groovy");
 		URI scriptUri = new File("samples/app.groovy").toURI();
-		assertTrue("Wrong output: " + output,
-				output.contains("Hello World! From " + scriptUri));
+		assertThat(output).contains("Hello World! From " + scriptUri);
 	}
 
 	@Test
 	public void retrySample() throws Exception {
 		String output = this.cli.run("retry.groovy");
 		URI scriptUri = new File("samples/retry.groovy").toURI();
-		assertTrue("Wrong output: " + output,
-				output.contains("Hello World! From " + scriptUri));
+		assertThat(output).contains("Hello World! From " + scriptUri);
 	}
 
 	@Test
 	public void beansSample() throws Exception {
 		this.cli.run("beans.groovy");
 		String output = this.cli.getHttpOutput();
-		assertTrue("Wrong output: " + output, output.contains("Hello World!"));
+		assertThat(output).contains("Hello World!");
 	}
 
 	@Test
 	public void templateSample() throws Exception {
 		String output = this.cli.run("template.groovy");
-		assertTrue("Wrong output: " + output, output.contains("Hello World!"));
+		assertThat(output).contains("Hello World!");
 	}
 
 	@Test
 	public void jobSample() throws Exception {
 		String output = this.cli.run("job.groovy", "foo=bar");
-		assertTrue("Wrong output: " + output,
-				output.contains("completed with the following parameters"));
+		assertThat(output).contains("completed with the following parameters");
 	}
 
 	@Test
 	public void oauth2Sample() throws Exception {
 		String output = this.cli.run("oauth2.groovy");
-		assertTrue("Wrong output: " + output,
-				output.contains("security.oauth2.client.clientId"));
-		assertTrue("Wrong output: " + output,
-				output.contains("security.oauth2.client.secret ="));
+		assertThat(output).contains("security.oauth2.client.clientId");
+		assertThat(output).contains("security.oauth2.client.secret =");
 	}
 
 	@Test
@@ -94,88 +86,85 @@ public class SampleIntegrationTests {
 			Thread.sleep(200);
 			output = this.cli.getOutput();
 		}
-		assertTrue("Wrong output: " + output, output.contains("Hello Phil"));
+		assertThat(output).contains("Hello Phil");
 	}
 
 	@Test
 	public void jobWebSample() throws Exception {
 		String output = this.cli.run("job.groovy", "web.groovy", "foo=bar");
-		assertTrue("Wrong output: " + output,
-				output.contains("completed with the following parameters"));
+		assertThat(output).contains("completed with the following parameters");
 		String result = this.cli.getHttpOutput();
-		assertEquals("World!", result);
+		assertThat(result).isEqualTo("World!");
 	}
 
 	@Test
 	public void webSample() throws Exception {
 		this.cli.run("web.groovy");
-		assertEquals("World!", this.cli.getHttpOutput());
+		assertThat(this.cli.getHttpOutput()).isEqualTo("World!");
 	}
 
 	@Test
 	public void uiSample() throws Exception {
 		this.cli.run("ui.groovy", "--classpath=.:src/test/resources");
 		String result = this.cli.getHttpOutput();
-		assertTrue("Wrong output: " + result, result.contains("Hello World"));
+		assertThat(result).contains("Hello World");
 		result = this.cli.getHttpOutput("/css/bootstrap.min.css");
-		assertTrue("Wrong output: " + result, result.contains("container"));
+		assertThat(result).contains("container");
 	}
 
 	@Test
 	public void actuatorSample() throws Exception {
 		this.cli.run("actuator.groovy");
-		assertEquals("{\"message\":\"Hello World!\"}", this.cli.getHttpOutput());
+		assertThat(this.cli.getHttpOutput()).isEqualTo("{\"message\":\"Hello World!\"}");
 	}
 
 	@Test
 	public void httpSample() throws Exception {
 		String output = this.cli.run("http.groovy");
-		assertTrue("Wrong output: " + output, output.contains("Hello World"));
+		assertThat(output).contains("Hello World");
 	}
 
 	@Test
 	public void integrationSample() throws Exception {
 		String output = this.cli.run("integration.groovy");
-		assertTrue("Wrong output: " + output, output.contains("Hello, World"));
+		assertThat(output).contains("Hello, World");
 	}
 
 	@Test
 	public void xmlSample() throws Exception {
 		String output = this.cli.run("runner.xml", "runner.groovy");
-		assertTrue("Wrong output: " + output, output.contains("Hello World"));
+		assertThat(output).contains("Hello World");
 	}
 
 	@Test
 	public void txSample() throws Exception {
 		String output = this.cli.run("tx.groovy");
-		assertTrue("Wrong output: " + output, output.contains("Foo count="));
+		assertThat(output).contains("Foo count=");
 	}
 
 	@Test
 	public void jmsSample() throws Exception {
 		String output = this.cli.run("jms.groovy");
-		assertTrue("Wrong output: " + output,
-				output.contains("Received Greetings from Spring Boot via HornetQ"));
+		assertThat(output).contains("Received Greetings from Spring Boot via HornetQ");
 	}
 
 	@Test
 	@Ignore("Requires RabbitMQ to be run, so disable it be default")
 	public void rabbitSample() throws Exception {
 		String output = this.cli.run("rabbit.groovy");
-		assertTrue("Wrong output: " + output,
-				output.contains("Received Greetings from Spring Boot via RabbitMQ"));
+		assertThat(output).contains("Received Greetings from Spring Boot via RabbitMQ");
 	}
 
 	@Test
 	public void deviceSample() throws Exception {
 		this.cli.run("device.groovy");
-		assertEquals("Hello Normal Device!", this.cli.getHttpOutput());
+		assertThat(this.cli.getHttpOutput()).isEqualTo("Hello Normal Device!");
 	}
 
 	@Test
 	public void caching() throws Exception {
 		this.cli.run("caching.groovy");
-		assertThat(this.cli.getOutput(), containsString("Hello World"));
+		assertThat(this.cli.getOutput()).contains("Hello World");
 	}
 
 }

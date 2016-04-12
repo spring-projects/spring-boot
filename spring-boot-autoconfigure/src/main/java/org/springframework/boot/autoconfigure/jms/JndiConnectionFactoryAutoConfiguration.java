@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Arrays;
 import javax.jms.ConnectionFactory;
 import javax.naming.NamingException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
@@ -56,8 +55,11 @@ public class JndiConnectionFactoryAutoConfiguration {
 	private static String[] JNDI_LOCATIONS = { "java:/JmsXA",
 			"java:/XAConnectionFactory" };
 
-	@Autowired
-	private JmsProperties properties;
+	private final JmsProperties properties;
+
+	public JndiConnectionFactoryAutoConfiguration(JmsProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	public ConnectionFactory connectionFactory() throws NamingException {

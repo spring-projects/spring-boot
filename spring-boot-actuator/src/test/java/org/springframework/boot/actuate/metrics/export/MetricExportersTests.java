@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MetricExporters}.
@@ -54,8 +53,8 @@ public class MetricExportersTests {
 		this.exporters.setReader(this.reader);
 		this.exporters.setWriters(this.writers);
 		this.exporters.configureTasks(new ScheduledTaskRegistrar());
-		assertNotNull(this.exporters.getExporters());
-		assertEquals(0, this.exporters.getExporters().size());
+		assertThat(this.exporters.getExporters()).isNotNull();
+		assertThat(this.exporters.getExporters()).isEmpty();
 	}
 
 	@Test
@@ -66,8 +65,8 @@ public class MetricExportersTests {
 		this.exporters.setReader(this.reader);
 		this.exporters.setWriters(this.writers);
 		this.exporters.configureTasks(new ScheduledTaskRegistrar());
-		assertNotNull(this.exporters.getExporters());
-		assertEquals(1, this.exporters.getExporters().size());
+		assertThat(this.exporters.getExporters()).isNotNull();
+		assertThat(this.exporters.getExporters()).hasSize(1);
 	}
 
 	@Test
@@ -77,8 +76,8 @@ public class MetricExportersTests {
 		this.exporters.setExporters(Collections.<String, Exporter>singletonMap("foo",
 				new MetricCopyExporter(this.reader, this.writer)));
 		this.exporters.configureTasks(new ScheduledTaskRegistrar());
-		assertNotNull(this.exporters.getExporters());
-		assertEquals(1, this.exporters.getExporters().size());
+		assertThat(this.exporters.getExporters()).isNotNull();
+		assertThat(this.exporters.getExporters()).hasSize(1);
 	}
 
 }

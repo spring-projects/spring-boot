@@ -240,30 +240,31 @@ public class RepackageTask extends DefaultTask {
 		}
 
 		private void setMainClass(Repackager repackager) {
-			String mainClass;
-			if (getProject().hasProperty("mainClassName")) {
-				mainClass = (String) getProject().property("mainClassName");
-			}
-			else {
-				ExtraPropertiesExtension extraProperties = (ExtraPropertiesExtension) getProject()
-						.getExtensions().getByName("ext");
-				mainClass = (String) extraProperties.get("mainClassName");
-			}
+			String mainClassName = getMainClassNameProperty();
 			if (RepackageTask.this.mainClass != null) {
-				mainClass = RepackageTask.this.mainClass;
+				mainClassName = RepackageTask.this.mainClass;
 			}
 			else if (this.extension.getMainClass() != null) {
-				mainClass = this.extension.getMainClass();
+				mainClassName = this.extension.getMainClass();
 			}
 			else {
 				Task runTask = getProject().getTasks().findByName("run");
 				if (runTask != null && runTask.hasProperty("main")) {
-					mainClass = (String) getProject().getTasks().getByName("run")
+					mainClassName = (String) getProject().getTasks().getByName("run")
 							.property("main");
 				}
 			}
-			getLogger().info("Setting mainClass: " + mainClass);
-			repackager.setMainClass(mainClass);
+			getLogger().info("Setting mainClass: " + mainClassName);
+			repackager.setMainClass(mainClassName);
+		}
+
+		private String getMainClassNameProperty() {
+			if (getProject().hasProperty("mainClassName")) {
+				return (String) getProject().property("mainClassName");
+			}
+			ExtraPropertiesExtension extraProperties = (ExtraPropertiesExtension) getProject()
+					.getExtensions().getByName("ext");
+			return (String) extraProperties.get("mainClassName");
 		}
 
 		private LaunchScript getLaunchScript() throws IOException {

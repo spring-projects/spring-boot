@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,10 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link CassandraAutoConfiguration}
@@ -48,17 +45,17 @@ public class CassandraAutoConfigurationTests {
 	@Test
 	public void createClusterWithDefault() {
 		this.context = doLoad();
-		assertEquals(1, this.context.getBeanNamesForType(Cluster.class).length);
+		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
 		Cluster cluster = this.context.getBean(Cluster.class);
-		assertThat(cluster.getClusterName(), startsWith("cluster"));
+		assertThat(cluster.getClusterName()).startsWith("cluster");
 	}
 
 	@Test
 	public void createClusterWithOverrides() {
 		this.context = doLoad("spring.data.cassandra.cluster-name=testcluster");
-		assertEquals(1, this.context.getBeanNamesForType(Cluster.class).length);
+		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
 		Cluster cluster = this.context.getBean(Cluster.class);
-		assertThat(cluster.getClusterName(), equalTo("testcluster"));
+		assertThat(cluster.getClusterName()).isEqualTo("testcluster");
 	}
 
 	private AnnotationConfigApplicationContext doLoad(String... environment) {

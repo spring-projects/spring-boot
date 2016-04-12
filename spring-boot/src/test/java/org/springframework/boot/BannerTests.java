@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,19 +22,20 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.Banner.Mode;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link Banner} and its usage by {@link SpringApplication}.
  *
  * @author Phillip Webb
  * @author Michael Stummvoll
+ * @author Michael Simons
  */
 public class BannerTests {
 
@@ -48,14 +49,14 @@ public class BannerTests {
 	}
 
 	@Rule
-	public OutputCapture out = new OutputCapture();
+	public InternalOutputCapture out = new InternalOutputCapture();
 
 	@Test
 	public void testDefaultBanner() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		this.context = application.run();
-		assertThat(this.out.toString(), containsString(":: Spring Boot ::"));
+		assertThat(this.out.toString()).contains(":: Spring Boot ::");
 	}
 
 	@Test
@@ -63,7 +64,7 @@ public class BannerTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		this.context = application.run();
-		assertThat(this.out.toString(), containsString(":: Spring Boot ::"));
+		assertThat(this.out.toString()).contains(":: Spring Boot ::");
 	}
 
 	@Test
@@ -72,7 +73,50 @@ public class BannerTests {
 		application.setWebEnvironment(false);
 		application.setBanner(new DummyBanner());
 		this.context = application.run();
-		assertThat(this.out.toString(), containsString("My Banner"));
+		assertThat(this.out.toString()).contains("My Banner");
+	}
+
+	@Test
+	public void testBannerInContext() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		assertThat(this.context.containsBean("springBootBanner")).isTrue();
+	}
+
+	@Test
+	public void testCustomBannerInContext() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		final DummyBanner dummyBanner = new DummyBanner();
+		application.setBanner(dummyBanner);
+		this.context = application.run();
+		assertThat(this.context.getBean("springBootBanner")).isEqualTo(dummyBanner);
+	}
+
+	@Test
+	public void testDisableBannerInContext() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setBannerMode(Mode.OFF);
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		assertThat(this.context.containsBean("springBootBanner")).isFalse();
+	}
+
+	@Test
+	public void testDeprecatePrintBanner() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class) {
+
+			@Override
+			protected void printBanner(Environment environment) {
+				System.out.println("I printed a deprecated banner");
+			};
+
+		};
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		assertThat(this.out.toString()).contains("I printed a deprecated banner");
+		assertThat(this.context.containsBean("springBootBanner")).isFalse();
 	}
 
 	static class DummyBanner implements Banner {

@@ -103,7 +103,7 @@ public class DevToolsDataSourceAutoConfiguration {
 
 		private boolean dataSourceRequiresShutdown() {
 			return IN_MEMORY_DRIVER_CLASS_NAMES
-					.contains(this.dataSourceProperties.getDriverClassName())
+					.contains(this.dataSourceProperties.determineDriverClassName())
 					&& (!(this.dataSource instanceof EmbeddedDatabase));
 		}
 

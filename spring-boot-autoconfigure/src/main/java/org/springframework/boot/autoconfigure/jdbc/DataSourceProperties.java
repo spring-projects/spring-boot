@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
@@ -42,11 +43,9 @@ import org.springframework.util.StringUtils;
  * @author Benedikt Ritter
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
+@ConfigurationProperties(prefix = "spring.datasource")
 public class DataSourceProperties
 		implements BeanClassLoaderAware, EnvironmentAware, InitializingBean {
-
-	public static final String PREFIX = "spring.datasource";
 
 	private ClassLoader classLoader;
 
@@ -160,7 +159,25 @@ public class DataSourceProperties
 		this.type = type;
 	}
 
+	/**
+	 * Return the configured driver or {@code null} if none was configured.
+	 * @return the configured driver
+	 * @see #determineDriverClassName()
+	 */
 	public String getDriverClassName() {
+		return this.driverClassName;
+	}
+
+	public void setDriverClassName(String driverClassName) {
+		this.driverClassName = driverClassName;
+	}
+
+	/**
+	 * Determine the driver to use based on this configuration and the environment.
+	 * @return the driver to use
+	 * @since 1.4.0
+	 */
+	public String determineDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
 			Assert.state(driverClassIsLoadable(),
 					"Cannot load driver class: " + this.driverClassName);
@@ -197,11 +214,25 @@ public class DataSourceProperties
 		}
 	}
 
-	public void setDriverClassName(String driverClassName) {
-		this.driverClassName = driverClassName;
+	/**
+	 * Return the configured url or {@code null} if none was configured.
+	 * @return the configured url
+	 * @see #determineUrl()
+	 */
+	public String getUrl() {
+		return this.url;
 	}
 
-	public String getUrl() {
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	/**
+	 * Determine the url to use based on this configuration and the environment.
+	 * @return the url to use
+	 * @since 1.4.0
+	 */
+	public String determineUrl() {
 		if (StringUtils.hasText(this.url)) {
 			return this.url;
 		}
@@ -213,36 +244,60 @@ public class DataSourceProperties
 		return url;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
+	/**
+	 * Return the configured username or {@code null} if none was configured.
+	 * @return the configured username
+	 * @see #determineUsername()
+	 */
 	public String getUsername() {
-		if (StringUtils.hasText(this.username)) {
-			return this.username;
-		}
-		if (EmbeddedDatabaseConnection.isEmbedded(getDriverClassName())) {
-			return "sa";
-		}
-		return null;
+		return this.username;
 	}
 
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
-		if (StringUtils.hasText(this.password)) {
-			return this.password;
+	/**
+	 * Determine the username to use based on this configuration and the environment.
+	 * @return the username to use
+	 * @since 1.4.0
+	 */
+	public String determineUsername() {
+		if (StringUtils.hasText(this.username)) {
+			return this.username;
 		}
-		if (EmbeddedDatabaseConnection.isEmbedded(getDriverClassName())) {
-			return "";
+		if (EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName())) {
+			return "sa";
 		}
 		return null;
 	}
 
+	/**
+	 * Return the configured password or {@code null} if none was configured.
+	 * @return the configured password
+	 * @see #determinePassword()
+	 */
+	public String getPassword() {
+		return this.password;
+	}
+
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	/**
+	 * Determine the password to use based on this configuration and the environment.
+	 * @return the password to use
+	 * @since 1.4.0
+	 */
+	public String determinePassword() {
+		if (StringUtils.hasText(this.password)) {
+			return this.password;
+		}
+		if (EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName())) {
+			return "";
+		}
+		return null;
 	}
 
 	public String getJndiName() {

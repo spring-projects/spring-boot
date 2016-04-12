@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -101,7 +100,7 @@ public class DispatcherTests {
 				Collections.singleton(mapper));
 		dispatcher.handle(this.serverRequest, this.serverResponse);
 		verifyZeroInteractions(handler);
-		assertThat(this.response.getStatus(), equalTo(403));
+		assertThat(this.response.getStatus()).isEqualTo(403);
 	}
 
 	@Test

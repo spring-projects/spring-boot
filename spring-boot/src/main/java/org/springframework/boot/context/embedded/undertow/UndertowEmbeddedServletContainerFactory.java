@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,7 @@ import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
 import org.xnio.OptionMap;
 import org.xnio.Options;
+import org.xnio.Sequence;
 import org.xnio.SslClientAuthMode;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
@@ -259,6 +260,14 @@ public class UndertowEmbeddedServletContainerFactory
 			builder.addHttpsListener(port, getListenAddress(), sslContext);
 			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE,
 					getSslClientAuthMode(ssl));
+			if (ssl.getEnabledProtocols() != null) {
+				builder.setSocketOption(Options.SSL_ENABLED_PROTOCOLS,
+						Sequence.of(ssl.getEnabledProtocols()));
+			}
+			if (ssl.getCiphers() != null) {
+				builder.setSocketOption(Options.SSL_ENABLED_CIPHER_SUITES,
+						Sequence.of(ssl.getCiphers()));
+			}
 		}
 		catch (NoSuchAlgorithmException ex) {
 			throw new IllegalStateException(ex);
@@ -492,8 +501,7 @@ public class UndertowEmbeddedServletContainerFactory
 	protected UndertowEmbeddedServletContainer getUndertowEmbeddedServletContainer(
 			Builder builder, DeploymentManager manager, int port) {
 		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, isUseForwardHeaders(), port >= 0, getCompression(),
-				getServerHeader());
+				isUseForwardHeaders(), port >= 0, getCompression(), getServerHeader());
 	}
 
 	@Override

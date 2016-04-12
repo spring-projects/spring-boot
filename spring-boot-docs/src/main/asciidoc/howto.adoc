@@ -113,6 +113,96 @@ Application code that you want to run as your business logic can be implemented 
 
 
 
+[[howto-automatic-expansion]]
+=== Automatically expand properties at build time
+Rather than hardcoding some properties that are also specified in your project's build
+configuration, you can automatically expand them using the existing build configuration
+instead. This is possible in both Maven and Gradle.
+
+
+
+[[howto-automatic-expansion-maven]]
+==== Automatic property expansion using Maven
+You can automatically expand properties from the Maven project using resource
+filtering. If you use the `spring-boot-starter-parent` you can then refer to your
+Maven '`project properties`' via `@..@` placeholders, e.g.
+
+[source,properties,indent=0]
+----
+	app.encoding=@project.build.sourceEncoding@
+	app.java.version=@java.version@
+----
+
+TIP: The `spring-boot:run` can add `src/main/resources` directly to the classpath
+(for hot reloading purposes) if you enable the `addResources` flag. This circumvents
+the resource filtering and this feature. You can use the `exec:java` goal instead
+or customize the plugin's configuration, see the
+{spring-boot-maven-plugin-site}/usage.html[plugin usage page] for more details.
+
+If you don't use the starter parent, in your `pom.xml` you need (inside the `<build/>`
+element):
+
+[source,xml,indent=0]
+----
+    <resources>
+        <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+        </resource>
+    </resources>
+----
+
+and (inside `<plugins/>`):
+
+[source,xml,indent=0]
+----
+	<plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-resources-plugin</artifactId>
+		<version>2.7</version>
+		<configuration>
+			<delimiters>
+				<delimiter>@</delimiter>
+			</delimiters>
+			<useDefaultDelimiters>false</useDefaultDelimiters>
+		</configuration>
+	</plugin>
+----
+
+NOTE: The `useDefaultDelimiters` property is important if you are using standard Spring
+placeholders in your configuration (e.g. `${foo}`). These may be expanded by the build if
+that property is not set to `false`.
+
+
+
+[[howto-automatic-expansion-gradle]]
+==== Automatic property expansion using Gradle
+You can automatically expand properties from the Gradle project by configuring the
+Java plugin's `processResources` task to do so:
+
+[source,groovy,indent=0]
+----
+	processResources {
+		expand(project.properties)
+	}
+----
+
+You can then refer to your Gradle project's properties via placeholders, e.g.
+
+[source,properties,indent=0]
+----
+	app.name=${name}
+	app.description=${description}
+----
+
+NOTE: Gradle's `expand` method uses Groovy's `SimpleTemplateEngine` which transforms
+`${..}` tokens. The `${..}` style conflicts with Spring's own property placeholder
+mechanism. To use Spring property placeholders together with automatic expansion
+the Spring property placeholders need to be escaped like `\${..}`.
+
+
+
+
 [[howto-externalize-configuration]]
 === Externalize the configuration of SpringApplication
 A `SpringApplication` has bean properties (mainly setters) so you can use its Java API as
@@ -122,8 +212,8 @@ might have.
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.main.web_environment=false
-	spring.main.banner_mode=off
+	spring.main.web-environment=false
+	spring.main.banner-mode=off
 ----
 
 and then the Spring Boot banner will not be printed on startup, and the application will
@@ -149,7 +239,7 @@ used with the following configuration:
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.main.sources=com.acme.Config,com.acme.ExtraConfig
-	spring.main.banner_mode=console
+	spring.main.banner-mode=console
 ----
 
 The actual application will _now_ show the banner (as overridden by configuration) and use
@@ -438,6 +528,7 @@ in the '`Spring Boot features`' section, or the
 code.
 
 
+
 [[howto-user-a-random-unassigned-http-port]]
 === Use a random unassigned HTTP port
 To scan for a free port (using OS natives to prevent clashes) use `server.port=0`.
@@ -452,20 +543,20 @@ that and be sure that it has initialized is to add a `@Bean` of type
 `ApplicationListener<EmbeddedServletContainerInitializedEvent>` and pull the container
 out of the event when it is published.
 
-A useful practice for use with `@WebIntegrationTest` is to set `server.port=0`
-and then inject the actual ('`local`') port as a `@Value`. For example:
+Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can
+also inject the actual port into a field using the `@LocalServerPort` annotation. For
+example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationConfiguration(SampleDataJpaApplication.class)
-	@WebIntegrationTest("server.port:0")
-	public class CityRepositoryIntegrationTests {
+	@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
+	public class MyWebIntegrationTests {
 
 		@Autowired
 		EmbeddedWebApplicationContext server;
 
-		@Value("${local.server.port}")
+		@LocalServerPort
 		int port;
 
 		// ...
@@ -475,9 +566,10 @@ and then inject the actual ('`local`') port as a `@Value`. For example:
 
 [NOTE]
 ====
-Don't try to inject the port with `@Value` in a regular application. As we just saw, the
-value is only set once the container has initialized; contrary to a test, application code
-callbacks are processed early (i.e. before the value is actually available).
+`@LocalServerPort` is a meta-annotation for `@Value("${local.server.port}")`. Don't try
+to inject the port in a regular application. As we just saw, the value is only set once
+the container has initialized; contrary to a test, application code callbacks are
+processed early (i.e. before the value is actually available).
 ====
 
 
@@ -506,6 +598,8 @@ to use `application.properties` to configure HTTPS as the HTTP connector is the 
 the two to configure programmatically. See the
 {github-code}/spring-boot-samples/spring-boot-sample-tomcat-multi-connectors[`spring-boot-sample-tomcat-multi-connectors`]
 sample project for an example.
+
+
 
 [[howto-configure-accesslogs]]
 === Configure Access Logging
@@ -536,6 +630,7 @@ Access logging for undertow can be configured in a similar fashion
 
 Logs are stored in a `logs` directory relative to the working directory of the
 application. This can be customized via `server.undertow.accesslog.directory`.
+
 
 
 [[howto-use-behind-a-proxy-server]]
@@ -1342,12 +1437,11 @@ You also need to add `logging.file` to your `application.properties`:
 
 [[howto-configure-log4j-for-logging]]
 === Configure Log4j for logging
-Spring Boot also supports either http://logging.apache.org/log4j/1.2[Log4j] or
-http://logging.apache.org/log4j/2.x[Log4j 2] for logging configuration, but only if one
-of them is on the classpath. If you are using the starter poms for assembling
-dependencies that means you have to exclude Logback and then include your chosen version
-of Log4j instead. If you aren't using the starter poms then you need to provide
-`commons-logging` (at least) in addition to your chosen version of Log4j.
+Spring Boot supports http://logging.apache.org/log4j/2.x[Log4j 2] for logging
+configuration if it is on the classpath. If you are using the starter poms for
+assembling dependencies that means you have to exclude Logback and then include log4j 2
+instead. If you aren't using the starter poms then you need to provide `commons-logging`
+(at least) in addition to Log4j 2.
 
 The simplest path is probably through the starter poms, even though it requires some
 jiggling with excludes, .e.g. in Maven:
@@ -1370,17 +1464,14 @@ jiggling with excludes, .e.g. in Maven:
 	</dependency>
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-log4j</artifactId>
+		<artifactId>spring-boot-starter-log4j2</artifactId>
 	</dependency>
 ----
 
-To use Log4j 2, simply depend on `spring-boot-starter-log4j2` rather than
-`spring-boot-starter-log4j`.
-
-NOTE: The use of one of the Log4j starters gathers together the dependencies for
-common logging requirements (e.g. including having Tomcat use `java.util.logging` but
-configuring the output using Log4j or Log4j 2). See the Actuator Log4j or Log4j 2
-samples for more detail and to see it in action.
+NOTE: The use of the Log4j starters gathers together the dependencies for common logging
+requirements (e.g. including having Tomcat use `java.util.logging` but configuring the
+output using Log4j 2). See the Actuator Log4j 2 samples for more detail and to see it in
+action.
 
 
 
@@ -1440,6 +1531,21 @@ See _<<spring-boot-features.adoc#boot-features-configure-datasource>>_ in the
 '`Spring Boot features`' section and the
 {sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[`DataSourceAutoConfiguration`]
 class for more details.
+
+[TIP]
+====
+You could also do that if you want to configure a JNDI data-source.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean(destroyMethod="")
+	@ConfigurationProperties(prefix="datasource.mine")
+	public DataSource dataSource() throws Exception {
+		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
+		return dataSourceLookup.getDataSource("java:comp/env/jdbc/YourDS");
+	}
+----
+====
 
 
 
@@ -1513,18 +1619,16 @@ configuration properties. The most common options to set are:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.jpa.hibernate.ddl-auto: create-drop
-	spring.jpa.hibernate.naming_strategy: org.hibernate.cfg.ImprovedNamingStrategy
-	spring.jpa.database: H2
-	spring.jpa.show-sql: true
+	spring.jpa.hibernate.ddl-auto=create-drop
+	spring.jpa.hibernate.naming.physical-strategy=com.example.MyPhysicalNamingStrategy
+	spring.jpa.database=H2
+	spring.jpa.show-sql=true
 ----
 
-(Because of relaxed data binding hyphens or underscores should work equally well as
-property keys.) The `ddl-auto` setting is a special case in that it has different
-defaults depending on whether you are using an embedded database (`create-drop`) or not
-(`none`). In addition all properties in `+spring.jpa.properties.*+` are passed through as
-normal JPA properties (with the prefix stripped) when the local `EntityManagerFactory` is
-created.
+The `ddl-auto` setting is a special case in that it has different defaults depending on
+whether you are using an embedded database (`create-drop`) or not (`none`). In addition
+all properties in `+spring.jpa.properties.*+` are passed through as normal JPA properties
+(with the prefix stripped) when the local `EntityManagerFactory` is created.
 
 See {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[`HibernateJpaAutoConfiguration`]
 and {sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[`JpaBaseConfiguration`]
@@ -1703,7 +1807,7 @@ to start. The script locations can be changed by setting `spring.datasource.sche
 `spring.datasource.data`, and neither location will be processed if
 `spring.datasource.initialize=false`.
 
-To disable the fail-fast you can set `spring.datasource.continueOnError=true`. This can be
+To disable the fail-fast you can set `spring.datasource.continue-on-error=true`. This can be
 useful once an application has matured and been deployed a few times, since the scripts
 can act as '`poor man's migrations`' -- inserts that fail mean that the data is already
 there, so there would be no need to prevent the application from running, for instance.
@@ -1747,7 +1851,10 @@ underscore-separated version, e.g. '`1`' or '`2_1`'). By default they live in a 
 the Flyway class from flyway-core for details of available settings like schemas etc. In
 addition Spring Boot provides a small set of properties in
 {sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[`FlywayProperties`]
-that can be used to disable the migrations, or switch off the location checking.
+that can be used to disable the migrations, or switch off the location checking. Spring
+Boot will call `Flyway.migrate()` to perform the database migration. If you would like
+more control, provide a `@Bean` that implements
+{sc-spring-boot-autoconfigure}/flyway/FlywayMigrationStrategy.{sc-ext}[`FlywayMigrationStrategy`].
 
 TIP: If you want to make use of http://flywaydb.org/documentation/callbacks.html[Flyway
 callbacks], those scripts should also live in the `classpath:db/migration` folder.
@@ -2115,6 +2222,95 @@ automatically compile your code whenever a file is saved.
 
 
 
+[[howto-build-info]]
+=== Generate build information
+Both the Maven and Gradle plugin allow to generate build information containing
+the coordinates, name and version of the project. The plugin can also be configured
+to add additional properties through configuration. When such file is present,
+Spring Boot auto-configures a `BuildProperties` bean.
+
+To generate build information with Maven, add an execution for the `build-info` goal:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>{spring-boot-version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>build-info</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+TIP: Check the {spring-boot-maven-plugin-site}/[Spring Boot Maven Plugin documentation]
+for more details.
+
+And to do the same with Gradle:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	springBoot  {
+		buildInfo()
+	}
+----
+
+Additional properties can be added using the DSL:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	springBoot  {
+		buildInfo {
+			additionalProperties = [
+				'foo': 'bar'
+			]
+		}
+	}
+----
+
+
+
+[[howto-git-info]]
+=== Generate git information
+
+Both Maven and Gradle allow to generate a `git.properties` file containing information
+about the state of your `git` source code repository when the project was built.
+
+For Maven users the `spring-boot-starter-parent` POM includes a pre-configured plugin to
+generate a `git.properties` file. Simply add the following declaration to your POM:
+
+[source,xml,indent=0]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+Gradle users can achieve the same result using the
+https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties[`gradle-git-properties`] plugin
+
+[source,groovy,indent=0]
+----
+	plugins {
+		id "com.gorylenko.gradle-git-properties" version "1.4.6"
+	}
+----
+
+
+
 [[howto-customize-dependency-versions-with-maven]]
 [[howto-customize-dependency-versions]]
 === Customize dependency versions
@@ -2395,31 +2591,42 @@ details.
 [[howto-build-an-executable-archive-with-ant]]
 === Build an executable archive from Ant without using spring-boot-antlib
 To build with Ant you need to grab dependencies, compile and then create a jar or war
-archive as normal. To make it executable you can either use the `spring-boot-antlib`
+archive. To make it executable you can either use the `spring-boot-antlib`
 module, or you can follow these instructions:
 
-. Use the appropriate launcher as a `Main-Class`, e.g. `JarLauncher` for a jar file, and
-  specify the other properties it needs as manifest entries, principally a `Start-Class`.
-
-. Add the runtime dependencies in a nested '`lib`' directory (for a jar) and the
-  `provided` (embedded container) dependencies in a nested `lib-provided` directory.
-  Remember *not* to compress the entries in the archive.
-
+. If you are building a jar, package the application's classes and resources in a nested
+  `BOOT-INF/classes` directory. If you are building a war, package the application's
+  classes in a nested `WEB-INF/classes` directory as usual.
+. Add the runtime dependencies in a nested `BOOT-INF/lib` directory for a jar or
+  `WEB-INF/lib` for a war. Remember *not* to compress the entries in the archive.
+. Add the `provided` (embedded container) dependencies in a nested `BOOT-INF/lib`
+  directory for jar or `WEB-INF/lib-provided` for a war. Remember *not* to compress the
+  entries in the archive.
 . Add the `spring-boot-loader` classes at the root of the archive (so the `Main-Class`
   is available).
+. Use the appropriate launcher, e.g. `JarLauncher` for a jar file, as a `Main-Class`
+  attribute in the manifest and specify the other properties it needs as manifest entries,
+  principally a `Start-Class`.
 
 Example:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0]
 ----
 	<target name="build" depends="compile">
-		<copy todir="target/classes/lib">
-			<fileset dir="lib/runtime" />
-		</copy>
-		<jar destfile="target/spring-boot-sample-actuator-${spring-boot.version}.jar" compress="false">
-			<fileset dir="target/classes" />
-			<fileset dir="src/main/resources" />
-			<zipfileset src="lib/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
+		<jar destfile="target/${ant.project.name}-${spring-boot.version}.jar" compress="false">
+			<mappedresources>
+				<fileset dir="target/classes" />
+				<globmapper from="*" to="BOOT-INF/classes/*"/>
+			</mappedresources>
+			<mappedresources>
+				<fileset dir="src/main/resources" erroronmissingdir="false"/>
+				<globmapper from="*" to="BOOT-INF/classes/*"/>
+			</mappedresources>
+			<mappedresources>
+				<fileset dir="${lib.dir}/runtime" />
+				<globmapper from="*" to="BOOT-INF/lib/*"/>
+			</mappedresources>
+			<zipfileset src="${lib.dir}/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
 			<manifest>
 				<attribute name="Main-Class" value="org.springframework.boot.loader.JarLauncher" />
 				<attribute name="Start-Class" value="${start-class}" />
@@ -2428,11 +2635,12 @@ Example:
 	</target>
 ----
 
-The Actuator Sample has a `build.xml` that should work if you run it with
+The {github-code}/spring-boot-samples/spring-boot-sample-ant[Ant Sample] has a
+`build.xml` with a `manual` task that should work if you run it with
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	$ ant -lib <folder containing ivy-2.2.jar>
+	$ ant -lib <folder containing ivy-2.2.jar> clean manual
 ----
 
 after which you can run the application with

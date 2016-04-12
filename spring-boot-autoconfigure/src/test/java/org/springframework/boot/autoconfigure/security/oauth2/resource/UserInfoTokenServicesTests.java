@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.springframework.security.oauth2.client.resource.UserRedirectRequiredE
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -75,7 +75,8 @@ public class UserInfoTokenServicesTests {
 	@Test
 	public void sunnyDay() {
 		this.services.setRestTemplate(this.template);
-		assertEquals("unknown", this.services.loadAuthentication("FOO").getName());
+		assertThat(this.services.loadAuthentication("FOO").getName())
+				.isEqualTo("unknown");
 	}
 
 	@Test
@@ -85,14 +86,16 @@ public class UserInfoTokenServicesTests {
 				.willThrow(new UserRedirectRequiredException("foo:bar",
 						Collections.<String, String>emptyMap()));
 		this.expected.expect(InvalidTokenException.class);
-		assertEquals("unknown", this.services.loadAuthentication("FOO").getName());
+		assertThat(this.services.loadAuthentication("FOO").getName())
+				.isEqualTo("unknown");
 	}
 
 	@Test
 	public void userId() {
 		this.map.put("userid", "spencer");
 		this.services.setRestTemplate(this.template);
-		assertEquals("spencer", this.services.loadAuthentication("FOO").getName());
+		assertThat(this.services.loadAuthentication("FOO").getName())
+				.isEqualTo("spencer");
 	}
 
 }

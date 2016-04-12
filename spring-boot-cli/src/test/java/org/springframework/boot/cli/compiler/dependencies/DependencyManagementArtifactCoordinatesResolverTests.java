@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,7 @@ package org.springframework.boot.cli.compiler.dependencies;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -52,19 +50,19 @@ public class DependencyManagementArtifactCoordinatesResolverTests {
 
 	@Test
 	public void getGroupIdForBootArtifact() throws Exception {
-		assertThat(this.resolver.getGroupId("spring-boot-something"),
-				equalTo("org.springframework.boot"));
+		assertThat(this.resolver.getGroupId("spring-boot-something"))
+				.isEqualTo("org.springframework.boot");
 		verify(this.dependencyManagement, never()).find(anyString());
 	}
 
 	@Test
 	public void getGroupIdFound() throws Exception {
-		assertThat(this.resolver.getGroupId("a1"), equalTo("g1"));
+		assertThat(this.resolver.getGroupId("a1")).isEqualTo("g1");
 	}
 
 	@Test
 	public void getGroupIdNotFound() throws Exception {
-		assertThat(this.resolver.getGroupId("a2"), nullValue());
+		assertThat(this.resolver.getGroupId("a2")).isNull();
 	}
 
 }

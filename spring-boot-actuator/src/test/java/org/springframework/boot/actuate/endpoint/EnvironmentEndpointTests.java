@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,14 @@ import java.util.Map;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.MapPropertySource;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link EnvironmentEndpoint}.
@@ -49,7 +47,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 
 	@Test
 	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke().size(), greaterThan(0));
+		assertThat(getEndpointBean().invoke()).isNotEmpty();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -63,7 +61,8 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 				Collections.singletonMap("foo", (Object) "spam")));
 		this.context.getEnvironment().getPropertySources().addFirst(source);
 		Map<String, Object> env = report.invoke();
-		assertEquals("bar", ((Map<String, Object>) env.get("composite:one")).get("foo"));
+		assertThat(((Map<String, Object>) env.get("composite:one")).get("foo"))
+				.isEqualTo("bar");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -76,16 +75,13 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		System.setProperty("VCAP_SERVICES", "123456");
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("dbPassword"));
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("apiKey"));
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("mySecret"));
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("myCredentials"));
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("VCAP_SERVICES"));
+		Map<String, Object> systemProperties = (Map<String, Object>) env
+				.get("systemProperties");
+		assertThat(systemProperties.get("dbPassword")).isEqualTo("******");
+		assertThat(systemProperties.get("apiKey")).isEqualTo("******");
+		assertThat(systemProperties.get("mySecret")).isEqualTo("******");
+		assertThat(systemProperties.get("myCredentials")).isEqualTo("******");
+		assertThat(systemProperties.get("VCAP_SERVICES")).isEqualTo("******");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -97,14 +93,14 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		System.setProperty("foo.mycredentials.uri", "123456");
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
-		assertEquals("******", ((Map<String, Object>) env.get("systemProperties"))
-				.get("my.services.amqp-free.credentials.uri"));
-		assertEquals("******", ((Map<String, Object>) env.get("systemProperties"))
-				.get("credentials.http_api_uri"));
-		assertEquals("******", ((Map<String, Object>) env.get("systemProperties"))
-				.get("my.services.cleardb-free.credentials"));
-		assertEquals("******", ((Map<String, Object>) env.get("systemProperties"))
-				.get("foo.mycredentials.uri"));
+		Map<String, Object> systemProperties = (Map<String, Object>) env
+				.get("systemProperties");
+		assertThat(systemProperties.get("my.services.amqp-free.credentials.uri"))
+				.isEqualTo("******");
+		assertThat(systemProperties.get("credentials.http_api_uri")).isEqualTo("******");
+		assertThat(systemProperties.get("my.services.cleardb-free.credentials"))
+				.isEqualTo("******");
+		assertThat(systemProperties.get("foo.mycredentials.uri")).isEqualTo("******");
 
 	}
 
@@ -116,10 +112,10 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		EnvironmentEndpoint report = getEndpointBean();
 		report.setKeysToSanitize("key");
 		Map<String, Object> env = report.invoke();
-		assertEquals("123456",
-				((Map<String, Object>) env.get("systemProperties")).get("dbPassword"));
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("apiKey"));
+		Map<String, Object> systemProperties = (Map<String, Object>) env
+				.get("systemProperties");
+		assertThat(systemProperties.get("dbPassword")).isEqualTo("123456");
+		assertThat(systemProperties.get("apiKey")).isEqualTo("******");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -130,10 +126,10 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		EnvironmentEndpoint report = getEndpointBean();
 		report.setKeysToSanitize(".*pass.*");
 		Map<String, Object> env = report.invoke();
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("dbPassword"));
-		assertEquals("123456",
-				((Map<String, Object>) env.get("systemProperties")).get("apiKey"));
+		Map<String, Object> systemProperties = (Map<String, Object>) env
+				.get("systemProperties");
+		assertThat(systemProperties.get("dbPassword")).isEqualTo("******");
+		assertThat(systemProperties.get("apiKey")).isEqualTo("123456");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -148,10 +144,10 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		System.setProperty("apiKey", "123456");
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
-		assertEquals("123456",
-				((Map<String, Object>) env.get("systemProperties")).get("dbPassword"));
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("apiKey"));
+		Map<String, Object> systemProperties = (Map<String, Object>) env
+				.get("systemProperties");
+		assertThat(systemProperties.get("dbPassword")).isEqualTo("123456");
+		assertThat(systemProperties.get("apiKey")).isEqualTo("******");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -166,10 +162,10 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		System.setProperty("apiKey", "123456");
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("dbPassword"));
-		assertEquals("123456",
-				((Map<String, Object>) env.get("systemProperties")).get("apiKey"));
+		Map<String, Object> systemProperties = (Map<String, Object>) env
+				.get("systemProperties");
+		assertThat(systemProperties.get("dbPassword")).isEqualTo("******");
+		assertThat(systemProperties.get("apiKey")).isEqualTo("123456");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -185,10 +181,10 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		System.setProperty("apiKey", "123456");
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("dbPassword"));
-		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("apiKey"));
+		Map<String, Object> systemProperties = (Map<String, Object>) env
+				.get("systemProperties");
+		assertThat(systemProperties.get("dbPassword")).isEqualTo("******");
+		assertThat(systemProperties.get("apiKey")).isEqualTo("******");
 	}
 
 	@Configuration

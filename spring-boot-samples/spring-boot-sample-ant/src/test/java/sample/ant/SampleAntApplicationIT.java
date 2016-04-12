@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
 
 package sample.ant;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -48,12 +46,12 @@ public class SampleAntApplicationIT {
 			}
 
 		});
-		assertThat("Number of jars", jarFiles.length, equalTo(1));
+		assertThat(jarFiles).hasSize(1);
 		Process process = new JavaExecutable().processBuilder("-jar", jarFiles[0].getName()).directory(target).start();
 		process.waitFor(5, TimeUnit.MINUTES);
-		assertThat(process.exitValue(), equalTo(0));
+		assertThat(process.exitValue()).isEqualTo(0);
 		String output = FileCopyUtils.copyToString(new InputStreamReader(process.getInputStream()));
-		assertThat(output, containsString("Spring Boot Ant Example"));
+		assertThat(output).contains("Spring Boot Ant Example");
 	}
 
 }

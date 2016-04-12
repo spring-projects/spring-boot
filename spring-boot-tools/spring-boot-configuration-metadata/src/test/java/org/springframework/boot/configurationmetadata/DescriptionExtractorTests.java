@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.configurationmetadata;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DescriptionExtractor}.
@@ -35,39 +35,39 @@ public class DescriptionExtractorTests {
 	public void extractShortDescription() {
 		String description = this.extractor
 				.getShortDescription("My short " + "description. More stuff.");
-		assertEquals("My short description.", description);
+		assertThat(description).isEqualTo("My short description.");
 	}
 
 	@Test
 	public void extractShortDescriptionNewLineBeforeDot() {
 		String description = this.extractor.getShortDescription(
 				"My short" + NEW_LINE + "description." + NEW_LINE + "More stuff.");
-		assertEquals("My short description.", description);
+		assertThat(description).isEqualTo("My short description.");
 	}
 
 	@Test
 	public void extractShortDescriptionNewLineBeforeDotWithSpaces() {
 		String description = this.extractor.getShortDescription(
 				"My short  " + NEW_LINE + " description.  " + NEW_LINE + "More stuff.");
-		assertEquals("My short description.", description);
+		assertThat(description).isEqualTo("My short description.");
 	}
 
 	@Test
 	public void extractShortDescriptionNoDot() {
 		String description = this.extractor.getShortDescription("My short description");
-		assertEquals("My short description", description);
+		assertThat(description).isEqualTo("My short description");
 	}
 
 	@Test
 	public void extractShortDescriptionNoDotMultipleLines() {
 		String description = this.extractor
 				.getShortDescription("My short description " + NEW_LINE + " More stuff");
-		assertEquals("My short description", description);
+		assertThat(description).isEqualTo("My short description");
 	}
 
 	@Test
 	public void extractShortDescriptionNull() {
-		assertEquals(null, this.extractor.getShortDescription(null));
+		assertThat(this.extractor.getShortDescription(null)).isEqualTo(null);
 	}
 
 }

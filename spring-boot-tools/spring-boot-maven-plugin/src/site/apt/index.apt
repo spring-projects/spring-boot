@@ -22,6 +22,10 @@ Spring Boot Maven Plugin
   * {{{./start-mojo.html}spring-boot:start}} and {{{./stop-mojo.html}spring-boot:stop}} to manage
     the lifecycle of your Spring Boot application (i.e. for integration tests).
 
+  * {{{./build-info-mojo.html}spring-boot:build-info}} generates build information that can be used
+    by the Actuator.
+
+
 
 * Usage
 
@@ -42,6 +46,8 @@ Spring Boot Maven Plugin
 
   * {{{./examples/repackage-classifier.html}Custom repackage classifier}}
 
+  * {{{./examples/repackage-disable-attach.html}Local repackaged artifact}}
+
   * {{{./examples/exclude-dependency.html}Exclude a dependency}}
 
   * {{{./examples/run-debug.html}Debug the application}}
@@ -49,6 +55,8 @@ Spring Boot Maven Plugin
   * {{{./examples/it-random-port.html}Random port for integration tests}}
 
   * {{{./examples/run-profiles.html}Specify active profiles}}
+
+  * {{{./examples/build-info.html}Generate build information}}
 
   []
 

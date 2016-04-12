@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,7 @@ import java.net.URL;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JvmUtils}.
@@ -36,8 +34,8 @@ public class JvmUtilsTests {
 	public void getToolsJar() throws Exception {
 		URL jarUrl = JvmUtils.getToolsJarUrl();
 		// System.out.println(jarUrl);
-		assertThat(jarUrl.toString(), endsWith(".jar"));
-		assertThat(new File(jarUrl.toURI()).exists(), equalTo(true));
+		assertThat(jarUrl.toString()).endsWith(".jar");
+		assertThat(new File(jarUrl.toURI()).exists()).isTrue();
 	}
 
 }

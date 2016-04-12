@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AggregateMetricReader}.
@@ -41,20 +40,21 @@ public class AggregateMetricReaderTests {
 	@Test
 	public void writeAndReadDefaults() {
 		this.source.set(new Metric<Double>("foo.bar.spam", 2.3));
-		assertEquals(2.3, this.reader.findOne("aggregate.spam").getValue());
+		assertThat(this.reader.findOne("aggregate.spam").getValue()).isEqualTo(2.3);
 	}
 
 	@Test
 	public void defaultKeyPattern() {
 		this.source.set(new Metric<Double>("foo.bar.spam.bucket.wham", 2.3));
-		assertEquals(2.3, this.reader.findOne("aggregate.spam.bucket.wham").getValue());
+		assertThat(this.reader.findOne("aggregate.spam.bucket.wham").getValue())
+				.isEqualTo(2.3);
 	}
 
 	@Test
 	public void addKeyPattern() {
 		this.source.set(new Metric<Double>("foo.bar.spam.bucket.wham", 2.3));
 		this.reader.setKeyPattern("d.d.k.d");
-		assertEquals(2.3, this.reader.findOne("aggregate.spam.wham").getValue());
+		assertThat(this.reader.findOne("aggregate.spam.wham").getValue()).isEqualTo(2.3);
 	}
 
 	@Test
@@ -63,42 +63,43 @@ public class AggregateMetricReaderTests {
 		this.source.set(new Metric<Double>("off.bar.spam.bucket.wham", 2.4));
 		this.reader.setPrefix("www");
 		this.reader.setKeyPattern("k.d.k.d");
-		assertEquals(2.3, this.reader.findOne("www.foo.spam.wham").getValue());
-		assertEquals(2, this.reader.count());
+		assertThat(this.reader.findOne("www.foo.spam.wham").getValue()).isEqualTo(2.3);
+		assertThat(this.reader.count()).isEqualTo(2);
 	}
 
 	@Test
 	public void writeAndReadExtraLong() {
 		this.source.set(new Metric<Double>("blee.foo.bar.spam", 2.3));
 		this.reader.setKeyPattern("d.d.d.k");
-		assertEquals(2.3, this.reader.findOne("aggregate.spam").getValue());
+		assertThat(this.reader.findOne("aggregate.spam").getValue()).isEqualTo(2.3);
 	}
 
 	@Test
 	public void writeAndReadLatestValue() {
 		this.source.set(new Metric<Double>("foo.bar.spam", 2.3, new Date(100L)));
 		this.source.set(new Metric<Double>("oof.rab.spam", 2.4, new Date(0L)));
-		assertEquals(2.3, this.reader.findOne("aggregate.spam").getValue());
+		assertThat(this.reader.findOne("aggregate.spam").getValue()).isEqualTo(2.3);
 	}
 
 	@Test
 	public void onlyPrefixed() {
 		this.source.set(new Metric<Double>("foo.bar.spam", 2.3));
-		assertNull(this.reader.findOne("spam"));
+		assertThat(this.reader.findOne("spam")).isNull();
 	}
 
 	@Test
 	public void incrementCounter() {
 		this.source.increment(new Delta<Long>("foo.bar.counter.spam", 2L));
 		this.source.increment(new Delta<Long>("oof.rab.counter.spam", 3L));
-		assertEquals(5L, this.reader.findOne("aggregate.counter.spam").getValue());
+		assertThat(this.reader.findOne("aggregate.counter.spam").getValue())
+				.isEqualTo(5L);
 	}
 
 	@Test
 	public void countGauges() {
 		this.source.set(new Metric<Double>("foo.bar.spam", 2.3));
 		this.source.set(new Metric<Double>("oof.rab.spam", 2.4));
-		assertEquals(1, this.reader.count());
+		assertThat(this.reader.count()).isEqualTo(1);
 	}
 
 	@Test
@@ -107,7 +108,7 @@ public class AggregateMetricReaderTests {
 		this.source.set(new Metric<Double>("oof.rab.spam", 2.4));
 		this.source.increment(new Delta<Long>("foo.bar.counter.spam", 2L));
 		this.source.increment(new Delta<Long>("oof.rab.counter.spam", 3L));
-		assertEquals(2, this.reader.count());
+		assertThat(this.reader.count()).isEqualTo(2);
 	}
 
 }

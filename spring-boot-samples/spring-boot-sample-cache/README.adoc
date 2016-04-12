@@ -7,6 +7,7 @@ abstraction is supported by many caching libraries, including:
 * `EhCache`
 * `Hazelcast`
 * `Infinispan`
+* `Couchbase`
 * `Redis`
 * `Guava`
 * Simple provider based on `ConcurrentHashMap`
@@ -78,9 +79,22 @@ can set the `spring.cache.infinispan.config` property to use the provided
 
 
 
+=== Couchbase
+Add the `java-client` and `couchbase-spring-cache` dependencies and make sure that you
+have setup at least a `spring.couchbase.bootstrap-hosts` property.
+
+
+
 === Redis
-Add the `spring-boot-starter-redis` and make sure it is configured properly (by default,
+Add the `spring-boot-starter-data-redis` and make sure it is configured properly (by default,
 a redis instance with the default settings is expected on your local box).
+
+
+
+=== Caffeine
+Simply add the `com.github.ben-manes.caffeine:caffeine` dependency to enable support
+for Caffeine. You can customize how caches are created in different ways, see
+`application.properties` for an example and the documentation for more details.
 
 
 

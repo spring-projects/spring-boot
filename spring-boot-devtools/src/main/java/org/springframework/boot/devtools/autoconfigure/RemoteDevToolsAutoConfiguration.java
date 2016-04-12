@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,11 +74,15 @@ public class RemoteDevToolsAutoConfiguration {
 	private static final Log logger = LogFactory
 			.getLog(RemoteDevToolsAutoConfiguration.class);
 
-	@Autowired
-	private DevToolsProperties properties;
+	private final DevToolsProperties properties;
 
-	@Autowired
-	private ServerProperties serverProperties;
+	private final ServerProperties serverProperties;
+
+	public RemoteDevToolsAutoConfiguration(DevToolsProperties properties,
+			ServerProperties serverProperties) {
+		this.properties = properties;
+		this.serverProperties = serverProperties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

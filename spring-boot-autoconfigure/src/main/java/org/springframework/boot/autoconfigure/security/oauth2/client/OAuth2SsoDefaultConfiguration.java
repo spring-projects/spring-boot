@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -45,11 +44,15 @@ import org.springframework.util.ClassUtils;
 public class OAuth2SsoDefaultConfiguration extends WebSecurityConfigurerAdapter
 		implements Ordered {
 
-	@Autowired
-	BeanFactory beanFactory;
+	private final BeanFactory beanFactory;
 
-	@Autowired
-	OAuth2SsoProperties sso;
+	private final OAuth2SsoProperties sso;
+
+	public OAuth2SsoDefaultConfiguration(BeanFactory beanFactory,
+			OAuth2SsoProperties sso) {
+		this.beanFactory = beanFactory;
+		this.sso = sso;
+	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {

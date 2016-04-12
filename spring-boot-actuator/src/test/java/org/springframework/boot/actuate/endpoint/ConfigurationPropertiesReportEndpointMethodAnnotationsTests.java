@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,12 @@ import org.junit.Test;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationPropertiesReportEndpoint} when used with bean methods.
@@ -65,9 +64,9 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("other");
-		assertNotNull(nestedProperties);
-		assertEquals("other", nestedProperties.get("prefix"));
-		assertNotNull(nestedProperties.get("properties"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("prefix")).isEqualTo("other");
+		assertThat(nestedProperties.get("properties")).isNotNull();
 	}
 
 	@Test
@@ -81,9 +80,9 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("bar");
-		assertNotNull(nestedProperties);
-		assertEquals("other", nestedProperties.get("prefix"));
-		assertNotNull(nestedProperties.get("properties"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("prefix")).isEqualTo("other");
+		assertThat(nestedProperties.get("properties")).isNotNull();
 	}
 
 	@Configuration

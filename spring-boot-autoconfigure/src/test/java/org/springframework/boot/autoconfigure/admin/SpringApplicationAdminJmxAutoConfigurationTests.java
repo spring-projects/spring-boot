@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +36,11 @@ import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoCo
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -90,7 +88,8 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 		load(ENABLE_ADMIN_PROP);
 		ObjectName objectName = createDefaultObjectName();
 		ObjectInstance objectInstance = this.mBeanServer.getObjectInstance(objectName);
-		assertNotNull("Lifecycle bean should have been registered", objectInstance);
+		assertThat(objectInstance).as("Lifecycle bean should have been registered")
+				.isNotNull();
 	}
 
 	@Test
@@ -122,13 +121,13 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 						JmxAutoConfiguration.class,
 						SpringApplicationAdminJmxAutoConfiguration.class)
 				.run("--" + ENABLE_ADMIN_PROP, "--server.port=0");
-		assertTrue(this.context instanceof EmbeddedWebApplicationContext);
-		assertEquals(true, this.mBeanServer.getAttribute(createDefaultObjectName(),
-				"EmbeddedWebApplication"));
+		assertThat(this.context).isInstanceOf(EmbeddedWebApplicationContext.class);
+		assertThat(this.mBeanServer.getAttribute(createDefaultObjectName(),
+				"EmbeddedWebApplication")).isEqualTo(Boolean.TRUE);
 		int expected = ((EmbeddedWebApplicationContext) this.context)
 				.getEmbeddedServletContainer().getPort();
 		String actual = getProperty(createDefaultObjectName(), "local.server.port");
-		assertEquals(String.valueOf(expected), actual);
+		assertThat(actual).isEqualTo(String.valueOf(expected));
 	}
 
 	private ObjectName createDefaultObjectName() {

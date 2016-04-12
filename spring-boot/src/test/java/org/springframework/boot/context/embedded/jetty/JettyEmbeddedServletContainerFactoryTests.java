@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,9 +46,7 @@ import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.http.HttpHeaders;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -134,8 +132,74 @@ public class JettyEmbeddedServletContainerFactoryTests
 				.getConnectors()[0];
 		SslConnectionFactory connectionFactory = connector
 				.getConnectionFactory(SslConnectionFactory.class);
-		assertThat(connectionFactory.getSslContextFactory().getIncludeCipherSuites(),
-				equalTo(new String[] { "ALPHA", "BRAVO", "CHARLIE" }));
+		assertThat(connectionFactory.getSslContextFactory().getIncludeCipherSuites())
+				.containsExactly("ALPHA", "BRAVO", "CHARLIE");
+	}
+
+	@Override
+	protected void addConnector(final int port,
+			AbstractEmbeddedServletContainerFactory factory) {
+		((JettyEmbeddedServletContainerFactory) factory)
+				.addServerCustomizers(new JettyServerCustomizer() {
+
+					@Override
+					public void customize(Server server) {
+						ServerConnector connector = new ServerConnector(server);
+						connector.setPort(port);
+						server.addConnector(connector);
+					}
+
+				});
+	}
+
+	@Test
+	public void sslEnabledMultiProtocolsConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
+		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
+
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+
+		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
+		ServerConnector connector = (ServerConnector) jettyContainer.getServer()
+				.getConnectors()[0];
+		SslConnectionFactory connectionFactory = connector
+				.getConnectionFactory(SslConnectionFactory.class);
+
+		assertThat(connectionFactory.getSslContextFactory().getIncludeProtocols())
+				.isEqualTo(new String[] { "TLSv1.1", "TLSv1.2" });
+	}
+
+	@Test
+	public void sslEnabledProtocolsConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
+		ssl.setEnabledProtocols(new String[] { "TLSv1.1" });
+
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+
+		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
+		ServerConnector connector = (ServerConnector) jettyContainer.getServer()
+				.getConnectors()[0];
+		SslConnectionFactory connectionFactory = connector
+				.getConnectionFactory(SslConnectionFactory.class);
+
+		assertThat(connectionFactory.getSslContextFactory().getIncludeProtocols())
+				.isEqualTo(new String[] { "TLSv1.1" });
 	}
 
 	private void assertTimeout(JettyEmbeddedServletContainerFactory factory,
@@ -147,7 +211,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		WebAppContext webAppContext = (WebAppContext) handlers[0];
 		int actual = webAppContext.getSessionHandler().getSessionManager()
 				.getMaxInactiveInterval();
-		assertThat(actual, equalTo(expected));
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
@@ -167,7 +231,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
-		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
 	}
 
 	@Test
@@ -182,7 +246,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		initParameters.put("a", "alpha");
 		factory.getJspServlet().setInitParameters(initParameters);
 		this.container = factory.getEmbeddedServletContainer();
-		assertThat(getJspServlet().getInitParameters(), is(equalTo(initParameters)));
+		assertThat(getJspServlet().getInitParameters()).isEqualTo(initParameters);
 	}
 
 	@Test

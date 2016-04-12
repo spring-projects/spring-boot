@@ -14,8 +14,8 @@
   -- A web UI example with production features
 * link:spring-boot-sample-actuator-noweb[spring-boot-sample-actuator-noweb]
   -- A production features sample with no web application
-* link:spring-boot-sample-actuator-log4j[spring-boot-sample-actuator-log4j]
-  -- A production features sample using log4j for logging (instead of logback)
+* link:spring-boot-sample-actuator-log4j2[spring-boot-sample-actuator-log4j2]
+  -- A production features sample using log4j 2 for logging (instead of logback)
 * link:spring-boot-sample-cache[spring-boot-sample-cache]
   -- A web sample that uses Spring's cache abstraction
 * link:spring-boot-sample-web-ui[spring-boot-sample-web-ui]
@@ -60,6 +60,8 @@
   -- Example showing message-oriented application using HornetQ
 * link:spring-boot-sample-batch[spring-boot-sample-batch]
   -- Define and run a Batch job in a few lines of code
+* link:spring-boot-sample-data-couchbase[spring-boot-sample-data-couchbase]
+    -- Spring Data Couchbase repositories
 * link:spring-boot-sample-data-jpa[spring-boot-sample-data-jpa]
   -- Spring Data JPA + Hibernate + HSQLDB
 * link:spring-boot-sample-data-mongodb[spring-boot-sample-data-mongodb]
