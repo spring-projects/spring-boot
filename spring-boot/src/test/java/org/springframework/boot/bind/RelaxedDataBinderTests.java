@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -648,6 +648,16 @@ public class RelaxedDataBinderTests {
 		assertEquals("boo", target.getFooBaz());
 	}
 
+	@Test
+	public void testIndexBounds() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		RelaxedDataBinder binder = getBinder(target, "test");
+		MutablePropertyValues values = new MutablePropertyValues();
+		values.add("test.objects[0]", "teststring");
+		binder.bind(values);
+		assertEquals("teststring", target.getObjects().get(0));
+	}
+
 	private void doTestBindCaseInsensitiveEnums(VanillaTarget target) throws Exception {
 		BindingResult result = bind(target, "bingo: THIS");
 		assertThat(result.getErrorCount(), equalTo(0));
@@ -1006,6 +1016,8 @@ public class RelaxedDataBinderTests {
 
 		private List<Bingo> bingos;
 
+		private List<Object> objects;
+
 		public char[] getBar() {
 			return this.bar;
 		}
@@ -1061,6 +1073,15 @@ public class RelaxedDataBinderTests {
 		public void setBingos(List<Bingo> bingos) {
 			this.bingos = bingos;
 		}
+
+		public List<Object> getObjects() {
+			return this.objects;
+		}
+
+		public void setObjects(List<Object> objects) {
+			this.objects = objects;
+		}
+
 	}
 
 	enum Bingo {
@@ -1081,4 +1102,5 @@ public class RelaxedDataBinderTests {
 		}
 
 	}
+
 }
