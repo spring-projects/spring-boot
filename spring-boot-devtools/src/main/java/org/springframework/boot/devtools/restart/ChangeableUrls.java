@@ -94,7 +94,7 @@ final class ChangeableUrls implements Iterable<URL> {
 		JarFile jarFile = getJarFileIfPossible(url);
 		if (jarFile != null) {
 			try {
-				return getUrlsFromClassPathAttribute(jarFile.getManifest());
+				return getUrlsFromClassPathAttribute(url, jarFile.getManifest());
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException(
@@ -118,7 +118,7 @@ final class ChangeableUrls implements Iterable<URL> {
 		return null;
 	}
 
-	private static List<URL> getUrlsFromClassPathAttribute(Manifest manifest) {
+	private static List<URL> getUrlsFromClassPathAttribute(URL base, Manifest manifest) {
 		List<URL> urls = new ArrayList<URL>();
 		String classPathAttribute = manifest.getMainAttributes()
 				.getValue(Attributes.Name.CLASS_PATH);
@@ -126,7 +126,7 @@ final class ChangeableUrls implements Iterable<URL> {
 			for (String entry : StringUtils.delimitedListToStringArray(classPathAttribute,
 					" ")) {
 				try {
-					urls.add(new URL(entry));
+					urls.add(new URL(base, entry));
 				}
 				catch (MalformedURLException ex) {
 					throw new IllegalStateException(

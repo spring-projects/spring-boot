@@ -77,10 +77,12 @@ public class ChangeableUrlsTests {
 	public void urlsFromJarClassPathAreConsidered() throws Exception {
 		URL projectCore = makeUrl("project-core");
 		URL projectWeb = makeUrl("project-web");
+		File relative = this.temporaryFolder.newFolder();
 		ChangeableUrls urls = ChangeableUrls.fromUrlClassLoader(new URLClassLoader(
 				new URL[] { makeJarFileWithUrlsInManifestClassPath(projectCore,
-						projectWeb) }));
-		assertThat(urls.toList(), contains(projectCore, projectWeb));
+						projectWeb, relative.getName() + "/") }));
+		assertThat(urls.toList(),
+				contains(projectCore, projectWeb, relative.toURI().toURL()));
 	}
 
 	private URL makeUrl(String name) throws IOException {
@@ -92,7 +94,7 @@ public class ChangeableUrlsTests {
 		return file.toURI().toURL();
 	}
 
-	private URL makeJarFileWithUrlsInManifestClassPath(URL... urls) throws Exception {
+	private URL makeJarFileWithUrlsInManifestClassPath(Object... urls) throws Exception {
 		File classpathJar = this.temporaryFolder.newFile("classpath.jar");
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().putValue(Attributes.Name.MANIFEST_VERSION.toString(),
