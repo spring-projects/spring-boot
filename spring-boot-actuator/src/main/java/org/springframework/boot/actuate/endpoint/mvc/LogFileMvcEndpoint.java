@@ -22,18 +22,12 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.endpoint.EndpointProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.logging.LogFile;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -52,26 +46,9 @@ import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "endpoints.logfile")
-public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
+public class LogFileMvcEndpoint extends AbstractMvcEndpoint {
 
 	private static final Log logger = LogFactory.getLog(LogFileMvcEndpoint.class);
-
-	/**
-	 * Endpoint URL path.
-	 */
-	@NotNull
-	@Pattern(regexp = "/.*", message = "Path must start with /")
-	private String path = "/logfile";
-
-	/**
-	 * Enable the endpoint.
-	 */
-	private boolean enabled = true;
-
-	/**
-	 * Mark if the endpoint exposes sensitive information.
-	 */
-	private Boolean sensitive;
 
 	/**
 	 * External Logfile to be accessed. Can be used if the logfile is written by output
@@ -79,37 +56,8 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	 */
 	private File externalFile;
 
-	private Environment environment;
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
-	}
-
-	@Override
-	public String getPath() {
-		return this.path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	@Override
-	public boolean isSensitive() {
-		return EndpointProperties.isSensitive(this.environment, this.sensitive, true);
-	}
-
-	public void setSensitive(Boolean sensitive) {
-		this.sensitive = sensitive;
+	public LogFileMvcEndpoint() {
+		super("/logfile", true);
 	}
 
 	public File getExternalFile() {
@@ -118,12 +66,6 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 
 	public void setExternalFile(File externalFile) {
 		this.externalFile = externalFile;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public Class<? extends Endpoint> getEndpointType() {
-		return null;
 	}
 
 	@RequestMapping(method = { RequestMethod.GET, RequestMethod.HEAD })
@@ -147,7 +89,7 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		if (this.externalFile != null) {
 			return new FileSystemResource(this.externalFile);
 		}
-		LogFile logFile = LogFile.get(this.environment);
+		LogFile logFile = LogFile.get(getEnvironment());
 		if (logFile == null) {
 			logger.debug("Missing 'logging.file' or 'logging.path' properties");
 			return null;
