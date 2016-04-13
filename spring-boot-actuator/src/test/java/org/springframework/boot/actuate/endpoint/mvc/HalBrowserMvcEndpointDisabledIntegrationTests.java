@@ -83,7 +83,7 @@ public class HalBrowserMvcEndpointDisabledIntegrationTests {
 	public void endpointsDoNotHaveLinks() throws Exception {
 		for (MvcEndpoint endpoint : this.mvcEndpoints.getEndpoints()) {
 			String path = endpoint.getPath();
-			if ("/actuator".equals(path)) {
+			if ("/actuator".equals(path) || endpoint instanceof HeapdumpMvcEndpoint) {
 				continue;
 			}
 			path = path.length() > 0 ? path : "/";
