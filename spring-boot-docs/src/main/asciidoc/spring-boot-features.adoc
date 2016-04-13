@@ -3064,7 +3064,7 @@ You can take full control of the configuration by adding a
 `org.neo4j.ogm.config.Configuration` `@Bean` of your own. Also, adding a `@Bean` of type
 `Neo4jOperations` disables the auto-configuration.
 
-You can configure the user and credentials to use via the `spring.data.couchbase.*`
+You can configure the user and credentials to use via the `spring.data.neo4j.*`
 properties:
 
 [source,properties,indent=0]
