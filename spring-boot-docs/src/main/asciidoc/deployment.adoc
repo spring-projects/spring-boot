@@ -107,7 +107,7 @@ It's easy to then verify the status of the deployed application:
 
 Once Cloud Foundry acknowledges that your application has been deployed, you should be
 able to hit the application at the URI given, in this case
-`http://acloudyspringtime.cfapps.io/`.
+`\http://acloudyspringtime.cfapps.io/`.
 
 
 

@@ -13,10 +13,10 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :spring-boot-docs: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/reference
 :spring-boot-docs-current: http://docs.spring.io/spring-boot/docs/current/reference
 :github-repo: spring-projects/spring-boot
-:github-raw: http://raw.github.com/{github-repo}/{github-tag}
-:github-code: http://github.com/{github-repo}/tree/{github-tag}
-:github-wiki: http://github.com/{github-repo}/wiki
-:github-master-code: http://github.com/{github-repo}/tree/master
+:github-raw: https://raw.github.com/{github-repo}/{github-tag}
+:github-code: https://github.com/{github-repo}/tree/{github-tag}
+:github-wiki: https://github.com/{github-repo}/wiki
+:github-master-code: https://github.com/{github-repo}/tree/master
 :sc-ext: java
 :sc-spring-boot: {github-code}/spring-boot/src/main/java/org/springframework/boot
 :sc-spring-boot-autoconfigure: {github-code}/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
@@ -31,7 +31,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :dc-spring-boot-autoconfigure: {dc-root}/org/springframework/boot/autoconfigure
 :dc-spring-boot-actuator: {dc-root}/org/springframework/boot/actuate
 :dc-spring-boot-test: {dc-root}/spring-boot-test/src/main/java/org/springframework/boot/test
-:dc-spring-boot-test-autoconfigure: {dc-root}/spring-boot-test/src/main/java/org/springframework/boot/test/autoconfigure
+:dc-spring-boot-test-autoconfigure: {dc-root}/spring-boot-test-autoconfigure/src/main/java/org/springframework/boot/test/autoconfigure
 :dependency-management-plugin: https://github.com/spring-gradle-plugins/dependency-management-plugin
 :dependency-management-plugin-documentation: {dependency-management-plugin}/blob/master/README.md
 :spring-boot-maven-plugin-site: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/maven-plugin

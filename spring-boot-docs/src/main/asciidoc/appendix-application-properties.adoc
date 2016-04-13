@@ -631,7 +631,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.log-dir= # Transaction logs directory.
 	spring.jta.transaction-manager-id= # Transaction manager unique identifier.
 
-	# ATOMIKOS
+	# ATOMIKOS ({sc-spring-boot}/jta/atomikos/AtomikosProperties.{sc-ext}[AtomikosProperties])
 	spring.jta.atomikos.connectionfactory.borrow-connection-timeout=30 # Timeout, in seconds, for borrowing connections from the pool.
 	spring.jta.atomikos.connectionfactory.ignore-session-transacted-flag=true # Whether or not to ignore the transacted flag when creating session.
 	spring.jta.atomikos.connectionfactory.local-transaction-mode=false # Whether or not local transactions are desired.
@@ -736,7 +736,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.bitronix.properties.skip-corrupted-logs=false # Skip corrupted transactions log entries.
 	spring.jta.bitronix.properties.warn-about-zero-resource-transaction=true # Log a warning for transactions executed without a single enlisted resource.
 
-	# NARAYANA
+	# NARAYANA ({sc-spring-boot}/jta/narayana/NarayanaProperties.{sc-ext}[NarayanaProperties])
 	spring.jta.narayana.default-timeout=60 # Transaction timeout in seconds.
 	spring.jta.narayana.expiry-scanners=com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner # Comma-separated list of expiry scanners.
 	spring.jta.narayana.log-dir= # Transaction object store directory.
