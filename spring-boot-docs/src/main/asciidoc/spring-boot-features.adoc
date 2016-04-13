@@ -4435,7 +4435,7 @@ the annotations will be ignored.
 
 
 [[boot-features-testing-spring-boot-applications-detecting-config]]
-==== Detecting configuration
+==== Detecting test configuration
 If you're familiar with the Spring Test Framework, you may be used to using
 `@ContextConfiguration(classes=...)` in order to specify which Spring `@Configuration`
 to load. Alternatively, you might have often used nested `@Configuration` classes within
@@ -4522,7 +4522,7 @@ For convenience, tests that need to make REST calls to the started server can ad
 
 
 [[boot-features-testing-spring-boot-applications-mocking-beans]]
-==== Mocking Beans
+==== Mocking and spying beans
 It's sometimes necessary to mock certain components within your application context when
 running tests. For example, you may have a facade over some remote service that's
 unavailable during development. Mocking can also be useful when you want to simulate
@@ -4571,6 +4571,8 @@ implementation:
 	}
 ----
 
+Additionally you can also use `@SpyBean` to wrap any existing bean with a Mockito `spy`.
+See the javadoc for full details.
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-tests]]
