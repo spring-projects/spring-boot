@@ -76,11 +76,7 @@ public class FilterAnnotationsTests {
 		FilterAnnotations filterAnnotations = get(FilterByRegex.class);
 		assertThat(match(filterAnnotations, ExampleWithAnnotation.class)).isFalse();
 		assertThat(match(filterAnnotations, ExampleWithoutAnnotation.class)).isTrue();
-	}
-
-	@Test
-	public void anyMatches() throws Exception {
-	}
+	} 
 
 	private FilterAnnotations get(Class<?> type) {
 		Filters filters = AnnotatedElementUtils.getMergedAnnotation(type, Filters.class);
