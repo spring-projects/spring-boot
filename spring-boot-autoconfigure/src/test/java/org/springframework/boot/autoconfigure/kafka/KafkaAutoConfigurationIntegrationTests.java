@@ -65,7 +65,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 				"spring.kafka.consumer.auto-offset-reset=earliest");
 		@SuppressWarnings("unchecked")
 		KafkaTemplate<String, String> template = this.context.getBean(KafkaTemplate.class);
-		template.convertAndSend(TEST_TOPIC, "foo", "bar");
+		template.send(TEST_TOPIC, "foo", "bar");
 		Listener listener = this.context.getBean(Listener.class);
 		assertThat(listener.latch.await(10, TimeUnit.SECONDS)).isTrue();
 		assertThat(listener.key).isEqualTo("foo");
@@ -104,7 +104,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 		private volatile String key;
 
 		@KafkaListener(topics = TEST_TOPIC)
-		public void listen(String foo, @Header(KafkaHeaders.MESSAGE_KEY) String key) {
+		public void listen(String foo, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
 			this.received = foo;
 			this.key = key;
 			this.latch.countDown();

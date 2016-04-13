@@ -32,8 +32,8 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
-import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
@@ -50,10 +50,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Gary Russell
  * @since 1.4
  */
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(KafkaPropertiesTests.Config.class)
-@SpringApplicationTest({
+@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = {
 	"spring.kafka.bootstrap-servers=foo:1234",
 	"spring.kafka.clientId=cid",
 	"spring.kafka.ssl-key-password=p1",
