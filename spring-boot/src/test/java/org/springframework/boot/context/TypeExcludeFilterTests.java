@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -42,19 +43,27 @@ public class TypeExcludeFilterTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
+	private AnnotationConfigApplicationContext context;
+
+	@After
+	public void cleanUp() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
 	public void loadsTypeExcludeFilters() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.getBeanFactory().registerSingleton("filter1",
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.getBeanFactory().registerSingleton("filter1",
 				new WithoutMatchOverrideFilter());
-		context.getBeanFactory().registerSingleton("filter2",
+		this.context.getBeanFactory().registerSingleton("filter2",
 				new SampleTypeExcludeFilter());
-		context.register(Config.class);
-		context.refresh();
-		assertThat(context.getBean(ExampleComponent.class)).isNotNull();
+		this.context.register(Config.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(ExampleComponent.class)).isNotNull();
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		context.getBean(ExampleFilteredComponent.class);
-		context.close();
+		this.context.getBean(ExampleFilteredComponent.class);
 	}
 
 	@Configuration
