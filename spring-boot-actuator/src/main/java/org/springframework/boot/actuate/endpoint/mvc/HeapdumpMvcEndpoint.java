@@ -26,6 +26,8 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
@@ -56,6 +58,11 @@ public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint implements MvcEndpo
 			Collections.singletonMap("message",
 					"Heapdumping is not supported in this environment."),
 			HttpStatus.NOT_FOUND);
+	private static final ResponseEntity<Map<String, String>> HEAPDUMP_ALREADY_IN_PROGRESS = new ResponseEntity<Map<String, String>>(
+			Collections.singletonMap("message",
+					"Only a single heapdump can be requested at a time."),
+			HttpStatus.TOO_MANY_REQUESTS);
+	private final Lock heapDumpLock = new ReentrantLock();
 
 	public HeapdumpMvcEndpoint() {
 		setPath("/heapdump");
@@ -81,6 +88,22 @@ public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint implements MvcEndpo
 		if (!heapdumper.isAvailable()) {
 			return HEAPDUMPER_NOT_AVAILABLE_RESPONSE;
 		}
+		if (heapDumpLock.tryLock()) {
+			try {
+				doDumpHeap(response, live);
+			}
+			finally {
+				heapDumpLock.unlock();
+			}
+		}
+		else {
+			return HEAPDUMP_ALREADY_IN_PROGRESS;
+		}
+		return null;
+	}
+
+	private void doDumpHeap(HttpServletResponse response, boolean live)
+			throws IOException {
 		final File dumpFile = File.createTempFile(createFileName(live), ".hprof");
 		// file must not exist before creating heap dump
 		dumpFile.delete();
@@ -91,7 +114,6 @@ public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint implements MvcEndpo
 		finally {
 			dumpFile.delete();
 		}
-		return null;
 	}
 
 	private void streamFileAndGzipToResponse(HttpServletResponse response, File dumpFile)
