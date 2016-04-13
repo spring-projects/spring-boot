@@ -37,7 +37,9 @@ while [[ -L "$jarfile" ]]; do
   cd "$(dirname "$jarfile")" || exit 1
   jarfile=$(pwd)/$(basename "$jarfile")
 done
+# Normalized, absolute path to jar-file
 jarfolder="$(realpath $(dirname "$jarfile"))"
+
 cd "$WORKING_DIR" || exit 1
 
 # Source any config file
