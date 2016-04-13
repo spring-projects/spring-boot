@@ -2159,10 +2159,10 @@ to decode tokens, so there is nothing else to do. If your app is a standalone se
 need to give it some more configuration, one of the following options:
 
 * `security.oauth2.resource.user-info-uri` to use the `/me` resource (e.g.
-`https://uaa.run.pivotal.io/userinfo` on PWS)
+`\https://uaa.run.pivotal.io/userinfo` on PWS)
 
 * `security.oauth2.resource.token-info-uri` to use the token decoding endpoint (e.g.
-`https://uaa.run.pivotal.io/check_token` on PWS).
+`\https://uaa.run.pivotal.io/check_token` on PWS).
 
 If you specify both the `user-info-uri` and the `token-info-uri` then you can set a flag
 to say that one is preferred over the other (`prefer-token-info=true` is the default).
