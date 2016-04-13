@@ -116,28 +116,29 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- <plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<inherited>false</inherited>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>attach-artifacts</id>
-						<phase>package</phase>
+						<id>checkstyle-validation</id>
+						<phase>validate</phase>
 						<goals>
-							<goal>attach-artifact</goal>
+							<goal>check</goal>
 						</goals>
 						<configuration>
-							<artifacts>
-								<artifact>
-									<file>${project.build.directory}/spring-boot-starters-${project.version}-poms.zip</file>
-									<type>starter-poms</type>
-								</artifact>
-							</artifacts>
+							<skip>true</skip>
 						</configuration>
 					</execution>
 				</executions>
-			</plugin> -->
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>animal-sniffer-maven-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
