@@ -65,7 +65,6 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
- * @author Venil Noronha
  */
 public class TomcatEmbeddedServletContainerFactoryTests
 		extends AbstractEmbeddedServletContainerFactoryTests {
@@ -130,23 +129,6 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		InOrder ordered = inOrder((Object[]) listeners);
 		for (TomcatContextCustomizer listener : listeners) {
 			ordered.verify(listener).customize((Context) anyObject());
-		}
-	}
-
-	@Test
-	public void tomcatSslProtocolCustomizers() throws Exception {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		TomcatSslProtocolCustomizer[] customizers = new TomcatSslProtocolCustomizer[4];
-		for (int i = 0; i < customizers.length; i++) {
-			customizers[i] = mock(TomcatSslProtocolCustomizer.class);
-		}
-		factory.setSsl(new Ssl());
-		factory.setSslProtocolCustomizers(Arrays.asList(customizers[0], customizers[1]));
-		factory.addSslProtocolCustomizers(customizers[2], customizers[3]);
-		this.container = factory.getEmbeddedServletContainer();
-		InOrder ordered = inOrder((Object[]) customizers);
-		for (TomcatSslProtocolCustomizer customizer : customizers) {
-			ordered.verify(customizer).customize((AbstractHttp11JsseProtocol<?>) anyObject());
 		}
 	}
 
@@ -235,22 +217,6 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("TomcatContextCustomizers must not be null");
 		factory.addContextCustomizers((TomcatContextCustomizer[]) null);
-	}
-
-	@Test
-	public void setNullTomcatSslProtocolCustomizersThrows() {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TomcatSslProtocolCustomizers must not be null");
-		factory.setSslProtocolCustomizers(null);
-	}
-
-	@Test
-	public void addNullSslProtocolCustomizersThrows() {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TomcatSslProtocolCustomizers must not be null");
-		factory.addSslProtocolCustomizers((TomcatSslProtocolCustomizer[]) null);
 	}
 
 	@Test

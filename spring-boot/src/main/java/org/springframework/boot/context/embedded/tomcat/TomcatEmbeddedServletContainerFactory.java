@@ -86,7 +86,6 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Eddú Meléndez
- * @author Venil Noronha
  * @see #setPort(int)
  * @see #setContextLifecycleListeners(Collection)
  * @see TomcatEmbeddedServletContainer
@@ -110,8 +109,6 @@ public class TomcatEmbeddedServletContainerFactory
 	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<LifecycleListener>();
 
 	private List<TomcatContextCustomizer> tomcatContextCustomizers = new ArrayList<TomcatContextCustomizer>();
-
-	private List<TomcatSslProtocolCustomizer> sslProtocolCustomizers = new ArrayList<TomcatSslProtocolCustomizer>();
 
 	private List<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new ArrayList<TomcatConnectorCustomizer>();
 
@@ -319,24 +316,17 @@ public class TomcatEmbeddedServletContainerFactory
 	protected void configureSsl(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		protocol.setSSLEnabled(true);
 		protocol.setSslProtocol(ssl.getProtocol());
-		if (this.sslProtocolCustomizers.isEmpty()) {
-			configureSslClientAuth(protocol, ssl);
-			protocol.setKeystorePass(ssl.getKeyStorePassword());
-			protocol.setKeyPass(ssl.getKeyPassword());
-			protocol.setKeyAlias(ssl.getKeyAlias());
-			configureSslKeyStore(protocol, ssl);
-			protocol.setCiphers(StringUtils.arrayToCommaDelimitedString(ssl.getCiphers()));
-			if (ssl.getEnabledProtocols() != null) {
-				protocol.setProperty("sslEnabledProtocols",
-						StringUtils.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
-			}
-			configureSslTrustStore(protocol, ssl);
+		configureSslClientAuth(protocol, ssl);
+		protocol.setKeystorePass(ssl.getKeyStorePassword());
+		protocol.setKeyPass(ssl.getKeyPassword());
+		protocol.setKeyAlias(ssl.getKeyAlias());
+		configureSslKeyStore(protocol, ssl);
+		protocol.setCiphers(StringUtils.arrayToCommaDelimitedString(ssl.getCiphers()));
+		if (ssl.getEnabledProtocols() != null) {
+			protocol.setProperty("sslEnabledProtocols",
+					StringUtils.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
 		}
-		else {
-			for (TomcatSslProtocolCustomizer sslProtocolCustomizer : this.sslProtocolCustomizers) {
-				sslProtocolCustomizer.customize(protocol);
-			}
-		}
+		configureSslTrustStore(protocol, ssl);
 	}
 
 	private void configureSslClientAuth(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
@@ -596,37 +586,6 @@ public class TomcatEmbeddedServletContainerFactory
 		Assert.notNull(tomcatContextCustomizers,
 				"TomcatContextCustomizers must not be null");
 		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
-	}
-
-	/**
-	 * Set {@link TomcatSslProtocolCustomizer}s that should be applied to the
-	 * {@link AbstractHttp11JsseProtocol}. Calling this method will replace any existing
-	 * customizers.
-	 * @param customizers the customizers to set.
-	 */
-	public void setSslProtocolCustomizers(
-			Collection<? extends TomcatSslProtocolCustomizer> customizers) {
-		Assert.notNull(customizers, "TomcatSslProtocolCustomizers must not be null");
-		this.sslProtocolCustomizers = new ArrayList<TomcatSslProtocolCustomizer>(customizers);
-	}
-
-	/**
-	 * Returns a mutable collection of the {@link TomcatSslProtocolCustomizer}s that will be
-	 * applied to the {@link AbstractHttp11JsseProtocol}.
-	 * @return the customizers that will be applied.
-	 */
-	public Collection<TomcatSslProtocolCustomizer> getSslProtocolCustomizers() {
-		return this.sslProtocolCustomizers;
-	}
-
-	/**
-	 * Add {@link TomcatSslProtocolCustomizer}s that should be used to customize the
-	 * {@link AbstractHttp11JsseProtocol}.
-	 * @param customizers the customizers to add.
-	 */
-	public void addSslProtocolCustomizers(TomcatSslProtocolCustomizer... customizers) {
-		Assert.notNull(customizers, "TomcatSslProtocolCustomizers must not be null");
-		this.sslProtocolCustomizers.addAll(Arrays.asList(customizers));
 	}
 
 	/**

@@ -75,7 +75,6 @@ import org.springframework.boot.context.embedded.MimeMappings.Mapping;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
-import org.springframework.boot.context.embedded.SslContextCustomizer;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
@@ -92,7 +91,6 @@ import org.springframework.util.ResourceUtils;
  * @author Andy Wilkinson
  * @author Marcos Barbero
  * @author Eddú Meléndez
- * @author Venil Noronha
  * @since 1.2.0
  * @see UndertowEmbeddedServletContainer
  */
@@ -102,8 +100,6 @@ public class UndertowEmbeddedServletContainerFactory
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
 	private List<UndertowBuilderCustomizer> builderCustomizers = new ArrayList<UndertowBuilderCustomizer>();
-
-	private List<SslContextCustomizer> sslContextCustomizers = new ArrayList<SslContextCustomizer>();
 
 	private List<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new ArrayList<UndertowDeploymentInfoCustomizer>();
 
@@ -187,36 +183,6 @@ public class UndertowEmbeddedServletContainerFactory
 	}
 
 	/**
-	 * Set {@link SslContextCustomizer}s that should be applied to the {@link SSLContext}.
-	 * Calling this method will replace any existing customizers.
-	 * @param customizers the customizers to set.
-	 */
-	public void setSslContextCustomizers(
-			Collection<? extends SslContextCustomizer> customizers) {
-		Assert.notNull(customizers, "SslContextCustomizers must not be null");
-		this.sslContextCustomizers = new ArrayList<SslContextCustomizer>(customizers);
-	}
-
-	/**
-	 * Returns a mutable collection of the {@link SslContextCustomizer}s that will be
-	 * applied to the {@link SSLContext}.
-	 * @return the customizers that will be applied.
-	 */
-	public Collection<SslContextCustomizer> getSslContextCustomizers() {
-		return this.sslContextCustomizers;
-	}
-
-	/**
-	 * Add {@link SslContextCustomizer}s that should be used to customize the
-	 * {@link SSLContext}.
-	 * @param customizers the customizers to add.
-	 */
-	public void addSslContextCustomizers(SslContextCustomizer... customizers) {
-		Assert.notNull(customizers, "SslContextCustomizers must not be null");
-		this.sslContextCustomizers.addAll(Arrays.asList(customizers));
-	}
-
-	/**
 	 * Set {@link UndertowDeploymentInfoCustomizer}s that should be applied to the
 	 * Undertow {@link DeploymentInfo}. Calling this method will replace any existing
 	 * customizers.
@@ -290,14 +256,7 @@ public class UndertowEmbeddedServletContainerFactory
 	private void configureSsl(Ssl ssl, int port, Builder builder) {
 		try {
 			SSLContext sslContext = SSLContext.getInstance(ssl.getProtocol());
-			if (this.sslContextCustomizers.isEmpty()) {
-				sslContext.init(getKeyManagers(), getTrustManagers(), null);
-			}
-			else {
-				for (SslContextCustomizer sslContextCustomizer : this.sslContextCustomizers) {
-					sslContextCustomizer.customize(sslContext);
-				}
-			}
+			sslContext.init(getKeyManagers(), getTrustManagers(), null);
 			builder.addHttpsListener(port, getListenAddress(), sslContext);
 			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE,
 					getSslClientAuthMode(ssl));

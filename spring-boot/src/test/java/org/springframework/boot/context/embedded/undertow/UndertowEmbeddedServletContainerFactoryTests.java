@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 
 import io.undertow.Undertow.Builder;
@@ -42,8 +41,6 @@ import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.ExampleServlet;
 import org.springframework.boot.context.embedded.MimeMappings.Mapping;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
-import org.springframework.boot.context.embedded.Ssl;
-import org.springframework.boot.context.embedded.SslContextCustomizer;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -58,7 +55,6 @@ import static org.mockito.Mockito.mock;
  *
  * @author Ivan Sopov
  * @author Andy Wilkinson
- * @author Venil Noronha
  */
 public class UndertowEmbeddedServletContainerFactoryTests
 		extends AbstractEmbeddedServletContainerFactoryTests {
@@ -108,39 +104,6 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (UndertowBuilderCustomizer customizer : customizers) {
 			ordered.verify(customizer).customize((Builder) anyObject());
-		}
-	}
-
-	@Test
-	public void setNullSslContextCustomizersThrows() {
-		UndertowEmbeddedServletContainerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("SslContextCustomizers must not be null");
-		factory.setSslContextCustomizers(null);
-	}
-
-	@Test
-	public void addNullAddSslContextCustomizersThrows() {
-		UndertowEmbeddedServletContainerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("SslContextCustomizers must not be null");
-		factory.addSslContextCustomizers((SslContextCustomizer[]) null);
-	}
-
-	@Test
-	public void sslContextCustomizers() throws Exception {
-		UndertowEmbeddedServletContainerFactory factory = getFactory();
-		SslContextCustomizer[] customizers = new SslContextCustomizer[4];
-		for (int i = 0; i < customizers.length; i++) {
-			customizers[i] = mock(SslContextCustomizer.class);
-		}
-		factory.setSsl(new Ssl());
-		factory.setSslContextCustomizers(Arrays.asList(customizers[0], customizers[1]));
-		factory.addSslContextCustomizers(customizers[2], customizers[3]);
-		this.container = factory.getEmbeddedServletContainer();
-		InOrder ordered = inOrder((Object[]) customizers);
-		for (SslContextCustomizer customizer : customizers) {
-			ordered.verify(customizer).customize((SSLContext) anyObject());
 		}
 	}
 
