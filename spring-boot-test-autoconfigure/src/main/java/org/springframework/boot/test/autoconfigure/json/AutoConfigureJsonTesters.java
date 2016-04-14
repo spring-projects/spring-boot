@@ -32,7 +32,7 @@ import org.springframework.test.context.TestExecutionListeners.MergeMode;
 
 /**
  * Annotation that can be applied to a test class to enable and configure
- * auto-configuration of JSON Testers.
+ * auto-configuration of JSON testers.
  * <p>
  * NOTE: {@code @AutoConfigureJsonTesters} works in conjunction with
  * {@link JsonTesterInitializationTestExecutionListener}. If you declare your own
