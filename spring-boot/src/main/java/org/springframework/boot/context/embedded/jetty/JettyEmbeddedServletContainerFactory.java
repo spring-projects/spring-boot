@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URL;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -91,6 +92,7 @@ import org.springframework.util.StringUtils;
  * @author Andrey Hihlovskiy
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Venil Noronha
  * @see #setPort(int)
  * @see #setConfigurations(Collection)
  * @see JettyEmbeddedServletContainer
@@ -211,14 +213,29 @@ public class JettyEmbeddedServletContainerFactory
 		configureSslClientAuth(factory, ssl);
 		configureSslPasswords(factory, ssl);
 		factory.setCertAlias(ssl.getKeyAlias());
-		configureSslKeyStore(factory, ssl);
+
+		KeyStore keyStore = getDynamicSslKeyStore();
+		if (keyStore != null) {
+			factory.setKeyStore(keyStore);
+		}
+		else {
+			configureSslKeyStore(factory, ssl);
+		}
+
 		if (ssl.getCiphers() != null) {
 			factory.setIncludeCipherSuites(ssl.getCiphers());
 		}
 		if (ssl.getEnabledProtocols() != null) {
 			factory.setIncludeProtocols(ssl.getEnabledProtocols());
 		}
-		configureSslTrustStore(factory, ssl);
+
+		KeyStore trustStore = getDynamicSslTrustStore();
+		if (trustStore != null) {
+			factory.setTrustStore(trustStore);
+		}
+		else {
+			configureSslTrustStore(factory, ssl);
+		}
 	}
 
 	private void configureSslClientAuth(SslContextFactory factory, Ssl ssl) {

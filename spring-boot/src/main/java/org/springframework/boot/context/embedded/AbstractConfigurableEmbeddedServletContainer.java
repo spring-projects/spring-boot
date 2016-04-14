@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -37,6 +38,7 @@ import org.springframework.util.ClassUtils;
  * @author Stephane Nicoll
  * @author Ivan Sopov
  * @author Eddú Meléndez
+ * @author Venil Noronha
  * @see AbstractEmbeddedServletContainerFactory
  */
 public abstract class AbstractConfigurableEmbeddedServletContainer
@@ -338,6 +340,33 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	protected boolean shouldRegisterJspServlet() {
 		return this.jspServlet != null && this.jspServlet.getRegistered() && ClassUtils
 				.isPresent(this.jspServlet.getClassName(), getClass().getClassLoader());
+	}
+
+	protected KeyStore getDynamicSslKeyStore() {
+		KeyStore keyStore = null;
+		if (getSsl() != null && getSsl() instanceof DynamicSsl) {
+			KeyStoreSupplier keyStoreSupplier = ((DynamicSsl) getSsl())
+					.getKeyStoreSupplier();
+			if (keyStoreSupplier != null) {
+				keyStore = keyStoreSupplier.get();
+				Assert.notNull(keyStore, "keyStoreSupplier must return a non-null value");
+			}
+		}
+		return keyStore;
+	}
+
+	protected KeyStore getDynamicSslTrustStore() {
+		KeyStore trustStore = null;
+		if (getSsl() != null && getSsl() instanceof DynamicSsl) {
+			KeyStoreSupplier trustStoreSupplier = ((DynamicSsl) getSsl())
+					.getTrustStoreSupplier();
+			if (trustStoreSupplier != null) {
+				trustStore = trustStoreSupplier.get();
+				Assert.notNull(trustStore,
+						"trustStoreSupplier must return a non-null value");
+			}
+		}
+		return trustStore;
 	}
 
 }

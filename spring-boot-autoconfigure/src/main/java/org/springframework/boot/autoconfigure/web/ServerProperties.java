@@ -42,6 +42,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties.Session.Cooki
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
+import org.springframework.boot.context.embedded.DynamicSsl;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -72,6 +73,7 @@ import org.springframework.util.StringUtils;
  * @author Ivan Sopov
  * @author Marcos Barbero
  * @author Eddú Meléndez
+ * @author Venil Noronha
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties
@@ -123,8 +125,7 @@ public class ServerProperties
 
 	private Session session = new Session();
 
-	@NestedConfigurationProperty
-	private Ssl ssl;
+	private Ssl ssl = new DynamicSsl();
 
 	@NestedConfigurationProperty
 	private Compression compression = new Compression();
