@@ -37,7 +37,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @see ImportWebMvcAutoConfiguration
+ * @see AutoConfigureWebMvc
  */
 @Configuration
 @ConditionalOnWebApplication

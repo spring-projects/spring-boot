@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.orm.jpa;
+package org.springframework.boot.test.autoconfigure.json;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -23,28 +23,22 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 
 /**
- * {@link ImportAutoConfiguration Auto-configuration imports} for typical Data JPA tests.
- * Most tests should consider using {@link DataJpaTest @DataJpaTest} rather than using
- * this annotation directly.
+ * {@link ImportAutoConfiguration Auto-configuration imports} for typical JSON tests. Most
+ * tests should consider using {@link JsonTest @JsonTest} rather than using this
+ * annotation directly.
  *
  * @author Phillip Webb
  * @since 1.4.0
- * @see DataJpaTest
+ * @see JsonTest
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ImportAutoConfiguration({ HibernateJpaAutoConfiguration.class,
-		JpaRepositoriesAutoConfiguration.class, TransactionAutoConfiguration.class,
-		DataSourceTransactionManagerAutoConfiguration.class,
-		DataSourceAutoConfiguration.class })
-public @interface ImportDataJpaAutoConfiguration {
+@ImportAutoConfiguration({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class })
+public @interface AutoConfigurationJson {
 
 }

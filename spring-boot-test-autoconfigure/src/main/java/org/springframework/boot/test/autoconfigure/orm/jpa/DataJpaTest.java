@@ -62,7 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(DataJpaTypeExcludeFilter.class)
 @Transactional
-@ImportDataJpaAutoConfiguration
+@AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 public @interface DataJpaTest {

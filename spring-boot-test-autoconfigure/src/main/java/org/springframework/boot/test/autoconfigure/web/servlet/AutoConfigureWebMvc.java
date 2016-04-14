@@ -42,6 +42,6 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 @Documented
 @ImportAutoConfiguration({ WebMvcAutoConfiguration.class, GsonAutoConfiguration.class,
 		JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
-public @interface ImportWebMvcAutoConfiguration {
+public @interface AutoConfigureWebMvc {
 
 }
