@@ -25,11 +25,11 @@ import org.springframework.context.ApplicationContextAware;
 /**
  * {@link BeanPostProcessor} that retrieves the {@link KeyStoreSupplier keyStoreSupplier}
  * and {@link KeyStoreSupplier trustStoreSupplier} beans from the bean factory and sets
- * them to {@link DynamicSsl} instances contained by
+ * them to {@link Ssl} instances contained by
  * {@link AbstractConfigurableEmbeddedServletContainer} beans.
  * @author Venil Noronha
  */
-public class DynamicSslConfigurerBeanPostProcessor
+public class SslConfigurerBeanPostProcessor
 		implements BeanPostProcessor, ApplicationContextAware {
 
 	private static final String KEY_STORE_SUPPLIER_BEAN_NAME = "keyStoreSupplier";
@@ -41,7 +41,7 @@ public class DynamicSslConfigurerBeanPostProcessor
 	private KeyStoreSupplier keyStoreSupplier;
 	private KeyStoreSupplier trustStoreSupplier;
 
-	public DynamicSslConfigurerBeanPostProcessor() {
+	public SslConfigurerBeanPostProcessor() {
 		this.initialized = false;
 	}
 
@@ -56,8 +56,8 @@ public class DynamicSslConfigurerBeanPostProcessor
 			throws BeansException {
 		if (bean instanceof AbstractConfigurableEmbeddedServletContainer) {
 			Ssl ssl = ((AbstractConfigurableEmbeddedServletContainer) bean).getSsl();
-			if (ssl != null && ssl instanceof DynamicSsl) {
-				configureDynamicSsl((DynamicSsl) ssl);
+			if (ssl != null) {
+				configureSsl((Ssl) ssl);
 			}
 		}
 		return bean;
@@ -69,7 +69,7 @@ public class DynamicSslConfigurerBeanPostProcessor
 		return bean;
 	}
 
-	private void configureDynamicSsl(DynamicSsl ssl) {
+	private void configureSsl(Ssl ssl) {
 		initializeKeyStoreSuppliers();
 		if (this.keyStoreSupplier != null) {
 			ssl.setKeyStoreSupplier(this.keyStoreSupplier);

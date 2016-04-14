@@ -301,7 +301,7 @@ public class UndertowEmbeddedServletContainerFactory
 	private KeyManager[] getKeyManagers() {
 		try {
 			Ssl ssl = getSsl();
-			KeyStore keyStore = getDynamicSslKeyStore();
+			KeyStore keyStore = getSupplierKeyStore();
 			if (keyStore == null) {
 				keyStore = getKeyStore(ssl);
 			}
@@ -336,7 +336,7 @@ public class UndertowEmbeddedServletContainerFactory
 	private TrustManager[] getTrustManagers() {
 		try {
 			Ssl ssl = getSsl();
-			KeyStore trustStore = getDynamicSslKeyStore();
+			KeyStore trustStore = getSupplierKeyStore();
 			if (trustStore == null) {
 				trustStore = getTrustStore(ssl);
 				if (trustStore == null) {

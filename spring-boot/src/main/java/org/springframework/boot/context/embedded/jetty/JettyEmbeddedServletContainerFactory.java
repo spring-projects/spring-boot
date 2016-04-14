@@ -252,7 +252,7 @@ public class JettyEmbeddedServletContainerFactory
 		configureSslPasswords(factory, ssl);
 		factory.setCertAlias(ssl.getKeyAlias());
 
-		KeyStore keyStore = getDynamicSslKeyStore();
+		KeyStore keyStore = getSupplierKeyStore();
 		if (keyStore != null) {
 			factory.setKeyStore(keyStore);
 		}
@@ -267,7 +267,7 @@ public class JettyEmbeddedServletContainerFactory
 			factory.setIncludeProtocols(ssl.getEnabledProtocols());
 		}
 
-		KeyStore trustStore = getDynamicSslTrustStore();
+		KeyStore trustStore = getSupplierTrustStore();
 		if (trustStore != null) {
 			factory.setTrustStore(trustStore);
 		}

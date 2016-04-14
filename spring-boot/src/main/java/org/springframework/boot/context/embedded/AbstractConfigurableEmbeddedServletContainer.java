@@ -342,11 +342,10 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 				.isPresent(this.jspServlet.getClassName(), getClass().getClassLoader());
 	}
 
-	protected KeyStore getDynamicSslKeyStore() {
+	protected KeyStore getSupplierKeyStore() {
 		KeyStore keyStore = null;
-		if (getSsl() != null && getSsl() instanceof DynamicSsl) {
-			KeyStoreSupplier keyStoreSupplier = ((DynamicSsl) getSsl())
-					.getKeyStoreSupplier();
+		if (getSsl() != null) {
+			KeyStoreSupplier keyStoreSupplier = getSsl().getKeyStoreSupplier();
 			if (keyStoreSupplier != null) {
 				keyStore = keyStoreSupplier.get();
 				Assert.notNull(keyStore, "keyStoreSupplier must return a non-null value");
@@ -355,11 +354,10 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 		return keyStore;
 	}
 
-	protected KeyStore getDynamicSslTrustStore() {
+	protected KeyStore getSupplierTrustStore() {
 		KeyStore trustStore = null;
-		if (getSsl() != null && getSsl() instanceof DynamicSsl) {
-			KeyStoreSupplier trustStoreSupplier = ((DynamicSsl) getSsl())
-					.getTrustStoreSupplier();
+		if (getSsl() != null) {
+			KeyStoreSupplier trustStoreSupplier = getSsl().getTrustStoreSupplier();
 			if (trustStoreSupplier != null) {
 				trustStore = trustStoreSupplier.get();
 				Assert.notNull(trustStore,
