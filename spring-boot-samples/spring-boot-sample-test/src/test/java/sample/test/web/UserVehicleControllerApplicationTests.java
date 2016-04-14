@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * {@code @SpringApplicationTest} based tests for {@link UserVehicleController}.
+ * {@code @SpringBootTest} based tests for {@link UserVehicleController}.
  *
  * @author Phillip Webb
  */
