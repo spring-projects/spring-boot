@@ -113,7 +113,7 @@ final class AsciiBytes {
 
 	public AsciiBytes substring(int beginIndex, int endIndex) {
 		int length = endIndex - beginIndex;
-		if (this.offset + length > this.length) {
+		if (this.offset + length > this.bytes.length) {
 			throw new IndexOutOfBoundsException();
 		}
 		return new AsciiBytes(this.bytes, this.offset + beginIndex, length);

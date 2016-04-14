@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class TypeExcludeFiltersTestContextCustomizerFactoryTests {
+public class TypeExcludeFiltersContextCustomizerFactoryTests {
 
 	private TypeExcludeFiltersContextCustomizerFactory factory = new TypeExcludeFiltersContextCustomizerFactory();
 

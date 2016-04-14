@@ -125,7 +125,7 @@ public class RedisAutoConfiguration {
 					clusterProperties.getNodes());
 
 			if (clusterProperties.getMaxRedirects() != null) {
-				config.setMaxRedirects(config.getMaxRedirects());
+				config.setMaxRedirects(clusterProperties.getMaxRedirects());
 			}
 			return config;
 		}

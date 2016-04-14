@@ -316,12 +316,10 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	@Test
 	public void primaryConnectorPortClashThrowsIllegalStateException()
 			throws InterruptedException, IOException {
-		final int port = SocketUtils.findAvailableTcpPort(40000);
-
-		doWithBlockedPort(port, new Runnable() {
+		doWithBlockedPort(new BlockedPortAction() {
 
 			@Override
-			public void run() {
+			public void run(int port) {
 				TomcatEmbeddedServletContainerFactory factory = getFactory();
 				factory.setPort(port);
 
@@ -337,7 +335,6 @@ public class TomcatEmbeddedServletContainerFactoryTests
 			}
 
 		});
-
 	}
 
 	@Test

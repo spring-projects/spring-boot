@@ -732,6 +732,7 @@ public class TomcatEmbeddedServletContainerFactory
 	 */
 	private static class StoreMergedWebXmlListener implements LifecycleListener {
 
+		@SuppressWarnings("deprecation")
 		private final String MERGED_WEB_XML = org.apache.tomcat.util.scan.Constants.MERGED_WEB_XML;
 
 		@Override

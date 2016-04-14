@@ -105,7 +105,7 @@ public class CentralDirectoryParserTests {
 		@Override
 		public void visitFileHeader(CentralDirectoryFileHeader fileHeader,
 				int dataOffset) {
-			this.headers.add(fileHeader);
+			this.headers.add(fileHeader.clone());
 		}
 
 		@Override

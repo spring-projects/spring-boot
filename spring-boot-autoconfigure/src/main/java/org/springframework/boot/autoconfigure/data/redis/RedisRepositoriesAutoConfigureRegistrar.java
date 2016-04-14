@@ -27,6 +27,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 /**
  * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Redis
  * Repositories.
+ *
  * @author Eddú Meléndez
  * @since 1.4.0
  */

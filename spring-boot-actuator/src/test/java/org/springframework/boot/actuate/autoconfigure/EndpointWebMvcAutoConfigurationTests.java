@@ -58,7 +58,9 @@ import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebAppl
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.testutil.Matched;
@@ -172,6 +174,35 @@ public class EndpointWebMvcAutoConfigurationTests {
 		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
 				managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
 		assertThat(interceptors).hasSize(1);
+		this.applicationContext.close();
+		assertAllClosed();
+	}
+
+	@Test
+	public void onDifferentPortWithSpecificContainer() throws Exception {
+		this.applicationContext.register(SpecificContainerConfig.class, RootConfig.class,
+				DifferentPortConfig.class, EndpointConfig.class, BaseConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		this.applicationContext.refresh();
+		assertContent("/controller", ports.get().server, "controlleroutput");
+		assertContent("/endpoint", ports.get().server, null);
+		assertContent("/controller", ports.get().management, null);
+		assertContent("/endpoint", ports.get().management, "endpointoutput");
+		assertContent("/error", ports.get().management, startsWith("{"));
+		ApplicationContext managementContext = this.applicationContext
+				.getBean(ManagementContextResolver.class).getApplicationContext();
+		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
+				managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
+		assertThat(interceptors).hasSize(1);
+		EmbeddedServletContainerFactory parentContainerFactory = this.applicationContext
+				.getBean(EmbeddedServletContainerFactory.class);
+		EmbeddedServletContainerFactory managementContainerFactory = managementContext
+				.getBean(EmbeddedServletContainerFactory.class);
+		assertThat(parentContainerFactory)
+				.isInstanceOf(SpecificEmbeddedServletContainerFactory.class);
+		assertThat(managementContainerFactory)
+				.isInstanceOf(SpecificEmbeddedServletContainerFactory.class);
+		assertThat(managementContainerFactory).isNotSameAs(parentContainerFactory);
 		this.applicationContext.close();
 		assertAllClosed();
 	}
@@ -610,6 +641,16 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
+	public static class SpecificContainerConfig {
+
+		@Bean
+		public SpecificEmbeddedServletContainerFactory embeddedServletContainerFactory() {
+			return new SpecificEmbeddedServletContainerFactory();
+		}
+
+	}
+
+	@Configuration
 	@Import(ServerPortConfig.class)
 	public static class DifferentPortConfig {
 
@@ -636,6 +677,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		}
 
 		protected static class TestInterceptor extends HandlerInterceptorAdapter {
+
 			private int count = 0;
 
 			@Override
@@ -648,6 +690,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 			public int getCount() {
 				return this.count;
 			}
+
 		}
 
 	}
@@ -725,6 +768,11 @@ public class EndpointWebMvcAutoConfigurationTests {
 		public EmbeddedServletContainer getServletContainer() {
 			return this.servletContainer;
 		}
+
+	}
+
+	private static class SpecificEmbeddedServletContainerFactory
+			extends TomcatEmbeddedServletContainerFactory {
 
 	}
 

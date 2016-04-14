@@ -48,7 +48,7 @@
 		<appengine.version>1.9.34</appengine.version>
 		<artemis.version>1.2.0</artemis.version>
 		<aspectj.version>1.8.9</aspectj.version>
-		<assertj.version>2.4.0</assertj.version>
+		<assertj.version>2.4.1</assertj.version>
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
 		<caffeine.version>2.2.6</caffeine.version>
@@ -159,7 +159,7 @@
 		<spring-social-facebook.version>2.0.3.RELEASE</spring-social-facebook.version>
 		<spring-social-linkedin.version>1.0.2.RELEASE</spring-social-linkedin.version>
 		<spring-social-twitter.version>1.1.2.RELEASE</spring-social-twitter.version>
-		<spring-ws.version>2.2.3.RELEASE</spring-ws.version>
+		<spring-ws.version>2.3.0.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.8.11.2</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
@@ -2103,6 +2103,16 @@
 			<dependency>
 				<groupId>org.springframework.session</groupId>
 				<artifactId>spring-session-data-gemfire</artifactId>
+				<version>${spring-session.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.session</groupId>
+				<artifactId>spring-session-data-mongo</artifactId>
+				<version>${spring-session.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.session</groupId>
+				<artifactId>spring-session-jdbc</artifactId>
 				<version>${spring-session.version}</version>
 			</dependency>
 			<dependency>

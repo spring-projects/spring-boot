@@ -335,6 +335,19 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
+	public void errorPageFromPutRequest() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.addErrorPages(new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/hello"));
+		this.container = factory.getEmbeddedServletContainer(exampleServletRegistration(),
+				errorServletRegistration());
+		this.container.start();
+		assertThat(getResponse(getLocalUrl("/hello"), HttpMethod.PUT))
+				.isEqualTo("Hello World");
+		assertThat(getResponse(getLocalUrl("/bang"), HttpMethod.PUT))
+				.isEqualTo("Hello World");
+	}
+
+	@Test
 	public void basicSslFromClassPath() throws Exception {
 		testBasicSslWithKeyStore("classpath:test.jks");
 	}
@@ -749,19 +762,15 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void portClashOfPrimaryConnectorResultsInPortInUseException()
 			throws IOException {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
-
-		final int port = SocketUtils.findAvailableTcpPort(40000);
-
-		factory.setPort(port);
-
-		this.container = factory.getEmbeddedServletContainer();
-
-		doWithBlockedPort(port, new Runnable() {
+		doWithBlockedPort(new BlockedPortAction() {
 
 			@Override
-			public void run() {
+			public void run(int port) {
 				try {
+					AbstractEmbeddedServletContainerFactory factory = getFactory();
+					factory.setPort(port);
+					AbstractEmbeddedServletContainerFactoryTests.this.container = factory
+							.getEmbeddedServletContainer();
 					AbstractEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
@@ -771,25 +780,21 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			}
 
 		});
-
 	}
 
 	@Test
 	public void portClashOfSecondaryConnectorResultsInPortInUseException()
 			throws IOException {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		factory.setPort(SocketUtils.findAvailableTcpPort(40000));
-
-		final int port = SocketUtils.findAvailableTcpPort(40000);
-
-		addConnector(port, factory);
-		this.container = factory.getEmbeddedServletContainer();
-
-		doWithBlockedPort(port, new Runnable() {
+		doWithBlockedPort(new BlockedPortAction() {
 
 			@Override
-			public void run() {
+			public void run(int port) {
 				try {
+					AbstractEmbeddedServletContainerFactory factory = getFactory();
+					factory.setPort(SocketUtils.findAvailableTcpPort(40000));
+					addConnector(port, factory);
+					AbstractEmbeddedServletContainerFactoryTests.this.container = factory
+							.getEmbeddedServletContainer();
 					AbstractEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
@@ -869,7 +874,12 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected String getResponse(String url, String... headers)
 			throws IOException, URISyntaxException {
-		ClientHttpResponse response = getClientResponse(url, headers);
+		return getResponse(url, HttpMethod.GET, headers);
+	}
+
+	protected String getResponse(String url, HttpMethod method, String... headers)
+			throws IOException, URISyntaxException {
+		ClientHttpResponse response = getClientResponse(url, method, headers);
 		try {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
 		}
@@ -881,7 +891,14 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	protected String getResponse(String url,
 			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
 					throws IOException, URISyntaxException {
-		ClientHttpResponse response = getClientResponse(url, requestFactory, headers);
+		return getResponse(url, HttpMethod.GET, requestFactory, headers);
+	}
+
+	protected String getResponse(String url, HttpMethod method,
+			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
+					throws IOException, URISyntaxException {
+		ClientHttpResponse response = getClientResponse(url, method, requestFactory,
+				headers);
 		try {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
 		}
@@ -892,21 +909,27 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected ClientHttpResponse getClientResponse(String url, String... headers)
 			throws IOException, URISyntaxException {
-		return getClientResponse(url, new HttpComponentsClientHttpRequestFactory() {
-
-			@Override
-			protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
-				return AbstractEmbeddedServletContainerFactoryTests.this.httpClientContext;
-			}
-
-		}, headers);
+		return getClientResponse(url, HttpMethod.GET, headers);
 	}
 
-	protected ClientHttpResponse getClientResponse(String url,
+	protected ClientHttpResponse getClientResponse(String url, HttpMethod method,
+			String... headers) throws IOException, URISyntaxException {
+		return getClientResponse(url, method,
+				new HttpComponentsClientHttpRequestFactory() {
+
+					@Override
+					protected HttpContext createHttpContext(HttpMethod httpMethod,
+							URI uri) {
+						return AbstractEmbeddedServletContainerFactoryTests.this.httpClientContext;
+					}
+
+				}, headers);
+	}
+
+	protected ClientHttpResponse getClientResponse(String url, HttpMethod method,
 			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
 					throws IOException, URISyntaxException {
-		ClientHttpRequest request = requestFactory.createRequest(new URI(url),
-				HttpMethod.GET);
+		ClientHttpRequest request = requestFactory.createRequest(new URI(url), method);
 		request.getHeaders().add("Cookie", "JSESSIONID=" + "123");
 		for (String header : headers) {
 			String[] parts = header.split(":");
@@ -967,12 +990,19 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		return bean;
 	}
 
-	protected final void doWithBlockedPort(final int port, Runnable action)
-			throws IOException {
+	protected final void doWithBlockedPort(BlockedPortAction action) throws IOException {
+		int port = SocketUtils.findAvailableTcpPort(40000);
 		ServerSocket serverSocket = new ServerSocket();
-		serverSocket.bind(new InetSocketAddress(port));
+		for (int i = 0; i < 10; i++) {
+			try {
+				serverSocket.bind(new InetSocketAddress(port));
+				break;
+			}
+			catch (Exception ex) {
+			}
+		}
 		try {
-			action.run();
+			action.run(port);
 		}
 		finally {
 			serverSocket.close();
@@ -1019,5 +1049,11 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}
 
 	};
+
+	public interface BlockedPortAction {
+
+		void run(int port);
+
+	}
 
 }

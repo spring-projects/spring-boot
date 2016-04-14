@@ -94,6 +94,9 @@ You can also use the `spring.main.banner-mode` property to determine if the bann
 to be printed on `System.out` (`console`), using the configured logger (`log`) or not
 at all (`off`).
 
+The printed banner will be registered as a singleton bean under the name
+`springBootBanner`.
+
 [NOTE]
 ====
 YAML maps `off` to `false` so make sure to add quotes if you want to disable the
@@ -677,6 +680,11 @@ profile, and it would have to be explicitly reset in all other profiles as neces
 	  user:
 	    password: weak
 ----
+
+Spring profiles designated using the "spring.profiles" element may optionally be negated
+using the {@code !} character. If both negated and non-negated profiles are specified for
+a single document, at least one non-negated profile must match and no negated profiles
+may match.
 
 
 
@@ -2151,10 +2159,10 @@ to decode tokens, so there is nothing else to do. If your app is a standalone se
 need to give it some more configuration, one of the following options:
 
 * `security.oauth2.resource.user-info-uri` to use the `/me` resource (e.g.
-`https://uaa.run.pivotal.io/userinfo` on PWS)
+`\https://uaa.run.pivotal.io/userinfo` on PWS)
 
 * `security.oauth2.resource.token-info-uri` to use the token decoding endpoint (e.g.
-`https://uaa.run.pivotal.io/check_token` on PWS).
+`\https://uaa.run.pivotal.io/check_token` on PWS).
 
 If you specify both the `user-info-uri` and the `token-info-uri` then you can set a flag
 to say that one is preferred over the other (`prefer-token-info=true` is the default).
@@ -3056,7 +3064,7 @@ You can take full control of the configuration by adding a
 `org.neo4j.ogm.config.Configuration` `@Bean` of your own. Also, adding a `@Bean` of type
 `Neo4jOperations` disables the auto-configuration.
 
-You can configure the user and credentials to use via the `spring.data.couchbase.*`
+You can configure the user and credentials to use via the `spring.data.neo4j.*`
 properties:
 
 [source,properties,indent=0]
@@ -3519,7 +3527,7 @@ Generic caching is used if the context defines _at least_ one
 [[boot-features-caching-provider-jcache]]
 ==== JCache
 JCache is bootstrapped via the presence of a `javax.cache.spi.CachingProvider` on the
-classpath (i.e. a JSR-107 compliant caching library). It might happen that more that one
+classpath (i.e. a JSR-107 compliant caching library). It might happen that more than one
 provider is present, in which case the provider must be explicitly specified. Even if the
 JSR-107 standard does not enforce a standardized way to define the location of the
 configuration file, Spring Boot does its best to accommodate with implementation details.
@@ -4087,14 +4095,14 @@ Then you can use in any `@RabbitListener`-annotated method as follows:
 
 You can enable retries to handle situations where your listener throws an exception.
 When retries are exhausted, the message will be rejected and either dropped or routed to a dead-letter exchange
-if the broker is so configured.
+if the broker is configured so.
 Retries are disabled by default.
 
 IMPORTANT: If retries are not enabled and the listener throws an exception, by default the delivery will be retried
 indefinitely.
 You can modify this behavior in two ways; set the `defaultRequeueRejected` property to `false` and zero redeliveries
 will be attempted; or, throw an `AmqpRejectAndDontRequeueException` to signal the message should be rejected.
-This is the mechanism used when retries are enabled and the maximum delivery attempts is reached.
+This is the mechanism used when retries are enabled and the maximum delivery attempts are reached.
 
 
 
@@ -4427,20 +4435,25 @@ the annotations will be ignored.
 
 
 [[boot-features-testing-spring-boot-applications-detecting-config]]
-==== Detecting configuration
+==== Detecting test configuration
 If you're familiar with the Spring Test Framework, you may be used to using
 `@ContextConfiguration(classes=...)` in order to specify which Spring `@Configuration`
 to load. Alternatively, you might have often used nested `@Configuration` classes within
 your test.
 
 When testing Spring Boot applications this is often not required.
-Spring Boot's `@*Test` annotations will search for your primary configuration automatically
-whenever you don't explicitly defined one.
+Spring Boot's `@*Test` annotations will search for your primary configuration
+automatically whenever you don't explicitly define one.
 
 The search algorithm works up from the package that contains the test until it finds a
 `@SpringBootApplication` or `@SpringBootConfiguration` annotated class. As long as you've
 <<using-boot-structuring-your-code, structure your code>> in a sensible way your main
 configuration is usually found.
+
+If you want to customize the primary configuration, you can use a nested
+`@TestConfiguration` class. Unlike a nested `@Configuration` class which would be used
+instead of a your application's primary configuration, a nested `@TestConfiguration` class
+will be used in addition to your application's primary configuration.
 
 NOTE: Spring's test framework will cache application contexts between tests. Therefore, as
 long as your tests share the same configuration (no matter how it's discovered), the
@@ -4509,7 +4522,7 @@ For convenience, tests that need to make REST calls to the started server can ad
 
 
 [[boot-features-testing-spring-boot-applications-mocking-beans]]
-==== Mocking Beans
+==== Mocking and spying beans
 It's sometimes necessary to mock certain components within your application context when
 running tests. For example, you may have a facade over some remote service that's
 unavailable during development. Mocking can also be useful when you want to simulate
@@ -4558,6 +4571,8 @@ implementation:
 	}
 ----
 
+Additionally you can also use `@SpyBean` to wrap any existing bean with a Mockito `spy`.
+See the javadoc for full details.
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-tests]]

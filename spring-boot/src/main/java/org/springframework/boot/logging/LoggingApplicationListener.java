@@ -51,10 +51,10 @@ import org.springframework.util.StringUtils;
  * will be customized if the environment contains {@code logging.level.*} entries.
  * <p>
  * Debug and trace logging for Spring, Tomcat, Jetty and Hibernate will be enabled when
- * the environment contains {@code debug} or {@code trace} properties (i.e. if you start
- * your application using {@literal java -jar myapp.jar [--debug | --trace]}). If you
- * prefer to ignore these properties you can set {@link #setParseArgs(boolean) parseArgs}
- * to {@code false}.
+ * the environment contains {@code debug} or {@code trace} properties that aren't set to
+ * {@code "false"} (i.e. if you start your application using
+ * {@literal java -jar myapp.jar [--debug | --trace]}). If you prefer to ignore these
+ * properties you can set {@link #setParseArgs(boolean) parseArgs} to {@code false}.
  * <p>
  * By default, log output is only written to the console. If a log file is required the
  * {@code logging.path} and {@code logging.file} properties can be used.

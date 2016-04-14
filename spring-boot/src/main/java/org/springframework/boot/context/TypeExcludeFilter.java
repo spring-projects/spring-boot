@@ -39,7 +39,7 @@ import org.springframework.core.type.filter.TypeFilter;
  * override the {@link #match(MetadataReader, MetadataReaderFactory)} method.
  * <p>
  * Note that {@code TypeExcludeFilters} are initialized very early in the application
- * lifecycle, they should generally not have dependencies on any other beans. They and are
+ * lifecycle, they should generally not have dependencies on any other beans. They are
  * primarily used internally to support {@code spring-boot-test}.
  *
  * @author Phillip Webb

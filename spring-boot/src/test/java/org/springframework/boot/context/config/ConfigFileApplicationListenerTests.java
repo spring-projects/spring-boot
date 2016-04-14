@@ -604,7 +604,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void absoluteResourceDefaultsToFile() throws Exception {
 		String location = new File("src/test/resources/specificlocation.properties")
-				.getAbsolutePath();
+				.getAbsolutePath().replace("\\", "/");
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.config.location=" + location);
 		this.initializer.postProcessEnvironment(this.environment, this.application);

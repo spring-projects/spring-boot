@@ -34,6 +34,7 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Test;
@@ -58,6 +59,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Henri Kerola
  */
 public class JettyEmbeddedServletContainerFactoryTests
 		extends AbstractEmbeddedServletContainerFactoryTests {
@@ -254,6 +256,26 @@ public class JettyEmbeddedServletContainerFactoryTests
 		JettyEmbeddedServletContainerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
 		assertForwardHeaderIsUsed(factory);
+	}
+
+	@Test
+	public void defaultThreadPool() throws Exception {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		factory.setThreadPool(null);
+		assertThat(factory.getThreadPool()).isNull();
+		JettyEmbeddedServletContainer servletContainer = (JettyEmbeddedServletContainer) factory
+				.getEmbeddedServletContainer();
+		assertThat(servletContainer.getServer().getThreadPool()).isNotNull();
+	}
+
+	@Test
+	public void customThreadPool() throws Exception {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		ThreadPool threadPool = mock(ThreadPool.class);
+		factory.setThreadPool(threadPool);
+		JettyEmbeddedServletContainer servletContainer = (JettyEmbeddedServletContainer) factory
+				.getEmbeddedServletContainer();
+		assertThat(servletContainer.getServer().getThreadPool()).isSameAs(threadPool);
 	}
 
 	@Override

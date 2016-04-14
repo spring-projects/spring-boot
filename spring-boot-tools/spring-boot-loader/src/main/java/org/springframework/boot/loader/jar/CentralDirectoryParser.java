@@ -17,12 +17,10 @@
 package org.springframework.boot.loader.jar;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.loader.data.RandomAccessData;
-import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
 /**
  * Parses the central directory from a JAR file.
@@ -56,24 +54,23 @@ class CentralDirectoryParser {
 		}
 		RandomAccessData centralDirectoryData = endRecord.getCentralDirectory(data);
 		visitStart(endRecord, centralDirectoryData);
-		InputStream inputStream = centralDirectoryData
-				.getInputStream(ResourceAccess.ONCE);
-		try {
-			int dataOffset = 0;
-			for (int i = 0; i < endRecord.getNumberOfRecords(); i++) {
-				CentralDirectoryFileHeader fileHeader = CentralDirectoryFileHeader
-						.fromInputStream(inputStream);
-				visitFileHeader(dataOffset, fileHeader);
-				dataOffset += this.CENTRAL_DIRECTORY_HEADER_BASE_SIZE
-						+ fileHeader.getName().length() + fileHeader.getComment().length()
-						+ fileHeader.getExtra().length;
-			}
-		}
-		finally {
-			inputStream.close();
-		}
+		parseEntries(endRecord, centralDirectoryData);
 		visitEnd();
 		return data;
+	}
+
+	private void parseEntries(CentralDirectoryEndRecord endRecord,
+			RandomAccessData centralDirectoryData) throws IOException {
+		byte[] bytes = Bytes.get(centralDirectoryData);
+		CentralDirectoryFileHeader fileHeader = new CentralDirectoryFileHeader();
+		int dataOffset = 0;
+		for (int i = 0; i < endRecord.getNumberOfRecords(); i++) {
+			fileHeader.load(bytes, dataOffset, null, 0);
+			visitFileHeader(dataOffset, fileHeader);
+			dataOffset += this.CENTRAL_DIRECTORY_HEADER_BASE_SIZE
+					+ fileHeader.getName().length() + fileHeader.getComment().length()
+					+ fileHeader.getExtra().length;
+		}
 	}
 
 	private RandomAccessData getArchiveData(CentralDirectoryEndRecord endRecord,

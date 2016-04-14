@@ -218,6 +218,11 @@ public class CouchbaseProperties {
 		private long query = 7500;
 
 		/**
+		 * Socket connect connections timeout in milliseconds.
+		 */
+		private int socketConnect = 1000;
+
+		/**
 		 * Regular and geospatial view operations timeout in milliseconds.
 		 */
 		private long view = 7500;
@@ -244,6 +249,14 @@ public class CouchbaseProperties {
 
 		public void setQuery(long query) {
 			this.query = query;
+		}
+
+		public int getSocketConnect() {
+			return this.socketConnect;
+		}
+
+		public void setSocketConnect(int socketConnect) {
+			this.socketConnect = socketConnect;
 		}
 
 		public long getView() {
