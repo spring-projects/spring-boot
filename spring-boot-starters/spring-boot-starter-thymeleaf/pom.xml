@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-thymeleaf</artifactId>
 	<name>Spring Boot Thymeleaf Starter</name>
-	<description>Spring Boot Thymeleaf Starter</description>
+	<description>Starter for building MVC web applications using Thymeleaf views</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

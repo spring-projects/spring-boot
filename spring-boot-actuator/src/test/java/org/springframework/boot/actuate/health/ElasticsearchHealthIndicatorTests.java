@@ -23,13 +23,13 @@ import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.ElasticsearchTimeoutException;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.action.support.PlainActionFuture;
 import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.ClusterAdminClient;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.block.ClusterBlocks;
+import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.cluster.node.DiscoveryNodes;
 import org.elasticsearch.cluster.routing.RoutingTable;
 import org.junit.Before;
@@ -176,9 +176,9 @@ public class ElasticsearchHealthIndicatorTests {
 
 		private StubClusterHealthResponse(ClusterHealthStatus status) {
 			super("test-cluster", new String[0],
-					new ClusterState(null, 0, null, RoutingTable.builder().build(),
+					new ClusterState(null, 0, null, null, RoutingTable.builder().build(),
 							DiscoveryNodes.builder().build(),
-							ClusterBlocks.builder().build(), null));
+							ClusterBlocks.builder().build(), null, false));
 			this.status = status;
 		}
 

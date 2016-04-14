@@ -26,7 +26,7 @@ import org.springframework.core.env.Environment;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
- * @deprecated since 1.4.0 in favor of
+ * @deprecated as of 1.4 in favor of
  * {@link org.springframework.boot.test.util.EnvironmentTestUtils}
  */
 @Deprecated

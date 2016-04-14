@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import sample.data.jpa.SampleDataJpaApplication;
 import sample.data.jpa.domain.City;
 import sample.data.jpa.domain.Hotel;
 import sample.data.jpa.domain.HotelSummary;
@@ -27,7 +26,7 @@ import sample.data.jpa.domain.Rating;
 import sample.data.jpa.domain.RatingCount;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -41,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Oliver Gierke
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SampleDataJpaApplication.class)
+@SpringBootTest
 public class HotelRepositoryIntegrationTests {
 
 	@Autowired

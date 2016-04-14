@@ -79,4 +79,7 @@ do as they were designed before this was clarified.
 | http://www.couchbase.com/[Couchbase] HTTP session
 | https://github.com/mkopylec/session-couchbase-spring-boot-starter
 
+| https://github.com/oembedler/spring-graphql-common[Spring GraphQL] (GraphQL and GraphiQL)
+| https://github.com/oembedler/graphql-spring-boot
+
 |===

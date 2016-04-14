@@ -37,6 +37,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.support.ValueExpression;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -59,6 +60,7 @@ import static org.mockito.Mockito.verify;
  * @author Greg Turnquist
  * @author Stephane Nicoll
  * @author Gary Russell
+ * @author Stephane Nicoll
  */
 public class RabbitAutoConfigurationTests {
 
@@ -82,11 +84,15 @@ public class RabbitAutoConfigurationTests {
 				.getBean(RabbitMessagingTemplate.class);
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
 		RabbitAdmin amqpAdmin = this.context.getBean(RabbitAdmin.class);
 		assertThat(rabbitTemplate.getConnectionFactory()).isEqualTo(connectionFactory);
+		assertThat(getMandatory(rabbitTemplate)).isFalse();
 		assertThat(messagingTemplate.getRabbitTemplate()).isEqualTo(rabbitTemplate);
 		assertThat(amqpAdmin).isNotNull();
 		assertThat(connectionFactory.getHost()).isEqualTo("localhost");
+		assertThat(dfa.getPropertyValue("publisherConfirms")).isEqualTo(false);
+		assertThat(dfa.getPropertyValue("publisherReturns")).isEqualTo(false);
 		assertThat(this.context.containsBean("rabbitListenerContainerFactory"))
 				.as("Listener container factory should be created by default").isTrue();
 	}
@@ -136,6 +142,19 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	public void testConnectionFactoryPublisherSettings() {
+		load(TestConfiguration.class, "spring.rabbitmq.publisher-confirms=true",
+				"spring.rabbitmq.publisher-returns=true");
+		CachingConnectionFactory connectionFactory = this.context
+				.getBean(CachingConnectionFactory.class);
+		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
+		assertThat(dfa.getPropertyValue("publisherConfirms")).isEqualTo(true);
+		assertThat(dfa.getPropertyValue("publisherReturns")).isEqualTo(true);
+		assertThat(getMandatory(rabbitTemplate)).isTrue();
+	}
+
+	@Test
 	public void testRabbitTemplateMessageConverters() {
 		load(MessageConvertersConfiguration.class);
 		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
@@ -170,6 +189,21 @@ public class RabbitAutoConfigurationTests {
 		assertThat(backOffPolicy.getInitialInterval()).isEqualTo(2000);
 		assertThat(backOffPolicy.getMultiplier()).isEqualTo(1.5);
 		assertThat(backOffPolicy.getMaxInterval()).isEqualTo(5000);
+	}
+
+	@Test
+	public void testRabbitTemplateMandatory() {
+		load(TestConfiguration.class, "spring.rabbitmq.template.mandatory:true");
+		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
+		assertThat(getMandatory(rabbitTemplate)).isTrue();
+	}
+
+	@Test
+	public void testRabbitTemplateMandatoryDisabledEvenIfPublisherReturnsIsSet() {
+		load(TestConfiguration.class, "spring.rabbitmq.template.mandatory:false",
+				"spring.rabbitmq.publisher-returns=true");
+		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
+		assertThat(getMandatory(rabbitTemplate)).isFalse();
 	}
 
 	@Test
@@ -346,6 +380,13 @@ public class RabbitAutoConfigurationTests {
 				.getBean(CachingConnectionFactory.class);
 		return (com.rabbitmq.client.ConnectionFactory) new DirectFieldAccessor(
 				connectionFactory).getPropertyValue("rabbitConnectionFactory");
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean getMandatory(RabbitTemplate rabbitTemplate) {
+		ValueExpression<Boolean> expression = (ValueExpression<Boolean>) new DirectFieldAccessor(
+				rabbitTemplate).getPropertyValue("mandatoryExpression");
+		return expression.getValue();
 	}
 
 	private void load(Class<?> config, String... environment) {

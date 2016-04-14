@@ -95,6 +95,7 @@ import org.springframework.validation.BindException;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		ApplicationListener<ApplicationEvent>, Ordered {
@@ -581,9 +582,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		}
 
 		private Set<String> asResolvedSet(String value, String fallback) {
-			List<String> list = Arrays
-					.asList(StringUtils.commaDelimitedListToStringArray(value != null
-							? this.environment.resolvePlaceholders(value) : fallback));
+			List<String> list = Arrays.asList(StringUtils.trimArrayElements(
+					StringUtils.commaDelimitedListToStringArray(value != null
+							? this.environment.resolvePlaceholders(value) : fallback)));
 			Collections.reverse(list);
 			return new LinkedHashSet<String>(list);
 		}

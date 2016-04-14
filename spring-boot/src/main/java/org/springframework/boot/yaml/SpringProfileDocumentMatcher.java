@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,17 +24,24 @@ import java.util.Properties;
 import org.springframework.beans.factory.config.YamlProcessor.DocumentMatcher;
 import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
 import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link DocumentMatcher} backed by {@link Environment#getActiveProfiles()}. A YAML
- * document matches if it contains an element "spring.profiles" (a comma-separated list)
- * and one of the profiles is in the active list.
+ * document may define a "spring.profiles" element as a comma-separated list of Spring
+ * profile names, optionally negated using the {@code !} character. If both negated and
+ * non-negated profiles are specified for a single document, at least one non-negated
+ * profile must match and no negated profiles may match.
  *
  * @author Dave Syer
+ * @author Matt Benson
+ * @author Phillip Webb
  */
 public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
 	private static final String[] DEFAULT_PROFILES = new String[] { "^\\s*$" };
+
+	private static final String SPRING_PROFILES = "spring.profiles";
 
 	private String[] activeProfiles = new String[0];
 
@@ -54,11 +61,55 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
 	@Override
 	public MatchStatus matches(Properties properties) {
+		DocumentMatcher activeProfilesMatcher = getActiveProfilesDocumentMatcher();
+		String profiles = properties.getProperty(SPRING_PROFILES);
+		String negative = extractProfiles(profiles, ProfileType.NEGATIVE);
+		String positive = extractProfiles(profiles, ProfileType.POSITIVE);
+		if (StringUtils.hasLength(negative)) {
+			properties = new Properties(properties);
+			properties.setProperty(SPRING_PROFILES, negative);
+			switch (activeProfilesMatcher.matches(properties)) {
+			case FOUND:
+				return MatchStatus.NOT_FOUND;
+			case NOT_FOUND:
+				return MatchStatus.FOUND;
+			}
+			properties.setProperty(SPRING_PROFILES, positive);
+		}
+		return activeProfilesMatcher.matches(properties);
+	}
+
+	private DocumentMatcher getActiveProfilesDocumentMatcher() {
 		String[] profiles = this.activeProfiles;
 		if (profiles.length == 0) {
 			profiles = DEFAULT_PROFILES;
 		}
-		return new ArrayDocumentMatcher("spring.profiles", profiles).matches(properties);
+		return new ArrayDocumentMatcher(SPRING_PROFILES, profiles);
+	}
+
+	private String extractProfiles(String profiles, ProfileType type) {
+		if (profiles == null) {
+			return null;
+		}
+		StringBuilder result = new StringBuilder();
+		for (String candidate : StringUtils.commaDelimitedListToSet(profiles)) {
+			ProfileType candidateType = ProfileType.POSITIVE;
+			if (candidate.startsWith("!")) {
+				candidateType = ProfileType.NEGATIVE;
+			}
+			if (candidateType == type) {
+				result.append(result.length() > 0 ? "," : "");
+				result.append(candidate.substring(type == ProfileType.POSITIVE ? 0 : 1));
+			}
+		}
+		return result.toString();
+	}
+
+	/**
+	 * Profile match types.
+	 */
+	enum ProfileType {
+		POSITIVE, NEGATIVE
 	}
 
 }

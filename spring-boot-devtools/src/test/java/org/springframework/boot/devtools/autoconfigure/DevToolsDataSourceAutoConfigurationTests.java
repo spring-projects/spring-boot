@@ -68,19 +68,6 @@ public class DevToolsDataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void nonEmbeddedInMemoryDatabaseIsShutDown() throws SQLException {
-		ConfigurableApplicationContext context = createContextWithDriver("org.h2.Driver",
-				DataSourceConfiguration.class);
-		DataSource dataSource = context.getBean(DataSource.class);
-		Connection connection = mock(Connection.class);
-		given(dataSource.getConnection()).willReturn(connection);
-		Statement statement = mock(Statement.class);
-		given(connection.createStatement()).willReturn(statement);
-		context.close();
-		verify(statement).execute("SHUTDOWN");
-	}
-
-	@Test
 	public void nonEmbeddedInMemoryDatabaseConfiguredWithDriverIsShutDown()
 			throws SQLException {
 		ConfigurableApplicationContext context = createContextWithDriver("org.h2.Driver",

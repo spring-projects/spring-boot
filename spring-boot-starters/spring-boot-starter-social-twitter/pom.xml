@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-social-twitter</artifactId>
 	<name>Spring Boot Social Twitter Starter</name>
-	<description>Spring Boot Social Twitter Starter</description>
+	<description>Starter for using Spring Social Twitter</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

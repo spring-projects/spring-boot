@@ -48,6 +48,7 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -62,6 +63,8 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Quinten De Swaef
+ * @author Venil Noronha
  */
 public class ServerPropertiesTests {
 
@@ -251,11 +254,43 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
-	public void testCustomizeTomcatHeaderSize() throws Exception {
+	public void testCustomizeHeaderSize() throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("server.tomcat.maxHttpHeaderSize", "9999");
+		map.put("server.maxHttpHeaderSize", "9999");
 		bindProperties(map);
-		assertThat(this.properties.getTomcat().getMaxHttpHeaderSize()).isEqualTo(9999);
+		assertThat(this.properties.getMaxHttpHeaderSize()).isEqualTo(9999);
+	}
+
+	@Test
+	public void testCustomizePostSize() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.maxHttpPostSize", "9999");
+		bindProperties(map);
+		assertThat(this.properties.getMaxHttpPostSize()).isEqualTo(9999);
+	}
+
+	@Test
+	public void testCustomizeJettyAcceptors() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.jetty.acceptors", "10");
+		bindProperties(map);
+		assertThat(this.properties.getJetty().getAcceptors()).isEqualTo(10);
+	}
+
+	@Test
+	public void testCustomizeJettySelectors() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.jetty.selectors", "10");
+		bindProperties(map);
+		assertThat(this.properties.getJetty().getSelectors()).isEqualTo(10);
+	}
+
+	@Test
+	public void testCustomizeTomcatMinSpareThreads() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.min-spare-threads", "10");
+		bindProperties(map);
+		assertThat(this.properties.getTomcat().getMinSpareThreads()).isEqualTo(10);
 	}
 
 	@Test
@@ -407,6 +442,14 @@ public class ServerPropertiesTests {
 				new JettyEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setSessionStoreDir(new File("myfolder"));
+	}
+
+	@Test
+	public void skipNullElementsForUndertow() throws Exception {
+		UndertowEmbeddedServletContainerFactory container = mock(
+				UndertowEmbeddedServletContainerFactory.class);
+		this.properties.customize(container);
+		verify(container, never()).setAccessLogEnabled(anyBoolean());
 	}
 
 	private void bindProperties(Map<String, String> map) {

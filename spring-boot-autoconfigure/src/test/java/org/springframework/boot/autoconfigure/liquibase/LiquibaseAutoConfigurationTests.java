@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
+import java.io.File;
 import java.util.Map;
 
 import liquibase.integration.spring.SpringLiquibase;
@@ -24,6 +25,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -32,6 +34,7 @@ import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,6 +47,9 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
+
+	@Rule
+	public TemporaryFolder temp = new TemporaryFolder();
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -190,6 +196,22 @@ public class LiquibaseAutoConfigurationTests {
 				.getField(liquibase, "parameters");
 		assertThat(parameters.containsKey("foo")).isTrue();
 		assertThat(parameters.get("foo")).isEqualTo("bar");
+	}
+
+	@Test
+	public void testRollbackFile() throws Exception {
+		File file = this.temp.newFile("rollback-file.sql");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"liquibase.rollbackFile:" + file.getAbsolutePath());
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+		File actualFile = (File) ReflectionTestUtils.getField(liquibase, "rollbackFile");
+		assertThat(actualFile).isEqualTo(file).exists();
+		String content = new String(FileCopyUtils.copyToByteArray(file));
+		assertThat(content).contains("DROP TABLE PUBLIC.customer;");
 	}
 
 }

@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-groovy-templates</artifactId>
 	<name>Spring Boot Groovy Templates Starter</name>
-	<description>Spring Boot Groovy Templates Starter</description>
+	<description>Starter for building MVC web applications using Groovy Templates views</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

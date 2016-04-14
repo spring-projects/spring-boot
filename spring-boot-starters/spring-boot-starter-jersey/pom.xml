@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-jersey</artifactId>
 	<name>Spring Boot Jersey Starter</name>
-	<description>Spring Boot Jersey Starter</description>
+	<description>Starter for building RESTful web applications using JAX-RS and Jersey.
+		An alternative to spring-boot-starter-web</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

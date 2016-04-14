@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Annotation at the field or method/constructor parameter level that injects the HTTP
- * port that got allocated at runtime. Privdes a convenient alternative for
+ * port that got allocated at runtime. Provides a convenient alternative for
  * <code>&#064;Value(&quot;${local.server.port}&quot;)</code>.
  *
  * @author Anand Shah

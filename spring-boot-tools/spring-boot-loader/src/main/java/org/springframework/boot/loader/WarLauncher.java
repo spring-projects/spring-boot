@@ -55,7 +55,7 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		new WarLauncher().launch(args);
 	}
 

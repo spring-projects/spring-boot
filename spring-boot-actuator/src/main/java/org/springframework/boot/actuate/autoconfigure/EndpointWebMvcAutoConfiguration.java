@@ -30,11 +30,14 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -55,6 +58,7 @@ import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfigurat
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -164,7 +168,7 @@ public class EndpointWebMvcAutoConfiguration
 	}
 
 	private void createChildManagementContext() {
-		final AnnotationConfigEmbeddedWebApplicationContext childContext = new AnnotationConfigEmbeddedWebApplicationContext();
+		AnnotationConfigEmbeddedWebApplicationContext childContext = new AnnotationConfigEmbeddedWebApplicationContext();
 		childContext.setParent(this.applicationContext);
 		childContext.setNamespace("management");
 		childContext.setId(this.applicationContext.getId() + ":management");
@@ -172,10 +176,28 @@ public class EndpointWebMvcAutoConfiguration
 				PropertyPlaceholderAutoConfiguration.class,
 				EmbeddedServletContainerAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
+		registerEmbeddedServletContainerFactory(childContext);
 		CloseEventPropagationListener.addIfPossible(this.applicationContext,
 				childContext);
 		childContext.refresh();
 		managementContextResolver().setApplicationContext(childContext);
+	}
+
+	private void registerEmbeddedServletContainerFactory(
+			AnnotationConfigEmbeddedWebApplicationContext childContext) {
+		try {
+			EmbeddedServletContainerFactory servletContainerFactory = this.applicationContext
+					.getBean(EmbeddedServletContainerFactory.class);
+			ConfigurableListableBeanFactory beanFactory = childContext.getBeanFactory();
+			if (beanFactory instanceof BeanDefinitionRegistry) {
+				BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+				registry.registerBeanDefinition("embeddedServletContainerFactory",
+						new RootBeanDefinition(servletContainerFactory.getClass()));
+			}
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			// Ignore and assume auto-configuration
+		}
 	}
 
 	/**

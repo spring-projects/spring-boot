@@ -25,10 +25,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -47,8 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Doo-Hwan, Kwak
  */
 @RunWith(SpringRunner.class)
-@WebAppConfiguration
-@SpringApplicationConfiguration(SampleGroovyTemplateApplication.class)
+@SpringBootTest
 @DirtiesContext
 public class MessageControllerWebTests {
 
@@ -83,6 +81,7 @@ public class MessageControllerWebTests {
 	}
 
 	private static class RegexMatcher extends TypeSafeMatcher<String> {
+
 		private final String regex;
 
 		public RegexMatcher(String regex) {
@@ -108,5 +107,7 @@ public class MessageControllerWebTests {
 			description.appendText("a string that matches regex: ")
 					.appendText(this.regex);
 		}
+
 	}
+
 }

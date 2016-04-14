@@ -26,10 +26,11 @@ import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfigurati
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.user.SecurityConfig;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
@@ -41,7 +42,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(JpaUserDetailsTests.Main.class)
+@ContextConfiguration(classes = JpaUserDetailsTests.Main.class, loader = SpringBootContextLoader.class)
 @DirtiesContext
 public class JpaUserDetailsTests {
 

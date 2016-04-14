@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 import sample.secure.SampleSecureApplicationTests.TestConfiguration;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration({ SampleSecureApplication.class,
+@SpringBootTest(classes = { SampleSecureApplication.class,
 		TestConfiguration.class })
 public class SampleSecureApplicationTests {
 

@@ -77,11 +77,17 @@ public class ClassPathFileSystemWatcherTests {
 		context.getEnvironment().getPropertySources().addLast(propertySource);
 		context.register(Config.class);
 		context.refresh();
-		Thread.sleep(100);
+		Thread.sleep(200);
 		File classFile = new File(folder, "Example.class");
 		FileCopyUtils.copy("file".getBytes(), classFile);
-		Thread.sleep(1100);
+		Thread.sleep(1000);
 		List<ClassPathChangedEvent> events = context.getBean(Listener.class).getEvents();
+		for (int i = 0; i < 20; i++) {
+			if (!events.isEmpty()) {
+				break;
+			}
+			Thread.sleep(500);
+		}
 		assertThat(events.size()).isEqualTo(1);
 		assertThat(events.get(0).getChangeSet().iterator().next().getFiles().iterator()
 				.next().getFile()).isEqualTo(classFile);

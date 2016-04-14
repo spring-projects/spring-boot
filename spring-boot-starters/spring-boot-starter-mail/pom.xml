@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-mail</artifactId>
 	<name>Spring Boot Mail Starter</name>
-	<description>Spring Boot Mail Starter</description>
+	<description>Starter for using Java Mail and Spring Framework's email sending
+		support</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

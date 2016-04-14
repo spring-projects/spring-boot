@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.lease.Releasable;
-import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 
@@ -62,6 +62,7 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 		Map<String, String> defaults = new LinkedHashMap<String, String>();
 		defaults.put("http.enabled", String.valueOf(false));
 		defaults.put("node.local", String.valueOf(true));
+		defaults.put("path.home", System.getProperty("user.dir"));
 		DEFAULTS = Collections.unmodifiableMap(defaults);
 	}
 
@@ -95,7 +96,7 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	}
 
 	private Client createNodeClient() throws Exception {
-		ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
+		Settings.Builder settings = Settings.settingsBuilder();
 		for (Map.Entry<String, String> entry : DEFAULTS.entrySet()) {
 			if (!this.properties.getProperties().containsKey(entry.getKey())) {
 				settings.put(entry.getKey(), entry.getValue());

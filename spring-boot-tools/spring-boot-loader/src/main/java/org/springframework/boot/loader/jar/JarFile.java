@@ -64,6 +64,8 @@ public class JarFile extends java.util.jar.JarFile {
 
 	private final RandomAccessData data;
 
+	private final JarFileType type;
+
 	private URL url;
 
 	private JarFileEntries entries;
@@ -87,7 +89,7 @@ public class JarFile extends java.util.jar.JarFile {
 	 * @throws IOException if the file cannot be read
 	 */
 	JarFile(RandomAccessDataFile file) throws IOException {
-		this(file, "", file);
+		this(file, "", file, JarFileType.DIRECT);
 	}
 
 	/**
@@ -96,15 +98,17 @@ public class JarFile extends java.util.jar.JarFile {
 	 * @param rootFile the root jar file
 	 * @param pathFromRoot the name of this file
 	 * @param data the underlying data
+	 * @param type the type of the jar file
 	 * @throws IOException if the file cannot be read
 	 */
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
-			RandomAccessData data) throws IOException {
-		this(rootFile, pathFromRoot, data, null);
+			RandomAccessData data, JarFileType type) throws IOException {
+		this(rootFile, pathFromRoot, data, null, type);
 	}
 
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
-			RandomAccessData data, JarEntryFilter filter) throws IOException {
+			RandomAccessData data, JarEntryFilter filter, JarFileType type)
+					throws IOException {
 		super(rootFile.getFile());
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
@@ -112,6 +116,7 @@ public class JarFile extends java.util.jar.JarFile {
 		this.entries = parser.addVisitor(new JarFileEntries(this, filter));
 		parser.addVisitor(centralDirectoryVisitor());
 		this.data = parser.parse(data, filter == null);
+		this.type = type;
 	}
 
 	private CentralDirectoryVisitor centralDirectoryVisitor() {
@@ -151,15 +156,21 @@ public class JarFile extends java.util.jar.JarFile {
 	public Manifest getManifest() throws IOException {
 		Manifest manifest = (this.manifest == null ? null : this.manifest.get());
 		if (manifest == null) {
-			InputStream inputStream = getInputStream(MANIFEST_NAME, ResourceAccess.ONCE);
-			if (inputStream == null) {
-				return null;
+			if (this.type == JarFileType.NESTED_DIRECTORY) {
+				manifest = new JarFile(this.getRootJarFile()).getManifest();
 			}
-			try {
-				manifest = new Manifest(inputStream);
-			}
-			finally {
-				inputStream.close();
+			else {
+				InputStream inputStream = getInputStream(MANIFEST_NAME,
+						ResourceAccess.ONCE);
+				if (inputStream == null) {
+					return null;
+				}
+				try {
+					manifest = new Manifest(inputStream);
+				}
+				finally {
+					inputStream.close();
+				}
 			}
 			this.manifest = new SoftReference<Manifest>(manifest);
 		}
@@ -248,6 +259,7 @@ public class JarFile extends java.util.jar.JarFile {
 	private JarFile createJarFileFromDirectoryEntry(JarEntry entry) throws IOException {
 		final AsciiBytes sourceName = new AsciiBytes(entry.getName());
 		JarEntryFilter filter = new JarEntryFilter() {
+
 			@Override
 			public AsciiBytes apply(AsciiBytes name) {
 				if (name.startsWith(sourceName) && !name.equals(sourceName)) {
@@ -255,11 +267,12 @@ public class JarFile extends java.util.jar.JarFile {
 				}
 				return null;
 			}
+
 		};
 		return new JarFile(this.rootFile,
 				this.pathFromRoot + "!/"
 						+ entry.getName().substring(0, sourceName.length() - 1),
-				this.data, filter);
+				this.data, filter, JarFileType.NESTED_DIRECTORY);
 	}
 
 	private JarFile createJarFileFromFileEntry(JarEntry entry) throws IOException {
@@ -271,7 +284,7 @@ public class JarFile extends java.util.jar.JarFile {
 		}
 		RandomAccessData entryData = this.entries.getEntryData(entry.getName());
 		return new JarFile(this.rootFile, this.pathFromRoot + "!/" + entry.getName(),
-				entryData);
+				entryData, JarFileType.NESTED_JAR);
 	}
 
 	@Override
@@ -374,6 +387,10 @@ public class JarFile extends java.util.jar.JarFile {
 		catch (Error ex) {
 			// Ignore
 		}
+	}
+
+	private enum JarFileType {
+		DIRECT, NESTED_DIRECTORY, NESTED_JAR
 	}
 
 }

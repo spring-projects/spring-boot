@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
@@ -25,6 +28,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Greg Turnquist
  * @author Stephane Nicoll
  * @author Aurélien Leboulanger
+ * @author Venil Noronha
  */
 @ConfigurationProperties(prefix = "spring.activemq")
 public class ActiveMQProperties {
@@ -52,6 +56,8 @@ public class ActiveMQProperties {
 
 	private Pool pool = new Pool();
 
+	private Packages packages = new Packages();
+
 	public String getBrokerUrl() {
 		return this.brokerUrl;
 	}
@@ -71,7 +77,7 @@ public class ActiveMQProperties {
 	/**
 	 * Get if pooling is enabled.
 	 * @return if pooling is enabled
-	 * @deprecated since 1.4 in favor of "spring.activemq.pool.enabled"
+	 * @deprecated as of 1.4 in favor of "spring.activemq.pool.enabled"
 	 */
 	@Deprecated
 	@DeprecatedConfigurationProperty(replacement = "spring.activemq.pool.enabled")
@@ -82,7 +88,7 @@ public class ActiveMQProperties {
 	/**
 	 * Set if pooling is enabled.
 	 * @param pooled the pooling enabled value
-	 * @deprecated since 1.4 in favor of "spring.activemq.pool.enabled"
+	 * @deprecated as of 1.4 in favor of "spring.activemq.pool.enabled"
 	 */
 	@Deprecated
 	public void setPooled(boolean pooled) {
@@ -111,6 +117,10 @@ public class ActiveMQProperties {
 
 	public void setPool(Pool pool) {
 		this.pool = pool;
+	}
+
+	public Packages getPackages() {
+		return this.packages;
 	}
 
 	public static class Pool {
@@ -166,6 +176,36 @@ public class ActiveMQProperties {
 
 		public void setExpiryTimeout(long expiryTimeout) {
 			this.expiryTimeout = expiryTimeout;
+		}
+
+	}
+
+	public static class Packages {
+
+		/**
+		 * Trust all packages.
+		 */
+		private Boolean trustAll;
+
+		/**
+		 * Comma-separated list of specific packages to trust (when not trusting all packages).
+		 */
+		private List<String> trusted = new ArrayList<String>();
+
+		public Boolean getTrustAll() {
+			return this.trustAll;
+		}
+
+		public void setTrustAll(Boolean trustAll) {
+			this.trustAll = trustAll;
+		}
+
+		public List<String> getTrusted() {
+			return this.trusted;
+		}
+
+		public void setTrusted(List<String> trusted) {
+			this.trusted = trusted;
 		}
 
 	}

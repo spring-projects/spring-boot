@@ -23,9 +23,8 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.MinimalActuatorHypermediaApplication;
-import org.springframework.boot.actuate.endpoint.mvc.HalBrowserMvcEndpointServerPortIntegrationTests.SpringBootHypermediaApplication;
-import org.springframework.boot.test.context.IntegrationTest;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpEntity;
@@ -36,7 +35,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -51,9 +49,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
  * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SpringBootHypermediaApplication.class)
-@WebAppConfiguration
-@IntegrationTest({ "server.port=0", "management.port=0" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
+		"management.port=0" })
 @DirtiesContext
 public class HalBrowserMvcEndpointServerPortIntegrationTests {
 

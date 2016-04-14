@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test;
 
-import org.springframework.boot.test.context.IntegrationTest;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -31,7 +30,7 @@ import org.springframework.test.util.ReflectionTestUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @since 1.2.0
- * @deprecated since 1.4.0 as no longer used by {@code @IntegrationTest}.
+ * @deprecated as of 1.4 as no longer used by {@code @IntegrationTest}.
  */
 @Deprecated
 public class IntegrationTestPropertiesListener extends AbstractTestExecutionListener {

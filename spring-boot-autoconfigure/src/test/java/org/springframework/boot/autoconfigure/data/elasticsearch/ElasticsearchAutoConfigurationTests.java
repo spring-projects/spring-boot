@@ -57,8 +57,7 @@ public class ElasticsearchAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.data.elasticsearch.properties.foo.bar:baz",
-				"spring.data.elasticsearch.properties.path.data:target/data",
-				"spring.data.elasticsearch.properties.path.logs:target/logs");
+				"spring.data.elasticsearch.properties.path.home:target");
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
@@ -74,8 +73,7 @@ public class ElasticsearchAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.data.elasticsearch.properties.foo.bar:baz",
-				"spring.data.elasticsearch.properties.path.data:target/data",
-				"spring.data.elasticsearch.properties.path.logs:target/logs",
+				"spring.data.elasticsearch.properties.path.home:target",
 				"spring.data.elasticsearch.properties.node.local:false",
 				"spring.data.elasticsearch.properties.node.data:true",
 				"spring.data.elasticsearch.properties.http.enabled:true");
@@ -109,8 +107,7 @@ public class ElasticsearchAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.data.elasticsearch.cluster-nodes:localhost",
-				"spring.data.elasticsearch.properties.path.data:target/data",
-				"spring.data.elasticsearch.properties.path.logs:target/logs");
+				"spring.data.elasticsearch.properties.path.home:target");
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.thrown.expect(BeanCreationException.class);

@@ -212,8 +212,8 @@ might have.
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.main.web_environment=false
-	spring.main.banner_mode=off
+	spring.main.web-environment=false
+	spring.main.banner-mode=off
 ----
 
 and then the Spring Boot banner will not be printed on startup, and the application will
@@ -239,7 +239,7 @@ used with the following configuration:
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.main.sources=com.acme.Config,com.acme.ExtraConfig
-	spring.main.banner_mode=console
+	spring.main.banner-mode=console
 ----
 
 The actual application will _now_ show the banner (as overridden by configuration) and use
@@ -543,15 +543,15 @@ that and be sure that it has initialized is to add a `@Bean` of type
 `ApplicationListener<EmbeddedServletContainerInitializedEvent>` and pull the container
 out of the event when it is published.
 
-A useful practice for use with `@WebIntegrationTest` is to set `server.port=0`
-and then inject the actual port. For example:
+Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can
+also inject the actual port into a field using the `@LocalServerPort` annotation. For
+example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationConfiguration(SampleDataJpaApplication.class)
-	@WebIntegrationTest("server.port:0")
-	public class CityRepositoryIntegrationTests {
+	@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
+	public class MyWebIntegrationTests {
 
 		@Autowired
 		EmbeddedWebApplicationContext server;
@@ -1619,18 +1619,16 @@ configuration properties. The most common options to set are:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.jpa.hibernate.ddl-auto: create-drop
-	spring.jpa.hibernate.naming_strategy: org.hibernate.cfg.ImprovedNamingStrategy
-	spring.jpa.database: H2
-	spring.jpa.show-sql: true
+	spring.jpa.hibernate.ddl-auto=create-drop
+	spring.jpa.hibernate.naming.physical-strategy=com.example.MyPhysicalNamingStrategy
+	spring.jpa.database=H2
+	spring.jpa.show-sql=true
 ----
 
-(Because of relaxed data binding hyphens or underscores should work equally well as
-property keys.) The `ddl-auto` setting is a special case in that it has different
-defaults depending on whether you are using an embedded database (`create-drop`) or not
-(`none`). In addition all properties in `+spring.jpa.properties.*+` are passed through as
-normal JPA properties (with the prefix stripped) when the local `EntityManagerFactory` is
-created.
+The `ddl-auto` setting is a special case in that it has different defaults depending on
+whether you are using an embedded database (`create-drop`) or not (`none`). In addition
+all properties in `+spring.jpa.properties.*+` are passed through as normal JPA properties
+(with the prefix stripped) when the local `EntityManagerFactory` is created.
 
 See {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[`HibernateJpaAutoConfiguration`]
 and {sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[`JpaBaseConfiguration`]
@@ -1853,7 +1851,10 @@ underscore-separated version, e.g. '`1`' or '`2_1`'). By default they live in a 
 the Flyway class from flyway-core for details of available settings like schemas etc. In
 addition Spring Boot provides a small set of properties in
 {sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[`FlywayProperties`]
-that can be used to disable the migrations, or switch off the location checking.
+that can be used to disable the migrations, or switch off the location checking. Spring
+Boot will call `Flyway.migrate()` to perform the database migration. If you would like
+more control, provide a `@Bean` that implements
+{sc-spring-boot-autoconfigure}/flyway/FlywayMigrationStrategy.{sc-ext}[`FlywayMigrationStrategy`].
 
 TIP: If you want to make use of http://flywaydb.org/documentation/callbacks.html[Flyway
 callbacks], those scripts should also live in the `classpath:db/migration` folder.
@@ -2590,31 +2591,42 @@ details.
 [[howto-build-an-executable-archive-with-ant]]
 === Build an executable archive from Ant without using spring-boot-antlib
 To build with Ant you need to grab dependencies, compile and then create a jar or war
-archive as normal. To make it executable you can either use the `spring-boot-antlib`
+archive. To make it executable you can either use the `spring-boot-antlib`
 module, or you can follow these instructions:
 
-. Use the appropriate launcher as a `Main-Class`, e.g. `JarLauncher` for a jar file, and
-  specify the other properties it needs as manifest entries, principally a `Start-Class`.
-
-. Add the runtime dependencies in a nested '`lib`' directory (for a jar) and the
-  `provided` (embedded container) dependencies in a nested `lib-provided` directory.
-  Remember *not* to compress the entries in the archive.
-
+. If you are building a jar, package the application's classes and resources in a nested
+  `BOOT-INF/classes` directory. If you are building a war, package the application's
+  classes in a nested `WEB-INF/classes` directory as usual.
+. Add the runtime dependencies in a nested `BOOT-INF/lib` directory for a jar or
+  `WEB-INF/lib` for a war. Remember *not* to compress the entries in the archive.
+. Add the `provided` (embedded container) dependencies in a nested `BOOT-INF/lib`
+  directory for jar or `WEB-INF/lib-provided` for a war. Remember *not* to compress the
+  entries in the archive.
 . Add the `spring-boot-loader` classes at the root of the archive (so the `Main-Class`
   is available).
+. Use the appropriate launcher, e.g. `JarLauncher` for a jar file, as a `Main-Class`
+  attribute in the manifest and specify the other properties it needs as manifest entries,
+  principally a `Start-Class`.
 
 Example:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0]
 ----
 	<target name="build" depends="compile">
-		<copy todir="target/classes/lib">
-			<fileset dir="lib/runtime" />
-		</copy>
-		<jar destfile="target/spring-boot-sample-actuator-${spring-boot.version}.jar" compress="false">
-			<fileset dir="target/classes" />
-			<fileset dir="src/main/resources" />
-			<zipfileset src="lib/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
+		<jar destfile="target/${ant.project.name}-${spring-boot.version}.jar" compress="false">
+			<mappedresources>
+				<fileset dir="target/classes" />
+				<globmapper from="*" to="BOOT-INF/classes/*"/>
+			</mappedresources>
+			<mappedresources>
+				<fileset dir="src/main/resources" erroronmissingdir="false"/>
+				<globmapper from="*" to="BOOT-INF/classes/*"/>
+			</mappedresources>
+			<mappedresources>
+				<fileset dir="${lib.dir}/runtime" />
+				<globmapper from="*" to="BOOT-INF/lib/*"/>
+			</mappedresources>
+			<zipfileset src="${lib.dir}/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
 			<manifest>
 				<attribute name="Main-Class" value="org.springframework.boot.loader.JarLauncher" />
 				<attribute name="Start-Class" value="${start-class}" />
@@ -2623,11 +2635,12 @@ Example:
 	</target>
 ----
 
-The Actuator Sample has a `build.xml` that should work if you run it with
+The {github-code}/spring-boot-samples/spring-boot-sample-ant[Ant Sample] has a
+`build.xml` with a `manual` task that should work if you run it with
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	$ ant -lib <folder containing ivy-2.2.jar>
+	$ ant -lib <folder containing ivy-2.2.jar> clean manual
 ----
 
 after which you can run the application with

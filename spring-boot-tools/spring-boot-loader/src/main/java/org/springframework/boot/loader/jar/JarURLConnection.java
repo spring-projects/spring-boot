@@ -59,6 +59,8 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private static final JarEntryName EMPTY_JAR_ENTRY_NAME = new JarEntryName("");
 
+	private static final String FILE_COLON_DOUBLE_SLASH = "file://";
+
 	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<Boolean>();
 
 	private final JarFile jarFile;
@@ -73,7 +75,8 @@ class JarURLConnection extends java.net.JarURLConnection {
 		// What we pass to super is ultimately ignored
 		super(EMPTY_JAR_URL);
 		this.url = url;
-		String spec = url.getFile().substring(jarFile.getUrl().getFile().length());
+		String spec = getNormalizedFile(url)
+				.substring(jarFile.getUrl().getFile().length());
 		int separator;
 		while ((separator = spec.indexOf(SEPARATOR)) > 0) {
 			jarFile = getNestedJarFile(jarFile, spec.substring(0, separator));
@@ -81,6 +84,13 @@ class JarURLConnection extends java.net.JarURLConnection {
 		}
 		this.jarFile = jarFile;
 		this.jarEntryName = getJarEntryName(spec);
+	}
+
+	private String getNormalizedFile(URL url) {
+		if (!url.getFile().startsWith(FILE_COLON_DOUBLE_SLASH)) {
+			return url.getFile();
+		}
+		return "file:" + url.getFile().substring(FILE_COLON_DOUBLE_SLASH.length());
 	}
 
 	private JarFile getNestedJarFile(JarFile jarFile, String name) throws IOException {

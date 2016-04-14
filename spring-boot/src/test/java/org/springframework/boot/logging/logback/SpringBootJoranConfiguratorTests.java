@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -41,6 +42,7 @@ import static org.hamcrest.Matchers.not;
  *
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 public class SpringBootJoranConfiguratorTests {
 
@@ -70,7 +72,7 @@ public class SpringBootJoranConfiguratorTests {
 	@After
 	public void reset() {
 		this.context.stop();
-		BasicConfigurator.configureDefaultContext();
+		new BasicConfigurator().configure((LoggerContext) LoggerFactory.getILoggerFactory());
 	}
 
 	@Test
@@ -138,6 +140,30 @@ public class SpringBootJoranConfiguratorTests {
 				"my.EXAMPLE_PROPERTY=test");
 		initialize("property.xml");
 		assertThat(this.context.getProperty("MINE")).isEqualTo("test");
+	}
+
+	@Test
+	public void springPropertyNoValue() throws Exception {
+		initialize("property.xml");
+		assertThat(this.context.getProperty("SIMPLE")).isNull();
+	}
+
+	@Test
+	public void relaxedSpringPropertyNoValue() throws Exception {
+		initialize("property.xml");
+		assertThat(this.context.getProperty("MINE")).isNull();
+	}
+
+	@Test
+	public void springPropertyWithDefaultValue() throws Exception {
+		initialize("property-default-value.xml");
+		assertThat(this.context.getProperty("SIMPLE")).isEqualTo("foo");
+	}
+
+	@Test
+	public void relaxedSpringPropertyWithDefaultValue() throws Exception {
+		initialize("property-default-value.xml");
+		assertThat(this.context.getProperty("MINE")).isEqualTo("bar");
 	}
 
 	private void doTestNestedProfile(boolean expected, String... profiles)

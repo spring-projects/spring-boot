@@ -55,7 +55,7 @@ import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
  * @author Andy Wilkinson
  * @author Brian Clozel
  * @since 1.1.0
- * @deprecated In 1.4.0 following the deprecation of Velocity support in Spring Framework
+ * @deprecated as of 1.4 following the deprecation of Velocity support in Spring Framework
  * 4.3
  */
 @Configuration

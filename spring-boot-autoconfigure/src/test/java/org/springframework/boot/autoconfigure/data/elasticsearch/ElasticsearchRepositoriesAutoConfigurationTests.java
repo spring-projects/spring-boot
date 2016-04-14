@@ -89,8 +89,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 
 	private void addElasticsearchProperties(AnnotationConfigApplicationContext context) {
 		EnvironmentTestUtils.addEnvironment(context,
-				"spring.data.elasticsearch.properties.path.data:target/data",
-				"spring.data.elasticsearch.properties.path.logs:target/logs");
+				"spring.data.elasticsearch.properties.path.home:target");
 	}
 
 	@Configuration

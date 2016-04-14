@@ -7,8 +7,9 @@
 		<version>1.4.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-log4j2</artifactId>
-	<name>Spring Boot Log4J2 Starter</name>
-	<description>Spring Boot Log4J2 Starter</description>
+	<name>Spring Boot Log4j 2 Starter</name>
+	<description>Starter for using Log4j2 for logging. An alternative to
+		spring-boot-starter-logging</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

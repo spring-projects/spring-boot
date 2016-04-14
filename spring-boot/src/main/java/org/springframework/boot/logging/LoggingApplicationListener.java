@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -50,6 +49,12 @@ import org.springframework.util.StringUtils;
  * environment contains a {@code logging.config} property it will be used to bootstrap the
  * logging system, otherwise a default configuration is used. Regardless, logging levels
  * will be customized if the environment contains {@code logging.level.*} entries.
+ * <p>
+ * Debug and trace logging for Spring, Tomcat, Jetty and Hibernate will be enabled when
+ * the environment contains {@code debug} or {@code trace} properties that aren't set to
+ * {@code "false"} (i.e. if you start your application using
+ * {@literal java -jar myapp.jar [--debug | --trace]}). If you prefer to ignore these
+ * properties you can set {@link #setParseArgs(boolean) parseArgs} to {@code false}.
  * <p>
  * By default, log output is only written to the console. If a log file is required the
  * {@code logging.path} and {@code logging.file} properties can be used.
@@ -103,12 +108,12 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	/**
 	 * The name of the System property that contains the process ID.
 	 */
-	public static final String PID_KEY = "PID";
+	public static final String PID_KEY = LoggingSystemProperties.PID_KEY;
 
 	/**
 	 * The name of the System property that contains the exception conversion word.
 	 */
-	public static final String EXCEPTION_CONVERSION_WORD = "LOG_EXCEPTION_CONVERSION_WORD";
+	public static final String EXCEPTION_CONVERSION_WORD = LoggingSystemProperties.EXCEPTION_CONVERSION_WORD;
 
 	/**
 	 * The name of the System property that contains the log file.
@@ -123,17 +128,17 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	/**
 	 * The name of the System property that contains the console log pattern.
 	 */
-	public static final String CONSOLE_LOG_PATTERN = "CONSOLE_LOG_PATTERN";
+	public static final String CONSOLE_LOG_PATTERN = LoggingSystemProperties.CONSOLE_LOG_PATTERN;
 
 	/**
 	 * The name of the System property that contains the file log pattern.
 	 */
-	public static final String FILE_LOG_PATTERN = "FILE_LOG_PATTERN";
+	public static final String FILE_LOG_PATTERN = LoggingSystemProperties.FILE_LOG_PATTERN;
 
 	/**
 	 * The name of the System property that contains the log level pattern.
 	 */
-	public static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
+	public static final String LOG_LEVEL_PATTERN = LoggingSystemProperties.LOG_LEVEL_PATTERN;
 
 	/**
 	 * The name of the {@link LoggingSystem} bean.
@@ -248,7 +253,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 */
 	protected void initialize(ConfigurableEnvironment environment,
 			ClassLoader classLoader) {
-		setSystemProperties(environment);
+		new LoggingSystemProperties(environment).apply();
 		LogFile logFile = LogFile.get(environment);
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
@@ -257,28 +262,6 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		initializeSystem(environment, this.loggingSystem, logFile);
 		initializeFinalLoggingLevels(environment, this.loggingSystem);
 		registerShutdownHookIfNecessary(environment, this.loggingSystem);
-	}
-
-	private void setSystemProperties(ConfigurableEnvironment environment) {
-		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(
-				environment, "logging.");
-		setSystemProperty(propertyResolver, EXCEPTION_CONVERSION_WORD,
-				"exception-conversion-word");
-		setSystemProperty(propertyResolver, CONSOLE_LOG_PATTERN, "pattern.console");
-		setSystemProperty(propertyResolver, FILE_LOG_PATTERN, "pattern.file");
-		setSystemProperty(propertyResolver, LOG_LEVEL_PATTERN, "pattern.level");
-		setSystemProperty(PID_KEY, new ApplicationPid().toString());
-	}
-
-	private void setSystemProperty(RelaxedPropertyResolver propertyResolver,
-			String systemPropertyName, String propertyName) {
-		setSystemProperty(systemPropertyName, propertyResolver.getProperty(propertyName));
-	}
-
-	private void setSystemProperty(String name, String value) {
-		if (System.getProperty(name) == null && value != null) {
-			System.setProperty(name, value);
-		}
 	}
 
 	private void initializeEarlyLoggingLevel(ConfigurableEnvironment environment) {

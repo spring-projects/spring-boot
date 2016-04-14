@@ -78,7 +78,7 @@ public class PropertyMappingContextCustomizerFactoryTests {
 	}
 
 	@Test
-	public void hashCodeAndEqualsShoudBeBasedOnPropertyValues() throws Exception {
+	public void hashCodeAndEqualsShouldBeBasedOnPropertyValues() throws Exception {
 		ContextCustomizer customizer1 = this.factory
 				.createContextCustomizer(TypeMapping.class, null);
 		ContextCustomizer customizer2 = this.factory

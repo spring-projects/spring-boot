@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
-import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.test.context.BootstrapWith;
@@ -47,7 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
  * override these settings.
  * <p>
  * If you are looking to load your full application configuration, but use an embedded
- * database, you should consider {@link SpringApplicationTest @SpringApplicationTest}
+ * database, you should consider {@link SpringBootTest @SpringBootTest}
  * combined with {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} rather than
  * this annotation.
  *
@@ -69,6 +69,7 @@ public @interface DataJpaTest {
 
 	/**
 	 * If SQL output should be logged.
+	 * @return if SQL is logged
 	 */
 	@PropertyMapping("spring.jpa.show-sql")
 	boolean showSql() default true;
@@ -79,18 +80,21 @@ public @interface DataJpaTest {
 	 * included.
 	 * @see #includeFilters()
 	 * @see #excludeFilters()
+	 * @return if default filters should be used
 	 */
 	boolean useDefaultFilters() default true;
 
 	/**
 	 * A set of include filters which can be used to add otherwise filtered beans to the
 	 * application context.
+	 * @return include filters to apply
 	 */
 	Filter[] includeFilters() default {};
 
 	/**
 	 * A set of exclude filters which can be used to filter beans that would otherwise be
 	 * added to the application context.
+	 * @return exclude filters to apply
 	 */
 	Filter[] excludeFilters() default {};
 

@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-jooq</artifactId>
 	<name>Spring Boot JOOQ Starter</name>
-	<description>Spring Boot JOOQ Starter</description>
+	<description>Starter for using jOOQ to access SQL databases. An alternative to
+		spring-boot-starter-data-jpa or spring-boot-starter-jdbc</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

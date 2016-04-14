@@ -27,8 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Test for {@link MockitoPostProcessor}. See also the integration tests in the
- * {@code runner} package.
+ * Test for {@link MockitoPostProcessor}. See also the integration tests.
  *
  * @author Phillip Webb
  */
@@ -38,7 +37,7 @@ public class MockitoPostProcessorTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void cannotMockMulipleBeans() {
+	public void cannotMockMultipleBeans() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MultipleBeans.class);

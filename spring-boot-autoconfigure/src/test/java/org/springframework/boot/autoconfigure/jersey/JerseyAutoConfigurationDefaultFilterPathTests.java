@@ -29,22 +29,20 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationDefaultFilterPathTests.Application;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.IntegrationTest;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,21 +53,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jersey.type=filter")
 @DirtiesContext
-@SpringApplicationConfiguration(Application.class)
-@IntegrationTest({ "server.port=0", "spring.jersey.type=filter" })
-@WebAppConfiguration
 public class JerseyAutoConfigurationDefaultFilterPathTests {
 
-	@LocalServerPort
-	private int port;
-
-	private RestTemplate restTemplate = new TestRestTemplate();
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate
-				.getForEntity("http://localhost:" + this.port + "/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/hello",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
@@ -98,6 +92,7 @@ public class JerseyAutoConfigurationDefaultFilterPathTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
+	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class, JerseyAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })

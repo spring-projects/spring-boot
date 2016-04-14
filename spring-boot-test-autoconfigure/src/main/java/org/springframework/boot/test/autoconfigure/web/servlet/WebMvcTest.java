@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
-import org.springframework.boot.test.context.SpringApplicationTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Import;
@@ -46,16 +46,16 @@ import org.springframework.test.web.servlet.MockMvc;
  * {@code @Component}, {@code @Service} or {@code @Repository} beans).
  * <p>
  * By default, tests annotated with {@code @WebMvcTest} will also auto-configure
- * {@link MockMvc} (include support for HtmlUnit WebDriver and Selenium WebClient). For
+ * {@link MockMvc} (include support for HtmlUnit WebClient and Selenium WebDriver). For
  * more fine-grained control of MockMVC that
- * {@link AutoConfigureMockMvc @AutoConfigureMockMvc} annotation cab be used.
+ * {@link AutoConfigureMockMvc @AutoConfigureMockMvc} annotation can be used.
  * <p>
  * Typically {@code @WebMvcTest} is used in combination with {@link MockBean @MockBean} or
  * {@link Import @Import} to create any collaborators required by your {@code @Controller}
  * beans.
  * <p>
  * If you are looking to load your full application configuration and use MockMVC, you
- * should consider {@link SpringApplicationTest @SpringApplicationTest} combined with
+ * should consider {@link SpringBootTest @SpringBootTest} combined with
  * {@link AutoConfigureMockMvc @AutoConfigureMockMvc} rather than this annotation.
  *
  * @author Phillip Webb
@@ -78,6 +78,7 @@ public @interface WebMvcTest {
 	 * can be used for brevity if no other attributes are defined. See
 	 * {@link #controllers()} for details.
 	 * @see #controllers()
+	 * @return the controllers to test
 	 */
 	@AliasFor("controllers")
 	Class<?>[] value() default {};
@@ -86,6 +87,7 @@ public @interface WebMvcTest {
 	 * Specifies the controllers to test. May be left blank if all {@code @Controller}
 	 * beans should be added to the application context.
 	 * @see #value()
+	 * @return the controllers to test
 	 */
 	@AliasFor("value")
 	Class<?>[] controllers() default {};
@@ -98,18 +100,21 @@ public @interface WebMvcTest {
 	 * included.
 	 * @see #includeFilters()
 	 * @see #excludeFilters()
+	 * @return if default filters should be used
 	 */
 	boolean useDefaultFilters() default true;
 
 	/**
 	 * A set of include filters which can be used to add otherwise filtered beans to the
 	 * application context.
+	 * @return include filters to apply
 	 */
 	Filter[] includeFilters() default {};
 
 	/**
 	 * A set of exclude filters which can be used to filter beans that would otherwise be
 	 * added to the application context.
+	 * @return exclude filters to apply
 	 */
 	Filter[] excludeFilters() default {};
 

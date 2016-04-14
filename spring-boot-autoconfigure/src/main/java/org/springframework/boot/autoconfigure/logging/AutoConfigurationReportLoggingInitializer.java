@@ -103,7 +103,7 @@ public class AutoConfigurationReportLoggingInitializer
 						+ "debug logging (start with --debug)%n%n"));
 			}
 			if (this.logger.isDebugEnabled()) {
-				this.logger.debug(new ConditionEvalutionReportMessage(this.report));
+				this.logger.debug(new ConditionEvaluationReportMessage(this.report));
 			}
 		}
 	}

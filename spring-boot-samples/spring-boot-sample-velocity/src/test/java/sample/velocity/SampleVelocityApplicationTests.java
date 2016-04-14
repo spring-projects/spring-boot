@@ -20,7 +20,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -32,8 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SampleVelocityApplication.class)
-@SuppressWarnings("deprecation")
+@SpringBootTest
 public class SampleVelocityApplicationTests {
 
 	@ClassRule

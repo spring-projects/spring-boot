@@ -48,6 +48,7 @@
 		<module>spring-boot-starter-jooq</module>
 		<module>spring-boot-starter-jta-atomikos</module>
 		<module>spring-boot-starter-jta-bitronix</module>
+		<module>spring-boot-starter-jta-narayana</module>
 		<module>spring-boot-starter-logging</module>
 		<module>spring-boot-starter-log4j2</module>
 		<module>spring-boot-starter-mail</module>
@@ -96,6 +97,47 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>assemble-starter-poms</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/starter-poms-assembly.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>checkstyle-validation</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>animal-sniffer-maven-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

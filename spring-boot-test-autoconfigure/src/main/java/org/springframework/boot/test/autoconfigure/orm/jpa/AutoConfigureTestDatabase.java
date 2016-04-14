@@ -43,13 +43,15 @@ import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 public @interface AutoConfigureTestDatabase {
 
 	/**
-	 * If the test database should replace any existing.
+	 * Determines what type of existing DataSource beans can be replaced.
+	 * @return the type of existing DataSource to replace
 	 */
 	Replace replace() default Replace.ANY;
 
 	/**
 	 * The type of connection to be establish when {@link #replace() replacing} the data
 	 * source. By default will attempt to detect the connection based on the classpath.
+	 * @return the type of connection to use
 	 */
 	EmbeddedDatabaseConnection connection() default EmbeddedDatabaseConnection.NONE;
 

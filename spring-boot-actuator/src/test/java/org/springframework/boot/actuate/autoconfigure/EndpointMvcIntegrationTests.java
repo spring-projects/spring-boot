@@ -35,7 +35,6 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.EndpointMvcIntegrationTests.Application;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
@@ -49,8 +48,8 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.web.LocalServerPort;
-import org.springframework.boot.test.context.IntegrationTest;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,7 +57,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -73,9 +71,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(Application.class)
-@IntegrationTest("server.port=0")
-@WebAppConfiguration
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class EndpointMvcIntegrationTests {
 
@@ -99,18 +95,6 @@ public class EndpointMvcIntegrationTests {
 				.getForObject("http://localhost:" + this.port + "/health", String.class);
 		assertThat(body).isNotNull().contains("status");
 		assertThat(this.interceptor.invoked()).isTrue();
-	}
-
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			JacksonAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
-	protected @interface MinimalWebConfiguration {
-
 	}
 
 	@Configuration
@@ -163,6 +147,18 @@ public class EndpointMvcIntegrationTests {
 		protected TestInterceptor interceptor() {
 			return new TestInterceptor();
 		}
+
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			JacksonAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
+	protected @interface MinimalWebConfiguration {
 
 	}
 

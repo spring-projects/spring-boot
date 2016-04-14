@@ -55,7 +55,7 @@ public class AutoConfigureReportTestExecutionListenerTests {
 	}
 
 	@Test
-	public void prepareFialingTestInstanceShouldPrintReport() throws Exception {
+	public void prepareFailingTestInstanceShouldPrintReport() throws Exception {
 		TestContext testContext = mock(TestContext.class);
 		given(testContext.getTestInstance()).willThrow(new IllegalStateException());
 		SpringApplication application = new SpringApplication(Config.class);

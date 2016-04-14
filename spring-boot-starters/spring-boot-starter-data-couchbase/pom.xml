@@ -10,7 +10,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-data-couchbase</artifactId>
 	<name>Spring Boot Data Couchbase Starter</name>
-	<description>Spring Boot Data Couchbase Starter</description>
+	<description>Starter for using Couchbase document-oriented database and Spring Data
+		Couchbase</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

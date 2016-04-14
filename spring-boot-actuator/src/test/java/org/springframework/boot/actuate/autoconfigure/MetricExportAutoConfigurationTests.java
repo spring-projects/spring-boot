@@ -75,6 +75,7 @@ public class MetricExportAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		MetricExporters exporter = this.context.getBean(MetricExporters.class);
 		assertThat(exporter).isNotNull();
+		assertThat(exporter.getExporters()).containsKey("messageChannelMetricWriter");
 	}
 
 	@Test

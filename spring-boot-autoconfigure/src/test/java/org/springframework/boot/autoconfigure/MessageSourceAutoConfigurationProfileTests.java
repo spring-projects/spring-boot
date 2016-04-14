@@ -22,8 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.MessageSourceAutoConfigurationProfileTests.Config;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
@@ -37,11 +36,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-@SpringApplicationConfiguration({ Config.class, MessageSourceAutoConfiguration.class,
-		PropertyPlaceholderAutoConfiguration.class })
 @RunWith(SpringRunner.class)
-@DirtiesContext
+@SpringBootTest
+@ImportAutoConfiguration({ MessageSourceAutoConfiguration.class,
+		PropertyPlaceholderAutoConfiguration.class })
 @ActiveProfiles("switch-messages")
+@DirtiesContext
 public class MessageSourceAutoConfigurationProfileTests {
 
 	@Autowired
@@ -57,4 +57,5 @@ public class MessageSourceAutoConfigurationProfileTests {
 	protected static class Config {
 
 	}
+
 }

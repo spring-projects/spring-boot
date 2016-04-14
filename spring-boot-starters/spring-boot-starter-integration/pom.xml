@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-integration</artifactId>
 	<name>Spring Boot Integration Starter</name>
-	<description>Spring Boot Integration Starter</description>
+	<description>Starter for using Spring Integration</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

@@ -29,18 +29,16 @@ import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfigur
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
-import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpointTests.TestConfiguration;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -59,8 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringApplicationConfiguration(TestConfiguration.class)
-@WebAppConfiguration
+@SpringBootTest
 public class MetricsMvcEndpointTests {
 
 	@Autowired

@@ -26,78 +26,53 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.Filter;
-
 import groovy.text.Template;
 import groovy.text.TemplateEngine;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultHandler;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@SpringApplicationConfiguration(SpringBootHypermediaApplication.class)
+@ContextConfiguration(classes = SpringBootHypermediaApplication.class, loader = SpringBootContextLoader.class)
 @WebAppConfiguration
 @TestPropertySource(properties = { "spring.jackson.serialization.indent_output=true",
 		"endpoints.health.sensitive=true", "endpoints.actuator.enabled=false" })
 @DirtiesContext
+@AutoConfigureRestDocs(EndpointDocumentation.RESTDOCS_OUTPUT_DIR)
+@AutoConfigureMockMvc
 public class EndpointDocumentation {
 
-	private static final String RESTDOCS_OUTPUT_DIR = "target/generated-snippets";
-
-	@Rule
-	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation(
-			RESTDOCS_OUTPUT_DIR);
-
-	@Autowired
-	private WebApplicationContext context;
+	static final String RESTDOCS_OUTPUT_DIR = "target/generated-snippets";
 
 	@Autowired
 	private MvcEndpoints mvcEndpoints;
 
 	@Autowired
-	@Qualifier("metricFilter")
-	private Filter metricFilter;
-
-	@Autowired
-	@Qualifier("webRequestLoggingFilter")
-	private Filter traceFilter;
-
-	@Autowired
 	private TemplateEngine templates;
 
+	@Autowired
 	private MockMvc mockMvc;
-
-	@Before
-	public void setUp() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
-				.addFilters(this.metricFilter, this.traceFilter)
-				.apply(documentationConfiguration(this.restDocumentation)).build();
-	}
 
 	@Test
 	public void logfile() throws Exception {
@@ -169,7 +144,9 @@ public class EndpointDocumentation {
 	public static class EndpointDoc {
 
 		private String path;
+
 		private String custom;
+
 		private String title;
 
 		public EndpointDoc(File rootDir, String path) {

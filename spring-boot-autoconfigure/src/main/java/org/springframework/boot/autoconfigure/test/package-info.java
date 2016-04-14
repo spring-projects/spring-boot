@@ -16,6 +16,6 @@
 
 /**
  * Test utilities related to auto-configuration.
- * @deprecated in 1.4.0 in favor of the {@code spring-test-autoconfigure} module
+ * @deprecated as of 1.4 in favor of the {@code spring-boot-test-autoconfigure} module
  */
 package org.springframework.boot.autoconfigure.test;

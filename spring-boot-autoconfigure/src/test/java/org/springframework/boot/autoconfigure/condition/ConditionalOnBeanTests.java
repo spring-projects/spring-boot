@@ -57,12 +57,7 @@ public class ConditionalOnBeanTests {
 		this.context.register(FooConfiguration.class,
 				OnBeanNameAndTypeConfiguration.class);
 		this.context.refresh();
-		/*
-		 * Arguably this should be true, but as things are implemented the conditions
-		 * specified in the different attributes of @ConditionalOnBean are combined with
-		 * logical OR (not AND) so if any of them match the condition is true.
-		 */
-		assertThat(this.context.containsBean("bar")).isFalse();
+		assertThat(this.context.containsBean("bar")).isTrue();
 	}
 
 	@Test
@@ -132,28 +127,34 @@ public class ConditionalOnBeanTests {
 	@Configuration
 	@ConditionalOnBean(name = "foo")
 	protected static class OnBeanNameConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
-	@ConditionalOnMissingBean(name = "foo", value = Date.class)
+	@ConditionalOnBean(name = "foo", value = Date.class)
 	protected static class OnBeanNameAndTypeConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnBean(annotation = EnableScheduling.class)
 	protected static class OnAnnotationConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
@@ -177,30 +178,36 @@ public class ConditionalOnBeanTests {
 	@Configuration
 	@ConditionalOnBean(type = "some.type.Missing")
 	protected static class OnBeanMissingClassConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	@EnableScheduling
 	protected static class FooConfiguration {
+
 		@Bean
 		public String foo() {
 			return "foo";
 		}
+
 	}
 
 	@Configuration
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
 	protected static class XmlConfiguration {
+
 	}
 
 	@Configuration
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
 	@Import(OnBeanNameConfiguration.class)
 	protected static class CombinedXmlConfiguration {
+
 	}
 
 	@Configuration

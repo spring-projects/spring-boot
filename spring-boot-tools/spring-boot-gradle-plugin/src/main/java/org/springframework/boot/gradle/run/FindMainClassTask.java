@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.gradle.api.Task;
 import org.gradle.api.plugins.ApplicationPluginConvention;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSetOutput;
 import org.gradle.api.tasks.TaskAction;
 
@@ -85,9 +86,9 @@ public class FindMainClassTask extends DefaultTask {
 			mainClass = application.getMainClassName();
 		}
 
-		Task runTask = project.getTasks().findByName("run");
+		JavaExec runTask = findRunTask(project);
 		if (mainClass == null && runTask != null) {
-			mainClass = (String) runTask.property("main");
+			mainClass = runTask.getMain();
 		}
 
 		if (mainClass == null) {
@@ -122,9 +123,18 @@ public class FindMainClassTask extends DefaultTask {
 			application.setMainClassName(mainClass);
 		}
 		if (runTask != null && !runTask.hasProperty("main")) {
-			runTask.setProperty("main", mainClass);
+			runTask.setMain(mainClass);
 		}
 
 		return mainClass;
 	}
+
+	private JavaExec findRunTask(Project project) {
+		Task runTask = project.getTasks().findByName("run");
+		if (runTask instanceof JavaExec) {
+			return (JavaExec) runTask;
+		}
+		return null;
+	}
+
 }

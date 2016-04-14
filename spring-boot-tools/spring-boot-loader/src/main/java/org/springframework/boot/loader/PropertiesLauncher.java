@@ -55,9 +55,10 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * extracts optional values (which can also be provided overridden as System properties in
  * case the file doesn't exist):
  * <ul>
- * <li>{@code loader.path}: a comma-separated list of directories to append to the
- * classpath (containing file resources and/or nested archives in *.jar or *.zip).
- * Defaults to {@code BOOT-INF/classes,BOOT-INF/lib} in your application archive</li>
+ * <li>{@code loader.path}: a comma-separated list of directories (containing file
+ * resources and/or nested archives in *.jar or *.zip or archives) or archives to append
+ * to the classpath. {@code BOOT-INF/classes,BOOT-INF/lib} in the application archive are
+ * always used</li>
  * <li>{@code loader.main}: the main method to delegate execution to once the class loader
  * is set up. No default, but will fall back to looking for a {@code Start-Class} in a
  * {@code MANIFEST.MF}, if there is one in <code>${loader.home}/META-INF</code>.</li>
@@ -78,9 +79,9 @@ public class PropertiesLauncher extends Launcher {
 	public static final String MAIN = "loader.main";
 
 	/**
-	 * Properties key for classpath entries (directories possibly containing jars).
-	 * Defaults to "lib/" (relative to {@link #HOME loader home directory}). Multiple
-	 * entries can be specified using a comma-separated list.
+	 * Properties key for classpath entries (directories possibly containing jars or
+	 * jars). Multiple entries can be specified using a comma-separated list. {@code
+	 * BOOT-INF/classes,BOOT-INF/lib} in the application archive are always used.
 	 */
 	public static final String PATH = "loader.path";
 
@@ -407,10 +408,15 @@ public class PropertiesLauncher extends Launcher {
 		List<Archive> lib = new ArrayList<Archive>();
 		for (String path : this.paths) {
 			for (Archive archive : getClassPathArchives(path)) {
-				List<Archive> nested = new ArrayList<Archive>(
-						archive.getNestedArchives(new ArchiveEntryFilter()));
-				nested.add(0, archive);
-				lib.addAll(nested);
+				if (archive instanceof ExplodedArchive) {
+					List<Archive> nested = new ArrayList<Archive>(
+							archive.getNestedArchives(new ArchiveEntryFilter()));
+					nested.add(0, archive);
+					lib.addAll(nested);
+				}
+				else {
+					lib.add(archive);
+				}
 			}
 		}
 		addNestedEntries(lib);

@@ -108,7 +108,7 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	}
 
 	@Override
-	protected Set<Class<?>> getDefaultIncudes() {
+	protected Set<Class<?>> getDefaultIncludes() {
 		if (ObjectUtils.isEmpty(this.annotation.controllers())) {
 			return DEFAULT_INCLUDES_AND_CONTROLLER;
 		}

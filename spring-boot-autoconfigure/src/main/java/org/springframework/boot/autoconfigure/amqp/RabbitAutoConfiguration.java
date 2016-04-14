@@ -118,6 +118,8 @@ public class RabbitAutoConfiguration {
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
 					factory.getObject());
 			connectionFactory.setAddresses(config.getAddresses());
+			connectionFactory.setPublisherConfirms(config.isPublisherConfirms());
+			connectionFactory.setPublisherReturns(config.isPublisherReturns());
 			if (config.getCache().getChannel().getSize() != null) {
 				connectionFactory
 						.setChannelCacheSize(config.getCache().getChannel().getSize());
@@ -163,6 +165,7 @@ public class RabbitAutoConfiguration {
 			if (messageConverter != null) {
 				rabbitTemplate.setMessageConverter(messageConverter);
 			}
+			rabbitTemplate.setMandatory(determineMandatoryFlag());
 			RabbitProperties.Template templateProperties = this.properties.getTemplate();
 			RabbitProperties.Retry retryProperties = templateProperties.getRetry();
 			if (retryProperties.isEnabled()) {
@@ -175,6 +178,11 @@ public class RabbitAutoConfiguration {
 				rabbitTemplate.setReplyTimeout(templateProperties.getReplyTimeout());
 			}
 			return rabbitTemplate;
+		}
+
+		private boolean determineMandatoryFlag() {
+			Boolean mandatory = this.properties.getTemplate().getMandatory();
+			return (mandatory != null ? mandatory : this.properties.isPublisherReturns());
 		}
 
 		private RetryTemplate createRetryTemplate(RabbitProperties.Retry properties) {

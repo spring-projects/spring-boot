@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Import;
 		ActiveMQAutoConfiguration.class, HornetQAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
 @Import({ JndiJtaConfiguration.class, BitronixJtaConfiguration.class,
-		AtomikosJtaConfiguration.class })
+		AtomikosJtaConfiguration.class, NarayanaJtaConfiguration.class })
 @EnableConfigurationProperties(JtaProperties.class)
 public class JtaAutoConfiguration {
 

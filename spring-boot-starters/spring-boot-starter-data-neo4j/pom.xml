@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-data-neo4j</artifactId>
 	<name>Spring Boot Data Neo4j Starter</name>
-	<description>Spring Boot Data Neo4j Starter</description>
+	<description>Starter for using Neo4j graph database and Spring Data Neo4j</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

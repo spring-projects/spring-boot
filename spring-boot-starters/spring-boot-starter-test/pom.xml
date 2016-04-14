@@ -8,7 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-test</artifactId>
 	<name>Spring Boot Test Starter</name>
-	<description>Spring Boot Test Starter</description>
+	<description>Starter for testing Spring Boot applications with libraries including
+		JUnit, Hamcrest and Mockito</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

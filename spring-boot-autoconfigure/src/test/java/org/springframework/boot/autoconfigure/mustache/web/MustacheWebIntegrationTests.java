@@ -36,13 +36,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheResourceTemplateLoader;
-import org.springframework.boot.autoconfigure.mustache.web.MustacheWebIntegrationTests.Application;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.test.context.IntegrationTest;
-import org.springframework.boot.test.context.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +49,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,9 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringApplicationConfiguration(Application.class)
-@IntegrationTest("server.port:0")
-@WebAppConfiguration
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class MustacheWebIntegrationTests {
 
 	@Autowired
@@ -99,16 +95,6 @@ public class MustacheWebIntegrationTests {
 		String body = new TestRestTemplate()
 				.getForObject("http://localhost:" + this.port + "/partial", String.class);
 		assertThat(body.contains("Hello World")).isTrue();
-	}
-
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
-	protected @interface MinimalWebConfiguration {
 	}
 
 	@Configuration
@@ -147,6 +133,16 @@ public class MustacheWebIntegrationTests {
 			SpringApplication.run(Application.class, args);
 		}
 
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
+	protected @interface MinimalWebConfiguration {
 	}
 
 }

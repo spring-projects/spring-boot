@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -53,6 +54,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Josh Long
  * @author Manuel Doninger
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
@@ -81,14 +83,10 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 			"org.hibernate.engine.transaction.jta.platform.internal.WebSphereExtendedJtaPlatform",
 			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform", };
 
-	private final JpaProperties properties;
-
-	private final DataSource dataSource;
-
-	public HibernateJpaAutoConfiguration(JpaProperties properties,
-			DataSource dataSource) {
-		this.properties = properties;
-		this.dataSource = dataSource;
+	public HibernateJpaAutoConfiguration(DataSource dataSource,
+			JpaProperties jpaProperties,
+			ObjectProvider<JtaTransactionManager> jtaTransactionManagerProvider) {
+		super(dataSource, jpaProperties, jtaTransactionManagerProvider);
 	}
 
 	@Override
@@ -99,7 +97,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	@Override
 	protected Map<String, Object> getVendorProperties() {
 		Map<String, Object> vendorProperties = new LinkedHashMap<String, Object>();
-		vendorProperties.putAll(this.properties.getHibernateProperties(this.dataSource));
+		vendorProperties.putAll(getProperties().getHibernateProperties(getDataSource()));
 		return vendorProperties;
 	}
 

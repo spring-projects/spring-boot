@@ -643,6 +643,16 @@ public class RelaxedDataBinderTests {
 		assertThat(target.getFooBaz()).isEqualTo("boo");
 	}
 
+	@Test
+	public void testIndexBounds() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		RelaxedDataBinder binder = getBinder(target, "test");
+		MutablePropertyValues values = new MutablePropertyValues();
+		values.add("test.objects[0]", "teststring");
+		binder.bind(values);
+		assertThat(target.getObjects()).containsExactly("teststring");
+	}
+
 	private void doTestBindCaseInsensitiveEnums(VanillaTarget target) throws Exception {
 		BindingResult result = bind(target, "bingo: THIS");
 		assertThat(result.getErrorCount()).isEqualTo(0);
@@ -1001,6 +1011,8 @@ public class RelaxedDataBinderTests {
 
 		private List<Bingo> bingos;
 
+		private List<Object> objects;
+
 		public char[] getBar() {
 			return this.bar;
 		}
@@ -1056,6 +1068,15 @@ public class RelaxedDataBinderTests {
 		public void setBingos(List<Bingo> bingos) {
 			this.bingos = bingos;
 		}
+
+		public List<Object> getObjects() {
+			return this.objects;
+		}
+
+		public void setObjects(List<Object> objects) {
+			this.objects = objects;
+		}
+
 	}
 
 	enum Bingo {
@@ -1076,4 +1097,5 @@ public class RelaxedDataBinderTests {
 		}
 
 	}
+
 }

@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link Sanitizer}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class SanitizerTests {
 
@@ -35,6 +36,8 @@ public class SanitizerTests {
 		assertThat(sanitizer.sanitize("my-OTHER.paSSword", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("somesecret", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("somekey", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("token", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("sometoken", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("find", "secret")).isEqualTo("secret");
 	}
 

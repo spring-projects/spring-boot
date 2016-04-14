@@ -154,10 +154,10 @@ public class FileSystemWatcherTests {
 	@Test
 	public void waitsForPollingInterval() throws Exception {
 		this.changes.clear();
-		setupWatcher(100, 1);
+		setupWatcher(200, 1);
 		File folder = startWithNewFolder();
 		touch(new File(folder, "test1.txt"));
-		Thread.sleep(200);
+		Thread.sleep(400);
 		touch(new File(folder, "test2.txt"));
 		this.watcher.stopAfter(1);
 		assertThat(this.changes.size()).isEqualTo(2);

@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-ws</artifactId>
 	<name>Spring Boot Web Services Starter</name>
-	<description>Spring Boot Web Services Starter</description>
+	<description>Starter for using Spring Web Services</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

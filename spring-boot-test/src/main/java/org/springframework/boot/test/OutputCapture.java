@@ -21,7 +21,7 @@ package org.springframework.boot.test;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @deprecated since 1.4.0 in favor of
+ * @deprecated as of 1.4 in favor of
  * {@link org.springframework.boot.test.rule.OutputCapture}
  */
 @Deprecated
