@@ -29,7 +29,7 @@ import org.springframework.context.ApplicationContextAware;
  * {@link AbstractConfigurableEmbeddedServletContainer} beans.
  * @author Venil Noronha
  */
-public class SslConfigurerBeanPostProcessor
+public class DynamicSslConfigurerBeanPostProcessor
 		implements BeanPostProcessor, ApplicationContextAware {
 
 	private static final String KEY_STORE_SUPPLIER_BEAN_NAME = "keyStoreSupplier";
@@ -41,7 +41,7 @@ public class SslConfigurerBeanPostProcessor
 	private KeyStoreSupplier keyStoreSupplier;
 	private KeyStoreSupplier trustStoreSupplier;
 
-	public SslConfigurerBeanPostProcessor() {
+	public DynamicSslConfigurerBeanPostProcessor() {
 		this.initialized = false;
 	}
 
