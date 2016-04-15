@@ -53,6 +53,7 @@
 		<bitronix.version>2.1.4</bitronix.version>
 		<caffeine.version>2.2.6</caffeine.version>
 		<cassandra-driver.version>2.1.9</cassandra-driver.version>
+		<classmate.version>1.3.1</classmate.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
 		<commons-collections.version>3.2.2</commons-collections.version>
 		<commons-codec.version>1.10</commons-codec.version>
@@ -586,6 +587,11 @@
 				<groupId>com.datastax.cassandra</groupId>
 				<artifactId>cassandra-driver-mapping</artifactId>
 				<version>${cassandra-driver.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml</groupId>
+				<artifactId>classmate</artifactId>
+				<version>${classmate.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
