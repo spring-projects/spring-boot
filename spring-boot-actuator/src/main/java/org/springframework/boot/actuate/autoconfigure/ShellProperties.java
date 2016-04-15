@@ -37,9 +37,12 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
-@ConfigurationProperties(prefix = "shell", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = ShellProperties.SHELL_PREFIX, ignoreUnknownFields = true)
 public class ShellProperties {
+
+	public static final String SHELL_PREFIX = "management.shell";
 
 	private static final Log logger = LogFactory.getLog(ShellProperties.class);
 
@@ -372,7 +375,7 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for JAAS authentication.
 	 */
-	@ConfigurationProperties(prefix = "shell.auth.jaas", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX + ".auth.jaas", ignoreUnknownFields = false)
 	public static class JaasAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
@@ -401,7 +404,7 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for key authentication.
 	 */
-	@ConfigurationProperties(prefix = "shell.auth.key", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX + ".auth.key", ignoreUnknownFields = false)
 	public static class KeyAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
@@ -432,7 +435,7 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for simple authentication.
 	 */
-	@ConfigurationProperties(prefix = "shell.auth.simple", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX + ".auth.simple", ignoreUnknownFields = false)
 	public static class SimpleAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
@@ -508,7 +511,7 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for Spring authentication.
 	 */
-	@ConfigurationProperties(prefix = "shell.auth.spring", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX + ".auth.spring", ignoreUnknownFields = false)
 	public static class SpringAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 

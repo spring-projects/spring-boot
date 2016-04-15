@@ -255,7 +255,7 @@
     ]
   },
   {
-    "name": "shell.auth.type",
+    "name": "management.shell.auth.type",
     "values": [
       {
         "value": "simple",

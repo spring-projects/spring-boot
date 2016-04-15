@@ -1007,28 +1007,28 @@ content into your application; rather pick only the properties that you need.
 	management.info.git.enabled=true # Enable git info.
 	management.info.git.mode=simple # Mode to use to expose git information.
 
+	# REMOTE SHELL ({sc-spring-boot-actuator}/autoconfigure/ShellProperties.{sc-ext}[ShellProperties])
+	management.shell.auth.type=simple # Authentication type. Auto-detected according to the environment.
+	management.shell.auth.jaas.domain=my-domain # JAAS domain.
+	management.shell.auth.key.path= # Path to the authentication key. This should point to a valid ".pem" file.
+	management.shell.auth.simple.user.name=user # Login user.
+	management.shell.auth.simple.user.password= # Login password.
+	management.shell.auth.spring.roles=ADMIN # Comma-separated list of required roles to login to the CRaSH console.
+	management.shell.command-path-patterns=classpath*:/commands/**,classpath*:/crash/commands/** # Patterns to use to look for commands.
+	management.shell.command-refresh-interval=-1 # Scan for changes and update the command if necessary (in seconds).
+	management.shell.config-path-patterns=classpath*:/crash/* # Patterns to use to look for configurations.
+	management.shell.disabled-commands=jpa*,jdbc*,jndi* # Comma-separated list of commands to disable.
+	management.shell.disabled-plugins= # Comma-separated list of plugins to disable. Certain plugins are disabled by default based on the environment.
+	management.shell.ssh.auth-timeout = # Number of milliseconds after user will be prompted to login again.
+	management.shell.ssh.enabled=true # Enable CRaSH SSH support.
+	management.shell.ssh.idle-timeout = # Number of milliseconds after which unused connections are closed.
+	management.shell.ssh.key-path= # Path to the SSH server key.
+	management.shell.ssh.port=2000 # SSH port.
+	management.shell.telnet.enabled=false # Enable CRaSH telnet support. Enabled by default if the TelnetPlugin is  available.
+	management.shell.telnet.port=5000 # Telnet port.
+
 	# TRACING ({sc-spring-boot-actuator}/trace/TraceProperties.{sc-ext}[TraceProperties])
 	management.trace.include=request-headers,response-headers,errors # Items to be included in the trace.
-
-	# REMOTE SHELL
-	shell.auth.type=simple # Authentication type. Auto-detected according to the environment.
-	shell.auth.jaas.domain=my-domain # JAAS domain.
-	shell.auth.key.path= # Path to the authentication key. This should point to a valid ".pem" file.
-	shell.auth.simple.user.name=user # Login user.
-	shell.auth.simple.user.password= # Login password.
-	shell.auth.spring.roles=ADMIN # Comma-separated list of required roles to login to the CRaSH console.
-	shell.command-path-patterns=classpath*:/commands/**,classpath*:/crash/commands/** # Patterns to use to look for commands.
-	shell.command-refresh-interval=-1 # Scan for changes and update the command if necessary (in seconds).
-	shell.config-path-patterns=classpath*:/crash/* # Patterns to use to look for configurations.
-	shell.disabled-commands=jpa*,jdbc*,jndi* # Comma-separated list of commands to disable.
-	shell.disabled-plugins= # Comma-separated list of plugins to disable. Certain plugins are disabled by default based on the environment.
-	shell.ssh.auth-timeout = # Number of milliseconds after user will be prompted to login again.
-	shell.ssh.enabled=true # Enable CRaSH SSH support.
-	shell.ssh.idle-timeout = # Number of milliseconds after which unused connections are closed.
-	shell.ssh.key-path= # Path to the SSH server key.
-	shell.ssh.port=2000 # SSH port.
-	shell.telnet.enabled=false # Enable CRaSH telnet support. Enabled by default if the TelnetPlugin is  available.
-	shell.telnet.port=5000 # Telnet port.
 
 	# METRICS EXPORT ({sc-spring-boot-actuator}/metrics/export/MetricExportProperties.{sc-ext}[MetricExportProperties])
 	spring.metrics.export.aggregate.key-pattern= # Pattern that tells the aggregator what to do with the keys from the source repository.
