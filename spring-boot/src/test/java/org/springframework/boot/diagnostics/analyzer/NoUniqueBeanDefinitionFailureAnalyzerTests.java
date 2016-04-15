@@ -18,7 +18,8 @@ package org.springframework.boot.diagnostics.analyzer;
 
 import org.junit.Test;
 
-import org.springframework.beans.factory.UnsatisfiedDependencyException;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.analyzer.nounique.TestBean;
@@ -32,21 +33,20 @@ import org.springframework.context.annotation.ImportResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link NoUniqueBeanDefinitionExceptionFailureAnalyzer}.
+ * Tests for {@link NoUniqueBeanDefinitionFailureAnalyzer}.
  *
  * @author Andy Wilkinson
  */
-public class NoUniqueBeanDefinitionExceptionFailureAnalyzerTests {
+public class NoUniqueBeanDefinitionFailureAnalyzerTests {
 
-	private final NoUniqueBeanDefinitionExceptionFailureAnalyzer analyzer = new NoUniqueBeanDefinitionExceptionFailureAnalyzer();
+	private final NoUniqueBeanDefinitionFailureAnalyzer analyzer = new NoUniqueBeanDefinitionFailureAnalyzer();
 
 	@Test
 	public void failureAnalysisForFieldConsumer() {
 		FailureAnalysis failureAnalysis = analyzeFailure(
 				createFailure(FieldConsumer.class));
-		System.out.println(failureAnalysis.getDescription());
 		assertThat(failureAnalysis.getDescription())
-				.startsWith("Field 'testBean' in " + FieldConsumer.class.getName()
+				.startsWith("Field testBean in " + FieldConsumer.class.getName()
 						+ " required a single bean, but 6 were found:");
 		assertFoundBeans(failureAnalysis);
 	}
@@ -55,9 +55,28 @@ public class NoUniqueBeanDefinitionExceptionFailureAnalyzerTests {
 	public void failureAnalysisForMethodConsumer() {
 		FailureAnalysis failureAnalysis = analyzeFailure(
 				createFailure(MethodConsumer.class));
-		System.out.println(failureAnalysis.getDescription());
 		assertThat(failureAnalysis.getDescription()).startsWith(
-				"Parameter 0 of method 'consumer' in " + MethodConsumer.class.getName()
+				"Parameter 0 of method consumer in " + MethodConsumer.class.getName()
+						+ " required a single bean, but 6 were found:");
+		assertFoundBeans(failureAnalysis);
+	}
+
+	@Test
+	public void failureAnalysisForConstructorConsumer() {
+		FailureAnalysis failureAnalysis = analyzeFailure(
+				createFailure(ConstructorConsumer.class));
+		assertThat(failureAnalysis.getDescription()).startsWith(
+				"Parameter 0 of constructor in " + ConstructorConsumer.class.getName()
+						+ " required a single bean, but 6 were found:");
+		assertFoundBeans(failureAnalysis);
+	}
+
+	@Test
+	public void failureAnalysisForObjectProviderMethodConsumer() {
+		FailureAnalysis failureAnalysis = analyzeFailure(
+				createFailure(ObjectProviderMethodConsumer.class));
+		assertThat(failureAnalysis.getDescription()).startsWith(
+				"Method consumer in " + ObjectProviderMethodConsumer.class.getName()
 						+ " required a single bean, but 6 were found:");
 		assertFoundBeans(failureAnalysis);
 	}
@@ -66,14 +85,23 @@ public class NoUniqueBeanDefinitionExceptionFailureAnalyzerTests {
 	public void failureAnalysisForXmlConsumer() {
 		FailureAnalysis failureAnalysis = analyzeFailure(
 				createFailure(XmlConsumer.class));
-		System.out.println(failureAnalysis.getDescription());
 		assertThat(failureAnalysis.getDescription()).startsWith(
 				"Parameter 0 of constructor in " + TestBeanConsumer.class.getName()
 						+ " required a single bean, but 6 were found:");
 		assertFoundBeans(failureAnalysis);
 	}
 
-	private UnsatisfiedDependencyException createFailure(Class<?> consumer) {
+	@Test
+	public void failureAnalysisForObjectProviderConstructorConsumer() {
+		FailureAnalysis failureAnalysis = analyzeFailure(
+				createFailure(ObjectProviderConstructorConsumer.class));
+		assertThat(failureAnalysis.getDescription()).startsWith(
+				"Constructor in " + ObjectProviderConstructorConsumer.class.getName()
+						+ " required a single bean, but 6 were found:");
+		assertFoundBeans(failureAnalysis);
+	}
+
+	private BeanCreationException createFailure(Class<?> consumer) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(DuplicateBeansProducer.class, consumer);
 		context.setParent(new AnnotationConfigApplicationContext(ParentProducer.class));
@@ -81,7 +109,7 @@ public class NoUniqueBeanDefinitionExceptionFailureAnalyzerTests {
 			context.refresh();
 			return null;
 		}
-		catch (UnsatisfiedDependencyException ex) {
+		catch (BeanCreationException ex) {
 			this.analyzer.setBeanFactory(context.getBeanFactory());
 			return ex;
 		}
@@ -90,7 +118,7 @@ public class NoUniqueBeanDefinitionExceptionFailureAnalyzerTests {
 		}
 	}
 
-	private FailureAnalysis analyzeFailure(UnsatisfiedDependencyException failure) {
+	private FailureAnalysis analyzeFailure(BeanCreationException failure) {
 		return this.analyzer.analyze(failure);
 	}
 
@@ -145,10 +173,39 @@ public class NoUniqueBeanDefinitionExceptionFailureAnalyzerTests {
 	}
 
 	@Configuration
+	static class ObjectProviderConstructorConsumer {
+
+		ObjectProviderConstructorConsumer(ObjectProvider<TestBean> objectProvider) {
+			objectProvider.getIfAvailable();
+		}
+
+	}
+
+	@Configuration
+	static class ConstructorConsumer {
+
+		ConstructorConsumer(TestBean testBean) {
+
+		}
+
+	}
+
+	@Configuration
 	static class MethodConsumer {
 
 		@Bean
 		String consumer(TestBean testBean) {
+			return "foo";
+		}
+
+	}
+
+	@Configuration
+	static class ObjectProviderMethodConsumer {
+
+		@Bean
+		String consumer(ObjectProvider<TestBean> testBeanProvider) {
+			testBeanProvider.getIfAvailable();
 			return "foo";
 		}
 

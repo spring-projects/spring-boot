@@ -33,8 +33,10 @@ org.springframework.boot.env.SpringApplicationJsonEnvironmentPostProcessor
 
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.diagnostics.analyzer.BeanCurrentlyInCreationFailureAnalyzer,\
+org.springframework.boot.diagnostics.analyzer.NoUniqueBeanDefinitionFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.PortInUseFailureAnalyzer,\
-org.springframework.boot.diagnostics.analyzer.BeanCurrentlyInCreationFailureAnalyzer
+org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer,
 
 # FailureAnalysisReporters
 org.springframework.boot.diagnostics.FailureAnalysisReporter=\
