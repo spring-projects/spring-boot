@@ -24,6 +24,7 @@ import java.net.URLClassLoader;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.zip.ZipOutputStream;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -76,9 +77,11 @@ public class ChangeableUrlsTests {
 		URL projectCore = makeUrl("project-core");
 		URL projectWeb = makeUrl("project-web");
 		File relative = this.temporaryFolder.newFolder();
-		ChangeableUrls urls = ChangeableUrls.fromUrlClassLoader(new URLClassLoader(
-				new URL[] { makeJarFileWithUrlsInManifestClassPath(projectCore,
-						projectWeb, relative.getName() + "/") }));
+		ChangeableUrls urls = ChangeableUrls
+				.fromUrlClassLoader(new URLClassLoader(new URL[] {
+						makeJarFileWithUrlsInManifestClassPath(projectCore, projectWeb,
+								relative.getName() + "/"),
+						makeJarFileWithNoManifest() }));
 		assertThat(urls.toList()).containsExactly(projectCore, projectWeb,
 				relative.toURI().toURL());
 	}
@@ -100,6 +103,12 @@ public class ChangeableUrlsTests {
 		manifest.getMainAttributes().putValue(Attributes.Name.CLASS_PATH.toString(),
 				StringUtils.arrayToDelimitedString(urls, " "));
 		new JarOutputStream(new FileOutputStream(classpathJar), manifest).close();
+		return classpathJar.toURI().toURL();
+	}
+
+	private URL makeJarFileWithNoManifest() throws Exception {
+		File classpathJar = this.temporaryFolder.newFile("no-manifest.jar");
+		new ZipOutputStream(new FileOutputStream(classpathJar)).close();
 		return classpathJar.toURI().toURL();
 	}
 

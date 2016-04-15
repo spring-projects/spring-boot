@@ -118,6 +118,9 @@ final class ChangeableUrls implements Iterable<URL> {
 	}
 
 	private static List<URL> getUrlsFromClassPathAttribute(URL base, Manifest manifest) {
+		if (manifest == null) {
+			return Collections.<URL>emptyList();
+		}
 		String classPath = manifest.getMainAttributes()
 				.getValue(Attributes.Name.CLASS_PATH);
 		if (!StringUtils.hasText(classPath)) {
