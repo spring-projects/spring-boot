@@ -1011,7 +1011,7 @@ content into your application; rather pick only the properties that you need.
 	management.trace.include=request-headers,response-headers,errors # Items to be included in the trace.
 
 	# REMOTE SHELL
-	shell.auth=simple # Authentication type. Auto-detected according to the environment.
+	shell.auth.type=simple # Authentication type. Auto-detected according to the environment.
 	shell.auth.jaas.domain=my-domain # JAAS domain.
 	shell.auth.key.path= # Path to the authentication key. This should point to a valid ".pem" file.
 	shell.auth.simple.user.name=user # Login user.

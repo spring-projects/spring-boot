@@ -185,10 +185,10 @@ public class CrshAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
 		public SpringAuthenticationProperties springAuthenticationProperties() {
-			// In case no shell.auth property is provided fall back to Spring Security
+			// In case no shell.auth.type property is provided fall back to Spring Security
 			// based authentication and get role to access shell from
 			// ManagementServerProperties.
-			// In case shell.auth is set to spring and roles are configured using
+			// In case shell.auth.type is set to spring and roles are configured using
 			// shell.auth.spring.roles the below default role will be overridden by
 			// ConfigurationProperties.
 			SpringAuthenticationProperties authenticationProperties = new SpringAuthenticationProperties();

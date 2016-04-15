@@ -54,9 +54,9 @@ public class ShellPropertiesTests {
 		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.bind(new MutablePropertyValues(
-				Collections.singletonMap("shell.auth", "spring")));
+				Collections.singletonMap("shell.auth.type", "spring")));
 		assertThat(binder.getBindingResult().hasErrors()).isFalse();
-		assertThat(props.getAuth()).isEqualTo("spring");
+		assertThat(props.getAuth().getType()).isEqualTo("spring");
 	}
 
 	@Test
@@ -64,9 +64,9 @@ public class ShellPropertiesTests {
 		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.bind(
-				new MutablePropertyValues(Collections.singletonMap("shell.auth", "")));
+				new MutablePropertyValues(Collections.singletonMap("shell.auth.type", "")));
 		assertThat(binder.getBindingResult().hasErrors()).isTrue();
-		assertThat(props.getAuth()).isEqualTo("simple");
+		assertThat(props.getAuth().getType()).isEqualTo("simple");
 	}
 
 	@Test
@@ -299,7 +299,7 @@ public class ShellPropertiesTests {
 	@Test
 	public void testCustomShellProperties() throws Exception {
 		MockEnvironment env = new MockEnvironment();
-		env.setProperty("shell.auth", "simple");
+		env.setProperty("shell.auth.type", "simple");
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 		context.setEnvironment(env);
 		context.setServletContext(new MockServletContext());

@@ -43,13 +43,7 @@ public class ShellProperties {
 
 	private static final Log logger = LogFactory.getLog(ShellProperties.class);
 
-	/**
-	 * Authentication type. Auto-detected according to the environment (i.e. if Spring
-	 * Security is available, "spring" is used by default).
-	 */
-	private String auth = "simple";
-
-	private boolean defaultAuth = true;
+	private final Auth auth = new Auth();
 
 	@Autowired(required = false)
 	private CrshShellProperties[] additionalProperties = new CrshShellProperties[] {
@@ -86,13 +80,7 @@ public class ShellProperties {
 
 	private final Telnet telnet = new Telnet();
 
-	public void setAuth(String auth) {
-		Assert.hasLength(auth, "Auth must not be empty");
-		this.auth = auth;
-		this.defaultAuth = false;
-	}
-
-	public String getAuth() {
+	public Auth getAuth() {
 		return this.auth;
 	}
 
@@ -191,15 +179,7 @@ public class ShellProperties {
 	 * @param properties the properties to validate
 	 */
 	protected void validateCrshShellConfig(Properties properties) {
-		String finalAuth = properties.getProperty("crash.auth");
-		if (!this.defaultAuth && !this.auth.equals(finalAuth)) {
-			logger.warn(String.format(
-					"Shell authentication fell back to method '%s' opposed to "
-							+ "configured method '%s'. Please check your classpath.",
-					finalAuth, this.auth));
-		}
-		// Make sure we keep track of final authentication method
-		this.auth = finalAuth;
+		getAuth().validateCrshShellConfig(properties);
 	}
 
 	/**
@@ -220,6 +200,44 @@ public class ShellProperties {
 	 */
 	public static abstract class CrshShellAuthenticationProperties
 			extends CrshShellProperties {
+
+	}
+
+	public static class Auth {
+
+		/**
+		 * Authentication type. Auto-detected according to the environment (i.e. if Spring
+		 * Security is available, "spring" is used by default).
+		 */
+		private String type = "simple";
+
+		private boolean defaultAuth = true;
+
+		public String getType() {
+			return this.type;
+		}
+
+		public void setType(String type) {
+			Assert.hasLength(type, "Auth type must not be empty");
+			this.type = type;
+			this.defaultAuth = false;
+		}
+
+		/**
+		 * Basic validation of applied CRaSH shell configuration.
+		 * @param properties the properties to validate
+		 */
+		protected void validateCrshShellConfig(Properties properties) {
+			String finalAuth = properties.getProperty("crash.auth");
+			if (!this.defaultAuth && !this.type.equals(finalAuth)) {
+				logger.warn(String.format(
+						"Shell authentication fell back to method '%s' opposed to "
+								+ "configured method '%s'. Please check your classpath.",
+						finalAuth, this.type));
+			}
+			// Make sure we keep track of final authentication method
+			this.type = finalAuth;
+		}
 
 	}
 

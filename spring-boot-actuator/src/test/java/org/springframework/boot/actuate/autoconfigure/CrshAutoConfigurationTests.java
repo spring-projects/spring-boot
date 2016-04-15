@@ -230,7 +230,7 @@ public class CrshAutoConfigurationTests {
 	@Test
 	public void testJaasAuthenticationProvider() {
 		MockEnvironment env = new MockEnvironment();
-		env.setProperty("shell.auth", "jaas");
+		env.setProperty("shell.auth.type", "jaas");
 		env.setProperty("shell.auth.jaas.domain", "my-test-domain");
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setEnvironment(env);
@@ -247,7 +247,7 @@ public class CrshAutoConfigurationTests {
 	@Test
 	public void testKeyAuthenticationProvider() {
 		MockEnvironment env = new MockEnvironment();
-		env.setProperty("shell.auth", "key");
+		env.setProperty("shell.auth.type", "key");
 		env.setProperty("shell.auth.key.path", "~/test.pem");
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setEnvironment(env);
@@ -264,7 +264,7 @@ public class CrshAutoConfigurationTests {
 	@Test
 	public void testSimpleAuthenticationProvider() throws Exception {
 		MockEnvironment env = new MockEnvironment();
-		env.setProperty("shell.auth", "simple");
+		env.setProperty("shell.auth.type", "simple");
 		env.setProperty("shell.auth.simple.user.name", "user");
 		env.setProperty("shell.auth.simple.user.password", "password");
 		this.context = new AnnotationConfigWebApplicationContext();
@@ -294,7 +294,7 @@ public class CrshAutoConfigurationTests {
 	@Test
 	public void testSpringAuthenticationProvider() throws Exception {
 		MockEnvironment env = new MockEnvironment();
-		env.setProperty("shell.auth", "spring");
+		env.setProperty("shell.auth.type", "spring");
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setEnvironment(env);
 		this.context.setServletContext(new MockServletContext());
