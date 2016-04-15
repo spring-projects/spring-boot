@@ -1,9 +1,18 @@
+import org.springframework.util.ClassUtils
+import org.springframework.core.io.DefaultResourceLoader
+
 welcome = { ->
-    if (!crash.context.attributes['spring.environment'].getProperty("spring.main.show_banner", Boolean.class, Boolean.TRUE)) {
+    def environment = crash.context.attributes['spring.environment']
+    
+    if (!environment.getProperty("spring.main.show_banner", Boolean.class, Boolean.TRUE)) {
         return ""
     }
-
-    def bannerText = crash.context.attributes['spring.beanfactory'].class.getResourceAsStream('/banner.txt')?.text
+    
+    def resource = new DefaultResourceLoader(ClassUtils.getDefaultClassLoader()).getResource(
+        environment.getProperty('banner.location', String, 'classpath:banner.txt')
+    )
+    
+    def bannerText = resource.exists() && resource.isReadable() ? resource.inputStream.text : null
     if( bannerText ){
         return "${bannerText}\n"
 
