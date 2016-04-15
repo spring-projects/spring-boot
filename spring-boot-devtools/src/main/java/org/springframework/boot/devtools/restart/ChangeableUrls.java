@@ -119,19 +119,23 @@ final class ChangeableUrls implements Iterable<URL> {
 	}
 
 	private static List<URL> getUrlsFromClassPathAttribute(URL base, Manifest manifest) {
-		List<URL> urls = new ArrayList<URL>();
+		if (manifest == null) {
+			return Collections.<URL>emptyList();
+		}
 		String classPathAttribute = manifest.getMainAttributes()
 				.getValue(Attributes.Name.CLASS_PATH);
-		if (StringUtils.hasText(classPathAttribute)) {
-			for (String entry : StringUtils.delimitedListToStringArray(classPathAttribute,
-					" ")) {
-				try {
-					urls.add(new URL(base, entry));
-				}
-				catch (MalformedURLException ex) {
-					throw new IllegalStateException(
-							"Class-Path attribute contains malformed URL", ex);
-				}
+		if (!StringUtils.hasText(classPathAttribute)) {
+			return Collections.<URL>emptyList();
+		}
+		List<URL> urls = new ArrayList<URL>();
+		for (String entry : StringUtils.delimitedListToStringArray(classPathAttribute,
+				" ")) {
+			try {
+				urls.add(new URL(base, entry));
+			}
+			catch (MalformedURLException ex) {
+				throw new IllegalStateException(
+						"Class-Path attribute contains malformed URL", ex);
 			}
 		}
 		return urls;
