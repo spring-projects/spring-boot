@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link ConfigurationProperties} for Spring Web Services.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  * @since 1.4.0
  */
 @ConfigurationProperties("spring.ws")
@@ -40,11 +41,6 @@ public class WsProperties {
 	@Pattern(regexp = "/[^?#]*", message = "Path must start with /")
 	private String path = "/services";
 
-	/**
-	 * Init parameters to pass to Spring Web Services via the servlet.
-	 */
-	private Map<String, String> init = new HashMap<String, String>();
-
 	private final Servlet servlet = new Servlet();
 
 	public String getPath() {
@@ -55,24 +51,30 @@ public class WsProperties {
 		this.path = path;
 	}
 
-	public Map<String, String> getInit() {
-		return this.init;
-	}
-
-	public void setInit(Map<String, String> init) {
-		this.init = init;
-	}
-
 	public Servlet getServlet() {
 		return this.servlet;
 	}
 
+
 	public static class Servlet {
+
+		/**
+		 * Servlet init parameters to pass to Spring Web Services.
+		 */
+		private Map<String, String> init = new HashMap<String, String>();
 
 		/**
 		 * Load on startup priority of the Spring Web Services servlet.
 		 */
 		private int loadOnStartup = -1;
+
+		public Map<String, String> getInit() {
+			return this.init;
+		}
+
+		public void setInit(Map<String, String> init) {
+			this.init = init;
+		}
 
 		public int getLoadOnStartup() {
 			return this.loadOnStartup;

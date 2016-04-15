@@ -29,8 +29,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.ws.config.annotation.DelegatingWsConfiguration;
+import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurationSupport;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
 
@@ -38,6 +37,7 @@ import org.springframework.ws.transport.http.MessageDispatcherServlet;
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Web Services.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  * @since 1.4.0
  */
 @Configuration
@@ -48,7 +48,7 @@ import org.springframework.ws.transport.http.MessageDispatcherServlet;
 @AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
 public class WsAutoConfiguration {
 
-	private WsProperties properties;
+	private final WsProperties properties;
 
 	public WsAutoConfiguration(WsProperties properties) {
 		this.properties = properties;
@@ -63,15 +63,16 @@ public class WsAutoConfiguration {
 		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
 		ServletRegistrationBean registration = new ServletRegistrationBean(
 				servlet, urlMapping);
-		registration.setLoadOnStartup(this.properties.getServlet().getLoadOnStartup());
-		for (Map.Entry<String, String> entry : this.properties.getInit().entrySet()) {
+		WsProperties.Servlet servletProperties = this.properties.getServlet();
+		registration.setLoadOnStartup(servletProperties.getLoadOnStartup());
+		for (Map.Entry<String, String> entry : servletProperties.getInit().entrySet()) {
 			registration.addInitParameter(entry.getKey(), entry.getValue());
 		}
 		return registration;
 	}
 
 	@Configuration
-	@Import(DelegatingWsConfiguration.class)
+	@EnableWs
 	protected static class WsConfiguration {
 	}
 

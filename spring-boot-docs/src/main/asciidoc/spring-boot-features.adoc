@@ -4990,6 +4990,28 @@ public class MyTest {
 
 
 
+[[boot-features-websockets]]
+== WebSockets
+Spring Boot provides WebSockets auto-configuration for embedded Tomcat (8 and 7), Jetty 9
+and Undertow. If you're deploying a war file to a standalone container, Spring Boot
+assumes that the container will be responsible for the configuration of its WebSocket
+support.
+
+Spring Framework provides {spring-reference}/#websocket[rich WebSocket support] that can
+be easily accessed via the `spring-boot-starter-websocket` module.
+
+
+
+[[boot-features-ws]]
+== Web Services
+Spring Boot provides Web Services auto-configuration so that all is required is defining
+your `Endpoints`.
+
+The {spring-ws-reference}[Spring Web Services features] can be easily accessed via the
+`spring-boot-starter-ws` module.
+
+
+
 [[boot-features-developing-auto-configuration]]
 == Creating your own auto-configuration
 If you work in a company that develops shared libraries, or if you work on an open-source
@@ -5195,18 +5217,6 @@ you are auto-configuring typically requires other starters, mention them as well
 a proper set of _default_ dependencies may be hard if the number of optional dependencies
 is high as you should avoid bringing unnecessary dependencies for a typical usage of the
 library.
-
-
-
-[[boot-features-websockets]]
-== WebSockets
-Spring Boot provides WebSockets auto-configuration for embedded Tomcat (8 and 7), Jetty 9
-and Undertow. If you're deploying a war file to a standalone container, Spring Boot
-assumes that the container will be responsible for the configuration of its WebSocket
-support.
-
-Spring Framework provides {spring-reference}/#websocket[rich WebSocket support] that can
-be easily accessed via the `spring-boot-starter-websocket` module.
 
 
 

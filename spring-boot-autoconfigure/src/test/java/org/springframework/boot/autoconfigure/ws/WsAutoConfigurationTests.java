@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.ws;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -35,18 +34,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link WsAutoConfiguration}.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  */
 public class WsAutoConfigurationTests {
-
-	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	@Before
-	public void setupContext() {
-		this.context.setServletContext(new MockServletContext());
-	}
+	private AnnotationConfigWebApplicationContext context;
 
 	@After
 	public void close() {
@@ -57,7 +52,7 @@ public class WsAutoConfigurationTests {
 
 	@Test
 	public void defaultConfiguration() {
-		registerAndRefresh(WsAutoConfiguration.class);
+		load(WsAutoConfiguration.class);
 
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 	}
@@ -66,27 +61,19 @@ public class WsAutoConfigurationTests {
 	public void customPathMustBeginWithASlash() {
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("Path must start with /");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.ws.path=invalid");
-		registerAndRefresh(WsAutoConfiguration.class);
+		load(WsAutoConfiguration.class, "spring.ws.path=invalid");
 	}
 
 	@Test
 	public void customPathWithTrailingSlash() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.ws.path=/valid/");
-		registerAndRefresh(WsAutoConfiguration.class);
-
+		load(WsAutoConfiguration.class, "spring.ws.path=/valid/");
 		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
 				.contains("/valid/*");
 	}
 
 	@Test
 	public void customPath() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.ws.path=/valid");
-		registerAndRefresh(WsAutoConfiguration.class);
-
+		load(WsAutoConfiguration.class, "spring.ws.path=/valid");
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
 				.contains("/valid/*");
@@ -94,10 +81,7 @@ public class WsAutoConfigurationTests {
 
 	@Test
 	public void customLoadOnStartup() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.ws.servlet.load-on-startup=1");
-		registerAndRefresh(WsAutoConfiguration.class);
-
+		load(WsAutoConfiguration.class, "spring.ws.servlet.load-on-startup=1");
 		ServletRegistrationBean registrationBean = this.context
 				.getBean(ServletRegistrationBean.class);
 		assertThat(ReflectionTestUtils.getField(registrationBean, "loadOnStartup"))
@@ -106,19 +90,21 @@ public class WsAutoConfigurationTests {
 
 	@Test
 	public void customInitParameters() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.ws.init.key1=value1", "spring.ws.init.key2=value2");
-		registerAndRefresh(WsAutoConfiguration.class);
-
+		load(WsAutoConfiguration.class, "spring.ws.servlet.init.key1=value1",
+				"spring.ws.servlet.init.key2=value2");
 		ServletRegistrationBean registrationBean = this.context
 				.getBean(ServletRegistrationBean.class);
 		assertThat(registrationBean.getInitParameters()).containsEntry("key1", "value1");
 		assertThat(registrationBean.getInitParameters()).containsEntry("key2", "value2");
 	}
 
-	private void registerAndRefresh(Class<?>... annotatedClasses) {
-		this.context.register(annotatedClasses);
-		this.context.refresh();
+	private void load(Class<?> config, String... environment) {
+		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
+		ctx.setServletContext(new MockServletContext());
+		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		ctx.register(config);
+		ctx.refresh();
+		this.context = ctx;
 	}
 
 }

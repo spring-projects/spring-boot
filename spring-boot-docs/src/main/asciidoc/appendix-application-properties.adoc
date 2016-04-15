@@ -406,6 +406,11 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.toolbox-config-location= # Velocity Toolbox config location. For instance `/WEB-INF/toolbox.xml`
 	spring.velocity.view-names= # White list of view names that can be resolved.
 
+	# WEB SERVICES ({sc-spring-boot-autoconfigure}/ws/WsProperties.{sc-ext}[WsProperties])
+	spring.ws.path=/services # Path that serves as the base URI for the services.
+	spring.ws.servlet.init= # Servlet init parameters to pass to Spring Web Services.
+	spring.ws.servlet.load-on-startup=-1 # Load on startup priority of the Spring Web Services servlet.
+
 
 	[[common-application-properties-security]]
 	# ----------------------------------------
