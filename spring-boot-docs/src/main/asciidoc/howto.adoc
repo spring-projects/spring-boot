@@ -1630,6 +1630,19 @@ whether you are using an embedded database (`create-drop`) or not (`none`). In a
 all properties in `+spring.jpa.properties.*+` are passed through as normal JPA properties
 (with the prefix stripped) when the local `EntityManagerFactory` is created.
 
+Spring Boot provides a consistent naming strategy regardless of the Hibernate generation
+that you are using. If you are using Hibernate 4, you can customize it using
+`spring.jpa.hibernate.naming.strategy`; Hibernate 5 defines a `Physical` and `Implicit`
+naming strategies: Spring Boot configures `SpringPhysicalNamingStrategy` by default. This
+implementation provides the same table structure as Hibernate 4. If you'd rather use
+Hibernate 5's default instead, set the following property:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+----
+
+
 See {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[`HibernateJpaAutoConfiguration`]
 and {sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[`JpaBaseConfiguration`]
 for more details.
