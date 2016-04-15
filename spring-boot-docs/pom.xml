@@ -843,6 +843,7 @@
 										<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
 										<spring-docs-version>${spring.version}</spring-docs-version>
 										<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
+										<spring-ws-docs-version>${spring-ws.version}</spring-ws-docs-version>
 										<github-tag>${github-tag}</github-tag>
 									</attributes>
 								</configuration>
