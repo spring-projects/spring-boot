@@ -585,7 +585,7 @@
 					<signature>
 						<groupId>org.codehaus.mojo.signature</groupId>
 						<artifactId>java16</artifactId>
-						<version>1.0</version>
+						<version>1.1</version>
 					</signature>
 					<annotations>
 						<annotation>org.springframework.lang.UsesJava8</annotation>
