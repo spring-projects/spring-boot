@@ -79,9 +79,11 @@ public class ChangeableUrlsTests {
 		URL projectCore = makeUrl("project-core");
 		URL projectWeb = makeUrl("project-web");
 		File relative = this.temporaryFolder.newFolder();
-		ChangeableUrls urls = ChangeableUrls.fromUrlClassLoader(new URLClassLoader(
-				new URL[] { makeJarFileWithUrlsInManifestClassPath(projectCore,
-						projectWeb, relative.getName() + "/"), makeJarFileWithNoManifest() }));
+		ChangeableUrls urls = ChangeableUrls
+				.fromUrlClassLoader(new URLClassLoader(new URL[] {
+						makeJarFileWithUrlsInManifestClassPath(projectCore, projectWeb,
+								relative.getName() + "/"),
+						makeJarFileWithNoManifest() }));
 		assertThat(urls.toList(),
 				contains(projectCore, projectWeb, relative.toURI().toURL()));
 	}
