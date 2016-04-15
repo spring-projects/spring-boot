@@ -77,7 +77,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-htmlunit-driver</artifactId>
+			<artifactId>htmlunit-driver</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -125,6 +125,10 @@
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-api</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
