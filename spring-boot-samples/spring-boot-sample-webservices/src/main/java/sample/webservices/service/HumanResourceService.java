@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package sample.ws;
+package sample.webservices.service;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import java.util.Date;
 
-@SpringBootApplication
-public class SampleWsApplication {
+public interface HumanResourceService {
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleWsApplication.class, args);
-	}
+	void bookHoliday(Date startDate, Date endDate, String name);
 
 }

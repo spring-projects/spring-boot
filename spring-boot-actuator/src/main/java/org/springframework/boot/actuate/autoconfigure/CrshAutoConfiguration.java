@@ -93,12 +93,12 @@ import org.springframework.util.StringUtils;
  * <p>
  * If a Spring Security {@link AuthenticationManager} is detected, this configuration will
  * create a {@link CRaSHPlugin} to forward shell authentication requests to Spring
- * Security. This authentication method will get enabled if {@code management.shell.auth.type}
- * is set to {@code spring} or if no explicit {@code management.shell.auth} is provided
- * and a {@link AuthenticationManager} is available. In the latter case shell access will
- * be restricted to users having roles that match those configured in
- * {@link ManagementServerProperties}. Required roles can be overridden by
- * {@code management.shell.auth.spring.roles}.
+ * Security. This authentication method will get enabled if
+ * {@code management.shell.auth.type} is set to {@code spring} or if no explicit
+ * {@code management.shell.auth} is provided and a {@link AuthenticationManager} is
+ * available. In the latter case shell access will be restricted to users having roles
+ * that match those configured in {@link ManagementServerProperties}. Required roles can
+ * be overridden by {@code management.shell.auth.spring.roles}.
  * <p>
  * To add customizations to the shell simply define beans of type {@link CRaSHPlugin} in
  * the application context. Those beans will get auto detected during startup and

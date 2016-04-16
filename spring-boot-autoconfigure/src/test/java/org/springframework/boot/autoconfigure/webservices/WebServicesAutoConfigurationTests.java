@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.ws;
+package org.springframework.boot.autoconfigure.webservices;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -31,12 +31,12 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WsAutoConfiguration}.
+ * Tests for {@link WebServicesAutoConfiguration}.
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
  */
-public class WsAutoConfigurationTests {
+public class WebServicesAutoConfigurationTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -52,8 +52,7 @@ public class WsAutoConfigurationTests {
 
 	@Test
 	public void defaultConfiguration() {
-		load(WsAutoConfiguration.class);
-
+		load(WebServicesAutoConfiguration.class);
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 	}
 
@@ -61,19 +60,19 @@ public class WsAutoConfigurationTests {
 	public void customPathMustBeginWithASlash() {
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("Path must start with /");
-		load(WsAutoConfiguration.class, "spring.ws.path=invalid");
+		load(WebServicesAutoConfiguration.class, "spring.webservices.path=invalid");
 	}
 
 	@Test
 	public void customPathWithTrailingSlash() {
-		load(WsAutoConfiguration.class, "spring.ws.path=/valid/");
+		load(WebServicesAutoConfiguration.class, "spring.webservices.path=/valid/");
 		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
 				.contains("/valid/*");
 	}
 
 	@Test
 	public void customPath() {
-		load(WsAutoConfiguration.class, "spring.ws.path=/valid");
+		load(WebServicesAutoConfiguration.class, "spring.webservices.path=/valid");
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
 				.contains("/valid/*");
@@ -81,7 +80,8 @@ public class WsAutoConfigurationTests {
 
 	@Test
 	public void customLoadOnStartup() {
-		load(WsAutoConfiguration.class, "spring.ws.servlet.load-on-startup=1");
+		load(WebServicesAutoConfiguration.class,
+				"spring.webservices.servlet.load-on-startup=1");
 		ServletRegistrationBean registrationBean = this.context
 				.getBean(ServletRegistrationBean.class);
 		assertThat(ReflectionTestUtils.getField(registrationBean, "loadOnStartup"))
@@ -90,8 +90,9 @@ public class WsAutoConfigurationTests {
 
 	@Test
 	public void customInitParameters() {
-		load(WsAutoConfiguration.class, "spring.ws.servlet.init.key1=value1",
-				"spring.ws.servlet.init.key2=value2");
+		load(WebServicesAutoConfiguration.class,
+				"spring.webservices.servlet.init.key1=value1",
+				"spring.webservices.servlet.init.key2=value2");
 		ServletRegistrationBean registrationBean = this.context
 				.getBean(ServletRegistrationBean.class);
 		assertThat(registrationBean.getInitParameters()).containsEntry("key1", "value1");
@@ -99,12 +100,12 @@ public class WsAutoConfigurationTests {
 	}
 
 	private void load(Class<?> config, String... environment) {
-		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
-		ctx.setServletContext(new MockServletContext());
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
-		ctx.register(config);
-		ctx.refresh();
-		this.context = ctx;
+		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		context.setServletContext(new MockServletContext());
+		EnvironmentTestUtils.addEnvironment(context, environment);
+		context.register(config);
+		context.refresh();
+		this.context = context;
 	}
 
 }

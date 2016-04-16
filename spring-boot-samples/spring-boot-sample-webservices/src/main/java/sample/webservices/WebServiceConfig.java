@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.ws;
+package sample.webservices;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,12 +29,12 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
 	@Bean(name = "holiday")
 	public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema countriesSchema) {
-		DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-		wsdl11Definition.setPortTypeName("HumanResource");
-		wsdl11Definition.setLocationUri("/holidayService/");
-		wsdl11Definition.setTargetNamespace("http://mycompany.com/hr/definitions");
-		wsdl11Definition.setSchema(countriesSchema);
-		return wsdl11Definition;
+		DefaultWsdl11Definition wsdl = new DefaultWsdl11Definition();
+		wsdl.setPortTypeName("HumanResource");
+		wsdl.setLocationUri("/holidayService/");
+		wsdl.setTargetNamespace("http://mycompany.com/hr/definitions");
+		wsdl.setSchema(countriesSchema);
+		return wsdl;
 	}
 
 	@Bean

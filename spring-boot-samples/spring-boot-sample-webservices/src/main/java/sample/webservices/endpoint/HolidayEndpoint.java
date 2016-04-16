@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.ws.endpoint;
+package sample.webservices.endpoint;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,7 +28,7 @@ import org.jdom2.Namespace;
 import org.jdom2.filter.Filters;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
-import sample.ws.service.HumanResourceService;
+import sample.webservices.service.HumanResourceService;
 
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -40,7 +40,9 @@ public class HolidayEndpoint {
 	private static final String NAMESPACE_URI = "http://mycompany.com/hr/schemas";
 
 	private XPathExpression<Element> startDateExpression;
+
 	private XPathExpression<Element> endDateExpression;
+
 	private XPathExpression<String> nameExpression;
 
 	private HumanResourceService humanResourceService;
@@ -49,11 +51,8 @@ public class HolidayEndpoint {
 			throws JDOMException, XPathFactoryConfigurationException,
 			XPathExpressionException {
 		this.humanResourceService = humanResourceService;
-
 		Namespace namespace = Namespace.getNamespace("hr", NAMESPACE_URI);
-
 		XPathFactory xPathFactory = XPathFactory.instance();
-
 		this.startDateExpression = xPathFactory.compile("//hr:StartDate",
 				Filters.element(), null, namespace);
 		this.endDateExpression = xPathFactory.compile("//hr:EndDate", Filters.element(),
@@ -72,7 +71,6 @@ public class HolidayEndpoint {
 		Date endDate = dateFormat
 				.parse(this.endDateExpression.evaluateFirst(holidayRequest).getText());
 		String name = this.nameExpression.evaluateFirst(holidayRequest);
-
 		this.humanResourceService.bookHoliday(startDate, endDate, name);
 	}
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.ws;
+package sample.webservices;
 
 import java.io.StringReader;
 
@@ -62,10 +62,8 @@ public class SampleWsApplicationTests {
 				+ "      <hr:FirstName>John</hr:FirstName>"
 				+ "      <hr:LastName>Doe</hr:LastName>" + "   </hr:Employee>"
 				+ "</hr:HolidayRequest>";
-
 		StreamSource source = new StreamSource(new StringReader(request));
 		StreamResult result = new StreamResult(System.out);
-
 		this.webServiceTemplate.sendSourceAndReceiveToResult(source, result);
 		assertThat(this.output.toString()).contains("Booking holiday for");
 	}

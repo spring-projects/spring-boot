@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.ws.service;
+package sample.webservices.service;
 
 import java.util.Date;
 

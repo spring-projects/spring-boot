@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.ws;
+package org.springframework.boot.autoconfigure.webservices;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,8 +31,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@ConfigurationProperties("spring.ws")
-public class WsProperties {
+@ConfigurationProperties("spring.webservices")
+public class WebServicesProperties {
 
 	/**
 	 * Path that serves as the base URI for the services.
@@ -54,7 +54,6 @@ public class WsProperties {
 	public Servlet getServlet() {
 		return this.servlet;
 	}
-
 
 	public static class Servlet {
 

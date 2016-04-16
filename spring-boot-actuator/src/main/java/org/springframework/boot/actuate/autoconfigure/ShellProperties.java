@@ -375,7 +375,8 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for JAAS authentication.
 	 */
-	@ConfigurationProperties(prefix = SHELL_PREFIX + ".auth.jaas", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX
+			+ ".auth.jaas", ignoreUnknownFields = false)
 	public static class JaasAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
@@ -404,7 +405,8 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for key authentication.
 	 */
-	@ConfigurationProperties(prefix = SHELL_PREFIX + ".auth.key", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX
+			+ ".auth.key", ignoreUnknownFields = false)
 	public static class KeyAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
@@ -435,7 +437,8 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for simple authentication.
 	 */
-	@ConfigurationProperties(prefix = SHELL_PREFIX + ".auth.simple", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX
+			+ ".auth.simple", ignoreUnknownFields = false)
 	public static class SimpleAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
@@ -511,7 +514,8 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for Spring authentication.
 	 */
-	@ConfigurationProperties(prefix = SHELL_PREFIX + ".auth.spring", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX
+			+ ".auth.spring", ignoreUnknownFields = false)
 	public static class SpringAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 

@@ -38,4 +38,5 @@ import org.springframework.beans.factory.annotation.Value;
 @Documented
 @Value("${local.management.port}")
 public @interface LocalManagementPort {
+
 }

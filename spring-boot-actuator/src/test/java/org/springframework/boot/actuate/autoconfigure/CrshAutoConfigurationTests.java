@@ -81,8 +81,8 @@ public class CrshAutoConfigurationTests {
 
 	@Test
 	public void testDisabledPlugins() throws Exception {
-		load("management.shell.disabled_plugins=" +
-				"termIOHandler, org.crsh.auth.AuthenticationPlugin, javaLanguage");
+		load("management.shell.disabled_plugins="
+				+ "termIOHandler, org.crsh.auth.AuthenticationPlugin, javaLanguage");
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 		assertThat(lifeCycle).isNotNull();
 		assertThat(lifeCycle.getContext().getPlugins(TermIOHandler.class))
@@ -109,8 +109,7 @@ public class CrshAutoConfigurationTests {
 
 	@Test
 	public void testSshConfiguration() {
-		load("management.shell.ssh.enabled=true",
-				"management.shell.ssh.port=3333");
+		load("management.shell.ssh.enabled=true", "management.shell.ssh.port=3333");
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 		assertThat(lifeCycle.getConfig().getProperty("crash.ssh.port")).isEqualTo("3333");
 		assertThat(lifeCycle.getConfig().getProperty("crash.ssh.auth_timeout"))
@@ -139,7 +138,6 @@ public class CrshAutoConfigurationTests {
 		assertThat(lifeCycle.getConfig().getProperty("crash.ssh.idle_timeout"))
 				.isEqualTo("400000");
 	}
-
 
 	@Test
 	public void testCommandResolution() {
@@ -328,7 +326,6 @@ public class CrshAutoConfigurationTests {
 		this.context.register(CrshAutoConfiguration.class);
 		this.context.refresh();
 	}
-
 
 	@Configuration
 	public static class SecurityConfiguration {

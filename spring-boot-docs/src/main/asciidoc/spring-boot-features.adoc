@@ -5002,13 +5002,13 @@ be easily accessed via the `spring-boot-starter-websocket` module.
 
 
 
-[[boot-features-ws]]
+[[boot-features-webservices]]
 == Web Services
 Spring Boot provides Web Services auto-configuration so that all is required is defining
 your `Endpoints`.
 
-The {spring-ws-reference}[Spring Web Services features] can be easily accessed via the
-`spring-boot-starter-ws` module.
+The {spring-webservices-reference}[Spring Web Services features] can be easily accessed
+via the `spring-boot-starter-webservices` module.
 
 
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.ws;
+package org.springframework.boot.autoconfigure.webservices;
 
 import java.util.Map;
 
@@ -44,13 +44,13 @@ import org.springframework.ws.transport.http.MessageDispatcherServlet;
 @ConditionalOnWebApplication
 @ConditionalOnClass(MessageDispatcherServlet.class)
 @ConditionalOnMissingBean(WsConfigurationSupport.class)
-@EnableConfigurationProperties(WsProperties.class)
+@EnableConfigurationProperties(WebServicesProperties.class)
 @AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
-public class WsAutoConfiguration {
+public class WebServicesAutoConfiguration {
 
-	private final WsProperties properties;
+	private final WebServicesProperties properties;
 
-	public WsAutoConfiguration(WsProperties properties) {
+	public WebServicesAutoConfiguration(WebServicesProperties properties) {
 		this.properties = properties;
 	}
 
@@ -61,9 +61,9 @@ public class WsAutoConfiguration {
 		servlet.setApplicationContext(applicationContext);
 		String path = this.properties.getPath();
 		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
-		ServletRegistrationBean registration = new ServletRegistrationBean(
-				servlet, urlMapping);
-		WsProperties.Servlet servletProperties = this.properties.getServlet();
+		ServletRegistrationBean registration = new ServletRegistrationBean(servlet,
+				urlMapping);
+		WebServicesProperties.Servlet servletProperties = this.properties.getServlet();
 		registration.setLoadOnStartup(servletProperties.getLoadOnStartup());
 		for (Map.Entry<String, String> entry : servletProperties.getInit().entrySet()) {
 			registration.addInitParameter(entry.getKey(), entry.getValue());
@@ -74,6 +74,7 @@ public class WsAutoConfiguration {
 	@Configuration
 	@EnableWs
 	protected static class WsConfiguration {
+
 	}
 
 }
