@@ -44,7 +44,7 @@ class JsonLoader {
 		return this.resourceLoadClass;
 	}
 
-	public String getJson(CharSequence source) throws IOException {
+	public String getJson(CharSequence source) {
 		if (source == null) {
 			return null;
 		}
@@ -55,24 +55,39 @@ class JsonLoader {
 		return source.toString();
 	}
 
-	public String getJson(String path, Class<?> resourceLoadClass) throws IOException {
+	public String getJson(String path, Class<?> resourceLoadClass) {
 		return getJson(new ClassPathResource(path, resourceLoadClass));
 	}
 
-	public String getJson(byte[] source) throws IOException {
+	public String getJson(byte[] source) {
 		return getJson(new ByteArrayInputStream(source));
 	}
 
-	public String getJson(File source) throws IOException {
-		return getJson(new FileInputStream(source));
+	public String getJson(File source) {
+		try {
+			return getJson(new FileInputStream(source));
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Unable to load JSON from " + source, ex);
+		}
 	}
 
-	public String getJson(Resource source) throws IOException {
-		return getJson(source.getInputStream());
+	public String getJson(Resource source) {
+		try {
+			return getJson(source.getInputStream());
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Unable to load JSON from " + source, ex);
+		}
 	}
 
-	public String getJson(InputStream source) throws IOException {
-		return FileCopyUtils.copyToString(new InputStreamReader(source));
+	public String getJson(InputStream source) {
+		try {
+			return FileCopyUtils.copyToString(new InputStreamReader(source));
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Unable to load JSON from InputStream", ex);
+		}
 	}
 
 }
