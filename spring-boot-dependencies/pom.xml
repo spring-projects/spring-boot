@@ -160,7 +160,7 @@
 		<spring-social-facebook.version>2.0.3.RELEASE</spring-social-facebook.version>
 		<spring-social-linkedin.version>1.0.2.RELEASE</spring-social-linkedin.version>
 		<spring-social-twitter.version>1.1.2.RELEASE</spring-social-twitter.version>
-		<spring-webservices.version>2.3.0.RELEASE</spring-webservices.version>
+		<spring-ws.version>2.3.0.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.8.11.2</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
@@ -505,7 +505,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-webservices</artifactId>
+				<artifactId>spring-boot-starter-ws</artifactId>
 				<version>1.4.0.BUILD-SNAPSHOT</version>
 			</dependency>
 
@@ -2179,7 +2179,7 @@
 			<dependency>
 				<groupId>org.springframework.ws</groupId>
 				<artifactId>spring-ws-core</artifactId>
-				<version>${spring-webservices.version}</version>
+				<version>${spring-ws.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -2190,7 +2190,7 @@
 			<dependency>
 				<groupId>org.springframework.ws</groupId>
 				<artifactId>spring-ws-security</artifactId>
-				<version>${spring-webservices.version}</version>
+				<version>${spring-ws.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -2201,7 +2201,7 @@
 			<dependency>
 				<groupId>org.springframework.ws</groupId>
 				<artifactId>spring-ws-support</artifactId>
-				<version>${spring-webservices.version}</version>
+				<version>${spring-ws.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -2212,7 +2212,7 @@
 			<dependency>
 				<groupId>org.springframework.ws</groupId>
 				<artifactId>spring-ws-test</artifactId>
-				<version>${spring-webservices.version}</version>
+				<version>${spring-ws.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
