@@ -92,7 +92,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected the expected JSON or the name of a resource containing the expected
 	 * JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(CharSequence expected) {
@@ -106,7 +105,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param path the name of a resource containing the expected JSON
 	 * @param resourceLoadClass the source class used to load the resource
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(String path, Class<?> resourceLoadClass) {
@@ -119,7 +117,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * to the specified JSON bytes.
 	 * @param expected the expected JSON bytes
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(byte[] expected) {
@@ -132,7 +129,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * to the specified JSON file.
 	 * @param expected a file containing the expected JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(File expected) {
@@ -145,7 +141,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * to the specified JSON input stream.
 	 * @param expected an input stream containing the expected JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(InputStream expected) {
@@ -158,7 +153,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * to the specified JSON resource.
 	 * @param expected a resource containing the expected JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(Resource expected) {
@@ -174,7 +168,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected the expected JSON or the name of a resource containing the expected
 	 * JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isStrictlyEqualToJson(CharSequence expected) {
@@ -188,7 +181,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param path the name of a resource containing the expected JSON
 	 * @param resourceLoadClass the source class used to load the resource
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isStrictlyEqualToJson(String path,
@@ -202,7 +194,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * the specified JSON bytes.
 	 * @param expected the expected JSON bytes
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isStrictlyEqualToJson(byte[] expected) {
@@ -215,7 +206,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * the specified JSON file.
 	 * @param expected a file containing the expected JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isStrictlyEqualToJson(File expected) {
@@ -228,7 +218,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * the specified JSON input stream.
 	 * @param expected an input stream containing the expected JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isStrictlyEqualToJson(InputStream expected) {
@@ -241,7 +230,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * the specified JSON resource.
 	 * @param expected a resource containing the expected JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isStrictlyEqualToJson(Resource expected) {
@@ -257,7 +245,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * JSON
 	 * @param compareMode the compare mode used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(CharSequence expected,
@@ -272,7 +259,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param resourceLoadClass the source class used to load the resource
 	 * @param compareMode the compare mode used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(String path, Class<?> resourceLoadClass,
@@ -286,7 +272,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected the expected JSON bytes
 	 * @param compareMode the compare mode used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(byte[] expected, JSONCompareMode compareMode) {
@@ -299,7 +284,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected a file containing the expected JSON
 	 * @param compareMode the compare mode used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(File expected, JSONCompareMode compareMode) {
@@ -312,7 +296,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected an input stream containing the expected JSON
 	 * @param compareMode the compare mode used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(InputStream expected,
@@ -325,7 +308,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected a resource containing the expected JSON
 	 * @param compareMode the compare mode used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(Resource expected,
@@ -342,7 +324,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * JSON
 	 * @param comparator the comparator used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(CharSequence expected,
@@ -357,7 +338,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param resourceLoadClass the source class used to load the resource
 	 * @param comparator the comparator used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(String path, Class<?> resourceLoadClass,
@@ -371,7 +351,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected the expected JSON bytes
 	 * @param comparator the comparator used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(byte[] expected, JSONComparator comparator) {
@@ -384,7 +363,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected a file containing the expected JSON
 	 * @param comparator the comparator used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(File expected, JSONComparator comparator) {
@@ -397,7 +375,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected an input stream containing the expected JSON
 	 * @param comparator the comparator used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(InputStream expected,
@@ -411,7 +388,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected a resource containing the expected JSON
 	 * @param comparator the comparator used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is not equal to the given one
 	 */
 	public JsonContentAssert isEqualToJson(Resource expected, JSONComparator comparator) {
@@ -452,7 +428,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected the expected JSON or the name of a resource containing the expected
 	 * JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(CharSequence expected) {
@@ -466,7 +441,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param path the name of a resource containing the expected JSON
 	 * @param resourceLoadClass the source class used to load the resource
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(String path, Class<?> resourceLoadClass) {
@@ -479,7 +453,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * equal to the specified JSON bytes.
 	 * @param expected the expected JSON bytes
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(byte[] expected) {
@@ -492,7 +465,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * equal to the specified JSON file.
 	 * @param expected a file containing the expected JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(File expected) {
@@ -505,7 +477,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * equal to the specified JSON input stream.
 	 * @param expected an input stream containing the expected JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(InputStream expected) {
@@ -518,7 +489,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * equal to the specified JSON resource.
 	 * @param expected a resource containing the expected JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(Resource expected) {
@@ -534,7 +504,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected the expected JSON or the name of a resource containing the expected
 	 * JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotStrictlyEqualToJson(CharSequence expected) {
@@ -548,7 +517,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param path the name of a resource containing the expected JSON
 	 * @param resourceLoadClass the source class used to load the resource
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotStrictlyEqualToJson(String path,
@@ -562,7 +530,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * to the specified JSON bytes.
 	 * @param expected the expected JSON bytes
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotStrictlyEqualToJson(byte[] expected) {
@@ -575,7 +542,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * to the specified JSON file.
 	 * @param expected a file containing the expected JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotStrictlyEqualToJson(File expected) {
@@ -588,7 +554,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * to the specified JSON input stream.
 	 * @param expected an input stream containing the expected JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotStrictlyEqualToJson(InputStream expected) {
@@ -601,7 +566,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * to the specified JSON resource.
 	 * @param expected a resource containing the expected JSON
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotStrictlyEqualToJson(Resource expected) {
@@ -617,7 +581,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * JSON
 	 * @param compareMode the compare mode used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(CharSequence expected,
@@ -632,7 +595,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param resourceLoadClass the source class used to load the resource
 	 * @param compareMode the compare mode used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(String path, Class<?> resourceLoadClass,
@@ -646,7 +608,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected the expected JSON bytes
 	 * @param compareMode the compare mode used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(byte[] expected,
@@ -660,7 +621,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected a file containing the expected JSON
 	 * @param compareMode the compare mode used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(File expected,
@@ -674,7 +634,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected an input stream containing the expected JSON
 	 * @param compareMode the compare mode used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(InputStream expected,
@@ -688,7 +647,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected a resource containing the expected JSON
 	 * @param compareMode the compare mode used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(Resource expected,
@@ -705,7 +663,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * JSON
 	 * @param comparator the comparator used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(CharSequence expected,
@@ -720,7 +677,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param resourceLoadClass the source class used to load the resource
 	 * @param comparator the comparator used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(String path, Class<?> resourceLoadClass,
@@ -734,7 +690,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected the expected JSON bytes
 	 * @param comparator the comparator used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(byte[] expected,
@@ -748,7 +703,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected a file containing the expected JSON
 	 * @param comparator the comparator used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(File expected, JSONComparator comparator) {
@@ -761,7 +715,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected an input stream containing the expected JSON
 	 * @param comparator the comparator used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(InputStream expected,
@@ -775,7 +728,6 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param expected a resource containing the expected JSON
 	 * @param comparator the comparator used when checking
 	 * @return {@code this} assertion object
-	 * @on IO error
 	 * @throws AssertionError if the actual JSON value is equal to the given one
 	 */
 	public JsonContentAssert isNotEqualToJson(Resource expected,
