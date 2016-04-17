@@ -153,7 +153,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 			return new DispatcherServlet();
 			// Alternatively you can use ServletContextInitializer beans including
 			// ServletRegistration and FilterRegistration. Read the
-			// EmbeddedWebApplicationContext javadoc for details
+			// EmbeddedWebApplicationContext Javadoc for details.
 		}
 
 		@Bean

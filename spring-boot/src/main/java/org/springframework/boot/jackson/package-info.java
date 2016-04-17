@@ -15,6 +15,6 @@
  */
 
 /**
- * Custom enhancements and support for the Jackson Project.
+ * Custom enhancements and support for the Jackson project.
  */
 package org.springframework.boot.jackson;

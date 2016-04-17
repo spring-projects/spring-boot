@@ -65,7 +65,7 @@ public class VehicleIdentificationNumberTests {
 	}
 
 	@Test
-	public void equalsAndHashShouldBeBasedOnVin() throws Exception {
+	public void equalsAndHashCodeShouldBeBasedOnVin() throws Exception {
 		VehicleIdentificationNumber vin1 = new VehicleIdentificationNumber(SAMPLE_VIN);
 		VehicleIdentificationNumber vin2 = new VehicleIdentificationNumber(SAMPLE_VIN);
 		VehicleIdentificationNumber vin3 = new VehicleIdentificationNumber(

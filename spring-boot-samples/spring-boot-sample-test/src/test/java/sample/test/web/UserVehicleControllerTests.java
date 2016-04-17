@@ -102,7 +102,7 @@ public class UserVehicleControllerTests {
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void welcomeCommandLineRunnerShouldBeAvailable() throws Exception {
-		// Since we're a @WebMvcTest WelcomeCommandLineRunner should not be available
+		// Since we're a @WebMvcTest WelcomeCommandLineRunner should not be available.
 		assertThat(this.applicationContext.getBean(WelcomeCommandLineRunner.class));
 	}
 
