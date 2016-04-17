@@ -34,7 +34,7 @@ the `spring-boot-actuator` there is also an `autoconfig` endpoint that renders t
 in JSON. Use that to debug the application and see what features have been added (and
 which not) by Spring Boot at runtime.
 
-Many more questions can be answered by looking at the source code and the javadoc. Some
+Many more questions can be answered by looking at the source code and the Javadoc. Some
 rules of thumb:
 
 * Look for classes called `+*AutoConfiguration+` and read their sources, in particular the

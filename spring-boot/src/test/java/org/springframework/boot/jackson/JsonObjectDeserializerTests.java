@@ -133,7 +133,7 @@ public class JsonObjectDeserializerTests {
 	}
 
 	@Test
-	public void nullSafeValueWhenClassIsShouldBigDecimalReturnBigDecimal()
+	public void nullSafeValueWhenClassIsBigDecimalShouldReturnBigDecimal()
 			throws Exception {
 		JsonNode node = mock(JsonNode.class);
 		given(node.decimalValue()).willReturn(BigDecimal.TEN);

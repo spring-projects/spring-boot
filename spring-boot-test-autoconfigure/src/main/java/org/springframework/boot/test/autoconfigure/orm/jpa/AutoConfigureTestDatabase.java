@@ -49,7 +49,7 @@ public @interface AutoConfigureTestDatabase {
 	Replace replace() default Replace.ANY;
 
 	/**
-	 * The type of connection to be establish when {@link #replace() replacing} the data
+	 * The type of connection to be established when {@link #replace() replacing} the data
 	 * source. By default will attempt to detect the connection based on the classpath.
 	 * @return the type of connection to use
 	 */

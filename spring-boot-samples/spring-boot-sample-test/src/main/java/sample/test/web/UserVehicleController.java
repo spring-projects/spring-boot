@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Controller to return vehicle information for a given {@link User}
+ * Controller to return vehicle information for a given {@link User}.
  *
  * @author Phillip Webb
  */

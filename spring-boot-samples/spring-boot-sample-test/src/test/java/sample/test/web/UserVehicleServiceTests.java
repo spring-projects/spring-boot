@@ -69,7 +69,7 @@ public class UserVehicleServiceTests {
 	}
 
 	@Test
-	public void getVehicleDetailsWhenUserNameNotFoundShouldThrowException()
+	public void getVehicleDetailsWhenUsernameNotFoundShouldThrowException()
 			throws Exception {
 		given(this.userRepository.findByUsername(anyString())).willReturn(null);
 		this.thrown.expect(UserNameNotFoundException.class);
