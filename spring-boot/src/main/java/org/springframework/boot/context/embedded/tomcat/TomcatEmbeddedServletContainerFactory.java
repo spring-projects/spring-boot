@@ -86,6 +86,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Venil Noronha
  * @see #setPort(int)
  * @see #setContextLifecycleListeners(Collection)
  * @see TomcatEmbeddedServletContainer
@@ -100,7 +101,7 @@ public class TomcatEmbeddedServletContainerFactory
 	/**
 	 * The class name of default protocol used.
 	 */
-	public static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
+	public static final String DEFAULT_PROTOCOL = TomcatHttp11NioProtocol.class.getName();
 
 	private File baseDirectory;
 
@@ -320,13 +321,23 @@ public class TomcatEmbeddedServletContainerFactory
 		protocol.setKeystorePass(ssl.getKeyStorePassword());
 		protocol.setKeyPass(ssl.getKeyPassword());
 		protocol.setKeyAlias(ssl.getKeyAlias());
-		configureSslKeyStore(protocol, ssl);
+		if (protocol instanceof TomcatHttp11NioProtocol && getSupplierKeyStore() != null) {
+			((TomcatHttp11NioProtocol) protocol).setKeyStore(getSupplierKeyStore());
+		}
+		else {
+			configureSslKeyStore(protocol, ssl);
+		}
 		protocol.setCiphers(StringUtils.arrayToCommaDelimitedString(ssl.getCiphers()));
 		if (ssl.getEnabledProtocols() != null) {
 			protocol.setProperty("sslEnabledProtocols",
 					StringUtils.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
 		}
-		configureSslTrustStore(protocol, ssl);
+		if (protocol instanceof TomcatHttp11NioProtocol && getSupplierTrustStore() != null) {
+			((TomcatHttp11NioProtocol) protocol).setTrustStore(getSupplierTrustStore());
+		}
+		else {
+			configureSslTrustStore(protocol, ssl);
+		}
 	}
 
 	private void configureSslClientAuth(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
