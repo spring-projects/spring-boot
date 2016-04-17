@@ -952,6 +952,9 @@ content into your application; rather pick only the properties that you need.
 	endpoints.metrics.id= # Endpoint identifier.
 	endpoints.metrics.path= # Endpoint path.
 	endpoints.metrics.sensitive= # Mark if the endpoint exposes sensitive information.
+	endpoints.session.enabled= # Enable the endpoint
+	endpoints.session.id= # Endpoint identifier
+	endpoints.session.path= # Endpoint path
 	endpoints.shutdown.enabled= # Enable the endpoint.
 	endpoints.shutdown.id= # Endpoint identifier.
 	endpoints.shutdown.path= # Endpoint path.
