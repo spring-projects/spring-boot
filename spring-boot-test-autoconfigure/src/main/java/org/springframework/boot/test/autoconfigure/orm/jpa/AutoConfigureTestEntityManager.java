@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
 /**
- * Annotation that can be applied to a test class to enable and configure
+ * Annotation that can be applied to a test class to enable
  * auto-configuration of a {@link TestEntityManager}.
  *
  * @author Phillip Webb

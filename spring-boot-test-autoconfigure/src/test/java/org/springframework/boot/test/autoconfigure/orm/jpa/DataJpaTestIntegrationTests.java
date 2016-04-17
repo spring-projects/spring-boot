@@ -80,7 +80,7 @@ public class DataJpaTestIntegrationTests {
 	}
 
 	@Test
-	public void replacesDefinedDatasourceWithEmbeddedDefault() throws Exception {
+	public void replacesDefinedDataSourceWithEmbeddedDefault() throws Exception {
 		String product = this.dataSource.getConnection().getMetaData()
 				.getDatabaseProductName();
 		assertThat(product).isEqualTo("H2");
