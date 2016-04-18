@@ -85,7 +85,7 @@ public class RunMojo extends AbstractRunMojo {
 		while (hasNonDaemonThreads);
 	}
 
-	private static class RunProcessKiller implements Runnable {
+	private static final class RunProcessKiller implements Runnable {
 
 		private final RunProcess runProcess;
 
