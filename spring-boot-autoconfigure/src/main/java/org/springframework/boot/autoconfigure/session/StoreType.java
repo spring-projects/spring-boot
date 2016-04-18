@@ -51,7 +51,7 @@ public enum StoreType {
 	HASH_MAP,
 
 	/**
-	 * No session datastore.
+	 * No session data-store.
 	 */
 	NONE;
 

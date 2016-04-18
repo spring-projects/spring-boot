@@ -21,15 +21,12 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionConfigurationImportSelector;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
@@ -43,7 +40,8 @@ import org.springframework.session.SessionRepository;
  * @author Andy Wilkinson
  * @author Tommy Ludwig
  * @author Eddú Meléndez
- * @since 1.3.0
+ * @author Stephane Nicoll
+ * @since 1.4.0
  */
 @Configuration
 @ConditionalOnClass(Session.class)
@@ -54,19 +52,6 @@ import org.springframework.session.SessionRepository;
 		MongoAutoConfiguration.class, RedisAutoConfiguration.class })
 @Import(SessionConfigurationImportSelector.class)
 public class SessionAutoConfiguration {
-
-	@Configuration
-	@ConditionalOnMissingBean(value = ServerProperties.class, search = SearchStrategy.CURRENT)
-	// Just in case user switches off ServerPropertiesAutoConfiguration
-	public static class ServerPropertiesConfiguration {
-
-		@Bean
-		// Use the same bean name as the default one for any old webapp
-		public ServerProperties serverProperties() {
-			return new ServerProperties();
-		}
-
-	}
 
 	/**
 	 * {@link ImportSelector} to add {@link StoreType} configuration classes.

@@ -27,7 +27,6 @@ import org.springframework.util.Assert;
  *
  * @author Tommy Ludwig
  * @author Eddú Meléndez
- * @since 1.4.0
  */
 final class SessionStoreMappings {
 
@@ -39,7 +38,7 @@ final class SessionStoreMappings {
 		mappings.put(StoreType.MONGO, MongoSessionConfiguration.class);
 		mappings.put(StoreType.REDIS, RedisSessionConfiguration.class);
 		mappings.put(StoreType.HAZELCAST, HazelcastSessionConfiguration.class);
-		mappings.put(StoreType.HASH_MAP, SimpleSessionConfiguration.class);
+		mappings.put(StoreType.HASH_MAP, HashMapSessionConfiguration.class);
 		mappings.put(StoreType.NONE, NoOpSessionConfiguration.class);
 		MAPPINGS = Collections.unmodifiableMap(mappings);
 	}
@@ -63,4 +62,5 @@ final class SessionStoreMappings {
 		throw new IllegalStateException(
 				"Unknown configuration class " + configurationClassName);
 	}
+
 }

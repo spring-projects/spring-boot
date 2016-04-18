@@ -16,42 +16,153 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.session.data.redis.RedisFlushMode;
 
 /**
- * Properties for configuring Spring Session's auto-configuration.
+ * Configuration properties for Spring Session.
  *
  * @author Tommy Ludwig
+ * @author Stephane Nicoll
  * @since 1.4.0
  */
 @ConfigurationProperties("spring.session")
 public class SessionProperties {
 
-	private Store store;
+	/**
+	 * Session store type, auto-detected according to the environment by default.
+	 */
+	private StoreType storeType;
 
-	public Store getStore() {
-		return this.store;
+	private Integer timeout;
+
+	private final Hazelcast hazelcast = new Hazelcast();
+
+	private final Jdbc jdbc = new Jdbc();
+
+	private final Mongo mongo = new Mongo();
+
+	private final Redis redis = new Redis();
+
+	public SessionProperties(ObjectProvider<ServerProperties> serverProperties) {
+		ServerProperties properties = serverProperties.getIfUnique();
+		this.timeout = (properties != null ? properties.getSession().getTimeout() : null);
 	}
 
-	public void setStore(Store store) {
-		this.store = store;
+	public StoreType getStoreType() {
+		return this.storeType;
+	}
+
+	public void setStoreType(StoreType storeType) {
+		this.storeType = storeType;
 	}
 
 	/**
-	 * Session store-specific properties.
+	 * Return the session timeout in seconds.
+	 * @return the session timeout in seconds
+	 * @see ServerProperties#getSession()
 	 */
-	public static class Store {
-		/**
-		 * Session data store type, auto-detected according to the environment by default.
-		 */
-		private StoreType type;
-
-		public StoreType getType() {
-			return this.type;
-		}
-
-		public void setType(StoreType type) {
-			this.type = type;
-		}
+	public Integer getTimeout() {
+		return this.timeout;
 	}
+
+	public Hazelcast getHazelcast() {
+		return this.hazelcast;
+	}
+
+	public Jdbc getJdbc() {
+		return this.jdbc;
+	}
+
+	public Mongo getMongo() {
+		return this.mongo;
+	}
+
+	public Redis getRedis() {
+		return this.redis;
+	}
+
+	public static class Hazelcast {
+
+		/**
+		 * Name of the map used to store sessions.
+		 */
+		private String mapName = "spring:session:sessions";
+
+		public String getMapName() {
+			return this.mapName;
+		}
+
+		public void setMapName(String mapName) {
+			this.mapName = mapName;
+		}
+
+	}
+
+	public static class Jdbc {
+
+		/**
+		 * Name of database table used to store sessions.
+		 */
+		private String tableName = "SPRING_SESSION";
+
+		public String getTableName() {
+			return this.tableName;
+		}
+
+		public void setTableName(String tableName) {
+			this.tableName = tableName;
+		}
+
+	}
+
+	public static class Mongo {
+
+		/**
+		 * Collection name used to store sessions.
+		 */
+		private String collectionName = "sessions";
+
+		public String getCollectionName() {
+			return this.collectionName;
+		}
+
+		public void setCollectionName(String collectionName) {
+			this.collectionName = collectionName;
+		}
+
+	}
+
+	public static class Redis {
+
+		/**
+		 * Namespace for keys used to store sessions.
+		 */
+		private String namespace = "";
+
+		/**
+		 * Flush mode for the Redis sessions.
+		 */
+		private RedisFlushMode flushMode = RedisFlushMode.ON_SAVE;
+
+		public String getNamespace() {
+			return this.namespace;
+		}
+
+		public void setNamespace(String namespace) {
+			this.namespace = namespace;
+		}
+
+		public RedisFlushMode getFlushMode() {
+			return this.flushMode;
+		}
+
+		public void setFlushMode(RedisFlushMode flushMode) {
+			this.flushMode = flushMode;
+		}
+
+	}
+
 }

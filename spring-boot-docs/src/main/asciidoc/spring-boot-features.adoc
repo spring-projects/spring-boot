@@ -4392,21 +4392,24 @@ class for more details.
 
 [[boot-features-session]]
 == Spring Session
-Spring Session provides support for managing a user's session information. If you are
-writing a web application and Spring Session and one the following providers:
+Spring Boot provides Spring Session auto-configuration for a wide range of stores. If
+Spring Session is available and you haven't defined a bean of type `SessionRepository`,
+Spring Boot tries to detect the following session stores (in this order):
 
 * JDBC
+* MongoDB
+* Redis
 * Hazelcast
-* Spring Data Mongo
-* Spring Data Redis
+* HashMap
 
-on the classpath, Spring Boot will auto-configure Spring Session through its
-`@EnableJdbcHttpSession`, `@EnableHazelcastHttpSession`, `@EnableMongoHttpSession`,
-`@EnableRedisHttpSession`. Session data will be stored in the provider and the session timeout
-can be configured using the `server.session.timeout` property.
+It is also possible to _force_ the store to use via the `spring.session.store-type`
+property. Each store have specific additional settings. For instance it is possible
+to customize the name of the table for the jdbc store:
 
-It is also possible to _force_ the session provider to use via the `spring.session.store.type`
-property.
+[source,properties,indent=0]
+----
+    spring.session.jdbc.table-name=SESSIONS
+----
 
 
 

@@ -24,7 +24,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
- * General condition used by all session auto-configuration classes.
+ * General condition used with all session configuration classes.
  *
  * @author Tommy Ludwig
  */
@@ -34,13 +34,13 @@ class SessionCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), "spring.session.store.");
-		if (!resolver.containsProperty("type")) {
+				context.getEnvironment(), "spring.session.");
+		if (!resolver.containsProperty("store-type")) {
 			return ConditionOutcome.match("Automatic session store type");
 		}
 		StoreType sessionStoreType = SessionStoreMappings
 				.getType(((AnnotationMetadata) metadata).getClassName());
-		String value = resolver.getProperty("type").replace("-", "_").toUpperCase();
+		String value = resolver.getProperty("store-type").replace("-", "_").toUpperCase();
 		if (value.equals(sessionStoreType.name())) {
 			return ConditionOutcome.match("Session store type " + sessionStoreType);
 		}

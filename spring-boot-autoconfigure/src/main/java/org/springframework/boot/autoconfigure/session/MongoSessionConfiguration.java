@@ -16,43 +16,37 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import javax.annotation.PostConstruct;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
-import org.springframework.session.data.mongo.config.annotation.web.http.EnableMongoHttpSession;
+import org.springframework.session.data.mongo.config.annotation.web.http.MongoHttpSessionConfiguration;
 
 /**
- * Mongo backed session auto-configuration.
+ * Mongo backed session configuration.
  *
  * @author Eddú Meléndez
- * @since 1.4.0
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnBean(MongoOperations.class)
-@EnableMongoHttpSession
 @Conditional(SessionCondition.class)
 class MongoSessionConfiguration {
 
-	private ServerProperties serverProperties;
+	@Configuration
+	public static class SpringBootMongoHttpSessionConfiguration
+			extends MongoHttpSessionConfiguration {
 
-	private MongoOperationsSessionRepository sessionRepository;
-
-	MongoSessionConfiguration(ServerProperties serverProperties, MongoOperationsSessionRepository sessionRepository) {
-		this.serverProperties = serverProperties;
-		this.sessionRepository = sessionRepository;
-	}
-
-	@PostConstruct
-	public void applyConfigurationProperties() {
-		Integer timeout = this.serverProperties.getSession().getTimeout();
-		if (timeout != null) {
-			this.sessionRepository.setMaxInactiveIntervalInSeconds(timeout);
+		@Autowired
+		public void customize(SessionProperties sessionProperties) {
+			Integer timeout = sessionProperties.getTimeout();
+			if (timeout != null) {
+				setMaxInactiveIntervalInSeconds(timeout);
+			}
+			setCollectionName(sessionProperties.getMongo().getCollectionName());
 		}
+
 	}
 
 }

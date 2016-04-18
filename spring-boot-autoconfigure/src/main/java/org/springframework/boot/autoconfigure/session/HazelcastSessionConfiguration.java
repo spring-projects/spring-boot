@@ -16,44 +16,38 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import javax.annotation.PostConstruct;
-
 import com.hazelcast.core.HazelcastInstance;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.session.MapSessionRepository;
-import org.springframework.session.hazelcast.config.annotation.web.http.EnableHazelcastHttpSession;
+import org.springframework.session.hazelcast.config.annotation.web.http.HazelcastHttpSessionConfiguration;
 
 /**
- * Hazelcast backed session auto-configuration.
+ * Hazelcast backed session configuration.
  *
  * @author Tommy Ludwig
  * @author Eddú Meléndez
- * @since 1.4.0
+ * @author Stephane Nicoll
  */
 @Configuration
-@ConditionalOnBean({ HazelcastInstance.class })
-@EnableHazelcastHttpSession
+@ConditionalOnBean(HazelcastInstance.class)
 @Conditional(SessionCondition.class)
 class HazelcastSessionConfiguration {
 
-	private ServerProperties serverProperties;
+	@Configuration
+	public static class SprigBootHazelcastHttpSessionConfiguration
+			extends HazelcastHttpSessionConfiguration {
 
-	private MapSessionRepository sessionRepository;
-
-	HazelcastSessionConfiguration(ServerProperties serverProperties, MapSessionRepository sessionRepository) {
-		this.serverProperties = serverProperties;
-		this.sessionRepository = sessionRepository;
-	}
-
-	@PostConstruct
-	public void applyConfigurationProperties() {
-		Integer timeout = this.serverProperties.getSession().getTimeout();
-		if (timeout != null) {
-			this.sessionRepository.setDefaultMaxInactiveInterval(timeout);
+		@Autowired
+		public void customize(SessionProperties sessionProperties) {
+			Integer timeout = sessionProperties.getTimeout();
+			if (timeout != null) {
+				setMaxInactiveIntervalInSeconds(timeout);
+			}
+			setSessionMapName(sessionProperties.getHazelcast().getMapName());
 		}
+
 	}
 }

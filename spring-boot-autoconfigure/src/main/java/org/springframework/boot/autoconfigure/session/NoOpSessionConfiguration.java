@@ -22,11 +22,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.session.SessionRepository;
 
 /**
- * No-op session configuration used to disable Spring Session auto configuration via the
- * environment.
+ * No-op session configuration used to disable Spring Session using the environment.
  *
  * @author Tommy Ludwig
- * @since 1.4.0
  */
 @Configuration
 @ConditionalOnMissingBean(SessionRepository.class)
