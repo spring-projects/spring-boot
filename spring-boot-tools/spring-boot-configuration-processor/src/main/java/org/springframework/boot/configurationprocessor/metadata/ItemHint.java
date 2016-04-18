@@ -54,7 +54,7 @@ public class ItemHint implements Comparable<ItemHint> {
 		int dot = name.lastIndexOf('.');
 		if (dot != -1) {
 			String prefix = name.substring(0, dot);
-			String originalName = name.substring(dot, name.length());
+			String originalName = name.substring(dot);
 			return prefix + ConfigurationMetadata.toDashedCase(originalName);
 		}
 		return ConfigurationMetadata.toDashedCase(name);
