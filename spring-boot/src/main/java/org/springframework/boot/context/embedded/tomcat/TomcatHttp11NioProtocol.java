@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded.tomcat;
 
 import java.security.KeyStore;
 
+import org.apache.coyote.http11.Constants;
 import org.apache.coyote.http11.Http11NioProtocol;
 import org.apache.tomcat.util.net.NioEndpoint;
 
@@ -28,30 +29,30 @@ import org.apache.tomcat.util.net.NioEndpoint;
  */
 public class TomcatHttp11NioProtocol extends Http11NioProtocol {
 
-	private TomcatNioEndpoint tomcatNioEndpoint;
-
 	public TomcatHttp11NioProtocol() {
 		super();
-		this.tomcatNioEndpoint = new TomcatNioEndpoint();
-		this.endpoint = this.tomcatNioEndpoint;
+		this.endpoint = new TomcatNioEndpoint();
 		((NioEndpoint) this.endpoint).setHandler((Http11ConnectionHandler) getHandler());
+		setSoLinger(Constants.DEFAULT_CONNECTION_LINGER);
+		setSoTimeout(Constants.DEFAULT_CONNECTION_TIMEOUT);
+		setTcpNoDelay(Constants.DEFAULT_TCP_NO_DELAY);
 		setSslImplementationName(TomcatJSSEImplementation.class.getName());
 	}
 
 	public KeyStore getKeyStore() {
-		return this.tomcatNioEndpoint.getKeyStore();
+		return ((TomcatNioEndpoint) this.endpoint).getKeyStore();
 	}
 
 	public void setKeyStore(KeyStore keyStore) {
-		this.tomcatNioEndpoint.setKeyStore(keyStore);
+		((TomcatNioEndpoint) this.endpoint).setKeyStore(keyStore);
 	}
 
 	public KeyStore getTrustStore() {
-		return this.tomcatNioEndpoint.getTrustStore();
+		return ((TomcatNioEndpoint) this.endpoint).getTrustStore();
 	}
 
 	public void setTrustStore(KeyStore trustStore) {
-		this.tomcatNioEndpoint.setTrustStore(trustStore);
+		((TomcatNioEndpoint) this.endpoint).setTrustStore(trustStore);
 	}
 
 }
