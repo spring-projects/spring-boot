@@ -37,8 +37,12 @@ import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -181,6 +185,34 @@ public class WebRequestTraceFilterTests {
 		Map<String, Object> map = (Map<String, Object>) trace.get("error");
 		System.err.println(map);
 		assertEquals("Foo", map.get("message").toString());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void filterHas500ResponseStatusWhenExceptionIsThrown()
+			throws ServletException, IOException {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+
+		try {
+			this.filter.doFilterInternal(request, response, new FilterChain() {
+
+				@Override
+				public void doFilter(ServletRequest request, ServletResponse response)
+						throws IOException, ServletException {
+					throw new RuntimeException();
+				}
+
+			});
+			fail("Exception was swallowed");
+		}
+		catch (RuntimeException ex) {
+			Map<String, Object> headers = (Map<String, Object>) this.repository.findAll()
+					.iterator().next().getInfo().get("headers");
+			Map<String, Object> responseHeaders = (Map<String, Object>) headers
+					.get("response");
+			assertThat((String) responseHeaders.get("status"), is(equalTo("500")));
+		}
 	}
 
 }
