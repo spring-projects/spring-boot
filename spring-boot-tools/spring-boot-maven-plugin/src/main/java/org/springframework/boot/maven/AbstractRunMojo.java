@@ -401,7 +401,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void logArguments(String message, String[] args) {
-		StringBuffer sb = new StringBuffer(message);
+		StringBuilder sb = new StringBuilder(message);
 		for (String arg : args) {
 			sb.append(arg).append(" ");
 		}
