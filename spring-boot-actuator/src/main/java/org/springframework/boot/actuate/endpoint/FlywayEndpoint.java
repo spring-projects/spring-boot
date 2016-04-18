@@ -34,6 +34,7 @@ import org.springframework.util.Assert;
  *
  * @author Eddú Meléndez
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "endpoints.flyway")
@@ -80,7 +81,8 @@ public class FlywayEndpoint extends AbstractEndpoint<List<FlywayMigration>> {
 		public FlywayMigration(MigrationInfo info) {
 			this.type = info.getType();
 			this.checksum = info.getChecksum();
-			this.version = info.getVersion().toString();
+			this.version = info.getVersion() != null ? info.getVersion().toString()
+					: null;
 			this.description = info.getDescription();
 			this.script = info.getScript();
 			this.state = info.getState();
