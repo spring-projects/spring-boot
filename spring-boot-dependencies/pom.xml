@@ -147,6 +147,7 @@
 		<spring-data-releasetrain.version>Hopper-SR1</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.19.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.3.0.M1</spring-integration.version>
+		<spring-integration-java-dsl.version>1.1.2.RELEASE</spring-integration-java-dsl.version>
 		<spring-loaded.version>1.2.5.RELEASE</spring-loaded.version>
 		<spring-mobile.version>1.1.5.RELEASE</spring-mobile.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
@@ -2063,6 +2064,11 @@
 						<artifactId>commons-logging-api</artifactId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.integration</groupId>
+				<artifactId>spring-integration-java-dsl</artifactId>
+				<version>${spring-integration-java-dsl.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.mobile</groupId>
