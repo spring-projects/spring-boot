@@ -1952,16 +1952,21 @@ in the '`Production-ready features`' section.
 === Customize the '`whitelabel`' error page
 Spring Boot installs a '`whitelabel`' error page that you will see in browser client if
 you encounter a server error (machine clients consuming JSON and other media types should
-see a sensible response with the right error code). To switch it off you can set
-`server.error.whitelabel.enabled=false`, but normally in addition or alternatively to that you
-will want to add your own error page replacing the whitelabel one. Exactly how you do this
-depends on the templating technology that you are using. For example, if you are using
-Thymeleaf you would add an `error.html` template and if you are using FreeMarker you would
-add an `error.ftl` template. In general what you need is a `View` that resolves with a name
-of `error`, and/or a `@Controller` that handles the `/error` path. Unless you replaced some
-of the default configuration you should find a `BeanNameViewResolver` in your
-`ApplicationContext` so a `@Bean` with id `error` would be a simple way of doing that.
-Look at {sc-spring-boot-autoconfigure}/web/ErrorMvcAutoConfiguration.{sc-ext}[`ErrorMvcAutoConfiguration`] for more options.
+see a sensible response with the right error code).
+
+NOTE: Set `server.error.whitelabel.enabled=false` to switch the default error page off
+which will restore the default of the servlet container that you are using. Note that
+Spring Boot will still attempt to resolve the error view so you'd probably add you own
+error page rather than disabling it completely.
+
+Overriding the error page with your own depends on the templating technology that you are
+using. For example, if you are using Thymeleaf you would add an `error.html` template and
+if you are using FreeMarker you would add an `error.ftl` template. In general what you
+need is a `View` that resolves with a name of `error`, and/or a `@Controller` that handles
+the `/error` path. Unless you replaced some of the default configuration you should find
+a `BeanNameViewResolver` in your `ApplicationContext` so a `@Bean` with id `error` would
+be a simple way of doing that. Look at
+{sc-spring-boot-autoconfigure}/web/ErrorMvcAutoConfiguration.{sc-ext}[`ErrorMvcAutoConfiguration`] for more options.
 
 See also the section on <<boot-features-error-handling, Error Handling>> for details of
 how to register handlers in the servlet container.
