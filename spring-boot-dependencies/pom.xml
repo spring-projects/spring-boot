@@ -69,6 +69,7 @@
 		<dom4j.version>1.6.1</dom4j.version>
 		<dropwizard-metrics.version>3.1.2</dropwizard-metrics.version>
 		<ehcache.version>2.10.1</ehcache.version>
+		<ehcache3.version>3.0.0</ehcache3.version>
 		<embedded-mongo.version>1.50.2</embedded-mongo.version>
 		<flyway.version>3.2.1</flyway.version>
 		<freemarker.version>2.3.23</freemarker.version>
@@ -1563,6 +1564,11 @@
 				<groupId>org.eclipse.jetty.websocket</groupId>
 				<artifactId>websocket-server</artifactId>
 				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.ehcache</groupId>
+				<artifactId>ehcache</artifactId>
+				<version>${ehcache3.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.elasticsearch</groupId>
