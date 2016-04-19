@@ -754,7 +754,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.narayana.recovery-jms-user= # JMS username to be used by recovery manager.
 	spring.jta.narayana.recovery-modules= # Comma-separated list of recovery modules.
 	spring.jta.narayana.transaction-manager-id=1 # Unique transaction manager id.
-	spring.jta.narayana.xa-resource-orphan-filters= # Comma-separated list of of orphan filters.
+	spring.jta.narayana.xa-resource-orphan-filters= # Comma-separated list of orphan filters.
 
 	# EMBEDDED MONGODB ({sc-spring-boot-autoconfigure}/mongo/embedded/EmbeddedMongoProperties.{sc-ext}[EmbeddedMongoProperties])
 	spring.mongodb.embedded.features=SYNC_DELAY # Comma-separated list of features to enable.
