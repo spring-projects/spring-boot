@@ -38,6 +38,9 @@ while [[ -L "$jarfile" ]]; do
   jarfile=$(pwd)/$(basename "$jarfile")
 done
 jarfolder="$(dirname "$jarfile")"
+## normalize jarfolder path name
+jarfolder="$(readlink -f "$jarfolder")"
+
 cd "$WORKING_DIR" || exit 1
 
 # Source any config file
