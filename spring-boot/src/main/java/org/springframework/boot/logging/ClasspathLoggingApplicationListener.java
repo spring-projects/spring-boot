@@ -22,17 +22,18 @@ import java.util.Arrays;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.core.ResolvableType;
 
 /**
- * A {@link SmartApplicationListener} that reacts to {@link ApplicationStartedEvent start
- * events} and to {@link ApplicationFailedEvent failed events} by logging the classpath of
- * the thread context class loader (TCCL) at {@code DEBUG} level.
+ * A {@link SmartApplicationListener} that reacts to
+ * {@link ApplicationEnvironmentPreparedEvent environment prepared events} and to
+ * {@link ApplicationFailedEvent failed events} by logging the classpath of the thread
+ * context class loader (TCCL) at {@code DEBUG} level.
  *
  * @author Andy Wilkinson
  */
@@ -46,7 +47,7 @@ public final class ClasspathLoggingApplicationListener
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (this.logger.isDebugEnabled()) {
-			if (event instanceof ApplicationStartedEvent) {
+			if (event instanceof ApplicationEnvironmentPreparedEvent) {
 				this.logger
 						.debug("Application started with classpath: " + getClasspath());
 			}
@@ -68,7 +69,7 @@ public final class ClasspathLoggingApplicationListener
 		if (type == null) {
 			return false;
 		}
-		return ApplicationStartedEvent.class.isAssignableFrom(type)
+		return ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(type)
 				|| ApplicationFailedEvent.class.isAssignableFrom(type);
 	}
 
