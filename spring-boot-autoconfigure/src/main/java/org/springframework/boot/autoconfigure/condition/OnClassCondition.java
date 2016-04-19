@@ -44,7 +44,7 @@ class OnClassCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 
-		StringBuffer matchMessage = new StringBuffer();
+		StringBuilder matchMessage = new StringBuilder();
 
 		MultiValueMap<String, Object> onClasses = getAttributes(metadata,
 				ConditionalOnClass.class);
@@ -56,8 +56,8 @@ class OnClassCondition extends SpringBootCondition {
 						.noMatch("required @ConditionalOnClass classes not found: "
 								+ StringUtils.collectionToCommaDelimitedString(missing));
 			}
-			matchMessage.append("@ConditionalOnClass classes found: "
-					+ StringUtils.collectionToCommaDelimitedString(
+			matchMessage.append("@ConditionalOnClass classes found: ")
+					.append(StringUtils.collectionToCommaDelimitedString(
 							getMatchingClasses(onClasses, MatchType.PRESENT, context)));
 		}
 
@@ -72,9 +72,9 @@ class OnClassCondition extends SpringBootCondition {
 								+ StringUtils.collectionToCommaDelimitedString(present));
 			}
 			matchMessage.append(matchMessage.length() == 0 ? "" : " ");
-			matchMessage.append("@ConditionalOnMissing classes not found: "
-					+ StringUtils.collectionToCommaDelimitedString(getMatchingClasses(
-							onMissingClasses, MatchType.MISSING, context)));
+			matchMessage.append("@ConditionalOnMissing classes not found: ")
+					.append(StringUtils.collectionToCommaDelimitedString(getMatchingClasses(
+					onMissingClasses, MatchType.MISSING, context)));
 		}
 
 		return ConditionOutcome.match(matchMessage.toString());

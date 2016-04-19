@@ -74,7 +74,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		StringBuffer matchMessage = new StringBuffer();
+		StringBuilder matchMessage = new StringBuilder();
 		if (metadata.isAnnotated(ConditionalOnBean.class.getName())) {
 			BeanSearchSpec spec = new BeanSearchSpec(context, metadata,
 					ConditionalOnBean.class);
@@ -83,8 +83,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 				return ConditionOutcome
 						.noMatch("@ConditionalOnBean " + spec + " found no beans");
 			}
-			matchMessage.append(
-					"@ConditionalOnBean " + spec + " found the following " + matching);
+			matchMessage.append("@ConditionalOnBean ").append(spec)
+					.append(" found the following ").append(matching);
 		}
 		if (metadata.isAnnotated(ConditionalOnSingleCandidate.class.getName())) {
 			BeanSearchSpec spec = new SingleCandidateBeanSearchSpec(context, metadata,
@@ -99,8 +99,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 						+ " found no primary candidate amongst the" + " following "
 						+ matching);
 			}
-			matchMessage.append("@ConditionalOnSingleCandidate " + spec + " found "
-					+ "a primary candidate amongst the following " + matching);
+			matchMessage.append("@ConditionalOnSingleCandidate ").append(spec)
+					.append(" found a primary candidate amongst the following ").append(matching);
 		}
 		if (metadata.isAnnotated(ConditionalOnMissingBean.class.getName())) {
 			BeanSearchSpec spec = new BeanSearchSpec(context, metadata,
@@ -111,7 +111,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 						+ " found the following " + matching);
 			}
 			matchMessage.append(matchMessage.length() == 0 ? "" : " ");
-			matchMessage.append("@ConditionalOnMissingBean " + spec + " found no beans");
+			matchMessage.append("@ConditionalOnMissingBean ").append(spec)
+					.append(" found no beans");
 		}
 		return ConditionOutcome.match(matchMessage.toString());
 	}
