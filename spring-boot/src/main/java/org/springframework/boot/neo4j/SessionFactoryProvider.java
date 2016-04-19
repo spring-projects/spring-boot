@@ -20,7 +20,7 @@ import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.session.SessionFactory;
 
 /**
- * Provide a a Neo4j {@link SessionFactory} instance based on a configurable
+ * Provide a Neo4j {@link SessionFactory} instance based on a configurable
  * {@link Configuration} and custom packages to scan.
  *
  * @author Stephane Nicoll
