@@ -76,7 +76,7 @@ public class ProjectInfoAutoConfiguration {
 		Properties target = new Properties();
 		for (String key : source.stringPropertyNames()) {
 			if (key.startsWith(p)) {
-				target.put(key.substring(p.length(), key.length()), source.get(key));
+				target.put(key.substring(p.length()), source.get(key));
 			}
 		}
 		return target;
