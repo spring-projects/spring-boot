@@ -68,10 +68,10 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 		if (StringUtils.hasLength(negative)) {
 			properties = new Properties(properties);
 			properties.setProperty(SPRING_PROFILES, negative);
-			switch (activeProfilesMatcher.matches(properties)) {
-			case FOUND:
+			if (activeProfilesMatcher.matches(properties) == MatchStatus.FOUND) {
 				return MatchStatus.NOT_FOUND;
-			case NOT_FOUND:
+			}
+			if (StringUtils.isEmpty(positive)) {
 				return MatchStatus.FOUND;
 			}
 			properties.setProperty(SPRING_PROFILES, positive);
