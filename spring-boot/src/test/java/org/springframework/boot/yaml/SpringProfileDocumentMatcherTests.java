@@ -87,14 +87,10 @@ public class SpringProfileDocumentMatcherTests {
 	@Test
 	public void negatedAndNonNegated() throws IOException {
 		DocumentMatcher matcher = new SpringProfileDocumentMatcher("foo", "bar", "blah");
-		{
-			Properties properties = getProperties("spring.profiles: !baz,blah");
-			assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.FOUND);
-		}
-		{
-			Properties properties = getProperties("spring.profiles: !baz,another");
-			assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.NOT_FOUND);
-		}
+		Properties expectFound = getProperties("spring.profiles: !baz,blah");
+		assertThat(matcher.matches(expectFound)).isEqualTo(MatchStatus.FOUND);
+		Properties expectNotFound = getProperties("spring.profiles: !baz,another");
+		assertThat(matcher.matches(expectNotFound)).isEqualTo(MatchStatus.NOT_FOUND);
 	}
 
 	@Test
