@@ -27,7 +27,7 @@ import org.apache.tomcat.util.net.NioEndpoint;
  * {@link KeyStore trustStore} instances by creating a {@link TomcatNioEndpoint} endpoint.
  * @author Venil Noronha
  */
-public class TomcatHttp11NioProtocol extends Http11NioProtocol {
+public class TomcatHttp11NioProtocol extends Http11NioProtocol implements StoreAware {
 
 	public TomcatHttp11NioProtocol() {
 		super();
@@ -39,18 +39,12 @@ public class TomcatHttp11NioProtocol extends Http11NioProtocol {
 		setSslImplementationName(TomcatJSSEImplementation.class.getName());
 	}
 
-	public KeyStore getKeyStore() {
-		return ((TomcatNioEndpoint) this.endpoint).getKeyStore();
-	}
-
+	@Override
 	public void setKeyStore(KeyStore keyStore) {
 		((TomcatNioEndpoint) this.endpoint).setKeyStore(keyStore);
 	}
 
-	public KeyStore getTrustStore() {
-		return ((TomcatNioEndpoint) this.endpoint).getTrustStore();
-	}
-
+	@Override
 	public void setTrustStore(KeyStore trustStore) {
 		((TomcatNioEndpoint) this.endpoint).setTrustStore(trustStore);
 	}

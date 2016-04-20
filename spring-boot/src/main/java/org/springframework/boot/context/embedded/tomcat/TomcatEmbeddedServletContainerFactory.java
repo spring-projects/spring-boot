@@ -321,8 +321,8 @@ public class TomcatEmbeddedServletContainerFactory
 		protocol.setKeystorePass(ssl.getKeyStorePassword());
 		protocol.setKeyPass(ssl.getKeyPassword());
 		protocol.setKeyAlias(ssl.getKeyAlias());
-		if (protocol instanceof TomcatHttp11NioProtocol && getSupplierKeyStore() != null) {
-			((TomcatHttp11NioProtocol) protocol).setKeyStore(getSupplierKeyStore());
+		if (protocol instanceof StoreAware && getSupplierKeyStore() != null) {
+			((StoreAware) protocol).setKeyStore(getSupplierKeyStore());
 		}
 		else {
 			configureSslKeyStore(protocol, ssl);
@@ -332,8 +332,8 @@ public class TomcatEmbeddedServletContainerFactory
 			protocol.setProperty("sslEnabledProtocols",
 					StringUtils.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
 		}
-		if (protocol instanceof TomcatHttp11NioProtocol && getSupplierTrustStore() != null) {
-			((TomcatHttp11NioProtocol) protocol).setTrustStore(getSupplierTrustStore());
+		if (protocol instanceof StoreAware && getSupplierTrustStore() != null) {
+			((StoreAware) protocol).setTrustStore(getSupplierTrustStore());
 		}
 		else {
 			configureSslTrustStore(protocol, ssl);
