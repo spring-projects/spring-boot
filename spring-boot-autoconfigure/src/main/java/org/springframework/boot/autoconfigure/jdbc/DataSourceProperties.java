@@ -415,7 +415,7 @@ public class DataSourceProperties
 
 	}
 
-	private static class DataSourceBeanCreationException extends BeanCreationException {
+	static class DataSourceBeanCreationException extends BeanCreationException {
 
 		DataSourceBeanCreationException(EmbeddedDatabaseConnection connection,
 				Environment environment, String property) {

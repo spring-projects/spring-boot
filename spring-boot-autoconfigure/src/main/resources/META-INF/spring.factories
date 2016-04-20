@@ -99,6 +99,10 @@ org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.WebSocketMessagingAutoConfiguration,\
 org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration
 
+# Failure analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.autoconfigure.jdbc.DataSourceBeanCreationFailureAnalyzer
+
 # Template availability providers
 org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailabilityProvider,\
