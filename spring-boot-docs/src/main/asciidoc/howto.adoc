@@ -1847,11 +1847,9 @@ initialization explicitly using `spring.batch.initializer.enabled=false`.
 
 
 [[howto-use-a-higher-level-database-migration-tool]]
-=== Use a higher level database migration tool
-Spring Boot works fine with higher level migration tools http://flywaydb.org/[Flyway]
-(SQL-based) and http://www.liquibase.org/[Liquibase] (XML). In general we prefer
-Flyway because it is easier on the eyes, and it isn't very common to need platform
-independence: usually only one or at most couple of platforms is needed.
+=== Use a higher-level database migration tool
+Spring Boot supports two higher-level migration tools: http://flywaydb.org/[Flyway]
+and http://www.liquibase.org/[Liquibase].
 
 [[howto-execute-flyway-database-migrations-on-startup]]
 ==== Execute Flyway database migrations on startup
@@ -1890,12 +1888,15 @@ To automatically run Liquibase database migrations on startup, add the
 `org.liquibase:liquibase-core` to your classpath.
 
 The master change log is by default read from `db/changelog/db.changelog-master.yaml` but
-can be set using `liquibase.change-log`. See
+can be set using `liquibase.change-log`. In addition to YAML, Liquibase also supports
+JSON, XML, and SQL change log formats.
+
+See
 {sc-spring-boot-autoconfigure}/liquibase/LiquibaseProperties.{sc-ext}[`LiquibaseProperties`]
 for details of available settings like contexts, default schema etc.
 
-There is a {github-code}/spring-boot-samples/spring-boot-sample-liquibase[Liquibase sample] so
-you can see how to set things up.
+There is a {github-code}/spring-boot-samples/spring-boot-sample-liquibase[Liquibase sample]
+so you can see how to set things up.
 
 
 

@@ -42,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link LiquibaseAutoConfiguration}.
  *
  * @author Marcel Overdijk
+ * @author Andy Wilkinson
  */
 public class LiquibaseAutoConfigurationTests {
 
@@ -90,7 +91,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void testOverrideChangeLog() throws Exception {
+	public void testXmlChangeLog() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"liquibase.change-log:classpath:/db/changelog/db.changelog-override.xml");
 		this.context.register(EmbeddedDataSourceConfiguration.class,
@@ -100,6 +101,32 @@ public class LiquibaseAutoConfigurationTests {
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
 		assertThat(liquibase.getChangeLog())
 				.isEqualTo("classpath:/db/changelog/db.changelog-override.xml");
+	}
+
+	@Test
+	public void testJsonChangeLog() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"liquibase.change-log:classpath:/db/changelog/db.changelog-override.json");
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+		assertThat(liquibase.getChangeLog())
+				.isEqualTo("classpath:/db/changelog/db.changelog-override.json");
+	}
+
+	@Test
+	public void testSqlChangeLog() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"liquibase.change-log:classpath:/db/changelog/db.changelog-override.sql");
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+		assertThat(liquibase.getChangeLog())
+				.isEqualTo("classpath:/db/changelog/db.changelog-override.sql");
 	}
 
 	@Test
