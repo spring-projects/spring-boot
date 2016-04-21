@@ -45,9 +45,9 @@ import org.springframework.test.web.servlet.MockMvc;
  * {@code WebMvcConfigurer} and {@code HandlerMethodArgumentResolver} beans but not
  * {@code @Component}, {@code @Service} or {@code @Repository} beans).
  * <p>
- * By default, tests annotated with {@code @WebMvcTest} will also auto-configure
- * {@link MockMvc} (include support for HtmlUnit WebClient and Selenium WebDriver). For
- * more fine-grained control of MockMVC that
+ * By default, tests annotated with {@code @WebMvcTest} will also auto-configure Spring
+ * Security and {@link MockMvc} (include support for HtmlUnit WebClient and Selenium
+ * WebDriver). For more fine-grained control of MockMVC the
  * {@link AutoConfigureMockMvc @AutoConfigureMockMvc} annotation can be used.
  * <p>
  * Typically {@code @WebMvcTest} is used in combination with {@link MockBean @MockBean} or
@@ -117,5 +117,13 @@ public @interface WebMvcTest {
 	 * @return exclude filters to apply
 	 */
 	Filter[] excludeFilters() default {};
+
+	/**
+	 * If Spring Security's {@link MockMvc} support should be auto-configured when it is
+	 * on the classpath. Defaults to {@code true}.
+	 * @return if Spring Security's MockMvc support is auto-configured
+	 */
+	@AliasFor(annotation = AutoConfigureMockMvc.class, attribute = "secure")
+	boolean secure() default true;
 
 }

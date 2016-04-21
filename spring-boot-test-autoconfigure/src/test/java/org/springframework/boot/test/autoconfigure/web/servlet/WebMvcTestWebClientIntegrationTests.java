@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest
+@WebMvcTest(secure = false)
 public class WebMvcTestWebClientIntegrationTests {
 
 	@Autowired
