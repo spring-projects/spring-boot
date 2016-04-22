@@ -69,6 +69,21 @@ public class MetricExportAutoConfigurationTests {
 	}
 
 	@Test
+	public void metricsFlushAutomatically() throws Exception {
+		this.context = new AnnotationConfigApplicationContext(WriterConfig.class,
+				MetricRepositoryAutoConfiguration.class,
+				MetricExportAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		GaugeService gaugeService = this.context.getBean(GaugeService.class);
+		assertNotNull(gaugeService);
+		gaugeService.submit("foo", 2.7);
+		MetricExporters flusher = this.context.getBean(MetricExporters.class);
+		flusher.close(); // this will be called by Spring on shutdown
+		MetricWriter writer = this.context.getBean("writer", MetricWriter.class);
+		Mockito.verify(writer, Mockito.atLeastOnce()).set(Matchers.any(Metric.class));
+	}
+
+	@Test
 	public void defaultExporterWhenMessageChannelAvailable() throws Exception {
 		this.context = new AnnotationConfigApplicationContext(
 				MessageChannelConfiguration.class,
