@@ -7,7 +7,7 @@
 		<version>1.4.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-amqp</artifactId>
-	<name>Spring Boot AMPQ Starter</name>
+	<name>Spring Boot AMQP Starter</name>
 	<description>Starter for using Spring AMQP and Rabbit MQ</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
