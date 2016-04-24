@@ -82,4 +82,7 @@ do as they were designed before this was clarified.
 | https://github.com/oembedler/spring-graphql-common[Spring GraphQL] (GraphQL and GraphiQL)
 | https://github.com/oembedler/graphql-spring-boot
 
+| https://www.mulesoft.com/platform/soa/mule-esb-open-source-esb[Mule ESB]
+| https://github.com/denschu/mule-spring-boot-starter
+
 |===
