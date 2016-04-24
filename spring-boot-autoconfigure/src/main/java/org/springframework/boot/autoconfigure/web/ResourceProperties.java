@@ -33,6 +33,7 @@ import org.springframework.core.io.ResourceLoader;
  * @author Phillip Webb
  * @author Brian Clozel
  * @author Dave Syer
+ * @author Venil Noronha
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)
@@ -117,10 +118,9 @@ public class ResourceProperties implements ResourceLoaderAware {
 	}
 
 	List<Resource> getFaviconLocations() {
-		List<Resource> locations = new ArrayList<Resource>(
-				CLASSPATH_RESOURCE_LOCATIONS.length + 1);
+		List<Resource> locations = new ArrayList<Resource>(staticLocations.length + 1);
 		if (this.resourceLoader != null) {
-			for (String location : CLASSPATH_RESOURCE_LOCATIONS) {
+			for (String location : staticLocations) {
 				locations.add(this.resourceLoader.getResource(location));
 			}
 		}

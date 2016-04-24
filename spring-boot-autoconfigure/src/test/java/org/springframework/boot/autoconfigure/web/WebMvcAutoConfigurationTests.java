@@ -412,7 +412,7 @@ public class WebMvcAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(SimpleUrlHandlerMapping.class)
 				.get("faviconHandlerMapping"), is(notNullValue()));
 		Map<String, List<Resource>> mappingLocations = getFaviconMappingLocations();
-		assertThat(mappingLocations.get("/**/favicon.ico").size(), equalTo(5));
+		assertThat(mappingLocations.get("/**/favicon.ico").size(), equalTo(6));
 	}
 
 	@Test
