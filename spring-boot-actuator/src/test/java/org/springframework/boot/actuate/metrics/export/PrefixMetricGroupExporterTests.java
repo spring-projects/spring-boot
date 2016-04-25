@@ -57,7 +57,8 @@ public class PrefixMetricGroupExporterTests {
 		this.reader.set(new Metric<Number>("counter.foo.bar", 1));
 		this.exporter.setGroups(Collections.singleton("counter.foo"));
 		this.exporter.export();
-		assertThat(this.writer.findAll("counter.foo").iterator().next().getValue()).isEqualTo(2L);
+		assertThat(this.writer.findAll("counter.foo").iterator().next().getValue())
+				.isEqualTo(2L);
 	}
 
 	@Test

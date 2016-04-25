@@ -100,7 +100,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 						+ matching);
 			}
 			matchMessage.append("@ConditionalOnSingleCandidate ").append(spec)
-					.append(" found a primary candidate amongst the following ").append(matching);
+					.append(" found a primary candidate amongst the following ")
+					.append(matching);
 		}
 		if (metadata.isAnnotated(ConditionalOnMissingBean.class.getName())) {
 			BeanSearchSpec spec = new BeanSearchSpec(context, metadata,

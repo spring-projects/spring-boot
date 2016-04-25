@@ -47,9 +47,9 @@ import org.springframework.transaction.annotation.Transactional;
  * override these settings.
  * <p>
  * If you are looking to load your full application configuration, but use an embedded
- * database, you should consider {@link SpringBootTest @SpringBootTest}
- * combined with {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} rather than
- * this annotation.
+ * database, you should consider {@link SpringBootTest @SpringBootTest} combined with
+ * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} rather than this
+ * annotation.
  *
  * @author Phillip Webb
  * @see AutoConfigureTestDatabase

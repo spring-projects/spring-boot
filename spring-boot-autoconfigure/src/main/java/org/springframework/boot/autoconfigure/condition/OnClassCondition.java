@@ -73,8 +73,9 @@ class OnClassCondition extends SpringBootCondition {
 			}
 			matchMessage.append(matchMessage.length() == 0 ? "" : " ");
 			matchMessage.append("@ConditionalOnMissing classes not found: ")
-					.append(StringUtils.collectionToCommaDelimitedString(getMatchingClasses(
-					onMissingClasses, MatchType.MISSING, context)));
+					.append(StringUtils.collectionToCommaDelimitedString(
+							getMatchingClasses(onMissingClasses, MatchType.MISSING,
+									context)));
 		}
 
 		return ConditionOutcome.match(matchMessage.toString());

@@ -289,8 +289,7 @@ public class JsonContentAssertTests {
 	}
 
 	@Test
-	public void isEqualToJsonWhenStringIsMatchingAndLenientShouldPass()
-			throws Exception {
+	public void isEqualToJsonWhenStringIsMatchingAndLenientShouldPass() throws Exception {
 		assertThat(forJson(SOURCE)).isEqualToJson(LENIENT_SAME, JSONCompareMode.LENIENT);
 	}
 
@@ -329,8 +328,7 @@ public class JsonContentAssertTests {
 	}
 
 	@Test
-	public void isEqualToJsonWhenBytesAreMatchingAndLenientShouldPass()
-			throws Exception {
+	public void isEqualToJsonWhenBytesAreMatchingAndLenientShouldPass() throws Exception {
 		assertThat(forJson(SOURCE)).isEqualToJson(LENIENT_SAME.getBytes(),
 				JSONCompareMode.LENIENT);
 	}

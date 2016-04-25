@@ -58,12 +58,12 @@ public class NodeEntityScanTests {
 		this.thrown.expectMessage("Unable to configure "
 				+ "SessionFactoryFactoryBean from @NodeEntityScan, "
 				+ "ensure an appropriate bean is registered.");
-		this.context = new AnnotationConfigApplicationContext(MissingSessionFactory.class);
+		this.context = new AnnotationConfigApplicationContext(
+				MissingSessionFactory.class);
 	}
 
 	private void assertSetPackagesToScan(String... expected) {
-		String[] actual = this.context
-				.getBean(TestSessionFactoryProvider.class)
+		String[] actual = this.context.getBean(TestSessionFactoryProvider.class)
 				.getPackagesToScan();
 		assertThat(actual).isEqualTo(expected);
 	}
@@ -87,9 +87,7 @@ public class NodeEntityScanTests {
 	static class MissingSessionFactory {
 	}
 
-
-	private static class TestSessionFactoryProvider
-			extends SessionFactoryProvider {
+	private static class TestSessionFactoryProvider extends SessionFactoryProvider {
 
 		private String[] packagesToScan;
 

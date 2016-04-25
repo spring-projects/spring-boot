@@ -76,8 +76,8 @@ public abstract class JsonObjectDeserializer<T>
 					throws IOException;
 
 	/**
-	 * Helper method to extract a value from the given {@code jsonNode} or return {@code null}
-	 * when the node itself is {@code null}.
+	 * Helper method to extract a value from the given {@code jsonNode} or return
+	 * {@code null} when the node itself is {@code null}.
 	 * @param jsonNode the source node (may be {@code null}
 	 * @param type the data type. May be {@link String}, {@link Boolean}, {@link Long},
 	 * {@link Integer}, {@link Short}, {@link Double}, {@link Float}, {@link BigDecimal}

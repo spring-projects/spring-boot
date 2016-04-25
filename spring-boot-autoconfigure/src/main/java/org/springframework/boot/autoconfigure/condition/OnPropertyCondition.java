@@ -83,8 +83,8 @@ class OnPropertyCondition extends SpringBootCondition {
 
 		StringBuilder message = new StringBuilder("@ConditionalOnProperty ");
 		if (!missingProperties.isEmpty()) {
-			message.append("missing required properties ").append(expandNames(prefix, missingProperties))
-					.append(" ");
+			message.append("missing required properties ")
+					.append(expandNames(prefix, missingProperties)).append(" ");
 		}
 		if (!nonMatchingProperties.isEmpty()) {
 			String expected = StringUtils.hasLength(havingValue) ? havingValue : "!false";

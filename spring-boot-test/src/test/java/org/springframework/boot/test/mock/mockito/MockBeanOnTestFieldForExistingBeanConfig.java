@@ -22,8 +22,8 @@ import org.springframework.context.annotation.Import;
 
 /**
  * Config for {@link MockBeanOnTestFieldForExistingBeanIntegrationTests} and
- * {@link MockBeanOnTestFieldForExistingBeanCacheIntegrationTests}. Extracted to a shared config
- * to trigger caching.
+ * {@link MockBeanOnTestFieldForExistingBeanCacheIntegrationTests}. Extracted to a shared
+ * config to trigger caching.
  *
  * @author Phillip Webb
  */
