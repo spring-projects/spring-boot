@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
  * @author Maciej Walkowiak
  * @author Stephane Nicoll
  * @author Benedikt Ritter
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.datasource")
@@ -104,9 +105,29 @@ public class DataSourceProperties
 	private String schema;
 
 	/**
+	 * User of the database to execute DDL scripts (if different).
+	 */
+	private String schemaUsername;
+
+	/**
+	 * Password of the database to execute DDL scripts (if different).
+	 */
+	private String schemaPassword;
+
+	/**
 	 * Data (DML) script resource reference.
 	 */
 	private String data;
+
+	/**
+	 * User of the database to execute DML scripts.
+	 */
+	private String dataUsername;
+
+	/**
+	 * Password of the database to execute DML scripts.
+	 */
+	private String dataPassword;
 
 	/**
 	 * Do not stop if an error occurs while initializing the database.
@@ -338,12 +359,44 @@ public class DataSourceProperties
 		this.schema = schema;
 	}
 
+	public String getSchemaUsername() {
+		return this.schemaUsername;
+	}
+
+	public void setSchemaUsername(String schemaUsername) {
+		this.schemaUsername = schemaUsername;
+	}
+
+	public String getSchemaPassword() {
+		return this.schemaPassword;
+	}
+
+	public void setSchemaPassword(String schemaPassword) {
+		this.schemaPassword = schemaPassword;
+	}
+
 	public String getData() {
 		return this.data;
 	}
 
 	public void setData(String script) {
 		this.data = script;
+	}
+
+	public String getDataUsername() {
+		return this.dataUsername;
+	}
+
+	public void setDataUsername(String dataUsername) {
+		this.dataUsername = dataUsername;
+	}
+
+	public String getDataPassword() {
+		return this.dataPassword;
+	}
+
+	public void setDataPassword(String dataPassword) {
+		this.dataPassword = dataPassword;
 	}
 
 	public boolean isContinueOnError() {
