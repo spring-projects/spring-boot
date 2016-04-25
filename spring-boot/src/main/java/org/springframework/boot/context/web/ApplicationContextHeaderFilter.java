@@ -31,7 +31,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * <p>
  * Moved from spring-boot-actuator {@code EndpointWebMvcAutoConfiguration}.
  * @author Venil Noronha
- * @since 1.3.4
+ * @since 1.4.0
  */
 public class ApplicationContextHeaderFilter extends OncePerRequestFilter {
 
