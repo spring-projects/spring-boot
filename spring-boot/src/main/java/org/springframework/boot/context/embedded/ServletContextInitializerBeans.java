@@ -120,7 +120,7 @@ public class ServletContextInitializerBeans
 		}
 		else {
 			addServletContextInitializerBean(ServletContextInitializer.class, beanName,
-					initializer, beanFactory, null);
+					initializer, beanFactory, initializer);
 		}
 	}
 
