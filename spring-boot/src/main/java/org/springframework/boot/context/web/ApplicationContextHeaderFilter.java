@@ -29,12 +29,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 /**
  * {@link OncePerRequestFilter} to add the {@literal X-Application-Context} if required.
  * <p>
- * Moved from spring-boot-actuator EndpointWebMvcAutoConfiguration.
- * 
+ * Moved from spring-boot-actuator {@code EndpointWebMvcAutoConfiguration}.
  * @author Venil Noronha
+ * @since 1.3.4
  */
 public class ApplicationContextHeaderFilter extends OncePerRequestFilter {
 
+	/**
+	 * Public constant for {@literal X-Application-Context}.
+	 */
 	public static final String X_APPLICATION_CONTEXT = "X-Application-Context";
 
 	private final ApplicationContext applicationContext;
