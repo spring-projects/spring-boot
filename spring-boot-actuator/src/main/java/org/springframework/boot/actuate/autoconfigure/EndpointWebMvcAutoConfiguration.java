@@ -16,13 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,6 +54,7 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.boot.context.web.ApplicationContextHeaderFilter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -77,7 +72,6 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -93,6 +87,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Andy Wilkinson
  * @author Johannes Edmeier
  * @author Eddú Meléndez
+ * @author Venil Noronha
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
@@ -237,28 +232,6 @@ public class EndpointWebMvcAutoConfiguration
 	@Conditional(OnManagementMvcCondition.class)
 	@Import(ManagementContextConfigurationsImportSelector.class)
 	protected static class EndpointWebMvcConfiguration {
-	}
-
-	/**
-	 * {@link OncePerRequestFilter} to add the {@literal X-Application-Context} if
-	 * required.
-	 */
-	private static class ApplicationContextHeaderFilter extends OncePerRequestFilter {
-
-		private final ApplicationContext applicationContext;
-
-		ApplicationContextHeaderFilter(ApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
-		}
-
-		@Override
-		protected void doFilterInternal(HttpServletRequest request,
-				HttpServletResponse response, FilterChain filterChain)
-						throws ServletException, IOException {
-			response.addHeader("X-Application-Context", this.applicationContext.getId());
-			filterChain.doFilter(request, response);
-		}
-
 	}
 
 	/**
