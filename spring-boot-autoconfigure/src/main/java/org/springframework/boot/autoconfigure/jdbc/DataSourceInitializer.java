@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @since 1.1.0
  * @see DataSourceAutoConfiguration
  */
@@ -78,7 +79,17 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 	private void runSchemaScripts() {
 		List<Resource> scripts = getScripts(this.properties.getSchema(), "schema");
 		if (!scripts.isEmpty()) {
-			runScripts(scripts);
+			String schemaUsername = this.properties.getSchemaUsername();
+			String schemaPassword = this.properties.getSchemaPassword();
+			DataSource dataSource = null;
+			if (StringUtils.hasText(schemaUsername) && StringUtils.hasText(schemaPassword)) {
+				dataSource = DataSourceBuilder.create()
+						.url(this.properties.getUrl())
+						.username(schemaUsername)
+						.password(schemaPassword)
+						.build();
+			}
+			runScripts(scripts, dataSource);
 			try {
 				this.applicationContext
 						.publishEvent(new DataSourceInitializedEvent(this.dataSource));
@@ -111,7 +122,17 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 
 	private void runDataScripts() {
 		List<Resource> scripts = getScripts(this.properties.getData(), "data");
-		runScripts(scripts);
+		String dataUsername = this.properties.getDataUsername();
+		String dataPassword = this.properties.getDataPassword();
+		DataSource dataSource = null;
+		if (StringUtils.hasText(dataUsername) && StringUtils.hasText(dataPassword)) {
+			dataSource = DataSourceBuilder.create()
+					.url(this.properties.getUrl())
+					.username(dataUsername)
+					.password(dataPassword)
+					.build();
+		}
+		runScripts(scripts, dataSource);
 	}
 
 	private List<Resource> getScripts(String locations, String fallback) {
@@ -141,7 +162,7 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 		return resources;
 	}
 
-	private void runScripts(List<Resource> resources) {
+	private void runScripts(List<Resource> resources, DataSource dataSource) {
 		if (resources.isEmpty()) {
 			return;
 		}
@@ -154,7 +175,7 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 		for (Resource resource : resources) {
 			populator.addScript(resource);
 		}
-		DatabasePopulatorUtils.execute(populator, this.dataSource);
+		DatabasePopulatorUtils.execute(populator, dataSource == null ? this.dataSource : dataSource);
 	}
 
 }
