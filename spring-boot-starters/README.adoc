@@ -85,4 +85,7 @@ do as they were designed before this was clarified.
 | https://www.mulesoft.com/platform/soa/mule-esb-open-source-esb[Mule ESB]
 | https://github.com/denschu/mule-spring-boot-starter
 
+| https://camunda.org/[Camunda BPM] 
+| https://github.com/camunda/camunda-bpm-spring-boot-starter
+
 |===
