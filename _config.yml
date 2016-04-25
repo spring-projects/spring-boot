@@ -1,11 +1,17 @@
 ### Global gh-pages pre-amble
 safe: true
 lsi: false
-pygments: true
-markdown: redcarpet
-redcarpet:
-  extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data"]
-
+highlighter: rouge
+markdown: kramdown
+encoding: UTF-8
+github: [metadata]
+kramdown:
+  input: GFM
+  hard_wrap: false
+  smart_quotes: ["apos", "apos", "quot", "quot"]
+gems:
+  - jekyll-coffeescript
+  - jekyll-paginate
 
 ### The following properties will change on a project-by-project basis
 
