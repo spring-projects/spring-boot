@@ -8,7 +8,7 @@ $(document).ready(function() {
 
 Spring.configureCopyButtons = function() {
     if (ZeroClipboard.detectFlashSupport()) {
-        $(".highlight > pre").each(function(index) {
+        $("pre.highlight").each(function(index) {
                 Spring.buildCopyButton($(this), index);
             }
         );
