@@ -89,6 +89,11 @@ public class RabbitProperties {
 	private boolean publisherReturns;
 
 	/**
+	 * The connection timeout, in milliseconds; zero for infinite.
+	 */
+	private Integer connectionTimeout;
+
+	/**
 	 * Cache configuration.
 	 */
 	private final Cache cache = new Cache();
@@ -220,6 +225,14 @@ public class RabbitProperties {
 
 	public void setPublisherReturns(boolean publisherReturns) {
 		this.publisherReturns = publisherReturns;
+	}
+
+	public Integer getConnectionTimeout() {
+		return this.connectionTimeout;
+	}
+
+	public void setConnectionTimeout(Integer connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
 	}
 
 	public Cache getCache() {
