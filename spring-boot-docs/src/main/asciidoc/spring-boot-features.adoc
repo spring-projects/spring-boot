@@ -333,6 +333,8 @@ sensible overriding of values, properties are considered in the following order:
 
 . Command line arguments.
 . Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment variable or system property)
+. `ServletConfig` init parameters.
+. `ServletContext` init parameters.
 . JNDI attributes from `java:comp/env`.
 . Java System properties (`System.getProperties()`).
 . OS environment variables.
