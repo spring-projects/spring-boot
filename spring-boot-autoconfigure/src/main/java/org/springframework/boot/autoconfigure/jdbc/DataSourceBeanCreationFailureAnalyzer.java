@@ -32,10 +32,9 @@ class DataSourceBeanCreationFailureAnalyzer
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
 			DataSourceBeanCreationException cause) {
-		String description = cause.getMessage()
-				.substring(0, cause.getMessage().indexOf(".")).trim();
-		String action = cause.getMessage().substring(cause.getMessage().indexOf(".") + 1)
-				.trim();
+		String message = cause.getMessage();
+		String description = message.substring(0, message.indexOf(".")).trim();
+		String action = message.substring(message.indexOf(".") + 1).trim();
 		return new FailureAnalysis(description, action, cause);
 	}
 
