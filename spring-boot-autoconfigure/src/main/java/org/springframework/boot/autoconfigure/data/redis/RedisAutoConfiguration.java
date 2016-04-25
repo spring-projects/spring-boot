@@ -44,6 +44,7 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -55,6 +56,7 @@ import org.springframework.util.StringUtils;
  * @author Christoph Strobl
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Venil Noronha
  */
 @Configuration
 @ConditionalOnClass({ JedisConnection.class, RedisOperations.class, Jedis.class })
@@ -92,7 +94,15 @@ public class RedisAutoConfiguration {
 			if (this.properties.getTimeout() > 0) {
 				factory.setTimeout(this.properties.getTimeout());
 			}
+			factory.setUsePool(getUsePool());
 			return factory;
+		}
+
+		private boolean getUsePool() {
+			return ClassUtils.isPresent("org.apache.commons.pool2.impl.GenericObjectPool",
+					getClass().getClassLoader())
+					&& (this.properties.getPool() == null || !Boolean.FALSE
+							.equals(this.properties.getPool().getEnabled()));
 		}
 
 		protected final RedisSentinelConfiguration getSentinelConfig() {
@@ -173,6 +183,7 @@ public class RedisAutoConfiguration {
 			}
 			return new JedisConnectionFactory();
 		}
+
 	}
 
 	/**

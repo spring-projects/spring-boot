@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @author Christoph Strobl
  * @author Eddú Meléndez
+ * @author Venil Noronha
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
@@ -131,6 +132,11 @@ public class RedisProperties {
 	public static class Pool {
 
 		/**
+		 * Whether connection pooling should be enabled.
+		 */
+		private Boolean enabled;
+
+		/**
 		 * Max number of "idle" connections in the pool. Use a negative value to indicate
 		 * an unlimited number of idle connections.
 		 */
@@ -154,6 +160,14 @@ public class RedisProperties {
 		 * to block indefinitely.
 		 */
 		private int maxWait = -1;
+
+		public Boolean getEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(Boolean enabled) {
+			this.enabled = enabled;
+		}
 
 		public int getMaxIdle() {
 			return this.maxIdle;
