@@ -91,6 +91,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Brian Clozel
  * @author Eddú Meléndez
+ * @author Venil Noronha
  */
 public class WebMvcAutoConfigurationTests {
 
@@ -398,7 +399,7 @@ public class WebMvcAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(SimpleUrlHandlerMapping.class)
 				.get("faviconHandlerMapping")).isNotNull();
 		Map<String, List<Resource>> mappingLocations = getFaviconMappingLocations();
-		assertThat(mappingLocations.get("/**/favicon.ico")).hasSize(5);
+		assertThat(mappingLocations.get("/**/favicon.ico")).hasSize(6);
 	}
 
 	@Test
