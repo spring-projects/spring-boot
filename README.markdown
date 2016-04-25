@@ -4,6 +4,9 @@ Spring's project pages are based on [Jekyll](http://jekyllrb.com) and [GitHub Pa
 
 This approach may sound a little funky (and it is), but it's way better than the misery of Git submodules. In fact, it's actually pretty easy. If you're just getting started, then follow the directions immediately below. If you're needing a refresher on how to keep things up to date, then head to the section at the bottom on "keeping up to date".
 
+> ***Note:*** Github changed their rendering (a lot) in April 2016. If you are seeing pages build failures since that time, then you probably need to merge some changes from this upstream. Follow the instructions below, and for testing locally use rubiy 2.x and don't forget to `bundle exec ...` everything.
+
+
 
 # How to start a new `gh-pages` project page
 
@@ -95,7 +98,7 @@ Assuming you're already within your project's clone directory, and you've alread
 
 ### Install jekyll if you have not already
 
-> **Note:** Jekyll 1.1.2 is a known good version, and it is specifically referred to in `Gemfile.lock` so you have to use `bundle` (not `gem install ...`) to install it:
+> **Note:** Jekyll 3.0.4 is a known good version, and it is specifically referred to in `Gemfile.lock` so you have to use `bundle` (not `gem install ...`) to install it:
 
     gem install bundler
     bundle
