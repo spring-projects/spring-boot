@@ -65,7 +65,7 @@ added after the original pull request but before a merge.
 
 == Working with the code
 If you don't have an IDE preference we would recommend that you use
-http://www.springsource.com/developer/sts[Spring Tools Suite] or
+https://spring.io/tools/sts[Spring Tools Suite] or
 http://eclipse.org[Eclipse] when working with the code. We use the
 http://eclipse.org/m2e/[M2Eclipse] eclipse plugin for maven support. Other IDEs and tools
 should also work without issue.
