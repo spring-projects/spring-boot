@@ -147,6 +147,7 @@
 		<spring-batch.version>3.0.6.RELEASE</spring-batch.version>
 		<spring-data-releasetrain.version>Hopper-SR1</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.19.0.RELEASE</spring-hateoas.version>
+		<spring-kafka.version>1.0.0.M2</spring-kafka.version>
 		<spring-integration.version>4.3.0.M1</spring-integration.version>
 		<spring-integration-java-dsl.version>1.1.2.RELEASE</spring-integration-java-dsl.version>
 		<spring-loaded.version>1.2.5.RELEASE</spring-loaded.version>
@@ -2048,6 +2049,11 @@
 				<groupId>org.springframework.hateoas</groupId>
 				<artifactId>spring-hateoas</artifactId>
 				<version>${spring-hateoas.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.kafka</groupId>
+				<artifactId>spring-kafka</artifactId>
+				<version>${spring-kafka.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.integration</groupId>
