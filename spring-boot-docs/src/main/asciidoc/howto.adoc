@@ -1211,7 +1211,7 @@ file and a maximum of 10Mb of file data in a single request. You may override th
 values, as well as the location to which intermediate data is stored (e.g., to the `/tmp`
 directory) and the threshold past which data is flushed to disk by using the properties
 exposed in the `MultipartProperties` class. If you want to specify that files be
-unlimited, for example, set the `multipart.maxFileSize` property to `-1`.
+unlimited, for example, set the `spring.http.multipart.max-file-size` property to `-1`.
 
 The multipart support is helpful when you want to receive multipart encoded file data as
 a `@RequestParam`-annotated parameter of type `MultipartFile` in a Spring MVC controller

@@ -143,13 +143,6 @@ content into your application; rather pick only the properties that you need.
 	# WEB PROPERTIES
 	# ----------------------------------------
 
-	# MULTIPART ({sc-spring-boot-autoconfigure}/web/MultipartProperties.{sc-ext}[MultipartProperties])
-	multipart.enabled=true # Enable support of multi-part uploads.
-	multipart.file-size-threshold=0 # Threshold after which files will be written to disk. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
-	multipart.location= # Intermediate location of uploaded files.
-	multipart.max-file-size=1Mb # Max file size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
-	multipart.max-request-size=10Mb # Max request size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
-
 	# EMBEDDED SERVER CONFIGURATION ({sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[ServerProperties])
 	server.address= # Network address to which the server should bind to.
 	server.compression.enabled=false # If response compression is enabled.
@@ -276,6 +269,13 @@ content into your application; rather pick only the properties that you need.
 	spring.http.encoding.charset=UTF-8 # Charset of HTTP requests and responses. Added to the "Content-Type" header if not set explicitly.
 	spring.http.encoding.enabled=true # Enable http encoding support.
 	spring.http.encoding.force=true # Force the encoding to the configured charset on HTTP requests and responses.
+
+	# MULTIPART ({sc-spring-boot-autoconfigure}/web/MultipartProperties.{sc-ext}[MultipartProperties])
+	spring.http.multipart.enabled=true # Enable support of multi-part uploads.
+	spring.http.multipart.file-size-threshold=0 # Threshold after which files will be written to disk. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
+	spring.http.multipart.location= # Intermediate location of uploaded files.
+	spring.http.multipart.max-file-size=1Mb # Max file size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
+	spring.http.multipart.max-request-size=10Mb # Max request size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
 
 	# JACKSON ({sc-spring-boot-autoconfigure}/jackson/JacksonProperties.{sc-ext}[JacksonProperties])
 	spring.jackson.date-format= # Date format string or a fully-qualified date format class name. For instance `yyyy-MM-dd HH:mm:ss`.

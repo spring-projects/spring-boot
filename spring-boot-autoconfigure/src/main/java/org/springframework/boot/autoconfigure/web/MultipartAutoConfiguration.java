@@ -47,7 +47,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Configuration
 @ConditionalOnClass({ Servlet.class, StandardServletMultipartResolver.class,
 		MultipartConfigElement.class })
-@ConditionalOnProperty(prefix = "multipart", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.http.multipart", name = "enabled", matchIfMissing = true)
 @EnableConfigurationProperties(MultipartProperties.class)
 public class MultipartAutoConfiguration {
 

@@ -8,12 +8,6 @@
     }
   },
   {
-    "name": "multipart.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Enable support of multi-part uploads.",
-    "defaultValue": true
-  },
-  {
     "name": "server.error.whitelabel.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable the default error page displayed in browsers in case of a server error.",
