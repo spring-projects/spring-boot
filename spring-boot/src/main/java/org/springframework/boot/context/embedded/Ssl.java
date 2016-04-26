@@ -21,6 +21,7 @@ package org.springframework.boot.context.embedded;
  *
  * @author Andy Wilkinson
  * @author Vladimir Tsanev
+ * @author Venil Noronha
  * @since 1.1.7
  */
 public class Ssl {
@@ -77,6 +78,11 @@ public class Ssl {
 	private String keyStoreProvider;
 
 	/**
+	 * Supplier for the key store.
+	 */
+	private KeyStoreSupplier keyStoreSupplier;
+
+	/**
 	 * Trust store that holds SSL certificates.
 	 */
 	private String trustStore;
@@ -95,6 +101,11 @@ public class Ssl {
 	 * Provider for the trust store.
 	 */
 	private String trustStoreProvider;
+
+	/**
+	 * Supplier for the trust store.
+	 */
+	private KeyStoreSupplier trustStoreSupplier;
 
 	/**
 	 * SSL protocol to use.
@@ -173,6 +184,14 @@ public class Ssl {
 		this.keyStoreProvider = keyStoreProvider;
 	}
 
+	protected KeyStoreSupplier getKeyStoreSupplier() {
+		return this.keyStoreSupplier;
+	}
+
+	protected void setKeyStoreSupplier(KeyStoreSupplier keyStoreSupplier) {
+		this.keyStoreSupplier = keyStoreSupplier;
+	}
+
 	public String[] getEnabledProtocols() {
 		return this.enabledProtocols;
 	}
@@ -211,6 +230,14 @@ public class Ssl {
 
 	public void setTrustStoreProvider(String trustStoreProvider) {
 		this.trustStoreProvider = trustStoreProvider;
+	}
+
+	protected KeyStoreSupplier getTrustStoreSupplier() {
+		return this.trustStoreSupplier;
+	}
+
+	protected void setTrustStoreSupplier(KeyStoreSupplier trustStoreSupplier) {
+		this.trustStoreSupplier = trustStoreSupplier;
 	}
 
 	public String getProtocol() {

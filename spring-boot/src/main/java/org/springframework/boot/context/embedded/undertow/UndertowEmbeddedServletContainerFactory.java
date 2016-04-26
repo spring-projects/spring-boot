@@ -17,11 +17,14 @@
 package org.springframework.boot.context.embedded.undertow;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -91,6 +94,7 @@ import org.springframework.util.ResourceUtils;
  * @author Andy Wilkinson
  * @author Marcos Barbero
  * @author Eddú Meléndez
+ * @author Venil Noronha
  * @since 1.2.0
  * @see UndertowEmbeddedServletContainer
  */
@@ -297,13 +301,10 @@ public class UndertowEmbeddedServletContainerFactory
 	private KeyManager[] getKeyManagers() {
 		try {
 			Ssl ssl = getSsl();
-			String keyStoreType = ssl.getKeyStoreType();
-			if (keyStoreType == null) {
-				keyStoreType = "JKS";
+			KeyStore keyStore = getSupplierKeyStore();
+			if (keyStore == null) {
+				keyStore = getKeyStore(ssl);
 			}
-			KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-			URL url = ResourceUtils.getURL(ssl.getKeyStore());
-			keyStore.load(url.openStream(), ssl.getKeyStorePassword().toCharArray());
 
 			// Get key manager to provide client credentials.
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
@@ -319,29 +320,55 @@ public class UndertowEmbeddedServletContainerFactory
 		}
 	}
 
+	private KeyStore getKeyStore(Ssl ssl)
+			throws KeyStoreException, FileNotFoundException, IOException,
+			NoSuchAlgorithmException, CertificateException {
+		String keyStoreType = ssl.getKeyStoreType();
+		if (keyStoreType == null) {
+			keyStoreType = "JKS";
+		}
+		KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+		URL url = ResourceUtils.getURL(ssl.getKeyStore());
+		keyStore.load(url.openStream(), ssl.getKeyStorePassword().toCharArray());
+		return keyStore;
+	}
+
 	private TrustManager[] getTrustManagers() {
 		try {
 			Ssl ssl = getSsl();
-			String trustStoreType = ssl.getTrustStoreType();
-			if (trustStoreType == null) {
-				trustStoreType = "JKS";
-			}
-			String trustStore = ssl.getTrustStore();
+			KeyStore trustStore = getSupplierKeyStore();
 			if (trustStore == null) {
-				return null;
+				trustStore = getTrustStore(ssl);
+				if (trustStore == null) {
+					return null;
+				}
 			}
-			KeyStore trustedKeyStore = KeyStore.getInstance(trustStoreType);
-			URL url = ResourceUtils.getURL(trustStore);
-			trustedKeyStore.load(url.openStream(),
-					ssl.getTrustStorePassword().toCharArray());
+
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory
 					.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-			trustManagerFactory.init(trustedKeyStore);
+			trustManagerFactory.init(trustStore);
 			return trustManagerFactory.getTrustManagers();
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	private KeyStore getTrustStore(Ssl ssl)
+			throws KeyStoreException, FileNotFoundException, IOException,
+			NoSuchAlgorithmException, CertificateException {
+		String trustStoreType = ssl.getTrustStoreType();
+		if (trustStoreType == null) {
+			trustStoreType = "JKS";
+		}
+		String trustStore = ssl.getTrustStore();
+		if (trustStore == null) {
+			return null;
+		}
+		KeyStore trustedKeyStore = KeyStore.getInstance(trustStoreType);
+		URL url = ResourceUtils.getURL(trustStore);
+		trustedKeyStore.load(url.openStream(), ssl.getTrustStorePassword().toCharArray());
+		return trustedKeyStore;
 	}
 
 	private DeploymentManager createDeploymentManager(

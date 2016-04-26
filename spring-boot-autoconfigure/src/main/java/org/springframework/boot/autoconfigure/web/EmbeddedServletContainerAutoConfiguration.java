@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration.EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar;
+import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration.SslConfigurerBeanPostProcessorRegistrar;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.SslConfigurerBeanPostProcessor;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
@@ -57,11 +59,15 @@ import org.springframework.util.ObjectUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Ivan Sopov
+ * @author Venil Noronha
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
 @ConditionalOnWebApplication
-@Import(EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar.class)
+@Import({
+	EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar.class,
+	SslConfigurerBeanPostProcessorRegistrar.class
+})
 public class EmbeddedServletContainerAutoConfiguration {
 
 	/**
@@ -139,6 +145,38 @@ public class EmbeddedServletContainerAutoConfiguration {
 						"embeddedServletContainerCustomizerBeanPostProcessor",
 						new RootBeanDefinition(
 								EmbeddedServletContainerCustomizerBeanPostProcessor.class));
+
+			}
+		}
+
+	}
+
+	/**
+	 * Registers a {@link SslConfigurerBeanPostProcessor}. Registered via
+	 * {@link ImportBeanDefinitionRegistrar} for early registration.
+	 */
+	public static class SslConfigurerBeanPostProcessorRegistrar
+			implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
+
+		private ConfigurableListableBeanFactory beanFactory;
+
+		@Override
+		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+			if (beanFactory instanceof ConfigurableListableBeanFactory) {
+				this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
+			}
+		}
+
+		@Override
+		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+				BeanDefinitionRegistry registry) {
+			if (this.beanFactory == null) {
+				return;
+			}
+			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(
+					SslConfigurerBeanPostProcessor.class, true, false))) {
+				registry.registerBeanDefinition("sslConfigurerBeanPostProcessor",
+						new RootBeanDefinition(SslConfigurerBeanPostProcessor.class));
 
 			}
 		}
