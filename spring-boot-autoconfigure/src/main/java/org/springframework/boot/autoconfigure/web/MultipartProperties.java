@@ -25,16 +25,16 @@ import org.springframework.util.StringUtils;
 /**
  * Properties to be used in configuring a {@link MultipartConfigElement}.
  * <ul>
- * <li>{@link #getLocation() location} specifies the directory where files will be
- * stored. The default is "". A common value is to use the system's temporary directory,
- * which can be obtained.</li>
+ * <li>{@link #getLocation() location} specifies the directory where files will be stored.
+ * The default is "". A common value is to use the system's temporary directory, which can
+ * be obtained.</li>
  * <li>{@link #getMaxFileSize() max-file-size} specifies the maximum size permitted for
  * uploaded files. The default is 1Mb.</li>
  * <li>{@link #getMaxRequestSize() max-request-size} specifies the maximum size allowed
  * for {@literal multipart/form-data} requests. The default is 10Mb</li>
  * <li>{@link #getFileSizeThreshold() file-size-threshold} specifies the size threshold
- * after which files will be written to disk. Default is 0, which means that the file
- * will be written to disk immediately.</li>
+ * after which files will be written to disk. Default is 0, which means that the file will
+ * be written to disk immediately.</li>
  * </ul>
  * <p>
  * These properties are ultimately passed through
