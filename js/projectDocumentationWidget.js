@@ -107,9 +107,7 @@ Spring.SnippetView = Backbone.View.extend({
 
     var html = $(this.combinedTemplate(this.model));
     this.$el.html(html);
-    if (ZeroClipboard.detectFlashSupport()) {
-    	Spring.buildCopyButton(html.find(":first"), "snippet");
-    }
+    Spring.buildCopyButton(html.find(":first"), "snippet");
     return this;
   },
 
