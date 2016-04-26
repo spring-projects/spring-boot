@@ -9,7 +9,7 @@ working as you expect it to, on Stack Overflow using the spring-boot tag.
 Bug report
 
 Please provide details of the problem, including the version of Spring Boot that you
-are using. If possible, please provide a testcase or sample application that reproduces
+are using. If possible, please provide a test case or sample application that reproduces
 the problem. This makes it much easier for us to diagnose the problem and to verify that
 we have fixed it.
 

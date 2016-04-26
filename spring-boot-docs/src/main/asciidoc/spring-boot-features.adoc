@@ -3374,7 +3374,7 @@ control over the whole configuration.
 ====
 
 It is also possible to customize some of the `CouchbaseEnvironment` settings. For instance
-the following configuration changes the timeout to use to open a new `Bucket` and enable
+the following configuration changes the timeout to use to open a new `Bucket` and enables
 SSL support:
 
 [source,properties,indent=0]

@@ -539,7 +539,7 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
-	public void yamlSetsMultiProfilesWithWithespace() throws Exception {
+	public void yamlSetsMultiProfilesWithWhitespace() throws Exception {
 		this.initializer.setSearchNames("testsetmultiprofileswhitespace");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("dev",
