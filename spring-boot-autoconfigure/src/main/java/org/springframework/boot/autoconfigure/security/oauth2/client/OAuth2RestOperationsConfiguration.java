@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2RestOperationsConfiguration.OAuth2ClientIdCondition;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
@@ -116,10 +117,10 @@ public class OAuth2RestOperationsConfiguration {
 
 		@Bean
 		public FilterRegistrationBean oauth2ClientFilterRegistration(
-				OAuth2ClientContextFilter filter) {
+				OAuth2ClientContextFilter filter, SecurityProperties security) {
 			FilterRegistrationBean registration = new FilterRegistrationBean();
 			registration.setFilter(filter);
-			registration.setOrder(-100);
+			registration.setOrder(security.getFilterOrder() - 10);
 			return registration;
 		}
 
