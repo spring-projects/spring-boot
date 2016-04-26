@@ -31,6 +31,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -71,6 +74,8 @@ import org.mockito.InOrder;
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -511,6 +516,32 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
 						.loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
+				httpClient);
+		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory))
+				.isEqualTo("test");
+	}
+
+	@Test
+	public void sslWithCustomSslStoreProvider() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		addTestTxtFile(factory);
+		Ssl ssl = new Ssl();
+		ssl.setClientAuth(ClientAuth.NEED);
+		ssl.setKeyPassword("password");
+		factory.setSsl(ssl);
+		factory.setSslStoreProvider(new CustomSslStoreProvider());
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+		keyStore.load(new FileInputStream(new File("src/test/resources/test.jks")),
+				"secret".toCharArray());
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder()
+						.loadTrustMaterial(null, new TrustSelfSignedStrategy())
+						.loadKeyMaterial(keyStore, "password".toCharArray()).build());
 		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
 				.build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
@@ -1053,6 +1084,34 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	public interface BlockedPortAction {
 
 		void run(int port);
+
+	}
+
+	public static class CustomSslStoreProvider implements SslStoreProvider {
+
+		@Override
+		public KeyStore getKeyStore() throws Exception {
+			return loadStore();
+		}
+
+		@Override
+		public KeyStore getTrustStore() throws Exception {
+			return loadStore();
+		}
+
+		private KeyStore loadStore() throws KeyStoreException, IOException,
+				NoSuchAlgorithmException, CertificateException {
+			KeyStore keyStore = KeyStore.getInstance("JKS");
+			Resource resource = new ClassPathResource("test.jks");
+			InputStream inputStream = resource.getInputStream();
+			try {
+				keyStore.load(inputStream, "secret".toCharArray());
+				return keyStore;
+			}
+			finally {
+				inputStream.close();
+			}
+		}
 
 	}
 

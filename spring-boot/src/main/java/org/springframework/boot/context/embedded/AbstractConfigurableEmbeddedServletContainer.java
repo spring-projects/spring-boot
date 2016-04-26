@@ -71,6 +71,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 
 	private Ssl ssl;
 
+	private SslStoreProvider sslStoreProvider;
+
 	private JspServlet jspServlet = new JspServlet();
 
 	private Compression compression;
@@ -285,6 +287,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 
 	public Ssl getSsl() {
 		return this.ssl;
+	}
+
+	@Override
+	public void setSslStoreProvider(SslStoreProvider sslStoreProvider) {
+		this.sslStoreProvider = sslStoreProvider;
+	}
+
+	public SslStoreProvider getSslStoreProvider() {
+		return this.sslStoreProvider;
 	}
 
 	@Override

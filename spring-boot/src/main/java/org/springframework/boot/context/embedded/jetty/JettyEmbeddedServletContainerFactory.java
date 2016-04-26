@@ -250,14 +250,25 @@ public class JettyEmbeddedServletContainerFactory
 		configureSslClientAuth(factory, ssl);
 		configureSslPasswords(factory, ssl);
 		factory.setCertAlias(ssl.getKeyAlias());
-		configureSslKeyStore(factory, ssl);
 		if (ssl.getCiphers() != null) {
 			factory.setIncludeCipherSuites(ssl.getCiphers());
 		}
 		if (ssl.getEnabledProtocols() != null) {
 			factory.setIncludeProtocols(ssl.getEnabledProtocols());
 		}
-		configureSslTrustStore(factory, ssl);
+		if (getSslStoreProvider() != null) {
+			try {
+				factory.setKeyStore(getSslStoreProvider().getKeyStore());
+				factory.setTrustStore(getSslStoreProvider().getKeyStore());
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException("Unable to set SSL store", ex);
+			}
+		}
+		else {
+			configureSslKeyStore(factory, ssl);
+			configureSslTrustStore(factory, ssl);
+		}
 	}
 
 	private void configureSslClientAuth(SslContextFactory factory, Ssl ssl) {

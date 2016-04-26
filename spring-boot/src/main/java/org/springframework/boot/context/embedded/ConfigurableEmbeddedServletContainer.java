@@ -152,6 +152,12 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setSsl(Ssl ssl);
 
 	/**
+	 * Sets a provider that will be used to obtain SSL stores.
+	 * @param sslStoreProvider the SSL store provider
+	 */
+	void setSslStoreProvider(SslStoreProvider sslStoreProvider);
+
+	/**
 	 * Sets the configuration that will be applied to the container's JSP servlet.
 	 * @param jspServlet the JSP servlet configuration
 	 */
