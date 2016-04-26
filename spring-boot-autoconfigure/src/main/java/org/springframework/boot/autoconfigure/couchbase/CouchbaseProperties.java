@@ -115,12 +115,12 @@ public class CouchbaseProperties {
 	public static class Endpoints {
 
 		/**
-		 * Number of sockets per node against the Key/value service.
+		 * Number of sockets per node against the key/value service.
 		 */
 		private int keyValue = 1;
 
 		/**
-		 * Number of sockets per node against the Query (N1QL) service.
+		 * Number of sockets per node against the query (N1QL) service.
 		 */
 		private int query = 1;
 

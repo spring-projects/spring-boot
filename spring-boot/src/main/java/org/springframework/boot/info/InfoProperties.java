@@ -41,23 +41,23 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 	 * @param entries the information to expose
 	 */
 	public InfoProperties(Properties entries) {
-		Assert.notNull(entries, "Properties must not be null");
+		Assert.notNull(entries, "Entries must not be null");
 		this.entries = copy(entries);
 	}
 
 	/**
 	 * Return the value of the specified property or {@code null}.
-	 * @param property the id of the property
+	 * @param key the key of the property
 	 * @return the property value
 	 */
-	public String get(String property) {
-		return this.entries.getProperty(property);
+	public String get(String key) {
+		return this.entries.getProperty(key);
 	}
 
 	/**
 	 * Return the value of the specified property as a {@link Date} or {@code null} if the
 	 * value is not a valid {@link Long} representation of an epoch time.
-	 * @param key the id of the property
+	 * @param key the key of the property
 	 * @return the property value
 	 */
 	public Date getDate(String key) {

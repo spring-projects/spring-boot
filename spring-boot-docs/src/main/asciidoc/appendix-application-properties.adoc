@@ -792,9 +792,9 @@ content into your application; rather pick only the properties that you need.
 	spring.activemq.in-memory=true # Specify if the default broker URL should be in memory. Ignored if an explicit broker has been specified.
 	spring.activemq.password= # Login password of the broker.
 	spring.activemq.user= # Login user of the broker.
-	spring.activemq.packages.trust-all=false # Trust all packages
+	spring.activemq.packages.trust-all=false # Trust all packages.
 	spring.activemq.packages.trusted= # Comma-separated list of specific packages to trust (when not trusting all packages).
-	spring.activemq.pool.configuration.*= # See PooledConnectionFactory
+	spring.activemq.pool.configuration.*= # See PooledConnectionFactory.
 	spring.activemq.pool.enabled=false # Whether a PooledConnectionFactory should be created instead of a regular ConnectionFactory.
 	spring.activemq.pool.expiry-timeout=0 # Connection expiration timeout in milliseconds.
 	spring.activemq.pool.idle-timeout=30000 # Connection idle timeout in milliseconds.

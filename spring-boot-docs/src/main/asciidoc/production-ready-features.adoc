@@ -237,7 +237,7 @@ creating a bean of type `MvcEndpoint`. Your `MvcEndpoint` is not a `@Controller`
 can use `@RequestMapping` (and `@Managed*`) to expose resources.
 
 TIP: If you are doing this as a library feature consider adding a configuration class
-annoated with `@ManagementContextConfiguration` to `/META-INF/spring.factories` under the
+annotated with `@ManagementContextConfiguration` to `/META-INF/spring.factories` under the
 key `org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration`. If
 you do that then the endpoint will move to a child context with all the other MVC
 endpoints if your users ask for a separate management port or address. A configuration
