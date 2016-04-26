@@ -525,7 +525,7 @@ configuration to replace specific parts of the auto-configuration. For example, 
 you add your own `DataSource` bean, the default embedded database support will back away.
 
 If you need to find out what auto-configuration is currently being applied, and why,
-start your application with the `--debug` switch. This will enables debug logs for a
+start your application with the `--debug` switch. This will enable debug logs for a
 selection of core loggers and log an auto-configuration report to the console.
 
 
