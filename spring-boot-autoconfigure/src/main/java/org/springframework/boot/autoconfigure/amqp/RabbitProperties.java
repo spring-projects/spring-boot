@@ -89,7 +89,7 @@ public class RabbitProperties {
 	private boolean publisherReturns;
 
 	/**
-	 * The connection timeout, in milliseconds; zero for infinite.
+	 * Connection timeout, in milliseconds; zero for infinite.
 	 */
 	private Integer connectionTimeout;
 
