@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -72,6 +73,12 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	 */
 	private Boolean sensitive;
 
+	/**
+	 * External Logfile to be accessed. Can be used if the logfile is written by output
+	 * redirect and not by the logging-system itself.
+	 */
+	private File externalFile;
+
 	private Environment environment;
 
 	@Override
@@ -105,6 +112,14 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		this.sensitive = sensitive;
 	}
 
+	public File getExternalFile() {
+		return this.externalFile;
+	}
+
+	public void setExternalFile(File externalFile) {
+		this.externalFile = externalFile;
+	}
+
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Class<? extends Endpoint> getEndpointType() {
@@ -119,23 +134,25 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 			return;
 		}
 		Resource resource = getLogFileResource();
+		if (resource != null && !resource.exists()) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Log file '" + resource + "' does not exist");
+			}
+			resource = null;
+		}
 		new Handler(resource).handleRequest(request, response);
 	}
 
 	private Resource getLogFileResource() {
+		if (this.externalFile != null) {
+			return new FileSystemResource(this.externalFile);
+		}
 		LogFile logFile = LogFile.get(this.environment);
 		if (logFile == null) {
 			logger.debug("Missing 'logging.file' or 'logging.path' properties");
 			return null;
 		}
-		FileSystemResource resource = new FileSystemResource(logFile.toString());
-		if (!resource.exists()) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Log file '" + resource + "' does not exist");
-			}
-			return null;
-		}
-		return resource;
+		return new FileSystemResource(logFile.toString());
 	}
 
 	/**
