@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -31,6 +33,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
  * in web applications.
  *
  * @author Stephane Nicoll
+ * @author Sivabalan Ramachandran
  * @since 1.2.0
  */
 @Configuration
@@ -48,7 +51,12 @@ public class HttpEncodingAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(CharacterEncodingFilter.class)
 	public CharacterEncodingFilter characterEncodingFilter() {
-		CharacterEncodingFilter filter = new OrderedCharacterEncodingFilter();
+		CharacterEncodingFilter filter = new OrderedCharacterEncodingFilter() {
+			@Override
+			protected boolean shouldNotFilter(HttpServletRequest request) {
+				return (request.getContentType() != null) ? request.getContentType().startsWith("image/") : false;
+			}
+		};
 		filter.setEncoding(this.httpEncodingProperties.getCharset().name());
 		filter.setForceEncoding(this.httpEncodingProperties.isForce());
 		return filter;
