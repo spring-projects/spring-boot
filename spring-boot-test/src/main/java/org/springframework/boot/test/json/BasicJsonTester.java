@@ -17,7 +17,6 @@
 package org.springframework.boot.test.json;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.springframework.core.io.Resource;
@@ -63,9 +62,8 @@ public class BasicJsonTester {
 	 * using {@code resourceLoadClass}.
 	 * @param source JSON content or a {@code .json} resource name
 	 * @return the JSON content
-	 * @throws IOException on load error
 	 */
-	public JsonContent<Object> from(CharSequence source) throws IOException {
+	public JsonContent<Object> from(CharSequence source) {
 		return getJsonContent(this.loader.getJson(source));
 	}
 
@@ -74,10 +72,8 @@ public class BasicJsonTester {
 	 * @param path the path of the resource to load
 	 * @param resourceLoadClass the classloader used load the resource
 	 * @return the JSON content
-	 * @throws IOException on load error
 	 */
-	public JsonContent<Object> from(String path, Class<?> resourceLoadClass)
-			throws IOException {
+	public JsonContent<Object> from(String path, Class<?> resourceLoadClass) {
 		return getJsonContent(this.loader.getJson(path, resourceLoadClass));
 	}
 
@@ -85,9 +81,8 @@ public class BasicJsonTester {
 	 * Create JSON content from the specified JSON bytes.
 	 * @param source the bytes of JSON
 	 * @return the JSON content
-	 * @throws IOException on load error
 	 */
-	public JsonContent<Object> from(byte[] source) throws IOException {
+	public JsonContent<Object> from(byte[] source) {
 		return getJsonContent(this.loader.getJson(source));
 	}
 
@@ -95,9 +90,8 @@ public class BasicJsonTester {
 	 * Create JSON content from the specified JSON file.
 	 * @param source the file containing JSON
 	 * @return the JSON content
-	 * @throws IOException on load error
 	 */
-	public JsonContent<Object> from(File source) throws IOException {
+	public JsonContent<Object> from(File source) {
 		return getJsonContent(this.loader.getJson(source));
 	}
 
@@ -105,9 +99,8 @@ public class BasicJsonTester {
 	 * Create JSON content from the specified JSON input stream.
 	 * @param source the input stream containing JSON
 	 * @return the JSON content
-	 * @throws IOException on load error
 	 */
-	public JsonContent<Object> from(InputStream source) throws IOException {
+	public JsonContent<Object> from(InputStream source) {
 		return getJsonContent(this.loader.getJson(source));
 	}
 
@@ -115,9 +108,8 @@ public class BasicJsonTester {
 	 * Create JSON content from the specified JSON resource.
 	 * @param source the resource containing JSON
 	 * @return the JSON content
-	 * @throws IOException on load error
 	 */
-	public JsonContent<Object> from(Resource source) throws IOException {
+	public JsonContent<Object> from(Resource source) {
 		return getJsonContent(this.loader.getJson(source));
 	}
 

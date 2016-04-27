@@ -61,12 +61,14 @@ public class IntegrationAutoConfigurationTests {
 	@Test
 	public void parentContext() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
+		this.context.register(JmxAutoConfiguration.class,
+				IntegrationAutoConfiguration.class);
 		this.context.refresh();
 		AnnotationConfigApplicationContext parent = this.context;
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setParent(parent);
-		this.context.register(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
+		this.context.register(JmxAutoConfiguration.class,
+				IntegrationAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 		((ConfigurableApplicationContext) this.context.getParent()).close();

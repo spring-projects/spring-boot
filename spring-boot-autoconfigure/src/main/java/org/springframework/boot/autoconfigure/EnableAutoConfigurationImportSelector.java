@@ -143,8 +143,8 @@ public class EnableAutoConfigurationImportSelector
 		List<String> configurations = SpringFactoriesLoader.loadFactoryNames(
 				getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader());
 		Assert.notEmpty(configurations,
-				"No auto configuration classes found in META-INF/spring.factories. If you" +
-						"are using a custom packaging, make sure that file is correct.");
+				"No auto configuration classes found in META-INF/spring.factories. If you "
+						+ "are using a custom packaging, make sure that file is correct.");
 		return configurations;
 	}
 

@@ -34,7 +34,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.mockito.BDDMockito.given;
 
 /**
- * {@code @WebIntegrationTest} for {@link SampleTestApplication}.
+ * {@code @SpringBootTest} with a random port for {@link SampleTestApplication}.
  *
  * @author Phillip Webb
  */

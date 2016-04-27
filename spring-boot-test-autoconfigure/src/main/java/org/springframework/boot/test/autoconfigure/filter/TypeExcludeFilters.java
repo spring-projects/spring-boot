@@ -26,9 +26,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.TypeExcludeFilter;
 
 /**
- * Annotation that can be on tests to define a set of {@link TypeExcludeFilter} classes that
- * should be applied to {@link SpringBootApplication @SpringBootApplication} component
- * scanning.
+ * Annotation that can be on tests to define a set of {@link TypeExcludeFilter} classes
+ * that should be applied to {@link SpringBootApplication @SpringBootApplication}
+ * component scanning.
  *
  * @author Phillip Webb
  * @since 1.4.0

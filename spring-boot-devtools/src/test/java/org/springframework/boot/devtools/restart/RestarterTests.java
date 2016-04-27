@@ -175,7 +175,7 @@ public class RestarterTests {
 				Thread viaFactory = factory.newThread(runnable);
 				// Regular threads will inherit the current thread
 				assertThat(regular.getContextClassLoader()).isEqualTo(contextClassLoader);
-				// Factory threads should should inherit from the initial thread
+				// Factory threads should inherit from the initial thread
 				assertThat(viaFactory.getContextClassLoader()).isEqualTo(parentLoader);
 			};
 		};

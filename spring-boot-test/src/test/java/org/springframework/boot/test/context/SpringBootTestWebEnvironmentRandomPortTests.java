@@ -26,16 +26,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
- * Tests for {@link SpringBootTest} configured with
- * {@link WebEnvironment#DEFINED_PORT}.
+ * Tests for {@link SpringBootTest} configured with {@link WebEnvironment#DEFINED_PORT}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"value=123" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "value=123" })
 public class SpringBootTestWebEnvironmentRandomPortTests
 		extends AbstractSpringBootTestEmbeddedWebEnvironmentTests {
 

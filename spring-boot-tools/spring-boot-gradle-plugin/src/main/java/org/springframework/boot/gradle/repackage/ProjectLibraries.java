@@ -87,16 +87,12 @@ class ProjectLibraries implements Libraries {
 			libraries(custom, callback);
 		}
 		else {
-			Set<GradleLibrary> compile = getLibraries("compile", LibraryScope.COMPILE);
 			Set<GradleLibrary> runtime = getLibraries("runtime", LibraryScope.RUNTIME);
-			runtime = minus(runtime, compile);
 			Set<GradleLibrary> provided = getLibraries(this.providedConfigurationName,
 					LibraryScope.PROVIDED);
 			if (provided != null) {
-				compile = minus(compile, provided);
 				runtime = minus(runtime, provided);
 			}
-			libraries(compile, callback);
 			libraries(runtime, callback);
 			libraries(provided, callback);
 		}

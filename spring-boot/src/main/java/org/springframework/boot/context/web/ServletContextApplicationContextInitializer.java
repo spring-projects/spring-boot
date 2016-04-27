@@ -52,7 +52,7 @@ public class ServletContextApplicationContextInitializer implements
 	 * @param servletContext the servlet that should be ultimately set.
 	 * @param addApplicationContextAttribute if the {@link ApplicationContext} should be
 	 * stored as an attribute in the {@link ServletContext}
-	 * @since 1.4.0
+	 * @since 1.3.4
 	 */
 	public ServletContextApplicationContextInitializer(ServletContext servletContext,
 			boolean addApplicationContextAttribute) {

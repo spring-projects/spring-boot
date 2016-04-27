@@ -333,6 +333,8 @@ sensible overriding of values, properties are considered in the following order:
 
 . Command line arguments.
 . Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment variable or system property)
+. `ServletConfig` init parameters.
+. `ServletContext` init parameters.
 . JNDI attributes from `java:comp/env`.
 . Java System properties (`System.getProperties()`).
 . OS environment variables.
@@ -682,7 +684,7 @@ profile, and it would have to be explicitly reset in all other profiles as neces
 ----
 
 Spring profiles designated using the "spring.profiles" element may optionally be negated
-using the {@code !} character. If both negated and non-negated profiles are specified for
+using the `!` character. If both negated and non-negated profiles are specified for
 a single document, at least one non-negated profile must match and no negated profiles
 may match.
 
@@ -2420,9 +2422,11 @@ If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa`
 '`starter POMs`' you will automatically get a dependency to `tomcat-jdbc`.
 
 NOTE: You can bypass that algorithm completely and specify the connection pool to use via
-the `spring.datasource.type` property. Also, additional connection pools can always be
-configured manually. If you define your own `DataSource` bean, auto-configuration will
-not occur.
+the `spring.datasource.type` property. This is especially important if you are running
+your application in a Tomcat container as `tomcat-jdbc` is provided by default.
+
+TIP: Additional connection pools can always be configured manually. If you define your
+own `DataSource` bean, auto-configuration will not occur.
 
 DataSource configuration is controlled by external configuration properties in
 `+spring.datasource.*+`. For example, you might declare the following section in
@@ -3370,7 +3374,7 @@ control over the whole configuration.
 ====
 
 It is also possible to customize some of the `CouchbaseEnvironment` settings. For instance
-the following configuration changes the timeout to use to open a new `Bucket` and enable
+the following configuration changes the timeout to use to open a new `Bucket` and enables
 SSL support:
 
 [source,properties,indent=0]
@@ -3960,7 +3964,9 @@ Then you can use in any `@JmsListener`-annotated method as follows:
 === AMQP
 The Advanced Message Queuing Protocol (AMQP) is a platform-neutral, wire-level protocol
 for message-oriented middleware. The Spring AMQP project applies core Spring concepts to
-the development of AMQP-based messaging solutions.
+the development of AMQP-based messaging solutions. Spring Boot offers several
+conveniences for working with AMQP via RabbitMQ, including the
+`spring-boot-starter-amqp` '`Starter POM`'.
 
 
 
@@ -4349,7 +4355,7 @@ Spring Boot provides a number of utilities and annotations to help when testing 
 application. Test support is provided by two modules; `spring-boot-test` contains core
 items, and `spring-boot-test-autoconfigure` supports auto-configuration for tests.
 
-Most developers will just use the the `spring-boot-starter-test` '`Starter POM`' which
+Most developers will just use the `spring-boot-starter-test` '`Starter POM`' which
 imports both Spring Boot test modules as well has JUnit, AssertJ, Hamcrest and a number
 of other useful libraries.
 
@@ -4362,9 +4368,9 @@ If you use the
 the following provided libraries:
 
 * http://junit.org[JUnit] -- The de-facto standard for unit testing Java applications.
-* {spring-reference}/#integration-testing.html[Spring Test] & Spring Boot Test -- utilities and integration test support for Spring Boot
+* {spring-reference}/#integration-testing.html[Spring Test] & Spring Boot Test -- Utilities and integration test support for Spring Boot
   applications.
-* http://joel-costigliola.github.io/assertj/[AssertJ] - A fluent assertion library.
+* http://joel-costigliola.github.io/assertj/[AssertJ] -- A fluent assertion library.
 * http://hamcrest.org/JavaHamcrest/[Hamcrest] -- A library of matcher objects (also known
   as constraints or predicates).
 * http://mockito.org/[Mockito] -- A Java mocking framework.
@@ -4406,7 +4412,7 @@ features of Spring Boot are only installed in the context by default if you use
 `SpringApplication` to create it.
 
 Spring Boot provides a `@SpringBootTest` annotation which can be used as an
-alternative the standard `spring-test` `@ContextConfiguration` annotation when you need
+alternative to the standard `spring-test` `@ContextConfiguration` annotation when you need
 Spring Boot features. The annotation works by creating the `ApplicationContext` used
 in your tests via `SpringApplication`.
 
@@ -4423,7 +4429,7 @@ how your tests will run:
 * `DEFINED_PORT` -- Loads an `EmbeddedWebApplicationContext` and provides a real
   servlet environment. Embedded servlet containers are started and listening on a defined
   port (i.e from your `application.properties` or on the default port `8080`).
-* `NONE` -- Loads an `ApplicationContext` using `SpringApplication` but does not provides
+* `NONE` -- Loads an `ApplicationContext` using `SpringApplication` but does not provide
   _any_ servlet environment (mock or otherwise).
 
 NOTE: In addition to `@SpringBootTest` a number of other annotations are also
@@ -4531,8 +4537,8 @@ failures that might be hard to trigger in a real environment.
 Spring Boot includes a `@MockBean` annotation that can be used to define a Mockito mock
 for a bean inside your `ApplicationContext`. You can use the annotation to add new beans,
 or replace a single existing bean definition. The annotation can be used directly on test
-classes, on fields within your test; or on `@Configuration` classes and fields. When used
-on a field the, instance of the created mock will also be injected. Mock beans are
+classes, on fields within your test, or on `@Configuration` classes and fields. When used
+on a field, the instance of the created mock will also be injected. Mock beans are
 automatically reset after each test method.
 
 Here's a typical example where we replace an existing `RemoteService` bean with a mock
@@ -4572,7 +4578,7 @@ implementation:
 ----
 
 Additionally you can also use `@SpyBean` to wrap any existing bean with a Mockito `spy`.
-See the javadoc for full details.
+See the Javadoc for full details.
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-tests]]
@@ -4581,11 +4587,11 @@ Spring Boot's auto-configuration system works well for applications, but can som
 a little too much for tests. It's often helpful to load only the parts of the
 configuration that are required to test a '`slice`' of your application. For example, you
 might want to test that Spring MVC controllers are mapping URLs correctly, and you don't
-want to involve and database calls in those tests; or you _might be wanting_ to test JPA
+want to involve database calls in those tests; or you _might be wanting_ to test JPA
 entities, and you're not interested in web layer when those tests run.
 
 The `spring-boot-test-autoconfigure` module includes a number of annotations that can be
-used to automatically configure such '`slices`'. Each of them work in a similar way,
+used to automatically configure such '`slices`'. Each of them works in a similar way,
 providing a `@...Test` annotation that loads the `ApplicationContext` and one or
 more `@AutoConfigure...` annotations that can be used to customize auto-configuration
 settings.
@@ -4599,7 +4605,7 @@ TIP: It's also possible to use the `@AutoConfigure...` annotations with the stan
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-json-tests]]
 ==== Auto-configured JSON tests
 To test that Object JSON serialization and deserialization is working as expected you can
-use the `@JsonTest` annotation. `@JsonTest` will auto-configure Jackson ObjectMappers,
+use the `@JsonTest` annotation. `@JsonTest` will auto-configure Jackson `ObjectMapper`,
 any `@JsonComponent` beans and any Jackson `Modules`. It also configures `Gson`
 if you happen to be using that instead of, or as well as, Jackson. If you need to
 configure elements of the auto-configuration you can use the `@AutoConfigureJsonTesters`
@@ -4749,7 +4755,7 @@ and/or a `WebDriver` bean. Here is an example that uses HtmlUnit:
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test]]
 ==== Auto-configured Data JPA tests
-The `@DataJpaTest` can be used if want to test JPA applications. By default it will
+The `@DataJpaTest` can be used if you want to test JPA applications. By default it will
 configure an in-memory embedded database, scan for `@Entity` classes and configure Spring
 Data JPA repositories. Regular `@Component` beans will not be loaded into the
 `ApplicationContext`.
@@ -4988,6 +4994,28 @@ public class MyTest {
 
 
 
+[[boot-features-websockets]]
+== WebSockets
+Spring Boot provides WebSockets auto-configuration for embedded Tomcat (8 and 7), Jetty 9
+and Undertow. If you're deploying a war file to a standalone container, Spring Boot
+assumes that the container will be responsible for the configuration of its WebSocket
+support.
+
+Spring Framework provides {spring-reference}/#websocket[rich WebSocket support] that can
+be easily accessed via the `spring-boot-starter-websocket` module.
+
+
+
+[[boot-features-webservices]]
+== Web Services
+Spring Boot provides Web Services auto-configuration so that all is required is defining
+your `Endpoints`.
+
+The {spring-webservices-reference}[Spring Web Services features] can be easily accessed
+via the `spring-boot-starter-webservices` module.
+
+
+
 [[boot-features-developing-auto-configuration]]
 == Creating your own auto-configuration
 If you work in a company that develops shared libraries, or if you work on an open-source
@@ -5193,18 +5221,6 @@ you are auto-configuring typically requires other starters, mention them as well
 a proper set of _default_ dependencies may be hard if the number of optional dependencies
 is high as you should avoid bringing unnecessary dependencies for a typical usage of the
 library.
-
-
-
-[[boot-features-websockets]]
-== WebSockets
-Spring Boot provides WebSockets auto-configuration for embedded Tomcat (8 and 7), Jetty 9
-and Undertow. If you're deploying a war file to a standalone container, Spring Boot
-assumes that the container will be responsible for the configuration of its WebSocket
-support.
-
-Spring Framework provides {spring-reference}/#websocket[rich WebSocket support] that can
-be easily accessed via the `spring-boot-starter-websocket` module.
 
 
 

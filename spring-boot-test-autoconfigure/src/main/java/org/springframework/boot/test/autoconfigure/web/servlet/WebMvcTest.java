@@ -69,7 +69,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @BootstrapWith(WebMvcTestContextBootstrapper.class)
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(WebMvcTypeExcludeFilter.class)
-@ImportWebMvcAutoConfiguration
+@AutoConfigureWebMvc
 @AutoConfigureMockMvc
 public @interface WebMvcTest {
 

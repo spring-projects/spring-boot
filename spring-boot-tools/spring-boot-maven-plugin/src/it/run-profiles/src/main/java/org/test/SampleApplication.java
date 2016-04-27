@@ -29,7 +29,7 @@ public class SampleApplication {
 			throw new IllegalArgumentException("Invalid argument " + argument);
 		}
 		int index = args[0].indexOf("=");
-		String profile = argument.substring(index + 1, argument.length());
+		String profile = argument.substring(index + 1);
 		System.out.println("I haz been run with profile(s) '" + profile + "'");
 	}
 

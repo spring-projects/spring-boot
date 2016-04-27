@@ -248,6 +248,7 @@ public class ThymeleafAutoConfiguration {
 			// This resolver acts as a fallback resolver (e.g. like a
 			// InternalResourceViewResolver) so it needs to have low precedence
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
+			resolver.setCache(this.properties.isCache());
 			return resolver;
 		}
 

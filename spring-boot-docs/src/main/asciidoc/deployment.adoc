@@ -367,11 +367,8 @@ of this guide.
 [[deployment-install]]
 == Installing Spring Boot applications
 In additional to running Spring Boot applications using `java -jar` it is also possible
-to make fully executable applications for Unix systems (Linux, OSX, FreeBSD etc).
-This makes it very easy to install and manage Spring Boot applications in common
-production environments. As long as you are generating '`fully executable`' jars from your
-build, and you are not using a custom `embeddedLaunchScript`, the following techniques
-can be used.
+to make fully executable applications for Unix systems. This makes it very easy to install
+and manage Spring Boot applications in common production environments.
 
 To create a '`fully executable`' jar with Maven use the following plugin configuration:
 
@@ -400,6 +397,10 @@ With Gradle, the equivalent configuration would be:
 NOTE: Fully executable jars work by embedding an extra script at the front of the file.
 Not all tools currently accept this format so you may not always be able to use this
 technique.
+
+NOTE: The default script supports most Linux distributions and is tested on CentOS and
+Ubuntu. Other platforms, such as OS X and FreeBSD, will require the use of a custom
+`embeddedLaunchScript`.
 
 NOTE: When a fully executable jar is run, it uses the jar's directory as the working
 directory.

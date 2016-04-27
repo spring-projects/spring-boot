@@ -37,8 +37,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Base class for {@link SpringBootTest} tests configured to start an embedded
- * servlet container
+ * Base class for {@link SpringBootTest} tests configured to start an embedded servlet
+ * container
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

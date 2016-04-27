@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Iterables;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
+import org.springframework.boot.actuate.metrics.writer.Delta;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,6 +49,16 @@ public class PrefixMetricGroupExporterTests {
 		this.exporter.setGroups(Collections.singleton("foo"));
 		this.exporter.export();
 		assertThat(Iterables.collection(this.writer.groups())).hasSize(1);
+	}
+
+	@Test
+	public void countersIncremented() {
+		this.writer.increment("counter.foo", new Delta<Long>("bar", 1L));
+		this.reader.set(new Metric<Number>("counter.foo.bar", 1));
+		this.exporter.setGroups(Collections.singleton("counter.foo"));
+		this.exporter.export();
+		assertThat(this.writer.findAll("counter.foo").iterator().next().getValue())
+				.isEqualTo(2L);
 	}
 
 	@Test

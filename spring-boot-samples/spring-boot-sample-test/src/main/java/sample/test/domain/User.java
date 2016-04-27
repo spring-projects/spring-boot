@@ -50,7 +50,7 @@ public class User {
 		this.vin = vin;
 	}
 
-	protected Long getId() {
+	public Long getId() {
 		return this.id;
 	}
 

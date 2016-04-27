@@ -201,7 +201,7 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testExplicitDriverClassClearsUserName() throws Exception {
+	public void testExplicitDriverClassClearsUsername() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.driverClassName:"
 						+ "org.springframework.boot.autoconfigure.jdbc."
@@ -302,7 +302,7 @@ public class DataSourceAutoConfigurationTests {
 
 	}
 
-	// see testExplicitDriverClassClearsUserName
+	// see testExplicitDriverClassClearsUsername
 	public static class DatabaseTestDriver implements Driver {
 
 		@Override

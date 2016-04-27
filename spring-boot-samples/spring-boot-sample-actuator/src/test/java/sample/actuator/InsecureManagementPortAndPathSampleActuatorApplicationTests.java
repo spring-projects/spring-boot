@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.LocalManagementPort;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,7 +53,7 @@ public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 	@LocalServerPort
 	private int port = 9010;
 
-	@Value("${local.management.port}")
+	@LocalManagementPort
 	private int managementPort = 9011;
 
 	@Test

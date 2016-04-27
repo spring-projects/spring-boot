@@ -31,11 +31,11 @@ import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.Ordered;
 import org.springframework.core.SpringVersion;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextLoader;
@@ -88,6 +88,13 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
 			setActiveProfiles(environment, config.getActiveProfiles());
 		}
+		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment,
+				application.getResourceLoader() == null
+						? new DefaultResourceLoader(getClass().getClassLoader())
+						: application.getResourceLoader(),
+				config.getPropertySourceLocations());
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment,
+				getInlinedProperties(config));
 		application.setEnvironment(environment);
 		List<ApplicationContextInitializer<?>> initializers = getInitializers(config,
 				application);
@@ -152,8 +159,6 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		for (ContextCustomizer contextCustomizer : config.getContextCustomizers()) {
 			initializers.add(new ContextCustomizerAdapter(contextCustomizer, config));
 		}
-		initializers.add(new TestPropertySourcesInitializer(
-				config.getPropertySourceLocations(), getInlinedProperties(config)));
 		initializers.addAll(application.getInitializers());
 		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : config
 				.getContextInitializerClasses()) {
@@ -239,38 +244,6 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 					webConfiguration.getResourceBasePath());
 			initializers.add(0, new ServletContextApplicationContextInitializer(
 					servletContext, true));
-		}
-
-	}
-
-	/**
-	 * {@link ApplicationContextInitializer} to set up test property sources.
-	 */
-
-	private static class TestPropertySourcesInitializer implements
-			ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
-
-		private final String[] propertySourceLocations;
-
-		private final String[] inlinedProperties;
-
-		TestPropertySourcesInitializer(String[] propertySourceLocations,
-				String[] inlinedProperties) {
-			this.propertySourceLocations = propertySourceLocations;
-			this.inlinedProperties = inlinedProperties;
-		}
-
-		@Override
-		public void initialize(ConfigurableApplicationContext applicationContext) {
-			TestPropertySourceUtils.addPropertiesFilesToEnvironment(applicationContext,
-					this.propertySourceLocations);
-			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(applicationContext,
-					this.inlinedProperties);
-		}
-
-		@Override
-		public int getOrder() {
-			return Ordered.HIGHEST_PRECEDENCE + 10;
 		}
 
 	}

@@ -153,7 +153,8 @@ public class EnableAutoConfigurationImportSelectorTests {
 	@Test
 	public void propertyOverrideSetToTrue() throws Exception {
 		configureExclusions(new String[0], new String[0], new String[0]);
-		this.environment.setProperty(EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, "true");
+		this.environment.setProperty(EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY,
+				"true");
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports).isNotEmpty();
 	}
@@ -161,7 +162,8 @@ public class EnableAutoConfigurationImportSelectorTests {
 	@Test
 	public void propertyOverrideSetToFalse() throws Exception {
 		configureExclusions(new String[0], new String[0], new String[0]);
-		this.environment.setProperty(EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, "false");
+		this.environment.setProperty(EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY,
+				"false");
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports).isEmpty();
 	}

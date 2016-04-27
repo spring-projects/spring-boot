@@ -114,6 +114,9 @@ public class RabbitAutoConfiguration {
 				factory.setTrustStore(ssl.getTrustStore());
 				factory.setTrustStorePassphrase(ssl.getTrustStorePassword());
 			}
+			if (config.getConnectionTimeout() != null) {
+				factory.setConnectionTimeout(config.getConnectionTimeout());
+			}
 			factory.afterPropertiesSet();
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
 					factory.getObject());

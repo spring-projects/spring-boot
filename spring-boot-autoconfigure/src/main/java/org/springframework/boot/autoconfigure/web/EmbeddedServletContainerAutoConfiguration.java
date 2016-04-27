@@ -65,7 +65,7 @@ import org.springframework.util.ObjectUtils;
 public class EmbeddedServletContainerAutoConfiguration {
 
 	/**
-	 * Nested configuration for if Tomcat is being used.
+	 * Nested configuration if Tomcat is being used.
 	 */
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Tomcat.class })

@@ -47,14 +47,14 @@ public class UserEntityTests {
 	private TestEntityManager entityManager;
 
 	@Test
-	public void createWhenUserIdIsNullShouldThrowException() throws Exception {
+	public void createWhenUsernameIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Username must not be empty");
 		new User(null, VIN);
 	}
 
 	@Test
-	public void createWhenUserIdIsEmptyShouldThrowException() throws Exception {
+	public void createWhenUsernameIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Username must not be empty");
 		new User("", VIN);

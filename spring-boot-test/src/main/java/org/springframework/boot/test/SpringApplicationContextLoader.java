@@ -246,8 +246,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 				WebMergedContextConfiguration webConfiguration) {
 			SpringBootMockServletContext servletContext = new SpringBootMockServletContext(
 					webConfiguration.getResourceBasePath());
-			initializers.add(0,
-					new ServletContextApplicationContextInitializer(servletContext));
+			initializers.add(0, new ServletContextApplicationContextInitializer(
+					servletContext, true));
 		}
 
 	}

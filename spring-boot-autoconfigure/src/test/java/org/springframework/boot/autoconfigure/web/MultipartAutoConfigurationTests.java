@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.net.URI;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import javax.servlet.MultipartConfigElement;
 
@@ -32,10 +30,10 @@ import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletConta
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -170,10 +168,8 @@ public class MultipartAutoConfigurationTests {
 	private void testContainerWithCustomMultipartConfigEnabledSetting(
 			final String propertyValue, int expectedNumberOfMultipartConfigElementBeans) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		Map<String, Object> properties = new LinkedHashMap<String, Object>();
-		properties.put("multipart.enabled", propertyValue);
-		MapPropertySource propertySource = new MapPropertySource("test", properties);
-		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.http.multipart.enabled=" + propertyValue);
 		this.context.register(ContainerWithNoMultipartTomcat.class,
 				BaseConfiguration.class);
 		this.context.refresh();

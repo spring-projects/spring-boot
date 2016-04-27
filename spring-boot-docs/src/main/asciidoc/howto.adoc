@@ -34,7 +34,7 @@ the `spring-boot-actuator` there is also an `autoconfig` endpoint that renders t
 in JSON. Use that to debug the application and see what features have been added (and
 which not) by Spring Boot at runtime.
 
-Many more questions can be answered by looking at the source code and the javadoc. Some
+Many more questions can be answered by looking at the source code and the Javadoc. Some
 rules of thumb:
 
 * Look for classes called `+*AutoConfiguration+` and read their sources, in particular the
@@ -1211,7 +1211,7 @@ file and a maximum of 10Mb of file data in a single request. You may override th
 values, as well as the location to which intermediate data is stored (e.g., to the `/tmp`
 directory) and the threshold past which data is flushed to disk by using the properties
 exposed in the `MultipartProperties` class. If you want to specify that files be
-unlimited, for example, set the `multipart.maxFileSize` property to `-1`.
+unlimited, for example, set the `spring.http.multipart.max-file-size` property to `-1`.
 
 The multipart support is helpful when you want to receive multipart encoded file data as
 a `@RequestParam`-annotated parameter of type `MultipartFile` in a Spring MVC controller
@@ -1630,6 +1630,19 @@ whether you are using an embedded database (`create-drop`) or not (`none`). In a
 all properties in `+spring.jpa.properties.*+` are passed through as normal JPA properties
 (with the prefix stripped) when the local `EntityManagerFactory` is created.
 
+Spring Boot provides a consistent naming strategy regardless of the Hibernate generation
+that you are using. If you are using Hibernate 4, you can customize it using
+`spring.jpa.hibernate.naming.strategy`; Hibernate 5 defines a `Physical` and `Implicit`
+naming strategies: Spring Boot configures `SpringPhysicalNamingStrategy` by default. This
+implementation provides the same table structure as Hibernate 4. If you'd rather use
+Hibernate 5's default instead, set the following property:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+----
+
+
 See {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[`HibernateJpaAutoConfiguration`]
 and {sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[`JpaBaseConfiguration`]
 for more details.
@@ -1834,11 +1847,9 @@ initialization explicitly using `spring.batch.initializer.enabled=false`.
 
 
 [[howto-use-a-higher-level-database-migration-tool]]
-=== Use a higher level database migration tool
-Spring Boot works fine with higher level migration tools http://flywaydb.org/[Flyway]
-(SQL-based) and http://www.liquibase.org/[Liquibase] (XML). In general we prefer
-Flyway because it is easier on the eyes, and it isn't very common to need platform
-independence: usually only one or at most couple of platforms is needed.
+=== Use a higher-level database migration tool
+Spring Boot supports two higher-level migration tools: http://flywaydb.org/[Flyway]
+and http://www.liquibase.org/[Liquibase].
 
 [[howto-execute-flyway-database-migrations-on-startup]]
 ==== Execute Flyway database migrations on startup
@@ -1877,12 +1888,15 @@ To automatically run Liquibase database migrations on startup, add the
 `org.liquibase:liquibase-core` to your classpath.
 
 The master change log is by default read from `db/changelog/db.changelog-master.yaml` but
-can be set using `liquibase.change-log`. See
+can be set using `liquibase.change-log`. In addition to YAML, Liquibase also supports
+JSON, XML, and SQL change log formats.
+
+See
 {sc-spring-boot-autoconfigure}/liquibase/LiquibaseProperties.{sc-ext}[`LiquibaseProperties`]
 for details of available settings like contexts, default schema etc.
 
-There is a {github-code}/spring-boot-samples/spring-boot-sample-liquibase[Liquibase sample] so
-you can see how to set things up.
+There is a {github-code}/spring-boot-samples/spring-boot-sample-liquibase[Liquibase sample]
+so you can see how to set things up.
 
 
 
@@ -1939,16 +1953,21 @@ in the '`Production-ready features`' section.
 === Customize the '`whitelabel`' error page
 Spring Boot installs a '`whitelabel`' error page that you will see in browser client if
 you encounter a server error (machine clients consuming JSON and other media types should
-see a sensible response with the right error code). To switch it off you can set
-`server.error.whitelabel.enabled=false`, but normally in addition or alternatively to that you
-will want to add your own error page replacing the whitelabel one. Exactly how you do this
-depends on the templating technology that you are using. For example, if you are using
-Thymeleaf you would add an `error.html` template and if you are using FreeMarker you would
-add an `error.ftl` template. In general what you need is a `View` that resolves with a name
-of `error`, and/or a `@Controller` that handles the `/error` path. Unless you replaced some
-of the default configuration you should find a `BeanNameViewResolver` in your
-`ApplicationContext` so a `@Bean` with id `error` would be a simple way of doing that.
-Look at {sc-spring-boot-autoconfigure}/web/ErrorMvcAutoConfiguration.{sc-ext}[`ErrorMvcAutoConfiguration`] for more options.
+see a sensible response with the right error code).
+
+NOTE: Set `server.error.whitelabel.enabled=false` to switch the default error page off
+which will restore the default of the servlet container that you are using. Note that
+Spring Boot will still attempt to resolve the error view so you'd probably add you own
+error page rather than disabling it completely.
+
+Overriding the error page with your own depends on the templating technology that you are
+using. For example, if you are using Thymeleaf you would add an `error.html` template and
+if you are using FreeMarker you would add an `error.ftl` template. In general what you
+need is a `View` that resolves with a name of `error`, and/or a `@Controller` that handles
+the `/error` path. Unless you replaced some of the default configuration you should find
+a `BeanNameViewResolver` in your `ApplicationContext` so a `@Bean` with id `error` would
+be a simple way of doing that. Look at
+{sc-spring-boot-autoconfigure}/web/ErrorMvcAutoConfiguration.{sc-ext}[`ErrorMvcAutoConfiguration`] for more options.
 
 See also the section on <<boot-features-error-handling, Error Handling>> for details of
 how to register handlers in the servlet container.
