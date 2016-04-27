@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.web;
+package org.springframework.boot.context.embedded;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
