@@ -71,6 +71,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
+			<artifactId>infinispan-spring4-embedded</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-jcache</artifactId>
 		</dependency>
 		-->
