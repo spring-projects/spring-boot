@@ -88,4 +88,7 @@ do as they were designed before this was clarified.
 | https://camunda.org/[Camunda BPM]
 | https://github.com/camunda/camunda-bpm-spring-boot-starter
 
+| http://ff4j.org/[Feature Flipping For Java (FF4J)]
+| https://github.com/clun/ff4j/
+
 |===
