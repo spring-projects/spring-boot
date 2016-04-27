@@ -63,13 +63,13 @@ class SpringApplicationBannerPrinter {
 		catch (UnsupportedEncodingException ex) {
 			logger.warn("Failed to create String for banner", ex);
 		}
-		return banner;
+		return new PrintedBanner(banner, sourceClass);
 	}
 
 	public Banner print(Environment environment, Class<?> sourceClass, PrintStream out) {
 		Banner banner = getBanner(environment, this.fallbackBanner);
 		banner.printBanner(environment, sourceClass, out);
-		return banner;
+		return new PrintedBanner(banner, sourceClass);
 	}
 
 	private Banner getBanner(Environment environment, Banner definedBanner) {
@@ -141,6 +141,30 @@ class SpringApplicationBannerPrinter {
 			for (Banner banner : this.banners) {
 				banner.printBanner(environment, sourceClass, out);
 			}
+		}
+
+	}
+
+	/**
+	 * Decorator that allows a {@link Banner} to be printed again without needing to
+	 * specify the source class.
+	 */
+	private static class PrintedBanner implements Banner {
+
+		private final Banner banner;
+
+		private final Class<?> sourceClass;
+
+		PrintedBanner(Banner banner, Class<?> sourceClass) {
+			this.banner = banner;
+			this.sourceClass = sourceClass;
+		}
+
+		@Override
+		public void printBanner(Environment environment, Class<?> sourceClass,
+				PrintStream out) {
+			sourceClass = (sourceClass == null ? this.sourceClass : sourceClass);
+			this.banner.printBanner(environment, sourceClass, out);
 		}
 
 	}
