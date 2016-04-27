@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.embedded;
+package org.springframework.boot.web.servlet;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.Assert;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
 /**
@@ -40,22 +44,53 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  * be used as the filter name if not otherwise specified.
  *
  * @author Phillip Webb
- * @since 1.3.0
+ * @since 1.4.0
  * @see ServletContextInitializer
  * @see ServletContext#addFilter(String, Filter)
  * @see FilterRegistrationBean
  * @see DelegatingFilterProxy
- * @deprecated as of 1.4 in favor of
- * org.springframework.boot.web.DelegatingFilterProxyRegistrationBean
  */
-@Deprecated
-public class DelegatingFilterProxyRegistrationBean
-		extends org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean
-		implements org.springframework.boot.context.embedded.ServletContextInitializer {
+public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistrationBean
+		implements ApplicationContextAware {
 
+	private ApplicationContext applicationContext;
+
+	private final String targetBeanName;
+
+	/**
+	 * Create a new {@link DelegatingFilterProxyRegistrationBean} instance to be
+	 * registered with the specified {@link ServletRegistrationBean}s.
+	 * @param targetBeanName name of the target filter bean to look up in the Spring
+	 * application context (must not be {@code null}).
+	 * @param servletRegistrationBeans associate {@link ServletRegistrationBean}s
+	 */
 	public DelegatingFilterProxyRegistrationBean(String targetBeanName,
 			ServletRegistrationBean... servletRegistrationBeans) {
-		super(targetBeanName, servletRegistrationBeans);
+		super(servletRegistrationBeans);
+		Assert.hasLength(targetBeanName, "TargetBeanName must not be null or empty");
+		this.targetBeanName = targetBeanName;
+		setName(targetBeanName);
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		this.applicationContext = applicationContext;
+	}
+
+	protected String getTargetBeanName() {
+		return this.targetBeanName;
+	}
+
+	@Override
+	public Filter getFilter() {
+		return new DelegatingFilterProxy(this.targetBeanName, getWebApplicationContext());
+	}
+
+	private WebApplicationContext getWebApplicationContext() {
+		Assert.notNull(this.applicationContext, "ApplicationContext be injected");
+		Assert.isInstanceOf(WebApplicationContext.class, this.applicationContext);
+		return (WebApplicationContext) this.applicationContext;
 	}
 
 }

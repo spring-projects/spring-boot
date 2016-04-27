@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.embedded;
+package org.springframework.boot.web.servlet;
 
 import javax.servlet.Filter;
 

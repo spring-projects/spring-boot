@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.web;
+package org.springframework.boot.web.filter;
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.core.Ordered;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 
@@ -23,17 +24,30 @@ import org.springframework.web.filter.HiddenHttpMethodFilter;
  * {@link HiddenHttpMethodFilter} that also implements {@link Ordered}.
  *
  * @author Phillip Webb
- * @since 1.2.4
- * @deprecated as of 1.4 in favor of
- * org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter
+ * @since 1.4.0
  */
-@Deprecated
-public class OrderedHiddenHttpMethodFilter
-		extends org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter {
+public class OrderedHiddenHttpMethodFilter extends HiddenHttpMethodFilter
+		implements Ordered {
 
 	/**
 	 * The default order is high to ensure the filter is applied before Spring Security.
 	 */
-	public static final int DEFAULT_ORDER = org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter.DEFAULT_ORDER;
+	public static final int DEFAULT_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
+			- 10000;
+
+	private int order = DEFAULT_ORDER;
+
+	@Override
+	public int getOrder() {
+		return this.order;
+	}
+
+	/**
+	 * Set the order for this filter.
+	 * @param order the order to set
+	 */
+	public void setOrder(int order) {
+		this.order = order;
+	}
 
 }

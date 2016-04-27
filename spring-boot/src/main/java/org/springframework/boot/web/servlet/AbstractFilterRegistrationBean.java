@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.embedded;
+package org.springframework.boot.web.servlet;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,11 +49,11 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
-	static final EnumSet<DispatcherType> ASYNC_DISPATCHER_TYPES = EnumSet.of(
+	private static final EnumSet<DispatcherType> ASYNC_DISPATCHER_TYPES = EnumSet.of(
 			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST,
 			DispatcherType.ASYNC);
 
-	static final EnumSet<DispatcherType> NON_ASYNC_DISPATCHER_TYPES = EnumSet
+	private static final EnumSet<DispatcherType> NON_ASYNC_DISPATCHER_TYPES = EnumSet
 			.of(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
 
 	private static final String[] DEFAULT_URL_MAPPINGS = { "/*" };

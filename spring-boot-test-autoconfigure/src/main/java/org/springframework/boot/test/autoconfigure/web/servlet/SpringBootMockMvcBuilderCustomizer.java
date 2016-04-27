@@ -20,10 +20,10 @@ import java.util.Collection;
 
 import javax.servlet.Filter;
 
-import org.springframework.boot.context.embedded.DelegatingFilterProxyRegistrationBean;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
-import org.springframework.boot.context.embedded.ServletContextInitializerBeans;
+import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.ServletContextInitializerBeans;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.ConfigurableMockMvcBuilder;
 import org.springframework.util.Assert;

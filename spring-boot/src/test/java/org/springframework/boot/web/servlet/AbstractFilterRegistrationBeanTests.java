@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.embedded;
+package org.springframework.boot.web.servlet;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,6 +49,13 @@ import static org.mockito.Mockito.verify;
  */
 public abstract class AbstractFilterRegistrationBeanTests {
 
+	private static final EnumSet<DispatcherType> ASYNC_DISPATCHER_TYPES = EnumSet.of(
+			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST,
+			DispatcherType.ASYNC);
+
+	private static final EnumSet<DispatcherType> NON_ASYNC_DISPATCHER_TYPES = EnumSet
+			.of(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -71,8 +78,8 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addFilter(eq("mockFilter"), getExpectedFilter());
 		verify(this.registration).setAsyncSupported(true);
-		verify(this.registration).addMappingForUrlPatterns(
-				AbstractFilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "/*");
+		verify(this.registration).addMappingForUrlPatterns(ASYNC_DISPATCHER_TYPES, false,
+				"/*");
 	}
 
 	@Test
@@ -97,12 +104,10 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		expectedInitParameters.put("a", "b");
 		expectedInitParameters.put("c", "d");
 		verify(this.registration).setInitParameters(expectedInitParameters);
-		verify(this.registration).addMappingForUrlPatterns(
-				AbstractFilterRegistrationBean.NON_ASYNC_DISPATCHER_TYPES, true, "/a",
-				"/b", "/c");
-		verify(this.registration).addMappingForServletNames(
-				AbstractFilterRegistrationBean.NON_ASYNC_DISPATCHER_TYPES, true, "s4",
-				"s5", "s1", "s2", "s3");
+		verify(this.registration).addMappingForUrlPatterns(NON_ASYNC_DISPATCHER_TYPES,
+				true, "/a", "/b", "/c");
+		verify(this.registration).addMappingForServletNames(NON_ASYNC_DISPATCHER_TYPES,
+				true, "s4", "s5", "s1", "s2", "s3");
 	}
 
 	@Test
@@ -152,8 +157,8 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		bean.setServletRegistrationBeans(new LinkedHashSet<ServletRegistrationBean>(
 				Arrays.asList(mockServletRegistration("b"))));
 		bean.onStartup(this.servletContext);
-		verify(this.registration).addMappingForServletNames(
-				AbstractFilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "b");
+		verify(this.registration).addMappingForServletNames(ASYNC_DISPATCHER_TYPES, false,
+				"b");
 	}
 
 	@Test

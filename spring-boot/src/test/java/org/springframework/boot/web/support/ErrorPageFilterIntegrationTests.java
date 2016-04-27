@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.web;
+package org.springframework.boot.web.support;
 
 import java.net.URI;
 import java.util.concurrent.CountDownLatch;
@@ -32,8 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.context.web.ErrorPageFilterIntegrationTests.EmbeddedWebContextLoader;
-import org.springframework.boot.context.web.ErrorPageFilterIntegrationTests.TomcatConfig;
+import org.springframework.boot.web.support.ErrorPageFilterIntegrationTests.EmbeddedWebContextLoader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,7 +65,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@ContextConfiguration(classes = TomcatConfig.class, loader = EmbeddedWebContextLoader.class)
+@ContextConfiguration(classes = ErrorPageFilterIntegrationTests.TomcatConfig.class, loader = EmbeddedWebContextLoader.class)
 public class ErrorPageFilterIntegrationTests {
 
 	@Autowired

@@ -54,7 +54,7 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.web.ApplicationContextHeaderFilter;
+import org.springframework.boot.web.filter.ApplicationContextHeaderFilter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;

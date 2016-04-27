@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.embedded;
+package org.springframework.boot.web.servlet;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 import org.springframework.web.SpringServletContainerInitializer;
 import org.springframework.web.WebApplicationInitializer;
@@ -34,12 +35,18 @@ import org.springframework.web.WebApplicationInitializer;
  * For configuration examples see {@link WebApplicationInitializer}.
  *
  * @author Phillip Webb
+ * @since 1.4.0
  * @see WebApplicationInitializer
- * @deprecated as of 1.4 in favor of
- * org.springframework.boot.web.ServletContextInitializer
  */
-@Deprecated
-public interface ServletContextInitializer
-		extends org.springframework.boot.web.servlet.ServletContextInitializer {
+public interface ServletContextInitializer {
+
+	/**
+	 * Configure the given {@link ServletContext} with any servlets, filters, listeners
+	 * context-params and attributes necessary for initialization.
+	 * @param servletContext the {@code ServletContext} to initialize
+	 * @throws ServletException if any call against the given {@code ServletContext}
+	 * throws a {@code ServletException}
+	 */
+	void onStartup(ServletContext servletContext) throws ServletException;
 
 }

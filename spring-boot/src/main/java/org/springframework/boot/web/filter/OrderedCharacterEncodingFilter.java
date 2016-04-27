@@ -14,11 +14,33 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.web.filter;
+
+import org.springframework.core.Ordered;
+import org.springframework.web.filter.CharacterEncodingFilter;
+
 /**
- * Specialized {@link org.springframework.context.ApplicationContext} that supports
- * embedded servlet containers.
+ * {@link CharacterEncodingFilter} that also implements {@link Ordered}.
  *
- * @see org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
- * @see org.springframework.boot.context.embedded.EmbeddedWebApplicationContext
+ * @author Phillip Webb
+ * @since 1.4.0
  */
-package org.springframework.boot.context.embedded;
+public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter
+		implements Ordered {
+
+	private int order = Ordered.HIGHEST_PRECEDENCE;
+
+	@Override
+	public int getOrder() {
+		return this.order;
+	}
+
+	/**
+	 * Set the order for this filter.
+	 * @param order the order to set
+	 */
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
+}

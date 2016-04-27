@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.config.ExampleEmbeddedWebApplicationConfiguration;
+import org.springframework.boot.testutil.MockServlet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;

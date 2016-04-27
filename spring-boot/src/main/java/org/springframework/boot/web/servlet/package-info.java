@@ -15,10 +15,6 @@
  */
 
 /**
- * Specialized {@link org.springframework.context.ApplicationContext} that supports
- * embedded servlet containers.
- *
- * @see org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
- * @see org.springframework.boot.context.embedded.EmbeddedWebApplicationContext
+ * Classes and utilities designed to work with the `javax.servlet` specification.
  */
-package org.springframework.boot.context.embedded;
+package org.springframework.boot.web.servlet;

@@ -24,8 +24,6 @@ import sample.hibernate4.domain.Hotel;
 import sample.hibernate4.domain.HotelSummary;
 import sample.hibernate4.domain.Rating;
 import sample.hibernate4.domain.RatingCount;
-import sample.hibernate4.service.CityRepository;
-import sample.hibernate4.service.HotelRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

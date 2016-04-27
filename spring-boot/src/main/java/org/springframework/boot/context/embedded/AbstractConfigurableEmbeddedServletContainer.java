@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -234,7 +236,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	}
 
 	@Override
-	public void setErrorPages(Set<ErrorPage> errorPages) {
+	public void setErrorPages(Set<? extends ErrorPage> errorPages) {
 		Assert.notNull(errorPages, "ErrorPages must not be null");
 		this.errorPages = new LinkedHashSet<ErrorPage>(errorPages);
 	}

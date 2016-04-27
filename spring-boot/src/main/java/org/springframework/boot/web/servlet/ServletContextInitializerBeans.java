@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.embedded;
+package org.springframework.boot.web.servlet;
 
 import java.util.AbstractCollection;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ import org.springframework.util.MultiValueMap;
 public class ServletContextInitializerBeans
 		extends AbstractCollection<ServletContextInitializer> {
 
-	static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
+	private static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
 
 	private static final Log logger = LogFactory
 			.getLog(ServletContextInitializerBeans.class);
