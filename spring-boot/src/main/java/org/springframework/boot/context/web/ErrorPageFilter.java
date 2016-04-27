@@ -16,21 +16,22 @@
 
 package org.springframework.boot.context.web;
 
-import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import javax.servlet.Filter;
+
+import org.springframework.boot.context.embedded.ErrorPageRegistrar;
+import org.springframework.boot.context.embedded.ErrorPageRegistry;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * A special {@link AbstractConfigurableEmbeddedServletContainer} for non-embedded
+ * A Servlet {@link Filter} that provides an {@link ErrorPageRegistry} for non-embedded
  * applications (i.e. deployed WAR files). It registers error pages and handles
  * application errors by filtering requests and forwarding to the error pages instead of
  * letting the container handle them. Error pages are a feature of the servlet spec but
  * there is no Java API for registering them in the spec. This filter works around that by
- * accepting error page registrations from Spring Boot's
- * {@link EmbeddedServletContainerCustomizer} (any beans of that type in the context will
- * be applied to this container).
+ * accepting error page registrations from Spring Boot's {@link ErrorPageRegistrar} (any
+ * beans of that type in the context will be applied to this container).
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -41,7 +42,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Deprecated
-public class ErrorPageFilter
-		extends org.springframework.boot.web.support.ErrorPageFilter {
+public class ErrorPageFilter extends org.springframework.boot.web.support.ErrorPageFilter
+		implements NonEmbeddedServletContainerFactory {
 
 }

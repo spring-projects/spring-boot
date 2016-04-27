@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.web;
 
 import javax.servlet.MultipartConfigElement;
 
-import org.springframework.boot.context.embedded.MultipartConfigFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -37,9 +37,8 @@ import org.springframework.util.StringUtils;
  * be written to disk immediately.</li>
  * </ul>
  * <p>
- * These properties are ultimately passed through
- * {@link org.springframework.boot.context.embedded.MultipartConfigFactory} which means
- * you may specify the values using {@literal long} values or using more readable
+ * These properties are ultimately passed through {@link MultipartConfigFactory} which
+ * means you may specify the values using {@literal long} values or using more readable
  * {@literal String} variants that accept {@literal Kb} or {@literal Mb} suffixes.
  *
  * @author Josh Long

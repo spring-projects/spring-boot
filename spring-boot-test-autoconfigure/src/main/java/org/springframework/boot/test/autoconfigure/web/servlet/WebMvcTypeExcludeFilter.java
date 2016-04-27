@@ -22,10 +22,10 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.boot.context.embedded.DelegatingFilterProxyRegistrationBean;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.test.autoconfigure.filter.AnnotationCustomizableTypeExcludeFilter;
+import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.type.classreading.MetadataReader;

@@ -28,8 +28,8 @@ import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.web.ServletContextApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.support.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;

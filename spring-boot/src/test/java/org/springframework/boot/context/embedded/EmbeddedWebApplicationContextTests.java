@@ -90,9 +90,6 @@ public class EmbeddedWebApplicationContextTests {
 			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST,
 			DispatcherType.ASYNC);
 
-	private static final EnumSet<DispatcherType> NON_ASYNC_DISPATCHER_TYPES = EnumSet
-			.of(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
