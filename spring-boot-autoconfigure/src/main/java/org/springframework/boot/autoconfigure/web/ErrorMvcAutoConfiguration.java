@@ -39,9 +39,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.servlet.ErrorPageRegistrar;
+import org.springframework.boot.web.servlet.ErrorPageRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -257,8 +258,7 @@ public class ErrorMvcAutoConfiguration {
 	 * {@link EmbeddedServletContainerCustomizer} that configures the container's error
 	 * pages.
 	 */
-	private static class ErrorPageCustomizer
-			implements EmbeddedServletContainerCustomizer, Ordered {
+	private static class ErrorPageCustomizer implements ErrorPageRegistrar, Ordered {
 
 		private final ServerProperties properties;
 
@@ -267,9 +267,10 @@ public class ErrorMvcAutoConfiguration {
 		}
 
 		@Override
-		public void customize(ConfigurableEmbeddedServletContainer container) {
-			container.addErrorPages(new ErrorPage(this.properties.getServletPrefix()
-					+ this.properties.getError().getPath()));
+		public void registerErrorPages(ErrorPageRegistry errorPageRegistry) {
+			ErrorPage errorPage = new ErrorPage(this.properties.getServletPrefix()
+					+ this.properties.getError().getPath());
+			errorPageRegistry.addErrorPages(errorPage);
 		}
 
 		@Override

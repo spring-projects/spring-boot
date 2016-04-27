@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.web;
-
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.web.servlet.ErrorPageRegistry;
+package org.springframework.boot.web.servlet;
 
 /**
- * Marker interface for {@link EmbeddedServletContainerFactory} types that are actually
- * safe to run in a non-embedded container.
+ * Interface to be implemented by types that register {@link ErrorPage ErrorPages}.
  *
- * @author Dave Syer
- * @deprecated as of 1.4 in favor of {@link ErrorPageRegistry}
+ * @author Phillip Webb
+ * @since 1.4.0
  */
-@Deprecated
-public interface NonEmbeddedServletContainerFactory {
+public interface ErrorPageRegistrar {
+
+	/**
+	 * Register pages as required with the given registry.
+	 * @param registry the error page registry
+	 */
+	void registerErrorPages(ErrorPageRegistry registry);
 
 }

@@ -33,10 +33,9 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.web.NonEmbeddedServletContainerFactory;
 import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.servlet.ErrorPageRegistrar;
+import org.springframework.boot.web.servlet.ErrorPageRegistry;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -44,14 +43,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.NestedServletException;
 
 /**
- * A special {@link AbstractConfigurableEmbeddedServletContainer} for non-embedded
+ * A Servlet {@link Filter} that provides an {@link ErrorPageRegistry} for non-embedded
  * applications (i.e. deployed WAR files). It registers error pages and handles
  * application errors by filtering requests and forwarding to the error pages instead of
  * letting the container handle them. Error pages are a feature of the servlet spec but
  * there is no Java API for registering them in the spec. This filter works around that by
- * accepting error page registrations from Spring Boot's
- * {@link EmbeddedServletContainerCustomizer} (any beans of that type in the context will
- * be applied to this container).
+ * accepting error page registrations from Spring Boot's {@link ErrorPageRegistrar} (any
+ * beans of that type in the context will be applied to this container).
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -60,8 +58,7 @@ import org.springframework.web.util.NestedServletException;
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer
-		implements Filter, NonEmbeddedServletContainerFactory {
+public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 	private static final Log logger = LogFactory.getLog(ErrorPageFilter.class);
 

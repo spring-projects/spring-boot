@@ -18,8 +18,8 @@ package org.springframework.boot.context.web;
 
 import javax.servlet.Filter;
 
-import org.springframework.boot.context.embedded.ErrorPageRegistrar;
-import org.springframework.boot.context.embedded.ErrorPageRegistry;
+import org.springframework.boot.web.servlet.ErrorPageRegistrar;
+import org.springframework.boot.web.servlet.ErrorPageRegistry;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
