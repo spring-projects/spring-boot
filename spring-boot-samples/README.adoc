@@ -57,7 +57,7 @@ The following sample applications are provided:
 | Stores data using Spring Data MongoDB
 
 | link:spring-boot-sample-data-neo4j[spring-boot-sample-data-neo4j]
-| Stores data using Spring Data Redis
+| Stores data using Spring Data Neo4j
 
 | link:spring-boot-sample-data-redis[spring-boot-sample-data-redis]
 | Stores data using Spring Data Redis
