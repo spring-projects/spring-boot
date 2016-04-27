@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -37,6 +38,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
@@ -72,6 +74,12 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	 */
 	private Boolean sensitive;
 
+	/**
+	 * External Logfile to be accessed. Can be used if the logfile is written by output
+	 * redirect and not by the logging-system itself.
+	 */
+	private File externalFile;
+
 	private Environment environment;
 
 	@Override
@@ -105,6 +113,14 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		this.sensitive = sensitive;
 	}
 
+	public void setExternalFile(File externalFile) {
+		Assert.isTrue(externalFile.exists(),
+				"ExternalFile '" + externalFile + "' does not exist");
+		Assert.isTrue(externalFile.canRead(),
+				"ExternalFile '" + externalFile + "' cannot be read");
+		this.externalFile = externalFile;
+	}
+
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Class<? extends Endpoint> getEndpointType() {
@@ -123,12 +139,18 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	}
 
 	private Resource getLogFileResource() {
-		LogFile logFile = LogFile.get(this.environment);
-		if (logFile == null) {
-			logger.debug("Missing 'logging.file' or 'logging.path' properties");
-			return null;
+		FileSystemResource resource;
+		if (this.externalFile != null) {
+			resource = new FileSystemResource(this.externalFile);
 		}
-		FileSystemResource resource = new FileSystemResource(logFile.toString());
+		else {
+			LogFile logFile = LogFile.get(this.environment);
+			if (logFile == null) {
+				logger.debug("Missing 'logging.file' or 'logging.path' properties");
+				return null;
+			}
+			resource = new FileSystemResource(logFile.toString());
+		}
 		if (!resource.exists()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Log file '" + resource + "' does not exist");
