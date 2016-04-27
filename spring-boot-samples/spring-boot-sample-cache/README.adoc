@@ -9,6 +9,7 @@ abstraction is supported by many caching libraries, including:
 * `Infinispan`
 * `Couchbase`
 * `Redis`
+* `Caffeine`
 * `Guava`
 * Simple provider based on `ConcurrentHashMap`
 * Generic provider based on `org.springframework.Cache` bean definition(s)
@@ -57,6 +58,13 @@ of the library that you want to use.
 
 === EhCache 2.x
 Simply add the `net.sf.ehcache:ehcache` dependency to the project. Since there is a
+default `ehcache.xml` configuration file at the root of the classpath, it is automatically
+used to configure the underlying `CacheManager`.
+
+
+
+=== EhCache 3.x
+Simply add the `org.ehcache:ehcache` dependency to the project. Since there is a
 default `ehcache.xml` configuration file at the root of the classpath, it is automatically
 used to configure the underlying `CacheManager`.
 
