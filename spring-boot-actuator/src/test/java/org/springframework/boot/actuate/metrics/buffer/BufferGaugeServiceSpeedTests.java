@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.lang.UsesJava8;
 import org.springframework.util.StopWatch;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Speed tests for {@link BufferGaugeService}.
@@ -117,7 +117,7 @@ public class BufferGaugeServiceSpeedTests {
 				});
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
-		assertTrue(number * threadCount < total.longValue());
+		assertThat(number * threadCount < total.longValue()).isTrue();
 	}
 
 	@Theory
@@ -141,7 +141,7 @@ public class BufferGaugeServiceSpeedTests {
 		});
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
-		assertTrue(0 < total.longValue());
+		assertThat(0 < total.longValue()).isTrue();
 	}
 
 	private void iterate(String taskName) throws Exception {

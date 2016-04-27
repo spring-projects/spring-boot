@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,32 +22,31 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.context.web.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(SampleHypermediaApplication.class)
-@WebIntegrationTest(randomPort = true)
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SampleHypermediaApplicationHomePageTests {
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port;
 
 	@Test
 	public void home() {
 		String response = new TestRestTemplate()
 				.getForObject("http://localhost:" + this.port, String.class);
-		assertTrue("Wrong body: " + response, response.contains("404"));
+		assertThat(response).contains("404");
 	}
 
 	@Test
@@ -58,7 +57,7 @@ public class SampleHypermediaApplicationHomePageTests {
 				new RequestEntity<Void>(headers, HttpMethod.GET,
 						new URI("http://localhost:" + this.port + "/actuator")),
 				String.class);
-		assertTrue("Wrong body: " + response, response.getBody().contains("\"_links\":"));
+		assertThat(response.getBody()).contains("\"_links\":");
 	}
 
 	@Test
@@ -69,7 +68,7 @@ public class SampleHypermediaApplicationHomePageTests {
 				new RequestEntity<Void>(headers, HttpMethod.GET,
 						new URI("http://localhost:" + this.port + "/actuator/")),
 				String.class);
-		assertTrue("Wrong body: " + response, response.getBody().contains("HAL Browser"));
+		assertThat(response.getBody()).contains("HAL Browser");
 	}
 
 }

@@ -52,11 +52,11 @@ import org.springframework.util.MultiValueMap;
  * end. Further sorting is applied within these groups using the
  * {@link AnnotationAwareOrderComparator}.
  *
- *
  * @author Dave Syer
  * @author Phillip Webb
+ * @since 1.4.0
  */
-class ServletContextInitializerBeans
+public class ServletContextInitializerBeans
 		extends AbstractCollection<ServletContextInitializer> {
 
 	static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
@@ -73,7 +73,7 @@ class ServletContextInitializerBeans
 
 	private List<ServletContextInitializer> sortedList;
 
-	ServletContextInitializerBeans(ListableBeanFactory beanFactory) {
+	public ServletContextInitializerBeans(ListableBeanFactory beanFactory) {
 		this.initializers = new LinkedMultiValueMap<Class<?>, ServletContextInitializer>();
 		addServletContextInitializerBeans(beanFactory);
 		addAdaptableBeans(beanFactory);

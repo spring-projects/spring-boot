@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,32 +93,6 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setAddress(InetAddress address);
 
 	/**
-	 * The class name for the jsp servlet if used. If
-	 * {@link #setRegisterJspServlet(boolean) registerJspServlet} is true <b>and</b> this
-	 * class is on the classpath then it will be registered. Since both Tomcat and Jetty
-	 * use Jasper for their JSP implementation the default is
-	 * {@code org.apache.jasper.servlet.JspServlet}.
-	 * @param jspServletClassName the class name for the JSP servlet if used
-	 * @deprecated in 1.3.0 in favor of {@link JspServlet#setClassName(String)}
-	 * @see #setJspServlet
-	 * @see JspServlet#setClassName(String)
-	 */
-	@Deprecated
-	void setJspServletClassName(String jspServletClassName);
-
-	/**
-	 * Set if the JspServlet should be registered if it is on the classpath. Defaults to
-	 * {@code true} so that files from the {@link #setDocumentRoot(File) document root}
-	 * will be served.
-	 * @param registerJspServlet if the JSP servlet should be registered
-	 * @deprecated in 1.3.0 in favor of {@link JspServlet#setRegistered(boolean)}
-	 * @see #setJspServlet
-	 * @see JspServlet#setRegistered(boolean)
-	 */
-	@Deprecated
-	void setRegisterJspServlet(boolean registerJspServlet);
-
-	/**
 	 * Set if the DefaultServlet should be registered. Defaults to {@code true} so that
 	 * files from the {@link #setDocumentRoot(File) document root} will be served.
 	 * @param registerDefaultServlet if the default servlet should be registered
@@ -176,6 +150,12 @@ public interface ConfigurableEmbeddedServletContainer {
 	 * @param ssl the SSL configuration
 	 */
 	void setSsl(Ssl ssl);
+
+	/**
+	 * Sets a provider that will be used to obtain SSL stores.
+	 * @param sslStoreProvider the SSL store provider
+	 */
+	void setSslStoreProvider(SslStoreProvider sslStoreProvider);
 
 	/**
 	 * Sets the configuration that will be applied to the container's JSP servlet.

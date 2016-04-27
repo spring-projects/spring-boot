@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package org.springframework.boot.autoconfigure.social;
 
 import org.junit.Test;
 
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link FacebookAutoConfiguration}.
@@ -42,7 +42,7 @@ public class FacebookAutoConfigurationTests extends AbstractSocialAutoConfigurat
 		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertConnectionFrameworkBeans();
-		assertNotNull(this.context.getBean(Facebook.class));
+		assertThat(this.context.getBean(Facebook.class)).isNotNull();
 	}
 
 	@Test

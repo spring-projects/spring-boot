@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,11 +36,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.loader.ByteArrayStartsWith;
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RandomAccessDataFile}.
@@ -118,7 +115,7 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void inputStreamRead() throws Exception {
 		for (int i = 0; i <= 255; i++) {
-			assertThat(this.inputStream.read(), equalTo(i));
+			assertThat(this.inputStream.read()).isEqualTo(i);
 		}
 	}
 
@@ -140,8 +137,8 @@ public class RandomAccessDataFileTests {
 	public void inputStreamReadBytes() throws Exception {
 		byte[] b = new byte[256];
 		int amountRead = this.inputStream.read(b);
-		assertThat(b, equalTo(BYTES));
-		assertThat(amountRead, equalTo(256));
+		assertThat(b).isEqualTo(BYTES);
+		assertThat(amountRead).isEqualTo(256);
 	}
 
 	@Test
@@ -149,54 +146,54 @@ public class RandomAccessDataFileTests {
 		byte[] b = new byte[7];
 		this.inputStream.skip(1);
 		int amountRead = this.inputStream.read(b, 2, 3);
-		assertThat(b, equalTo(new byte[] { 0, 0, 1, 2, 3, 0, 0 }));
-		assertThat(amountRead, equalTo(3));
+		assertThat(b).isEqualTo(new byte[] { 0, 0, 1, 2, 3, 0, 0 });
+		assertThat(amountRead).isEqualTo(3);
 	}
 
 	@Test
 	public void inputStreamReadMoreBytesThanAvailable() throws Exception {
 		byte[] b = new byte[257];
 		int amountRead = this.inputStream.read(b);
-		assertThat(b, startsWith(BYTES));
-		assertThat(amountRead, equalTo(256));
+		assertThat(b).startsWith(BYTES);
+		assertThat(amountRead).isEqualTo(256);
 	}
 
 	@Test
 	public void inputStreamReadPastEnd() throws Exception {
 		this.inputStream.skip(255);
-		assertThat(this.inputStream.read(), equalTo(0xFF));
-		assertThat(this.inputStream.read(), equalTo(-1));
-		assertThat(this.inputStream.read(), equalTo(-1));
+		assertThat(this.inputStream.read()).isEqualTo(0xFF);
+		assertThat(this.inputStream.read()).isEqualTo(-1);
+		assertThat(this.inputStream.read()).isEqualTo(-1);
 	}
 
 	@Test
 	public void inputStreamReadZeroLength() throws Exception {
 		byte[] b = new byte[] { 0x0F };
 		int amountRead = this.inputStream.read(b, 0, 0);
-		assertThat(b, equalTo(new byte[] { 0x0F }));
-		assertThat(amountRead, equalTo(0));
-		assertThat(this.inputStream.read(), equalTo(0));
+		assertThat(b).isEqualTo(new byte[] { 0x0F });
+		assertThat(amountRead).isEqualTo(0);
+		assertThat(this.inputStream.read()).isEqualTo(0);
 	}
 
 	@Test
 	public void inputStreamSkip() throws Exception {
 		long amountSkipped = this.inputStream.skip(4);
-		assertThat(this.inputStream.read(), equalTo(4));
-		assertThat(amountSkipped, equalTo(4L));
+		assertThat(this.inputStream.read()).isEqualTo(4);
+		assertThat(amountSkipped).isEqualTo(4L);
 	}
 
 	@Test
 	public void inputStreamSkipMoreThanAvailable() throws Exception {
 		long amountSkipped = this.inputStream.skip(257);
-		assertThat(this.inputStream.read(), equalTo(-1));
-		assertThat(amountSkipped, equalTo(256L));
+		assertThat(this.inputStream.read()).isEqualTo(-1);
+		assertThat(amountSkipped).isEqualTo(256L);
 	}
 
 	@Test
 	public void inputStreamSkipPastEnd() throws Exception {
 		this.inputStream.skip(256);
 		long amountSkipped = this.inputStream.skip(1);
-		assertThat(amountSkipped, equalTo(0L));
+		assertThat(amountSkipped).isEqualTo(0L);
 	}
 
 	@Test
@@ -214,8 +211,8 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void subsectionZeroLength() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(0, 0);
-		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read(),
-				equalTo(-1));
+		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read())
+				.isEqualTo(-1);
 	}
 
 	@Test
@@ -235,16 +232,17 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void subsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 1);
-		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read(), equalTo(1));
+		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read())
+				.isEqualTo(1);
 	}
 
 	@Test
 	public void inputStreamReadPastSubsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 2);
 		InputStream inputStream = subsection.getInputStream(ResourceAccess.PER_READ);
-		assertThat(inputStream.read(), equalTo(1));
-		assertThat(inputStream.read(), equalTo(2));
-		assertThat(inputStream.read(), equalTo(-1));
+		assertThat(inputStream.read()).isEqualTo(1);
+		assertThat(inputStream.read()).isEqualTo(2);
+		assertThat(inputStream.read()).isEqualTo(-1);
 	}
 
 	@Test
@@ -253,26 +251,26 @@ public class RandomAccessDataFileTests {
 		InputStream inputStream = subsection.getInputStream(ResourceAccess.PER_READ);
 		byte[] b = new byte[3];
 		int amountRead = inputStream.read(b);
-		assertThat(b, equalTo(new byte[] { 1, 2, 0 }));
-		assertThat(amountRead, equalTo(2));
+		assertThat(b).isEqualTo(new byte[] { 1, 2, 0 });
+		assertThat(amountRead).isEqualTo(2);
 	}
 
 	@Test
 	public void inputStreamSkipPastSubsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 2);
 		InputStream inputStream = subsection.getInputStream(ResourceAccess.PER_READ);
-		assertThat(inputStream.skip(3), equalTo(2L));
-		assertThat(inputStream.read(), equalTo(-1));
+		assertThat(inputStream.skip(3)).isEqualTo(2L);
+		assertThat(inputStream.read()).isEqualTo(-1);
 	}
 
 	@Test
 	public void inputStreamSkipNegative() throws Exception {
-		assertThat(this.inputStream.skip(-1), equalTo(0L));
+		assertThat(this.inputStream.skip(-1)).isEqualTo(0L);
 	}
 
 	@Test
 	public void getFile() throws Exception {
-		assertThat(this.file.getFile(), equalTo(this.tempFile));
+		assertThat(this.file.getFile()).isEqualTo(this.tempFile);
 	}
 
 	@Test
@@ -294,7 +292,7 @@ public class RandomAccessDataFileTests {
 			}));
 		}
 		for (Future<Boolean> future : results) {
-			assertThat(future.get(), equalTo(true));
+			assertThat(future.get()).isTrue();
 		}
 	}
 
@@ -308,11 +306,7 @@ public class RandomAccessDataFileTests {
 		Field filesField = filePool.getClass().getDeclaredField("files");
 		filesField.setAccessible(true);
 		Queue<?> queue = (Queue<?>) filesField.get(filePool);
-		assertThat(queue.size(), equalTo(0));
-	}
-
-	private static Matcher<? super byte[]> startsWith(byte[] bytes) {
-		return new ByteArrayStartsWith(bytes);
+		assertThat(queue.size()).isEqualTo(0);
 	}
 
 }

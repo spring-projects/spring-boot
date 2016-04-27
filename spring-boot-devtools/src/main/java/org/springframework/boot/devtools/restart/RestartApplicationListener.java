@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,19 @@
 
 package org.springframework.boot.devtools.restart;
 
-import java.util.List;
-
 import org.springframework.boot.context.event.ApplicationFailedEvent;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * {@link ApplicationListener} to initialize the {@link Restarter}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.3.0
  * @see Restarter
  */
@@ -45,9 +44,16 @@ public class RestartApplicationListener
 		if (event instanceof ApplicationStartedEvent) {
 			onApplicationStartedEvent((ApplicationStartedEvent) event);
 		}
+		if (event instanceof ApplicationPreparedEvent) {
+			Restarter.getInstance()
+					.prepare(((ApplicationPreparedEvent) event).getApplicationContext());
+		}
 		if (event instanceof ApplicationReadyEvent
 				|| event instanceof ApplicationFailedEvent) {
 			Restarter.getInstance().finish();
+			if (event instanceof ApplicationFailedEvent) {
+				Restarter.getInstance().prepare(null);
+			}
 		}
 	}
 
@@ -59,11 +65,7 @@ public class RestartApplicationListener
 			String[] args = event.getArgs();
 			DefaultRestartInitializer initializer = new DefaultRestartInitializer();
 			boolean restartOnInitialize = !AgentReloader.isActive();
-			List<RestartListener> restartListeners = SpringFactoriesLoader
-					.loadFactories(RestartListener.class, getClass().getClassLoader());
-			Restarter.initialize(args, false, initializer, restartOnInitialize,
-					restartListeners
-							.toArray(new RestartListener[restartListeners.size()]));
+			Restarter.initialize(args, false, initializer, restartOnInitialize);
 		}
 		else {
 			Restarter.disable();

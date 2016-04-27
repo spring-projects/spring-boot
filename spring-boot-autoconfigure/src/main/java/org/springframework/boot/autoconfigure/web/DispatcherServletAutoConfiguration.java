@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.List;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletRegistration;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -79,14 +79,19 @@ public class DispatcherServletAutoConfiguration {
 	@EnableConfigurationProperties(WebMvcProperties.class)
 	protected static class DispatcherServletConfiguration {
 
-		@Autowired
-		private ServerProperties server;
+		private final ServerProperties server;
 
-		@Autowired
-		private WebMvcProperties webMvcProperties;
+		private final WebMvcProperties webMvcProperties;
 
-		@Autowired(required = false)
-		private MultipartConfigElement multipartConfig;
+		private final MultipartConfigElement multipartConfig;
+
+		public DispatcherServletConfiguration(ServerProperties server,
+				WebMvcProperties webMvcProperties,
+				ObjectProvider<MultipartConfigElement> multipartConfigProvider) {
+			this.server = server;
+			this.webMvcProperties = webMvcProperties;
+			this.multipartConfig = multipartConfigProvider.getIfAvailable();
+		}
 
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 		public DispatcherServlet dispatcherServlet() {

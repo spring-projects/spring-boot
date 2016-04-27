@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -85,6 +86,7 @@ import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
+import org.springframework.web.servlet.resource.GzipResourceResolver;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.resource.ResourceResolver;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
@@ -136,20 +138,27 @@ public class WebMvcAutoConfiguration {
 		private static final Log logger = LogFactory
 				.getLog(WebMvcConfigurerAdapter.class);
 
-		@Autowired
-		private ResourceProperties resourceProperties = new ResourceProperties();
+		private final ResourceProperties resourceProperties;
 
-		@Autowired
-		private WebMvcProperties mvcProperties = new WebMvcProperties();
+		private final WebMvcProperties mvcProperties;
 
-		@Autowired
-		private ListableBeanFactory beanFactory;
+		private final ListableBeanFactory beanFactory;
 
-		@Autowired
-		private HttpMessageConverters messageConverters;
+		private final HttpMessageConverters messageConverters;
 
-		@Autowired(required = false)
-		ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+		final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+
+		public WebMvcAutoConfigurationAdapter(ResourceProperties resourceProperties,
+				WebMvcProperties mvcProperties, ListableBeanFactory beanFactory,
+				HttpMessageConverters messageConverters,
+				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider) {
+			this.resourceProperties = resourceProperties;
+			this.mvcProperties = mvcProperties;
+			this.beanFactory = beanFactory;
+			this.messageConverters = messageConverters;
+			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider
+					.getIfAvailable();
+		}
 
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -295,8 +304,11 @@ public class WebMvcAutoConfiguration {
 		@ConditionalOnProperty(value = "spring.mvc.favicon.enabled", matchIfMissing = true)
 		public static class FaviconConfiguration {
 
-			@Autowired
-			private ResourceProperties resourceProperties = new ResourceProperties();
+			private final ResourceProperties resourceProperties;
+
+			public FaviconConfiguration(ResourceProperties resourceProperties) {
+				this.resourceProperties = resourceProperties;
+			}
 
 			@Bean
 			public SimpleUrlHandlerMapping faviconHandlerMapping() {
@@ -325,11 +337,16 @@ public class WebMvcAutoConfiguration {
 	@Configuration
 	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration {
 
-		@Autowired(required = false)
-		private WebMvcProperties mvcProperties;
+		private final WebMvcProperties mvcProperties;
 
-		@Autowired
-		private ListableBeanFactory beanFactory;
+		private final ListableBeanFactory beanFactory;
+
+		public EnableWebMvcConfiguration(
+				ObjectProvider<WebMvcProperties> mvcPropertiesProvider,
+				ListableBeanFactory beanFactory) {
+			this.mvcProperties = mvcPropertiesProvider.getIfAvailable();
+			this.beanFactory = beanFactory;
+		}
 
 		@Bean
 		@Override
@@ -395,6 +412,9 @@ public class WebMvcAutoConfiguration {
 			Strategy strategy = properties.getStrategy();
 			if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
 				chain.addResolver(getVersionResourceResolver(strategy));
+			}
+			if (properties.isGzipped()) {
+				chain.addResolver(new GzipResourceResolver());
 			}
 			if (properties.isHtmlApplicationCache()) {
 				chain.addTransformer(new AppCacheManifestTransformer());

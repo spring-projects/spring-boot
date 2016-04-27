@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HealthEndpoint}.
@@ -47,7 +46,7 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 	@Test
 	public void invoke() throws Exception {
 		// As FINE isn't configured in the order we get UNKNOWN
-		assertThat(getEndpointBean().invoke().getStatus(), equalTo(Status.UNKNOWN));
+		assertThat(getEndpointBean().invoke().getStatus()).isEqualTo(Status.UNKNOWN);
 	}
 
 	@Configuration

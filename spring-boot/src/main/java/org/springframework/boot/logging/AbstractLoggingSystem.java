@@ -170,7 +170,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	}
 
 	protected final void applySystemProperties(Environment environment, LogFile logFile) {
-		new LoggingSytemProperties(environment).apply(logFile);
+		new LoggingSystemProperties(environment).apply(logFile);
 	}
 
 }

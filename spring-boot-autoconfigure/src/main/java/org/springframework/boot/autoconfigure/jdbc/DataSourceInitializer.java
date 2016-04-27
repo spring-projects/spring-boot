@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @since 1.1.0
  * @see DataSourceAutoConfiguration
  */
@@ -78,7 +79,9 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 	private void runSchemaScripts() {
 		List<Resource> scripts = getScripts(this.properties.getSchema(), "schema");
 		if (!scripts.isEmpty()) {
-			runScripts(scripts);
+			String username = this.properties.getSchemaUsername();
+			String password = this.properties.getSchemaPassword();
+			runScripts(scripts, username, password);
 			try {
 				this.applicationContext
 						.publishEvent(new DataSourceInitializedEvent(this.dataSource));
@@ -111,7 +114,9 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 
 	private void runDataScripts() {
 		List<Resource> scripts = getScripts(this.properties.getData(), "data");
-		runScripts(scripts);
+		String username = this.properties.getDataUsername();
+		String password = this.properties.getDataPassword();
+		runScripts(scripts, username, password);
 	}
 
 	private List<Resource> getScripts(String locations, String fallback) {
@@ -141,7 +146,7 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 		return resources;
 	}
 
-	private void runScripts(List<Resource> resources) {
+	private void runScripts(List<Resource> resources, String username, String password) {
 		if (resources.isEmpty()) {
 			return;
 		}
@@ -154,7 +159,14 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 		for (Resource resource : resources) {
 			populator.addScript(resource);
 		}
-		DatabasePopulatorUtils.execute(populator, this.dataSource);
+		DataSource dataSource = this.dataSource;
+		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
+			dataSource = DataSourceBuilder.create(this.properties.getClassLoader())
+					.driverClassName(this.properties.determineDriverClassName())
+					.url(this.properties.determineUrl()).username(username)
+					.password(password).build();
+		}
+		DatabasePopulatorUtils.execute(populator, dataSource);
 	}
 
 }

@@ -30,8 +30,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link IntegrationAutoConfiguration}.
@@ -56,25 +55,7 @@ public class IntegrationAutoConfigurationTests {
 	@Test
 	public void integrationIsAvailable() {
 		load();
-		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
-		assertDomains(mBeanServer, true, "org.springframework.integration",
-				"org.springframework.integration.monitor");
-		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
-	}
-
-	@Test
-	public void disableIntegration() {
-		load("spring.jmx.enabled=false");
-		assertEquals(0, this.context.getBeansOfType(MBeanServer.class).size());
-	}
-
-	@Test
-	public void customizeDomain() {
-		load("spring.jmx.default-domain=org.foo");
-		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
-		assertDomains(mBeanServer, true, "org.foo");
-		assertDomains(mBeanServer, false, "org.springframework.integration",
-				"org.springframework.integration.monitor");
+		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 	}
 
 	@Test
@@ -89,16 +70,39 @@ public class IntegrationAutoConfigurationTests {
 		this.context.register(JmxAutoConfiguration.class,
 				IntegrationAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
+		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 		((ConfigurableApplicationContext) this.context.getParent()).close();
 		this.context.close();
+	}
+
+	@Test
+	public void jmxIntegrationEnabledByDefault() {
+		load();
+		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
+		assertDomains(mBeanServer, true, "org.springframework.integration",
+				"org.springframework.integration.monitor");
+	}
+
+	@Test
+	public void disableJmxIntegration() {
+		load("spring.jmx.enabled=false");
+		assertThat(this.context.getBeansOfType(MBeanServer.class)).hasSize(0);
+	}
+
+	@Test
+	public void customizeJmxDomain() {
+		load("spring.jmx.default-domain=org.foo");
+		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
+		assertDomains(mBeanServer, true, "org.foo");
+		assertDomains(mBeanServer, false, "org.springframework.integration",
+				"org.springframework.integration.monitor");
 	}
 
 	private static void assertDomains(MBeanServer mBeanServer, boolean expected,
 			String... domains) {
 		List<String> actual = Arrays.asList(mBeanServer.getDomains());
 		for (String domain : domains) {
-			assertEquals(expected, actual.contains(domain));
+			assertThat(actual.contains(domain)).isEqualTo(expected);
 		}
 	}
 

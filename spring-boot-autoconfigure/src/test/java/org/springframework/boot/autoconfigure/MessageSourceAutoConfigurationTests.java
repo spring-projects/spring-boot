@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
@@ -32,9 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MessageSourceAutoConfiguration}.
@@ -57,38 +55,39 @@ public class MessageSourceAutoConfigurationTests {
 	@Test
 	public void testDefaultMessageSource() throws Exception {
 		load();
-		assertEquals("Foo message",
-				this.context.getMessage("foo", null, "Foo message", Locale.UK));
+		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
+				.isEqualTo("Foo message");
 	}
 
 	@Test
 	public void testMessageSourceCreated() throws Exception {
 		load("spring.messages.basename:test/messages");
-		assertEquals("bar",
-				this.context.getMessage("foo", null, "Foo message", Locale.UK));
+		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
+				.isEqualTo("bar");
 	}
 
 	@Test
 	public void testEncodingWorks() throws Exception {
 		load("spring.messages.basename:test/swedish");
-		assertEquals("Some text with some swedish öäå!",
-				this.context.getMessage("foo", null, "Foo message", Locale.UK));
+		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
+				.isEqualTo("Some text with some swedish öäå!");
 	}
 
 	@Test
 	public void testMultipleMessageSourceCreated() throws Exception {
 		load("spring.messages.basename:test/messages,test/messages2");
-		assertEquals("bar",
-				this.context.getMessage("foo", null, "Foo message", Locale.UK));
-		assertEquals("bar-bar",
-				this.context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK));
+		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
+				.isEqualTo("bar");
+		assertThat(this.context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK))
+				.isEqualTo("bar-bar");
 	}
 
 	@Test
 	public void testBadEncoding() throws Exception {
 		load("spring.messages.encoding:rubbish");
 		// Bad encoding just means the messages are ignored
-		assertEquals("blah", this.context.getMessage("foo", null, "blah", Locale.UK));
+		assertThat(this.context.getMessage("foo", null, "blah", Locale.UK))
+				.isEqualTo("blah");
 	}
 
 	@Test
@@ -98,24 +97,38 @@ public class MessageSourceAutoConfigurationTests {
 		this.context.register(Config.class, MessageSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals("bar",
-				this.context.getMessage("foo", null, "Foo message", Locale.UK));
+		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
+				.isEqualTo("bar");
 	}
 
 	@Test
 	public void testFallbackDefault() throws Exception {
 		load("spring.messages.basename:test/messages");
-
-		assertTrue(this.context.getBean(MessageSourceAutoConfiguration.class)
-				.isFallbackToSystemLocale());
+		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
+				.isFallbackToSystemLocale()).isTrue();
 	}
 
 	@Test
 	public void testFallbackTurnOff() throws Exception {
 		load("spring.messages.basename:test/messages",
 				"spring.messages.fallback-to-system-locale:false");
-		assertFalse(this.context.getBean(MessageSourceAutoConfiguration.class)
-				.isFallbackToSystemLocale());
+		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
+				.isFallbackToSystemLocale()).isFalse();
+	}
+
+	@Test
+	public void testFormatMessageDefault() throws Exception {
+		load("spring.messages.basename:test/messages");
+		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
+				.isAlwaysUseMessageFormat()).isFalse();
+	}
+
+	@Test
+	public void testFormatMessageOn() throws Exception {
+		load("spring.messages.basename:test/messages",
+				"spring.messages.always-use-message-format:true");
+		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
+				.isAlwaysUseMessageFormat()).isTrue();
 	}
 
 	@Test
@@ -125,7 +138,7 @@ public class MessageSourceAutoConfigurationTests {
 				MessageSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals("foo", this.context.getMessage("foo", null, null, null));
+		assertThat(this.context.getMessage("foo", null, null, null)).isEqualTo("foo");
 	}
 
 	@Test
@@ -140,8 +153,8 @@ public class MessageSourceAutoConfigurationTests {
 			this.context.register(MessageSourceAutoConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class);
 			this.context.refresh();
-			assertEquals("bar",
-					this.context.getMessage("foo", null, "Foo message", Locale.UK));
+			assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
+					.isEqualTo("bar");
 		}
 		finally {
 			parent.close();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -37,9 +36,7 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.configurationprocessor.TestCompiler;
 import org.springframework.boot.configurationsample.fieldvalues.FieldValues;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Abstract base class for {@link FieldValuesParser} tests.
@@ -60,43 +57,37 @@ public abstract class AbstractFieldValuesProcessorTests {
 		TestCompiler compiler = new TestCompiler(this.temporaryFolder);
 		compiler.getTask(FieldValues.class).call(processor);
 		Map<String, Object> values = processor.getValues();
-		assertThat(values.get("string"), equalToObject("1"));
-		assertThat(values.get("stringNone"), nullValue());
-		assertThat(values.get("stringConst"), equalToObject("c"));
-		assertThat(values.get("bool"), equalToObject(true));
-		assertThat(values.get("boolNone"), equalToObject(false));
-		assertThat(values.get("boolConst"), equalToObject(true));
-		assertThat(values.get("boolObject"), equalToObject(true));
-		assertThat(values.get("boolObjectNone"), nullValue());
-		assertThat(values.get("boolObjectConst"), equalToObject(true));
-		assertThat(values.get("integer"), equalToObject(1));
-		assertThat(values.get("integerNone"), equalToObject(0));
-		assertThat(values.get("integerConst"), equalToObject(2));
-		assertThat(values.get("integerObject"), equalToObject(3));
-		assertThat(values.get("integerObjectNone"), nullValue());
-		assertThat(values.get("integerObjectConst"), equalToObject(4));
-		assertThat(values.get("charset"), equalToObject("US-ASCII"));
-		assertThat(values.get("charsetConst"), equalToObject("UTF-8"));
-		assertThat(values.get("mimeType"), equalToObject("text/html"));
-		assertThat(values.get("mimeTypeConst"), equalToObject("text/plain"));
-		assertThat(values.get("object"), equalToObject(123));
-		assertThat(values.get("objectNone"), nullValue());
-		assertThat(values.get("objectConst"), equalToObject("c"));
-		assertThat(values.get("objectInstance"), nullValue());
-		assertThat(values.get("stringArray"),
-				equalToObject(new Object[] { "FOO", "BAR" }));
-		assertThat(values.get("stringArrayNone"), nullValue());
-		assertThat(values.get("stringEmptyArray"), equalToObject(new Object[0]));
-		assertThat(values.get("stringArrayConst"),
-				equalToObject(new Object[] { "OK", "KO" }));
-		assertThat(values.get("stringArrayConstElements"),
-				equalToObject(new Object[] { "c" }));
-		assertThat(values.get("integerArray"), equalToObject(new Object[] { 42, 24 }));
-		assertThat(values.get("unknownArray"), nullValue());
-	}
-
-	private Matcher<Object> equalToObject(Object object) {
-		return equalTo(object);
+		assertThat(values.get("string")).isEqualTo("1");
+		assertThat(values.get("stringNone")).isNull();
+		assertThat(values.get("stringConst")).isEqualTo("c");
+		assertThat(values.get("bool")).isEqualTo(true);
+		assertThat(values.get("boolNone")).isEqualTo(false);
+		assertThat(values.get("boolConst")).isEqualTo(true);
+		assertThat(values.get("boolObject")).isEqualTo(true);
+		assertThat(values.get("boolObjectNone")).isNull();
+		assertThat(values.get("boolObjectConst")).isEqualTo(true);
+		assertThat(values.get("integer")).isEqualTo(1);
+		assertThat(values.get("integerNone")).isEqualTo(0);
+		assertThat(values.get("integerConst")).isEqualTo(2);
+		assertThat(values.get("integerObject")).isEqualTo(3);
+		assertThat(values.get("integerObjectNone")).isNull();
+		assertThat(values.get("integerObjectConst")).isEqualTo(4);
+		assertThat(values.get("charset")).isEqualTo("US-ASCII");
+		assertThat(values.get("charsetConst")).isEqualTo("UTF-8");
+		assertThat(values.get("mimeType")).isEqualTo("text/html");
+		assertThat(values.get("mimeTypeConst")).isEqualTo("text/plain");
+		assertThat(values.get("object")).isEqualTo(123);
+		assertThat(values.get("objectNone")).isNull();
+		assertThat(values.get("objectConst")).isEqualTo("c");
+		assertThat(values.get("objectInstance")).isNull();
+		assertThat(values.get("stringArray")).isEqualTo(new Object[] { "FOO", "BAR" });
+		assertThat(values.get("stringArrayNone")).isNull();
+		assertThat(values.get("stringEmptyArray")).isEqualTo(new Object[0]);
+		assertThat(values.get("stringArrayConst")).isEqualTo(new Object[] { "OK", "KO" });
+		assertThat(values.get("stringArrayConstElements"))
+				.isEqualTo(new Object[] { "c" });
+		assertThat(values.get("integerArray")).isEqualTo(new Object[] { 42, 24 });
+		assertThat(values.get("unknownArray")).isNull();
 	}
 
 	@SupportedAnnotationTypes({

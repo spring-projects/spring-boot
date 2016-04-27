@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.jmx;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
@@ -40,17 +41,9 @@ public class EndpointMBean {
 
 	private final ObjectMapper mapper;
 
-	/**
-	 * Create a new {@link EndpointMBean} instance.
-	 * @param beanName the bean name
-	 * @param endpoint the endpoint to wrap
-	 * @deprecated since 1.3 in favor of
-	 * {@link #EndpointMBean(String, Endpoint, ObjectMapper)}
-	 */
-	@Deprecated
-	public EndpointMBean(String beanName, Endpoint<?> endpoint) {
-		this(beanName, endpoint, new ObjectMapper());
-	}
+	private final JavaType listObject;
+
+	private final JavaType mapStringObject;
 
 	/**
 	 * Create a new {@link EndpointMBean} instance.
@@ -65,6 +58,10 @@ public class EndpointMBean {
 		Assert.notNull(objectMapper, "ObjectMapper must not be null");
 		this.endpoint = endpoint;
 		this.mapper = objectMapper;
+		this.listObject = objectMapper.getTypeFactory()
+				.constructParametricType(List.class, Object.class);
+		this.mapStringObject = objectMapper.getTypeFactory()
+				.constructParametricType(Map.class, String.class, Object.class);
 	}
 
 	@ManagedAttribute(description = "Returns the class of the underlying endpoint")
@@ -89,9 +86,9 @@ public class EndpointMBean {
 			return result;
 		}
 		if (result.getClass().isArray() || result instanceof List) {
-			return this.mapper.convertValue(result, List.class);
+			return this.mapper.convertValue(result, this.listObject);
 		}
-		return this.mapper.convertValue(result, Map.class);
+		return this.mapper.convertValue(result, this.mapStringObject);
 	}
 
 }

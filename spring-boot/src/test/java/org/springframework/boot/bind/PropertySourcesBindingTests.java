@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,27 +24,26 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.bind.PropertySourcesBindingTests.TestConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PropertySourcesPropertyValues} binding.
  *
  * @author Dave Syer
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(TestConfig.class)
-@IntegrationTest
+@RunWith(SpringRunner.class)
+@DirtiesContext
+@ContextConfiguration(classes = TestConfig.class, loader = SpringApplicationBindContextLoader.class)
 public class PropertySourcesBindingTests {
 
 	@Value("${foo:}")
@@ -55,27 +54,28 @@ public class PropertySourcesBindingTests {
 
 	@Test
 	public void overridingOfPropertiesOrderOfAtPropertySources() {
-		assertThat(this.properties.getBar(), is("override"));
+		assertThat(this.properties.getBar()).isEqualTo("override");
+
 	}
 
 	@Test
 	public void overridingOfPropertiesOrderOfAtPropertySourcesWherePropertyIsCapitalized() {
-		assertThat(this.properties.getSpam(), is("BUCKET"));
+		assertThat(this.properties.getSpam()).isEqualTo("BUCKET");
 	}
 
 	@Test
 	public void overridingOfPropertiesOrderOfAtPropertySourcesWherePropertyNamesDiffer() {
-		assertThat(this.properties.getTheName(), is("NAME"));
+		assertThat(this.properties.getTheName()).isEqualTo("NAME");
 	}
 
 	@Test
 	public void overridingOfPropertiesAndBindToAtValue() {
-		assertThat(this.foo, is(this.properties.getFoo()));
+		assertThat(this.foo).isEqualTo(this.properties.getFoo());
 	}
 
 	@Test
 	public void overridingOfPropertiesOrderOfApplicationProperties() {
-		assertThat(this.properties.getFoo(), is("bucket"));
+		assertThat(this.properties.getFoo()).isEqualTo("bucket");
 	}
 
 	@Import({ SomeConfig.class })

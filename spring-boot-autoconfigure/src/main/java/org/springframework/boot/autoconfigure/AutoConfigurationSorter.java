@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.core.Ordered;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
@@ -44,11 +42,11 @@ import org.springframework.util.Assert;
  */
 class AutoConfigurationSorter {
 
-	private final CachingMetadataReaderFactory metadataReaderFactory;
+	private final MetadataReaderFactory metadataReaderFactory;
 
-	AutoConfigurationSorter(ResourceLoader resourceLoader) {
-		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
-		this.metadataReaderFactory = new CachingMetadataReaderFactory(resourceLoader);
+	AutoConfigurationSorter(MetadataReaderFactory metadataReaderFactory) {
+		Assert.notNull(metadataReaderFactory, "MetadataReaderFactory must not be null");
+		this.metadataReaderFactory = metadataReaderFactory;
 	}
 
 	public List<String> getInPriorityOrder(Collection<String> classNames)

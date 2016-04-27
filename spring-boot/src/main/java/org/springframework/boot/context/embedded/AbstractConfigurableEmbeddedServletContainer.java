@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	private File sessionStoreDir;
 
 	private Ssl ssl;
+
+	private SslStoreProvider sslStoreProvider;
 
 	private JspServlet jspServlet = new JspServlet();
 
@@ -270,12 +272,6 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 		this.registerDefaultServlet = registerDefaultServlet;
 	}
 
-	@Override
-	public void setRegisterJspServlet(boolean registerJspServlet) {
-		Assert.notNull(this.jspServlet);
-		this.jspServlet.setRegistered(registerJspServlet);
-	}
-
 	/**
 	 * Flag to indicate that the default servlet should be registered.
 	 * @return true if the default servlet is to be registered
@@ -294,9 +290,12 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	}
 
 	@Override
-	public void setJspServletClassName(String jspServletClassName) {
-		Assert.notNull(this.jspServlet);
-		this.jspServlet.setClassName(jspServletClassName);
+	public void setSslStoreProvider(SslStoreProvider sslStoreProvider) {
+		this.sslStoreProvider = sslStoreProvider;
+	}
+
+	public SslStoreProvider getSslStoreProvider() {
+		return this.sslStoreProvider;
 	}
 
 	@Override

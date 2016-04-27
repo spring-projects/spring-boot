@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -70,7 +68,7 @@ public class UrlHandlerMapperTests {
 		UrlHandlerMapper mapper = new UrlHandlerMapper("/tunnel", this.handler);
 		HttpServletRequest servletRequest = new MockHttpServletRequest("GET", "/tunnel");
 		ServerHttpRequest request = new ServletServerHttpRequest(servletRequest);
-		assertThat(mapper.getHandler(request), equalTo(this.handler));
+		assertThat(mapper.getHandler(request)).isEqualTo(this.handler);
 	}
 
 	@Test
@@ -79,7 +77,7 @@ public class UrlHandlerMapperTests {
 		HttpServletRequest servletRequest = new MockHttpServletRequest("GET",
 				"/tunnel/other");
 		ServerHttpRequest request = new ServletServerHttpRequest(servletRequest);
-		assertThat(mapper.getHandler(request), nullValue());
+		assertThat(mapper.getHandler(request)).isNull();
 	}
 
 }

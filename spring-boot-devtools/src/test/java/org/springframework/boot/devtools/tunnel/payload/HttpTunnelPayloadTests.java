@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,7 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -70,14 +68,14 @@ public class HttpTunnelPayloadTests {
 	@Test
 	public void getSequence() throws Exception {
 		HttpTunnelPayload payload = new HttpTunnelPayload(1, ByteBuffer.allocate(1));
-		assertThat(payload.getSequence(), equalTo(1L));
+		assertThat(payload.getSequence()).isEqualTo(1L);
 	}
 
 	@Test
 	public void getData() throws Exception {
 		ByteBuffer data = ByteBuffer.wrap("hello".getBytes());
 		HttpTunnelPayload payload = new HttpTunnelPayload(1, data);
-		assertThat(getData(payload), equalTo(data.array()));
+		assertThat(getData(payload)).isEqualTo(data.array());
 	}
 
 	@Test
@@ -87,8 +85,8 @@ public class HttpTunnelPayloadTests {
 		MockHttpServletResponse servletResponse = new MockHttpServletResponse();
 		HttpOutputMessage response = new ServletServerHttpResponse(servletResponse);
 		payload.assignTo(response);
-		assertThat(servletResponse.getHeader("x-seq"), equalTo("2"));
-		assertThat(servletResponse.getContentAsString(), equalTo("hello"));
+		assertThat(servletResponse.getHeader("x-seq")).isEqualTo("2");
+		assertThat(servletResponse.getContentAsString()).isEqualTo("hello");
 	}
 
 	@Test
@@ -96,7 +94,7 @@ public class HttpTunnelPayloadTests {
 		MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
 		HttpTunnelPayload payload = HttpTunnelPayload.get(request);
-		assertThat(payload, nullValue());
+		assertThat(payload).isNull();
 	}
 
 	@Test
@@ -116,8 +114,8 @@ public class HttpTunnelPayloadTests {
 		servletRequest.addHeader("x-seq", 123);
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
 		HttpTunnelPayload payload = HttpTunnelPayload.get(request);
-		assertThat(payload.getSequence(), equalTo(123L));
-		assertThat(getData(payload), equalTo("hello".getBytes()));
+		assertThat(payload.getSequence()).isEqualTo(123L);
+		assertThat(getData(payload)).isEqualTo("hello".getBytes());
 	}
 
 	@Test
@@ -130,7 +128,7 @@ public class HttpTunnelPayloadTests {
 		while (payloadData.hasRemaining()) {
 			writeChannel.write(payloadData);
 		}
-		assertThat(out.toByteArray(), equalTo("hello".getBytes()));
+		assertThat(out.toByteArray()).isEqualTo("hello".getBytes());
 	}
 
 	@Test
@@ -139,7 +137,7 @@ public class HttpTunnelPayloadTests {
 		given(channel.read(any(ByteBuffer.class)))
 				.willThrow(new SocketTimeoutException());
 		ByteBuffer payload = HttpTunnelPayload.getPayloadData(channel);
-		assertThat(payload, nullValue());
+		assertThat(payload).isNull();
 	}
 
 	private byte[] getData(HttpTunnelPayload payload) throws IOException {

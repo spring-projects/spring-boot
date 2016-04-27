@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
@@ -42,13 +44,7 @@ import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.hamcrest.Matchers.arrayContaining;
-import static org.hamcrest.Matchers.arrayWithSize;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -75,8 +71,8 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer(
 				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		this.container.start();
-		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
-		assertThat(getResponse(getLocalUrl("/not-found")), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
+		assertThat(getResponse(getLocalUrl("/not-found"))).isEqualTo("Hello World");
 	}
 
 	@Test
@@ -161,7 +157,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 			}
 		});
 		this.container = factory.getEmbeddedServletContainer();
-		assertEquals("/", contextPath.get());
+		assertThat(contextPath.get()).isEqualTo("/");
 	}
 
 	@Test
@@ -173,8 +169,8 @@ public class UndertowEmbeddedServletContainerFactoryTests
 
 	@Test
 	public void eachFactoryUsesADiscreteServletContainer() {
-		assertThat(getServletContainerFromNewFactory(),
-				is(not(equalTo(getServletContainerFromNewFactory()))));
+		assertThat(getServletContainerFromNewFactory())
+				.isNotEqualTo(getServletContainerFromNewFactory());
 	}
 
 	@Test
@@ -184,14 +180,57 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		factory.setAccessLogEnabled(true);
 		File accessLogDirectory = this.temporaryFolder.getRoot();
 		factory.setAccessLogDirectory(accessLogDirectory);
-		assertThat(accessLogDirectory.listFiles(), is(arrayWithSize(0)));
+		assertThat(accessLogDirectory.listFiles()).isEmpty();
 		this.container = factory.getEmbeddedServletContainer(
 				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		this.container.start();
-		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
 		File accessLog = new File(accessLogDirectory, "access_log.log");
 		awaitFile(accessLog);
-		assertThat(accessLogDirectory.listFiles(), is(arrayContaining(accessLog)));
+		assertThat(accessLogDirectory.listFiles()).contains(accessLog);
+	}
+
+	@Override
+	protected void addConnector(final int port,
+			AbstractEmbeddedServletContainerFactory factory) {
+		((UndertowEmbeddedServletContainerFactory) factory)
+				.addBuilderCustomizers(new UndertowBuilderCustomizer() {
+
+					@Override
+					public void customize(Builder builder) {
+						builder.addHttpListener(port, "0.0.0.0");
+					}
+				});
+	}
+
+	@Test(expected = SSLHandshakeException.class)
+	public void sslRestrictedProtocolsEmptyCipherFailure() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
+				new String[] { "TLS_EMPTY_RENEGOTIATION_INFO_SCSV" });
+	}
+
+	@Test(expected = SSLHandshakeException.class)
+	public void sslRestrictedProtocolsECDHETLS1Failure() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1" },
+				new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" });
+	}
+
+	@Test
+	public void sslRestrictedProtocolsECDHESuccess() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
+				new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" });
+	}
+
+	@Test
+	public void sslRestrictedProtocolsRSATLS12Success() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
+				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
+	}
+
+	@Test(expected = SSLHandshakeException.class)
+	public void sslRestrictedProtocolsRSATLS11Failure() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
+				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
 	}
 
 	@Override

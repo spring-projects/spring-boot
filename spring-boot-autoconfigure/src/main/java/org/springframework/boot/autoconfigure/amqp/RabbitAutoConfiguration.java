@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,20 @@ import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.retry.backoff.ExponentialBackOffPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitTemplate}.
@@ -69,28 +74,13 @@ import org.springframework.context.annotation.Import;
  * @author Greg Turnquist
  * @author Josh Long
  * @author Stephane Nicoll
+ * @author Gary Russell
  */
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
 @EnableConfigurationProperties(RabbitProperties.class)
 @Import(RabbitAnnotationDrivenConfiguration.class)
 public class RabbitAutoConfiguration {
-
-	@Bean
-	@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "dynamic", matchIfMissing = true)
-	@ConditionalOnMissingBean(AmqpAdmin.class)
-	public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
-		return new RabbitAdmin(connectionFactory);
-	}
-
-	@Autowired
-	private ConnectionFactory connectionFactory;
-
-	@Bean
-	@ConditionalOnMissingBean(RabbitTemplate.class)
-	public RabbitTemplate rabbitTemplate() {
-		return new RabbitTemplate(this.connectionFactory);
-	}
 
 	@Configuration
 	@ConditionalOnMissingBean(ConnectionFactory.class)
@@ -124,20 +114,111 @@ public class RabbitAutoConfiguration {
 				factory.setTrustStore(ssl.getTrustStore());
 				factory.setTrustStorePassphrase(ssl.getTrustStorePassword());
 			}
+			if (config.getConnectionTimeout() != null) {
+				factory.setConnectionTimeout(config.getConnectionTimeout());
+			}
 			factory.afterPropertiesSet();
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
 					factory.getObject());
 			connectionFactory.setAddresses(config.getAddresses());
+			connectionFactory.setPublisherConfirms(config.isPublisherConfirms());
+			connectionFactory.setPublisherReturns(config.isPublisherReturns());
+			if (config.getCache().getChannel().getSize() != null) {
+				connectionFactory
+						.setChannelCacheSize(config.getCache().getChannel().getSize());
+			}
+			if (config.getCache().getConnection().getMode() != null) {
+				connectionFactory
+						.setCacheMode(config.getCache().getConnection().getMode());
+			}
+			if (config.getCache().getConnection().getSize() != null) {
+				connectionFactory.setConnectionCacheSize(
+						config.getCache().getConnection().getSize());
+			}
+			if (config.getCache().getChannel().getCheckoutTimeout() != null) {
+				connectionFactory.setChannelCheckoutTimeout(
+						config.getCache().getChannel().getCheckoutTimeout());
+			}
 			return connectionFactory;
 		}
 
 	}
 
+	@Configuration
+	@Import(RabbitConnectionFactoryCreator.class)
+	protected static class RabbitTemplateConfiguration {
+
+		private final ObjectProvider<MessageConverter> messageConverter;
+
+		private final RabbitProperties properties;
+
+		public RabbitTemplateConfiguration(
+				ObjectProvider<MessageConverter> messageConverter,
+				RabbitProperties properties) {
+			this.messageConverter = messageConverter;
+			this.properties = properties;
+		}
+
+		@Bean
+		@ConditionalOnSingleCandidate(ConnectionFactory.class)
+		@ConditionalOnMissingBean(RabbitTemplate.class)
+		public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+			RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+			MessageConverter messageConverter = this.messageConverter.getIfUnique();
+			if (messageConverter != null) {
+				rabbitTemplate.setMessageConverter(messageConverter);
+			}
+			rabbitTemplate.setMandatory(determineMandatoryFlag());
+			RabbitProperties.Template templateProperties = this.properties.getTemplate();
+			RabbitProperties.Retry retryProperties = templateProperties.getRetry();
+			if (retryProperties.isEnabled()) {
+				rabbitTemplate.setRetryTemplate(createRetryTemplate(retryProperties));
+			}
+			if (templateProperties.getReceiveTimeout() != null) {
+				rabbitTemplate.setReceiveTimeout(templateProperties.getReceiveTimeout());
+			}
+			if (templateProperties.getReplyTimeout() != null) {
+				rabbitTemplate.setReplyTimeout(templateProperties.getReplyTimeout());
+			}
+			return rabbitTemplate;
+		}
+
+		private boolean determineMandatoryFlag() {
+			Boolean mandatory = this.properties.getTemplate().getMandatory();
+			return (mandatory != null ? mandatory : this.properties.isPublisherReturns());
+		}
+
+		private RetryTemplate createRetryTemplate(RabbitProperties.Retry properties) {
+			RetryTemplate template = new RetryTemplate();
+			SimpleRetryPolicy policy = new SimpleRetryPolicy();
+			policy.setMaxAttempts(properties.getMaxAttempts());
+			template.setRetryPolicy(policy);
+			ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+			backOffPolicy.setInitialInterval(properties.getInitialInterval());
+			backOffPolicy.setMultiplier(properties.getMultiplier());
+			backOffPolicy.setMaxInterval(properties.getMaxInterval());
+			template.setBackOffPolicy(backOffPolicy);
+			return template;
+		}
+
+		@Bean
+		@ConditionalOnSingleCandidate(ConnectionFactory.class)
+		@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "dynamic", matchIfMissing = true)
+		@ConditionalOnMissingBean(AmqpAdmin.class)
+		public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
+			return new RabbitAdmin(connectionFactory);
+		}
+
+	}
+
+	@Configuration
 	@ConditionalOnClass(RabbitMessagingTemplate.class)
 	@ConditionalOnMissingBean(RabbitMessagingTemplate.class)
+	@Import(RabbitTemplateConfiguration.class)
 	protected static class MessagingTemplateConfiguration {
 
 		@Bean
+		@ConditionalOnSingleCandidate(RabbitTemplate.class)
 		public RabbitMessagingTemplate rabbitMessagingTemplate(
 				RabbitTemplate rabbitTemplate) {
 			return new RabbitMessagingTemplate(rabbitTemplate);

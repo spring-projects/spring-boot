@@ -38,7 +38,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
 /**
- * Banner implementation that prints from a source {@link Resource}.
+ * Banner implementation that prints from a source text {@link Resource}.
  *
  * @author Phillip Webb
  * @author Vedran Pavic

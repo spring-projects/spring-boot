@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SampleSimpleApplication}.
  *
  * @author Dave Syer
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(SampleSimpleApplication.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class SpringTestSampleSimpleApplicationTests {
 
 	@Autowired
@@ -41,9 +40,9 @@ public class SpringTestSampleSimpleApplicationTests {
 
 	@Test
 	public void testContextLoads() throws Exception {
-		assertNotNull(this.ctx);
-		assertTrue(this.ctx.containsBean("helloWorldService"));
-		assertTrue(this.ctx.containsBean("sampleSimpleApplication"));
+		assertThat(this.ctx).isNotNull();
+		assertThat(this.ctx.containsBean("helloWorldService")).isTrue();
+		assertThat(this.ctx.containsBean("sampleSimpleApplication")).isTrue();
 	}
 
 }

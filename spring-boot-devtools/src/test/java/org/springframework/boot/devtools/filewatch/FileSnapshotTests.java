@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,7 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link FileSnapshot}.
@@ -70,8 +68,8 @@ public class FileSnapshotTests {
 		File fileCopy = new File(file, "x").getParentFile();
 		FileSnapshot snapshot1 = new FileSnapshot(file);
 		FileSnapshot snapshot2 = new FileSnapshot(fileCopy);
-		assertThat(snapshot1, equalTo(snapshot2));
-		assertThat(snapshot1.hashCode(), equalTo(snapshot2.hashCode()));
+		assertThat(snapshot1).isEqualTo(snapshot2);
+		assertThat(snapshot1.hashCode()).isEqualTo(snapshot2.hashCode());
 	}
 
 	@Test
@@ -79,7 +77,7 @@ public class FileSnapshotTests {
 		File file = createNewFile("abc", MODIFIED);
 		FileSnapshot snapshot1 = new FileSnapshot(file);
 		file.delete();
-		assertThat(snapshot1, not(equalTo(new FileSnapshot(file))));
+		assertThat(snapshot1).isNotEqualTo(new FileSnapshot(file));
 	}
 
 	@Test
@@ -87,7 +85,7 @@ public class FileSnapshotTests {
 		File file = createNewFile("abc", MODIFIED);
 		FileSnapshot snapshot1 = new FileSnapshot(file);
 		setupFile(file, "abcd", MODIFIED);
-		assertThat(snapshot1, not(equalTo(new FileSnapshot(file))));
+		assertThat(snapshot1).isNotEqualTo(new FileSnapshot(file));
 	}
 
 	@Test
@@ -95,7 +93,7 @@ public class FileSnapshotTests {
 		File file = createNewFile("abc", MODIFIED);
 		FileSnapshot snapshot1 = new FileSnapshot(file);
 		setupFile(file, "abc", MODIFIED + TWO_MINS);
-		assertThat(snapshot1, not(equalTo(new FileSnapshot(file))));
+		assertThat(snapshot1).isNotEqualTo(new FileSnapshot(file));
 	}
 
 	private File createNewFile(String content, long lastModified) throws IOException {

@@ -62,32 +62,35 @@ public class FlywayEndpoint extends AbstractEndpoint<List<FlywayMigration>> {
 	 */
 	public static class FlywayMigration {
 
-		private MigrationType type;
+		private final MigrationType type;
 
-		private Integer checksum;
+		private final Integer checksum;
 
-		private String version;
+		private final String version;
 
-		private String description;
+		private final String description;
 
-		private String script;
+		private final String script;
 
-		private MigrationState state;
+		private final MigrationState state;
 
-		private Date installedOn;
+		private final Date installedOn;
 
-		private Integer executionTime;
+		private final Integer executionTime;
 
 		public FlywayMigration(MigrationInfo info) {
 			this.type = info.getType();
 			this.checksum = info.getChecksum();
-			this.version = info.getVersion() != null ? info.getVersion().toString()
-					: null;
+			this.version = nullSafeToString(info.getVersion());
 			this.description = info.getDescription();
 			this.script = info.getScript();
 			this.state = info.getState();
 			this.installedOn = info.getInstalledOn();
 			this.executionTime = info.getExecutionTime();
+		}
+
+		private String nullSafeToString(Object obj) {
+			return (obj == null ? null : obj.toString());
 		}
 
 		public MigrationType getType() {

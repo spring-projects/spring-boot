@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package sample.hateoas.web;
 import sample.hateoas.domain.Customer;
 import sample.hateoas.domain.CustomerRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.hateoas.Resource;
@@ -42,7 +41,6 @@ public class CustomerController {
 
 	private final EntityLinks entityLinks;
 
-	@Autowired
 	public CustomerController(CustomerRepository repository, EntityLinks entityLinks) {
 		this.repository = repository;
 		this.entityLinks = entityLinks;

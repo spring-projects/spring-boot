@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -72,15 +68,13 @@ public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 												GrapeRootRepositorySystemSessionAutoConfigurationTests.this.session,
 												localRepository);
 							}
-						});
 
+						});
 		new GrapeRootRepositorySystemSessionAutoConfiguration().apply(this.session,
 				this.repositorySystem);
-
 		verify(this.repositorySystem, times(0))
 				.newLocalRepositoryManager(eq(this.session), any(LocalRepository.class));
-
-		assertThat(this.session.getLocalRepository(), is(nullValue()));
+		assertThat(this.session.getLocalRepository()).isNull();
 	}
 
 	@Test
@@ -101,9 +95,9 @@ public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 		verify(this.repositorySystem, times(1))
 				.newLocalRepositoryManager(eq(this.session), any(LocalRepository.class));
 
-		assertThat(this.session.getLocalRepository(), is(notNullValue()));
-		assertThat(this.session.getLocalRepository().getBasedir().getAbsolutePath(),
-				endsWith(File.separatorChar + "foo" + File.separatorChar + "repository"));
+		assertThat(this.session.getLocalRepository()).isNotNull();
+		assertThat(this.session.getLocalRepository().getBasedir().getAbsolutePath())
+				.endsWith(File.separatorChar + "foo" + File.separatorChar + "repository");
 	}
 
 	private class LocalRepositoryManagerAnswer implements Answer<LocalRepositoryManager> {

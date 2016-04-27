@@ -92,17 +92,16 @@ final class ChangeableUrls implements Iterable<URL> {
 
 	private static List<URL> getUrlsFromClassPathOfJarManifestIfPossible(URL url) {
 		JarFile jarFile = getJarFileIfPossible(url);
-		if (jarFile != null) {
-			try {
-				return getUrlsFromClassPathAttribute(url, jarFile.getManifest());
-			}
-			catch (IOException ex) {
-				throw new IllegalStateException(
-						"Failed to read Class-Path attribute from manifest of jar "
-								+ url);
-			}
+		if (jarFile == null) {
+			return Collections.<URL>emptyList();
 		}
-		return Collections.<URL>emptyList();
+		try {
+			return getUrlsFromClassPathAttribute(url, jarFile.getManifest());
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(
+					"Failed to read Class-Path attribute from manifest of jar " + url);
+		}
 	}
 
 	private static JarFile getJarFileIfPossible(URL url) {
@@ -122,14 +121,14 @@ final class ChangeableUrls implements Iterable<URL> {
 		if (manifest == null) {
 			return Collections.<URL>emptyList();
 		}
-		String classPathAttribute = manifest.getMainAttributes()
+		String classPath = manifest.getMainAttributes()
 				.getValue(Attributes.Name.CLASS_PATH);
-		if (!StringUtils.hasText(classPathAttribute)) {
-			return Collections.<URL>emptyList();
+		if (!StringUtils.hasText(classPath)) {
+			return Collections.emptyList();
 		}
-		List<URL> urls = new ArrayList<URL>();
-		for (String entry : StringUtils.delimitedListToStringArray(classPathAttribute,
-				" ")) {
+		String[] entries = StringUtils.delimitedListToStringArray(classPath, " ");
+		List<URL> urls = new ArrayList<URL>(entries.length);
+		for (String entry : entries) {
 			try {
 				urls.add(new URL(base, entry));
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
-import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrClient;
 
 /**
  * {@link HealthIndicator} for Apache Solr.
@@ -26,15 +26,15 @@ import org.apache.solr.client.solrj.SolrServer;
  */
 public class SolrHealthIndicator extends AbstractHealthIndicator {
 
-	private final SolrServer solrServer;
+	private final SolrClient solrClient;
 
-	public SolrHealthIndicator(SolrServer solrServer) {
-		this.solrServer = solrServer;
+	public SolrHealthIndicator(SolrClient solrClient) {
+		this.solrClient = solrClient;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		Object status = this.solrServer.ping().getResponse().get("status");
+		Object status = this.solrClient.ping().getResponse().get("status");
 		builder.up().withDetail("solrStatus", status);
 	}
 

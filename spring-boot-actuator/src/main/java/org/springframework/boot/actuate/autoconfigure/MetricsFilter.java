@@ -61,6 +61,8 @@ final class MetricsFilter extends OncePerRequestFilter {
 
 	private final GaugeService gaugeService;
 
+	private final MetricFilterProperties properties;
+
 	private static final Set<PatternReplacer> STATUS_REPLACERS;
 
 	static {
@@ -82,9 +84,11 @@ final class MetricsFilter extends OncePerRequestFilter {
 		KEY_REPLACERS = Collections.unmodifiableSet(replacements);
 	}
 
-	MetricsFilter(CounterService counterService, GaugeService gaugeService) {
+	MetricsFilter(CounterService counterService, GaugeService gaugeService,
+			MetricFilterProperties properties) {
 		this.counterService = counterService;
 		this.gaugeService = gaugeService;
+		this.properties = properties;
 	}
 
 	@Override
@@ -134,8 +138,9 @@ final class MetricsFilter extends OncePerRequestFilter {
 	private void recordMetrics(HttpServletRequest request, String path, int status,
 			long time) {
 		String suffix = getFinalStatus(request, path, status);
-		submitToGauge(getKey("response" + suffix), time);
-		incrementCounter(getKey("status." + status + suffix));
+		submitMetrics(MetricsFilterSubmission.MERGED, request, status, time, suffix);
+		submitMetrics(MetricsFilterSubmission.PER_HTTP_METHOD, request, status, time,
+				suffix);
 	}
 
 	private String getFinalStatus(HttpServletRequest request, String path, int status) {
@@ -173,7 +178,20 @@ final class MetricsFilter extends OncePerRequestFilter {
 		catch (Exception ex) {
 			return null;
 		}
+	}
 
+	private void submitMetrics(MetricsFilterSubmission submission,
+			HttpServletRequest request, int status, long time, String suffix) {
+		String prefix = "";
+		if (submission == MetricsFilterSubmission.PER_HTTP_METHOD) {
+			prefix = request.getMethod() + ".";
+		}
+		if (this.properties.shouldSubmitToGauge(submission)) {
+			submitToGauge(getKey("response." + prefix + suffix), time);
+		}
+		if (this.properties.shouldSubmitToCounter(submission)) {
+			incrementCounter(getKey("status." + prefix + status + suffix));
+		}
 	}
 
 	private String getKey(String string) {

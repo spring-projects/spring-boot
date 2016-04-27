@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,17 +33,17 @@ import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -53,6 +53,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * Tests for {@link Restarter}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class RestarterTests {
 
@@ -94,9 +95,9 @@ public class RestarterTests {
 		thread.start();
 		Thread.sleep(2600);
 		String output = this.out.toString();
-		assertThat(StringUtils.countOccurrencesOf(output, "Tick 0"), greaterThan(1));
-		assertThat(StringUtils.countOccurrencesOf(output, "Tick 1"), greaterThan(1));
-		assertThat(TestRestartListener.restarts, greaterThan(0));
+		assertThat(StringUtils.countOccurrencesOf(output, "Tick 0")).isGreaterThan(1);
+		assertThat(StringUtils.countOccurrencesOf(output, "Tick 1")).isGreaterThan(1);
+		assertThat(CloseCountingApplicationListener.closed).isGreaterThan(0);
 	}
 
 	@Test
@@ -105,7 +106,7 @@ public class RestarterTests {
 		ObjectFactory objectFactory = mock(ObjectFactory.class);
 		given(objectFactory.getObject()).willReturn("abc");
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
-		assertThat(attribute, equalTo((Object) "abc"));
+		assertThat(attribute).isEqualTo("abc");
 	}
 
 	public void addUrlsMustNotBeNull() throws Exception {
@@ -123,7 +124,7 @@ public class RestarterTests {
 		restarter.restart();
 		ClassLoader classLoader = ((TestableRestarter) restarter)
 				.getRelaunchClassLoader();
-		assertThat(((URLClassLoader) classLoader).getURLs()[0], equalTo(url));
+		assertThat(((URLClassLoader) classLoader).getURLs()[0]).isEqualTo(url);
 	}
 
 	@Test
@@ -142,8 +143,8 @@ public class RestarterTests {
 		restarter.restart();
 		ClassLoader classLoader = ((TestableRestarter) restarter)
 				.getRelaunchClassLoader();
-		assertThat(FileCopyUtils.copyToByteArray(classLoader.getResourceAsStream("f")),
-				equalTo("abc".getBytes()));
+		assertThat(FileCopyUtils.copyToByteArray(classLoader.getResourceAsStream("f")))
+				.isEqualTo("abc".getBytes());
 	}
 
 	@Test
@@ -157,7 +158,7 @@ public class RestarterTests {
 		});
 		ObjectFactory objectFactory = mock(ObjectFactory.class);
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
-		assertThat(attribute, equalTo((Object) "abc"));
+		assertThat(attribute).isEqualTo("abc");
 		verifyZeroInteractions(objectFactory);
 	}
 
@@ -173,9 +174,9 @@ public class RestarterTests {
 				ThreadFactory factory = Restarter.getInstance().getThreadFactory();
 				Thread viaFactory = factory.newThread(runnable);
 				// Regular threads will inherit the current thread
-				assertThat(regular.getContextClassLoader(), equalTo(contextClassLoader));
-				// Factory threads should should inherit from the initial thread
-				assertThat(viaFactory.getContextClassLoader(), equalTo(parentLoader));
+				assertThat(regular.getContextClassLoader()).isEqualTo(contextClassLoader);
+				// Factory threads should inherit from the initial thread
+				assertThat(viaFactory.getContextClassLoader()).isEqualTo(parentLoader);
 			};
 		};
 		thread.setContextClassLoader(contextClassLoader);
@@ -190,7 +191,7 @@ public class RestarterTests {
 		URL[] urls = new URL[] { new URL("file:/proj/module-a.jar!/") };
 		given(initializer.getInitialUrls(any(Thread.class))).willReturn(urls);
 		Restarter.initialize(new String[0], false, initializer, false);
-		assertThat(Restarter.getInstance().getInitialUrls(), equalTo(urls));
+		assertThat(Restarter.getInstance().getInitialUrls()).isEqualTo(urls);
 	}
 
 	@Component
@@ -215,15 +216,14 @@ public class RestarterTests {
 		}
 
 		public static void main(String... args) {
-			Restarter.initialize(args, false, new MockRestartInitializer(), true,
-					new TestRestartListener());
+			Restarter.initialize(args, false, new MockRestartInitializer(), true);
 			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 					SampleApplication.class);
-			context.registerShutdownHook();
+			context.addApplicationListener(new CloseCountingApplicationListener());
+			Restarter.getInstance().prepare(context);
 			System.out.println("Sleep " + Thread.currentThread());
 			sleep();
 			quit = true;
-			context.close();
 		}
 
 		private static void sleep() {
@@ -233,6 +233,18 @@ public class RestarterTests {
 			catch (InterruptedException ex) {
 				// Ignore
 			}
+		}
+
+	}
+
+	private static class CloseCountingApplicationListener
+			implements ApplicationListener<ContextClosedEvent> {
+
+		static int closed = 0;
+
+		@Override
+		public void onApplicationEvent(ContextClosedEvent event) {
+			closed++;
 		}
 
 	}
@@ -274,17 +286,6 @@ public class RestarterTests {
 
 		public ClassLoader getRelaunchClassLoader() {
 			return this.relaunchClassLoader;
-		}
-
-	}
-
-	private static class TestRestartListener implements RestartListener {
-
-		private static int restarts;
-
-		@Override
-		public void beforeRestart() {
-			restarts++;
 		}
 
 	}

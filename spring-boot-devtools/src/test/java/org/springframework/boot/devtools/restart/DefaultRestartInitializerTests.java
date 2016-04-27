@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,8 @@ import java.net.URL;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link DefaultRestartInitializer}.
@@ -35,7 +33,7 @@ public class DefaultRestartInitializerTests {
 	@Test
 	public void nullForTests() throws Exception {
 		MockRestartInitializer initializer = new MockRestartInitializer(true);
-		assertThat(initializer.getInitialUrls(Thread.currentThread()), nullValue());
+		assertThat(initializer.getInitialUrls(Thread.currentThread())).isNull();
 	}
 
 	@Test
@@ -45,8 +43,8 @@ public class DefaultRestartInitializerTests {
 		Thread thread = new Thread();
 		thread.setName("main");
 		thread.setContextClassLoader(classLoader);
-		assertThat(initializer.isMain(thread), equalTo(true));
-		assertThat(initializer.getInitialUrls(thread), not(nullValue()));
+		assertThat(initializer.isMain(thread)).isTrue();
+		assertThat(initializer.getInitialUrls(thread)).isNotEqualTo(nullValue());
 	}
 
 	@Test
@@ -56,8 +54,8 @@ public class DefaultRestartInitializerTests {
 		Thread thread = new Thread();
 		thread.setName("buscuit");
 		thread.setContextClassLoader(classLoader);
-		assertThat(initializer.isMain(thread), equalTo(false));
-		assertThat(initializer.getInitialUrls(thread), nullValue());
+		assertThat(initializer.isMain(thread)).isFalse();
+		assertThat(initializer.getInitialUrls(thread)).isNull();
 	}
 
 	@Test
@@ -68,8 +66,8 @@ public class DefaultRestartInitializerTests {
 		Thread thread = new Thread();
 		thread.setName("main");
 		thread.setContextClassLoader(classLoader);
-		assertThat(initializer.isMain(thread), equalTo(false));
-		assertThat(initializer.getInitialUrls(thread), nullValue());
+		assertThat(initializer.isMain(thread)).isFalse();
+		assertThat(initializer.getInitialUrls(thread)).isNull();
 	}
 
 	@Test
@@ -86,7 +84,7 @@ public class DefaultRestartInitializerTests {
 		MockRestartInitializer initializer = new MockRestartInitializer(true);
 		StackTraceElement element = new StackTraceElement(className, "someMethod",
 				"someFile", 123);
-		assertThat(initializer.isSkippedStackElement(element), equalTo(expected));
+		assertThat(initializer.isSkippedStackElement(element)).isEqualTo(expected);
 	}
 
 	private static class MockAppClassLoader extends ClassLoader {
