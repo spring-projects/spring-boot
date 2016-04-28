@@ -218,8 +218,8 @@ public class RabbitProperties {
 		private String trustStorePassword;
 
 		/**
-		 * The SSL algorithm to use (e.g. TLSv1.1). Default is set automatically by the
-		 * rabbit client library.
+		 * SSL algorithm to use (e.g. TLSv1.1). Default is set automatically by the rabbit
+		 * client library.
 		 */
 		private String algorithm;
 

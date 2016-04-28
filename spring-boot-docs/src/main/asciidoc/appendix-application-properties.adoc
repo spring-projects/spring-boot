@@ -760,6 +760,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.ssl.key-store-password= # Password used to access the key store.
 	spring.rabbitmq.ssl.trust-store= # Trust store that holds SSL certificates.
 	spring.rabbitmq.ssl.trust-store-password= # Password used to access the trust store.
+	spring.rabbitmq.ssl.algorithm= # SSL algorithm to use. By default configure by the rabbit client library.
 	spring.rabbitmq.username= # Login user to authenticate to the broker.
 	spring.rabbitmq.virtual-host= # Virtual host to use when connecting to the broker.
 
