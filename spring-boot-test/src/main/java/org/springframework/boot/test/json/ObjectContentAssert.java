@@ -26,7 +26,7 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.internal.Objects;
 
 /**
- * AssertJ {@link Assert} for {@link JsonContent}.
+ * AssertJ {@link Assert} for {@link ObjectContent}.
  *
  * @param <A> The actual type
  * @author Phillip Webb
@@ -42,7 +42,7 @@ public class ObjectContentAssert<A>
 	/**
 	 * Verifies that the actual value is an array, and returns an array assertion, to
 	 * allow chaining of array-specific assertions from this call.
-	 * @return a list assertion object
+	 * @return an array assertion object
 	 */
 	public AbstractObjectArrayAssert<?, Object> asArray() {
 		Objects.instance().assertIsInstanceOf(this.info, this.actual, Object[].class);
@@ -51,8 +51,8 @@ public class ObjectContentAssert<A>
 
 	/**
 	 * Verifies that the actual value is a map, and returns a map assertion, to allow
-	 * chaining of list-specific assertions from this call.
-	 * @return a list assertion object
+	 * chaining of map-specific assertions from this call.
+	 * @return a map assertion object
 	 */
 	@SuppressWarnings("unchecked")
 	public AbstractMapAssert<?, ?, Object, Object> asMap() {

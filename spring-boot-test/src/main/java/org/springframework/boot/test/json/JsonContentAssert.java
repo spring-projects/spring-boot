@@ -843,7 +843,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	/**
 	 * Verify that the actual value at the given JSON path produces no result. If the JSON
 	 * path expression is not {@linkplain JsonPath#isDefinite() definite}, this method
-	 * verifies that the value at the given path is not <em>empty</em>.
+	 * verifies that the value at the given path is <em>empty</em>.
 	 * @param expression the {@link JsonPath} expression
 	 * @param args arguments to parameterize the {@code JsonPath} expression with, using
 	 * formatting specifiers defined in {@link String#format(String, Object...)}
@@ -990,7 +990,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		JSONCompareResult result = new JSONCompareResult();
 		result.passed();
 		if (expectedJson != null) {
-			result.fail("Expected non-null JSON");
+			result.fail("Expected null JSON");
 		}
 		return result;
 	}
@@ -1079,7 +1079,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 				if (!required) {
 					return null;
 				}
-				throw new AssertionError(getNoValueMessage() + ex.getMessage());
+				throw new AssertionError(getNoValueMessage() + ". " + ex.getMessage());
 			}
 		}
 

@@ -192,7 +192,7 @@ public abstract class AbstractJsonMarshalTesterTests {
 			Class<?> resourceLoadClass, ResolvableType type);
 
 	/**
-	 * Access to field backed {@link ResolvableType}.
+	 * Access to field backed by {@link ResolvableType}.
 	 */
 	public static class ResolvableTypes {
 

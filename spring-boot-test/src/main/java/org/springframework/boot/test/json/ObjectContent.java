@@ -22,11 +22,11 @@ import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
 
 /**
- * Object content usually created from {@link AbstractJsonMarshalTester}.Generally used
+ * Object content usually created from {@link AbstractJsonMarshalTester}. Generally used
  * only to {@link AssertProvider provide} {@link ObjectContentAssert} to AssertJ
  * {@code assertThat} calls.
  *
- * @param <T> The content type
+ * @param <T> the content type
  * @author Phillip Webb
  * @since 1.4.0
  */

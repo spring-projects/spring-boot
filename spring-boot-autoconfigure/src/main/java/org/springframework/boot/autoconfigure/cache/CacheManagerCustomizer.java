@@ -22,7 +22,7 @@ import org.springframework.cache.CacheManager;
  * Callback interface that can be implemented by beans wishing to customize the cache
  * manager before it is fully initialized, in particular to tune its configuration.
  *
- * @param <T> The type of the {@link CacheManager}
+ * @param <T> the type of the {@link CacheManager}
  * @author Stephane Nicoll
  * @since 1.3.3
  */

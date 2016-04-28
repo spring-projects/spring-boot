@@ -24,13 +24,13 @@ import org.springframework.util.Assert;
 
 /**
  * AssertJ based JSON tester that works with basic JSON strings. Allows testing of JSON
- * payloads created from some any source, for example:<pre class="code">
+ * payloads created from any source, for example:<pre class="code">
  * public class ExampleObjectJsonTests {
  *
- *     private BasicJsonTester = new BasicJsonTester(getClass());
+ *     private BasicJsonTester json = new BasicJsonTester(getClass());
  *
  *     &#064;Test
- *     public void testWriteJson() {
+ *     public void testWriteJson() throws IOException {
  *         assertThat(json.from("example.json")).extractingJsonPathStringValue("@.name")
 				.isEqualTo("Spring");
  *     }
@@ -70,7 +70,7 @@ public class BasicJsonTester {
 	/**
 	 * Create JSON content from the specified resource path.
 	 * @param path the path of the resource to load
-	 * @param resourceLoadClass the classloader used load the resource
+	 * @param resourceLoadClass the source class used to load the resource
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(String path, Class<?> resourceLoadClass) {
