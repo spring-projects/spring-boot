@@ -18,12 +18,15 @@ package org.springframework.boot.test.autoconfigure.properties;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.util.ObjectUtils;
@@ -55,26 +58,37 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 
 	private Map<String, Object> getProperties(Class<?> source) {
 		Map<String, Object> properties = new LinkedHashMap<String, Object>();
-		collectProperties(source, properties);
+		collectProperties(source, source, properties);
 		return Collections.unmodifiableMap(properties);
 	}
 
-	private void collectProperties(Class<?> source, Map<String, Object> properties) {
+	private void collectProperties(Class<?> root, Class<?> source,
+			Map<String, Object> properties) {
 		if (source != null) {
-			for (Annotation annotation : AnnotationUtils.getAnnotations(source)) {
+			for (Annotation annotation : getMergedAnnotations(root, source)) {
 				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
-					annotation.annotationType().getAnnotation(PropertyMapping.class);
 					PropertyMapping typeMapping = annotation.annotationType()
 							.getAnnotation(PropertyMapping.class);
 					for (Method attribute : annotation.annotationType()
 							.getDeclaredMethods()) {
 						collectProperties(annotation, attribute, typeMapping, properties);
 					}
-					collectProperties(annotation.annotationType(), properties);
+					collectProperties(root, annotation.annotationType(), properties);
 				}
 			}
-			collectProperties(source.getSuperclass(), properties);
+			collectProperties(root, source.getSuperclass(), properties);
 		}
+	}
+
+	private List<Annotation> getMergedAnnotations(Class<?> root, Class<?> source) {
+		List<Annotation> mergedAnnotations = new ArrayList<Annotation>();
+		for (Annotation annotation : AnnotationUtils.getAnnotations(source)) {
+			if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
+				mergedAnnotations.add(AnnotatedElementUtils.getMergedAnnotation(root,
+						annotation.annotationType()));
+			}
+		}
+		return mergedAnnotations;
 	}
 
 	private void collectProperties(Annotation annotation, Method attribute,

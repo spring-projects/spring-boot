@@ -23,6 +23,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.core.annotation.AliasFor;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -152,6 +154,14 @@ public class AnnotationsPropertySourceTests {
 		assertThat(source.getProperty("value")).isEqualTo("alpha");
 		assertThat(source.getProperty("test.value")).isEqualTo("bravo");
 		assertThat(source.getProperty("test.example")).isEqualTo("charlie");
+	}
+
+	@Test
+	public void propertyMappedAttributesCanBeAliased() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(
+				PropertyMappedAttributeWithAnAlias.class);
+		assertThat(source.getPropertyNames()).containsExactly("aliasing.value");
+		assertThat(source.getProperty("aliasing.value")).isEqualTo("baz");
 	}
 
 	static class NoAnnotation {
@@ -304,6 +314,30 @@ public class AnnotationsPropertySourceTests {
 	@TypeLevelWithPrefixAnnotation("bravo")
 	@TypeAndAttributeLevelWithPrefixAnnotation("charlie")
 	static @interface PropertiesFromMultipleMetaAnnotationsAnnotation {
+
+	}
+
+	@AttributeWithAliasAnnotation("baz")
+	static class PropertyMappedAttributeWithAnAlias {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@AliasedAttributeAnnotation
+	static @interface AttributeWithAliasAnnotation {
+
+		@AliasFor(annotation = AliasedAttributeAnnotation.class, attribute = "value")
+		String value() default "foo";
+
+		String someOtherAttribute() default "shouldNotBeMapped";
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@PropertyMapping("aliasing")
+	static @interface AliasedAttributeAnnotation {
+
+		String value() default "bar";
 
 	}
 
