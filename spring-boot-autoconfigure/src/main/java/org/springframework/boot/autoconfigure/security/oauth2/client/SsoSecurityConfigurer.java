@@ -27,9 +27,12 @@ import org.springframework.security.config.annotation.web.configurers.ExceptionH
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
+import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
@@ -84,7 +87,38 @@ class SsoSecurityConfigurer {
 				sso.getLoginPath());
 		filter.setRestTemplate(restTemplate);
 		filter.setTokenServices(tokenServices);
+		filter.setAuthenticationSuccessHandler(successHandler(sso));
+		filter.setAuthenticationFailureHandler(failureHandler(sso));
 		return filter;
+	}
+
+	private SavedRequestAwareAuthenticationSuccessHandler successHandler(OAuth2SsoProperties sso) {
+		SavedRequestAwareAuthenticationSuccessHandler handler = new SavedRequestAwareAuthenticationSuccessHandler();
+		handler.setAlwaysUseDefaultTargetUrl(sso.isSuccessAlwaysUseDefaultTargetUrl());
+		handler.setDefaultTargetUrl(sso.getSuccesDefaultTargetUrl());
+		handler.setUseReferer(sso.isSuccessUseReferer());
+		handler.setTargetUrlParameter(sso.getSuccessTargetUrlParameter());
+
+		DefaultRedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+		redirectStrategy.setContextRelative(sso.isSuccessRedirectContextRelative());
+		handler.setRedirectStrategy(redirectStrategy);
+
+		return handler;
+	}
+
+	private SimpleUrlAuthenticationFailureHandler failureHandler(OAuth2SsoProperties sso) {
+		SimpleUrlAuthenticationFailureHandler handler = new SimpleUrlAuthenticationFailureHandler();
+		handler.setAllowSessionCreation(sso.isFailureAllowSessionCreation());
+		handler.setUseForward(sso.isFailureForwardToDestination());
+		if (sso.getFailureDefaultTargetUrl() != null) {
+			handler.setDefaultFailureUrl(sso.getFailureDefaultTargetUrl());
+		}
+
+		DefaultRedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+		redirectStrategy.setContextRelative(sso.isFailureRedirectContextRelative());
+		handler.setRedirectStrategy(redirectStrategy);
+
+		return handler;
 	}
 
 	private static class OAuth2ClientAuthenticationConfigurer
