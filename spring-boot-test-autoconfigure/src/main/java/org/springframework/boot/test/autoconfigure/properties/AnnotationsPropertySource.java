@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
  * {@link PropertyMapping @PropertyMapping}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.4.0
  */
 public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>> {
@@ -60,14 +61,16 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 
 	private void collectProperties(Class<?> source, Map<String, Object> properties) {
 		if (source != null) {
-			for (Annotation annotation : source.getDeclaredAnnotations()) {
+			for (Annotation annotation : AnnotationUtils.getAnnotations(source)) {
 				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
-					PropertyMapping typeMapping = AnnotationUtils.getAnnotation(
-							annotation.annotationType(), PropertyMapping.class);
+					annotation.annotationType().getAnnotation(PropertyMapping.class);
+					PropertyMapping typeMapping = annotation.annotationType()
+							.getAnnotation(PropertyMapping.class);
 					for (Method attribute : annotation.annotationType()
 							.getDeclaredMethods()) {
 						collectProperties(annotation, attribute, typeMapping, properties);
 					}
+					collectProperties(annotation.annotationType(), properties);
 				}
 			}
 			collectProperties(source.getSuperclass(), properties);

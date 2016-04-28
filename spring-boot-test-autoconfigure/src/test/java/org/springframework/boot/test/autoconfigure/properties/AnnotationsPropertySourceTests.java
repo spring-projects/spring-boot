@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link AnnotationsPropertySource}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class AnnotationsPropertySourceTests {
 
@@ -131,6 +132,26 @@ public class AnnotationsPropertySourceTests {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				CamelCaseToKebabCase.class);
 		assertThat(source.getPropertyNames()).contains("camel-case-to-kebab-case");
+	}
+
+	@Test
+	public void propertiesFromMetaAnnotationsAreMapped() throws Exception {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(
+				PropertiesFromSingleMetaAnnotation.class);
+		assertThat(source.getPropertyNames()).containsExactly("value");
+		assertThat(source.getProperty("value")).isEqualTo("foo");
+	}
+
+	@Test
+	public void propertiesFromMultipleMetaAnnotationsAreMappedUsingTheirOwnPropertyMapping()
+			throws Exception {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(
+				PropertiesFromMultipleMetaAnnotations.class);
+		assertThat(source.getPropertyNames()).containsExactly("value", "test.value",
+				"test.example");
+		assertThat(source.getProperty("value")).isEqualTo("alpha");
+		assertThat(source.getProperty("test.value")).isEqualTo("bravo");
+		assertThat(source.getProperty("test.example")).isEqualTo("charlie");
 	}
 
 	static class NoAnnotation {
@@ -259,6 +280,30 @@ public class AnnotationsPropertySourceTests {
 	static @interface CamelCaseToKebabCaseAnnotation {
 
 		String camelCaseToKebabCase() default "abc";
+
+	}
+
+	@PropertiesFromSingleMetaAnnotationAnnotation
+	static class PropertiesFromSingleMetaAnnotation {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@TypeLevelAnnotation("foo")
+	static @interface PropertiesFromSingleMetaAnnotationAnnotation {
+
+	}
+
+	@PropertiesFromMultipleMetaAnnotationsAnnotation
+	static class PropertiesFromMultipleMetaAnnotations {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@TypeLevelAnnotation("alpha")
+	@TypeLevelWithPrefixAnnotation("bravo")
+	@TypeAndAttributeLevelWithPrefixAnnotation("charlie")
+	static @interface PropertiesFromMultipleMetaAnnotationsAnnotation {
 
 	}
 
