@@ -253,7 +253,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		private String appendCharset(MimeType type, String charset) {
-			if (type.getCharSet() != null) {
+			if (type.getCharset() != null) {
 				return type.toString();
 			}
 			LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
