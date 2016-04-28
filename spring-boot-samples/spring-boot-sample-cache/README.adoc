@@ -66,6 +66,13 @@ http://www.ehcache.org/documentation/3.0/xml.html[the documentation] for more de
 
 
 
+=== EhCache 3.x
+Simply add the `org.ehcache:ehcache` dependency to the project. Since there is a
+default `ehcache.xml` configuration file at the root of the classpath, it is automatically
+used to configure the underlying `CacheManager`.
+
+
+
 === Hazelcast
 Both `com.hazelcast:hazelcast` and `com.hazelcast:hazelcast-spring` should be added to
 the project to enable support for Hazelcast.  Since there is a default `hazelcast.xml`
