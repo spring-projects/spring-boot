@@ -47,7 +47,7 @@ public class JsonContentTests {
 	}
 
 	@Test
-	public void createThenJsonIsNullShouldThrowException() throws Exception {
+	public void createWhenJsonIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("JSON must not be null");
 		new JsonContent<ExampleObject>(getClass(), TYPE, null);
@@ -84,7 +84,7 @@ public class JsonContentTests {
 	}
 
 	@Test
-	public void toStringWhenNoTypeShouldReturnString() throws Exception {
+	public void toStringWhenHasNoTypeShouldReturnString() throws Exception {
 		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
 				null, JSON);
 		assertThat(content.toString()).isEqualTo("JsonContent " + JSON);

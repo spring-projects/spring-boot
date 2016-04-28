@@ -53,7 +53,7 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  *     public void testWriteJson() {
  *         ExampleObject object = //...
  *         assertThat(json.write(object)).isEqualToJson("expected.json");
- *         assertThat(json.read("expected.json)).isEqualTo(object);
+ *         assertThat(json.read("expected.json")).isEqualTo(object);
  *     }
  *
  * }
@@ -62,7 +62,7 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  * <p>
  * To use this library JSONAssert must be on the test classpath.
  *
- * @param <T> The type under test
+ * @param <T> the type under test
  * @author Phillip Webb
  * @since 1.4.0
  * @see JsonContentAssert
@@ -271,8 +271,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 
 	/**
 	 * Write the specified object to a JSON string.
-	 * @param value the source value ({@code never null})
-	 * @param type the resulting type ({@code never null})
+	 * @param value the source value (never {@code null})
+	 * @param type the resulting type (never {@code null})
 	 * @return the JSON string
 	 * @throws IOException on write error
 	 */
@@ -281,9 +281,9 @@ public abstract class AbstractJsonMarshalTester<T> {
 
 	/**
 	 * Read from the specified input stream to create an object of the specified type. The
-	 * default implementation delegates to {@link #readObject(Reader, ResolvableType)}
-	 * @param inputStream the source input stream ({@code never null})
-	 * @param type the resulting type ({@code never null})
+	 * default implementation delegates to {@link #readObject(Reader, ResolvableType)}.
+	 * @param inputStream the source input stream (never {@code null})
+	 * @param type the resulting type (never {@code null})
 	 * @return the resulting object
 	 * @throws IOException on read error
 	 */
@@ -295,8 +295,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 
 	/**
 	 * Read from the specified reader to create an object of the specified type.
-	 * @param reader the source reader ({@code never null})
-	 * @param type the resulting type ({@code never null})
+	 * @param reader the source reader (never {@code null})
+	 * @param type the resulting type (never {@code null})
 	 * @return the resulting object
 	 * @throws IOException on read error
 	 */
@@ -304,7 +304,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 			throws IOException;
 
 	/**
-	 * Utility class used to support field initialization. Uses by subclasses to support
+	 * Utility class used to support field initialization. Used by subclasses to support
 	 * {@code initFields}.
 	 * @param <M> The marshaller type
 	 */

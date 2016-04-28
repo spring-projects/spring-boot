@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 /**
  * A base {@link DataSourcePoolMetadata} implementation.
  *
- * @param <T> The datasource type
+ * @param <T> the data source type
  * @author Stephane Nicoll
  * @since 1.2.0
  */

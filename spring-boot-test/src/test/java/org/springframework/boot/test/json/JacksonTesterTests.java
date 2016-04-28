@@ -40,7 +40,7 @@ public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 	}
 
 	@Test
-	public void initFieldsWhenObjectMapperIsNullShouldThrowException() {
+	public void initFieldsWhenMarshallerIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Marshaller must not be null");
 		JacksonTester.initFields(new InitFieldsTestClass(), (ObjectMapper) null);

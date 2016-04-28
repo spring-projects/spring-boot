@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  * Helper base class for {@link JsonDeserializer} implementations that deserialize
  * objects.
  *
- * @param <T> The supported object type
+ * @param <T> the supported object type
  * @author Phillip Webb
  * @since 1.4.0
  * @see JsonObjectSerializer
