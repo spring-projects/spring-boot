@@ -1713,33 +1713,97 @@ In the example above, if `YourException` is thrown by a controller defined in th
 package as `FooController`, a json representation of the `CustomerErrorType` POJO will be
 used instead of the `ErrorAttributes` representation.
 
-If you want more specific error pages for some conditions, the embedded servlet containers
-support a uniform Java DSL for customizing the error handling. Assuming that you have a
-mapping for `/400`:
+
+
+[[boot-features-error-handling-custom-error-pages]]
+===== Custom error pages
+If you want to display a custom HTML error page for a given status code, you add a file to
+an `/error` folder. Error pages can either be static HTML (i.e. added under any of the
+static resource folders) or built using templates. The name of the file should be the
+exact status code or a series mask.
+
+For example, to map `404` to a static HTML file, your folder structure would look like
+this:
+
+[source,indent=0,subs="verbatim,quotes,attributes"]
+----
+	src/
+	 +- main/
+	     +- java/
+	     |   + <source code>
+	     +- resources/
+	         +- public/
+	             +- error/
+	             |   +- 404.html
+	             +- <other public assets>
+----
+
+To map all `5xx` errors using a freemarker template, you'd have a structure like this:
+
+[source,indent=0,subs="verbatim,quotes,attributes"]
+----
+	src/
+	 +- main/
+	     +- java/
+	     |   + <source code>
+	     +- resources/
+	         +- template/
+	             +- error/
+	             |   +- 5xx.ftl
+	             +- <other templates>
+----
+
+For more complex mappings you can also add beans that implement the `ErrorViewResolver`
+interface.
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	public EmbeddedServletContainerCustomizer containerCustomizer(){
-		return new MyCustomizer();
-	}
-
-	// ...
-
-	private static class MyCustomizer implements EmbeddedServletContainerCustomizer {
+	public class MyErrorViewResolver implements ErrorViewResolver {
 
 		@Override
-		public void customize(ConfigurableEmbeddedServletContainer container) {
-			container.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
+		public ModelAndView resolveErrorView(HttpServletRequest request,
+				HttpStatus status, Map<String, Object> model) {
+			// Use the request or status to optionally return a ModelAndView
+			return ...
 		}
 
 	}
 ----
 
+
 You can also use regular Spring MVC features like
 {spring-reference}/#mvc-exceptionhandlers[`@ExceptionHandler` methods] and
 {spring-reference}/#mvc-ann-controller-advice[`@ControllerAdvice`]. The `ErrorController`
 will then pick up any unhandled exceptions.
+
+
+
+[[boot-features-error-handling-mapping-error-pages-without-mvc]]
+===== Mapping error pages outside of Spring MVC
+For applications that aren't using Spring MVC, you can use the `ErrorPageRegistrar`
+interface to directly register `ErrorPages`. This abstraction works directly with the
+underlying embedded servlet container and will work even if you don't have a Spring MVC
+`DispatcherServlet`
+
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+	public ErrorPageRegistrar errorPageRegistrar(){
+		return new MyErrorPageRegistrar();
+	}
+
+	// ...
+
+	private static class MyErrorPageRegistrar implements ErrorPageRegistrar {
+
+		@Override
+		public void registerErrorPages(ErrorPageRegistry registry) {
+			registry.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
+		}
+
+	}
+----
 
 N.B. if you register an `ErrorPage` with a path that will end up being handled by a
 `Filter` (e.g. as is common with some non-Spring web frameworks, like Jersey and Wicket),

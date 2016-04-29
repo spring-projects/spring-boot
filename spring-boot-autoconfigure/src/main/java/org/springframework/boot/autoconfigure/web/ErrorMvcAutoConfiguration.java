@@ -27,11 +27,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.aop.framework.autoproxy.AutoProxyUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -40,9 +42,11 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ErrorPage;
 import org.springframework.boot.web.servlet.ErrorPageRegistrar;
 import org.springframework.boot.web.servlet.ErrorPageRegistry;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -69,18 +73,28 @@ import org.springframework.web.util.HtmlUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
-@ConditionalOnWebApplication
-// Ensure this loads before the main WebMvcAutoConfiguration so that the error View is
-// available
-@AutoConfigureBefore(WebMvcAutoConfiguration.class)
 @Configuration
+@ConditionalOnWebApplication
+@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+// Load before the main WebMvcAutoConfiguration so that the error View is available
+@AutoConfigureBefore(WebMvcAutoConfiguration.class)
+@EnableConfigurationProperties(ResourceProperties.class)
 public class ErrorMvcAutoConfiguration {
 
-	private final ServerProperties properties;
+	private final ApplicationContext applicationContext;
 
-	public ErrorMvcAutoConfiguration(ServerProperties properties) {
-		this.properties = properties;
+	private final ServerProperties serverProperties;
+
+	private final ResourceProperties resourceProperties;
+
+	@Autowired(required = false)
+	private List<ErrorViewResolver> errorViewResolvers;
+
+	public ErrorMvcAutoConfiguration(ApplicationContext applicationContext,
+			ServerProperties serverProperties, ResourceProperties resourceProperties) {
+		this.applicationContext = applicationContext;
+		this.serverProperties = serverProperties;
+		this.resourceProperties = resourceProperties;
 	}
 
 	@Bean
@@ -92,12 +106,21 @@ public class ErrorMvcAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorController.class, search = SearchStrategy.CURRENT)
 	public BasicErrorController basicErrorController(ErrorAttributes errorAttributes) {
-		return new BasicErrorController(errorAttributes, this.properties.getError());
+		return new BasicErrorController(errorAttributes, this.serverProperties.getError(),
+				this.errorViewResolvers);
 	}
 
 	@Bean
 	public ErrorPageCustomizer errorPageCustomizer() {
-		return new ErrorPageCustomizer(this.properties);
+		return new ErrorPageCustomizer(this.serverProperties);
+	}
+
+	@Bean
+	@ConditionalOnBean(DispatcherServlet.class)
+	@ConditionalOnMissingBean
+	public DefaultErrorViewResolver conventionErrorViewResolver() {
+		return new DefaultErrorViewResolver(this.applicationContext,
+				this.resourceProperties);
 	}
 
 	@Bean
