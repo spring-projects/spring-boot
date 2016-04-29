@@ -91,4 +91,7 @@ do as they were designed before this was clarified.
 | http://ff4j.org/[Feature Flipping For Java (FF4J)]
 | https://github.com/clun/ff4j/
 
+| http://resteasy.jboss.org/[RESTEasy]
+| https://github.com/paypal/resteasy-spring-boot
+
 |===
