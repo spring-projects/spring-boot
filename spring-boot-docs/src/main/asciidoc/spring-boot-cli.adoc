@@ -415,7 +415,7 @@ From inside the embedded shell you can run other commands directly:
 ----
 
 The embedded shell supports ANSI color output as well as `tab` completion. If you need
-to run a native command you can use the `$` prefix. Hitting `ctrl-c` will exit the
+to run a native command you can use the `!` prefix. Hitting `ctrl-c` will exit the
 embedded shell.
 
 
