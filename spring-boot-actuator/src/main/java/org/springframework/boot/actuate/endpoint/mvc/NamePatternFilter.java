@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  * must provide implementations of {@link #getValue(Object, String)} and
  * {@link #getNames(Object, NameCallback)}.
  *
- * @param <T> The source data type
+ * @param <T> the source data type
  * @author Phillip Webb
  * @author Sergei Egorov
  * @author Andy Wilkinson

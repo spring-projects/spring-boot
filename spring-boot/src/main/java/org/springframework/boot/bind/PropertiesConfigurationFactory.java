@@ -49,7 +49,7 @@ import org.springframework.validation.Validator;
  * them to an object of a specified type and then optionally running a {@link Validator}
  * over it.
  *
- * @param <T> The target type
+ * @param <T> the target type
  * @author Dave Syer
  */
 public class PropertiesConfigurationFactory<T>

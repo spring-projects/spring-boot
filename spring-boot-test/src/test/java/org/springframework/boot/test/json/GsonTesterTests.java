@@ -41,7 +41,7 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 	}
 
 	@Test
-	public void initFieldsWhenObjectMapperIsNullShouldThrowException() {
+	public void initFieldsWhenMarshallerIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Marshaller must not be null");
 		GsonTester.initFields(new InitFieldsTestClass(), (Gson) null);

@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
  * {@link AssertProvider provide} {@link JsonContentAssert} to AssertJ {@code assertThat}
  * calls.
  *
- * @param <T> The source type that created the content
+ * @param <T> the source type that created the content
  * @author Phillip Webb
  * @since 1.4.0
  */

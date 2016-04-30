@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
  * Adapter class allowing a Hamcrest {@link Matcher} to be used as an AssertJ
  * {@link Condition}.
  *
- * @param <T> The type of object that the condition accepts
+ * @param <T> the type of object that the condition accepts
  * @author Phillip Webb
  */
 public final class Matched<T> extends Condition<T> {

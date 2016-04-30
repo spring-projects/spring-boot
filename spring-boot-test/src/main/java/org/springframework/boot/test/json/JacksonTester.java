@@ -41,7 +41,7 @@ import org.springframework.util.Assert;
  *     }
  *
  *     &#064;Test
- *     public void testWriteJson() {
+ *     public void testWriteJson() throws IOException {
  *         ExampleObject object = //...
  *         assertThat(json.write(object)).isEqualToJson("expected.json");
  *     }
@@ -51,7 +51,7 @@ import org.springframework.util.Assert;
  *
  * See {@link AbstractJsonMarshalTester} for more details.
  *
- * @param <T> The type under test
+ * @param <T> the type under test
  * @author Phillip Webb
  * @since 1.4.0
  */
@@ -116,7 +116,7 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 	}
 
 	/**
-	 * {@link JsonTesterFieldInitializer} for Jackson.
+	 * {@link FieldInitializer} for Jackson.
 	 */
 	private static class JacksonFieldInitializer extends FieldInitializer<ObjectMapper> {
 
