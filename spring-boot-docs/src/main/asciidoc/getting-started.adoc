@@ -378,7 +378,7 @@ manually, e.g. if you have installed using SDKMAN!
 
 [indent=0]
 ----
-	$ . ~/.sdkman/springboot/current/shell-completion/bash/spring
+	$ . ~/.sdkman/candidates/springboot/current/shell-completion/bash/spring
 	$ spring <HIT TAB HERE>
 	  grab  help  jar  run  test  version
 ----
