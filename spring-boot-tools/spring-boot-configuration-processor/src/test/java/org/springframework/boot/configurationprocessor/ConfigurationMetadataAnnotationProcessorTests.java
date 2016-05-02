@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,12 +60,14 @@ import org.springframework.boot.configurationsample.specific.ExcludedTypesPojo;
 import org.springframework.boot.configurationsample.specific.InnerClassAnnotatedGetterConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
+import org.springframework.boot.configurationsample.specific.InvalidAccessorProperties;
 import org.springframework.boot.configurationsample.specific.SimplePojo;
 import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -328,6 +330,13 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata, not(containsProperty("excluded.print-writer")));
 		assertThat(metadata, not(containsProperty("excluded.writer")));
 		assertThat(metadata, not(containsProperty("excluded.writer-array")));
+	}
+
+	@Test
+	public void invalidAccessor() throws IOException {
+		ConfigurationMetadata metadata = compile(InvalidAccessorProperties.class);
+		assertThat(metadata, containsGroup("config"));
+		assertThat(metadata.getItems(), hasSize(1));
 	}
 
 	@Test
