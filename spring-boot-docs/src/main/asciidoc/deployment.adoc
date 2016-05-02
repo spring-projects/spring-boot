@@ -142,8 +142,8 @@ Spring's `Environment` abstraction:
 
 All Cloud Foundry properties are prefixed with `vcap`. You can use vcap properties to
 access application information (such as the public URL of the application) and service
-information (such as database credentials). See `VcapApplicationListener` Javadoc for
-complete details.
+information (such as database credentials). See `CloudFoundryVcapEnvironmentPostProcessor`
+Javadoc for complete details.
 
 TIP: The http://cloud.spring.io/spring-cloud-connectors/[Spring Cloud Connectors] project
 is a better fit for tasks such as configuring a DataSource. Spring Boot includes
