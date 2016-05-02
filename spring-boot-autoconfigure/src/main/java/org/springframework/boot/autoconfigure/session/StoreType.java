@@ -26,16 +26,6 @@ package org.springframework.boot.autoconfigure.session;
 public enum StoreType {
 
 	/**
-	 * JDBC backed sessions.
-	 */
-	JDBC,
-
-	/**
-	 * Mongo backed sessions.
-	 */
-	MONGO,
-
-	/**
 	 * Redis backed sessions.
 	 */
 	REDIS,
@@ -44,6 +34,16 @@ public enum StoreType {
 	 * Hazelcast backed sessions.
 	 */
 	HAZELCAST,
+
+	/**
+	 * Mongo backed sessions.
+	 */
+	MONGO,
+
+	/**
+	 * JDBC backed sessions.
+	 */
+	JDBC,
 
 	/**
 	 * Simple in-memory map of sessions.

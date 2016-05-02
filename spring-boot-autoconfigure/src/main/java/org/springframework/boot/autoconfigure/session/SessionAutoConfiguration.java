@@ -44,9 +44,9 @@ import org.springframework.session.SessionRepository;
  * @since 1.4.0
  */
 @Configuration
+@ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnClass(Session.class)
 @ConditionalOnWebApplication
-@ConditionalOnMissingBean(SessionRepository.class)
 @EnableConfigurationProperties(SessionProperties.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
 		MongoAutoConfiguration.class, RedisAutoConfiguration.class })

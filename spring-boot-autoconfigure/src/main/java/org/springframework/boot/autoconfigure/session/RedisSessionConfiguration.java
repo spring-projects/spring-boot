@@ -18,10 +18,12 @@ package org.springframework.boot.autoconfigure.session;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.session.SessionRepository;
 import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
 
 /**
@@ -33,6 +35,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
  * @author Stephane Nicoll
  */
 @Configuration
+@ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean({ RedisTemplate.class, RedisConnectionFactory.class })
 @Conditional(SessionCondition.class)
 class RedisSessionConfiguration {

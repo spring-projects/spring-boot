@@ -20,8 +20,10 @@ import com.hazelcast.core.HazelcastInstance;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.session.SessionRepository;
 import org.springframework.session.hazelcast.config.annotation.web.http.HazelcastHttpSessionConfiguration;
 
 /**
@@ -32,6 +34,7 @@ import org.springframework.session.hazelcast.config.annotation.web.http.Hazelcas
  * @author Stephane Nicoll
  */
 @Configuration
+@ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(HazelcastInstance.class)
 @Conditional(SessionCondition.class)
 class HazelcastSessionConfiguration {

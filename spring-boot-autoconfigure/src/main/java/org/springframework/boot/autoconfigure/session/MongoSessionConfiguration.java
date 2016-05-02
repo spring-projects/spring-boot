@@ -18,9 +18,11 @@ package org.springframework.boot.autoconfigure.session;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.session.SessionRepository;
 import org.springframework.session.data.mongo.config.annotation.web.http.MongoHttpSessionConfiguration;
 
 /**
@@ -30,6 +32,7 @@ import org.springframework.session.data.mongo.config.annotation.web.http.MongoHt
  * @author Stephane Nicoll
  */
 @Configuration
+@ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(MongoOperations.class)
 @Conditional(SessionCondition.class)
 class MongoSessionConfiguration {

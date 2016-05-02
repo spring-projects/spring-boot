@@ -56,6 +56,7 @@ public class SampleSessionRedisApplicationTests {
 			if (!redisServerRunning(ex)) {
 				return;
 			}
+			throw ex;
 		}
 
 		URI uri = URI.create("http://localhost:" + port + "/");
