@@ -62,16 +62,16 @@ public class MockitoInitializeTestExecutionListenerTests {
 	}
 
 	@Test
-	public void prepareTestInstanceShouldInitMockitoAnnotation() throws Exception {
-		WithMockitoAnnotation instance = new WithMockitoAnnotation();
+	public void prepareTestInstanceShouldInitMockitoAnnotations() throws Exception {
+		WithMockitoAnnotations instance = new WithMockitoAnnotations();
 		this.listener.prepareTestInstance(mockTestContext(instance));
 		assertThat(instance.mock).isNotNull();
 		assertThat(instance.captor).isNotNull();
 	}
 
 	@Test
-	public void prepareTestInstanceShouldInjectMockBeans() throws Exception {
-		WithMockBeans instance = new WithMockBeans();
+	public void prepareTestInstanceShouldInjectMockBean() throws Exception {
+		WithMockBean instance = new WithMockBean();
 		this.listener.prepareTestInstance(mockTestContext(instance));
 		verify(this.postProcessor).inject(this.fieldCaptor.capture(), eq(instance),
 				(MockDefinition) any());
@@ -87,7 +87,7 @@ public class MockitoInitializeTestExecutionListenerTests {
 		return testContext;
 	}
 
-	static class WithMockitoAnnotation {
+	static class WithMockitoAnnotations {
 
 		@Mock
 		InputStream mock;
@@ -97,7 +97,7 @@ public class MockitoInitializeTestExecutionListenerTests {
 
 	}
 
-	static class WithMockBeans {
+	static class WithMockBean {
 
 		@MockBean
 		InputStream mockBean;

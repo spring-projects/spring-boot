@@ -85,7 +85,7 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 	}
 
 	@Test
-	public void getPageWhenUrlIsRelativeAndNoPortWillUseLocalhost8080() throws Exception {
+	public void getWhenUrlIsRelativeAndNoPortWillUseLocalhost8080() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
 		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(
 				environment);

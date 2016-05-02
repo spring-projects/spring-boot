@@ -102,7 +102,7 @@ public @interface SpyBean {
 	 * When {@code @MockBean} also defines a {@code name} this attribute can only contain
 	 * a single value.
 	 * <p>
-	 * If this is the only attribute specified consider using the {@code value} alias
+	 * If this is the only specified attribute consider using the {@code value} alias
 	 * instead.
 	 * @return the classes to mock
 	 */

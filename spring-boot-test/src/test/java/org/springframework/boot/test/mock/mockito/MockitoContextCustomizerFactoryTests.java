@@ -38,28 +38,28 @@ public class MockitoContextCustomizerFactoryTests {
 	public void getContextCustomizerWithoutAnnotationReturnsCustomizer()
 			throws Exception {
 		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(NoRegisterMocksAnnotation.class, null);
+				.createContextCustomizer(NoMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
 	public void getContextCustomizerWithAnnotationReturnsCustomizer() throws Exception {
 		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(WithRegisterMocksAnnotation.class, null);
+				.createContextCustomizer(WithMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
 	public void getContextCustomizerUsesMocksAsCacheKey() throws Exception {
 		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(WithRegisterMocksAnnotation.class, null);
+				.createContextCustomizer(WithMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();
 		ContextCustomizer same = this.factory
-				.createContextCustomizer(WithSameRegisterMocksAnnotation.class, null);
+				.createContextCustomizer(WithSameMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();
 		ContextCustomizer different = this.factory.createContextCustomizer(
-				WithDifferentRegisterMocksAnnotation.class, null);
-		assertThat(customizer).isNotNull();
+				WithDifferentMockBeanAnnotation.class, null);
+		assertThat(different).isNotNull();
 		assertThat(customizer.hashCode()).isEqualTo(same.hashCode());
 		assertThat(customizer.hashCode()).isNotEqualTo(different.hashCode());
 		assertThat(customizer).isEqualTo(customizer);
@@ -67,22 +67,22 @@ public class MockitoContextCustomizerFactoryTests {
 		assertThat(customizer).isNotEqualTo(different);
 	}
 
-	static class NoRegisterMocksAnnotation {
+	static class NoMockBeanAnnotation {
 
 	}
 
 	@MockBean({ Service1.class, Service2.class })
-	static class WithRegisterMocksAnnotation {
+	static class WithMockBeanAnnotation {
 
 	}
 
 	@MockBean({ Service2.class, Service1.class })
-	static class WithSameRegisterMocksAnnotation {
+	static class WithSameMockBeanAnnotation {
 
 	}
 
 	@MockBean({ Service1.class })
-	static class WithDifferentRegisterMocksAnnotation {
+	static class WithDifferentMockBeanAnnotation {
 
 	}
 
