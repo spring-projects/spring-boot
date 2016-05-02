@@ -114,7 +114,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
 			throws BeansException {
 		Assert.isInstanceOf(BeanDefinitionRegistry.class, beanFactory,
-				"@RegisterMocks can only be used on bean factories that "
+				"@MockBean can only be used on bean factories that "
 						+ "implement BeanDefinitionRegistry");
 		postProcessBeanFactory(beanFactory, (BeanDefinitionRegistry) beanFactory);
 	}
