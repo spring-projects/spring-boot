@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -59,7 +60,9 @@ import org.springframework.test.web.servlet.MockMvc;
  * {@link AutoConfigureMockMvc @AutoConfigureMockMvc} rather than this annotation.
  *
  * @author Phillip Webb
+ * @see AutoConfigureWebMvc
  * @see AutoConfigureMockMvc
+ * @see AutoConfigureCache
  * @since 1.4.0
  */
 @Target(ElementType.TYPE)
@@ -69,6 +72,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @BootstrapWith(WebMvcTestContextBootstrapper.class)
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(WebMvcTypeExcludeFilter.class)
+@AutoConfigureCache
 @AutoConfigureWebMvc
 @AutoConfigureMockMvc
 public @interface WebMvcTest {

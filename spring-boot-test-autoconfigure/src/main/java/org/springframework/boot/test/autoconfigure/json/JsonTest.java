@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.boot.test.json.GsonTester;
@@ -48,6 +49,7 @@ import org.springframework.test.context.BootstrapWith;
  * @author Phillip Webb
  * @see AutoConfigurationJson
  * @see AutoConfigureJsonTesters
+ * @see AutoConfigureCache
  * @since 1.4.0
  */
 @Target(ElementType.TYPE)
@@ -57,6 +59,7 @@ import org.springframework.test.context.BootstrapWith;
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(JsonExcludeFilter.class)
+@AutoConfigureCache
 @AutoConfigurationJson
 @AutoConfigureJsonTesters
 public @interface JsonTest {

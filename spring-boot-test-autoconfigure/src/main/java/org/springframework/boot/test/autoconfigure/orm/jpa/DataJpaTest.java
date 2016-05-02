@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,7 +53,10 @@ import org.springframework.transaction.annotation.Transactional;
  * annotation.
  *
  * @author Phillip Webb
+ * @see AutoConfigureDataJpa
  * @see AutoConfigureTestDatabase
+ * @see AutoConfigureTestEntityManager
+ * @see AutoConfigureCache
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -62,6 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(DataJpaTypeExcludeFilter.class)
 @Transactional
+@AutoConfigureCache
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
