@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Christian Dupuis
  * @author Christoph Strobl
  * @author Eddú Meléndez
+ * @author Venil Noronha
  */
 public class RedisAutoConfigurationTests {
 
@@ -82,6 +83,15 @@ public class RedisAutoConfigurationTests {
 				.isEqualTo("foo");
 		assertThat(this.context.getBean(JedisConnectionFactory.class).getPoolConfig()
 				.getMaxIdle()).isEqualTo(1);
+	}
+
+	@Test
+	public void testRedisConfigurationWithoutPool() throws Exception {
+		load("spring.redis.host:foo", "spring.redis.pool.enabled:false");
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
+				.isEqualTo("foo");
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getUsePool())
+				.isEqualTo(false);
 	}
 
 	@Test

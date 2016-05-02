@@ -20,7 +20,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.pool2.impl.GenericObjectPool;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -28,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Cluster;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Sentinel;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -55,6 +53,7 @@ import org.springframework.util.StringUtils;
  * @author Christoph Strobl
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Venil Noronha
  */
 @Configuration
 @ConditionalOnClass({ JedisConnection.class, RedisOperations.class, Jedis.class })
@@ -68,9 +67,10 @@ public class RedisAutoConfiguration {
 	}
 
 	/**
-	 * Base class for Redis configurations.
+	 * Redis connection configuration.
 	 */
-	protected static abstract class AbstractRedisConfiguration {
+	@Configuration
+	protected static class RedisConnectionConfiguration {
 
 		@Autowired
 		protected RedisProperties properties;
@@ -80,6 +80,13 @@ public class RedisAutoConfiguration {
 
 		@Autowired(required = false)
 		private RedisClusterConfiguration clusterConfiguration;
+
+		@Bean
+		@ConditionalOnMissingBean(RedisConnectionFactory.class)
+		public JedisConnectionFactory redisConnectionFactory()
+				throws UnknownHostException {
+			return applyProperties(createJedisConnectionFactory());
+		}
 
 		protected final JedisConnectionFactory applyProperties(
 				JedisConnectionFactory factory) {
@@ -92,10 +99,36 @@ public class RedisAutoConfiguration {
 			if (this.properties.getTimeout() > 0) {
 				factory.setTimeout(this.properties.getTimeout());
 			}
+			boolean usePool = this.properties.getPool() == null
+					|| !Boolean.FALSE.equals(this.properties.getPool().getEnabled());
+			factory.setUsePool(usePool);
 			return factory;
 		}
 
-		protected final RedisSentinelConfiguration getSentinelConfig() {
+		private JedisConnectionFactory createJedisConnectionFactory() {
+			JedisPoolConfig poolConfig = this.properties.getPool() != null
+					? jedisPoolConfig() : new JedisPoolConfig();
+
+			if (getSentinelConfig() != null) {
+				return new JedisConnectionFactory(getSentinelConfig(), poolConfig);
+			}
+			if (getClusterConfiguration() != null) {
+				return new JedisConnectionFactory(getClusterConfiguration(), poolConfig);
+			}
+			return new JedisConnectionFactory(poolConfig);
+		}
+
+		private JedisPoolConfig jedisPoolConfig() {
+			JedisPoolConfig config = new JedisPoolConfig();
+			RedisProperties.Pool props = this.properties.getPool();
+			config.setMaxTotal(props.getMaxActive());
+			config.setMaxIdle(props.getMaxIdle());
+			config.setMinIdle(props.getMinIdle());
+			config.setMaxWaitMillis(props.getMaxWait());
+			return config;
+		}
+
+		private RedisSentinelConfiguration getSentinelConfig() {
 			if (this.sentinelConfiguration != null) {
 				return this.sentinelConfiguration;
 			}
@@ -113,7 +146,7 @@ public class RedisAutoConfiguration {
 		 * Create a {@link RedisClusterConfiguration} if necessary.
 		 * @return {@literal null} if no cluster settings are set.
 		 */
-		protected final RedisClusterConfiguration getClusterConfiguration() {
+		private RedisClusterConfiguration getClusterConfiguration() {
 			if (this.clusterConfiguration != null) {
 				return this.clusterConfiguration;
 			}
@@ -145,72 +178,6 @@ public class RedisAutoConfiguration {
 				}
 			}
 			return nodes;
-		}
-
-	}
-
-	/**
-	 * Redis connection configuration.
-	 */
-	@Configuration
-	@ConditionalOnMissingClass("org.apache.commons.pool2.impl.GenericObjectPool")
-	protected static class RedisConnectionConfiguration
-			extends AbstractRedisConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(RedisConnectionFactory.class)
-		public JedisConnectionFactory redisConnectionFactory()
-				throws UnknownHostException {
-			return applyProperties(createJedisConnectionFactory());
-		}
-
-		private JedisConnectionFactory createJedisConnectionFactory() {
-			if (getSentinelConfig() != null) {
-				return new JedisConnectionFactory(getSentinelConfig());
-			}
-			if (getClusterConfiguration() != null) {
-				return new JedisConnectionFactory(getClusterConfiguration());
-			}
-			return new JedisConnectionFactory();
-		}
-	}
-
-	/**
-	 * Redis pooled connection configuration.
-	 */
-	@Configuration
-	@ConditionalOnClass(GenericObjectPool.class)
-	protected static class RedisPooledConnectionConfiguration
-			extends AbstractRedisConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(RedisConnectionFactory.class)
-		public JedisConnectionFactory redisConnectionFactory()
-				throws UnknownHostException {
-			return applyProperties(createJedisConnectionFactory());
-		}
-
-		private JedisConnectionFactory createJedisConnectionFactory() {
-			JedisPoolConfig poolConfig = this.properties.getPool() != null
-					? jedisPoolConfig() : new JedisPoolConfig();
-
-			if (getSentinelConfig() != null) {
-				return new JedisConnectionFactory(getSentinelConfig(), poolConfig);
-			}
-			if (getClusterConfiguration() != null) {
-				return new JedisConnectionFactory(getClusterConfiguration(), poolConfig);
-			}
-			return new JedisConnectionFactory(poolConfig);
-		}
-
-		private JedisPoolConfig jedisPoolConfig() {
-			JedisPoolConfig config = new JedisPoolConfig();
-			RedisProperties.Pool props = this.properties.getPool();
-			config.setMaxTotal(props.getMaxActive());
-			config.setMaxIdle(props.getMaxIdle());
-			config.setMinIdle(props.getMinIdle());
-			config.setMaxWaitMillis(props.getMaxWait());
-			return config;
 		}
 
 	}
