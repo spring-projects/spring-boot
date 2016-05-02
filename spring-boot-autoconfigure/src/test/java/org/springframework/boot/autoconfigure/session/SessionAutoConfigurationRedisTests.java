@@ -55,8 +55,7 @@ public class SessionAutoConfigurationRedisTests
 	@Test
 	public void redisSessionStoreWithCustomizations() {
 		load(Collections.<Class<?>>singletonList(RedisAutoConfiguration.class),
-				"spring.session.store-type=redis",
-				"spring.session.redis.namespace=foo",
+				"spring.session.store-type=redis", "spring.session.redis.namespace=foo",
 				"spring.session.redis.flush-mode=immediate");
 		RedisOperationsSessionRepository repository = validateSessionRepository(
 				RedisOperationsSessionRepository.class);

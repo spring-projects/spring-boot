@@ -36,13 +36,14 @@ import org.springframework.session.config.annotation.web.http.EnableSpringHttpSe
 class HashMapSessionConfiguration {
 
 	@Bean
-	public SessionRepository<ExpiringSession> sessionRepository(SessionProperties sessionProperties) {
-		MapSessionRepository sessionRepository = new MapSessionRepository();
-		Integer timeout = sessionProperties.getTimeout();
+	public SessionRepository<ExpiringSession> sessionRepository(
+			SessionProperties properties) {
+		MapSessionRepository repository = new MapSessionRepository();
+		Integer timeout = properties.getTimeout();
 		if (timeout != null) {
-			sessionRepository.setDefaultMaxInactiveInterval(timeout);
+			repository.setDefaultMaxInactiveInterval(timeout);
 		}
-		return sessionRepository;
+		return repository;
 	}
 
 }

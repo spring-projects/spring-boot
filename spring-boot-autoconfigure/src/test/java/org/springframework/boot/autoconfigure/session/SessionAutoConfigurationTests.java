@@ -72,8 +72,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 
 	@Test
 	public void hashMapSessionStoreCustomTimeout() {
-		load("spring.session.store-type=hash-map",
-				"server.session.timeout=3000");
+		load("spring.session.store-type=hash-map", "server.session.timeout=3000");
 		MapSessionRepository repository = validateSessionRepository(
 				MapSessionRepository.class);
 		assertThat(getSessionTimeout(repository)).isEqualTo(3000);
@@ -81,8 +80,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 
 	@Test
 	public void springSessionTimeoutIsNotAValidProperty() {
-		load("spring.session.store-type=hash-map",
-				"spring.session.timeout=3000");
+		load("spring.session.store-type=hash-map", "spring.session.timeout=3000");
 		MapSessionRepository repository = validateSessionRepository(
 				MapSessionRepository.class);
 		assertThat(getSessionTimeout(repository)).isNull();
@@ -130,7 +128,8 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 				"spring.session.store-type=hazelcast",
 				"spring.session.hazelcast.map-name=foo:bar:biz");
 		validateSessionRepository(MapSessionRepository.class);
-		HazelcastInstance hazelcastInstance = this.context.getBean(HazelcastInstance.class);
+		HazelcastInstance hazelcastInstance = this.context
+				.getBean(HazelcastInstance.class);
 		verify(hazelcastInstance, times(1)).getMap("foo:bar:biz");
 	}
 
@@ -154,13 +153,13 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 				.isEqualTo("foobar");
 	}
 
-
 	@Configuration
 	static class SessionRepositoryConfiguration {
 
 		@Bean
 		public SessionRepository<?> mySessionRepository() {
-			return new MapSessionRepository(Collections.<String, ExpiringSession>emptyMap());
+			return new MapSessionRepository(
+					Collections.<String, ExpiringSession>emptyMap());
 		}
 
 	}
@@ -179,8 +178,9 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	static class HazelcastSpecificMap {
 
 		@Bean
+		@SuppressWarnings("unchecked")
 		public HazelcastInstance hazelcastInstance() {
-			IMap map = mock(IMap.class);
+			IMap<Object, Object> map = mock(IMap.class);
 			HazelcastInstance mock = mock(HazelcastInstance.class);
 			given(mock.getMap("foo:bar:biz")).willReturn(map);
 			return mock;

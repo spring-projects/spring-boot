@@ -30,4 +30,5 @@ import org.springframework.session.SessionRepository;
 @ConditionalOnMissingBean(SessionRepository.class)
 @Conditional(SessionCondition.class)
 class NoOpSessionConfiguration {
+
 }
