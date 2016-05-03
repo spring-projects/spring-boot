@@ -40,7 +40,7 @@ import org.springframework.session.hazelcast.config.annotation.web.http.Hazelcas
 class HazelcastSessionConfiguration {
 
 	@Configuration
-	public static class SprigBootHazelcastHttpSessionConfiguration
+	public static class SpringBootHazelcastHttpSessionConfiguration
 			extends HazelcastHttpSessionConfiguration {
 
 		@Autowired
