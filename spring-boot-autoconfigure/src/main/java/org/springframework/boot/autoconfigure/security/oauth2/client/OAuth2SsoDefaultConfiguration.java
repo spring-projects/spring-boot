@@ -16,11 +16,11 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2SsoDefaultConfiguration.NeedsWebSecurityCondition;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -44,20 +44,20 @@ import org.springframework.util.ClassUtils;
 public class OAuth2SsoDefaultConfiguration extends WebSecurityConfigurerAdapter
 		implements Ordered {
 
-	private final BeanFactory beanFactory;
+	private final ApplicationContext applicationContext;
 
 	private final OAuth2SsoProperties sso;
 
-	public OAuth2SsoDefaultConfiguration(BeanFactory beanFactory,
+	public OAuth2SsoDefaultConfiguration(ApplicationContext applicationContext,
 			OAuth2SsoProperties sso) {
-		this.beanFactory = beanFactory;
+		this.applicationContext = applicationContext;
 		this.sso = sso;
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
-		new SsoSecurityConfigurer(this.beanFactory).configure(http);
+		new SsoSecurityConfigurer(this.applicationContext).configure(http);
 	}
 
 	@Override
