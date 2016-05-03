@@ -18,8 +18,10 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
+import org.springframework.boot.actuate.audit.listener.AbstractAuditListener;
 import org.springframework.boot.actuate.security.AbstractAuthenticationAuditListener;
 import org.springframework.boot.actuate.security.AbstractAuthorizationAuditListener;
 import org.springframework.boot.actuate.security.AuthenticationAuditListener;
@@ -44,7 +46,7 @@ public class AuditAutoConfigurationTests {
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void testTraceConfiguration() throws Exception {
+	public void defaultConfiguration() throws Exception {
 		registerAndRefresh(AuditAutoConfiguration.class);
 		assertThat(this.context.getBean(AuditEventRepository.class)).isNotNull();
 		assertThat(this.context.getBean(AuthenticationAuditListener.class)).isNotNull();
@@ -52,7 +54,7 @@ public class AuditAutoConfigurationTests {
 	}
 
 	@Test
-	public void ownAutoRepository() throws Exception {
+	public void ownAuditEventRepository() throws Exception {
 		registerAndRefresh(CustomAuditEventRepositoryConfiguration.class,
 				AuditAutoConfiguration.class);
 		assertThat(this.context.getBean(AuditEventRepository.class))
@@ -73,6 +75,14 @@ public class AuditAutoConfigurationTests {
 				AuditAutoConfiguration.class);
 		assertThat(this.context.getBean(AbstractAuthorizationAuditListener.class))
 				.isInstanceOf(TestAuthorizationAuditListener.class);
+	}
+
+	@Test
+	public void ownAuditListener() throws Exception {
+		registerAndRefresh(CustomAuditListenerConfiguration.class,
+				AuditAutoConfiguration.class);
+		assertThat(this.context.getBean(AbstractAuditListener.class))
+				.isInstanceOf(TestAuditListener.class);
 	}
 
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
@@ -135,6 +145,25 @@ public class AuditAutoConfigurationTests {
 
 		@Override
 		public void onApplicationEvent(AbstractAuthorizationEvent event) {
+		}
+
+	}
+
+	@Configuration
+	protected static class CustomAuditListenerConfiguration {
+
+		@Bean
+		public TestAuditListener testAuditListener() {
+			return new TestAuditListener();
+		}
+
+	}
+
+	protected static class TestAuditListener extends AbstractAuditListener {
+
+		@Override
+		protected void onAuditEvent(AuditEvent event) {
+
 		}
 
 	}
