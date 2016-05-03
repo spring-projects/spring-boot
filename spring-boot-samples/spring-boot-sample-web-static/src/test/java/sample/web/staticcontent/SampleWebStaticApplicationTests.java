@@ -62,7 +62,7 @@ public class SampleWebStaticApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("body");
 		assertThat(entity.getHeaders().getContentType())
-				.isEqualTo(MediaType.valueOf("text/css;charset=UTF-8"));
+				.isEqualTo(MediaType.valueOf("text/css"));
 	}
 
 }
