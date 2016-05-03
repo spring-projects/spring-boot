@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Import;
  * rules as {@code @EnableAutoConfiguration} but restricts the auto-configuration classes
  * to the specified set, rather than consulting {@code spring.factories}.
  * <p>
- * Generally, {@code @EnableAutoConfiguration} should used in preference to this
+ * Generally, {@code @EnableAutoConfiguration} should be used in preference to this
  * annotation, however, {@code @ImportAutoConfiguration} can be useful in some situations
  * and especially when writing tests.
  *
