@@ -70,7 +70,7 @@ class MockDefinition extends Definition {
 	}
 
 	/**
-	 * Return the classes that should be mocked.
+	 * Return the class that should be mocked.
 	 * @return the class to mock; never {@code null}
 	 */
 	public Class<?> getClassToMock() {
@@ -79,7 +79,7 @@ class MockDefinition extends Definition {
 
 	/**
 	 * Return the extra interfaces.
-	 * @return the extra interfaces or an empty array
+	 * @return the extra interfaces or an empty set
 	 */
 	public Set<Class<?>> getExtraInterfaces() {
 		return this.extraInterfaces;
@@ -87,7 +87,7 @@ class MockDefinition extends Definition {
 
 	/**
 	 * Return the answers mode.
-	 * @return the answer the answers mode; never {@code null}
+	 * @return the answers mode; never {@code null}
 	 */
 	public Answers getAnswer() {
 		return this.answer;

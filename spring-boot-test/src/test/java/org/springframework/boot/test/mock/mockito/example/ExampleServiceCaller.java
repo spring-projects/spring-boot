@@ -16,10 +16,8 @@
 
 package org.springframework.boot.test.mock.mockito.example;
 
-import java.security.Provider.Service;
-
 /**
- * Example bean for mocking tests that calls {@link Service}.
+ * Example bean for mocking tests that calls {@link ExampleService}.
  *
  * @author Phillip Webb
  */

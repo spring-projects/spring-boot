@@ -41,8 +41,6 @@ import static org.mockito.Mockito.mock;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ResetMocksTestExecutionListenerTests {
 
-	static boolean test001executed;
-
 	@Autowired
 	private ApplicationContext context;
 
@@ -51,7 +49,6 @@ public class ResetMocksTestExecutionListenerTests {
 		given(getMock("none").greeting()).willReturn("none");
 		given(getMock("before").greeting()).willReturn("before");
 		given(getMock("after").greeting()).willReturn("after");
-		test001executed = true;
 	}
 
 	@Test

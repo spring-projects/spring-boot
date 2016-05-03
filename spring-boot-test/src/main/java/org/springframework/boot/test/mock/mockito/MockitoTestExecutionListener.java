@@ -75,7 +75,7 @@ class MockitoTestExecutionListener extends AbstractTestExecutionListener {
 	}
 
 	/**
-	 * {@link FieldCallback} to collect mockito annotations.
+	 * {@link FieldCallback} to collect Mockito annotations.
 	 */
 	private static class MockitoAnnotationCollection implements FieldCallback {
 

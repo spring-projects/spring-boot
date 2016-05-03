@@ -55,7 +55,7 @@ public enum MockReset {
 	private static final MockUtil util = new MockUtil();
 
 	/**
-	 * Create {@link MockSettings settings} to be use used with mocks where reset should
+	 * Create {@link MockSettings settings} to be used with mocks where reset should
 	 * occur before each test method runs.
 	 * @return mock settings
 	 */
@@ -64,7 +64,7 @@ public enum MockReset {
 	}
 
 	/**
-	 * Create {@link MockSettings settings} to be use used with mocks where reset should
+	 * Create {@link MockSettings settings} to be used with mocks where reset should
 	 * occur after each test method runs.
 	 * @return mock settings
 	 */
@@ -73,7 +73,7 @@ public enum MockReset {
 	}
 
 	/**
-	 * Create {@link MockSettings settings} to be use used with mocks where a specific
+	 * Create {@link MockSettings settings} to be used with mocks where a specific
 	 * reset should occur.
 	 * @param reset the reset type
 	 * @return mock settings
