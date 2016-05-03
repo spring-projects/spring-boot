@@ -103,11 +103,10 @@ public class HttpEncodingAutoConfigurationTests {
 	}
 
 	private void assertCharacterEncodingFilter(CharacterEncodingFilter actual,
-			String encoding, boolean forceEncoding) {
-		DirectFieldAccessor accessor = new DirectFieldAccessor(actual);
-		assertThat(accessor.getPropertyValue("encoding")).as("Wrong encoding")
-				.isEqualTo(encoding);
-		assertThat(accessor.getPropertyValue("forceEncoding")).isEqualTo(forceEncoding);
+			String encoding, boolean forceRequestEncoding) {
+		assertThat(actual.getEncoding()).isEqualTo(encoding);
+		assertThat(actual.isForceRequestEncoding()).isEqualTo(forceRequestEncoding);
+		assertThat(actual.isForceResponseEncoding()).isFalse();
 	}
 
 	private void load(Class<?> config, String... environment) {

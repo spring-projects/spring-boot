@@ -50,7 +50,7 @@ public class HttpEncodingAutoConfiguration {
 	public CharacterEncodingFilter characterEncodingFilter() {
 		CharacterEncodingFilter filter = new OrderedCharacterEncodingFilter();
 		filter.setEncoding(this.httpEncodingProperties.getCharset().name());
-		filter.setForceEncoding(this.httpEncodingProperties.isForce());
+		filter.setForceRequestEncoding(this.httpEncodingProperties.isForce());
 		return filter;
 	}
 
