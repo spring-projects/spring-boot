@@ -28,6 +28,7 @@ import java.util.Map;
 
 import groovy.text.Template;
 import groovy.text.TemplateEngine;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -60,7 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 		"endpoints.health.sensitive=true", "endpoints.actuator.enabled=false" })
 @DirtiesContext
 @AutoConfigureRestDocs(EndpointDocumentation.RESTDOCS_OUTPUT_DIR)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(alwaysPrint = false)
 public class EndpointDocumentation {
 
 	static final String RESTDOCS_OUTPUT_DIR = "target/generated-snippets";
@@ -73,6 +74,11 @@ public class EndpointDocumentation {
 
 	@Autowired
 	private MockMvc mockMvc;
+
+	@BeforeClass
+	public static void clearLog() {
+		new File("target/logs/spring.log").delete();
+	}
 
 	@Test
 	public void logfile() throws Exception {
