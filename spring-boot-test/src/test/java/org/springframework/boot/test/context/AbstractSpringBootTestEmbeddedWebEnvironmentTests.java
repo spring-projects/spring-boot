@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Base class for {@link SpringBootTest} tests configured to start an embedded servlet
- * container
+ * container.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
