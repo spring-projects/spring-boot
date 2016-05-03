@@ -259,7 +259,7 @@ public class JettyEmbeddedServletContainerFactory
 		if (getSslStoreProvider() != null) {
 			try {
 				factory.setKeyStore(getSslStoreProvider().getKeyStore());
-				factory.setTrustStore(getSslStoreProvider().getKeyStore());
+				factory.setTrustStore(getSslStoreProvider().getTrustStore());
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Unable to set SSL store", ex);
