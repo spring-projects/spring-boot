@@ -50,6 +50,7 @@ import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResour
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.client.token.DefaultAccessTokenRequest;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
+import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.OAuth2ClientConfiguration;
@@ -99,7 +100,15 @@ public class OAuth2RestOperationsConfiguration {
 	@Configuration
 	@ConditionalOnBean(OAuth2ClientConfiguration.class)
 	@ConditionalOnWebApplication
-	protected static class SessionScopedConfiguration extends BaseConfiguration {
+	protected static class SessionScopedConfiguration {
+
+		@Bean
+		@ConfigurationProperties("security.oauth2.client")
+		@Primary
+		public AuthorizationCodeResourceDetails oauth2RemoteResource() {
+			AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
+			return details;
+		}
 
 		@Bean
 		public FilterRegistrationBean oauth2ClientFilterRegistration(
@@ -136,7 +145,15 @@ public class OAuth2RestOperationsConfiguration {
 	@Configuration
 	@ConditionalOnMissingBean(OAuth2ClientConfiguration.class)
 	@ConditionalOnWebApplication
-	protected static class RequestScopedConfiguration extends BaseConfiguration {
+	protected static class RequestScopedConfiguration {
+
+		@Bean
+		@ConfigurationProperties("security.oauth2.client")
+		@Primary
+		public AuthorizationCodeResourceDetails oauth2RemoteResource() {
+			AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
+			return details;
+		}
 
 		@Bean
 		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)

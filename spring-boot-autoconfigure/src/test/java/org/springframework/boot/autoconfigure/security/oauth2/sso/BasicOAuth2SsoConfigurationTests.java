@@ -49,10 +49,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(TestConfiguration.class)
 @WebAppConfiguration
-@TestPropertySource(properties = { "security.oauth2.client.clientId=client",
+@TestPropertySource(properties = { "debug=true", "security.oauth2.client.clientId=client",
 		"security.oauth2.client.clientSecret=secret",
-		"security.oauth2.client.authorizationUri=http://example.com/oauth/authorize",
-		"security.oauth2.client.tokenUri=http://example.com/oauth/token",
+		"security.oauth2.client.userAuthorizationUri=http://example.com/oauth/authorize",
+		"security.oauth2.client.accessTokenUri=http://example.com/oauth/token",
 		"security.oauth2.resource.jwt.keyValue=SSSSHHH" })
 public class BasicOAuth2SsoConfigurationTests {
 
