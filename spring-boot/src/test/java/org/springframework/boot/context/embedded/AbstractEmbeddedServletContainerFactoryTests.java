@@ -93,9 +93,11 @@ import org.springframework.util.concurrent.ListenableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Base for testing classes that extends {@link AbstractEmbeddedServletContainerFactory}.
@@ -536,7 +538,10 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		ssl.setClientAuth(ClientAuth.NEED);
 		ssl.setKeyPassword("password");
 		factory.setSsl(ssl);
-		factory.setSslStoreProvider(new CustomSslStoreProvider());
+		SslStoreProvider sslStoreProvider = mock(SslStoreProvider.class);
+		given(sslStoreProvider.getKeyStore()).willReturn(loadStore());
+		given(sslStoreProvider.getTrustStore()).willReturn(loadStore());
+		factory.setSslStoreProvider(sslStoreProvider);
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
 		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -552,6 +557,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				httpClient);
 		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory))
 				.isEqualTo("test");
+		verify(sslStoreProvider).getKeyStore();
+		verify(sslStoreProvider).getTrustStore();
 	}
 
 	@Test
@@ -1044,6 +1051,21 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}
 	}
 
+	private KeyStore loadStore() throws KeyStoreException, IOException,
+			NoSuchAlgorithmException, CertificateException {
+		KeyStore keyStore = KeyStore.getInstance("JKS");
+		Resource resource = new ClassPathResource("test.jks");
+		InputStream inputStream = resource.getInputStream();
+		try {
+			keyStore.load(inputStream, "secret".toCharArray());
+			return keyStore;
+		}
+		finally {
+			inputStream.close();
+		}
+	}
+
+
 	private class TestGzipInputStreamFactory implements InputStreamFactory {
 
 		private final AtomicBoolean requested = new AtomicBoolean(false);
@@ -1088,34 +1110,6 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	public interface BlockedPortAction {
 
 		void run(int port);
-
-	}
-
-	public static class CustomSslStoreProvider implements SslStoreProvider {
-
-		@Override
-		public KeyStore getKeyStore() throws Exception {
-			return loadStore();
-		}
-
-		@Override
-		public KeyStore getTrustStore() throws Exception {
-			return loadStore();
-		}
-
-		private KeyStore loadStore() throws KeyStoreException, IOException,
-				NoSuchAlgorithmException, CertificateException {
-			KeyStore keyStore = KeyStore.getInstance("JKS");
-			Resource resource = new ClassPathResource("test.jks");
-			InputStream inputStream = resource.getInputStream();
-			try {
-				keyStore.load(inputStream, "secret".toCharArray());
-				return keyStore;
-			}
-			finally {
-				inputStream.close();
-			}
-		}
 
 	}
 
