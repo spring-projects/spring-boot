@@ -50,7 +50,6 @@ import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResour
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.client.token.DefaultAccessTokenRequest;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
-import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.OAuth2ClientConfiguration;
@@ -76,19 +75,6 @@ public class OAuth2RestOperationsConfiguration {
 		OAuth2RestTemplate template = new OAuth2RestTemplate(details,
 				oauth2ClientContext);
 		return template;
-	}
-
-	@Configuration
-	protected abstract static class BaseConfiguration {
-
-		@Bean
-		@ConfigurationProperties("security.oauth2.client")
-		@Primary
-		public AuthorizationCodeResourceDetails oauth2RemoteResource() {
-			AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
-			return details;
-		}
-
 	}
 
 	@Configuration
