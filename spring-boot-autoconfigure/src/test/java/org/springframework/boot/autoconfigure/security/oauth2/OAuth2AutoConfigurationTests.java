@@ -36,8 +36,10 @@ import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfigurat
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -63,6 +65,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
+import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -179,6 +182,17 @@ public class OAuth2AutoConfigurationTests {
 		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG)).isEqualTo(0);
 		// Scoped target and proxy:
 		assertThat(countBeans(OAuth2ClientContext.class)).isEqualTo(2);
+	}
+
+	@Test
+	public void testClientIsNotAuthCode() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(MinimalSecureNonWebApplication.class);
+		EnvironmentTestUtils.addEnvironment(context,
+				"security.oauth2.client.clientId=client");
+		context.refresh();
+		assertThat(countBeans(context, ClientCredentialsResourceDetails.class)).isEqualTo(1);
+		context.close();
 	}
 
 	@Test
@@ -361,7 +375,11 @@ public class OAuth2AutoConfigurationTests {
 	}
 
 	private int countBeans(Class<?> type) {
-		return this.context.getBeanNamesForType(type).length;
+		return countBeans(this.context, type);
+	}
+
+	private int countBeans(ApplicationContext context, Class<?> type) {
+		return context.getBeanNamesForType(type).length;
 	}
 
 	@Configuration
@@ -370,6 +388,12 @@ public class OAuth2AutoConfigurationTests {
 			DispatcherServletAutoConfiguration.class, OAuth2AutoConfiguration.class,
 			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
 	protected static class MinimalSecureWebApplication {
+
+	}
+
+	@Configuration
+	@Import({ SecurityAutoConfiguration.class, OAuth2AutoConfiguration.class })
+	protected static class MinimalSecureNonWebApplication {
 
 	}
 
