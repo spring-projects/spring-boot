@@ -71,7 +71,7 @@
 		<ehcache.version>2.10.1</ehcache.version>
 		<ehcache3.version>3.0.0</ehcache3.version>
 		<embedded-mongo.version>1.50.2</embedded-mongo.version>
-		<flyway.version>3.2.1</flyway.version>
+		<flyway.version>4.0</flyway.version>
 		<freemarker.version>2.3.23</freemarker.version>
 		<elasticsearch.version>2.2.2</elasticsearch.version>
 		<gemfire.version>8.2.0</gemfire.version>

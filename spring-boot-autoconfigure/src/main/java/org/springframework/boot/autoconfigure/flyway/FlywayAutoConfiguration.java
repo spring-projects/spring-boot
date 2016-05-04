@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.callback.FlywayCallback;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -58,6 +59,7 @@ import org.springframework.util.ObjectUtils;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @author Jacques-Etienne Beaudet
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @Configuration
@@ -89,16 +91,20 @@ public class FlywayAutoConfiguration {
 
 		private final FlywayMigrationStrategy migrationStrategy;
 
+		private FlywayCallback[] flywayCallbacks;
+
 		public FlywayConfiguration(FlywayProperties properties,
 				ResourceLoader resourceLoader,
 				ObjectProvider<DataSource> dataSourceProvider,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSourceProvider,
-				ObjectProvider<FlywayMigrationStrategy> migrationStrategyProvider) {
+				ObjectProvider<FlywayMigrationStrategy> migrationStrategyProvider,
+				ObjectProvider<FlywayCallback[]> flywayCallbacks) {
 			this.properties = properties;
 			this.resourceLoader = resourceLoader;
 			this.dataSource = dataSourceProvider.getIfUnique();
 			this.flywayDataSource = flywayDataSourceProvider.getIfAvailable();
 			this.migrationStrategy = migrationStrategyProvider.getIfAvailable();
+			this.flywayCallbacks = flywayCallbacks.getIfAvailable();
 		}
 
 		@PostConstruct
@@ -137,6 +143,9 @@ public class FlywayAutoConfiguration {
 			}
 			else {
 				flyway.setDataSource(this.dataSource);
+			}
+			if (this.flywayCallbacks != null && this.flywayCallbacks.length > 0) {
+				flyway.setCallbacks(this.flywayCallbacks);
 			}
 			flyway.setLocations(this.properties.getLocations().toArray(new String[0]));
 			return flyway;
