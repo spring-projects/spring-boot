@@ -91,6 +91,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Brian Clozel
  * @author Eddú Meléndez
+ * @author Kazuki Shimizu
  */
 public class WebMvcAutoConfigurationTests {
 
@@ -234,13 +235,13 @@ public class WebMvcAutoConfigurationTests {
 		assertThat(getResourceResolvers("/webjars/**")).hasSize(3);
 		assertThat(getResourceTransformers("/webjars/**")).hasSize(2);
 		assertThat(getResourceResolvers("/**")).extractingResultOf("getClass")
-				.containsOnly(VersionResourceResolver.class, GzipResourceResolver.class,
+				.containsSequence(GzipResourceResolver.class, VersionResourceResolver.class,
 						PathResourceResolver.class);
 		assertThat(getResourceTransformers("/**")).extractingResultOf("getClass")
 				.containsOnly(CssLinkResourceTransformer.class,
 						AppCacheManifestTransformer.class);
 		VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers(
-				"/**").get(0);
+				"/**").get(1);
 		assertThat(resolver.getStrategyMap().get("/*.png"))
 				.isInstanceOf(ContentVersionStrategy.class);
 		assertThat(resolver.getStrategyMap().get("/**/*.js"))
