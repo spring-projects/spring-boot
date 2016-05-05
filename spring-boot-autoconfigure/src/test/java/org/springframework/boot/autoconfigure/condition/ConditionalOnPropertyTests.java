@@ -242,7 +242,7 @@ public class ConditionalOnPropertyTests {
 	public void metaAnnotationConditionDoesNotMatchWhenPropertyIsNotSet()
 			throws Exception {
 		load(MetaAnnotation.class);
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
@@ -254,7 +254,7 @@ public class ConditionalOnPropertyTests {
 	@Test
 	public void metaAndDirectAnnotationConditionDoesNotMatchWhenOnlyMetaPropertyIsSet() {
 		load(MetaAnnotationAndDirectAnnotation.class, "my.feature.enabled=true");
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
