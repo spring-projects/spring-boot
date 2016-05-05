@@ -190,6 +190,7 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnBean(View.class)
+		@ConditionalOnMissingBean
 		public BeanNameViewResolver beanNameViewResolver() {
 			BeanNameViewResolver resolver = new BeanNameViewResolver();
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
