@@ -35,7 +35,7 @@ public class TestRestTemplate extends org.springframework.boot.test.web.client.T
 
 	/**
 	 * Create a new {@link TestRestTemplate} instance.
-	 * 
+	 *
 	 * @param httpClientOptions
 	 *            client options to use if the Apache HTTP Client is used
 	 */
@@ -46,7 +46,7 @@ public class TestRestTemplate extends org.springframework.boot.test.web.client.T
 	/**
 	 * Create a new {@link TestRestTemplate} instance with the specified
 	 * credentials.
-	 * 
+	 *
 	 * @param username
 	 *            the username to use (or {@code null})
 	 * @param password
