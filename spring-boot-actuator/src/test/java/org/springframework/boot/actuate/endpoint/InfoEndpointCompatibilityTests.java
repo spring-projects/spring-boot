@@ -41,7 +41,7 @@ public class InfoEndpointCompatibilityTests {
 	}
 
 	private InfoEndpoint getEndpointBean() {
-		return new InfoEndpoint(Collections.singletonMap("foo", "bar"),
+		return new InfoEndpoint(Collections.<String, Object>singletonMap("foo", "bar"),
 				infoContributor());
 	}
 
