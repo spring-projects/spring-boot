@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -43,7 +44,7 @@ public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
 
 	@Test
 	public void invoke() throws Exception {
-		Info actual = getEndpointBean().invoke();
+		Map<String, Object> actual = getEndpointBean().invoke();
 		assertThat(actual.get("key1")).isEqualTo("value1");
 	}
 

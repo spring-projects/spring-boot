@@ -393,7 +393,7 @@ The following `InfoContributors` are auto-configured by Spring Boot when appropr
 |Expose git information if a `git.properties` file is available.
 
 |{sc-spring-boot-actuator}/info/BuildInfoContributor.{sc-ext}[`BuildInfoContributor`]
-|Expose build information if a `META-INF/boot/build.properties` file is available.
+|Expose build information if a `META-INF/build-info.properties` file is available.
 |===
 
 TIP: It is possible to disable them all using the `management.info.defaults.enabled`
@@ -453,18 +453,11 @@ If you want to display the full git information (i.e. the full content of
 [[production-ready-application-info-build]]
 ==== Build information
 The `info` endpoint can also publish information about your build if a `BuildProperties`
-bean is available. This happens if a `META-INF/boot/build.properties` file is available
+bean is available. This happens if a `META-INF/build-info.properties` file is available
 in the classpath.
 
 TIP: The Maven and Gradle plugins can both generate that file, see
 <<howto.adoc#howto-build-info,Generate build information>> for more details.
-
-If additional properties are present they are not exposed unless configured explicitly:
-
-[source,properties,indent=0]
-----
-	management.info.build.mode=full
-----
 
 
 [[production-ready-application-info-custom]]

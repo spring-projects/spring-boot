@@ -31,7 +31,7 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter;
 import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetails;
 
 /**
- * Generate a {@code build.properties} file based the content of the current
+ * Generate a {@code build-info.properties} file based the content of the current
  * {@link MavenProject}.
  *
  * @author Stephane Nicoll
@@ -47,14 +47,14 @@ public class BuildInfoMojo extends AbstractMojo {
 	private MavenProject project;
 
 	/**
-	 * The location of the generated build.properties.
+	 * The location of the generated build-info.properties.
 	 */
-	@Parameter(defaultValue = "${project.build.outputDirectory}/META-INF/boot/build.properties")
+	@Parameter(defaultValue = "${project.build.outputDirectory}/META-INF/build-info.properties")
 	private File outputFile;
 
 	/**
-	 * Additional properties to store in the build.properties. Each entry is prefixed by
-	 * {@code build.} in the generated build.properties.
+	 * Additional properties to store in the build-info.properties. Each entry is prefixed by
+	 * {@code build.} in the generated build-info.properties.
 	 */
 	@Parameter
 	private Map<String, String> additionalProperties;

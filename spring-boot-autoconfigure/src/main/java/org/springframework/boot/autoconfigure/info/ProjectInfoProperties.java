@@ -59,10 +59,10 @@ public class ProjectInfoProperties {
 	public static class Build {
 
 		/**
-		 * Location of the generated build.properties file.
+		 * Location of the generated build-info.properties file.
 		 */
 		private Resource location = new ClassPathResource(
-				"META-INF/boot/build.properties");
+				"META-INF/build-info.properties");
 
 		public Resource getLocation() {
 			return this.location;

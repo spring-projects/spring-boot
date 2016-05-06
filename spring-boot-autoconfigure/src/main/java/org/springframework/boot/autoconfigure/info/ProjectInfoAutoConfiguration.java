@@ -62,7 +62,7 @@ public class ProjectInfoAutoConfiguration {
 		return new GitProperties(loadFrom(this.properties.getGit().getLocation(), "git"));
 	}
 
-	@ConditionalOnResource(resources = "${spring.info.build.location:classpath:META-INF/boot/build.properties}")
+	@ConditionalOnResource(resources = "${spring.info.build.location:classpath:META-INF/build-info.properties}")
 	@ConditionalOnMissingBean
 	@Bean
 	public BuildProperties buildProperties() throws Exception {

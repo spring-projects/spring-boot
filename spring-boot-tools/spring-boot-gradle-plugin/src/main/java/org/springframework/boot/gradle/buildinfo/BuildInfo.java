@@ -34,11 +34,11 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter;
 import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetails;
 
 /**
- * {@link DefaultTask} for generating a {@code build.properties} file from a
+ * {@link DefaultTask} for generating a {@code build-info.properties} file from a
  * {@code Project}.
  * <p>
- * By default, the {@code build.properties} file is generated in
- * project.buildDir/resources/main/META-INF/boot.
+ * By default, the {@code build-info.properties} file is generated in
+ * project.buildDir/resources/main/META-INF.
  * </p>
  *
  * @author Andy Wilkinson
@@ -47,7 +47,7 @@ public class BuildInfo extends DefaultTask {
 
 	@OutputFile
 	private File outputFile = getProject().file(new File(getProject().getBuildDir(),
-			"resources/main/META-INF/boot/build.properties"));
+			"resources/main/META-INF/build-info.properties"));
 
 	@Input
 	private String projectGroup = getProject().getGroup().toString();

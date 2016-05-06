@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * A {@code BuildPropertiesWriter} writes the {@code build.properties} for consumption by
- * the Actuator.
+ * A {@code BuildPropertiesWriter} writes the {@code build-info.properties} for
+ * consumption by the Actuator.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll

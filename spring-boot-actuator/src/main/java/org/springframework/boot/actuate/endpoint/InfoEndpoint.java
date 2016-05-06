@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  */
 @ConfigurationProperties(prefix = "endpoints.info")
-public class InfoEndpoint extends AbstractEndpoint<Info> {
+public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private final List<InfoContributor> infoContributors;
 
@@ -48,13 +48,14 @@ public class InfoEndpoint extends AbstractEndpoint<Info> {
 	}
 
 	@Override
-	public Info invoke() {
+	public Map<String, Object> invoke() {
 		Info.Builder builder = new Info.Builder();
 		for (InfoContributor contributor : this.infoContributors) {
 			contributor.contribute(builder);
 		}
 		builder.withDetails(getAdditionalInfo());
-		return builder.build();
+		Info build = builder.build();
+		return build.getDetails();
 	}
 
 	/**

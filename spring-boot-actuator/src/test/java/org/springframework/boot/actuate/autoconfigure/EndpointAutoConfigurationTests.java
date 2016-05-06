@@ -187,7 +187,7 @@ public class EndpointAutoConfigurationTests {
 		this.context.refresh();
 
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
-		Info info = endpoint.invoke();
+		Map<String, Object> info = endpoint.invoke();
 		assertThat(info).isNotNull();
 		assertThat(info.get("name")).isEqualTo("foo");
 		assertThat(info.get("version")).isEqualTo("1.0");

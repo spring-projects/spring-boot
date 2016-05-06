@@ -86,7 +86,7 @@ content into your application; rather pick only the properties that you need.
 	spring.hazelcast.config= # The location of the configuration file to use to initialize Hazelcast.
 
 	# PROJECT INFORMATION ({sc-spring-boot-autoconfigure}/info/ProjectInfoProperties.{sc-ext}[ProjectInfoProperties])
-	spring.info.build.location=classpath:META-INF/boot/build.properties # Location of the generated build.properties file.
+	spring.info.build.location=classpath:META-INF/build-info.properties # Location of the generated build-info.properties file.
 	spring.info.git.location=classpath:git.properties # Location of the generated git.properties file.
 
 	# JMX
@@ -1015,7 +1015,6 @@ content into your application; rather pick only the properties that you need.
 
 	# INFO CONTRIBUTORS ({sc-spring-boot-actuator}/autoconfigure/InfoContributorProperties.{sc-ext}[InfoContributorProperties])
 	management.info.build.enabled=true # Enable build info.
-	management.info.build.mode=simple # Mode to use to expose build information.
 	management.info.defaults.enabled=true # Enable default info contributors.
 	management.info.env.enabled=true # Enable environment info.
 	management.info.git.enabled=true # Enable git info.

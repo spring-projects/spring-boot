@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import org.springframework.boot.actuate.info.BuildInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -29,34 +28,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("management.info")
 public class InfoContributorProperties {
 
-	private final Build build = new Build();
-
 	private final Git git = new Git();
-
-	public Build getBuild() {
-		return this.build;
-	}
 
 	public Git getGit() {
 		return this.git;
 	}
 
-	public static class Build {
-
-		/**
-		 * Mode to use to expose build information.
-		 */
-		private BuildInfoContributor.Mode mode = BuildInfoContributor.Mode.SIMPLE;
-
-		public BuildInfoContributor.Mode getMode() {
-			return this.mode;
-		}
-
-		public void setMode(BuildInfoContributor.Mode mode) {
-			this.mode = mode;
-		}
-
-	}
 
 	public static class Git {
 
