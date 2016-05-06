@@ -58,7 +58,7 @@ class JooqExceptionTranslator extends DefaultExecuteListener {
 	private SQLExceptionTranslator getTranslator(ExecuteContext context) {
 		SQLDialect dialect = context.configuration().dialect();
 		if (dialect != null) {
-			return new SQLErrorCodeSQLExceptionTranslator(dialect.name());
+			return new SQLErrorCodeSQLExceptionTranslator(dialect.thirdParty().springDbName());
 		}
 		return new SQLStateSQLExceptionTranslator();
 	}
