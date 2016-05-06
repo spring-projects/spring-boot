@@ -22,7 +22,6 @@ import java.util.Properties;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 /**
@@ -42,8 +41,7 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 	public PropertySource<?> load(String name, Resource resource, String profile)
 			throws IOException {
 		if (profile == null) {
-			Properties properties = PropertiesLoaderUtils
-					.loadProperties(new EncodedResource(resource, "UTF-8"));
+			Properties properties = PropertiesLoaderUtils.loadProperties(resource);
 			if (!properties.isEmpty()) {
 				return new PropertiesPropertySource(name, properties);
 			}
