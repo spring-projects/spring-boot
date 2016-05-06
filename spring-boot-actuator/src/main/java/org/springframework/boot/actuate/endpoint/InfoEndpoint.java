@@ -16,12 +16,15 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
+import org.springframework.boot.actuate.info.MapInfoContributor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -45,6 +48,26 @@ public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		super("info", false);
 		Assert.notNull(infoContributors, "Info contributors must not be null");
 		this.infoContributors = infoContributors;
+	}
+
+	/**
+	 * Constructor provided for backward compatibility.
+	 * @param info a map (which is added to the info)
+	 * @param infoContributors the info contributors to use
+	 *
+	 * @deprecated in favour of the constructor without the map
+	 */
+	@Deprecated
+	public InfoEndpoint(Map<String, Object> info, InfoContributor... infoContributors) {
+		this(createContributors(info, infoContributors));
+	}
+
+	private static List<InfoContributor> createContributors(Map<String, Object> info,
+			InfoContributor[] infoContributors) {
+		List<InfoContributor> result = new ArrayList<InfoContributor>(
+				Arrays.asList(infoContributors));
+		result.add(0, new MapInfoContributor(info));
+		return result;
 	}
 
 	@Override
