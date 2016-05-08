@@ -246,12 +246,10 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private void registerSpies(SpyDefinition definition, Field field,
 			String[] existingBeans) {
-		if (field != null) {
-			Assert.state(field == null || existingBeans.length == 1,
-					"Unable to register spy bean " + definition.getClassToSpy().getName()
-							+ " expected a single existing bean to replace but found "
-							+ new TreeSet<String>(Arrays.asList(existingBeans)));
-		}
+		Assert.state(field == null || existingBeans.length == 1,
+				"Unable to register spy bean " + definition.getClassToSpy().getName()
+						+ " expected a single existing bean to replace but found "
+						+ new TreeSet<String>(Arrays.asList(existingBeans)));
 		for (String beanName : existingBeans) {
 			registerSpy(definition, field, beanName);
 		}
