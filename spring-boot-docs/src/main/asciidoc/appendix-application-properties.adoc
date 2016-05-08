@@ -197,6 +197,15 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.accesslog.pattern=common # Format pattern for access logs.
 	server.tomcat.accesslog.prefix=access_log # Log file name prefix.
 	server.tomcat.accesslog.suffix=.log # Log file name suffix.
+	server.tomcat.accesslog.fileDateFormat=.yyyy-MM-dd # Date format to be appendend to log file name.
+	server.tomcat.accesslog.rotatable=true # Flag to determine if log rotation should occur.
+	server.tomcat.accesslog.renameOnRotate=false # Defer appending timestamp until rotation.
+	server.tomcat.accesslog.encoding=null # Character set used to write the log file. Defaults to system default.
+	server.tomcat.accesslog.locale=en_US # Locale used to format timestamps in access log lines. Defaults to Java process default.
+	server.tomcat.accesslog.requestAttributesEnabled=false # Check for overrides (e.g. X-Forwarded-For). See RemoteIpValve.
+	server.tomcat.accesslog.conditionIf=null # Request attribute that must be non-null to log a request.
+	server.tomcat.accesslog.conditionUnless=null # Request attribute that must be null to log a request.
+	server.tomcat.accesslog.buffered=true # Buffer logs instead of writing after each request.
 	server.tomcat.background-processor-delay=30 # Delay in seconds between the invocation of backgroundProcess methods.
 	server.tomcat.basedir= # Tomcat base directory. If not specified a temporary directory will be used.
 	server.tomcat.internal-proxies=10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\

@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -86,6 +87,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Quinten De Swaef
  * @author Venil Noronha
+ * @author Michael Hackner
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties
@@ -876,6 +878,15 @@ public class ServerProperties
 			valve.setDirectory(this.accesslog.getDirectory());
 			valve.setPrefix(this.accesslog.getPrefix());
 			valve.setSuffix(this.accesslog.getSuffix());
+			valve.setFileDateFormat(this.accesslog.getFileDateFormat());
+			valve.setRotatable(this.accesslog.isRotatable());
+			valve.setRenameOnRotate(this.accesslog.isRenameOnRotate());
+			valve.setEncoding(this.accesslog.getEncoding());
+			valve.setLocale(this.accesslog.getLocale());
+			valve.setRequestAttributesEnabled(this.accesslog.isRequestAttributesEnabled());
+			valve.setConditionIf(this.accesslog.getConditionIf());
+			valve.setConditionUnless(this.accesslog.getConditionUnless());
+			valve.setBuffered(this.accesslog.isBuffered());
 			factory.addContextValves(valve);
 		}
 
@@ -906,6 +917,52 @@ public class ServerProperties
 			 * Log file name suffix.
 			 */
 			private String suffix = ".log";
+
+			/**
+			 * Date format to be appendend to log file name.
+			 */
+			private String fileDateFormat = ".yyyy-MM-dd";
+
+			/**
+			 * Flag to determine if log rotation should occur.
+			 */
+			private boolean rotatable = true;
+
+			/**
+			 * Defer appending timestamp until rotation.
+			 */
+			private boolean renameOnRotate = false;
+
+			/**
+			 * Character set used to write the log file. Defaults to system default.
+			 */
+			private String encoding = null;
+
+			/**
+			 * Locale used to format timestamps in access log lines. Defaults to Java
+			 * process default.
+			 */
+			private String locale = Locale.getDefault().toString();
+
+			/**
+			 * Check for overrides (e.g. X-Forwarded-For). See RemoteIpValve.
+			 */
+			private boolean requestAttributesEnabled = false;
+
+			/**
+			 * Request attribute that must be non-null to log a request.
+			 */
+			private String conditionIf = null;
+
+			/**
+			 * Request attribute that must be null to log a request.
+			 */
+			private String conditionUnless = null;
+
+			/**
+			 * Buffer logs instead of writing after each request.
+			 */
+			private boolean buffered = true;
 
 			public boolean isEnabled() {
 				return this.enabled;
@@ -945,6 +1002,78 @@ public class ServerProperties
 
 			public void setSuffix(String suffix) {
 				this.suffix = suffix;
+			}
+
+			public String getFileDateFormat() {
+				return this.fileDateFormat;
+			}
+
+			public void setFileDateFormat(String fileDateFormat) {
+				this.fileDateFormat = fileDateFormat;
+			}
+
+			public boolean isRotatable() {
+				return this.rotatable;
+			}
+
+			public void setRotatable(boolean rotatable) {
+				this.rotatable = rotatable;
+			}
+
+			public boolean isRenameOnRotate() {
+				return this.renameOnRotate;
+			}
+
+			public void setRenameOnRotate(boolean renameOnRotate) {
+				this.renameOnRotate = renameOnRotate;
+			}
+
+			public String getEncoding() {
+				return this.encoding;
+			}
+
+			public void setEncoding(String encoding) {
+				this.encoding = encoding;
+			}
+
+			public String getLocale() {
+				return this.locale;
+			}
+
+			public void setLocale(String locale) {
+				this.locale = locale;
+			}
+
+			public boolean isRequestAttributesEnabled() {
+				return this.requestAttributesEnabled;
+			}
+
+			public void setRequestAttributesEnabled(boolean requestAttributesEnabled) {
+				this.requestAttributesEnabled = requestAttributesEnabled;
+			}
+
+			public String getConditionIf() {
+				return this.conditionIf;
+			}
+
+			public void setConditionIf(String conditionIf) {
+				this.conditionIf = conditionIf;
+			}
+
+			public String getConditionUnless() {
+				return this.conditionUnless;
+			}
+
+			public void setConditionUnless(String conditionUnless) {
+				this.conditionUnless = conditionUnless;
+			}
+
+			public boolean isBuffered() {
+				return this.buffered;
+			}
+
+			public void setBuffered(boolean buffered) {
+				this.buffered = buffered;
 			}
 		}
 
