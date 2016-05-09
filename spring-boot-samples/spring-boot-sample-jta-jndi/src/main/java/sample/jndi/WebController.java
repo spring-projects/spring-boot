@@ -16,7 +16,7 @@
 
 package sample.jndi;
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -31,7 +31,7 @@ public class WebController {
 		this.repository = repository;
 	}
 
-	@RequestMapping("/")
+	@GetMapping("/")
 	public String hello() {
 		System.out.println("Count is " + this.repository.count());
 		this.service.createAccountAndNotify("josh");

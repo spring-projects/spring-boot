@@ -49,9 +49,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.View;
@@ -263,7 +263,7 @@ public class BasicErrorControllerIntegrationTests {
 				throw error;
 			}
 
-			@RequestMapping(path = "/bodyValidation", method = RequestMethod.POST, produces = "application/json")
+			@PostMapping(path = "/bodyValidation", produces = "application/json")
 			public String bodyValidation(@Valid @RequestBody DummyBody body) {
 				return body.content;
 			}

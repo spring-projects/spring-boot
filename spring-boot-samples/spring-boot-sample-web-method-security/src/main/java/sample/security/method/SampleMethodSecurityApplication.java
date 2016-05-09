@@ -34,7 +34,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -45,7 +45,7 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 	@Controller
 	protected static class HomeController {
 
-		@RequestMapping("/")
+		@GetMapping("/")
 		@Secured("ROLE_ADMIN")
 		public String home(Map<String, Object> model) {
 			model.put("message", "Hello World");

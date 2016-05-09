@@ -90,8 +90,8 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -191,7 +191,8 @@ public class OAuth2AutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(context,
 				"security.oauth2.client.clientId=client");
 		context.refresh();
-		assertThat(countBeans(context, ClientCredentialsResourceDetails.class)).isEqualTo(1);
+		assertThat(countBeans(context, ClientCredentialsResourceDetails.class))
+				.isEqualTo(1);
 		context.close();
 	}
 
@@ -465,13 +466,13 @@ public class OAuth2AutoConfigurationTests {
 	@RestController
 	protected static class TestWebApp {
 
-		@RequestMapping(value = "/securedFind", method = RequestMethod.GET)
+		@GetMapping("/securedFind")
 		@PreAuthorize("#oauth2.hasScope('read')")
 		public String secureFind() {
 			return "You reached an endpoint secured by Spring Security OAuth2";
 		}
 
-		@RequestMapping(value = "/securedSave", method = RequestMethod.POST)
+		@PostMapping("/securedSave")
 		@PreAuthorize("#oauth2.hasScope('write')")
 		public String secureSave() {
 			return "You reached an endpoint secured by Spring Security OAuth2";
