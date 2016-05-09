@@ -4392,9 +4392,7 @@ class for more details.
 
 [[boot-features-session]]
 == Spring Session
-Spring Boot provides Spring Session auto-configuration for a wide range of stores. If
-Spring Session is available and you haven't defined a bean of type `SessionRepository`,
-Spring Boot tries to detect the following session stores (in this order):
+Spring Boot provides Spring Session auto-configuration for a wide range of stores:
 
 * JDBC
 * MongoDB
@@ -4402,9 +4400,18 @@ Spring Boot tries to detect the following session stores (in this order):
 * Hazelcast
 * HashMap
 
-It is also possible to _force_ the store to use via the `spring.session.store-type`
-property. Each store have specific additional settings. For instance it is possible
-to customize the name of the table for the jdbc store:
+If Spring Session is available, you only need to chose the
+{sc-spring-boot-autoconfigure}/session/StoreType.{sc-ext}[`StoreType`] that you wish to
+use to store the sessions. For instance to use Redis as backend store, you'd configure
+your application as follows:
+
+[source,properties,indent=0]
+----
+    spring.session.store-type=redis
+----
+
+Each store has specific additional settings. For instance it is possible to customize
+the name of the table for the jdbc store:
 
 [source,properties,indent=0]
 ----

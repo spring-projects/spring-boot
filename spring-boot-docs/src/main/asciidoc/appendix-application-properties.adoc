@@ -362,7 +362,7 @@ content into your application; rather pick only the properties that you need.
 	spring.session.mongo.collection-name=sessions # Collection name used to store sessions.
 	spring.session.redis.flush-mode= # Flush mode for the Redis sessions.
 	spring.session.redis.namespace= # Namespace for keys used to store sessions.
-	spring.session.store-type= # Session store type, auto-detected according to the environment by default.
+	spring.session.store-type= # Session store type.
 
 	# SPRING SOCIAL ({sc-spring-boot-autoconfigure}/social/SocialWebAutoConfiguration.{sc-ext}[SocialWebAutoConfiguration])
 	spring.social.auto-connection-views=false # Enable the connection status view for supported providers.

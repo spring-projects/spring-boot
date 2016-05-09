@@ -36,7 +36,7 @@ class SessionCondition extends SpringBootCondition {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 				context.getEnvironment(), "spring.session.");
 		if (!resolver.containsProperty("store-type")) {
-			return ConditionOutcome.match("Automatic session store type");
+			return ConditionOutcome.noMatch("Session store type not set");
 		}
 		StoreType sessionStoreType = SessionStoreMappings
 				.getType(((AnnotationMetadata) metadata).getClassName());

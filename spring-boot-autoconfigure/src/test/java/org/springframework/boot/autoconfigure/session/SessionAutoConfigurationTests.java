@@ -54,6 +54,18 @@ import static org.mockito.Mockito.verify;
 public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTests {
 
 	@Test
+	public void autoConfigurationDisabledIfStoreTypeNotSet() {
+		load();
+		assertThat(this.context.getBeansOfType(SessionRepository.class)).hasSize(0);
+	}
+
+	@Test
+	public void autoConfigurationDisabledIfStoreTypeSetToNone() {
+		load("spring.session.store-type=none");
+		assertThat(this.context.getBeansOfType(SessionRepository.class)).hasSize(0);
+	}
+
+	@Test
 	public void backOffIfSessionRepositoryIsPresent() {
 		load(Collections.<Class<?>>singletonList(SessionRepositoryConfiguration.class),
 				"spring.session.store-type=mongo");
@@ -84,12 +96,6 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		MapSessionRepository repository = validateSessionRepository(
 				MapSessionRepository.class);
 		assertThat(getSessionTimeout(repository)).isNull();
-	}
-
-	@Test
-	public void hashMapSessionStoreIsDefault() {
-		load();
-		validateSessionRepository(MapSessionRepository.class);
 	}
 
 	@Test
@@ -152,6 +158,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		assertThat(new DirectFieldAccessor(repository).getPropertyValue("collectionName"))
 				.isEqualTo("foobar");
 	}
+
 
 	@Configuration
 	static class SessionRepositoryConfiguration {

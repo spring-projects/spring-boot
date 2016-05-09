@@ -32,7 +32,7 @@ import org.springframework.session.data.redis.RedisFlushMode;
 public class SessionProperties {
 
 	/**
-	 * Session store type, auto-detected according to the environment by default.
+	 * Session store type.
 	 */
 	private StoreType storeType;
 
