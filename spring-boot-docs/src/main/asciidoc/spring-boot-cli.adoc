@@ -514,7 +514,7 @@ further information.
 == What to read next
 There are some {github-code}/spring-boot-cli/samples[sample groovy
 scripts] available from the GitHub repository that you can use to try out the
-Spring Boot CLI. There is also extensive javadoc throughout the
+Spring Boot CLI. There is also extensive Javadoc throughout the
 {sc-spring-boot-cli}[source code].
 
 If you find that you reach the limit of the CLI tool, you will probably want to look

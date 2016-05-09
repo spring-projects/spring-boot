@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.logging.logback.LevelRemappingAppender.AppendableLogger;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -73,7 +72,7 @@ public class LevelRemappingAppenderTests {
 	public void defaultRemapsInfo() throws Exception {
 		this.appender.append(mockLogEvent(Level.INFO));
 		verify(this.logger).callAppenders(this.logCaptor.capture());
-		assertThat(this.logCaptor.getValue().getLevel(), equalTo(Level.DEBUG));
+		assertThat(this.logCaptor.getValue().getLevel()).isEqualTo(Level.DEBUG);
 	}
 
 	@Test
@@ -82,15 +81,17 @@ public class LevelRemappingAppenderTests {
 		this.appender.append(mockLogEvent(Level.DEBUG));
 		this.appender.append(mockLogEvent(Level.ERROR));
 		verify(this.logger, times(2)).callAppenders(this.logCaptor.capture());
-		assertThat(this.logCaptor.getAllValues().get(0).getLevel(), equalTo(Level.TRACE));
-		assertThat(this.logCaptor.getAllValues().get(1).getLevel(), equalTo(Level.WARN));
+		assertThat(this.logCaptor.getAllValues().get(0).getLevel())
+				.isEqualTo(Level.TRACE);
+		assertThat(this.logCaptor.getAllValues().get(1).getLevel()).isEqualTo(Level.WARN);
 	}
 
 	@Test
 	public void notRemapped() throws Exception {
 		this.appender.append(mockLogEvent(Level.TRACE));
 		verify(this.logger).callAppenders(this.logCaptor.capture());
-		assertThat(this.logCaptor.getAllValues().get(0).getLevel(), equalTo(Level.TRACE));
+		assertThat(this.logCaptor.getAllValues().get(0).getLevel())
+				.isEqualTo(Level.TRACE);
 	}
 
 	private ILoggingEvent mockLogEvent(Level level) {

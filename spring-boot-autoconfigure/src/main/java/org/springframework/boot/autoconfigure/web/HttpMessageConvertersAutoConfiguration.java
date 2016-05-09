@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -54,13 +54,18 @@ public class HttpMessageConvertersAutoConfiguration {
 
 	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";
 
-	@Autowired(required = false)
-	private final List<HttpMessageConverter<?>> converters = Collections.emptyList();
+	private final List<HttpMessageConverter<?>> converters;
+
+	public HttpMessageConvertersAutoConfiguration(
+			ObjectProvider<List<HttpMessageConverter<?>>> convertersProvider) {
+		this.converters = convertersProvider.getIfAvailable();
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public HttpMessageConverters messageConverters() {
-		return new HttpMessageConverters(this.converters);
+		return new HttpMessageConverters(this.converters == null
+				? Collections.<HttpMessageConverter<?>>emptyList() : this.converters);
 	}
 
 	@Configuration
@@ -68,8 +73,12 @@ public class HttpMessageConvertersAutoConfiguration {
 	@EnableConfigurationProperties(HttpEncodingProperties.class)
 	protected static class StringHttpMessageConverterConfiguration {
 
-		@Autowired
-		private HttpEncodingProperties encodingProperties;
+		private final HttpEncodingProperties encodingProperties;
+
+		protected StringHttpMessageConverterConfiguration(
+				HttpEncodingProperties encodingProperties) {
+			this.encodingProperties = encodingProperties;
+		}
 
 		@Bean
 		@ConditionalOnMissingBean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,8 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  * @author Andy Wilkinson
  * @since 1.2.0
  */
-@ConfigurationProperties(prefix = JtaProperties.PREFIX, ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "spring.jta", ignoreUnknownFields = true)
 public class JtaProperties {
-
-	public static final String PREFIX = "spring.jta";
 
 	/**
 	 * Transaction logs directory.

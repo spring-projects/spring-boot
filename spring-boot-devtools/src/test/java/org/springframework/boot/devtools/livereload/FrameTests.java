@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link Frame}.
@@ -54,15 +53,15 @@ public class FrameTests {
 	@Test
 	public void textPayload() throws Exception {
 		Frame frame = new Frame("abc");
-		assertThat(frame.getType(), equalTo(Frame.Type.TEXT));
-		assertThat(frame.getPayload(), equalTo("abc".getBytes()));
+		assertThat(frame.getType()).isEqualTo(Frame.Type.TEXT);
+		assertThat(frame.getPayload()).isEqualTo("abc".getBytes());
 	}
 
 	@Test
 	public void typedPayload() throws Exception {
 		Frame frame = new Frame(Frame.Type.CLOSE);
-		assertThat(frame.getType(), equalTo(Frame.Type.CLOSE));
-		assertThat(frame.getPayload(), equalTo(new byte[] {}));
+		assertThat(frame.getType()).isEqualTo(Frame.Type.CLOSE);
+		assertThat(frame.getPayload()).isEqualTo(new byte[] {});
 	}
 
 	@Test
@@ -71,7 +70,7 @@ public class FrameTests {
 		Frame frame = new Frame(payload);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		frame.write(bos);
-		assertThat(bos.toByteArray(), equalTo(new byte[] { (byte) 0x81, 0x01, 0x41 }));
+		assertThat(bos.toByteArray()).isEqualTo(new byte[] { (byte) 0x81, 0x01, 0x41 });
 	}
 
 	@Test
@@ -81,13 +80,13 @@ public class FrameTests {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		frame.write(bos);
 		byte[] bytes = bos.toByteArray();
-		assertThat(bytes.length, equalTo(130));
-		assertThat(bytes[0], equalTo((byte) 0x81));
-		assertThat(bytes[1], equalTo((byte) 0x7E));
-		assertThat(bytes[2], equalTo((byte) 0x00));
-		assertThat(bytes[3], equalTo((byte) 126));
-		assertThat(bytes[4], equalTo((byte) 0x41));
-		assertThat(bytes[5], equalTo((byte) 0x41));
+		assertThat(bytes.length).isEqualTo(130);
+		assertThat(bytes[0]).isEqualTo((byte) 0x81);
+		assertThat(bytes[1]).isEqualTo((byte) 0x7E);
+		assertThat(bytes[2]).isEqualTo((byte) 0x00);
+		assertThat(bytes[3]).isEqualTo((byte) 126);
+		assertThat(bytes[4]).isEqualTo((byte) 0x41);
+		assertThat(bytes[5]).isEqualTo((byte) 0x41);
 	}
 
 	@Test
@@ -110,8 +109,8 @@ public class FrameTests {
 	public void readSmallTextFrame() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x81, (byte) 0x02, 0x41, 0x41 };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
-		assertThat(frame.getType(), equalTo(Frame.Type.TEXT));
-		assertThat(frame.getPayload(), equalTo(new byte[] { 0x41, 0x41 }));
+		assertThat(frame.getType()).isEqualTo(Frame.Type.TEXT);
+		assertThat(frame.getPayload()).isEqualTo(new byte[] { 0x41, 0x41 });
 	}
 
 	@Test
@@ -119,8 +118,8 @@ public class FrameTests {
 		byte[] bytes = new byte[] { (byte) 0x81, (byte) 0x82, 0x0F, 0x0F, 0x0F, 0x0F,
 				0x4E, 0x4E };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
-		assertThat(frame.getType(), equalTo(Frame.Type.TEXT));
-		assertThat(frame.getPayload(), equalTo(new byte[] { 0x41, 0x41 }));
+		assertThat(frame.getType()).isEqualTo(Frame.Type.TEXT);
+		assertThat(frame.getPayload()).isEqualTo(new byte[] { 0x41, 0x41 });
 	}
 
 	@Test
@@ -136,43 +135,43 @@ public class FrameTests {
 		bytes[6] = 0x0F;
 		bytes[7] = 0x0F;
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
-		assertThat(frame.getType(), equalTo(Frame.Type.TEXT));
-		assertThat(frame.getPayload(), equalTo(createString(126).getBytes()));
+		assertThat(frame.getType()).isEqualTo(Frame.Type.TEXT);
+		assertThat(frame.getPayload()).isEqualTo(createString(126).getBytes());
 	}
 
 	@Test
 	public void readContinuation() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x80, (byte) 0x00 };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
-		assertThat(frame.getType(), equalTo(Frame.Type.CONTINUATION));
+		assertThat(frame.getType()).isEqualTo(Frame.Type.CONTINUATION);
 	}
 
 	@Test
 	public void readBinary() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x82, (byte) 0x00 };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
-		assertThat(frame.getType(), equalTo(Frame.Type.BINARY));
+		assertThat(frame.getType()).isEqualTo(Frame.Type.BINARY);
 	}
 
 	@Test
 	public void readClose() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x88, (byte) 0x00 };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
-		assertThat(frame.getType(), equalTo(Frame.Type.CLOSE));
+		assertThat(frame.getType()).isEqualTo(Frame.Type.CLOSE);
 	}
 
 	@Test
 	public void readPing() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x89, (byte) 0x00 };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
-		assertThat(frame.getType(), equalTo(Frame.Type.PING));
+		assertThat(frame.getType()).isEqualTo(Frame.Type.PING);
 	}
 
 	@Test
 	public void readPong() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x8A, (byte) 0x00 };
 		Frame frame = Frame.read(newConnectionInputStream(bytes));
-		assertThat(frame.getType(), equalTo(Frame.Type.PONG));
+		assertThat(frame.getType()).isEqualTo(Frame.Type.PONG);
 	}
 
 	private ConnectionInputStream newConnectionInputStream(byte[] bytes) {

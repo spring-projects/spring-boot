@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import sample.data.jpa.domain.RatingCount;
 import sample.data.jpa.domain.Review;
 import sample.data.jpa.domain.ReviewDetails;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -42,7 +41,6 @@ class HotelServiceImpl implements HotelService {
 
 	private final ReviewRepository reviewRepository;
 
-	@Autowired
 	public HotelServiceImpl(HotelRepository hotelRepository,
 			ReviewRepository reviewRepository) {
 		this.hotelRepository = hotelRepository;
@@ -71,7 +69,7 @@ class HotelServiceImpl implements HotelService {
 	@Override
 	public Review addReview(Hotel hotel, ReviewDetails details) {
 		Review review = new Review(hotel, 1, details);
-		return reviewRepository.save(review);
+		return this.reviewRepository.save(review);
 	}
 
 	@Override

@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerConfigUtils;
+import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.JndiDestinationResolver;
 import org.springframework.transaction.jta.JtaTransactionManager;
@@ -42,21 +43,31 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 @ConditionalOnClass(EnableJms.class)
 class JmsAnnotationDrivenConfiguration {
 
-	@Autowired(required = false)
-	private DestinationResolver destinationResolver;
+	private final ObjectProvider<DestinationResolver> destinationResolver;
 
-	@Autowired(required = false)
-	private JtaTransactionManager transactionManager;
+	private final ObjectProvider<JtaTransactionManager> transactionManager;
 
-	@Autowired
-	private JmsProperties properties;
+	private final ObjectProvider<MessageConverter> messageConverter;
+
+	private final JmsProperties properties;
+
+	JmsAnnotationDrivenConfiguration(
+			ObjectProvider<DestinationResolver> destinationResolver,
+			ObjectProvider<JtaTransactionManager> transactionManager,
+			ObjectProvider<MessageConverter> messageConverter, JmsProperties properties) {
+		this.destinationResolver = destinationResolver;
+		this.transactionManager = transactionManager;
+		this.messageConverter = messageConverter;
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
 		DefaultJmsListenerContainerFactoryConfigurer configurer = new DefaultJmsListenerContainerFactoryConfigurer();
-		configurer.setDestinationResolver(this.destinationResolver);
-		configurer.setTransactionManager(this.transactionManager);
+		configurer.setDestinationResolver(this.destinationResolver.getIfUnique());
+		configurer.setTransactionManager(this.transactionManager.getIfUnique());
+		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setJmsProperties(this.properties);
 		return configurer;
 	}

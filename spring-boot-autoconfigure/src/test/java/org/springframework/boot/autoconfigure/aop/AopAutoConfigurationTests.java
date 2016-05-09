@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,12 @@ import org.aspectj.lang.annotation.Before;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AopAutoConfiguration}.
@@ -46,10 +45,10 @@ public class AopAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.aop.auto:false");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
-		assertFalse(aspect.isCalled());
+		assertThat(aspect.isCalled()).isFalse();
 		TestBean bean = this.context.getBean(TestBean.class);
 		bean.foo();
-		assertFalse(aspect.isCalled());
+		assertThat(aspect.isCalled()).isFalse();
 	}
 
 	@Test
@@ -61,10 +60,10 @@ public class AopAutoConfigurationTests {
 				"spring.aop.proxyTargetClass:true");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
-		assertFalse(aspect.isCalled());
+		assertThat(aspect.isCalled()).isFalse();
 		TestBean bean = this.context.getBean(TestBean.class);
 		bean.foo();
-		assertTrue(aspect.isCalled());
+		assertThat(aspect.isCalled()).isTrue();
 	}
 
 	@Test
@@ -76,10 +75,10 @@ public class AopAutoConfigurationTests {
 				"spring.aop.proxyTargetClass:false");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
-		assertFalse(aspect.isCalled());
+		assertThat(aspect.isCalled()).isFalse();
 		TestInterface bean = this.context.getBean(TestInterface.class);
 		bean.foo();
-		assertTrue(aspect.isCalled());
+		assertThat(aspect.isCalled()).isTrue();
 	}
 
 	@Configuration

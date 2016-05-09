@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -54,6 +54,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Josh Long
  * @author Manuel Doninger
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
@@ -82,11 +83,11 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 			"org.hibernate.engine.transaction.jta.platform.internal.WebSphereExtendedJtaPlatform",
 			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform", };
 
-	@Autowired
-	private JpaProperties properties;
-
-	@Autowired
-	private DataSource dataSource;
+	public HibernateJpaAutoConfiguration(DataSource dataSource,
+			JpaProperties jpaProperties,
+			ObjectProvider<JtaTransactionManager> jtaTransactionManagerProvider) {
+		super(dataSource, jpaProperties, jtaTransactionManagerProvider);
+	}
 
 	@Override
 	protected AbstractJpaVendorAdapter createJpaVendorAdapter() {
@@ -96,7 +97,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	@Override
 	protected Map<String, Object> getVendorProperties() {
 		Map<String, Object> vendorProperties = new LinkedHashMap<String, Object>();
-		vendorProperties.putAll(this.properties.getHibernateProperties(this.dataSource));
+		vendorProperties.putAll(getProperties().getHibernateProperties(getDataSource()));
 		return vendorProperties;
 	}
 

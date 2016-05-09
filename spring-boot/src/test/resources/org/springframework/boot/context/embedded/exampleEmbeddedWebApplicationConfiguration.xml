@@ -6,6 +6,6 @@
 	<bean name="servletContainerFactory"
 		class="org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory" />
 
-	<bean name="servlet" class="org.springframework.boot.context.embedded.MockServlet"/>
+	<bean name="servlet" class="org.springframework.boot.testutil.MockServlet"/>
 
 </beans>

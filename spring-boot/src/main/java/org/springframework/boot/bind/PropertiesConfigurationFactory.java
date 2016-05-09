@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ import org.springframework.validation.Validator;
  * them to an object of a specified type and then optionally running a {@link Validator}
  * over it.
  *
- * @param <T> The target type
+ * @param <T> the target type
  * @author Dave Syer
  */
 public class PropertiesConfigurationFactory<T>
@@ -231,7 +231,7 @@ public class PropertiesConfigurationFactory<T>
 		try {
 			if (this.logger.isTraceEnabled()) {
 				if (this.properties != null) {
-					this.logger.trace("Properties:\n" + this.properties);
+					this.logger.trace(String.format("Properties:%n%s" + this.properties));
 				}
 				else {
 					this.logger.trace("Property Sources: " + this.propertySources);

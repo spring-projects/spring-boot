@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ClassLoaderFile}.
@@ -69,22 +67,22 @@ public class ClassLoaderFileTests {
 	@Test
 	public void added() throws Exception {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.ADDED, BYTES);
-		assertThat(file.getKind(), equalTo(ClassLoaderFile.Kind.ADDED));
-		assertThat(file.getContents(), equalTo(BYTES));
+		assertThat(file.getKind()).isEqualTo(ClassLoaderFile.Kind.ADDED);
+		assertThat(file.getContents()).isEqualTo(BYTES);
 	}
 
 	@Test
 	public void modified() throws Exception {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.MODIFIED, BYTES);
-		assertThat(file.getKind(), equalTo(ClassLoaderFile.Kind.MODIFIED));
-		assertThat(file.getContents(), equalTo(BYTES));
+		assertThat(file.getKind()).isEqualTo(ClassLoaderFile.Kind.MODIFIED);
+		assertThat(file.getContents()).isEqualTo(BYTES);
 	}
 
 	@Test
 	public void deleted() throws Exception {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.DELETED, null);
-		assertThat(file.getKind(), equalTo(ClassLoaderFile.Kind.DELETED));
-		assertThat(file.getContents(), nullValue());
+		assertThat(file.getKind()).isEqualTo(ClassLoaderFile.Kind.DELETED);
+		assertThat(file.getContents()).isNull();
 	}
 
 }

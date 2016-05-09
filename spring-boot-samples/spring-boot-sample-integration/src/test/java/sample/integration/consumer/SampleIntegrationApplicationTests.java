@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for service demo application.
@@ -71,7 +71,7 @@ public class SampleIntegrationApplicationTests {
 	public void testVanillaExchange() throws Exception {
 		SpringApplication.run(ProducerApplication.class, "World");
 		String output = getOutput();
-		assertTrue("Wrong output: " + output, output.contains("Hello World"));
+		assertThat(output).contains("Hello World");
 	}
 
 	private String getOutput() throws Exception {

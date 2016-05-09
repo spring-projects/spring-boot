@@ -34,3 +34,4 @@ overridedb.*
 *.jar
 .DS_Store
 .factorypath
+dump.rdb

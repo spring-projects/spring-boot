@@ -23,8 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -55,7 +54,7 @@ public class ExitCodeGeneratorsTests {
 
 	@Test
 	public void getExitCodeWhenNoGeneratorsShouldReturnZero() throws Exception {
-		assertThat(new ExitCodeGenerators().getExitCode(), equalTo(0));
+		assertThat(new ExitCodeGenerators().getExitCode()).isEqualTo(0);
 	}
 
 	@Test
@@ -64,7 +63,7 @@ public class ExitCodeGeneratorsTests {
 		given(generator.getExitCode()).willThrow(new IllegalStateException());
 		ExitCodeGenerators generators = new ExitCodeGenerators();
 		generators.add(generator);
-		assertThat(generators.getExitCode(), equalTo(1));
+		assertThat(generators.getExitCode()).isEqualTo(1);
 	}
 
 	@Test
@@ -73,7 +72,7 @@ public class ExitCodeGeneratorsTests {
 		generators.add(mockGenerator(-1));
 		generators.add(mockGenerator(-3));
 		generators.add(mockGenerator(-2));
-		assertThat(generators.getExitCode(), equalTo(-3));
+		assertThat(generators.getExitCode()).isEqualTo(-3);
 	}
 
 	@Test
@@ -82,7 +81,7 @@ public class ExitCodeGeneratorsTests {
 		generators.add(mockGenerator(1));
 		generators.add(mockGenerator(3));
 		generators.add(mockGenerator(2));
-		assertThat(generators.getExitCode(), equalTo(3));
+		assertThat(generators.getExitCode()).isEqualTo(3);
 	}
 
 	@Test
@@ -93,7 +92,7 @@ public class ExitCodeGeneratorsTests {
 		generators.add(e, mockMapper(IllegalStateException.class, 1));
 		generators.add(e, mockMapper(IOException.class, 2));
 		generators.add(e, mockMapper(UnsupportedOperationException.class, 3));
-		assertThat(generators.getExitCode(), equalTo(2));
+		assertThat(generators.getExitCode()).isEqualTo(2);
 	}
 
 	private ExitCodeGenerator mockGenerator(int exitCode) {

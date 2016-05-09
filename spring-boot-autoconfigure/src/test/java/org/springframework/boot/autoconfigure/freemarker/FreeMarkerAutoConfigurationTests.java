@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.boot.test.EnvironmentTestUtils;
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -36,21 +36,20 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link FreeMarkerAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
 public class FreeMarkerAutoConfigurationTests {
 
@@ -74,8 +73,8 @@ public class FreeMarkerAutoConfigurationTests {
 	@Test
 	public void defaultConfiguration() {
 		registerAndRefreshContext();
-		assertThat(this.context.getBean(FreeMarkerViewResolver.class), notNullValue());
-		assertThat(this.context.getBean(FreeMarkerConfigurer.class), notNullValue());
+		assertThat(this.context.getBean(FreeMarkerViewResolver.class)).isNotNull();
+		assertThat(this.context.getBean(FreeMarkerConfigurer.class)).isNotNull();
 	}
 
 	@Test
@@ -104,8 +103,8 @@ public class FreeMarkerAutoConfigurationTests {
 		registerAndRefreshContext();
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("home"));
-		assertThat(response.getContentType(), equalTo("text/html;charset=UTF-8"));
+		assertThat(result).contains("home");
+		assertThat(response.getContentType()).isEqualTo("text/html;charset=UTF-8");
 	}
 
 	@Test
@@ -113,8 +112,8 @@ public class FreeMarkerAutoConfigurationTests {
 		registerAndRefreshContext("spring.freemarker.contentType:application/json");
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("home"));
-		assertThat(response.getContentType(), equalTo("application/json;charset=UTF-8"));
+		assertThat(result).contains("home");
+		assertThat(response.getContentType()).isEqualTo("application/json;charset=UTF-8");
 	}
 
 	@Test
@@ -122,7 +121,7 @@ public class FreeMarkerAutoConfigurationTests {
 		registerAndRefreshContext("spring.freemarker.prefix:prefix/");
 		MockHttpServletResponse response = render("prefixed");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("prefixed"));
+		assertThat(result).contains("prefixed");
 	}
 
 	@Test
@@ -130,7 +129,7 @@ public class FreeMarkerAutoConfigurationTests {
 		registerAndRefreshContext("spring.freemarker.suffix:.freemarker");
 		MockHttpServletResponse response = render("suffixed");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("suffixed"));
+		assertThat(result).contains("suffixed");
 	}
 
 	@Test
@@ -139,14 +138,14 @@ public class FreeMarkerAutoConfigurationTests {
 				"spring.freemarker.templateLoaderPath:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("custom"));
+		assertThat(result).contains("custom");
 	}
 
 	@Test
 	public void disableCache() {
 		registerAndRefreshContext("spring.freemarker.cache:false");
-		assertThat(this.context.getBean(FreeMarkerViewResolver.class).getCacheLimit(),
-				equalTo(0));
+		assertThat(this.context.getBean(FreeMarkerViewResolver.class).getCacheLimit())
+				.isEqualTo(0);
 	}
 
 	@Test
@@ -154,8 +153,8 @@ public class FreeMarkerAutoConfigurationTests {
 		registerAndRefreshContext("spring.freemarker.allow-session-override:true");
 		AbstractTemplateViewResolver viewResolver = this.context
 				.getBean(FreeMarkerViewResolver.class);
-		assertThat((Boolean) ReflectionTestUtils.getField(viewResolver,
-				"allowSessionOverride"), is(true));
+		assertThat(ReflectionTestUtils.getField(viewResolver, "allowSessionOverride"))
+				.isEqualTo(true);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -163,7 +162,7 @@ public class FreeMarkerAutoConfigurationTests {
 	public void customFreeMarkerSettings() {
 		registerAndRefreshContext("spring.freemarker.settings.boolean_format:yup,nope");
 		assertThat(this.context.getBean(FreeMarkerConfigurer.class).getConfiguration()
-				.getSetting("boolean_format"), equalTo("yup,nope"));
+				.getSetting("boolean_format")).isEqualTo("yup,nope");
 	}
 
 	@Test
@@ -173,7 +172,7 @@ public class FreeMarkerAutoConfigurationTests {
 				.getBean(FreeMarkerConfigurer.class);
 		StringWriter writer = new StringWriter();
 		freemarker.getConfiguration().getTemplate("message.ftl").process(this, writer);
-		assertThat(writer.toString(), containsString("Hello World"));
+		assertThat(writer.toString()).contains("Hello World");
 	}
 
 	@Test
@@ -185,11 +184,25 @@ public class FreeMarkerAutoConfigurationTests {
 					.getBean(freemarker.template.Configuration.class);
 			StringWriter writer = new StringWriter();
 			freemarker.getTemplate("message.ftl").process(this, writer);
-			assertThat(writer.toString(), containsString("Hello World"));
+			assertThat(writer.toString()).contains("Hello World");
 		}
 		finally {
 			context.close();
 		}
+	}
+
+	@Test
+	public void registerResourceHandlingFilterDisabledByDefault() throws Exception {
+		registerAndRefreshContext();
+		assertThat(this.context.getBeansOfType(ResourceUrlEncodingFilter.class))
+				.isEmpty();
+	}
+
+	@Test
+	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled()
+			throws Exception {
+		registerAndRefreshContext("spring.resources.chain.enabled:true");
+		assertThat(this.context.getBean(ResourceUrlEncodingFilter.class)).isNotNull();
 	}
 
 	private void registerAndRefreshContext(String... env) {
@@ -206,7 +219,7 @@ public class FreeMarkerAutoConfigurationTests {
 		FreeMarkerViewResolver resolver = this.context
 				.getBean(FreeMarkerViewResolver.class);
 		View view = resolver.resolveViewName(viewName, Locale.UK);
-		assertThat(view, notNullValue());
+		assertThat(view).isNotNull();
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute(RequestContext.WEB_APPLICATION_CONTEXT_ATTRIBUTE,
 				this.context);
@@ -214,4 +227,5 @@ public class FreeMarkerAutoConfigurationTests {
 		view.render(null, request, response);
 		return response;
 	}
+
 }

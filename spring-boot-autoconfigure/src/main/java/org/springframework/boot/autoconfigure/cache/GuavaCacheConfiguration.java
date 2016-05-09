@@ -22,7 +22,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheBuilderSpec;
 import com.google.common.cache.CacheLoader;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.CacheManager;
@@ -45,20 +45,27 @@ import org.springframework.util.StringUtils;
 @Conditional(CacheCondition.class)
 class GuavaCacheConfiguration {
 
-	@Autowired
-	private CacheProperties cacheProperties;
+	private final CacheProperties cacheProperties;
 
-	@Autowired
-	private CacheManagerCustomizers customizers;
+	private final CacheManagerCustomizers customizers;
 
-	@Autowired(required = false)
-	private CacheBuilder<Object, Object> cacheBuilder;
+	private final CacheBuilder<Object, Object> cacheBuilder;
 
-	@Autowired(required = false)
-	private CacheBuilderSpec cacheBuilderSpec;
+	private final CacheBuilderSpec cacheBuilderSpec;
 
-	@Autowired(required = false)
-	private CacheLoader<Object, Object> cacheLoader;
+	private final CacheLoader<Object, Object> cacheLoader;
+
+	GuavaCacheConfiguration(CacheProperties cacheProperties,
+			CacheManagerCustomizers customizers,
+			ObjectProvider<CacheBuilder<Object, Object>> cacheBuilderProvider,
+			ObjectProvider<CacheBuilderSpec> cacheBuilderSpecProvider,
+			ObjectProvider<CacheLoader<Object, Object>> cacheLoaderProvider) {
+		this.cacheProperties = cacheProperties;
+		this.customizers = customizers;
+		this.cacheBuilder = cacheBuilderProvider.getIfAvailable();
+		this.cacheBuilderSpec = cacheBuilderSpecProvider.getIfAvailable();
+		this.cacheLoader = cacheLoaderProvider.getIfAvailable();
+	}
 
 	@Bean
 	public GuavaCacheManager cacheManager() {

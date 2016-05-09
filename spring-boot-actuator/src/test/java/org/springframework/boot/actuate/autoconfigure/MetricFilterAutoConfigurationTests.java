@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,11 +53,10 @@ import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.NestedServletException;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.BDDMockito.willThrow;
@@ -65,6 +64,7 @@ import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
@@ -81,6 +81,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Stephane Nicoll
  */
 public class MetricFilterAutoConfigurationTests {
+
+	@Test
+	public void defaultMetricFilterAutoConfigurationProperties() {
+		MetricFilterProperties properties = new MetricFilterProperties();
+		assertThat(properties.getGaugeSubmissions())
+				.containsExactly(MetricsFilterSubmission.MERGED);
+		assertThat(properties.getCounterSubmissions())
+				.containsExactly(MetricsFilterSubmission.MERGED);
+	}
 
 	@Test
 	public void recordsHttpInteractions() throws Exception {
@@ -173,7 +182,7 @@ public class MetricFilterAutoConfigurationTests {
 	public void skipsFilterIfMissingServices() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				MetricFilterAutoConfiguration.class);
-		assertThat(context.getBeansOfType(Filter.class).size(), equalTo(0));
+		assertThat(context.getBeansOfType(Filter.class).size()).isEqualTo(0);
 		context.close();
 	}
 
@@ -184,7 +193,7 @@ public class MetricFilterAutoConfigurationTests {
 				"endpoints.metrics.filter.enabled:false");
 		context.register(Config.class, MetricFilterAutoConfiguration.class);
 		context.refresh();
-		assertThat(context.getBeansOfType(Filter.class).size(), equalTo(0));
+		assertThat(context.getBeansOfType(Filter.class).size()).isEqualTo(0);
 		context.close();
 	}
 
@@ -269,7 +278,7 @@ public class MetricFilterAutoConfigurationTests {
 			fail();
 		}
 		catch (Exception ex) {
-			assertThat(result.getRequest().getAttribute(attributeName), is(nullValue()));
+			assertThat(result.getRequest().getAttribute(attributeName)).isNull();
 			verify(context.getBean(CounterService.class))
 					.increment("status.500.createFailure");
 		}
@@ -293,6 +302,66 @@ public class MetricFilterAutoConfigurationTests {
 				.increment("status.503.unmapped");
 		verify(context.getBean(GaugeService.class), times(2))
 				.submit(eq("response.unmapped"), anyDouble());
+		context.close();
+	}
+
+	@Test
+	public void additionallyRecordsMetricsWithHttpMethodNameIfConfigured()
+			throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(Config.class, MetricFilterAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(context,
+				"endpoints.metrics.filter.gauge-submissions=merged,per-http-method",
+				"endpoints.metrics.filter.counter-submissions=merged,per-http-method");
+		context.refresh();
+		Filter filter = context.getBean(Filter.class);
+		final MockHttpServletRequest request = new MockHttpServletRequest("PUT",
+				"/test/path");
+		final MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain chain = mock(FilterChain.class);
+		willAnswer(new Answer<Object>() {
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				response.setStatus(200);
+				return null;
+			}
+		}).given(chain).doFilter(request, response);
+		filter.doFilter(request, response, chain);
+		verify(context.getBean(GaugeService.class)).submit(eq("response.test.path"),
+				anyDouble());
+		verify(context.getBean(GaugeService.class)).submit(eq("response.PUT.test.path"),
+				anyDouble());
+		verify(context.getBean(CounterService.class))
+				.increment(eq("status.200.test.path"));
+		verify(context.getBean(CounterService.class))
+				.increment(eq("status.PUT.200.test.path"));
+		context.close();
+	}
+
+	@Test
+	public void doesNotRecordRolledUpMetricsIfConfigured() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(Config.class, MetricFilterAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(context,
+				"endpoints.metrics.filter.gauge-submissions=",
+				"endpoints.metrics.filter.counter-submissions=");
+		context.refresh();
+		Filter filter = context.getBean(Filter.class);
+		final MockHttpServletRequest request = new MockHttpServletRequest("PUT",
+				"/test/path");
+		final MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain chain = mock(FilterChain.class);
+		willAnswer(new Answer<Object>() {
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				response.setStatus(200);
+				return null;
+			}
+		}).given(chain).doFilter(request, response);
+		filter.doFilter(request, response, chain);
+		verify(context.getBean(GaugeService.class), never()).submit(anyString(),
+				anyDouble());
+		verify(context.getBean(CounterService.class), never()).increment(anyString());
 		context.close();
 	}
 

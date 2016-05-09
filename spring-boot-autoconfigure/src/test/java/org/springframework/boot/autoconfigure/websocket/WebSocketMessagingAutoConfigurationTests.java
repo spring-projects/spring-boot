@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,16 +30,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.CompositeMessageConverter;
@@ -68,10 +68,7 @@ import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -102,34 +99,33 @@ public class WebSocketMessagingAutoConfigurationTests {
 	@Test
 	public void basicMessagingWithJsonResponse() throws Throwable {
 		Object result = performStompSubscription("/app/json");
-		assertThat(new String((byte[]) result),
-				is(equalTo(String.format("{%n  \"foo\" : 5,%n  \"bar\" : \"baz\"%n}"))));
+		assertThat(new String((byte[]) result))
+				.isEqualTo(String.format("{%n  \"foo\" : 5,%n  \"bar\" : \"baz\"%n}"));
 	}
 
 	@Test
 	public void basicMessagingWithStringResponse() throws Throwable {
 		Object result = performStompSubscription("/app/string");
-		assertThat(new String((byte[]) result),
-				is(equalTo(String.format("string data"))));
+		assertThat(new String((byte[]) result)).isEqualTo(String.format("string data"));
 	}
 
 	@Test
 	public void customizedConverterTypesMatchDefaultConverterTypes() {
 		List<MessageConverter> customizedConverters = getCustomizedConverters();
 		List<MessageConverter> defaultConverters = getDefaultConverters();
-		assertThat(customizedConverters.size(), is(equalTo(defaultConverters.size())));
+		assertThat(customizedConverters.size()).isEqualTo(defaultConverters.size());
 		Iterator<MessageConverter> customizedIterator = customizedConverters.iterator();
 		Iterator<MessageConverter> defaultIterator = defaultConverters.iterator();
 		while (customizedIterator.hasNext()) {
-			assertThat(customizedIterator.next(),
-					is(instanceOf(defaultIterator.next().getClass())));
+			assertThat(customizedIterator.next())
+					.isInstanceOf(defaultIterator.next().getClass());
 		}
 	}
 
 	private List<MessageConverter> getCustomizedConverters() {
 		List<MessageConverter> customizedConverters = new ArrayList<MessageConverter>();
-		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration();
-		ReflectionTestUtils.setField(configuration, "objectMapper", new ObjectMapper());
+		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
+				new ObjectMapper());
 		configuration.configureMessageConverters(customizedConverters);
 		return customizedConverters;
 	}
@@ -201,11 +197,8 @@ public class WebSocketMessagingAutoConfigurationTests {
 			if (failure.get() != null) {
 				throw failure.get();
 			}
-			else {
-				fail("Response was not received within 30 seconds");
-			}
+			fail("Response was not received within 30 seconds");
 		}
-
 		return result.get();
 	}
 

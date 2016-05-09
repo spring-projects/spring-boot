@@ -133,8 +133,8 @@ class OnPropertyCondition extends SpringBootCondition {
 
 		StringBuilder message = new StringBuilder("@ConditionalOnProperty ");
 		if (!missingProperties.isEmpty()) {
-			message.append("missing required properties "
-					+ expandNames(prefix, missingProperties) + " ");
+			message.append("missing required properties ")
+					.append(expandNames(prefix, missingProperties)).append(" ");
 		}
 		if (!nonMatchingProperties.isEmpty()) {
 			String expected = StringUtils.hasLength(havingValue) ? havingValue : "!false";
@@ -162,7 +162,7 @@ class OnPropertyCondition extends SpringBootCondition {
 	}
 
 	private String expandNames(String prefix, List<String> names) {
-		StringBuffer expanded = new StringBuffer();
+		StringBuilder expanded = new StringBuilder();
 		for (String name : names) {
 			expanded.append(expanded.length() == 0 ? "" : ", ");
 			expanded.append(prefix);

@@ -34,15 +34,12 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.devtools.test.MockClientHttpRequestFactory;
 import org.springframework.boot.devtools.tunnel.client.HttpTunnelConnection.TunnelChannel;
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.SocketUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -115,9 +112,9 @@ public class HttpTunnelConnectionTests {
 	public void closeTunnelChangesIsOpen() throws Exception {
 		this.requestFactory.willRespondAfterDelay(1000, HttpStatus.GONE);
 		WritableByteChannel channel = openTunnel(false);
-		assertThat(channel.isOpen(), equalTo(true));
+		assertThat(channel.isOpen()).isTrue();
 		channel.close();
-		assertThat(channel.isOpen(), equalTo(false));
+		assertThat(channel.isOpen()).isFalse();
 	}
 
 	@Test
@@ -137,7 +134,7 @@ public class HttpTunnelConnectionTests {
 		write(channel, "hello");
 		write(channel, "1+1");
 		write(channel, "1+2");
-		assertThat(this.incomingData.toString(), equalTo("hi=2=3"));
+		assertThat(this.incomingData.toString()).isEqualTo("hi=2=3");
 	}
 
 	@Test
@@ -148,15 +145,15 @@ public class HttpTunnelConnectionTests {
 		this.requestFactory.willRespond("hi");
 		TunnelChannel channel = openTunnel(true);
 		write(channel, "hello");
-		assertThat(this.incomingData.toString(), equalTo("hi"));
-		assertThat(this.requestFactory.getExecutedRequests().size(), greaterThan(10));
+		assertThat(this.incomingData.toString()).isEqualTo("hi");
+		assertThat(this.requestFactory.getExecutedRequests().size()).isGreaterThan(10);
 	}
 
 	@Test
 	public void serviceUnavailableResponseLogsWarningAndClosesTunnel() throws Exception {
 		this.requestFactory.willRespond(HttpStatus.SERVICE_UNAVAILABLE);
 		TunnelChannel tunnel = openTunnel(true);
-		assertThat(tunnel.isOpen(), is(false));
+		assertThat(tunnel.isOpen()).isFalse();
 		this.outputCapture.expect(containsString(
 				"Did you forget to start it with remote debugging enabled?"));
 	}
@@ -165,7 +162,7 @@ public class HttpTunnelConnectionTests {
 	public void connectFailureLogsWarning() throws Exception {
 		this.requestFactory.willRespond(new ConnectException());
 		TunnelChannel tunnel = openTunnel(true);
-		assertThat(tunnel.isOpen(), is(false));
+		assertThat(tunnel.isOpen()).isFalse();
 		this.outputCapture.expect(containsString(
 				"Failed to connect to remote application at http://localhost:"
 						+ this.port));

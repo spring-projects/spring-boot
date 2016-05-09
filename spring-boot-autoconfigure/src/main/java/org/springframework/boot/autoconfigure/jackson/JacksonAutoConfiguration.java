@@ -41,12 +41,12 @@ import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jackson.JsonComponentModule;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -76,6 +76,11 @@ import org.springframework.util.ReflectionUtils;
 @ConditionalOnClass(ObjectMapper.class)
 public class JacksonAutoConfiguration {
 
+	@Bean
+	public JsonComponentModule jsonComponentModule() {
+		return new JsonComponentModule();
+	}
+
 	@Configuration
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
 	static class JacksonObjectMapperConfiguration {
@@ -97,8 +102,11 @@ public class JacksonAutoConfiguration {
 		private static final Log logger = LogFactory
 				.getLog(JodaDateTimeJacksonConfiguration.class);
 
-		@Autowired
-		private JacksonProperties jacksonProperties;
+		private final JacksonProperties jacksonProperties;
+
+		JodaDateTimeJacksonConfiguration(JacksonProperties jacksonProperties) {
+			this.jacksonProperties = jacksonProperties;
+		}
 
 		@Bean
 		public SimpleModule jodaDateTimeSerializationModule() {
@@ -155,20 +163,24 @@ public class JacksonAutoConfiguration {
 	@EnableConfigurationProperties(JacksonProperties.class)
 	static class JacksonObjectMapperBuilderConfiguration {
 
-		@Autowired
-		private ApplicationContext applicationContext;
+		private final ApplicationContext applicationContext;
 
-		@Autowired
-		private JacksonProperties jacksonProperties;
+		private final JacksonProperties jacksonProperties;
+
+		JacksonObjectMapperBuilderConfiguration(ApplicationContext applicationContext,
+				JacksonProperties jacksonProperties) {
+			this.applicationContext = applicationContext;
+			this.jacksonProperties = jacksonProperties;
+		}
 
 		@Bean
 		@ConditionalOnMissingBean(Jackson2ObjectMapperBuilder.class)
 		public Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder() {
 			Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
 			builder.applicationContext(this.applicationContext);
-			if (this.jacksonProperties.getSerializationInclusion() != null) {
+			if (this.jacksonProperties.getDefaultPropertyInclusion() != null) {
 				builder.serializationInclusion(
-						this.jacksonProperties.getSerializationInclusion());
+						this.jacksonProperties.getDefaultPropertyInclusion());
 			}
 			if (this.jacksonProperties.getTimeZone() != null) {
 				builder.timeZone(this.jacksonProperties.getTimeZone());

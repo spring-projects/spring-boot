@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,20 +55,27 @@ import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
  * @author Andy Wilkinson
  * @author Brian Clozel
  * @since 1.1.0
+ * @deprecated as of 1.4 following the deprecation of Velocity support in Spring Framework
+ * 4.3
  */
 @Configuration
 @ConditionalOnClass({ VelocityEngine.class, VelocityEngineFactory.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(VelocityProperties.class)
+@Deprecated
 public class VelocityAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(VelocityAutoConfiguration.class);
 
-	@Autowired
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
-	@Autowired
-	private VelocityProperties properties;
+	private final VelocityProperties properties;
+
+	public VelocityAutoConfiguration(ApplicationContext applicationContext,
+			VelocityProperties properties) {
+		this.applicationContext = applicationContext;
+		this.properties = properties;
+	}
 
 	@PostConstruct
 	public void checkTemplateLocationExists() {
@@ -84,6 +91,7 @@ public class VelocityAutoConfiguration {
 		}
 	}
 
+	@Deprecated
 	protected static class VelocityConfiguration {
 
 		@Autowired
@@ -103,6 +111,7 @@ public class VelocityAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnNotWebApplication
+	@Deprecated
 	public static class VelocityNonWebConfiguration extends VelocityConfiguration {
 
 		@Bean
@@ -118,6 +127,7 @@ public class VelocityAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(Servlet.class)
 	@ConditionalOnWebApplication
+	@Deprecated
 	public static class VelocityWebConfiguration extends VelocityConfiguration {
 
 		@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ResourceServerProperties}.
@@ -41,14 +41,13 @@ public class ResourceServerPropertiesTests {
 		String json = mapper.writeValueAsString(this.properties);
 		Map<String, Object> value = mapper.readValue(json, Map.class);
 		Map<String, Object> jwt = (Map<String, Object>) value.get("jwt");
-		assertNotNull("Wrong json: " + json, jwt.get("keyUri"));
+		assertThat(jwt.get("keyUri")).isNotNull();
 	}
 
 	@Test
 	public void tokenKeyDerived() throws Exception {
 		this.properties.setUserInfoUri("http://example.com/userinfo");
-		assertNotNull("Wrong properties: " + this.properties,
-				this.properties.getJwt().getKeyUri());
+		assertThat(this.properties.getJwt().getKeyUri()).isNotNull();
 	}
 
 }

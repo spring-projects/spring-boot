@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,7 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kin
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RestartServer}.
@@ -76,8 +74,8 @@ public class RestartServerTests {
 		files.addFile("my/module-c", "ClassB.class", fileB);
 		server.updateAndRestart(files);
 		Set<URL> expectedUrls = new LinkedHashSet<URL>(Arrays.asList(url1, url3));
-		assertThat(server.restartUrls, equalTo(expectedUrls));
-		assertThat(server.restartFiles, equalTo(files));
+		assertThat(server.restartUrls).isEqualTo(expectedUrls);
+		assertThat(server.restartFiles).isEqualTo(files);
 	}
 
 	@Test
@@ -95,7 +93,7 @@ public class RestartServerTests {
 		ClassLoaderFile fileA = new ClassLoaderFile(Kind.ADDED, new byte[0]);
 		files.addFile("my/module-a", "ClassA.class", fileA);
 		server.updateAndRestart(files);
-		assertThat(jarFile.lastModified(), greaterThan(startTime - 1000));
+		assertThat(jarFile.lastModified()).isGreaterThan(startTime - 1000);
 	}
 
 	@Test
@@ -114,7 +112,7 @@ public class RestartServerTests {
 		ClassLoaderFile fileA = new ClassLoaderFile(Kind.ADDED, "def".getBytes());
 		files.addFile("my/module-a", "ClassA.class", fileA);
 		server.updateAndRestart(files);
-		assertThat(FileCopyUtils.copyToByteArray(classFile), equalTo("def".getBytes()));
+		assertThat(FileCopyUtils.copyToByteArray(classFile)).isEqualTo("def".getBytes());
 	}
 
 	private static class MockRestartServer extends RestartServer {

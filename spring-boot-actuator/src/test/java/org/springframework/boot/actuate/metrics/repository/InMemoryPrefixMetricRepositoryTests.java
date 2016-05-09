@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Dave Syer
@@ -43,8 +42,8 @@ public class InMemoryPrefixMetricRepositoryTests {
 		for (Metric<?> metric : this.repository.findAll("foo")) {
 			names.add(metric.getName());
 		}
-		assertEquals(2, names.size());
-		assertTrue(names.contains("foo.bar"));
+		assertThat(names).hasSize(2);
+		assertThat(names.contains("foo.bar")).isTrue();
 	}
 
 	@Test
@@ -54,8 +53,8 @@ public class InMemoryPrefixMetricRepositoryTests {
 		for (Metric<?> metric : this.repository.findAll("foo.*")) {
 			names.add(metric.getName());
 		}
-		assertEquals(1, names.size());
-		assertTrue(names.contains("foo.bar"));
+		assertThat(names).hasSize(1);
+		assertThat(names.contains("foo.bar")).isTrue();
 	}
 
 	@Test
@@ -65,8 +64,8 @@ public class InMemoryPrefixMetricRepositoryTests {
 		for (Metric<?> metric : this.repository.findAll("foo.")) {
 			names.add(metric.getName());
 		}
-		assertEquals(1, names.size());
-		assertTrue(names.contains("foo.bar"));
+		assertThat(names).hasSize(1);
+		assertThat(names.contains("foo.bar")).isTrue();
 	}
 
 	@Test
@@ -77,8 +76,8 @@ public class InMemoryPrefixMetricRepositoryTests {
 		for (Metric<?> metric : this.repository.findAll("foo")) {
 			names.add(metric.getName());
 		}
-		assertEquals(1, names.size());
-		assertTrue(names.contains("foo.bar"));
+		assertThat(names).hasSize(1);
+		assertThat(names.contains("foo.bar")).isTrue();
 	}
 
 	@Test
@@ -90,9 +89,9 @@ public class InMemoryPrefixMetricRepositoryTests {
 		for (Metric<?> metric : this.repository.findAll("foo")) {
 			names.add(metric.getName());
 		}
-		assertEquals(2, names.size());
-		assertTrue(names.contains("foo.bar"));
-		assertEquals(3L, this.repository.findOne("foo.bar").getValue());
+		assertThat(names).hasSize(2);
+		assertThat(names.contains("foo.bar")).isTrue();
+		assertThat(this.repository.findOne("foo.bar").getValue()).isEqualTo(3L);
 	}
 
 }

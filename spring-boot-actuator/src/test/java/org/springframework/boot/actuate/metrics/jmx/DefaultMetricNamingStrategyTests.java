@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import javax.management.ObjectName;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DefaultMetricNamingStrategy}.
@@ -35,37 +35,37 @@ public class DefaultMetricNamingStrategyTests {
 	public void simpleName() throws Exception {
 		ObjectName name = this.strategy.getObjectName(null,
 				"domain:type=MetricValue,name=foo");
-		assertEquals("domain", name.getDomain());
-		assertEquals("foo", name.getKeyProperty("type"));
+		assertThat(name.getDomain()).isEqualTo("domain");
+		assertThat(name.getKeyProperty("type")).isEqualTo("foo");
 	}
 
 	@Test
 	public void onePeriod() throws Exception {
 		ObjectName name = this.strategy.getObjectName(null,
 				"domain:type=MetricValue,name=foo.bar");
-		assertEquals("domain", name.getDomain());
-		assertEquals("foo", name.getKeyProperty("type"));
-		assertEquals("Wrong name: " + name, "bar", name.getKeyProperty("value"));
+		assertThat(name.getDomain()).isEqualTo("domain");
+		assertThat(name.getKeyProperty("type")).isEqualTo("foo");
+		assertThat(name.getKeyProperty("value")).isEqualTo("bar");
 	}
 
 	@Test
 	public void twoPeriods() throws Exception {
 		ObjectName name = this.strategy.getObjectName(null,
 				"domain:type=MetricValue,name=foo.bar.spam");
-		assertEquals("domain", name.getDomain());
-		assertEquals("foo", name.getKeyProperty("type"));
-		assertEquals("Wrong name: " + name, "bar", name.getKeyProperty("name"));
-		assertEquals("Wrong name: " + name, "spam", name.getKeyProperty("value"));
+		assertThat(name.getDomain()).isEqualTo("domain");
+		assertThat(name.getKeyProperty("type")).isEqualTo("foo");
+		assertThat(name.getKeyProperty("name")).isEqualTo("bar");
+		assertThat(name.getKeyProperty("value")).isEqualTo("spam");
 	}
 
 	@Test
 	public void threePeriods() throws Exception {
 		ObjectName name = this.strategy.getObjectName(null,
 				"domain:type=MetricValue,name=foo.bar.spam.bucket");
-		assertEquals("domain", name.getDomain());
-		assertEquals("foo", name.getKeyProperty("type"));
-		assertEquals("Wrong name: " + name, "bar", name.getKeyProperty("name"));
-		assertEquals("Wrong name: " + name, "spam.bucket", name.getKeyProperty("value"));
+		assertThat(name.getDomain()).isEqualTo("domain");
+		assertThat(name.getKeyProperty("type")).isEqualTo("foo");
+		assertThat(name.getKeyProperty("name")).isEqualTo("bar");
+		assertThat(name.getKeyProperty("value")).isEqualTo("spam.bucket");
 	}
 
 }

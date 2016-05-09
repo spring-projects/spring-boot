@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,23 @@
 package org.springframework.boot.autoconfigure.sendgrid;
 
 import com.sendgrid.SendGrid;
-import org.apache.http.conn.routing.HttpRoutePlanner;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SendGridAutoConfiguration}.
  *
  * @author Maciej Walkowiak
+ * @author Patrick Bray
  */
 public class SendGridAutoConfigurationTests {
 
@@ -51,11 +47,18 @@ public class SendGridAutoConfigurationTests {
 	}
 
 	@Test
-	public void expectedSendGridBeanCreated() {
+	public void expectedSendGridBeanCreatedUsername() {
 		loadContext("spring.sendgrid.username:user", "spring.sendgrid.password:secret");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertEquals("user", ReflectionTestUtils.getField(sendGrid, "username"));
-		assertEquals("secret", ReflectionTestUtils.getField(sendGrid, "password"));
+		assertThat(sendGrid).extracting("username").containsExactly("user");
+		assertThat(sendGrid).extracting("password").containsExactly("secret");
+	}
+
+	@Test
+	public void expectedSendGridBeanCreatedApiKey() {
+		loadContext("spring.sendgrid.apiKey:SG.SECRET-API-KEY");
+		SendGrid sendGrid = this.context.getBean(SendGrid.class);
+		assertThat(sendGrid).extracting("password").containsExactly("SG.SECRET-API-KEY");
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -69,8 +72,8 @@ public class SendGridAutoConfigurationTests {
 		loadContext(ManualSendGridConfiguration.class, "spring.sendgrid.username:user",
 				"spring.sendgrid.password:secret");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertEquals("manual-user", ReflectionTestUtils.getField(sendGrid, "username"));
-		assertEquals("manual-secret", ReflectionTestUtils.getField(sendGrid, "password"));
+		assertThat(sendGrid).extracting("username").containsExactly("manual-user");
+		assertThat(sendGrid).extracting("password").containsExactly("manual-secret");
 	}
 
 	@Test
@@ -79,11 +82,8 @@ public class SendGridAutoConfigurationTests {
 				"spring.sendgrid.proxy.host:localhost",
 				"spring.sendgrid.proxy.port:5678");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		CloseableHttpClient client = (CloseableHttpClient) ReflectionTestUtils
-				.getField(sendGrid, "client");
-		HttpRoutePlanner routePlanner = (HttpRoutePlanner) ReflectionTestUtils
-				.getField(client, "routePlanner");
-		assertThat(routePlanner, instanceOf(DefaultProxyRoutePlanner.class));
+		assertThat(sendGrid).extracting("client").extracting("routePlanner")
+				.hasOnlyElementsOfType(DefaultProxyRoutePlanner.class);
 	}
 
 	private void loadContext(String... environment) {

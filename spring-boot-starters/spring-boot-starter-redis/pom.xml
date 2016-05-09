@@ -4,11 +4,13 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>1.3.5.BUILD-SNAPSHOT</version>
+		<version>1.4.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-redis</artifactId>
-	<name>Spring Boot Redis Starter</name>
-	<description>Spring Boot Redis Starter</description>
+	<name>spring-boot-starter-redis (DEPRECATED)</name>
+	<description>DEPRECATED (use spring-boot-starter-data-redis instead). 
+		Starter for using Redis key-value data store with Spring Data Redis and
+		the Jedis client</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

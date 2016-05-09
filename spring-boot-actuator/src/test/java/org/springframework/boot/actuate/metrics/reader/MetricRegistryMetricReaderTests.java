@@ -25,10 +25,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.Metric;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MetricRegistryMetricReader}.
@@ -52,9 +49,9 @@ public class MetricRegistryMetricReaderTests {
 			}
 
 		});
-		assertThat(this.metricReader.findOne("test"), is(nullValue()));
+		assertThat(this.metricReader.findOne("test")).isNull();
 		this.metricRegistry.remove("test");
-		assertThat(this.metricReader.findOne("test"), is(nullValue()));
+		assertThat(this.metricReader.findOne("test")).isNull();
 	}
 
 	@Test
@@ -69,9 +66,9 @@ public class MetricRegistryMetricReaderTests {
 
 		});
 		Metric<Integer> metric = (Metric<Integer>) this.metricReader.findOne("test");
-		assertThat(metric.getValue(), equalTo(Integer.valueOf(5)));
+		assertThat(metric.getValue()).isEqualTo(Integer.valueOf(5));
 		this.metricRegistry.remove("test");
-		assertThat(this.metricReader.findOne("test"), is(nullValue()));
+		assertThat(this.metricReader.findOne("test")).isNull();
 	}
 
 }

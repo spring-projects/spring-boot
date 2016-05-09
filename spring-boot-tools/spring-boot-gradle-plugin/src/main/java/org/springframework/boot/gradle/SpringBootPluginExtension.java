@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,11 @@ import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
+import groovy.lang.Closure;
+import org.gradle.api.Project;
+import org.gradle.api.plugins.JavaPlugin;
+
+import org.springframework.boot.gradle.buildinfo.BuildInfo;
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Layouts;
 
@@ -39,8 +44,11 @@ import org.springframework.boot.loader.tools.Layouts;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 public class SpringBootPluginExtension {
+
+	private final Project project;
 
 	/**
 	 * The main class that should be run. Instead of setting this explicitly you can use
@@ -127,6 +135,10 @@ public class SpringBootPluginExtension {
 	 * Properties that should be expanded in the embedded launch script.
 	 */
 	Map<String, String> embeddedLaunchScriptProperties;
+
+	public SpringBootPluginExtension(Project project) {
+		this.project = project;
+	}
 
 	/**
 	 * Convenience method for use in a custom task.
@@ -247,6 +259,21 @@ public class SpringBootPluginExtension {
 	public void setEmbeddedLaunchScriptProperties(
 			Map<String, String> embeddedLaunchScriptProperties) {
 		this.embeddedLaunchScriptProperties = embeddedLaunchScriptProperties;
+	}
+
+	public void buildInfo() {
+		this.buildInfo(null);
+	}
+
+	public void buildInfo(Closure<?> taskConfigurer) {
+		BuildInfo bootBuildInfo = this.project.getTasks().create("bootBuildInfo",
+				BuildInfo.class);
+		this.project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME)
+				.dependsOn(bootBuildInfo);
+		if (taskConfigurer != null) {
+			taskConfigurer.setDelegate(bootBuildInfo);
+			taskConfigurer.call();
+		}
 	}
 
 	/**

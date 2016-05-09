@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link LiquibaseServiceLocatorApplicationListener}.
@@ -55,7 +54,7 @@ public class LiquibaseServiceLocatorApplicationListenerTests {
 		Field field = ReflectionUtils.findField(ServiceLocator.class, "classResolver");
 		field.setAccessible(true);
 		Object resolver = field.get(instance);
-		assertThat(resolver, instanceOf(SpringPackageScanClassResolver.class));
+		assertThat(resolver).isInstanceOf(SpringPackageScanClassResolver.class);
 	}
 
 	@Configuration

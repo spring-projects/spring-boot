@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
+import java.io.File;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
@@ -89,6 +90,11 @@ public class LiquibaseProperties {
 	 * Change log parameters.
 	 */
 	private Map<String, String> parameters;
+
+	/**
+	 * File to which rollback SQL will be written when an update is performed.
+	 */
+	private File rollbackFile;
 
 	public String getChangeLog() {
 		return this.changeLog;
@@ -176,6 +182,14 @@ public class LiquibaseProperties {
 
 	public void setParameters(Map<String, String> parameters) {
 		this.parameters = parameters;
+	}
+
+	public File getRollbackFile() {
+		return this.rollbackFile;
+	}
+
+	public void setRollbackFile(File rollbackFile) {
+		this.rollbackFile = rollbackFile;
 	}
 
 }

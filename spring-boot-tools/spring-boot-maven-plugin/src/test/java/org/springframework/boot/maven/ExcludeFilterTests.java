@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -36,7 +35,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author David Turanski
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ExcludeFilterTests {
 
 	@Test
@@ -45,7 +44,7 @@ public class ExcludeFilterTests {
 				Arrays.asList(createExclude("com.foo", "bar")));
 		Set result = filter
 				.filter(Collections.singleton(createArtifact("com.foo", "bar")));
-		assertEquals("Should have been filtered", 0, result.size());
+		assertThat(result).isEmpty();
 	}
 
 	@Test
@@ -54,8 +53,8 @@ public class ExcludeFilterTests {
 				Arrays.asList(createExclude("com.foo", "bar")));
 		Artifact artifact = createArtifact("com.baz", "bar");
 		Set result = filter.filter(Collections.singleton(artifact));
-		assertEquals("Should not have been filtered", 1, result.size());
-		assertSame(artifact, result.iterator().next());
+		assertThat(result).hasSize(1);
+		assertThat(result.iterator().next()).isSameAs(artifact);
 	}
 
 	@Test
@@ -64,8 +63,8 @@ public class ExcludeFilterTests {
 				Arrays.asList(createExclude("com.foo", "bar")));
 		Artifact artifact = createArtifact("com.foo", "biz");
 		Set result = filter.filter(Collections.singleton(artifact));
-		assertEquals("Should not have been filtered", 1, result.size());
-		assertSame(artifact, result.iterator().next());
+		assertThat(result).hasSize(1);
+		assertThat(result.iterator().next()).isSameAs(artifact);
 	}
 
 	@Test
@@ -74,7 +73,7 @@ public class ExcludeFilterTests {
 				Arrays.asList(createExclude("com.foo", "bar", "jdk5")));
 		Set result = filter
 				.filter(Collections.singleton(createArtifact("com.foo", "bar", "jdk5")));
-		assertEquals("Should have been filtered", 0, result.size());
+		assertThat(result).isEmpty();
 	}
 
 	@Test
@@ -83,8 +82,8 @@ public class ExcludeFilterTests {
 				Arrays.asList(createExclude("com.foo", "bar", "jdk5")));
 		Artifact artifact = createArtifact("com.foo", "bar");
 		Set result = filter.filter(Collections.singleton(artifact));
-		assertEquals("Should not have been filtered", 1, result.size());
-		assertSame(artifact, result.iterator().next());
+		assertThat(result).hasSize(1);
+		assertThat(result.iterator().next()).isSameAs(artifact);
 	}
 
 	@Test
@@ -93,8 +92,8 @@ public class ExcludeFilterTests {
 				Arrays.asList(createExclude("com.foo", "bar", "jdk5")));
 		Artifact artifact = createArtifact("com.foo", "bar", "jdk6");
 		Set result = filter.filter(Collections.singleton(artifact));
-		assertEquals("Should not have been filtered", 1, result.size());
-		assertSame(artifact, result.iterator().next());
+		assertThat(result).hasSize(1);
+		assertThat(result.iterator().next()).isSameAs(artifact);
 	}
 
 	@Test
@@ -108,8 +107,8 @@ public class ExcludeFilterTests {
 		Artifact anotherAcme = createArtifact("org.acme", "another-app");
 		artifacts.add(anotherAcme);
 		Set result = filter.filter(artifacts);
-		assertEquals("Two dependencies should have been filtered", 1, result.size());
-		assertSame(anotherAcme, result.iterator().next());
+		assertThat(result).hasSize(1);
+		assertThat(result.iterator().next()).isSameAs(anotherAcme);
 	}
 
 	private Exclude createExclude(String groupId, String artifactId) {

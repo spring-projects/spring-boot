@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,7 +41,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JolokiaAutoConfiguration}.
@@ -74,8 +74,7 @@ public class JolokiaAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1,
-				this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
+		assertThat(this.context.getBeanNamesForType(JolokiaMvcEndpoint.class)).hasSize(1);
 	}
 
 	@Test
@@ -89,8 +88,7 @@ public class JolokiaAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1,
-				this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
+		assertThat(this.context.getBeanNamesForType(JolokiaMvcEndpoint.class)).hasSize(1);
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 		mockMvc.perform(MockMvcRequestBuilders.get("/foo/bar"))
 				.andExpect(MockMvcResultMatchers.content()
@@ -122,8 +120,7 @@ public class JolokiaAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(0,
-				this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
+		assertThat(this.context.getBeanNamesForType(JolokiaMvcEndpoint.class)).isEmpty();
 	}
 
 	private void assertEndpointEnabled(String... pairs) {
@@ -135,8 +132,7 @@ public class JolokiaAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1,
-				this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
+		assertThat(this.context.getBeanNamesForType(JolokiaMvcEndpoint.class)).hasSize(1);
 	}
 
 	@Configuration

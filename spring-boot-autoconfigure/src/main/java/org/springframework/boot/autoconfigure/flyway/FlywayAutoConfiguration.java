@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -44,7 +44,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -80,21 +79,27 @@ public class FlywayAutoConfiguration {
 	@EnableConfigurationProperties(FlywayProperties.class)
 	public static class FlywayConfiguration {
 
-		@Autowired
-		private FlywayProperties properties = new FlywayProperties();
+		private final FlywayProperties properties;
 
-		@Autowired
-		private ResourceLoader resourceLoader = new DefaultResourceLoader();
+		private final ResourceLoader resourceLoader;
 
-		@Autowired(required = false)
-		private DataSource dataSource;
+		private final DataSource dataSource;
 
-		@Autowired(required = false)
-		@FlywayDataSource
-		private DataSource flywayDataSource;
+		private final DataSource flywayDataSource;
 
-		@Autowired(required = false)
-		private FlywayMigrationStrategy migrationStrategy;
+		private final FlywayMigrationStrategy migrationStrategy;
+
+		public FlywayConfiguration(FlywayProperties properties,
+				ResourceLoader resourceLoader,
+				ObjectProvider<DataSource> dataSourceProvider,
+				@FlywayDataSource ObjectProvider<DataSource> flywayDataSourceProvider,
+				ObjectProvider<FlywayMigrationStrategy> migrationStrategyProvider) {
+			this.properties = properties;
+			this.resourceLoader = resourceLoader;
+			this.dataSource = dataSourceProvider.getIfUnique();
+			this.flywayDataSource = flywayDataSourceProvider.getIfAvailable();
+			this.migrationStrategy = migrationStrategyProvider.getIfAvailable();
+		}
 
 		@PostConstruct
 		public void checkLocationExists() {

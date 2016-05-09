@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ new Verify.JarArchiveVerification(f, Verify.SAMPLE_APP) {
 	@Override
 	protected void verifyZipEntries(Verify.ArchiveVerifier verifier) throws Exception {
 		super.verifyZipEntries(verifier)
-		verifier.assertHasUnpackEntry("lib/spring-core-")
-		verifier.assertHasNonUnpackEntry("lib/spring-context-")
+		verifier.assertHasUnpackEntry("BOOT-INF/lib/spring-core-")
+		verifier.assertHasNonUnpackEntry("BOOT-INF/lib/spring-context-")
 	}
 }.verify();

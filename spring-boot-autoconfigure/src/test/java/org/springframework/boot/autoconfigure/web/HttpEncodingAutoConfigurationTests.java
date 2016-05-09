@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.context.web.OrderedHiddenHttpMethodFilter;
-import org.springframework.boot.context.web.OrderedHttpPutFormContentFilter;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter;
+import org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,9 +37,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HttpEncodingAutoConfiguration}
@@ -100,16 +97,15 @@ public class HttpEncodingAutoConfigurationTests {
 		List<Filter> beans = new ArrayList<Filter>(
 				this.context.getBeansOfType(Filter.class).values());
 		AnnotationAwareOrderComparator.sort(beans);
-		assertThat(beans.get(0), instanceOf(CharacterEncodingFilter.class));
-		assertThat(beans.get(1), instanceOf(HiddenHttpMethodFilter.class));
+		assertThat(beans.get(0)).isInstanceOf(CharacterEncodingFilter.class);
+		assertThat(beans.get(1)).isInstanceOf(HiddenHttpMethodFilter.class);
 	}
 
 	private void assertCharacterEncodingFilter(CharacterEncodingFilter actual,
-			String encoding, boolean forceEncoding) {
-		DirectFieldAccessor accessor = new DirectFieldAccessor(actual);
-		assertEquals("Wrong encoding", encoding, accessor.getPropertyValue("encoding"));
-		assertEquals("Wrong forceEncoding flag", forceEncoding,
-				accessor.getPropertyValue("forceEncoding"));
+			String encoding, boolean forceRequestEncoding) {
+		assertThat(actual.getEncoding()).isEqualTo(encoding);
+		assertThat(actual.isForceRequestEncoding()).isEqualTo(forceRequestEncoding);
+		assertThat(actual.isForceResponseEncoding()).isFalse();
 	}
 
 	private void load(Class<?> config, String... environment) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,12 +33,7 @@ import org.springframework.beans.factory.support.SimpleBeanDefinitionRegistry;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 
-import static org.hamcrest.Matchers.arrayContaining;
-import static org.hamcrest.Matchers.arrayWithSize;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link WebServletHandler}.
@@ -65,14 +60,14 @@ public class WebServletHandlerTests {
 				.getBeanDefinition(DefaultConfigurationServlet.class.getName());
 		MutablePropertyValues propertyValues = servletRegistrationBean
 				.getPropertyValues();
-		assertThat(propertyValues.get("asyncSupported"), is((Object) false));
-		assertThat(((Map<String, String>) propertyValues.get("initParameters")).size(),
-				is(0));
-		assertThat((Integer) propertyValues.get("loadOnStartup"), is(-1));
-		assertThat(propertyValues.get("name"),
-				is((Object) DefaultConfigurationServlet.class.getName()));
-		assertThat((String[]) propertyValues.get("urlMappings"), is(arrayWithSize(0)));
-		assertThat(propertyValues.get("servlet"), is(equalTo((Object) scanned)));
+		assertThat(propertyValues.get("asyncSupported")).isEqualTo(false);
+		assertThat(((Map<String, String>) propertyValues.get("initParameters")))
+				.isEmpty();
+		assertThat((Integer) propertyValues.get("loadOnStartup")).isEqualTo(-1);
+		assertThat(propertyValues.get("name"))
+				.isEqualTo(DefaultConfigurationServlet.class.getName());
+		assertThat((String[]) propertyValues.get("urlMappings")).isEmpty();
+		assertThat(propertyValues.get("servlet")).isEqualTo(scanned);
 	}
 
 	@Test
@@ -85,7 +80,7 @@ public class WebServletHandlerTests {
 				.getBeanDefinition("custom");
 		MutablePropertyValues propertyValues = servletRegistrationBean
 				.getPropertyValues();
-		assertThat(propertyValues.get("name"), is((Object) "custom"));
+		assertThat(propertyValues.get("name")).isEqualTo("custom");
 	}
 
 	@Test
@@ -94,7 +89,7 @@ public class WebServletHandlerTests {
 				AsyncSupportedServlet.class);
 		MutablePropertyValues propertyValues = servletRegistrationBean
 				.getPropertyValues();
-		assertThat(propertyValues.get("asyncSupported"), is((Object) true));
+		assertThat(propertyValues.get("asyncSupported")).isEqualTo(true);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -104,10 +99,8 @@ public class WebServletHandlerTests {
 				InitParametersServlet.class);
 		MutablePropertyValues propertyValues = servletRegistrationBean
 				.getPropertyValues();
-		assertThat((Map<String, String>) propertyValues.get("initParameters"),
-				hasEntry("a", "alpha"));
-		assertThat((Map<String, String>) propertyValues.get("initParameters"),
-				hasEntry("b", "bravo"));
+		assertThat((Map<String, String>) propertyValues.get("initParameters"))
+				.containsEntry("a", "alpha").containsEntry("b", "bravo");
 	}
 
 	@Test
@@ -116,8 +109,8 @@ public class WebServletHandlerTests {
 				UrlPatternsServlet.class);
 		MutablePropertyValues propertyValues = servletRegistrationBean
 				.getPropertyValues();
-		assertThat((String[]) propertyValues.get("urlMappings"),
-				is(arrayContaining("alpha", "bravo")));
+		assertThat((String[]) propertyValues.get("urlMappings")).contains("alpha",
+				"bravo");
 	}
 
 	@Test
@@ -126,8 +119,8 @@ public class WebServletHandlerTests {
 				UrlPatternsFromValueServlet.class);
 		MutablePropertyValues propertyValues = servletRegistrationBean
 				.getPropertyValues();
-		assertThat((String[]) propertyValues.get("urlMappings"),
-				is(arrayContaining("alpha", "bravo")));
+		assertThat((String[]) propertyValues.get("urlMappings")).contains("alpha",
+				"bravo");
 	}
 
 	@Test

@@ -32,8 +32,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent;
 
-import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -97,8 +96,8 @@ public class AuthenticationAuditListenerTests {
 		ArgumentCaptor<AuditApplicationEvent> auditApplicationEvent = ArgumentCaptor
 				.forClass(AuditApplicationEvent.class);
 		verify(this.publisher).publishEvent(auditApplicationEvent.capture());
-		assertThat(auditApplicationEvent.getValue().getAuditEvent().getData(),
-				hasEntry("details", details));
+		assertThat(auditApplicationEvent.getValue().getAuditEvent().getData())
+				.containsEntry("details", details);
 	}
 
 }

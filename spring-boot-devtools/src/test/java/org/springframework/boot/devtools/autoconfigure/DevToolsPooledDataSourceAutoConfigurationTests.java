@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.devtools.test.FilteredClassPathRunner;
+import org.springframework.boot.testutil.FilteredClassPathRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.mockito.Mockito.times;

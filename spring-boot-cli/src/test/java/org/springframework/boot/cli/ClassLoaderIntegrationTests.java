@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ package org.springframework.boot.cli;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for CLI Classloader issues.
@@ -37,6 +36,7 @@ public class ClassLoaderIntegrationTests {
 		// CLI classes or dependencies should not be exposed to the app
 		String output = this.cli.run("classloader-test-app.groovy",
 				SpringCli.class.getName());
-		assertThat(output, containsString("HasClasses-false-true-false"));
+		assertThat(output).contains("HasClasses-false-true-false");
 	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfigurationTests;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.orm.jpa.EntityScan;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -42,7 +42,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MongoRepositoriesAutoConfiguration}.
@@ -66,7 +66,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 				"spring.datasource.initialize:false");
 		this.context.register(TestConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CountryRepository.class));
+		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
 	}
 
 	@Test
@@ -76,8 +76,8 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 				"spring.datasource.initialize:false");
 		this.context.register(MixedConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CountryRepository.class));
-		assertNotNull(this.context.getBean(CityRepository.class));
+		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
+		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 				"spring.datasource.initialize:false");
 		this.context.register(JpaConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CityRepository.class));
+		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 				"spring.datasource.initialize:false");
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CityRepository.class));
+		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 				"spring.data.mongodb.repositories.enabled:false");
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CityRepository.class));
+		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 	}
 
 	@Configuration

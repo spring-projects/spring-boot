@@ -109,7 +109,7 @@ public class DevToolsDataSourceAutoConfiguration {
 
 		private boolean dataSourceRequiresShutdown() {
 			return IN_MEMORY_DRIVER_CLASS_NAMES
-					.contains(this.dataSourceProperties.getDriverClassName())
+					.contains(this.dataSourceProperties.determineDriverClassName())
 					&& (!(this.dataSource instanceof EmbeddedDatabase));
 		}
 
@@ -142,7 +142,8 @@ public class DevToolsDataSourceAutoConfiguration {
 			if (dataSourceDefinition instanceof AnnotatedBeanDefinition
 					&& ((AnnotatedBeanDefinition) dataSourceDefinition)
 							.getFactoryMethodMetadata().getDeclaringClassName()
-							.startsWith(DataSourceAutoConfiguration.class.getName())) {
+							.startsWith(DataSourceAutoConfiguration.class.getPackage()
+									.getName() + ".DataSourceConfiguration$")) {
 				return ConditionOutcome.match("Found auto-configured DataSource");
 			}
 			return ConditionOutcome.noMatch("DataSource was not auto-configured");

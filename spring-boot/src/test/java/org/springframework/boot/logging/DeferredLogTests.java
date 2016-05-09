@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ package org.springframework.boot.logging;
 import org.apache.commons.logging.Log;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -43,32 +42,32 @@ public class DeferredLogTests {
 
 	@Test
 	public void isTraceEnabled() throws Exception {
-		assertThat(this.deferredLog.isTraceEnabled(), equalTo(true));
+		assertThat(this.deferredLog.isTraceEnabled()).isTrue();
 	}
 
 	@Test
 	public void isDebugEnabled() throws Exception {
-		assertThat(this.deferredLog.isDebugEnabled(), equalTo(true));
+		assertThat(this.deferredLog.isDebugEnabled()).isTrue();
 	}
 
 	@Test
 	public void isInfoEnabled() throws Exception {
-		assertThat(this.deferredLog.isInfoEnabled(), equalTo(true));
+		assertThat(this.deferredLog.isInfoEnabled()).isTrue();
 	}
 
 	@Test
 	public void isWarnEnabled() throws Exception {
-		assertThat(this.deferredLog.isWarnEnabled(), equalTo(true));
+		assertThat(this.deferredLog.isWarnEnabled()).isTrue();
 	}
 
 	@Test
 	public void isErrorEnabled() throws Exception {
-		assertThat(this.deferredLog.isErrorEnabled(), equalTo(true));
+		assertThat(this.deferredLog.isErrorEnabled()).isTrue();
 	}
 
 	@Test
 	public void isFatalEnabled() throws Exception {
-		assertThat(this.deferredLog.isFatalEnabled(), equalTo(true));
+		assertThat(this.deferredLog.isFatalEnabled()).isTrue();
 	}
 
 	@Test
