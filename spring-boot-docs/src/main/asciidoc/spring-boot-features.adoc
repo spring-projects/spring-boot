@@ -2485,6 +2485,7 @@ Here's the algorithm for choosing a specific implementation:
 
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa`
 '`starter POMs`' you will automatically get a dependency to `tomcat-jdbc`.
+If you choose to use HikariCP or Commons DBCP instead, you need to additionally exclude the dependency to `tomcat-jdbc`.
 
 NOTE: You can bypass that algorithm completely and specify the connection pool to use via
 the `spring.datasource.type` property. This is especially important if you are running
