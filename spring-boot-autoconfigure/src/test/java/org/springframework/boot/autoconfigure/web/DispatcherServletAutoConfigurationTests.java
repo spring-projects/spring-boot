@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
@@ -151,17 +152,19 @@ public class DispatcherServletAutoConfigurationTests {
 		this.context.register(ServerPropertiesAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.throw-exception-if-no-handler-found:true");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.dispatch-options-request:true");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.dispatch-trace-request:true");
+				"spring.mvc.throw-exception-if-no-handler-found:true",
+				"spring.mvc.dispatch-options-request:true",
+				"spring.mvc.dispatch-trace-request:true",
+				"spring.mvc.servlet.load-on-startup=5");
 		this.context.refresh();
 		DispatcherServlet bean = this.context.getBean(DispatcherServlet.class);
 		assertThat(bean).extracting("throwExceptionIfNoHandlerFound")
 				.containsExactly(true);
 		assertThat(bean).extracting("dispatchOptionsRequest").containsExactly(true);
 		assertThat(bean).extracting("dispatchTraceRequest").containsExactly(true);
+		assertThat(
+				new DirectFieldAccessor(this.context.getBean("dispatcherServletRegistration"))
+						.getPropertyValue("loadOnStartup")).isEqualTo(5);
 	}
 
 	@Configuration

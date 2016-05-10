@@ -84,6 +84,8 @@ public class WebMvcProperties {
 
 	private final Async async = new Async();
 
+	private final Servlet servlet = new Servlet();
+
 	private final View view = new View();
 
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
@@ -164,6 +166,10 @@ public class WebMvcProperties {
 		return this.async;
 	}
 
+	public Servlet getServlet() {
+		return this.servlet;
+	}
+
 	public View getView() {
 		return this.view;
 	}
@@ -183,6 +189,23 @@ public class WebMvcProperties {
 
 		public void setRequestTimeout(Long requestTimeout) {
 			this.requestTimeout = requestTimeout;
+		}
+
+	}
+
+	public static class Servlet {
+
+		/**
+		 * Load on startup priority of the dispatcher servlet.
+		 */
+		private int loadOnStartup = -1;
+
+		public int getLoadOnStartup() {
+			return this.loadOnStartup;
+		}
+
+		public void setLoadOnStartup(int loadOnStartup) {
+			this.loadOnStartup = loadOnStartup;
 		}
 
 	}

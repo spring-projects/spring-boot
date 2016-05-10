@@ -110,6 +110,8 @@ public class DispatcherServletAutoConfiguration {
 			ServletRegistrationBean registration = new ServletRegistrationBean(
 					dispatcherServlet(), this.server.getServletMapping());
 			registration.setName(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+			registration.setLoadOnStartup(
+					this.webMvcProperties.getServlet().getLoadOnStartup());
 			if (this.multipartConfig != null) {
 				registration.setMultipartConfig(this.multipartConfig);
 			}
