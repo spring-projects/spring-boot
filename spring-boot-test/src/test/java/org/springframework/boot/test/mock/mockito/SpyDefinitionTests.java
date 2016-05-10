@@ -40,7 +40,7 @@ public class SpyDefinitionTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void ClassToSpyMustNotBeNull() throws Exception {
+	public void classToSpyMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ClassToSpy must not be null");
 		new SpyDefinition(null, null, null);
