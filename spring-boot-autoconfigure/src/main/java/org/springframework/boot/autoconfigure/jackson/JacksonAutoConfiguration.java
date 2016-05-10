@@ -21,6 +21,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
@@ -41,6 +42,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
@@ -51,6 +53,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -85,11 +88,28 @@ public class JacksonAutoConfiguration {
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
 	static class JacksonObjectMapperConfiguration {
 
+		private final List<Jackson2ObjectMapperBuilderCustomizer> builderCustomizers;
+
+		JacksonObjectMapperConfiguration(
+				ObjectProvider<List<Jackson2ObjectMapperBuilderCustomizer>> builderCustomizersProvider) {
+			this.builderCustomizers = builderCustomizersProvider.getIfAvailable();
+		}
+
 		@Bean
 		@Primary
 		@ConditionalOnMissingBean(ObjectMapper.class)
 		public ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
+			customize(builder);
 			return builder.createXmlMapper(false).build();
+		}
+
+		private void customize(Jackson2ObjectMapperBuilder builder) {
+			if (this.builderCustomizers != null) {
+				AnnotationAwareOrderComparator.sort(this.builderCustomizers);
+				for (Jackson2ObjectMapperBuilderCustomizer customizer : this.builderCustomizers) {
+					customizer.customize(builder);
+				}
+			}
 		}
 
 	}
