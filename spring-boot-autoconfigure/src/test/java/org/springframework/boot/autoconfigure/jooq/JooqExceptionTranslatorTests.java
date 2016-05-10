@@ -39,7 +39,6 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-
 @RunWith(Parameterized.class)
 public class JooqExceptionTranslatorTests {
 

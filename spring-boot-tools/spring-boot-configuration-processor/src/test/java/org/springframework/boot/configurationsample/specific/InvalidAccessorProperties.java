@@ -27,6 +27,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 public class InvalidAccessorProperties {
 
 	private String name;
+
 	private boolean flag;
 
 	public void set(String name) {
