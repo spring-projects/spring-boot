@@ -143,7 +143,7 @@ public class TomcatEmbeddedServletContainerFactory
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainerFactory} with the specified
 	 * context path and port.
-	 * @param contextPath root the context path
+	 * @param contextPath the root context path
 	 * @param port the port to listen on
 	 */
 	public TomcatEmbeddedServletContainerFactory(String contextPath, int port) {

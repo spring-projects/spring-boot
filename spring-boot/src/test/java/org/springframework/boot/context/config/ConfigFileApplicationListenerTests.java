@@ -376,8 +376,6 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void loadPropertiesThenProfilePropertiesWithOverride() throws Exception {
 		this.environment.setActiveProfiles("other");
-		// TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-		// "spring.profiles.active:other");
 		this.initializer.setSearchNames("enableprofile");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("other.property");

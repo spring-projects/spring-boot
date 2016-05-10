@@ -148,7 +148,7 @@ public class JettyEmbeddedServletContainerFactory
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainerFactory} with the specified
 	 * context path and port.
-	 * @param contextPath root the context path
+	 * @param contextPath the root context path
 	 * @param port the port to listen on
 	 */
 	public JettyEmbeddedServletContainerFactory(String contextPath, int port) {
