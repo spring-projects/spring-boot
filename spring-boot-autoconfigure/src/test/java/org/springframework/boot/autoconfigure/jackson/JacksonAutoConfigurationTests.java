@@ -527,7 +527,8 @@ public class JacksonAutoConfigurationTests {
 		public Jackson2ObjectMapperBuilderCustomizer customDateFormat() {
 			return new Jackson2ObjectMapperBuilderCustomizer() {
 				@Override
-				public void customize(Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
+				public void customize(
+						Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
 					jackson2ObjectMapperBuilder.dateFormat(new MyDateFormat());
 				}
 			};
