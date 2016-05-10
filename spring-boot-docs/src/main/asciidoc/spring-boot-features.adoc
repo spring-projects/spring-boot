@@ -3297,7 +3297,7 @@ You can inject an auto-configured `ElasticsearchTemplate` or Elasticsearch `Clie
 instance as you would any other Spring Bean. By default the instance will embed a
 local in-memory server (a `Node` in ElasticSearch terms) and use the current working
 directory as the home directory for the server. In this setup, the first thing to do
-is to tell ElasticSearch were to store its files:
+is to tell ElasticSearch where to store its files:
 
 [source,properties,indent=0]
 ----
@@ -4401,7 +4401,7 @@ Spring Boot provides Spring Session auto-configuration for a wide range of store
 * Hazelcast
 * HashMap
 
-If Spring Session is available, you only need to chose the
+If Spring Session is available, you only need to choose the
 {sc-spring-boot-autoconfigure}/session/StoreType.{sc-ext}[`StoreType`] that you wish to
 use to store the sessions. For instance to use Redis as backend store, you'd configure
 your application as follows:

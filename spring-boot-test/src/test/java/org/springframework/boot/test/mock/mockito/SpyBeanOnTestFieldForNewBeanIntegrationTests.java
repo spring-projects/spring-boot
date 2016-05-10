@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test {@link SpyBean} on a test class field can be used to inject new mock instances.
+ * Test {@link SpyBean} on a test class field can be used to inject new spy instances.
  *
  * @author Phillip Webb
  */

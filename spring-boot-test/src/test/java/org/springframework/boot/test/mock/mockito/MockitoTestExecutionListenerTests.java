@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class MockitoInitializeTestExecutionListenerTests {
+public class MockitoTestExecutionListenerTests {
 
 	private MockitoTestExecutionListener listener = new MockitoTestExecutionListener();
 
