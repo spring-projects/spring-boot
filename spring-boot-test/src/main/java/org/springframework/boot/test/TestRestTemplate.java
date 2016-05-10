@@ -19,51 +19,46 @@ package org.springframework.boot.test;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Convenient subclass of {@link RestTemplate} that is suitable for integration
- * tests. They are fault tolerant, and optionally can carry Basic authentication
- * headers. If Apache Http Client 4.3.2 or better is available (recommended) it
- * will be used as the client, and by default configured to ignore cookies and
- * redirects.
+ * Convenient subclass of {@link RestTemplate} that is suitable for integration tests.
+ * They are fault tolerant, and optionally can carry Basic authentication headers. If
+ * Apache Http Client 4.3.2 or better is available (recommended) it will be used as the
+ * client, and by default configured to ignore cookies and redirects.
  *
  * @author Dave Syer
  * @author Phillip Webb
  * @deprecated as of 1.4 in favor of
- *             {@link org.springframework.boot.test.web.client.TestRestTemplate}
+ * {@link org.springframework.boot.test.web.client.TestRestTemplate}
  */
 @Deprecated
-public class TestRestTemplate extends org.springframework.boot.test.web.client.TestRestTemplate {
+public class TestRestTemplate
+		extends org.springframework.boot.test.web.client.TestRestTemplate {
 
 	/**
 	 * Create a new {@link TestRestTemplate} instance.
-	 *
-	 * @param httpClientOptions
-	 *            client options to use if the Apache HTTP Client is used
+	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
 	 */
 	public TestRestTemplate(HttpClientOption... httpClientOptions) {
-		super(options(httpClientOptions));
+		super(convertOptions(httpClientOptions));
 	}
 
 	/**
-	 * Create a new {@link TestRestTemplate} instance with the specified
-	 * credentials.
-	 *
-	 * @param username
-	 *            the username to use (or {@code null})
-	 * @param password
-	 *            the password (or {@code null})
-	 * @param httpClientOptions
-	 *            client options to use if the Apache HTTP Client is used
+	 * Create a new {@link TestRestTemplate} instance with the specified credentials.
+	 * @param username the username to use (or {@code null})
+	 * @param password the password (or {@code null})
+	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
 	 */
-	public TestRestTemplate(String username, String password, HttpClientOption... httpClientOptions) {
-		super(username, password, options(httpClientOptions));
+	public TestRestTemplate(String username, String password,
+			HttpClientOption... httpClientOptions) {
+		super(username, password, convertOptions(httpClientOptions));
 	}
 
-	private static org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption[] options(
-			HttpClientOption[] httpClientOptions) {
-		org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption[] result = new org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption[httpClientOptions.length];
-		for (int i = 0; i < httpClientOptions.length; i++) {
-			HttpClientOption httpClientOption = httpClientOptions[i];
-			result[i] = org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption.valueOf(httpClientOption.name());
+	private static org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption[] convertOptions(
+			HttpClientOption[] options) {
+		org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption[] result = new org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption[options.length];
+		for (int i = 0; i < options.length; i++) {
+			HttpClientOption option = options[i];
+			result[i] = org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption
+					.valueOf(option.name());
 		}
 		return result;
 	}

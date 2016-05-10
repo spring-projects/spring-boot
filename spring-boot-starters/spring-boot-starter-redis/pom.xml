@@ -8,9 +8,8 @@
 	</parent>
 	<artifactId>spring-boot-starter-redis</artifactId>
 	<name>spring-boot-starter-redis (DEPRECATED)</name>
-	<description>DEPRECATED (use spring-boot-starter-data-redis instead). 
-		Starter for using Redis key-value data store with Spring Data Redis and
-		the Jedis client</description>
+	<description>Starter for using Redis key-value data store with Spring Data Redis and
+		the Jedis client. Deprecated as of 1.4 in favor of spring-boot-starter-data-redis</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

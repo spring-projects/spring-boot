@@ -37,6 +37,11 @@ import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 
+/**
+ * Configurer for OAuth2 Single Sign On (SSO).
+ *
+ * @author Dave Syer
+ */
 class SsoSecurityConfigurer {
 
 	private ApplicationContext applicationContext;
@@ -46,7 +51,8 @@ class SsoSecurityConfigurer {
 	}
 
 	public void configure(HttpSecurity http) throws Exception {
-		OAuth2SsoProperties sso = this.applicationContext.getBean(OAuth2SsoProperties.class);
+		OAuth2SsoProperties sso = this.applicationContext
+				.getBean(OAuth2SsoProperties.class);
 		// Delay the processing of the filter until we know the
 		// SessionAuthenticationStrategy is available:
 		http.apply(new OAuth2ClientAuthenticationConfigurer(oauth2SsoFilter(sso)));

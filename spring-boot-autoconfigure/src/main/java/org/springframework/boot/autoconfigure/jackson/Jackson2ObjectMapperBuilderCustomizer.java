@@ -35,4 +35,5 @@ public interface Jackson2ObjectMapperBuilderCustomizer {
 	 * @param jacksonObjectMapperBuilder the jacksonObjectMapperBuilder to customize
 	 */
 	void customize(Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder);
+
 }

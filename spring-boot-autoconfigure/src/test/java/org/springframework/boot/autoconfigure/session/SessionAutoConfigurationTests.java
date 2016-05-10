@@ -159,7 +159,6 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 				.isEqualTo("foobar");
 	}
 
-
 	@Configuration
 	static class SessionRepositoryConfiguration {
 

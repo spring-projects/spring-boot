@@ -54,8 +54,7 @@ public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	 * Constructor provided for backward compatibility.
 	 * @param info a map (which is added to the info)
 	 * @param infoContributors the info contributors to use
-	 *
-	 * @deprecated in favour of the constructor without the map
+	 * @deprecated as of 1.4 in favor of the constructor without the map
 	 */
 	@Deprecated
 	public InfoEndpoint(Map<String, Object> info, InfoContributor... infoContributors) {

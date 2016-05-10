@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
+@Deprecated
 public class InfoEndpointCompatibilityTests {
 
 	@Test
@@ -55,4 +56,5 @@ public class InfoEndpointCompatibilityTests {
 
 		};
 	}
+
 }

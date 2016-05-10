@@ -21,7 +21,7 @@
 		<!-- Provided -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
+			<artifactId>spring-boot-actuator</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

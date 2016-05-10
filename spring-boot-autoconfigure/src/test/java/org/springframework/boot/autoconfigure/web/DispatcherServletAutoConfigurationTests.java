@@ -162,8 +162,8 @@ public class DispatcherServletAutoConfigurationTests {
 				.containsExactly(true);
 		assertThat(bean).extracting("dispatchOptionsRequest").containsExactly(true);
 		assertThat(bean).extracting("dispatchTraceRequest").containsExactly(true);
-		assertThat(
-				new DirectFieldAccessor(this.context.getBean("dispatcherServletRegistration"))
+		assertThat(new DirectFieldAccessor(
+				this.context.getBean("dispatcherServletRegistration"))
 						.getPropertyValue("loadOnStartup")).isEqualTo(5);
 	}
 

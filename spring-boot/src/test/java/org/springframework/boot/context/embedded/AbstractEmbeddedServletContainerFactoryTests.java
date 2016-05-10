@@ -1065,7 +1065,6 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}
 	}
 
-
 	private class TestGzipInputStreamFactory implements InputStreamFactory {
 
 		private final AtomicBoolean requested = new AtomicBoolean(false);
