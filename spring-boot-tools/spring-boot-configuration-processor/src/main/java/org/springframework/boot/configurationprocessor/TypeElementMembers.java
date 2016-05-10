@@ -118,15 +118,14 @@ class TypeElementMembers {
 
 	private boolean isSetter(ExecutableElement method) {
 		final String name = method.getSimpleName().toString();
-		return (name.startsWith("set") && name.length() > 3)
-				&& method.getParameters().size() == 1
-				&& (isSetterReturnType(method));
+		return (name.startsWith("set") && name.length() > 3
+				&& method.getParameters().size() == 1 && isSetterReturnType(method));
 	}
 
 	private boolean isSetterReturnType(ExecutableElement method) {
-		return (TypeKind.VOID == method.getReturnType().getKind()
-				|| this.env.getTypeUtils().isSameType(
-						method.getEnclosingElement().asType(), method.getReturnType()));
+		TypeMirror returnType = method.getReturnType();
+		return (TypeKind.VOID == returnType.getKind() || this.env.getTypeUtils()
+				.isSameType(method.getEnclosingElement().asType(), returnType));
 	}
 
 	private String getAccessorName(String methodName) {
