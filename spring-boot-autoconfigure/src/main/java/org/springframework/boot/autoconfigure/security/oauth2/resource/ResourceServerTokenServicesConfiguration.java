@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -113,7 +112,9 @@ public class ResourceServerTokenServicesConfiguration {
 			this.oauth2ClientContext = oauth2ClientContextProvider.getIfAvailable();
 		}
 
-		@Bean(name = "userInfoRestTemplate")
+		@Bean
+		@UserInfo
+		// TODO: make this conditional on there not being another one provided by user
 		public OAuth2RestTemplate userInfoRestTemplate() {
 			OAuth2RestTemplate template = getTemplate(
 					this.details == null ? DEFAULT_RESOURCE_DETAILS : this.details);
@@ -179,7 +180,7 @@ public class ResourceServerTokenServicesConfiguration {
 
 			public SocialTokenServicesConfiguration(ResourceServerProperties sso,
 					ObjectProvider<OAuth2ConnectionFactory<?>> connectionFactoryProvider,
-					@Qualifier("userInfoRestTemplate") ObjectProvider<OAuth2RestOperations> restTemplateProvider,
+					@UserInfo ObjectProvider<OAuth2RestOperations> restTemplateProvider,
 					ObjectProvider<AuthoritiesExtractor> authoritiesExtractorProvider) {
 				this.sso = sso;
 				this.connectionFactory = connectionFactoryProvider.getIfAvailable();
@@ -223,7 +224,7 @@ public class ResourceServerTokenServicesConfiguration {
 			private final AuthoritiesExtractor authoritiesExtractor;
 
 			public UserInfoTokenServicesConfiguration(ResourceServerProperties sso,
-					@Qualifier("userInfoRestTemplate") ObjectProvider<OAuth2RestOperations> restTemplateProvider,
+					@UserInfo ObjectProvider<OAuth2RestOperations> restTemplateProvider,
 					ObjectProvider<AuthoritiesExtractor> authoritiesExtractorProvider) {
 				this.sso = sso;
 				this.restTemplate = restTemplateProvider.getIfAvailable();

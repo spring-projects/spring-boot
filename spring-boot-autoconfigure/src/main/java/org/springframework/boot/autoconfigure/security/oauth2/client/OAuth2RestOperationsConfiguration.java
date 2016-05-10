@@ -43,10 +43,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
-import org.springframework.security.oauth2.client.OAuth2ClientContext;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
-import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.client.token.DefaultAccessTokenRequest;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
@@ -68,15 +65,6 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass(EnableOAuth2Client.class)
 @Conditional(OAuth2ClientIdCondition.class)
 public class OAuth2RestOperationsConfiguration {
-
-	@Bean
-	@Primary
-	public OAuth2RestTemplate oauth2RestTemplate(OAuth2ClientContext oauth2ClientContext,
-			OAuth2ProtectedResourceDetails details) {
-		OAuth2RestTemplate template = new OAuth2RestTemplate(details,
-				oauth2ClientContext);
-		return template;
-	}
 
 	@Configuration
 	@ConditionalOnNotWebApplication
