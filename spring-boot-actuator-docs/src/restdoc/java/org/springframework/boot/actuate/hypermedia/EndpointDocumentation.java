@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.hypermedia;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +49,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultHandler;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -66,6 +68,8 @@ public class EndpointDocumentation {
 
 	static final String RESTDOCS_OUTPUT_DIR = "target/generated-snippets";
 
+	static final File LOG_FILE = new File("target/logs/spring.log");
+
 	@Autowired
 	private MvcEndpoints mvcEndpoints;
 
@@ -77,7 +81,7 @@ public class EndpointDocumentation {
 
 	@BeforeClass
 	public static void clearLog() {
-		new File("target/logs/spring.log").delete();
+		LOG_FILE.delete();
 	}
 
 	@Test
@@ -88,6 +92,8 @@ public class EndpointDocumentation {
 
 	@Test
 	public void partialLogfile() throws Exception {
+		FileCopyUtils.copy(getClass().getResourceAsStream("log.txt"),
+				new FileOutputStream(LOG_FILE));
 		this.mockMvc
 				.perform(get("/logfile").accept(MediaType.TEXT_PLAIN)
 						.header(HttpHeaders.RANGE, "bytes=0-1024"))
