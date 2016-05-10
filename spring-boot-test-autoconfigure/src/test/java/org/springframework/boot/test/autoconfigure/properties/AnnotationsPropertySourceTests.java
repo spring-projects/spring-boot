@@ -164,6 +164,11 @@ public class AnnotationsPropertySourceTests {
 		assertThat(source.getProperty("aliasing.value")).isEqualTo("baz");
 	}
 
+	@Test
+	public void selfAnnotatingAnnotationDoesNotCauseStackOverflow() {
+		new AnnotationsPropertySource(PropertyMappedWithSelfAnnotatingAnnotation.class);
+	}
+
 	static class NoAnnotation {
 
 	}
@@ -327,7 +332,9 @@ public class AnnotationsPropertySourceTests {
 	static @interface AttributeWithAliasAnnotation {
 
 		@AliasFor(annotation = AliasedAttributeAnnotation.class, attribute = "value")
-		String value() default "foo";
+		String value()
+
+		default "foo";
 
 		String someOtherAttribute() default "shouldNotBeMapped";
 
@@ -338,6 +345,17 @@ public class AnnotationsPropertySourceTests {
 	static @interface AliasedAttributeAnnotation {
 
 		String value() default "bar";
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@SelfAnnotating
+	static @interface SelfAnnotating {
+
+	}
+
+	@SelfAnnotating
+	static class PropertyMappedWithSelfAnnotatingAnnotation {
 
 	}
 

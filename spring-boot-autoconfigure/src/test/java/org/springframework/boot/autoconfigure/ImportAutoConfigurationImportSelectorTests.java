@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
+import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -41,6 +42,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * Tests for {@link ImportAutoConfigurationImportSelector}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ImportAutoConfigurationImportSelectorTests {
@@ -87,6 +89,15 @@ public class ImportAutoConfigurationImportSelectorTests {
 				ThymeleafAutoConfiguration.class.getName());
 	}
 
+	@Test
+	public void selfAnnotatingAnnotationDoesNotCauseStackOverflow() throws IOException {
+		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
+				.getMetadataReader(ImportWithSelfAnnotatingAnnotation.class.getName())
+				.getAnnotationMetadata();
+		String[] imports = this.importSelector.selectImports(annotationMetadata);
+		assertThat(imports).containsOnly(ThymeleafAutoConfiguration.class.getName());
+	}
+
 	@ImportAutoConfiguration(FreeMarkerAutoConfiguration.class)
 	static class ImportFreemarker {
 
@@ -95,6 +106,11 @@ public class ImportAutoConfigurationImportSelectorTests {
 	@ImportOne
 	@ImportTwo
 	static class MultipleImports {
+
+	}
+
+	@SelfAnnotating
+	static class ImportWithSelfAnnotatingAnnotation {
 
 	}
 
@@ -107,6 +123,13 @@ public class ImportAutoConfigurationImportSelectorTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@ImportAutoConfiguration(ThymeleafAutoConfiguration.class)
 	static @interface ImportTwo {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@ImportAutoConfiguration(ThymeleafAutoConfiguration.class)
+	@SelfAnnotating
+	static @interface SelfAnnotating {
 
 	}
 

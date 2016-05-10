@@ -20,9 +20,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,13 +60,13 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 
 	private Map<String, Object> getProperties(Class<?> source) {
 		Map<String, Object> properties = new LinkedHashMap<String, Object>();
-		collectProperties(source, source, properties);
+		collectProperties(source, source, properties, new HashSet<Class<?>>());
 		return Collections.unmodifiableMap(properties);
 	}
 
 	private void collectProperties(Class<?> root, Class<?> source,
-			Map<String, Object> properties) {
-		if (source != null) {
+			Map<String, Object> properties, Set<Class<?>> seen) {
+		if (source != null && seen.add(source)) {
 			for (Annotation annotation : getMergedAnnotations(root, source)) {
 				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
 					PropertyMapping typeMapping = annotation.annotationType()
@@ -73,10 +75,11 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 							.getDeclaredMethods()) {
 						collectProperties(annotation, attribute, typeMapping, properties);
 					}
-					collectProperties(root, annotation.annotationType(), properties);
+					collectProperties(root, annotation.annotationType(), properties,
+							seen);
 				}
 			}
-			collectProperties(root, source.getSuperclass(), properties);
+			collectProperties(root, source.getSuperclass(), properties, seen);
 		}
 	}
 

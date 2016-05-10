@@ -20,6 +20,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +35,7 @@ import org.springframework.util.ClassUtils;
  * {@link ImportAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class ImportAutoConfigurationImportSelector
 		extends EnableAutoConfigurationImportSelector {
@@ -66,29 +68,30 @@ class ImportAutoConfigurationImportSelector
 
 	private List<String> getCandidateConfigurations(Class<?> source) {
 		Set<String> candidates = new LinkedHashSet<String>();
-		collectCandidateConfigurations(source, candidates);
+		collectCandidateConfigurations(source, candidates, new HashSet<Class<?>>());
 		return new ArrayList<String>(candidates);
 	}
 
-	private void collectCandidateConfigurations(Class<?> source, Set<String> candidates) {
-		if (source != null) {
+	private void collectCandidateConfigurations(Class<?> source, Set<String> candidates,
+			Set<Class<?>> seen) {
+		if (source != null && seen.add(source)) {
 			for (Annotation annotation : source.getDeclaredAnnotations()) {
 				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
-					collectCandidateConfigurations(annotation, candidates);
+					collectCandidateConfigurations(annotation, candidates, seen);
 				}
 			}
-			collectCandidateConfigurations(source.getSuperclass(), candidates);
+			collectCandidateConfigurations(source.getSuperclass(), candidates, seen);
 		}
 	}
 
 	private void collectCandidateConfigurations(Annotation annotation,
-			Set<String> candidates) {
+			Set<String> candidates, Set<Class<?>> seen) {
 		if (ANNOTATION_NAMES.contains(annotation.annotationType().getName())) {
 			String[] value = (String[]) AnnotationUtils
 					.getAnnotationAttributes(annotation, true).get("value");
 			candidates.addAll(Arrays.asList(value));
 		}
-		collectCandidateConfigurations(annotation.annotationType(), candidates);
+		collectCandidateConfigurations(annotation.annotationType(), candidates, seen);
 	}
 
 	@Override
