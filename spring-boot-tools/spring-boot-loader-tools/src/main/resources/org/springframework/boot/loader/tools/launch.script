@@ -37,7 +37,7 @@ while [[ -L "$jarfile" ]]; do
   cd "$(dirname "$jarfile")" || exit 1
   jarfile=$(pwd)/$(basename "$jarfile")
 done
-jarfolder="$(dirname "$jarfile")"
+jarfolder="$( (cd $(dirname "$jarfile") && pwd -P) )"
 cd "$WORKING_DIR" || exit 1
 
 # Source any config file
