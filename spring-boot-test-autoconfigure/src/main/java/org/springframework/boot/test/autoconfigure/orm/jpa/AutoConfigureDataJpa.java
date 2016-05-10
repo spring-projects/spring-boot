@@ -24,8 +24,10 @@ import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 
@@ -35,6 +37,7 @@ import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfigu
  * this annotation directly.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.4.0
  * @see DataJpaTest
  */
@@ -44,7 +47,8 @@ import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfigu
 @ImportAutoConfiguration({ HibernateJpaAutoConfiguration.class,
 		JpaRepositoriesAutoConfiguration.class, TransactionAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class,
-		DataSourceAutoConfiguration.class })
+		DataSourceAutoConfiguration.class, FlywayAutoConfiguration.class,
+		LiquibaseAutoConfiguration.class })
 public @interface AutoConfigureDataJpa {
 
 }

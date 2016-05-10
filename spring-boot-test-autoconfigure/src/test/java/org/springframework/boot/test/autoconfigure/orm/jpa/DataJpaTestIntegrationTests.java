@@ -25,6 +25,10 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -34,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link DataJpaTest}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -90,6 +95,24 @@ public class DataJpaTestIntegrationTests {
 	public void didNotInjectExampleComponent() throws Exception {
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.applicationContext.getBean(ExampleComponent.class);
+	}
+
+	@Test
+	public void flywayAutoConfigurationWasImported() {
+		ConditionEvaluationReport report = ConditionEvaluationReport
+				.get((ConfigurableListableBeanFactory) this.applicationContext
+						.getAutowireCapableBeanFactory());
+		assertThat(report.getConditionAndOutcomesBySource().keySet())
+				.contains(FlywayAutoConfiguration.class.getName());
+	}
+
+	@Test
+	public void liquibaseAutoConfigurationWasImported() {
+		ConditionEvaluationReport report = ConditionEvaluationReport
+				.get((ConfigurableListableBeanFactory) this.applicationContext
+						.getAutowireCapableBeanFactory());
+		assertThat(report.getConditionAndOutcomesBySource().keySet())
+				.contains(LiquibaseAutoConfiguration.class.getName());
 	}
 
 }
