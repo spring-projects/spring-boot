@@ -52,6 +52,7 @@ import org.springframework.web.servlet.View;
  * </ul>
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.4.0
  */
 public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
@@ -172,6 +173,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 		@Override
 		public void render(Map<String, ?> model, HttpServletRequest request,
 				HttpServletResponse response) throws Exception {
+			response.setContentType(getContentType());
 			FileCopyUtils.copy(this.resource.getInputStream(),
 					response.getOutputStream());
 		}

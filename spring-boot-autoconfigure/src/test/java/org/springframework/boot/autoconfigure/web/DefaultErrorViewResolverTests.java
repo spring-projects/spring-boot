@@ -37,6 +37,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,6 +54,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Tests for {@link DefaultErrorViewResolver}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class DefaultErrorViewResolverTests {
 
@@ -145,7 +147,9 @@ public class DefaultErrorViewResolverTests {
 		setResourceLocation("/exact");
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
 				HttpStatus.NOT_FOUND, this.model);
-		assertThat(render(resolved)).isEqualTo("exact/404");
+		MockHttpServletResponse response = render(resolved);
+		assertThat(response.getContentAsString().trim()).isEqualTo("exact/404");
+		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
 	}
 
 	@Test
@@ -153,7 +157,9 @@ public class DefaultErrorViewResolverTests {
 		setResourceLocation("/4xx");
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
 				HttpStatus.NOT_FOUND, this.model);
-		assertThat(render(resolved)).isEqualTo("4xx/4xx");
+		MockHttpServletResponse response = render(resolved);
+		assertThat(response.getContentAsString().trim()).isEqualTo("4xx/4xx");
+		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
 	}
 
 	@Test
@@ -161,7 +167,9 @@ public class DefaultErrorViewResolverTests {
 		setResourceLocation("/5xx");
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
 				HttpStatus.INTERNAL_SERVER_ERROR, this.model);
-		assertThat(render(resolved)).isEqualTo("5xx/5xx");
+		MockHttpServletResponse response = render(resolved);
+		assertThat(response.getContentAsString().trim()).isEqualTo("5xx/5xx");
+		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
 	}
 
 	@Test
@@ -185,7 +193,9 @@ public class DefaultErrorViewResolverTests {
 				any(ResourceLoader.class))).willReturn(true);
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
 				HttpStatus.NOT_FOUND, this.model);
-		assertThat(render(resolved)).isEqualTo("exact/404");
+		MockHttpServletResponse response = render(resolved);
+		assertThat(response.getContentAsString().trim()).isEqualTo("exact/404");
+		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
 	}
 
 	@Test
@@ -205,10 +215,10 @@ public class DefaultErrorViewResolverTests {
 				"classpath:" + packageName.replace(".", "/") + path + "/" });
 	}
 
-	private String render(ModelAndView modelAndView) throws Exception {
+	private MockHttpServletResponse render(ModelAndView modelAndView) throws Exception {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		modelAndView.getView().render(this.model, this.request, response);
-		return response.getContentAsString().trim();
+		return response;
 	}
 
 }
