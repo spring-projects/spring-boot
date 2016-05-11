@@ -42,13 +42,13 @@ public class MockDefinitionTests {
 	public void ClassToMockMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ClassToMock must not be null");
-		new MockDefinition(null, null, null, null, false, null);
+		new MockDefinition(null, null, null, null, false, null, true);
 	}
 
 	@Test
 	public void createWithDefaults() throws Exception {
 		MockDefinition definition = new MockDefinition(null, ExampleService.class, null,
-				null, false, null);
+				null, false, null, true);
 		assertThat(definition.getName()).isNull();
 		assertThat(definition.getClassToMock()).isEqualTo(ExampleService.class);
 		assertThat(definition.getExtraInterfaces()).isEmpty();
@@ -61,7 +61,7 @@ public class MockDefinitionTests {
 	public void createExplicit() throws Exception {
 		MockDefinition definition = new MockDefinition("name", ExampleService.class,
 				new Class<?>[] { ExampleExtraInterface.class },
-				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE);
+				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE, false);
 		assertThat(definition.getName()).isEqualTo("name");
 		assertThat(definition.getClassToMock()).isEqualTo(ExampleService.class);
 		assertThat(definition.getExtraInterfaces())
@@ -69,13 +69,14 @@ public class MockDefinitionTests {
 		assertThat(definition.getAnswer()).isEqualTo(Answers.RETURNS_SMART_NULLS);
 		assertThat(definition.isSerializable()).isTrue();
 		assertThat(definition.getReset()).isEqualTo(MockReset.BEFORE);
+		assertThat(definition.isProxyTargetAware()).isFalse();
 	}
 
 	@Test
 	public void createMock() throws Exception {
 		MockDefinition definition = new MockDefinition("name", ExampleService.class,
 				new Class<?>[] { ExampleExtraInterface.class },
-				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE);
+				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE, true);
 		ExampleService mock = definition.createMock();
 		MockCreationSettings<?> settings = new MockUtil().getMockSettings(mock);
 		assertThat(mock).isInstanceOf(ExampleService.class);
@@ -85,7 +86,6 @@ public class MockDefinitionTests {
 				.isEqualTo(Answers.RETURNS_SMART_NULLS.get());
 		assertThat(settings.isSerializable()).isTrue();
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.BEFORE);
-
 	}
 
 }

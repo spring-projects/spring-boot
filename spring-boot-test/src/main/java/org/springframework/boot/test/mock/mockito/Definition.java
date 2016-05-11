@@ -32,9 +32,12 @@ abstract class Definition {
 
 	private final MockReset reset;
 
-	Definition(String name, MockReset reset) {
+	private final boolean proxyTargetAware;
+
+	Definition(String name, MockReset reset, boolean proxyTargetAware) {
 		this.name = name;
 		this.reset = (reset != null ? reset : MockReset.AFTER);
+		this.proxyTargetAware = proxyTargetAware;
 	}
 
 	/**
@@ -53,11 +56,21 @@ abstract class Definition {
 		return this.reset;
 	}
 
+	/**
+	 * Return if AOP advised beans should be proxy target aware.
+	 * @return if proxy target aware
+	 */
+	public boolean isProxyTargetAware() {
+		return this.proxyTargetAware;
+	}
+
 	@Override
 	public int hashCode() {
 		int result = 1;
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.name);
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.reset);
+		result = MULTIPLIER * result
+				+ ObjectUtils.nullSafeHashCode(this.proxyTargetAware);
 		return result;
 	}
 
@@ -73,6 +86,8 @@ abstract class Definition {
 		boolean result = true;
 		result &= ObjectUtils.nullSafeEquals(this.name, other.name);
 		result &= ObjectUtils.nullSafeEquals(this.reset, other.reset);
+		result &= ObjectUtils.nullSafeEquals(this.proxyTargetAware,
+				other.proxyTargetAware);
 		return result;
 	}
 

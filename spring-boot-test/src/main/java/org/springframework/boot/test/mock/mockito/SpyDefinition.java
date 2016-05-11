@@ -38,8 +38,9 @@ class SpyDefinition extends Definition {
 
 	private final Class<?> classToSpy;
 
-	SpyDefinition(String name, Class<?> classToSpy, MockReset reset) {
-		super(name, reset);
+	SpyDefinition(String name, Class<?> classToSpy, MockReset reset,
+			boolean proxyTargetAware) {
+		super(name, reset, proxyTargetAware);
 		Assert.notNull(classToSpy, "ClassToSpy must not be null");
 		this.classToSpy = classToSpy;
 

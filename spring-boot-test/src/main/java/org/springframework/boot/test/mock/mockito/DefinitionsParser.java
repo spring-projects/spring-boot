@@ -92,7 +92,8 @@ class DefinitionsParser {
 		for (Class<?> classToMock : classesToMock) {
 			MockDefinition definition = new MockDefinition(annotation.name(), classToMock,
 					annotation.extraInterfaces(), annotation.answer(),
-					annotation.serializable(), annotation.reset());
+					annotation.serializable(), annotation.reset(),
+					annotation.proxyTargetAware());
 			addDefinition(element, definition, "mock");
 		}
 	}
@@ -107,7 +108,7 @@ class DefinitionsParser {
 		}
 		for (Class<?> classToSpy : classesToSpy) {
 			SpyDefinition definition = new SpyDefinition(annotation.name(), classToSpy,
-					annotation.reset());
+					annotation.reset(), annotation.proxyTargetAware());
 			addDefinition(element, definition, "spy");
 		}
 	}

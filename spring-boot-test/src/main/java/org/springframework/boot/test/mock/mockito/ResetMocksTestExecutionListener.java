@@ -50,7 +50,6 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 		if (applicationContext instanceof ConfigurableApplicationContext) {
 			resetMocks((ConfigurableApplicationContext) applicationContext, reset);
 		}
-
 	}
 
 	private void resetMocks(ConfigurableApplicationContext applicationContext,
@@ -59,7 +58,9 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 		String[] names = beanFactory.getBeanDefinitionNames();
 		for (String name : names) {
 			BeanDefinition definition = beanFactory.getBeanDefinition(name);
-			if (AbstractBeanDefinition.SCOPE_DEFAULT.equals(definition.getScope())) {
+			String scope = definition.getScope();
+			if (AbstractBeanDefinition.SCOPE_DEFAULT.equals(scope)
+					|| BeanDefinition.SCOPE_SINGLETON.equals(scope)) {
 				Object bean = beanFactory.getBean(name);
 				if (reset.equals(MockReset.get(bean))) {
 					Mockito.reset(bean);
