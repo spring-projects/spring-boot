@@ -235,6 +235,8 @@ public class JpaProperties {
 
 		private static final String DEFAULT_PHYSICAL_STRATEGY = "org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy";
 
+		private static final String DEFAULT_IMPLICIT_STRATEGY = "org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy";
+
 		/**
 		 * Hibernate 5 implicit naming strategy fully qualified name.
 		 */
@@ -288,7 +290,8 @@ public class JpaProperties {
 
 		private void applyHibernate5NamingStrategy(Map<String, String> properties) {
 			applyHibernate5NamingStrategy(properties,
-					"hibernate.implicit_naming_strategy", this.implicitStrategy, null);
+					"hibernate.implicit_naming_strategy", this.implicitStrategy,
+					DEFAULT_IMPLICIT_STRATEGY);
 			applyHibernate5NamingStrategy(properties,
 					"hibernate.physical_naming_strategy", this.physicalStrategy,
 					DEFAULT_PHYSICAL_STRATEGY);

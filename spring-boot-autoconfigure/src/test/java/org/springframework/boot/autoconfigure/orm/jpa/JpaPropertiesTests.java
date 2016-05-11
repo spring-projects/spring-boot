@@ -26,6 +26,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -98,11 +99,14 @@ public class JpaPropertiesTests {
 		JpaProperties properties = load(HibernateVersion.V5);
 		Map<String, String> hibernateProperties = properties
 				.getHibernateProperties(mockStandaloneDataSource());
-		assertThat(hibernateProperties).doesNotContainKeys(
-				"hibernate.ejb.naming_strategy", "hibernate.implicit_naming_strategy");
+		assertThat(hibernateProperties)
+				.doesNotContainKeys("hibernate.ejb.naming_strategy");
 		assertThat(hibernateProperties).containsEntry(
 				"hibernate.physical_naming_strategy",
 				SpringPhysicalNamingStrategy.class.getName());
+		assertThat(hibernateProperties).containsEntry(
+				"hibernate.implicit_naming_strategy",
+				SpringImplicitNamingStrategy.class.getName());
 	}
 
 	@Test
