@@ -4900,9 +4900,9 @@ database you can use the `@AutoConfigureTestDatabase` annotation:
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs]]
 ==== Auto-configured Spring REST Docs tests
-Test `@AutoConfigureRestDocs` annotation can be used if you want to use Spring REST Docs
+`@AutoConfigureRestDocs` annotation can be used if you want to use Spring REST Docs
 in your tests. It will automatically configure `MockMvc` to use Spring REST Docs and
-removes the need for Spring REST Docs' JUnit rule.
+remove the need for Spring REST Docs' JUnit rule.
 
 [source,java,indent=0]
 ----
@@ -4964,7 +4964,7 @@ automatically generate the default snippets:
 [source,java,indent=0]
 ----
 	@TestConfiguration
-	static class ResultHandlerConfiguration{
+	static class ResultHandlerConfiguration {
 
 		@Bean
 		public RestDocumentationResultHandler restDocumentation() {
