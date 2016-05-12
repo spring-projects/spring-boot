@@ -45,8 +45,7 @@ class ContentContainingCondition extends Condition<File> {
 		Reader reader = null;
 		try {
 			reader = new FileReader(value);
-			String content = FileCopyUtils.copyToString(new FileReader(value));
-			System.out.println(content);
+			String content = FileCopyUtils.copyToString(reader);
 			return content.contains(this.toContain);
 		}
 		catch (IOException ex) {
