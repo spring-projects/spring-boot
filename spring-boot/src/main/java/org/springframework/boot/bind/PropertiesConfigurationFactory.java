@@ -231,7 +231,7 @@ public class PropertiesConfigurationFactory<T>
 		try {
 			if (this.logger.isTraceEnabled()) {
 				if (this.properties != null) {
-					this.logger.trace(String.format("Properties:%n%s" + this.properties));
+					this.logger.trace(String.format("Properties:%n%s", this.properties));
 				}
 				else {
 					this.logger.trace("Property Sources: " + this.propertySources);
