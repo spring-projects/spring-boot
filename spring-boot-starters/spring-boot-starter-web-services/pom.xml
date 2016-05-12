@@ -6,10 +6,9 @@
 		<artifactId>spring-boot-starters</artifactId>
 		<version>1.4.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-starter-ws</artifactId>
-	<name>spring-boot-starter-ws (DEPRECATED)</name>
-	<description>Starter for using Spring Web Services. Deprecated as of 1.4 in favor of
-		spring-boot-starter-web-services</description>
+	<artifactId>spring-boot-starter-web-services</artifactId>
+	<name>Spring Boot Web Services Starter</name>
+	<description>Starter for using Spring Web Services</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
