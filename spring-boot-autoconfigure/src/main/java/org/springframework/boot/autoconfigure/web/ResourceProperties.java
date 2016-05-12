@@ -292,7 +292,7 @@ public class ResourceProperties implements ResourceLoaderAware {
 		/**
 		 * Comma-separated list of patterns to apply to the Version Strategy.
 		 */
-		private String[] paths;
+		private String[] paths = new String[] { "/**" };
 
 		/**
 		 * Version string to use for the Version Strategy.
