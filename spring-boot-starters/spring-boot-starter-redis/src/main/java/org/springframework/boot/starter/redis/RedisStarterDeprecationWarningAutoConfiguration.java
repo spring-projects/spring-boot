@@ -33,10 +33,10 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @Deprecated
-public class RedisStarterDepricationWarningAutoConfiguration {
+public class RedisStarterDeprecationWarningAutoConfiguration {
 
 	private static final Log logger = LogFactory
-			.getLog(RedisStarterDepricationWarningAutoConfiguration.class);
+			.getLog(RedisStarterDeprecationWarningAutoConfiguration.class);
 
 	@PostConstruct
 	public void logWarning() {
