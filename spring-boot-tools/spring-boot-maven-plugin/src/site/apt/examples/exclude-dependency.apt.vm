@@ -15,7 +15,7 @@
   executable jar. For consistency, they should not be present either when running the
   application.
 
-  There are tree ways one can exclude a dependency from being packaged/used at runtime
+  There are three ways one can exclude a dependency from being packaged/used at runtime
 
     * Exclude a specific artifact identified by <<<groupId>>> and <<<artifactId>>>
       (optionally with a <<<classifier>>> if needed)
@@ -57,7 +57,7 @@
 </project>
 ---
 
-  This example excludes every artifacts having the <<<my-lib>>> or <<<another-lib>>>
+  This example excludes any artifacts having the <<<my-lib>>> or <<<another-lib>>>
   artifact identifiers
 
 ---
