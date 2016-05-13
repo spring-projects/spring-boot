@@ -22,10 +22,8 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.testutil.FilteredClassPathRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.mockito.Mockito.times;
@@ -36,7 +34,6 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-@RunWith(FilteredClassPathRunner.class)
 public class DevToolsPooledDataSourceAutoConfigurationTests
 		extends AbstractDevToolsDataSourceAutoConfigurationTests {
 
