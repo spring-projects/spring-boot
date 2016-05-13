@@ -4382,10 +4382,12 @@ caching is enabled.
 
 [[boot-features-integration]]
 == Spring Integration
-Spring Integration provides abstractions over messaging and also other transports such as
-HTTP, TCP etc. If Spring Integration is available on your classpath it will be initialized
-through the `@EnableIntegration` annotation. Message processing statistics will be
-published over JMX if `'spring-integration-jmx'` is also on the classpath. See the
+Spring Boot offers several conveniences for working with Spring Integration, including
+the `spring-boot-starter-integration` '`Starter POM`'. Spring Integration provides
+abstractions over messaging and also other transports such as HTTP, TCP etc. If Spring
+Integration is available on your classpath it will be initialized through the
+`@EnableIntegration` annotation. Message processing statistics will be published over JMX
+if `'spring-integration-jmx'` is also on the classpath. See the
 {sc-spring-boot-autoconfigure}/integration/IntegrationAutoConfiguration.{sc-ext}[`IntegrationAutoConfiguration`]
 class for more details.
 
