@@ -47,7 +47,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-public class AbstractDevToolsDataSourceAutoConfigurationTests {
+public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@Test
 	public void singleManuallyConfiguredDataSourceIsNotClosed() throws SQLException {

@@ -35,7 +35,7 @@ import static org.mockito.Mockito.verify;
  * @see SpyBeanOnTestFieldForExistingBeanCacheIntegrationTests
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = MockBeanOnTestFieldForExistingBeanConfig.class)
+@ContextConfiguration(classes = SpyBeanOnTestFieldForExistingBeanConfig.class)
 public class SpyBeanOnTestFieldForExistingBeanIntegrationTests {
 
 	@SpyBean
