@@ -2296,11 +2296,27 @@ language feature). Example:
 
 [[boot-features-security-custom-user-info-client]]
 ==== Client
-To make your webapp into an OAuth2 client you can simply add `@EnableOAuth2Client` and
-Spring Boot will create an `OAuth2RestTemplate` for you to `@Autowire`. It uses the
-`security.oauth2.client.*` as credentials (the same as you might be using in the
-Authorization Server), but in addition it will need to know the authorization and token
-URIs in the Authorization Server. For example:
+To make your web-app into an OAuth2 client you can simply add `@EnableOAuth2Client` and
+Spring Boot will create a `OAuth2ClientContext` and `OAuth2ProtectedResourceDetails` that
+are necessary to create an `OAuth2RestOperations`. Spring Boot does not automatically
+create such bean but you can easily create your own:
+
+[source,java,indent=0]
+----
+
+	@Bean
+	public OAuth2RestTemplate oauth2RestTemplate(OAuth2ClientContext oauth2ClientContext,
+			OAuth2ProtectedResourceDetails details) {
+		return new OAuth2RestTemplate(details, oauth2ClientContext);
+	}
+----
+
+NOTE: You may want to add a qualifier and review your configuration as more than one
+`RestTemplate` may be defined in your application.
+
+This configuration uses `security.oauth2.client.*` as credentials (the same as you might
+be using in the Authorization Server), but in addition it will need to know the
+authorization and token URIs in the Authorization Server. For example:
 
 .application.yml
 [source,yaml,indent=0]
@@ -2332,12 +2348,12 @@ instance, your OAuth2 provider doesn't like header authentication). In fact, the
 `security.oauth2.client.*` properties are bound to an instance of
 `AuthorizationCodeResourceDetails` so all its properties can be specified.
 
-TIP: In a non-web application you can still `@Autowire` an `OAuth2RestOperations` and it
+TIP: In a non-web application you can still create an `OAuth2RestOperations` and it
 is still wired into the `security.oauth2.client.*` configuration. In this case it is a
 "`client credentials token grant`" you will be asking for if you use it (and there is no
-need to use `@EnableOAuth2Client` or `@EnableOAuth2Sso`). To switch it off, just remove
-the `security.oauth2.client.client-id` from your configuration (or make it the empty
-string).
+need to use `@EnableOAuth2Client` or `@EnableOAuth2Sso`). To prevent that infrastructure
+to be defined, just remove the `security.oauth2.client.client-id` from your configuration
+(or make it the empty string).
 
 
 
