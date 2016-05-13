@@ -67,14 +67,14 @@ public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 		}
 		StringBuilder text = new StringBuilder(name.getText().replace('.', '_'));
 		for (int i = 1; i < text.length() - 1; i++) {
-			if (isDashRequired(text.charAt(i - 1), text.charAt(i), text.charAt(i + 1))) {
+			if (isUnderscoreRequired(text.charAt(i - 1), text.charAt(i), text.charAt(i + 1))) {
 				text.insert(i++, '_');
 			}
 		}
 		return new Identifier(text.toString().toLowerCase(Locale.ROOT), name.isQuoted());
 	}
 
-	private boolean isDashRequired(char before, char current, char after) {
+	private boolean isUnderscoreRequired(char before, char current, char after) {
 		return Character.isLowerCase(before) && Character.isUpperCase(current)
 				&& Character.isLowerCase(after);
 	}

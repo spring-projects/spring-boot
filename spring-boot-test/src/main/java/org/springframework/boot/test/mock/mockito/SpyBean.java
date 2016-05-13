@@ -37,7 +37,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * {@link RunWith @RunWith} the {@link SpringRunner}.
  * <p>
  * Spies can be applied by type or by {@link #name() bean name}. All beans in the context
- * of the same type will be wrapped with the spy, if no existing bean is defined a new one
+ * of the same type will be wrapped with the spy. If no existing bean is defined a new one
  * will be added.
  * <p>
  * When {@code @SpyBean} is used on a field, as well as being registered in the
@@ -69,7 +69,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * </pre>
  * <p>
  * This annotation is {@code @Repeatable} and may be specified multiple times when working
- * with Java 8 or contained within an {@link SpyBeans @SpyBeans} annotation.
+ * with Java 8 or contained within a {@link SpyBeans @SpyBeans} annotation.
  *
  * @author Phillip Webb
  * @since 1.4.0
@@ -91,7 +91,7 @@ public @interface SpyBean {
 	/**
 	 * The classes to spy. This is an alias of {@link #classes()} which can be used for
 	 * brevity if no other attributes are defined. See {@link #classes()} for details.
-	 * @return the classes to mock
+	 * @return the classes to spy
 	 */
 	@AliasFor("classes")
 	Class<?>[] value() default {};
@@ -100,12 +100,12 @@ public @interface SpyBean {
 	 * The classes to spy. Each class specified here will result in a spy being applied.
 	 * Classes can be omitted when the annotation is used on a field.
 	 * <p>
-	 * When {@code @MockBean} also defines a {@code name} this attribute can only contain
+	 * When {@code @SpyBean} also defines a {@code name} this attribute can only contain
 	 * a single value.
 	 * <p>
 	 * If this is the only specified attribute consider using the {@code value} alias
 	 * instead.
-	 * @return the classes to mock
+	 * @return the classes to spy
 	 */
 	@AliasFor("value")
 	Class<?>[] classes() default {};
