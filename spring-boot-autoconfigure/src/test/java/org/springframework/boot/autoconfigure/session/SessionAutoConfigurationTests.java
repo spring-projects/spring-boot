@@ -22,9 +22,12 @@ import java.util.Collections;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -53,10 +56,16 @@ import static org.mockito.Mockito.verify;
  */
 public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTests {
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@Test
-	public void autoConfigurationDisabledIfStoreTypeNotSet() {
+	public void contextFailsIfStoreTypeNotSet() {
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("No session repository could be auto-configured");
+		this.thrown.expectMessage("session store type is 'null'");
+
 		load();
-		assertThat(this.context.getBeansOfType(SessionRepository.class)).hasSize(0);
 	}
 
 	@Test
@@ -157,6 +166,14 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 				MongoOperationsSessionRepository.class);
 		assertThat(new DirectFieldAccessor(repository).getPropertyValue("collectionName"))
 				.isEqualTo("foobar");
+	}
+
+	@Test
+	public void validationFailsIfSessionRepositoryIsNotConfigured() {
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("No session repository could be auto-configured");
+		this.thrown.expectMessage("session store type is 'JDBC'");
+		load("spring.session.store-type=jdbc");
 	}
 
 	@Configuration

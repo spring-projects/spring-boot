@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -26,6 +29,7 @@ import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfigurati
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionConfigurationImportSelector;
+import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionRepositoryValidator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -33,6 +37,7 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
+import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Session.
@@ -50,7 +55,7 @@ import org.springframework.session.SessionRepository;
 @EnableConfigurationProperties(SessionProperties.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
 		MongoAutoConfiguration.class, RedisAutoConfiguration.class })
-@Import(SessionConfigurationImportSelector.class)
+@Import({ SessionConfigurationImportSelector.class, SessionRepositoryValidator.class})
 public class SessionAutoConfiguration {
 
 	/**
@@ -66,6 +71,34 @@ public class SessionAutoConfiguration {
 				imports[i] = SessionStoreMappings.getConfigurationClass(types[i]);
 			}
 			return imports;
+		}
+
+	}
+
+	/**
+	 * Bean used to validate that a {@link SessionRepository} exists and provide a
+	 * meaningful if that's not the case.
+	 */
+	static class SessionRepositoryValidator {
+
+		private SessionProperties sessionProperties;
+		private ObjectProvider<SessionRepository<?>> sessionRepositoryProvider;
+
+		SessionRepositoryValidator(SessionProperties sessionProperties,
+				ObjectProvider<SessionRepository<?>> sessionRepositoryProvider) {
+			this.sessionProperties = sessionProperties;
+			this.sessionRepositoryProvider = sessionRepositoryProvider;
+		}
+
+		@PostConstruct
+		public void checkSessionRepository() {
+			StoreType storeType = this.sessionProperties.getStoreType();
+			if (storeType != StoreType.NONE) {
+				Assert.notNull(this.sessionRepositoryProvider.getIfAvailable(),
+						"No session repository could "
+								+ "be auto-configured, check your configuration (session "
+								+ "store type is '" + storeType + "')");
+			}
 		}
 
 	}
