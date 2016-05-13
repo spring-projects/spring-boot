@@ -130,8 +130,7 @@ else
     exit 1
 fi
 
-# Build actual command to execute
-command="$javaexe -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS -jar $jarfile $RUN_ARGS $*"
+arguments=(-Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS -jar $jarfile $RUN_ARGS "$@")
 
 # Action functions
 start() {
@@ -152,7 +151,6 @@ do_start() {
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
     if [ $USE_START_STOP_DAEMON = true ] && type start-stop-daemon > /dev/null 2>&1; then
-      arguments=(-Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS -jar $jarfile $RUN_ARGS "$@")
       start-stop-daemon --start --quiet \
         --chuid "$run_user" \
         --name "$identity" \
@@ -164,12 +162,12 @@ do_start() {
         >> "$log_file" 2>&1
       await_file "$pid_file"
     else
-      su -s /bin/sh -c "$command >> \"$log_file\" 2>&1 & echo \$!" "$run_user" > "$pid_file"
+      su -s /bin/sh -c "$javaexe $(printf "\"%s\" " "${arguments[@]}") >> \"$log_file\" 2>&1 & echo \$!" "$run_user" > "$pid_file"
     fi
     pid=$(cat "$pid_file")
   else
     checkPermissions || return $?
-    $command >> "$log_file" 2>&1 &
+    "$javaexe" "${arguments[@]}" >> "$log_file" 2>&1 &
     pid=$!
     disown $pid
     echo "$pid" > "$pid_file"
@@ -219,7 +217,7 @@ status() {
 
 run() {
   pushd "$(dirname "$jarfile")" > /dev/null
-  $command
+  "$javaexe" "${arguments[@]}"
   result=$?
   popd > /dev/null
   return "$result"
