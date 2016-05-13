@@ -59,7 +59,7 @@ public class WebMvcProperties {
 	/**
 	 * Dispatch OPTIONS requests to the FrameworkServlet doService method.
 	 */
-	private boolean dispatchOptionsRequest = false;
+	private boolean dispatchOptionsRequest = true;
 
 	/**
 	 * If the content of the "default" model should be ignored during redirect scenarios.
