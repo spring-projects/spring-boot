@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -40,19 +45,32 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
 @Conditional(SessionCondition.class)
 class RedisSessionConfiguration {
 
+	private static final Logger logger = LoggerFactory.getLogger(RedisSessionConfiguration.class);
+
 	@Configuration
 	public static class SpringBootRedisHttpSessionConfiguration
 			extends RedisHttpSessionConfiguration {
 
+		private SessionProperties sessionProperties;
+
 		@Autowired
 		public void customize(SessionProperties sessionProperties) {
-			Integer timeout = sessionProperties.getTimeout();
+			this.sessionProperties = sessionProperties;
+			Integer timeout = this.sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds(timeout);
 			}
-			SessionProperties.Redis redis = sessionProperties.getRedis();
+			SessionProperties.Redis redis = this.sessionProperties.getRedis();
 			setRedisNamespace(redis.getNamespace());
 			setRedisFlushMode(redis.getFlushMode());
+		}
+
+		@PostConstruct
+		public void validate() {
+			if (this.sessionProperties.getStoreType() == null) {
+				logger.warn("Spring Session store type is mandatory: set " +
+						"'spring.session.store-type=redis' in your configuration");
+			}
 		}
 
 	}

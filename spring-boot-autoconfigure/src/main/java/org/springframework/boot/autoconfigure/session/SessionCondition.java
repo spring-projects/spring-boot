@@ -22,6 +22,7 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.ClassUtils;
 
 /**
  * General condition used with all session configuration classes.
@@ -30,16 +31,24 @@ import org.springframework.core.type.AnnotationMetadata;
  */
 class SessionCondition extends SpringBootCondition {
 
+	private static final boolean redisPresent = ClassUtils.isPresent(
+			"org.springframework.data.redis.core.RedisTemplate", SessionCondition.class.getClassLoader());
+
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 				context.getEnvironment(), "spring.session.");
-		if (!resolver.containsProperty("store-type")) {
-			return ConditionOutcome.noMatch("Session store type not set");
-		}
 		StoreType sessionStoreType = SessionStoreMappings
 				.getType(((AnnotationMetadata) metadata).getClassName());
+		if (!resolver.containsProperty("store-type")) {
+			if (sessionStoreType == StoreType.REDIS && redisPresent) {
+				return ConditionOutcome.match("Session store type default to redis (deprecated)");
+			}
+			else {
+				return ConditionOutcome.noMatch("Session store type not set");
+			}
+		}
 		String value = resolver.getProperty("store-type").replace("-", "_").toUpperCase();
 		if (value.equals(sessionStoreType.name())) {
 			return ConditionOutcome.match("Session store type " + sessionStoreType);
