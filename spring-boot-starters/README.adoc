@@ -94,4 +94,7 @@ do as they were designed before this was clarified.
 | http://resteasy.jboss.org/[RESTEasy]
 | https://github.com/paypal/resteasy-spring-boot
 
+| JSF (https://javaserverfaces.java.net/[Mojarra], http://primefaces.org/[Prime Faces] and http://omnifaces.org/[OmniFaces])
+| https://github.com/persapiens/jsf-spring-boot-starter
+
 |===
