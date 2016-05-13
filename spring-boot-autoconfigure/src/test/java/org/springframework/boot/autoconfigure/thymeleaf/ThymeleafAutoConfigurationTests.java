@@ -27,10 +27,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafView;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-import org.thymeleaf.templateresolver.TemplateResolver;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -80,7 +80,7 @@ public class ThymeleafAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
-		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
+		Context attrs = new Context(Locale.UK, Collections.<String, Object>singletonMap("foo", "bar"));
 		String result = engine.process("template.txt", attrs);
 		assertThat(result).isEqualTo("<html>bar</html>");
 	}
@@ -92,10 +92,10 @@ public class ThymeleafAutoConfigurationTests {
 		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		this.context.getBean(TemplateEngine.class).initialize();
+		this.context.getBean(TemplateEngine.class);
 		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);
-		assertThat(resolver instanceof TemplateResolver).isTrue();
-		assertThat(((TemplateResolver) resolver).getCharacterEncoding())
+		assertThat(resolver instanceof ITemplateResolver).isTrue();
+		assertThat(((SpringResourceTemplateResolver) resolver).getCharacterEncoding())
 				.isEqualTo("UTF-16");
 		ThymeleafViewResolver views = this.context.getBean(ThymeleafViewResolver.class);
 		assertThat(views.getCharacterEncoding()).isEqualTo("UTF-16");
@@ -109,7 +109,7 @@ public class ThymeleafAutoConfigurationTests {
 		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		this.context.getBean(TemplateEngine.class).initialize();
+		this.context.getBean(TemplateEngine.class);
 		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);
 		assertThat(resolver.getOrder()).isEqualTo(Integer.valueOf(25));
 	}
@@ -171,7 +171,7 @@ public class ThymeleafAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
-		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
+		Context attrs = new Context(Locale.UK, Collections.<String, Object>singletonMap("foo", "bar"));
 		String result = engine.process("data-dialect", attrs);
 		assertThat(result).isEqualTo("<html><body data-foo=\"bar\"></body></html>");
 	}
@@ -193,7 +193,7 @@ public class ThymeleafAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
-		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
+		Context attrs = new Context(Locale.UK, Collections.<String, Object>singletonMap("foo", "bar"));
 		String result = engine.process("home", attrs);
 		assertThat(result).isEqualTo("<html><body>bar</body></html>");
 	}
@@ -207,7 +207,7 @@ public class ThymeleafAutoConfigurationTests {
 		try {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
 			Context attrs = new Context(Locale.UK,
-					Collections.singletonMap("greeting", "Hello World"));
+					Collections.<String, Object>singletonMap("greeting", "Hello World"));
 			String result = engine.process("message", attrs);
 			assertThat(result).contains("Hello World");
 		}
