@@ -18,6 +18,7 @@ package org.springframework.boot.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
@@ -276,6 +277,23 @@ public class LoggingApplicationListenerTests {
 		this.logger.trace("testattrace");
 		assertThat(this.outputCapture.toString()).contains("testatdebug");
 		assertThat(this.outputCapture.toString()).contains("testattrace");
+	}
+
+	@Test
+	public void parseLevelsCaseInsensitivePassesTurkeyTest() throws Exception {
+		Locale original = Locale.getDefault();
+		try {
+			Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+
+			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+					"logging.level.org.springframework.boot=iNfo");
+			this.initializer.initialize(this.context.getEnvironment(),
+					this.context.getClassLoader());
+
+			assertThat(this.outputCapture.toString()).doesNotContain("Cannot set level: iNfo");
+		} finally {
+			Locale.setDefault(original);
+		}
 	}
 
 	@Test
