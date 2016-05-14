@@ -45,7 +45,8 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
 @Conditional(SessionCondition.class)
 class RedisSessionConfiguration {
 
-	private static final Logger logger = LoggerFactory.getLogger(RedisSessionConfiguration.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(RedisSessionConfiguration.class);
 
 	@Configuration
 	public static class SpringBootRedisHttpSessionConfiguration
@@ -68,8 +69,8 @@ class RedisSessionConfiguration {
 		@PostConstruct
 		public void validate() {
 			if (this.sessionProperties.getStoreType() == null) {
-				logger.warn("Spring Session store type is mandatory: set " +
-						"'spring.session.store-type=redis' in your configuration");
+				logger.warn("Spring Session store type is mandatory: set "
+						+ "'spring.session.store-type=redis' in your configuration");
 			}
 		}
 

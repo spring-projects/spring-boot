@@ -39,19 +39,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
- * Test to validate that a custom {@link RestTemplate} can be defined
- * with OAuth2 SSO.
+ * Test to validate that a custom {@link RestTemplate} can be defined with OAuth2 SSO.
  *
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringBootTest
-@TestPropertySource(properties = {"security.oauth2.client.clientId=client",
+@TestPropertySource(properties = { "security.oauth2.client.clientId=client",
 		"security.oauth2.client.clientSecret=secret",
 		"security.oauth2.client.userAuthorizationUri=http://example.com/oauth/authorize",
 		"security.oauth2.client.accessTokenUri=http://example.com/oauth/token",
-		"security.oauth2.resource.jwt.keyValue=SSSSHHH"})
+		"security.oauth2.resource.jwt.keyValue=SSSSHHH" })
 public class CustomRestTemplateBasicOAuth2SsoConfigurationTests {
 
 	@Autowired
@@ -82,5 +81,3 @@ public class CustomRestTemplateBasicOAuth2SsoConfigurationTests {
 	}
 
 }
-
-

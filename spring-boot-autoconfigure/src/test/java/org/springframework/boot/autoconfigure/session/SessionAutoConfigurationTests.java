@@ -64,7 +64,6 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("No session repository could be auto-configured");
 		this.thrown.expectMessage("session store type is 'null'");
-
 		load();
 	}
 

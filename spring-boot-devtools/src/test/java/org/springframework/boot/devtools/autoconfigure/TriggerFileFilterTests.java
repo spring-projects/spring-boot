@@ -57,4 +57,10 @@ public class TriggerFileFilterTests {
 		assertThat(new TriggerFileFilter("thefile.txt").accept(file)).isFalse();
 	}
 
+	@Test
+	public void testName() throws Exception {
+		File file = this.temp.newFile(".triggerfile").getAbsoluteFile();
+		assertThat(new TriggerFileFilter(".triggerfile").accept(file)).isTrue();
+	}
+
 }

@@ -32,7 +32,8 @@ import org.springframework.util.ClassUtils;
 class SessionCondition extends SpringBootCondition {
 
 	private static final boolean redisPresent = ClassUtils.isPresent(
-			"org.springframework.data.redis.core.RedisTemplate", SessionCondition.class.getClassLoader());
+			"org.springframework.data.redis.core.RedisTemplate",
+			SessionCondition.class.getClassLoader());
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -43,11 +44,10 @@ class SessionCondition extends SpringBootCondition {
 				.getType(((AnnotationMetadata) metadata).getClassName());
 		if (!resolver.containsProperty("store-type")) {
 			if (sessionStoreType == StoreType.REDIS && redisPresent) {
-				return ConditionOutcome.match("Session store type default to redis (deprecated)");
+				return ConditionOutcome
+						.match("Session store type default to redis (deprecated)");
 			}
-			else {
-				return ConditionOutcome.noMatch("Session store type not set");
-			}
+			return ConditionOutcome.noMatch("Session store type not set");
 		}
 		String value = resolver.getProperty("store-type").replace("-", "_").toUpperCase();
 		if (value.equals(sessionStoreType.name())) {

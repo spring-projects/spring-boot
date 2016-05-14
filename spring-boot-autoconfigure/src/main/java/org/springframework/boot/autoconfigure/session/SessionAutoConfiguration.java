@@ -55,7 +55,7 @@ import org.springframework.util.Assert;
 @EnableConfigurationProperties(SessionProperties.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
 		MongoAutoConfiguration.class, RedisAutoConfiguration.class })
-@Import({ SessionConfigurationImportSelector.class, SessionRepositoryValidator.class})
+@Import({ SessionConfigurationImportSelector.class, SessionRepositoryValidator.class })
 public class SessionAutoConfiguration {
 
 	/**
@@ -82,6 +82,7 @@ public class SessionAutoConfiguration {
 	static class SessionRepositoryValidator {
 
 		private SessionProperties sessionProperties;
+
 		private ObjectProvider<SessionRepository<?>> sessionRepositoryProvider;
 
 		SessionRepositoryValidator(SessionProperties sessionProperties,
@@ -95,9 +96,9 @@ public class SessionAutoConfiguration {
 			StoreType storeType = this.sessionProperties.getStoreType();
 			if (storeType != StoreType.NONE) {
 				Assert.notNull(this.sessionRepositoryProvider.getIfAvailable(),
-						"No session repository could "
-								+ "be auto-configured, check your configuration (session "
-								+ "store type is '" + storeType + "')");
+						"No session repository could be auto-configured, check your "
+								+ "configuration (session store type is '" + storeType
+								+ "')");
 			}
 		}
 
