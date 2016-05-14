@@ -47,6 +47,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -196,6 +197,21 @@ public class DefaultErrorViewResolverTests {
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("exact/404");
 		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
+	}
+
+	@Test
+	public void resolveShouldCacheTemplate() throws Exception {
+		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/4xx"),
+				any(Environment.class), any(ClassLoader.class),
+				any(ResourceLoader.class))).willReturn(true);
+		for (int i = 0; i < 10; i++) {
+			ModelAndView resolved = this.resolver.resolveErrorView(this.request,
+					HttpStatus.NOT_FOUND, this.model);
+			assertThat(resolved.getViewName()).isEqualTo("error/4xx");
+		}
+		verify(this.templateAvailabilityProvider, times(1)).isTemplateAvailable(
+				eq("error/4xx"), any(Environment.class), any(ClassLoader.class),
+				any(ResourceLoader.class));
 	}
 
 	@Test
