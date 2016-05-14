@@ -169,6 +169,7 @@ public class PropertiesConfigurationFactoryTests {
 		return bindFoo(values);
 	}
 
+	@Deprecated
 	private Foo bindFoo(final String values) throws Exception {
 		this.factory.setProperties(PropertiesLoaderUtils
 				.loadProperties(new ByteArrayResource(values.getBytes())));

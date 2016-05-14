@@ -35,6 +35,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -161,7 +162,10 @@ public class PropertiesConfigurationFactory<T>
 	/**
 	 * Set the properties.
 	 * @param properties the properties
+	 * @deprecated as of 1.4 in favor of {@link #setPropertySources(PropertySources)
+	 * setPropertySources} that contains a {@link PropertiesPropertySource}.
 	 */
+	@Deprecated
 	public void setProperties(Properties properties) {
 		this.properties = properties;
 	}

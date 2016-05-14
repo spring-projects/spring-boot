@@ -102,6 +102,7 @@ public class PropertiesConfigurationFactoryParameterizedTests {
 		return bindFoo(values);
 	}
 
+	@Deprecated
 	private Foo bindFoo(final String values) throws Exception {
 		Properties properties = PropertiesLoaderUtils
 				.loadProperties(new ByteArrayResource(values.getBytes()));
