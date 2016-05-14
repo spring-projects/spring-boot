@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller;
 import org.springframework.boot.test.mock.mockito.example.SimpleExampleService;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +38,7 @@ import static org.mockito.Mockito.verify;
 public class SpyBeanOnTestFieldForNewBeanIntegrationTests {
 
 	@SpyBean
-	private ExampleService exampleService;
+	private SimpleExampleService exampleService;
 
 	@Autowired
 	private ExampleServiceCaller caller;
@@ -51,7 +50,7 @@ public class SpyBeanOnTestFieldForNewBeanIntegrationTests {
 	}
 
 	@Configuration
-	@Import({ ExampleServiceCaller.class, SimpleExampleService.class })
+	@Import(ExampleServiceCaller.class)
 	static class Config {
 
 	}
