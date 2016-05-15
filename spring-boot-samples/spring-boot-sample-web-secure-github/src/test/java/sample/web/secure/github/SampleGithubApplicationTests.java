@@ -16,11 +16,13 @@
 
 package sample.web.secure.github;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.net.URI;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -29,8 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Basic integration tests for GitHub SSO application.
@@ -45,6 +46,14 @@ public class SampleGithubApplicationTests {
 
 	@LocalServerPort
 	private int port;
+
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	@Test
+	public void restTemplateInjectable() throws Exception {
+		assertThat(restTemplate).isNotNull();
+	}
 
 	@Test
 	public void everythingIsSecuredByDefault() throws Exception {

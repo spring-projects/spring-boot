@@ -19,6 +19,9 @@ package sample.web.secure.github;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @SpringBootApplication
@@ -27,6 +30,12 @@ public class SampleGithubSecureApplication extends WebMvcConfigurerAdapter {
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleGithubSecureApplication.class, args);
+	}
+
+	@Bean
+	@Primary
+	public RestTemplate myRestTemplate() {
+		return new RestTemplate();
 	}
 
 }
