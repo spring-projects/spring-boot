@@ -102,6 +102,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Andy Wilkinson
  * @author Sébastien Deleuze
  * @author Eddú Meléndez
+ * @author Kazuki Shimizu
  */
 @Configuration
 @ConditionalOnWebApplication
@@ -410,12 +411,12 @@ public class WebMvcAutoConfiguration {
 
 		private void configureResourceChain(ResourceProperties.Chain properties,
 				ResourceChainRegistration chain) {
+			if (properties.isGzipped()) {
+				chain.addResolver(new GzipResourceResolver());
+			}
 			Strategy strategy = properties.getStrategy();
 			if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
 				chain.addResolver(getVersionResourceResolver(strategy));
-			}
-			if (properties.isGzipped()) {
-				chain.addResolver(new GzipResourceResolver());
 			}
 			if (properties.isHtmlApplicationCache()) {
 				chain.addTransformer(new AppCacheManifestTransformer());
