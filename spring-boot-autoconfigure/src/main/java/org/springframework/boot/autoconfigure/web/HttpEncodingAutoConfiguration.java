@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.web.OrderedCharacterEncodingFilter;
+import org.springframework.boot.web.filter.OrderedCharacterEncodingFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -40,15 +39,18 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @ConditionalOnProperty(prefix = "spring.http.encoding", value = "enabled", matchIfMissing = true)
 public class HttpEncodingAutoConfiguration {
 
-	@Autowired
-	private HttpEncodingProperties httpEncodingProperties;
+	private final HttpEncodingProperties httpEncodingProperties;
+
+	public HttpEncodingAutoConfiguration(HttpEncodingProperties httpEncodingProperties) {
+		this.httpEncodingProperties = httpEncodingProperties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(CharacterEncodingFilter.class)
 	public CharacterEncodingFilter characterEncodingFilter() {
 		CharacterEncodingFilter filter = new OrderedCharacterEncodingFilter();
 		filter.setEncoding(this.httpEncodingProperties.getCharset().name());
-		filter.setForceEncoding(this.httpEncodingProperties.isForce());
+		filter.setForceRequestEncoding(this.httpEncodingProperties.isForce());
 		return filter;
 	}
 

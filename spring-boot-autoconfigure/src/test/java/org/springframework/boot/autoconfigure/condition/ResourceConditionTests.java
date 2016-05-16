@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,14 @@ package org.springframework.boot.autoconfigure.condition;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link ResourceCondition}.
@@ -48,20 +47,20 @@ public class ResourceConditionTests {
 	@Test
 	public void defaultResourceAndNoExplicitKey() {
 		load(DefaultLocationConfiguration.class);
-		assertTrue(this.context.containsBean("foo"));
+		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
 	public void unknownDefaultLocationAndNoExplicitKey() {
 		load(UnknownDefaultLocationConfiguration.class);
-		assertFalse(this.context.containsBean("foo"));
+		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
 	public void unknownDefaultLocationAndExplicitKeyToResource() {
 		load(UnknownDefaultLocationConfiguration.class,
 				"spring.foo.test.config=logging.properties");
-		assertTrue(this.context.containsBean("foo"));
+		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	private void load(Class<?> config, String... environment) {

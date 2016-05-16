@@ -323,18 +323,6 @@ public class SpringApplicationBuilder {
 		return this;
 	}
 
-	/**
-	 * Flag to indicate the startup banner should be printed.
-	 * @param showBanner the flag to set. Default true.
-	 * @return the current builder
-	 * @deprecated Since 1.3.0 in favor of {@link #bannerMode}
-	 */
-	@Deprecated
-	public SpringApplicationBuilder showBanner(boolean showBanner) {
-		this.application.setShowBanner(showBanner);
-		return this;
-	}
-
 	public SpringApplicationBuilder bannerMode(Banner.Mode bannerMode) {
 		this.application.setBannerMode(bannerMode);
 		return this;

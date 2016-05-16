@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -31,6 +33,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Josh Thornhill
+ * @author Gary Russell
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
@@ -66,7 +69,7 @@ public class RabbitProperties {
 	private String virtualHost;
 
 	/**
-	 * Comma-separated list of addresses to which the client should connect to.
+	 * Comma-separated list of addresses to which the client should connect.
 	 */
 	private String addresses;
 
@@ -76,9 +79,31 @@ public class RabbitProperties {
 	private Integer requestedHeartbeat;
 
 	/**
+	 * Enable publisher confirms.
+	 */
+	private boolean publisherConfirms;
+
+	/**
+	 * Enable publisher returns.
+	 */
+	private boolean publisherReturns;
+
+	/**
+	 * Connection timeout, in milliseconds; zero for infinite.
+	 */
+	private Integer connectionTimeout;
+
+	/**
+	 * Cache configuration.
+	 */
+	private final Cache cache = new Cache();
+
+	/**
 	 * Listener container configuration.
 	 */
 	private final Listener listener = new Listener();
+
+	private final Template template = new Template();
 
 	public String getHost() {
 		if (this.addresses == null) {
@@ -186,8 +211,40 @@ public class RabbitProperties {
 		this.requestedHeartbeat = requestedHeartbeat;
 	}
 
+	public boolean isPublisherConfirms() {
+		return this.publisherConfirms;
+	}
+
+	public void setPublisherConfirms(boolean publisherConfirms) {
+		this.publisherConfirms = publisherConfirms;
+	}
+
+	public boolean isPublisherReturns() {
+		return this.publisherReturns;
+	}
+
+	public void setPublisherReturns(boolean publisherReturns) {
+		this.publisherReturns = publisherReturns;
+	}
+
+	public Integer getConnectionTimeout() {
+		return this.connectionTimeout;
+	}
+
+	public void setConnectionTimeout(Integer connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
+	}
+
+	public Cache getCache() {
+		return this.cache;
+	}
+
 	public Listener getListener() {
 		return this.listener;
+	}
+
+	public Template getTemplate() {
+		return this.template;
 	}
 
 	public static class Ssl {
@@ -273,6 +330,84 @@ public class RabbitProperties {
 
 	}
 
+	public static class Cache {
+
+		private final Channel channel = new Channel();
+
+		private final Connection connection = new Connection();
+
+		public Channel getChannel() {
+			return this.channel;
+		}
+
+		public Connection getConnection() {
+			return this.connection;
+		}
+
+		public static class Channel {
+
+			/**
+			 * Number of channels to retain in the cache. When "check-timeout" > 0, max
+			 * channels per connection.
+			 */
+			private Integer size;
+
+			/**
+			 * Number of milliseconds to wait to obtain a channel if the cache size has
+			 * been reached. If 0, always create a new channel.
+			 */
+			private Long checkoutTimeout;
+
+			public Integer getSize() {
+				return this.size;
+			}
+
+			public void setSize(Integer size) {
+				this.size = size;
+			}
+
+			public Long getCheckoutTimeout() {
+				return this.checkoutTimeout;
+			}
+
+			public void setCheckoutTimeout(Long checkoutTimeout) {
+				this.checkoutTimeout = checkoutTimeout;
+			}
+
+		}
+
+		public static class Connection {
+
+			/**
+			 * Connection factory cache mode.
+			 */
+			private CacheMode mode = CacheMode.CHANNEL;
+
+			/**
+			 * Number of connections to cache. Only applies when mode is CONNECTION.
+			 */
+			private Integer size;
+
+			public CacheMode getMode() {
+				return this.mode;
+			}
+
+			public void setMode(CacheMode mode) {
+				this.mode = mode;
+			}
+
+			public Integer getSize() {
+				return this.size;
+			}
+
+			public void setSize(Integer size) {
+				this.size = size;
+			}
+
+		}
+
+	}
+
 	public static class Listener {
 
 		/**
@@ -306,6 +441,17 @@ public class RabbitProperties {
 		 * be less than or equal to the prefetch count.
 		 */
 		private Integer transactionSize;
+
+		/**
+		 * Whether rejected deliveries are requeued by default; default true.
+		 */
+		private Boolean defaultRequeueRejected;
+
+		/**
+		 * Optional properties for a retry interceptor.
+		 */
+		@NestedConfigurationProperty
+		private final ListenerRetry retry = new ListenerRetry();
 
 		public boolean isAutoStartup() {
 			return this.autoStartup;
@@ -354,6 +500,156 @@ public class RabbitProperties {
 		public void setTransactionSize(Integer transactionSize) {
 			this.transactionSize = transactionSize;
 		}
+
+		public Boolean getDefaultRequeueRejected() {
+			return this.defaultRequeueRejected;
+		}
+
+		public void setDefaultRequeueRejected(Boolean defaultRequeueRejected) {
+			this.defaultRequeueRejected = defaultRequeueRejected;
+		}
+
+		public ListenerRetry getRetry() {
+			return this.retry;
+		}
+
+	}
+
+	public static class Template {
+
+		@NestedConfigurationProperty
+		private final Retry retry = new Retry();
+
+		/**
+		 * Enable mandatory messages. If a mandatory message cannot be routed to a queue
+		 * by the server, it will return an unroutable message with a Return method.
+		 */
+		private Boolean mandatory;
+
+		/**
+		 * Timeout for receive() operations.
+		 */
+		private Long receiveTimeout;
+
+		/**
+		 * Timeout for sendAndReceive() operations.
+		 */
+		private Long replyTimeout;
+
+		public Retry getRetry() {
+			return this.retry;
+		}
+
+		public Boolean getMandatory() {
+			return this.mandatory;
+		}
+
+		public void setMandatory(Boolean mandatory) {
+			this.mandatory = mandatory;
+		}
+
+		public Long getReceiveTimeout() {
+			return this.receiveTimeout;
+		}
+
+		public void setReceiveTimeout(Long receiveTimeout) {
+			this.receiveTimeout = receiveTimeout;
+		}
+
+		public Long getReplyTimeout() {
+			return this.replyTimeout;
+		}
+
+		public void setReplyTimeout(Long replyTimeout) {
+			this.replyTimeout = replyTimeout;
+		}
+
+	}
+
+	public static class Retry {
+
+		/**
+		 * Whether or not publishing retries are enabled.
+		 */
+		private boolean enabled;
+
+		/**
+		 * Maximum number of attempts to publish or deliver a message.
+		 */
+		private int maxAttempts = 3;
+
+		/**
+		 * Interval between the first and second attempt to publish or deliver a message.
+		 */
+		private long initialInterval = 1000L;
+
+		/**
+		 * A multiplier to apply to the previous retry interval.
+		 */
+		private double multiplier = 1.0;
+
+		/**
+		 * Maximum interval between attempts.
+		 */
+		private long maxInterval = 10000L;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public int getMaxAttempts() {
+			return this.maxAttempts;
+		}
+
+		public void setMaxAttempts(int maxAttempts) {
+			this.maxAttempts = maxAttempts;
+		}
+
+		public long getInitialInterval() {
+			return this.initialInterval;
+		}
+
+		public void setInitialInterval(long initialInterval) {
+			this.initialInterval = initialInterval;
+		}
+
+		public double getMultiplier() {
+			return this.multiplier;
+		}
+
+		public void setMultiplier(double multiplier) {
+			this.multiplier = multiplier;
+		}
+
+		public long getMaxInterval() {
+			return this.maxInterval;
+		}
+
+		public void setMaxInterval(long maxInterval) {
+			this.maxInterval = maxInterval;
+		}
+
+	}
+
+	public static class ListenerRetry extends Retry {
+
+		/**
+		 * Whether or not retries are stateless or stateful.
+		 */
+		private boolean stateless = true;
+
+		public boolean isStateless() {
+			return this.stateless;
+		}
+
+		public void setStateless(boolean stateless) {
+			this.stateless = stateless;
+		}
+
 	}
 
 }

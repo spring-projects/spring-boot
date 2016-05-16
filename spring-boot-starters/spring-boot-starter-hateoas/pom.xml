@@ -4,11 +4,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>1.3.6.BUILD-SNAPSHOT</version>
+		<version>1.4.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-hateoas</artifactId>
 	<name>Spring Boot HATEOAS Starter</name>
-	<description>Spring Boot HATEOAS Starter</description>
+	<description>Starter for building hypermedia-based RESTful web application with
+		Spring MVC and Spring HATEOAS</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

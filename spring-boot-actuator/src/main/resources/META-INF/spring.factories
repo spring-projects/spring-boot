@@ -6,6 +6,7 @@ org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.EndpointMBeanExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.InfoContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration,\

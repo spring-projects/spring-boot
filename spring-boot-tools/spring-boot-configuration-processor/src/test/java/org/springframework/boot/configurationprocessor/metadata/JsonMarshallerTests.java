@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,9 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsGroup;
-import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsHint;
-import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsProperty;
+import org.springframework.boot.configurationprocessor.Metadata;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JsonMarshaller}.
@@ -70,22 +68,21 @@ public class JsonMarshallerTests {
 		marshaller.write(metadata, outputStream);
 		ConfigurationMetadata read = marshaller
 				.read(new ByteArrayInputStream(outputStream.toByteArray()));
-		assertThat(read,
-				containsProperty("a.b", StringBuffer.class).fromSource(InputStream.class)
-						.withDescription("desc").withDefaultValue(is("x"))
-						.withDeprecation("Deprecation comment", "b.c.d"));
-		assertThat(read, containsProperty("b.c.d"));
-		assertThat(read, containsProperty("c").withDefaultValue(is(123)));
-		assertThat(read, containsProperty("d").withDefaultValue(is(true)));
-		assertThat(read,
-				containsProperty("e").withDefaultValue(is(new String[] { "y", "n" })));
-		assertThat(read, containsProperty("f")
-				.withDefaultValue(is(new boolean[] { true, false })));
-		assertThat(read, containsGroup("d"));
-		assertThat(read, containsHint("a.b"));
-		assertThat(read,
-				containsHint("c").withValue(0, 123, "hey").withValue(1, 456, null));
-		assertThat(read, containsHint("d").withProvider("first", "target", "foo")
+		assertThat(read).has(Metadata.withProperty("a.b", StringBuffer.class)
+				.fromSource(InputStream.class).withDescription("desc")
+				.withDefaultValue("x").withDeprecation("Deprecation comment", "b.c.d"));
+		assertThat(read).has(Metadata.withProperty("b.c.d"));
+		assertThat(read).has(Metadata.withProperty("c").withDefaultValue(123));
+		assertThat(read).has(Metadata.withProperty("d").withDefaultValue(true));
+		assertThat(read).has(
+				Metadata.withProperty("e").withDefaultValue(new String[] { "y", "n" }));
+		assertThat(read).has(Metadata.withProperty("f")
+				.withDefaultValue(new Object[] { true, false }));
+		assertThat(read).has(Metadata.withGroup("d"));
+		assertThat(read).has(Metadata.withHint("a.b"));
+		assertThat(read).has(
+				Metadata.withHint("c").withValue(0, 123, "hey").withValue(1, 456, null));
+		assertThat(read).has(Metadata.withHint("d").withProvider("first", "target", "foo")
 				.withProvider("second"));
 	}
 

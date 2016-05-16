@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,7 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link FolderSnapshot}.
@@ -72,22 +70,22 @@ public class FolderSnapshotTests {
 	@Test
 	public void equalsWhenNothingHasChanged() throws Exception {
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
-		assertThat(this.initialSnapshot, equalTo(updatedSnapshot));
-		assertThat(this.initialSnapshot.hashCode(), equalTo(updatedSnapshot.hashCode()));
+		assertThat(this.initialSnapshot).isEqualTo(updatedSnapshot);
+		assertThat(this.initialSnapshot.hashCode()).isEqualTo(updatedSnapshot.hashCode());
 	}
 
 	@Test
 	public void notEqualsWhenAFileIsAdded() throws Exception {
 		new File(new File(this.folder, "folder1"), "newfile").createNewFile();
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
-		assertThat(this.initialSnapshot, not(equalTo(updatedSnapshot)));
+		assertThat(this.initialSnapshot).isNotEqualTo(updatedSnapshot);
 	}
 
 	@Test
 	public void notEqualsWhenAFileIsDeleted() throws Exception {
 		new File(new File(this.folder, "folder1"), "file1").delete();
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
-		assertThat(this.initialSnapshot, not(equalTo(updatedSnapshot)));
+		assertThat(this.initialSnapshot).isNotEqualTo(updatedSnapshot);
 	}
 
 	@Test
@@ -95,7 +93,7 @@ public class FolderSnapshotTests {
 		File file1 = new File(new File(this.folder, "folder1"), "file1");
 		FileCopyUtils.copy("updatedcontent".getBytes(), file1);
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
-		assertThat(this.initialSnapshot, not(equalTo(updatedSnapshot)));
+		assertThat(this.initialSnapshot).isNotEqualTo(updatedSnapshot);
 	}
 
 	@Test
@@ -131,10 +129,10 @@ public class FolderSnapshotTests {
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
 		ChangedFiles changedFiles = this.initialSnapshot.getChangedFiles(updatedSnapshot,
 				null);
-		assertThat(changedFiles.getSourceFolder(), equalTo(this.folder));
-		assertThat(getChangedFile(changedFiles, file1).getType(), equalTo(Type.MODIFY));
-		assertThat(getChangedFile(changedFiles, file2).getType(), equalTo(Type.DELETE));
-		assertThat(getChangedFile(changedFiles, newFile).getType(), equalTo(Type.ADD));
+		assertThat(changedFiles.getSourceFolder()).isEqualTo(this.folder);
+		assertThat(getChangedFile(changedFiles, file1).getType()).isEqualTo(Type.MODIFY);
+		assertThat(getChangedFile(changedFiles, file2).getType()).isEqualTo(Type.DELETE);
+		assertThat(getChangedFile(changedFiles, newFile).getType()).isEqualTo(Type.ADD);
 	}
 
 	private ChangedFile getChangedFile(ChangedFiles changedFiles, File file) {

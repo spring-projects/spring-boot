@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.Properties;
 
 import org.jolokia.http.AgentServlet;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration.JolokiaCondition;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -69,8 +68,11 @@ import org.springframework.web.servlet.mvc.ServletWrappingController;
 @EnableConfigurationProperties(JolokiaProperties.class)
 public class JolokiaAutoConfiguration {
 
-	@Autowired
-	JolokiaProperties properties = new JolokiaProperties();
+	private final JolokiaProperties properties;
+
+	public JolokiaAutoConfiguration(JolokiaProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

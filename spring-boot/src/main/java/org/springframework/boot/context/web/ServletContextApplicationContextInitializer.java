@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2016 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,66 +18,27 @@ package org.springframework.boot.context.web;
 
 import javax.servlet.ServletContext;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.core.Ordered;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
-import org.springframework.web.context.WebApplicationContext;
 
 /**
  * {@link ApplicationContextInitializer} for setting the servlet context.
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @deprecated as of 1.4 in favor of
+ * org.springframework.boot.web.support.ServletContextApplicationContextInitializer
  */
-public class ServletContextApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableWebApplicationContext>, Ordered {
+@Deprecated
+public class ServletContextApplicationContextInitializer extends
+		org.springframework.boot.web.support.ServletContextApplicationContextInitializer {
 
-	private int order = Ordered.HIGHEST_PRECEDENCE;
-
-	private final ServletContext servletContext;
-
-	private final boolean addApplicationContextAttribute;
-
-	/**
-	 * Create a new {@link ServletContextApplicationContextInitializer} instance.
-	 * @param servletContext the servlet that should be ultimately set.
-	 */
-	public ServletContextApplicationContextInitializer(ServletContext servletContext) {
-		this(servletContext, false);
-	}
-
-	/**
-	 * Create a new {@link ServletContextApplicationContextInitializer} instance.
-	 * @param servletContext the servlet that should be ultimately set.
-	 * @param addApplicationContextAttribute if the {@link ApplicationContext} should be
-	 * stored as an attribute in the {@link ServletContext}
-	 * @since 1.3.4
-	 */
 	public ServletContextApplicationContextInitializer(ServletContext servletContext,
 			boolean addApplicationContextAttribute) {
-		this.servletContext = servletContext;
-		this.addApplicationContextAttribute = addApplicationContextAttribute;
+		super(servletContext, addApplicationContextAttribute);
 	}
 
-	public void setOrder(int order) {
-		this.order = order;
-	}
-
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
-
-	@Override
-	public void initialize(ConfigurableWebApplicationContext applicationContext) {
-		applicationContext.setServletContext(this.servletContext);
-		if (this.addApplicationContextAttribute) {
-			this.servletContext.setAttribute(
-					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
-					applicationContext);
-		}
-
+	public ServletContextApplicationContextInitializer(ServletContext servletContext) {
+		super(servletContext);
 	}
 
 }

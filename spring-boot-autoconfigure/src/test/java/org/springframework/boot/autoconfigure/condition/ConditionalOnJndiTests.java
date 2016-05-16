@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,24 +21,20 @@ import java.util.Map;
 
 import javax.naming.Context;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jndi.JndiPropertiesHidingClassLoader;
 import org.springframework.boot.autoconfigure.jndi.TestableInitialContextFactory;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.iterableWithSize;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -114,7 +110,7 @@ public class ConditionalOnJndiTests {
 	public void jndiLocationNotFound() {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(null,
 				mockMetaData("java:/a"));
-		assertThat(outcome.isMatch(), equalTo(false));
+		assertThat(outcome.isMatch()).isFalse();
 	}
 
 	@Test
@@ -122,7 +118,7 @@ public class ConditionalOnJndiTests {
 		this.condition.setFoundLocation("java:/b");
 		ConditionOutcome outcome = this.condition.getMatchOutcome(null,
 				mockMetaData("java:/a", "java:/b"));
-		assertThat(outcome.isMatch(), equalTo(true));
+		assertThat(outcome.isMatch()).isTrue();
 	}
 
 	private void setupJndi() {
@@ -132,9 +128,7 @@ public class ConditionalOnJndiTests {
 	}
 
 	private void assertPresent(boolean expected) {
-		int expectedNumber = expected ? 1 : 0;
-		Matcher<Iterable<String>> matcher = iterableWithSize(expectedNumber);
-		assertThat(this.context.getBeansOfType(String.class).values(), is(matcher));
+		assertThat(this.context.getBeansOfType(String.class)).hasSize(expected ? 1 : 0);
 	}
 
 	private void load(Class<?> config, String... environment) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.LinkDiscoverer;
@@ -41,12 +41,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HypermediaAutoConfiguration}.
@@ -73,9 +68,9 @@ public class HypermediaAutoConfigurationTests {
 		this.context.register(BaseConfig.class);
 		this.context.refresh();
 		LinkDiscoverers discoverers = this.context.getBean(LinkDiscoverers.class);
-		assertNotNull(discoverers);
+		assertThat(discoverers).isNotNull();
 		LinkDiscoverer discoverer = discoverers.getLinkDiscovererFor(MediaTypes.HAL_JSON);
-		assertTrue(HalLinkDiscoverer.class.isInstance(discoverer));
+		assertThat(HalLinkDiscoverer.class.isInstance(discoverer)).isTrue();
 	}
 
 	@Test
@@ -85,7 +80,7 @@ public class HypermediaAutoConfigurationTests {
 		this.context.register(BaseConfig.class);
 		this.context.refresh();
 		EntityLinks discoverers = this.context.getBean(EntityLinks.class);
-		assertNotNull(discoverers);
+		assertThat(discoverers).isNotNull();
 	}
 
 	@Test
@@ -99,7 +94,7 @@ public class HypermediaAutoConfigurationTests {
 		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
 				ObjectMapper.class);
 		assertThat(objectMapper.getSerializationConfig()
-				.isEnabled(SerializationFeature.INDENT_OUTPUT), is(false));
+				.isEnabled(SerializationFeature.INDENT_OUTPUT)).isFalse();
 	}
 
 	@Test
@@ -112,8 +107,8 @@ public class HypermediaAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
 				ObjectMapper.class);
-		assertTrue(objectMapper.getSerializationConfig()
-				.isEnabled(SerializationFeature.INDENT_OUTPUT));
+		assertThat(objectMapper.getSerializationConfig()
+				.isEnabled(SerializationFeature.INDENT_OUTPUT)).isTrue();
 	}
 
 	@Test
@@ -126,8 +121,8 @@ public class HypermediaAutoConfigurationTests {
 				.getBean(RequestMappingHandlerAdapter.class);
 		for (HttpMessageConverter<?> converter : handlerAdapter.getMessageConverters()) {
 			if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-				assertThat(converter.getSupportedMediaTypes(), containsInAnyOrder(
-						MediaType.APPLICATION_JSON, MediaTypes.HAL_JSON));
+				assertThat(converter.getSupportedMediaTypes())
+						.contains(MediaType.APPLICATION_JSON, MediaTypes.HAL_JSON);
 			}
 		}
 	}
@@ -144,8 +139,8 @@ public class HypermediaAutoConfigurationTests {
 				.getBean(RequestMappingHandlerAdapter.class);
 		for (HttpMessageConverter<?> converter : handlerAdapter.getMessageConverters()) {
 			if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-				assertThat(converter.getSupportedMediaTypes(),
-						contains(MediaTypes.HAL_JSON));
+				assertThat(converter.getSupportedMediaTypes())
+						.containsExactly(MediaTypes.HAL_JSON);
 			}
 		}
 	}

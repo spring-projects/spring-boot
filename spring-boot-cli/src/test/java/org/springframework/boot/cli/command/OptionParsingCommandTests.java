@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import org.junit.Test;
 
 import org.springframework.boot.cli.command.options.OptionHandler;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link OptionParsingCommand}.
@@ -34,9 +33,17 @@ public class OptionParsingCommandTests {
 	public void optionHelp() {
 		OptionHandler handler = new OptionHandler();
 		handler.option("bar", "Bar");
-		OptionParsingCommand command = new OptionParsingCommand("foo", "Foo", handler) {
-		};
-		assertThat(command.getHelp(), containsString("--bar"));
+		OptionParsingCommand command = new TestOptionParsingCommand("foo", "Foo",
+				handler);
+		assertThat(command.getHelp()).contains("--bar");
+	}
+
+	private static class TestOptionParsingCommand extends OptionParsingCommand {
+
+		TestOptionParsingCommand(String name, String description, OptionHandler handler) {
+			super(name, description, handler);
+		}
+
 	}
 
 }

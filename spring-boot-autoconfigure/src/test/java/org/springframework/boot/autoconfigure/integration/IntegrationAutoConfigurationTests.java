@@ -30,8 +30,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link IntegrationAutoConfiguration}.
@@ -56,7 +55,7 @@ public class IntegrationAutoConfigurationTests {
 	@Test
 	public void integrationIsAvailable() {
 		load();
-		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
+		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 	}
 
 	@Test
@@ -71,7 +70,7 @@ public class IntegrationAutoConfigurationTests {
 		this.context.register(JmxAutoConfiguration.class,
 				IntegrationAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
+		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 		((ConfigurableApplicationContext) this.context.getParent()).close();
 		this.context.close();
 	}
@@ -87,7 +86,7 @@ public class IntegrationAutoConfigurationTests {
 	@Test
 	public void disableJmxIntegration() {
 		load("spring.jmx.enabled=false");
-		assertEquals(0, this.context.getBeansOfType(MBeanServer.class).size());
+		assertThat(this.context.getBeansOfType(MBeanServer.class)).hasSize(0);
 	}
 
 	@Test
@@ -103,7 +102,7 @@ public class IntegrationAutoConfigurationTests {
 			String... domains) {
 		List<String> actual = Arrays.asList(mBeanServer.getDomains());
 		for (String domain : domains) {
-			assertEquals(expected, actual.contains(domain));
+			assertThat(actual.contains(domain)).isEqualTo(expected);
 		}
 	}
 

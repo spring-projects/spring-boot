@@ -118,7 +118,8 @@ public class ResourceProperties implements ResourceLoaderAware {
 	}
 
 	List<Resource> getFaviconLocations() {
-		List<Resource> locations = new ArrayList<Resource>(this.staticLocations.length + 1);
+		List<Resource> locations = new ArrayList<Resource>(
+				this.staticLocations.length + 1);
 		if (this.resourceLoader != null) {
 			for (String location : this.staticLocations) {
 				locations.add(this.resourceLoader.getResource(location));
@@ -169,6 +170,12 @@ public class ResourceProperties implements ResourceLoaderAware {
 		 */
 		private boolean htmlApplicationCache = false;
 
+		/**
+		 * Enable resolution of already gzipped resources. Checks for a resource name
+		 * variant with the {@code *.gz} extension.
+		 */
+		private boolean gzipped = false;
+
 		@NestedConfigurationProperty
 		private final Strategy strategy = new Strategy();
 
@@ -206,6 +213,14 @@ public class ResourceProperties implements ResourceLoaderAware {
 
 		public void setHtmlApplicationCache(boolean htmlApplicationCache) {
 			this.htmlApplicationCache = htmlApplicationCache;
+		}
+
+		public boolean isGzipped() {
+			return this.gzipped;
+		}
+
+		public void setGzipped(boolean gzipped) {
+			this.gzipped = gzipped;
 		}
 
 	}
@@ -277,7 +292,7 @@ public class ResourceProperties implements ResourceLoaderAware {
 		/**
 		 * Comma-separated list of patterns to apply to the Version Strategy.
 		 */
-		private String[] paths;
+		private String[] paths = new String[] { "/**" };
 
 		/**
 		 * Version string to use for the Version Strategy.

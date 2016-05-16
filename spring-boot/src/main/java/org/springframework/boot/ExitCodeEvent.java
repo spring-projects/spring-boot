@@ -41,7 +41,7 @@ public class ExitCodeEvent extends ApplicationEvent {
 
 	/**
 	 * Return the exit code that will be used to exit the JVM.
-	 * @return the the exit code
+	 * @return the exit code
 	 */
 	public int getExitCode() {
 		return this.exitCode;

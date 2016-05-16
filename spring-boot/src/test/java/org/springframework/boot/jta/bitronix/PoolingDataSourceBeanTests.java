@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,10 @@ import java.sql.Connection;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
+import bitronix.tm.TransactionManagerServices;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -40,16 +40,16 @@ public class PoolingDataSourceBeanTests {
 
 	@Test
 	public void sensibleDefaults() throws Exception {
-		assertThat(this.bean.getMaxPoolSize(), equalTo(10));
-		assertThat(this.bean.getAutomaticEnlistingEnabled(), equalTo(true));
-		assertThat(this.bean.isEnableJdbc4ConnectionTest(), equalTo(true));
+		assertThat(this.bean.getMaxPoolSize()).isEqualTo(10);
+		assertThat(this.bean.getAutomaticEnlistingEnabled()).isTrue();
+		assertThat(this.bean.isEnableJdbc4ConnectionTest()).isTrue();
 	}
 
 	@Test
 	public void setsUniqueNameIfNull() throws Exception {
 		this.bean.setBeanName("beanName");
 		this.bean.afterPropertiesSet();
-		assertThat(this.bean.getUniqueName(), equalTo("beanName"));
+		assertThat(this.bean.getUniqueName()).isEqualTo("beanName");
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class PoolingDataSourceBeanTests {
 		this.bean.setBeanName("beanName");
 		this.bean.setUniqueName("un");
 		this.bean.afterPropertiesSet();
-		assertThat(this.bean.getUniqueName(), equalTo("un"));
+		assertThat(this.bean.getUniqueName()).isEqualTo("un");
 	}
 
 	@Test
@@ -73,6 +73,7 @@ public class PoolingDataSourceBeanTests {
 		this.bean.init();
 		this.bean.createPooledConnection(dataSource, this.bean);
 		verify(dataSource).getXAConnection();
+		TransactionManagerServices.getTaskScheduler().shutdown();
 	}
 
 }

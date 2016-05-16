@@ -14,6 +14,7 @@
 			<includes>
 				<include>${project.groupId}:${project.artifactId}</include>
 			</includes>
+			<outputDirectory>BOOT-INF/classes</outputDirectory>
 			<unpack>true</unpack>
 		</dependencySet>
 	</dependencySets>

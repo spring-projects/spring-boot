@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,7 @@ import org.eclipse.aether.transfer.TransferResource;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DetailedProgressReporter}.
@@ -62,9 +58,8 @@ public final class DetailedProgressReporterTests {
 		TransferEvent startedEvent = new TransferEvent.Builder(this.session,
 				this.resource).build();
 		this.session.getTransferListener().transferStarted(startedEvent);
-
-		assertEquals(String.format("Downloading: %s%s%n", REPOSITORY, ARTIFACT),
-				new String(this.baos.toByteArray()));
+		assertThat(new String(this.baos.toByteArray()))
+				.isEqualTo(String.format("Downloading: %s%s%n", REPOSITORY, ARTIFACT));
 	}
 
 	@Test
@@ -75,9 +70,10 @@ public final class DetailedProgressReporterTests {
 				this.resource).addTransferredBytes(4096).build();
 		this.session.getTransferListener().transferSucceeded(completedEvent);
 		String message = new String(this.baos.toByteArray()).replace("\\", "/");
-		assertThat(message, startsWith("Downloaded: " + REPOSITORY + ARTIFACT));
-		assertThat(message, containsString("4KB at"));
-		assertThat(message, containsString("KB/sec"));
-		assertThat(message, endsWith("\n"));
+		assertThat(message).startsWith("Downloaded: " + REPOSITORY + ARTIFACT);
+		assertThat(message).contains("4KB at");
+		assertThat(message).contains("KB/sec");
+		assertThat(message).endsWith("\n");
 	}
+
 }

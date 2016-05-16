@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HttpHeaderAccessManager}.
@@ -87,24 +86,24 @@ public class HttpHeaderAccessManagerTests {
 	@Test
 	public void allowsMatching() throws Exception {
 		this.request.addHeader(HEADER, SECRET);
-		assertThat(this.manager.isAllowed(this.serverRequest), equalTo(true));
+		assertThat(this.manager.isAllowed(this.serverRequest)).isTrue();
 	}
 
 	@Test
 	public void disallowsWrongSecret() throws Exception {
 		this.request.addHeader(HEADER, "wrong");
-		assertThat(this.manager.isAllowed(this.serverRequest), equalTo(false));
+		assertThat(this.manager.isAllowed(this.serverRequest)).isFalse();
 	}
 
 	@Test
 	public void disallowsNoSecret() throws Exception {
-		assertThat(this.manager.isAllowed(this.serverRequest), equalTo(false));
+		assertThat(this.manager.isAllowed(this.serverRequest)).isFalse();
 	}
 
 	@Test
 	public void disallowsWrongHeader() throws Exception {
 		this.request.addHeader("X-WRONG", SECRET);
-		assertThat(this.manager.isAllowed(this.serverRequest), equalTo(false));
+		assertThat(this.manager.isAllowed(this.serverRequest)).isFalse();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.Scope;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.ServletContextInitializerBeans;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.core.io.Resource;
@@ -93,7 +97,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 * default. To change the default behaviour you can use a
 	 * {@link ServletRegistrationBean} or a different bean name.
 	 */
-	public static final String DISPATCHER_SERVLET_NAME = ServletContextInitializerBeans.DISPATCHER_SERVLET_NAME;
+	public static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
 
 	private volatile EmbeddedServletContainer embeddedServletContainer;
 
@@ -202,7 +206,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 * @return the self initializer
 	 * @see #prepareEmbeddedWebApplicationContext(ServletContext)
 	 */
-	private ServletContextInitializer getSelfInitializer() {
+	private org.springframework.boot.web.servlet.ServletContextInitializer getSelfInitializer() {
 		return new ServletContextInitializer() {
 			@Override
 			public void onStartup(ServletContext servletContext) throws ServletException {

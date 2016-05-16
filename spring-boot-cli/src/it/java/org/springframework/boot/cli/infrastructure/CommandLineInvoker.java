@@ -144,7 +144,9 @@ public final class CommandLineInvoker {
 			List<String> lines = new ArrayList<String>();
 			try {
 				while ((line = reader.readLine()) != null) {
-					lines.add(line);
+					if (!line.startsWith("Picked up ")) {
+						lines.add(line);
+					}
 				}
 			}
 			catch (IOException ex) {

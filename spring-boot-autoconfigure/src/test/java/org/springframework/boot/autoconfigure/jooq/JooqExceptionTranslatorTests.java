@@ -29,9 +29,7 @@ import org.mockito.ArgumentCaptor;
 
 import org.springframework.jdbc.BadSqlGrammarException;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -88,7 +86,7 @@ public class JooqExceptionTranslatorTests {
 		ArgumentCaptor<RuntimeException> captor = ArgumentCaptor
 				.forClass(RuntimeException.class);
 		verify(context).exception(captor.capture());
-		assertThat(captor.getValue(), is(instanceOf(BadSqlGrammarException.class)));
+		assertThat(captor.getValue()).isInstanceOf(BadSqlGrammarException.class);
 	}
 
 }

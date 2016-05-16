@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package org.springframework.boot.autoconfigure.social;
 
 import org.junit.Test;
 
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.linkedin.api.LinkedIn;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for Spring Social configuration with multiple API providers.
@@ -38,7 +38,7 @@ public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurat
 		setupContext("spring.social.twitter.appId:12345",
 				"spring.social.twitter.appSecret:secret");
 		assertConnectionFrameworkBeans();
-		assertNotNull(this.context.getBean(Twitter.class));
+		assertThat(this.context.getBean(Twitter.class)).isNotNull();
 		assertMissingBean(Facebook.class);
 		assertMissingBean(LinkedIn.class);
 	}
@@ -48,7 +48,7 @@ public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurat
 		setupContext("spring.social.facebook.appId:12345",
 				"spring.social.facebook.appSecret:secret");
 		assertConnectionFrameworkBeans();
-		assertNotNull(this.context.getBean(Facebook.class));
+		assertThat(this.context.getBean(Facebook.class)).isNotNull();
 		assertMissingBean(Twitter.class);
 		assertMissingBean(LinkedIn.class);
 	}
@@ -58,7 +58,7 @@ public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurat
 		setupContext("spring.social.linkedin.appId:12345",
 				"spring.social.linkedin.appSecret:secret");
 		assertConnectionFrameworkBeans();
-		assertNotNull(this.context.getBean(LinkedIn.class));
+		assertThat(this.context.getBean(LinkedIn.class)).isNotNull();
 		assertMissingBean(Twitter.class);
 		assertMissingBean(Facebook.class);
 	}
@@ -70,8 +70,8 @@ public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurat
 				"spring.social.linkedin.appId:12345",
 				"spring.social.linkedin.appSecret:secret");
 		assertConnectionFrameworkBeans();
-		assertNotNull(this.context.getBean(Facebook.class));
-		assertNotNull(this.context.getBean(LinkedIn.class));
+		assertThat(this.context.getBean(Facebook.class)).isNotNull();
+		assertThat(this.context.getBean(LinkedIn.class)).isNotNull();
 		assertMissingBean(Twitter.class);
 	}
 
@@ -82,8 +82,8 @@ public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurat
 				"spring.social.twitter.appId:12345",
 				"spring.social.twitter.appSecret:secret");
 		assertConnectionFrameworkBeans();
-		assertNotNull(this.context.getBean(Facebook.class));
-		assertNotNull(this.context.getBean(Twitter.class));
+		assertThat(this.context.getBean(Facebook.class)).isNotNull();
+		assertThat(this.context.getBean(Twitter.class)).isNotNull();
 		assertMissingBean(LinkedIn.class);
 	}
 
@@ -94,8 +94,8 @@ public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurat
 				"spring.social.twitter.appId:12345",
 				"spring.social.twitter.appSecret:secret");
 		assertConnectionFrameworkBeans();
-		assertNotNull(this.context.getBean(LinkedIn.class));
-		assertNotNull(this.context.getBean(Twitter.class));
+		assertThat(this.context.getBean(LinkedIn.class)).isNotNull();
+		assertThat(this.context.getBean(Twitter.class)).isNotNull();
 		assertMissingBean(Facebook.class);
 	}
 

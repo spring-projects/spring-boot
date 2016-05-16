@@ -30,6 +30,8 @@ import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
 import javax.validation.constraints.NotNull;
 
+import io.undertow.Undertow.Builder;
+import io.undertow.UndertowOptions;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
@@ -37,6 +39,13 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.HandlerWrapper;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties.Session.Cookie;
 import org.springframework.boot.cloud.CloudPlatform;
@@ -47,16 +56,18 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.InitParameterConfiguringServletContextInitializer;
 import org.springframework.boot.context.embedded.JspServlet;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowBuilderCustomizer;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
@@ -73,6 +84,8 @@ import org.springframework.util.StringUtils;
  * @author Ivan Sopov
  * @author Marcos Barbero
  * @author Eddú Meléndez
+ * @author Quinten De Swaef
+ * @author Venil Noronha
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties
@@ -121,6 +134,16 @@ public class ServerProperties
 	 * Value to use for the server header (uses servlet container default if empty).
 	 */
 	private String serverHeader;
+
+	/**
+	 * Maximum size in bytes of the HTTP message header.
+	 */
+	private int maxHttpHeaderSize = 0; // bytes
+
+	/**
+	 * Maximum size in bytes of the HTTP post content.
+	 */
+	private int maxHttpPostSize = 0; // bytes
 
 	private Session session = new Session();
 
@@ -319,33 +342,28 @@ public class ServerProperties
 		this.serverHeader = serverHeader;
 	}
 
+	public int getMaxHttpHeaderSize() {
+		return this.maxHttpHeaderSize;
+	}
+
+	public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
+		this.maxHttpHeaderSize = maxHttpHeaderSize;
+	}
+
+	public int getMaxHttpPostSize() {
+		return this.maxHttpPostSize;
+	}
+
+	public void setMaxHttpPostSize(int maxHttpPostSize) {
+		this.maxHttpPostSize = maxHttpPostSize;
+	}
+
 	protected final boolean getOrDeduceUseForwardHeaders() {
 		if (this.useForwardHeaders != null) {
 			return this.useForwardHeaders;
 		}
 		CloudPlatform platform = CloudPlatform.getActive(this.environment);
 		return (platform == null ? false : platform.isUsingForwardHeaders());
-	}
-
-	/**
-	 * Get the session timeout.
-	 * @return the session timeout
-	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
-	 */
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "server.session.timeout")
-	public Integer getSessionTimeout() {
-		return this.session.getTimeout();
-	}
-
-	/**
-	 * Set the session timeout.
-	 * @param sessionTimeout the session timeout
-	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
-	 */
-	@Deprecated
-	public void setSessionTimeout(Integer sessionTimeout) {
-		this.session.setTimeout(sessionTimeout);
 	}
 
 	public ErrorProperties getError() {
@@ -384,7 +402,7 @@ public class ServerProperties
 		return this.tomcat;
 	}
 
-	private Jetty getJetty() {
+	public Jetty getJetty() {
 		return this.jetty;
 	}
 
@@ -603,6 +621,11 @@ public class ServerProperties
 		private int maxThreads = 0; // Number of threads in protocol handler
 
 		/**
+		 * Minimum amount of worker threads.
+		 */
+		private int minSpareThreads = 0; // Minimum spare threads in protocol handler
+
+		/**
 		 * Maximum size in bytes of the HTTP message header.
 		 */
 		private int maxHttpHeaderSize = 0; // bytes
@@ -620,58 +643,39 @@ public class ServerProperties
 			this.maxThreads = maxThreads;
 		}
 
+		public int getMinSpareThreads() {
+			return this.minSpareThreads;
+		}
+
+		public void setMinSpareThreads(int minSpareThreads) {
+			this.minSpareThreads = minSpareThreads;
+		}
+
+		/**
+		 * Get the max http header size.
+		 * @return the max http header size.
+		 * @deprecated as of 1.4 in favor of
+		 * {@link ServerProperties#getMaxHttpHeaderSize()}
+		 */
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.max-http-header-size")
 		public int getMaxHttpHeaderSize() {
 			return this.maxHttpHeaderSize;
 		}
 
+		/**
+		 * Set the max http header size.
+		 * @param maxHttpHeaderSize the max http header size.
+		 * @deprecated as of 1.4 in favor of
+		 * {@link ServerProperties#setMaxHttpHeaderSize(int)}
+		 */
+		@Deprecated
 		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
 			this.maxHttpHeaderSize = maxHttpHeaderSize;
 		}
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;
-		}
-
-		/**
-		 * Specify if access log is enabled.
-		 * @return {@code true} if access log is enabled
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.enabled}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.tomcat.accesslog.enabled")
-		public boolean getAccessLogEnabled() {
-			return this.accesslog.isEnabled();
-		}
-
-		/**
-		 * Set if access log is enabled.
-		 * @param accessLogEnabled the access log enable flag
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.enabled}
-		 */
-		@Deprecated
-		public void setAccessLogEnabled(boolean accessLogEnabled) {
-			getAccesslog().setEnabled(accessLogEnabled);
-		}
-
-		/**
-		 * Get the format pattern for access logs.
-		 * @return the format pattern for access logs
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.pattern}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.tomcat.accesslog.pattern")
-		public String getAccessLogPattern() {
-			return this.accesslog.getPattern();
-		}
-
-		/**
-		 * Set the format pattern for access logs.
-		 * @param accessLogPattern the pattern for access logs
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.pattern}
-		 */
-		@Deprecated
-		public void setAccessLogPattern(String accessLogPattern) {
-			this.accesslog.setPattern(accessLogPattern);
 		}
 
 		public int getBackgroundProcessorDelay() {
@@ -748,8 +752,16 @@ public class ServerProperties
 			if (this.maxThreads > 0) {
 				customizeMaxThreads(factory);
 			}
-			if (this.maxHttpHeaderSize > 0) {
-				customizeMaxHttpHeaderSize(factory);
+			if (this.minSpareThreads > 0) {
+				customizeMinThreads(factory);
+			}
+			int maxHttpHeaderSize = (serverProperties.getMaxHttpHeaderSize() > 0
+					? serverProperties.getMaxHttpHeaderSize() : this.maxHttpHeaderSize);
+			if (maxHttpHeaderSize > 0) {
+				customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize);
+			}
+			if (serverProperties.getMaxHttpPostSize() > 0) {
+				customizeMaxHttpPostSize(factory, serverProperties.getMaxHttpPostSize());
 			}
 			if (this.accesslog.enabled) {
 				customizeAccessLog(factory);
@@ -812,8 +824,25 @@ public class ServerProperties
 		}
 
 		@SuppressWarnings("rawtypes")
+		private void customizeMinThreads(TomcatEmbeddedServletContainerFactory factory) {
+			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+				@Override
+				public void customize(Connector connector) {
+
+					ProtocolHandler handler = connector.getProtocolHandler();
+					if (handler instanceof AbstractProtocol) {
+						AbstractProtocol protocol = (AbstractProtocol) handler;
+						protocol.setMinSpareThreads(Tomcat.this.minSpareThreads);
+					}
+
+				}
+			});
+		}
+
+		@SuppressWarnings("rawtypes")
 		private void customizeMaxHttpHeaderSize(
-				TomcatEmbeddedServletContainerFactory factory) {
+				TomcatEmbeddedServletContainerFactory factory,
+				final int maxHttpHeaderSize) {
 			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
 
 				@Override
@@ -821,8 +850,21 @@ public class ServerProperties
 					ProtocolHandler handler = connector.getProtocolHandler();
 					if (handler instanceof AbstractHttp11Protocol) {
 						AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
-						protocol.setMaxHttpHeaderSize(Tomcat.this.maxHttpHeaderSize);
+						protocol.setMaxHttpHeaderSize(maxHttpHeaderSize);
 					}
+				}
+
+			});
+		}
+
+		private void customizeMaxHttpPostSize(
+				TomcatEmbeddedServletContainerFactory factory,
+				final int maxHttpPostSize) {
+			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+
+				@Override
+				public void customize(Connector connector) {
+					connector.setMaxPostSize(maxHttpPostSize);
 				}
 
 			});
@@ -908,11 +950,109 @@ public class ServerProperties
 
 	}
 
-	private static class Jetty {
+	public static class Jetty {
+
+		/**
+		 * Number of acceptor threads to use.
+		 */
+		private Integer acceptors;
+
+		/**
+		 * Number of selector threads to use.
+		 */
+		private Integer selectors;
+
+		public Integer getAcceptors() {
+			return this.acceptors;
+		}
+
+		public void setAcceptors(Integer acceptors) {
+			this.acceptors = acceptors;
+		}
+
+		public Integer getSelectors() {
+			return this.selectors;
+		}
+
+		public void setSelectors(Integer selectors) {
+			this.selectors = selectors;
+		}
 
 		void customizeJetty(ServerProperties serverProperties,
 				JettyEmbeddedServletContainerFactory factory) {
 			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
+			if (this.acceptors != null) {
+				factory.setAcceptors(this.acceptors);
+			}
+			if (this.selectors != null) {
+				factory.setSelectors(this.selectors);
+			}
+			if (serverProperties.getMaxHttpHeaderSize() > 0) {
+				customizeMaxHttpHeaderSize(factory,
+						serverProperties.getMaxHttpHeaderSize());
+			}
+			if (serverProperties.getMaxHttpPostSize() > 0) {
+				customizeMaxHttpPostSize(factory, serverProperties.getMaxHttpPostSize());
+			}
+		}
+
+		private void customizeMaxHttpHeaderSize(
+				JettyEmbeddedServletContainerFactory factory,
+				final int maxHttpHeaderSize) {
+			factory.addServerCustomizers(new JettyServerCustomizer() {
+
+				@Override
+				public void customize(Server server) {
+					for (org.eclipse.jetty.server.Connector connector : server
+							.getConnectors()) {
+						for (ConnectionFactory connectionFactory : connector
+								.getConnectionFactories()) {
+							if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
+								customize(
+										(HttpConfiguration.ConnectionFactory) connectionFactory);
+							}
+						}
+					}
+
+				}
+
+				private void customize(HttpConfiguration.ConnectionFactory factory) {
+					HttpConfiguration configuration = factory.getHttpConfiguration();
+					configuration.setRequestHeaderSize(maxHttpHeaderSize);
+					configuration.setResponseHeaderSize(maxHttpHeaderSize);
+				}
+
+			});
+		}
+
+		private void customizeMaxHttpPostSize(
+				JettyEmbeddedServletContainerFactory factory, final int maxHttpPostSize) {
+			factory.addServerCustomizers(new JettyServerCustomizer() {
+
+				@Override
+				public void customize(Server server) {
+					setHandlerMaxHttpPostSize(maxHttpPostSize, server.getHandlers());
+				}
+
+				private void setHandlerMaxHttpPostSize(int maxHttpPostSize,
+						Handler... handlers) {
+					for (Handler handler : handlers) {
+						if (handler instanceof ContextHandler) {
+							((ContextHandler) handler)
+									.setMaxFormContentSize(maxHttpPostSize);
+						}
+						else if (handler instanceof HandlerWrapper) {
+							setHandlerMaxHttpPostSize(maxHttpPostSize,
+									((HandlerWrapper) handler).getHandler());
+						}
+						else if (handler instanceof HandlerCollection) {
+							setHandlerMaxHttpPostSize(maxHttpPostSize,
+									((HandlerCollection) handler).getHandlers());
+						}
+					}
+				}
+
+			});
 		}
 
 	}
@@ -990,69 +1130,6 @@ public class ServerProperties
 			return this.accesslog;
 		}
 
-		/**
-		 * Get the format pattern for access logs.
-		 * @return the format pattern for access logs
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.pattern}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.undertow.accesslog.pattern")
-		public String getAccessLogPattern() {
-			return this.accesslog.getPattern();
-		}
-
-		/**
-		 * Set the format pattern for access logs.
-		 * @param accessLogPattern the pattern for access logs
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.pattern}
-		 */
-		@Deprecated
-		public void setAccessLogPattern(String accessLogPattern) {
-			this.accesslog.setPattern(accessLogPattern);
-		}
-
-		/**
-		 * Specify if access log is enabled.
-		 * @return {@code true} if access log is enabled
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.enabled}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.undertow.accesslog.enabled")
-		public boolean isAccessLogEnabled() {
-			return Boolean.TRUE.equals(this.accesslog.getEnabled());
-		}
-
-		/**
-		 * Set if access log is enabled.
-		 * @param accessLogEnabled the access log enable flag
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.enabled}
-		 */
-		@Deprecated
-		public void setAccessLogEnabled(boolean accessLogEnabled) {
-			getAccesslog().setEnabled(accessLogEnabled);
-		}
-
-		/**
-		 * Get the access log directory.
-		 * @return the access log directory
-		 * @deprecated since 1.3.0 in favor of {@code server.undertow.accesslog.dir}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.undertow.accesslog.dir")
-		public File getAccessLogDir() {
-			return this.accesslog.getDir();
-		}
-
-		/**
-		 * Set the access log directory.
-		 * @param accessLogDir the access log directory
-		 * @deprecated since 1.3.0 in favor of {@code server.tomcat.accesslog.dir}
-		 */
-		@Deprecated
-		public void setAccessLogDir(File accessLogDir) {
-			getAccesslog().setDir(accessLogDir);
-		}
-
 		void customizeUndertow(ServerProperties serverProperties,
 				UndertowEmbeddedServletContainerFactory factory) {
 			if (this.bufferSize != null) {
@@ -1080,6 +1157,41 @@ public class ServerProperties
 				factory.setAccessLogEnabled(this.accesslog.enabled);
 			}
 			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
+			if (serverProperties.getMaxHttpHeaderSize() > 0) {
+				customizeMaxHttpHeaderSize(factory,
+						serverProperties.getMaxHttpHeaderSize());
+			}
+			if (serverProperties.getMaxHttpPostSize() > 0) {
+				customizeMaxHttpPostSize(factory, serverProperties.getMaxHttpPostSize());
+			}
+		}
+
+		private void customizeMaxHttpHeaderSize(
+				UndertowEmbeddedServletContainerFactory factory,
+				final int maxHttpHeaderSize) {
+			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
+
+				@Override
+				public void customize(Builder builder) {
+					builder.setServerOption(UndertowOptions.MAX_HEADER_SIZE,
+							maxHttpHeaderSize);
+				}
+
+			});
+		}
+
+		private void customizeMaxHttpPostSize(
+				UndertowEmbeddedServletContainerFactory factory,
+				final int maxHttpPostSize) {
+			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
+
+				@Override
+				public void customize(Builder builder) {
+					builder.setServerOption(UndertowOptions.MAX_ENTITY_SIZE,
+							(long) maxHttpPostSize);
+				}
+
+			});
 		}
 
 		public static class Accesslog {

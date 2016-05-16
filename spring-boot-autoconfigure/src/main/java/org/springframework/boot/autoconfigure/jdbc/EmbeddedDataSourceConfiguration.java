@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,8 +40,11 @@ public class EmbeddedDataSourceConfiguration implements BeanClassLoaderAware {
 
 	private ClassLoader classLoader;
 
-	@Autowired
-	private DataSourceProperties properties;
+	private final DataSourceProperties properties;
+
+	public EmbeddedDataSourceConfiguration(DataSourceProperties properties) {
+		this.properties = properties;
+	}
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {

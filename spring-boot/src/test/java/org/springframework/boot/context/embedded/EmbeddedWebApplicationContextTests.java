@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,10 @@ package org.springframework.boot.context.embedded;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.EnumSet;
 import java.util.Properties;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
@@ -48,7 +50,10 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer;
+import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -63,14 +68,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.SessionScope;
 import org.springframework.web.filter.GenericFilterBean;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
@@ -87,6 +85,10 @@ import static org.mockito.Mockito.withSettings;
  * @author Stephane Nicoll
  */
 public class EmbeddedWebApplicationContextTests {
+
+	private static final EnumSet<DispatcherType> ASYNC_DISPATCHER_TYPES = EnumSet.of(
+			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST,
+			DispatcherType.ASYNC);
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -115,20 +117,19 @@ public class EmbeddedWebApplicationContextTests {
 		MockEmbeddedServletContainerFactory escf = getEmbeddedServletContainerFactory();
 
 		// Ensure that the context has been setup
-		assertThat(this.context.getServletContext(), equalTo(escf.getServletContext()));
+		assertThat(this.context.getServletContext()).isEqualTo(escf.getServletContext());
 		verify(escf.getServletContext()).setAttribute(
 				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
 				this.context);
 
 		// Ensure WebApplicationContextUtils.registerWebApplicationScopes was called
-		assertThat(
-				this.context.getBeanFactory()
-						.getRegisteredScope(WebApplicationContext.SCOPE_SESSION),
-				instanceOf(SessionScope.class));
+		assertThat(this.context.getBeanFactory()
+				.getRegisteredScope(WebApplicationContext.SCOPE_SESSION))
+						.isInstanceOf(SessionScope.class);
 
 		// Ensure WebApplicationContextUtils.registerEnvironmentBeans was called
-		assertThat(this.context.containsBean(
-				WebApplicationContext.SERVLET_CONTEXT_BEAN_NAME), equalTo(true));
+		assertThat(this.context
+				.containsBean(WebApplicationContext.SERVLET_CONTEXT_BEAN_NAME)).isTrue();
 	}
 
 	@Test
@@ -142,7 +143,7 @@ public class EmbeddedWebApplicationContextTests {
 				.getDeclaredField("shutdownHook");
 		shutdownHookField.setAccessible(true);
 		Object shutdownHook = shutdownHookField.get(this.context);
-		assertThat(shutdownHook, nullValue());
+		assertThat(shutdownHook).isNull();
 	}
 
 	@Test
@@ -153,9 +154,9 @@ public class EmbeddedWebApplicationContextTests {
 		this.context.refresh();
 		EmbeddedServletContainerInitializedEvent event = this.context
 				.getBean(MockListener.class).getEvent();
-		assertNotNull(event);
-		assertTrue(event.getSource().getPort() >= 0);
-		assertEquals(this.context, event.getApplicationContext());
+		assertThat(event).isNotNull();
+		assertThat(event.getSource().getPort() >= 0).isTrue();
+		assertThat(event.getApplicationContext()).isEqualTo(this.context);
 	}
 
 	@Test
@@ -164,8 +165,8 @@ public class EmbeddedWebApplicationContextTests {
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
 		ConfigurableEnvironment environment = this.context.getEnvironment();
-		assertTrue(environment.containsProperty("local.server.port"));
-		assertEquals("8080", environment.getProperty("local.server.port"));
+		assertThat(environment.containsProperty("local.server.port")).isTrue();
+		assertThat(environment.getProperty("local.server.port")).isEqualTo("8080");
 	}
 
 	@Test
@@ -240,7 +241,7 @@ public class EmbeddedWebApplicationContextTests {
 		MockEmbeddedServletContainerFactory escf = getEmbeddedServletContainerFactory();
 		verify(escf.getServletContext()).addFilter("filterBean", filter);
 		verify(escf.getServletContext()).addFilter("object", registration.getFilter());
-		assertEquals(filter, escf.getRegisteredFilter(0).getFilter());
+		assertThat(escf.getRegisteredFilter(0).getFilter()).isEqualTo(filter);
 	}
 
 	@Test
@@ -310,10 +311,10 @@ public class EmbeddedWebApplicationContextTests {
 		verify(escf.getRegisteredServlet(0).getRegistration()).addMapping("/");
 		ordered.verify(escf.getServletContext()).addFilter("filterBean1", filter1);
 		ordered.verify(escf.getServletContext()).addFilter("filterBean2", filter2);
-		verify(escf.getRegisteredFilter(0).getRegistration()).addMappingForUrlPatterns(
-				AbstractFilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "/*");
-		verify(escf.getRegisteredFilter(1).getRegistration()).addMappingForUrlPatterns(
-				AbstractFilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "/*");
+		verify(escf.getRegisteredFilter(0).getRegistration())
+				.addMappingForUrlPatterns(ASYNC_DISPATCHER_TYPES, false, "/*");
+		verify(escf.getRegisteredFilter(1).getRegistration())
+				.addMappingForUrlPatterns(ASYNC_DISPATCHER_TYPES, false, "/*");
 	}
 
 	@Test
@@ -460,8 +461,8 @@ public class EmbeddedWebApplicationContextTests {
 				beanDefinition(propertySupport));
 
 		this.context.refresh();
-		assertThat(getEmbeddedServletContainerFactory().getContainer().getPort(),
-				equalTo(8080));
+		assertThat(getEmbeddedServletContainerFactory().getContainer().getPort())
+				.isEqualTo(8080);
 	}
 
 	@Test
@@ -473,12 +474,12 @@ public class EmbeddedWebApplicationContextTests {
 		factory.registerScope(WebApplicationContext.SCOPE_GLOBAL_SESSION, scope);
 		addEmbeddedServletContainerFactoryBean();
 		this.context.refresh();
-		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_REQUEST),
-				sameInstance(scope));
-		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_SESSION),
-				sameInstance(scope));
-		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_GLOBAL_SESSION),
-				sameInstance(scope));
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_REQUEST))
+				.isSameAs(scope);
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_SESSION))
+				.isSameAs(scope);
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_GLOBAL_SESSION))
+				.isSameAs(scope);
 	}
 
 	private void addEmbeddedServletContainerFactoryBean() {

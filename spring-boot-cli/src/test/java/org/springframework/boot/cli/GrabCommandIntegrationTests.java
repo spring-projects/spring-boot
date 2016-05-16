@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,7 @@ import org.junit.Test;
 import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.util.FileSystemUtils;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -58,9 +56,10 @@ public class GrabCommandIntegrationTests {
 
 		// Use --autoconfigure=false to limit the amount of downloaded dependencies
 		String output = this.cli.grab("grab.groovy", "--autoconfigure=false");
-		assertTrue(new File("target/repository/joda-time/joda-time").isDirectory());
+		assertThat(new File("target/repository/joda-time/joda-time").isDirectory())
+				.isTrue();
 		// Should be resolved from local repository cache
-		assertTrue(output.contains("Downloading: file:"));
+		assertThat(output.contains("Downloading: file:")).isTrue();
 	}
 
 	@Test
@@ -71,8 +70,8 @@ public class GrabCommandIntegrationTests {
 			fail();
 		}
 		catch (Exception ex) {
-			assertThat(ex.getMessage(),
-					containsString("Duplicate @DependencyManagementBom annotation"));
+			assertThat(ex.getMessage())
+					.contains("Duplicate @DependencyManagementBom annotation");
 		}
 	}
 
@@ -83,6 +82,7 @@ public class GrabCommandIntegrationTests {
 				new File("src/test/resources/grab-samples/repository"),
 				new File("target/repository"));
 		this.cli.grab("customDependencyManagement.groovy", "--autoconfigure=false");
-		assertTrue(new File("target/repository/javax/ejb/ejb-api/3.0").isDirectory());
+		assertThat(new File("target/repository/javax/ejb/ejb-api/3.0").isDirectory())
+				.isTrue();
 	}
 }

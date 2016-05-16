@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,16 +25,14 @@ import org.junit.Test;
 import redis.clients.jedis.Jedis;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.StringUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RedisAutoConfiguration}.
@@ -63,51 +61,63 @@ public class RedisAutoConfigurationTests {
 	@Test
 	public void testDefaultRedisConfiguration() throws Exception {
 		load();
-		assertNotNull(this.context.getBean("redisTemplate", RedisOperations.class));
-		assertNotNull(this.context.getBean(StringRedisTemplate.class));
+		assertThat(this.context.getBean("redisTemplate", RedisOperations.class))
+				.isNotNull();
+		assertThat(this.context.getBean(StringRedisTemplate.class)).isNotNull();
 	}
 
 	@Test
 	public void testOverrideRedisConfiguration() throws Exception {
 		load("spring.redis.host:foo", "spring.redis.database:1");
-		assertEquals("foo",
-				this.context.getBean(JedisConnectionFactory.class).getHostName());
-		assertEquals(1, this.context.getBean(JedisConnectionFactory.class).getDatabase());
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
+				.isEqualTo("foo");
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getDatabase())
+				.isEqualTo(1);
 	}
 
 	@Test
 	public void testRedisConfigurationWithPool() throws Exception {
 		load("spring.redis.host:foo", "spring.redis.pool.max-idle:1");
-		assertEquals("foo",
-				this.context.getBean(JedisConnectionFactory.class).getHostName());
-		assertEquals(1, this.context.getBean(JedisConnectionFactory.class).getPoolConfig()
-				.getMaxIdle());
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
+				.isEqualTo("foo");
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getPoolConfig()
+				.getMaxIdle()).isEqualTo(1);
 	}
 
 	@Test
 	public void testRedisConfigurationWithTimeout() throws Exception {
 		load("spring.redis.host:foo", "spring.redis.timeout:100");
-		assertEquals("foo",
-				this.context.getBean(JedisConnectionFactory.class).getHostName());
-		assertEquals(100,
-				this.context.getBean(JedisConnectionFactory.class).getTimeout());
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
+				.isEqualTo("foo");
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getTimeout())
+				.isEqualTo(100);
 	}
 
 	@Test
 	public void testRedisConfigurationWithSentinel() throws Exception {
 		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
-		if (isAtLeastOneSentinelAvailable(sentinels)) {
+		if (isAtLeastOneNodeAvailable(sentinels)) {
 			load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
 					+ StringUtils.collectionToCommaDelimitedString(sentinels));
-
-			assertTrue(this.context.getBean(JedisConnectionFactory.class)
-					.isRedisSentinelAware());
+			assertThat(this.context.getBean(JedisConnectionFactory.class)
+					.isRedisSentinelAware()).isTrue();
 		}
 	}
 
-	private boolean isAtLeastOneSentinelAvailable(List<String> sentinels) {
-		for (String sentinel : sentinels) {
-			if (isSentinelAvailable(sentinel)) {
+	@Test
+	public void testRedisConfigurationWithCluster() throws Exception {
+		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
+		if (isAtLeastOneNodeAvailable(clusterNodes)) {
+			load("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
+					"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));
+			assertThat(this.context.getBean(JedisConnectionFactory.class)
+					.getClusterConnection()).isNotNull();
+		}
+	}
+
+	private boolean isAtLeastOneNodeAvailable(List<String> nodes) {
+		for (String node : nodes) {
+			if (isAvailable(node)) {
 				return true;
 			}
 		}
@@ -115,7 +125,7 @@ public class RedisAutoConfigurationTests {
 		return false;
 	}
 
-	private boolean isSentinelAvailable(String node) {
+	private boolean isAvailable(String node) {
 		Jedis jedis = null;
 		try {
 			String[] hostAndPort = node.split(":");

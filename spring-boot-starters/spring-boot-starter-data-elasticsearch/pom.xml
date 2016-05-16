@@ -4,11 +4,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>1.3.6.BUILD-SNAPSHOT</version>
+		<version>1.4.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
 	<name>Spring Boot Data Elasticsearch Starter</name>
-	<description>Spring Boot Data Elasticsearch Starter</description>
+	<description>Starter for using Elasticsearch search and analytics engine and Spring
+		Data Elasticsearch</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

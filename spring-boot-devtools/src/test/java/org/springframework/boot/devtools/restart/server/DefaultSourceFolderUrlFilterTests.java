@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DefaultSourceFolderUrlFilter}.
@@ -76,14 +75,14 @@ public class DefaultSourceFolderUrlFilterTests {
 				+ "spring-boot-sample-devtools";
 		URL jarUrl = new URL("jar:file:/Users/me/tmp/"
 				+ "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/");
-		assertThat(this.filter.isMatch(sourceFolder, jarUrl), equalTo(true));
+		assertThat(this.filter.isMatch(sourceFolder, jarUrl)).isTrue();
 		URL nestedJarUrl = new URL("jar:file:/Users/me/tmp/"
 				+ "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/"
 				+ "lib/spring-boot-1.3.0.BUILD-SNAPSHOT.jar!/");
-		assertThat(this.filter.isMatch(sourceFolder, nestedJarUrl), equalTo(false));
+		assertThat(this.filter.isMatch(sourceFolder, nestedJarUrl)).isFalse();
 		URL fileUrl = new URL("file:/Users/me/tmp/"
 				+ "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar");
-		assertThat(this.filter.isMatch(sourceFolder, fileUrl), equalTo(true));
+		assertThat(this.filter.isMatch(sourceFolder, fileUrl)).isTrue();
 	}
 
 	private void doTest(String sourcePostfix) throws MalformedURLException {
@@ -99,7 +98,8 @@ public class DefaultSourceFolderUrlFilterTests {
 		for (String postfix : COMMON_POSTFIXES) {
 			for (URL url : getUrls(moduleRoot + postfix)) {
 				boolean match = this.filter.isMatch(sourceFolder, url);
-				assertThat(url + " against " + sourceFolder, match, equalTo(expected));
+				assertThat(match).as(url + " against " + sourceFolder)
+						.isEqualTo(expected);
 			}
 		}
 	}

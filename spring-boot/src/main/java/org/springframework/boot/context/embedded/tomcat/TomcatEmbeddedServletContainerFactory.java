@@ -51,6 +51,7 @@ import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+import org.apache.coyote.http11.Http11NioProtocol;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
@@ -58,11 +59,12 @@ import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.MimeMappings;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
+import org.springframework.boot.context.embedded.SslStoreProvider;
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
@@ -141,7 +143,7 @@ public class TomcatEmbeddedServletContainerFactory
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainerFactory} with the specified
 	 * context path and port.
-	 * @param contextPath root the context path
+	 * @param contextPath the root context path
 	 * @param port the port to listen on
 	 */
 	public TomcatEmbeddedServletContainerFactory(String contextPath, int port) {
@@ -320,10 +322,18 @@ public class TomcatEmbeddedServletContainerFactory
 		protocol.setKeystorePass(ssl.getKeyStorePassword());
 		protocol.setKeyPass(ssl.getKeyPassword());
 		protocol.setKeyAlias(ssl.getKeyAlias());
-		configureSslKeyStore(protocol, ssl);
-		String ciphers = StringUtils.arrayToCommaDelimitedString(ssl.getCiphers());
-		protocol.setCiphers(ciphers);
-		configureSslTrustStore(protocol, ssl);
+		protocol.setCiphers(StringUtils.arrayToCommaDelimitedString(ssl.getCiphers()));
+		if (ssl.getEnabledProtocols() != null) {
+			protocol.setProperty("sslEnabledProtocols",
+					StringUtils.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
+		}
+		if (getSslStoreProvider() != null) {
+			configureSslStoreProvider(protocol, getSslStoreProvider());
+		}
+		else {
+			configureSslKeyStore(protocol, ssl);
+			configureSslTrustStore(protocol, ssl);
+		}
 	}
 
 	private void configureSslClientAuth(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
@@ -333,6 +343,16 @@ public class TomcatEmbeddedServletContainerFactory
 		else if (ssl.getClientAuth() == ClientAuth.WANT) {
 			protocol.setClientAuth("want");
 		}
+	}
+
+	protected void configureSslStoreProvider(AbstractHttp11JsseProtocol<?> protocol,
+			SslStoreProvider sslStoreProvider) {
+		Assert.isInstanceOf(Http11NioProtocol.class, protocol,
+				"SslStoreProvider can only be used with Http11NioProtocol");
+		((Http11NioProtocol) protocol).getEndpoint().setAttribute("sslStoreProvider",
+				sslStoreProvider);
+		protocol.setSslImplementationName(
+				TomcatEmbeddedJSSEImplementation.class.getName());
 	}
 
 	private void configureSslKeyStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
@@ -352,6 +372,7 @@ public class TomcatEmbeddedServletContainerFactory
 	}
 
 	private void configureSslTrustStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
+
 		if (ssl.getTrustStore() != null) {
 			try {
 				protocol.setTruststoreFile(
@@ -729,6 +750,7 @@ public class TomcatEmbeddedServletContainerFactory
 	 */
 	private static class StoreMergedWebXmlListener implements LifecycleListener {
 
+		@SuppressWarnings("deprecation")
 		private final String MERGED_WEB_XML = org.apache.tomcat.util.scan.Constants.MERGED_WEB_XML;
 
 		@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,18 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.core.IsEqual;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.core.Ordered;
-import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AutoConfigurationSorter}.
@@ -61,46 +57,46 @@ public class AutoConfigurationSorterTests {
 
 	@Before
 	public void setup() {
-		this.sorter = new AutoConfigurationSorter(new DefaultResourceLoader());
+		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory());
 	}
 
 	@Test
 	public void byOrderAnnotation() throws Exception {
 		List<String> actual = this.sorter
 				.getInPriorityOrder(Arrays.asList(LOWEST, HIGHEST));
-		assertThat(actual, nameMatcher(HIGHEST, LOWEST));
+		assertThat(actual).containsExactly(HIGHEST, LOWEST);
 	}
 
 	@Test
 	public void byAutoConfigureAfter() throws Exception {
 		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B, C));
-		assertThat(actual, nameMatcher(C, B, A));
+		assertThat(actual).containsExactly(C, B, A);
 	}
 
 	@Test
 	public void byAutoConfigureBefore() throws Exception {
 		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(X, Y, Z));
-		assertThat(actual, nameMatcher(Z, Y, X));
+		assertThat(actual).containsExactly(Z, Y, X);
 	}
 
 	@Test
 	public void byAutoConfigureAfterDoubles() throws Exception {
 		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, E));
-		assertThat(actual, nameMatcher(C, E, B, A));
+		assertThat(actual).containsExactly(C, E, B, A);
 	}
 
 	@Test
 	public void byAutoConfigureMixedBeforeAndAfter() throws Exception {
 		List<String> actual = this.sorter
 				.getInPriorityOrder(Arrays.asList(A, B, C, W, X));
-		assertThat(actual, nameMatcher(C, W, B, A, X));
+		assertThat(actual).containsExactly(C, W, B, A, X);
 	}
 
 	@Test
 	public void byAutoConfigureMixedBeforeAndAfterWithClassNames() throws Exception {
 		List<String> actual = this.sorter
 				.getInPriorityOrder(Arrays.asList(A2, B, C, W2, X));
-		assertThat(actual, nameMatcher(C, W2, B, A2, X));
+		assertThat(actual).containsExactly(C, W2, B, A2, X);
 	}
 
 	@Test
@@ -108,13 +104,13 @@ public class AutoConfigurationSorterTests {
 			throws Exception {
 		List<String> actual = this.sorter
 				.getInPriorityOrder(Arrays.asList(W, X, A, B, C));
-		assertThat(actual, nameMatcher(C, W, B, A, X));
+		assertThat(actual).containsExactly(C, W, B, A, X);
 	}
 
 	@Test
 	public void byAutoConfigureAfterWithMissing() throws Exception {
 		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B));
-		assertThat(actual, nameMatcher(B, A));
+		assertThat(actual).containsExactly(B, A);
 	}
 
 	@Test
@@ -124,87 +120,67 @@ public class AutoConfigurationSorterTests {
 		this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, D));
 	}
 
-	private Matcher<? super List<String>> nameMatcher(String... names) {
-
-		final List<String> list = Arrays.asList(names);
-
-		return new IsEqual<List<String>>(list) {
-
-			@Override
-			public void describeMismatch(Object item, Description description) {
-				@SuppressWarnings("unchecked")
-				List<String> items = (List<String>) item;
-				description.appendText("was ").appendValue(prettify(items));
-			}
-
-			@Override
-			public void describeTo(Description description) {
-				description.appendValue(prettify(list));
-			}
-
-			private String prettify(List<String> items) {
-				List<String> pretty = new ArrayList<String>();
-				for (String item : items) {
-					if (item.contains("$AutoConfigure")) {
-						item = item.substring(item.indexOf("$AutoConfigure")
-								+ "$AutoConfigure".length());
-					}
-					pretty.add(item);
-				}
-				return pretty.toString();
-			}
-		};
-
-	}
-
 	@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 	public static class OrderLowest {
+
 	}
 
 	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 	public static class OrderHighest {
+
 	}
 
 	@AutoConfigureAfter(AutoConfigureB.class)
 	public static class AutoConfigureA {
+
 	}
 
 	@AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureB")
 	public static class AutoConfigureA2 {
+
 	}
 
 	@AutoConfigureAfter({ AutoConfigureC.class, AutoConfigureD.class,
 			AutoConfigureE.class })
 	public static class AutoConfigureB {
+
 	}
 
 	public static class AutoConfigureC {
+
 	}
 
 	@AutoConfigureAfter(AutoConfigureA.class)
 	public static class AutoConfigureD {
+
 	}
 
 	public static class AutoConfigureE {
+
 	}
 
 	@AutoConfigureBefore(AutoConfigureB.class)
 	public static class AutoConfigureW {
+
 	}
 
 	@AutoConfigureBefore(name = "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureB")
 	public static class AutoConfigureW2 {
+
 	}
 
 	public static class AutoConfigureX {
+
 	}
 
 	@AutoConfigureBefore(AutoConfigureX.class)
 	public static class AutoConfigureY {
+
 	}
 
 	@AutoConfigureBefore(AutoConfigureY.class)
 	public static class AutoConfigureZ {
+
 	}
 
 }

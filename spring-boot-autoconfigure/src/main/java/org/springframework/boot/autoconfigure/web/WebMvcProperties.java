@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.MediaType;
 import org.springframework.validation.DefaultMessageCodesResolver;
@@ -60,7 +59,7 @@ public class WebMvcProperties {
 	/**
 	 * Dispatch OPTIONS requests to the FrameworkServlet doService method.
 	 */
-	private boolean dispatchOptionsRequest = false;
+	private boolean dispatchOptionsRequest = true;
 
 	/**
 	 * If the content of the "default" model should be ignored during redirect scenarios.
@@ -84,6 +83,8 @@ public class WebMvcProperties {
 	private String staticPathPattern = "/**";
 
 	private final Async async = new Async();
+
+	private final Servlet servlet = new Servlet();
 
 	private final View view = new View();
 
@@ -165,6 +166,10 @@ public class WebMvcProperties {
 		return this.async;
 	}
 
+	public Servlet getServlet() {
+		return this.servlet;
+	}
+
 	public View getView() {
 		return this.view;
 	}
@@ -188,18 +193,33 @@ public class WebMvcProperties {
 
 	}
 
+	public static class Servlet {
+
+		/**
+		 * Load on startup priority of the dispatcher servlet.
+		 */
+		private int loadOnStartup = -1;
+
+		public int getLoadOnStartup() {
+			return this.loadOnStartup;
+		}
+
+		public void setLoadOnStartup(int loadOnStartup) {
+			this.loadOnStartup = loadOnStartup;
+		}
+
+	}
+
 	public static class View {
 
 		/**
 		 * Spring MVC view prefix.
 		 */
-		@Value("${spring.view.prefix:}")
 		private String prefix;
 
 		/**
 		 * Spring MVC view suffix.
 		 */
-		@Value("${spring.view.suffix:}")
 		private String suffix;
 
 		public String getPrefix() {

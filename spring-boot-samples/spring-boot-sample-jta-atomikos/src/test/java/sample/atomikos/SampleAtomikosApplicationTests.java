@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 package sample.atomikos;
 
-import org.hamcrest.Matcher;
-import org.hamcrest.core.SubstringMatcher;
+import org.assertj.core.api.Condition;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for demo application.
@@ -39,25 +38,22 @@ public class SampleAtomikosApplicationTests {
 	public void testTransactionRollback() throws Exception {
 		SampleAtomikosApplication.main(new String[] {});
 		String output = this.outputCapture.toString();
-		assertThat(output, containsString(1, "---->"));
-		assertThat(output, containsString(1, "----> josh"));
-		assertThat(output, containsString(2, "Count is 1"));
-		assertThat(output, containsString(1, "Simulated error"));
+		assertThat(output).has(substring(1, "---->"));
+		assertThat(output).has(substring(1, "----> josh"));
+		assertThat(output).has(substring(2, "Count is 1"));
+		assertThat(output).has(substring(1, "Simulated error"));
 	}
 
-	private Matcher<? super String> containsString(final int times, String s) {
-		return new SubstringMatcher(s) {
+	private Condition<String> substring(final int times, final String substring) {
+		return new Condition<String>(
+				"containing '" + substring + "' " + times + " times") {
 
 			@Override
-			protected String relationship() {
-				return "containing " + times + " times";
-			}
-
-			@Override
-			protected boolean evalSubstringOf(String s) {
+			public boolean matches(String value) {
 				int i = 0;
-				while (s.contains(this.substring)) {
-					s = s.substring(s.indexOf(this.substring) + this.substring.length());
+				while (value.contains(substring)) {
+					int beginIndex = value.indexOf(substring) + substring.length();
+					value = value.substring(beginIndex);
 					i++;
 				}
 				return i == times;

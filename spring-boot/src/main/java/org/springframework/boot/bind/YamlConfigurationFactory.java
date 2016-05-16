@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,7 +138,7 @@ public class YamlConfigurationFactory<T>
 				+ "either set it directly or set the resource to load it from");
 		try {
 			if (this.logger.isTraceEnabled()) {
-				this.logger.trace("Yaml document is\n" + this.yaml);
+				this.logger.trace(String.format("Yaml document is %n%s" + this.yaml));
 			}
 			Constructor constructor = new YamlJavaBeanPropertyConstructor(this.type,
 					this.propertyAliases);

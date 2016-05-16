@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MongoAutoConfiguration}.
@@ -49,7 +49,7 @@ public class MongoAutoConfigurationTests {
 	public void clientExists() {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
-		assertEquals(1, this.context.getBeanNamesForType(Mongo.class).length);
+		assertThat(this.context.getBeanNamesForType(Mongo.class).length).isEqualTo(1);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -61,8 +61,8 @@ public class MongoAutoConfigurationTests {
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(300,
-				this.context.getBean(Mongo.class).getMongoOptions().getSocketTimeout());
+		assertThat(this.context.getBean(Mongo.class).getMongoOptions().getSocketTimeout())
+				.isEqualTo(300);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -74,8 +74,8 @@ public class MongoAutoConfigurationTests {
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(300,
-				this.context.getBean(Mongo.class).getMongoOptions().getSocketTimeout());
+		assertThat(this.context.getBean(Mongo.class).getMongoOptions().getSocketTimeout())
+				.isEqualTo(300);
 	}
 
 	@Configuration

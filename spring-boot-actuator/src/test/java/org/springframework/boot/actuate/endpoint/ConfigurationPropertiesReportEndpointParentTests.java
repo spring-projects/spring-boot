@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationPropertiesReportEndpoint} when used with a parent
@@ -63,8 +62,8 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 		ConfigurationPropertiesReportEndpoint endpoint = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 		Map<String, Object> result = endpoint.invoke();
-		assertTrue(result.containsKey("parent"));
-		assertEquals(3, result.size()); // the endpoint, the test props and the parent
+		assertThat(result).containsKey("parent");
+		assertThat(result).hasSize(3); // the endpoint, the test props and the parent
 		// System.err.println(result);
 	}
 
@@ -80,8 +79,8 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 		ConfigurationPropertiesReportEndpoint endpoint = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 		Map<String, Object> result = endpoint.invoke();
-		assertTrue(result.containsKey("parent"));
-		assertEquals(3, result.size()); // the endpoint, the test props and the parent
+		assertThat(result.containsKey("parent")).isTrue();
+		assertThat(result).hasSize(3); // the endpoint, the test props and the parent
 		// System.err.println(result);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 import javax.servlet.Filter;
 
@@ -37,7 +38,7 @@ import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -61,11 +62,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SpringBootWebSecurityConfiguration}.
@@ -87,17 +86,19 @@ public class SpringBootWebSecurityConfigurationTests {
 
 	@Test
 	public void testDefaultIgnores() {
-		assertTrue(SpringBootWebSecurityConfiguration.getIgnored(new SecurityProperties())
-				.contains("/css/**"));
+		List<String> ignored = SpringBootWebSecurityConfiguration
+				.getIgnored(new SecurityProperties());
+		assertThat(ignored).contains("/css/**");
 	}
 
 	@Test
 	public void testWebConfigurationOverrideGlobalAuthentication() throws Exception {
 		this.context = SpringApplication.run(TestWebConfiguration.class,
 				"--server.port=0");
-		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
-		assertNotNull(this.context.getBean(AuthenticationManager.class)
-				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")));
+		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
+		assertThat(this.context.getBean(AuthenticationManager.class)
+				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")))
+						.isNotNull();
 	}
 
 	@Test
@@ -165,9 +166,10 @@ public class SpringBootWebSecurityConfigurationTests {
 	public void testWebConfigurationInjectGlobalAuthentication() throws Exception {
 		this.context = SpringApplication.run(TestInjectWebConfiguration.class,
 				"--server.port=0");
-		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
-		assertNotNull(this.context.getBean(AuthenticationManager.class)
-				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")));
+		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
+		assertThat(this.context.getBean(AuthenticationManager.class)
+				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")))
+						.isNotNull();
 	}
 
 	// gh-3447
@@ -184,14 +186,14 @@ public class SpringBootWebSecurityConfigurationTests {
 
 		ResponseEntity<Object> result = rest
 				.postForEntity("http://localhost:" + port + "/", form, Object.class);
-		assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
+		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 
 		// override method with GET
 		form = new LinkedMultiValueMap<String, String>();
 		form.add("_method", "GET");
 
 		result = rest.postForEntity("http://localhost:" + port + "/", form, Object.class);
-		assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
@@ -243,6 +245,8 @@ public class SpringBootWebSecurityConfigurationTests {
 	protected static class TestInjectWebConfiguration
 			extends WebSecurityConfigurerAdapter {
 
+		private final AuthenticationManagerBuilder auth;
+
 		// It's a bad idea to inject an AuthenticationManager into a
 		// WebSecurityConfigurerAdapter because it can cascade early instantiation,
 		// unless you explicitly want the Boot default AuthenticationManager. It's
@@ -250,8 +254,9 @@ public class SpringBootWebSecurityConfigurationTests {
 		// might even be necessary to wrap the builder in a lazy AuthenticationManager
 		// (that calls getOrBuild() only when the AuthenticationManager is actually
 		// called).
-		@Autowired
-		private AuthenticationManagerBuilder auth;
+		protected TestInjectWebConfiguration(AuthenticationManagerBuilder auth) {
+			this.auth = auth;
+		}
 
 		@Override
 		public void init(WebSecurity web) throws Exception {
@@ -306,4 +311,5 @@ public class SpringBootWebSecurityConfigurationTests {
 		}
 
 	}
+
 }

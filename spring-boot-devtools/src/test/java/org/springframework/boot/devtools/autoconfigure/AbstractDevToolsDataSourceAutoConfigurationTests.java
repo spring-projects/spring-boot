@@ -29,7 +29,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-public class AbstractDevToolsDataSourceAutoConfigurationTests {
+public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@Test
 	public void singleManuallyConfiguredDataSourceIsNotClosed() throws SQLException {

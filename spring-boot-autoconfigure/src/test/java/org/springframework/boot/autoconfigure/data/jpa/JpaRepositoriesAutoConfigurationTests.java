@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JpaRepositoriesAutoConfiguration}.
@@ -58,19 +58,19 @@ public class JpaRepositoriesAutoConfigurationTests {
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		prepareApplicationContext(TestConfiguration.class);
 
-		assertNotNull(this.context.getBean(CityRepository.class));
-		assertNotNull(this.context.getBean(PlatformTransactionManager.class));
-		assertNotNull(this.context.getBean(EntityManagerFactory.class));
+		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
+		assertThat(this.context.getBean(PlatformTransactionManager.class)).isNotNull();
+		assertThat(this.context.getBean(EntityManagerFactory.class)).isNotNull();
 	}
 
 	@Test
 	public void testOverrideRepositoryConfiguration() throws Exception {
 		prepareApplicationContext(CustomConfiguration.class);
-
-		assertNotNull(this.context.getBean(
-				org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class));
-		assertNotNull(this.context.getBean(PlatformTransactionManager.class));
-		assertNotNull(this.context.getBean(EntityManagerFactory.class));
+		assertThat(this.context.getBean(
+				org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class))
+						.isNotNull();
+		assertThat(this.context.getBean(PlatformTransactionManager.class)).isNotNull();
+		assertThat(this.context.getBean(EntityManagerFactory.class)).isNotNull();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ import org.junit.Test;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
-import org.springframework.boot.context.embedded.MultipartConfigFactory;
-import org.springframework.boot.context.embedded.ServletRegistrationBean;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -37,16 +37,13 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DispatcherServletAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class DispatcherServletAutoConfigurationTests {
 
@@ -66,10 +63,10 @@ public class DispatcherServletAutoConfigurationTests {
 				DispatcherServletAutoConfiguration.class);
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DispatcherServlet.class));
+		assertThat(this.context.getBean(DispatcherServlet.class)).isNotNull();
 		ServletRegistrationBean registration = this.context
 				.getBean(ServletRegistrationBean.class);
-		assertEquals("[/]", registration.getUrlMappings().toString());
+		assertThat(registration.getUrlMappings().toString()).isEqualTo("[/]");
 	}
 
 	@Test
@@ -82,9 +79,10 @@ public class DispatcherServletAutoConfigurationTests {
 		this.context.refresh();
 		ServletRegistrationBean registration = this.context
 				.getBean(ServletRegistrationBean.class);
-		assertEquals("[/foo]", registration.getUrlMappings().toString());
-		assertEquals("customDispatcher", registration.getServletName());
-		assertEquals(0, this.context.getBeanNamesForType(DispatcherServlet.class).length);
+		assertThat(registration.getUrlMappings().toString()).isEqualTo("[/foo]");
+		assertThat(registration.getServletName()).isEqualTo("customDispatcher");
+		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length)
+				.isEqualTo(0);
 	}
 
 	// If you override either the dispatcherServlet or its registration you have to
@@ -99,9 +97,10 @@ public class DispatcherServletAutoConfigurationTests {
 		this.context.refresh();
 		ServletRegistrationBean registration = this.context
 				.getBean(ServletRegistrationBean.class);
-		assertEquals("[/foo]", registration.getUrlMappings().toString());
-		assertEquals("customDispatcher", registration.getServletName());
-		assertEquals(1, this.context.getBeanNamesForType(DispatcherServlet.class).length);
+		assertThat(registration.getUrlMappings().toString()).isEqualTo("[/foo]");
+		assertThat(registration.getServletName()).isEqualTo("customDispatcher");
+		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length)
+				.isEqualTo(1);
 	}
 
 	@Test
@@ -112,11 +111,11 @@ public class DispatcherServletAutoConfigurationTests {
 				DispatcherServletAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "server.servlet_path:/spring");
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DispatcherServlet.class));
+		assertThat(this.context.getBean(DispatcherServlet.class)).isNotNull();
 		ServletRegistrationBean registration = this.context
 				.getBean(ServletRegistrationBean.class);
-		assertEquals("[/spring/*]", registration.getUrlMappings().toString());
-		assertNull(registration.getMultipartConfig());
+		assertThat(registration.getUrlMappings().toString()).isEqualTo("[/spring/*]");
+		assertThat(registration.getMultipartConfig()).isNull();
 	}
 
 	@Test
@@ -129,7 +128,7 @@ public class DispatcherServletAutoConfigurationTests {
 		this.context.refresh();
 		ServletRegistrationBean registration = this.context
 				.getBean(ServletRegistrationBean.class);
-		assertNotNull(registration.getMultipartConfig());
+		assertThat(registration.getMultipartConfig()).isNotNull();
 	}
 
 	@Test
@@ -143,30 +142,47 @@ public class DispatcherServletAutoConfigurationTests {
 		DispatcherServlet dispatcherServlet = this.context
 				.getBean(DispatcherServlet.class);
 		dispatcherServlet.onApplicationEvent(new ContextRefreshedEvent(this.context));
-		assertThat(dispatcherServlet.getMultipartResolver(),
-				instanceOf(MockMultipartResolver.class));
+		assertThat(dispatcherServlet.getMultipartResolver())
+				.isInstanceOf(MockMultipartResolver.class);
 	}
 
 	@Test
-	public void dispatcherServletConfig() {
+	public void dispatcherServletDefaultConfig() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(ServerPropertiesAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
+		this.context.refresh();
+		DispatcherServlet bean = this.context.getBean(DispatcherServlet.class);
+		assertThat(bean).extracting("throwExceptionIfNoHandlerFound")
+				.containsExactly(false);
+		assertThat(bean).extracting("dispatchOptionsRequest").containsExactly(true);
+		assertThat(bean).extracting("dispatchTraceRequest").containsExactly(false);
+		assertThat(new DirectFieldAccessor(
+				this.context.getBean("dispatcherServletRegistration"))
+						.getPropertyValue("loadOnStartup")).isEqualTo(-1);
+	}
+
+	@Test
+	public void dispatcherServletCustomConfig() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(ServerPropertiesAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.throw-exception-if-no-handler-found:true");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.dispatch-options-request:true");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.dispatch-trace-request:true");
+				"spring.mvc.throw-exception-if-no-handler-found:true",
+				"spring.mvc.dispatch-options-request:false",
+				"spring.mvc.dispatch-trace-request:true",
+				"spring.mvc.servlet.load-on-startup=5");
 		this.context.refresh();
 		DispatcherServlet bean = this.context.getBean(DispatcherServlet.class);
-		assertEquals(true, new DirectFieldAccessor(bean)
-				.getPropertyValue("throwExceptionIfNoHandlerFound"));
-		assertEquals(true,
-				new DirectFieldAccessor(bean).getPropertyValue("dispatchOptionsRequest"));
-		assertEquals(true,
-				new DirectFieldAccessor(bean).getPropertyValue("dispatchTraceRequest"));
+		assertThat(bean).extracting("throwExceptionIfNoHandlerFound")
+				.containsExactly(true);
+		assertThat(bean).extracting("dispatchOptionsRequest").containsExactly(false);
+		assertThat(bean).extracting("dispatchTraceRequest").containsExactly(true);
+		assertThat(new DirectFieldAccessor(
+				this.context.getBean("dispatcherServletRegistration"))
+						.getPropertyValue("loadOnStartup")).isEqualTo(5);
 	}
 
 	@Configuration
