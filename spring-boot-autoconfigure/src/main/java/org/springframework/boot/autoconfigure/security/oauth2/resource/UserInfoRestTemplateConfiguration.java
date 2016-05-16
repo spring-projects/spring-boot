@@ -31,6 +31,9 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.util.CollectionUtils;
 
 /**
+ * Configuration acting as a factory for the rest template used for extracting user info
+ * during authentication.
+ *
  * @author Dave Syer
  */
 @Configuration
