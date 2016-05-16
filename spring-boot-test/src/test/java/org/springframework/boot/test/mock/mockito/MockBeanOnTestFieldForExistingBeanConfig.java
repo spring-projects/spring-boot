@@ -17,6 +17,7 @@
 package org.springframework.boot.test.mock.mockito;
 
 import org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller;
+import org.springframework.boot.test.mock.mockito.example.FailingExampleService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -28,7 +29,7 @@ import org.springframework.context.annotation.Import;
  * @author Phillip Webb
  */
 @Configuration
-@Import(ExampleServiceCaller.class)
+@Import({ ExampleServiceCaller.class, FailingExampleService.class })
 public class MockBeanOnTestFieldForExistingBeanConfig {
 
 }
