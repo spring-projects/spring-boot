@@ -18,14 +18,18 @@ package org.springframework.boot.test.mock.mockito;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
@@ -208,8 +212,8 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		if (StringUtils.hasLength(mockDefinition.getName())) {
 			return mockDefinition.getName();
 		}
-		String[] existingBeans = beanFactory
-				.getBeanNamesForType(mockDefinition.getClassToMock());
+		String[] existingBeans = getExistingBeans(beanFactory,
+				mockDefinition.getClassToMock());
 		if (ObjectUtils.isEmpty(existingBeans)) {
 			return this.beanNameGenerator.generateBeanName(beanDefinition, registry);
 		}
@@ -224,13 +228,34 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private void registerSpy(ConfigurableListableBeanFactory beanFactory,
 			BeanDefinitionRegistry registry, SpyDefinition definition, Field field) {
-		String[] existingBeans = beanFactory
-				.getBeanNamesForType(definition.getClassToSpy());
+		String[] existingBeans = getExistingBeans(beanFactory,
+				definition.getClassToSpy());
 		if (ObjectUtils.isEmpty(existingBeans)) {
 			createSpy(registry, definition, field);
 		}
 		else {
 			registerSpies(definition, field, existingBeans);
+		}
+	}
+
+	private String[] getExistingBeans(ConfigurableListableBeanFactory beanFactory,
+			Class<?> type) {
+		List<String> beans = new ArrayList<String>(
+				Arrays.asList(beanFactory.getBeanNamesForType(type)));
+		for (Iterator<String> iterator = beans.iterator(); iterator.hasNext();) {
+			if (isScopedTarget(iterator.next())) {
+				iterator.remove();
+			}
+		}
+		return beans.toArray(new String[beans.size()]);
+	}
+
+	private boolean isScopedTarget(String beanName) {
+		try {
+			return ScopedProxyUtils.isScopedTarget(beanName);
+		}
+		catch (Throwable ex) {
+			return false;
 		}
 	}
 
@@ -309,13 +334,22 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			Assert.state(ReflectionUtils.getField(field, target) == null,
 					"The field " + field + " cannot have an existing value");
 			Object bean = this.beanFactory.getBean(beanName, field.getType());
-			if (definition.isProxyTargetAware() && AopUtils.isAopProxy(bean)) {
+			if (definition.isProxyTargetAware() && isAopProxy(bean)) {
 				MockitoAopProxyTargetInterceptor.applyTo(bean);
 			}
 			ReflectionUtils.setField(field, target, bean);
 		}
 		catch (Throwable ex) {
 			throw new BeanCreationException("Could not inject field: " + field, ex);
+		}
+	}
+
+	private boolean isAopProxy(Object object) {
+		try {
+			return AopUtils.isAopProxy(object);
+		}
+		catch (Throwable ex) {
+			return false;
 		}
 	}
 
