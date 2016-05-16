@@ -19,6 +19,7 @@ package org.springframework.boot.json;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -30,10 +31,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JacksonJsonParser implements JsonParser {
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Map<String, Object> parseMap(String json) {
 		try {
-			return new ObjectMapper().readValue(json, Map.class);
+			TypeReference<Map<String, Object>> type = new TypeReference<Map<String, Object>>() { };
+			return new ObjectMapper().readValue(json, type);
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException("Cannot parse JSON", ex);
@@ -41,10 +42,10 @@ public class JacksonJsonParser implements JsonParser {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Object> parseList(String json) {
 		try {
-			return new ObjectMapper().readValue(json, List.class);
+			TypeReference<List<Object>> type = new TypeReference<List<Object>>() { };
+			return new ObjectMapper().readValue(json, type);
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException("Cannot parse JSON", ex);
