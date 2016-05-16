@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -37,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -49,14 +49,10 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.crypto.codec.Base64;
-import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.client.token.RequestEnhancer;
-import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
-import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
@@ -80,64 +76,11 @@ import org.springframework.web.client.RestTemplate;
  */
 @Configuration
 @ConditionalOnMissingBean(AuthorizationServerEndpointsConfiguration.class)
+@Import(UserInfoRestTemplateConfiguration.class)
 public class ResourceServerTokenServicesConfiguration {
 
 	private static final Log logger = LogFactory
 			.getLog(ResourceServerTokenServicesConfiguration.class);
-
-	@Configuration
-	protected static class UserInfoRestTemplateConfiguration {
-
-		private static final AuthorizationCodeResourceDetails DEFAULT_RESOURCE_DETAILS = new AuthorizationCodeResourceDetails();
-
-		static {
-			DEFAULT_RESOURCE_DETAILS.setClientId("<N/A>");
-			DEFAULT_RESOURCE_DETAILS
-					.setUserAuthorizationUri("Not a URI " + "because there is no client");
-			DEFAULT_RESOURCE_DETAILS
-					.setAccessTokenUri("Not a URI " + "because there is no client");
-		}
-
-		private final List<UserInfoRestTemplateCustomizer> customizers;
-
-		private final OAuth2ProtectedResourceDetails details;
-
-		private final OAuth2ClientContext oauth2ClientContext;
-
-		public UserInfoRestTemplateConfiguration(
-				ObjectProvider<List<UserInfoRestTemplateCustomizer>> customizersProvider,
-				ObjectProvider<OAuth2ProtectedResourceDetails> detailsProvider,
-				ObjectProvider<OAuth2ClientContext> oauth2ClientContextProvider) {
-			this.customizers = customizersProvider.getIfAvailable();
-			this.details = detailsProvider.getIfAvailable();
-			this.oauth2ClientContext = oauth2ClientContextProvider.getIfAvailable();
-		}
-
-		@Bean(name = "userInfoRestTemplate")
-		public OAuth2RestTemplate userInfoRestTemplate() {
-			OAuth2RestTemplate template = getTemplate(
-					this.details == null ? DEFAULT_RESOURCE_DETAILS : this.details);
-			template.getInterceptors().add(new AcceptJsonRequestInterceptor());
-			AuthorizationCodeAccessTokenProvider accessTokenProvider = new AuthorizationCodeAccessTokenProvider();
-			accessTokenProvider.setTokenRequestEnhancer(new AcceptJsonRequestEnhancer());
-			template.setAccessTokenProvider(accessTokenProvider);
-			if (!CollectionUtils.isEmpty(this.customizers)) {
-				AnnotationAwareOrderComparator.sort(this.customizers);
-				for (UserInfoRestTemplateCustomizer customizer : this.customizers) {
-					customizer.customize(template);
-				}
-			}
-			return template;
-		}
-
-		private OAuth2RestTemplate getTemplate(OAuth2ProtectedResourceDetails details) {
-			if (this.oauth2ClientContext == null) {
-				return new OAuth2RestTemplate(details);
-			}
-			return new OAuth2RestTemplate(details, this.oauth2ClientContext);
-		}
-
-	}
 
 	@Configuration
 	@Conditional(NotJwtTokenCondition.class)
@@ -179,11 +122,11 @@ public class ResourceServerTokenServicesConfiguration {
 
 			public SocialTokenServicesConfiguration(ResourceServerProperties sso,
 					ObjectProvider<OAuth2ConnectionFactory<?>> connectionFactoryProvider,
-					@Qualifier("userInfoRestTemplate") ObjectProvider<OAuth2RestOperations> restTemplateProvider,
+					UserInfoRestTemplateConfiguration restTemplateProvider,
 					ObjectProvider<AuthoritiesExtractor> authoritiesExtractorProvider) {
 				this.sso = sso;
 				this.connectionFactory = connectionFactoryProvider.getIfAvailable();
-				this.restTemplate = restTemplateProvider.getIfAvailable();
+				this.restTemplate = restTemplateProvider.userInfoRestTemplate();
 				this.authoritiesExtractor = authoritiesExtractorProvider.getIfAvailable();
 			}
 
@@ -223,10 +166,10 @@ public class ResourceServerTokenServicesConfiguration {
 			private final AuthoritiesExtractor authoritiesExtractor;
 
 			public UserInfoTokenServicesConfiguration(ResourceServerProperties sso,
-					@Qualifier("userInfoRestTemplate") ObjectProvider<OAuth2RestOperations> restTemplateProvider,
+					UserInfoRestTemplateConfiguration restTemplateProvider,
 					ObjectProvider<AuthoritiesExtractor> authoritiesExtractorProvider) {
 				this.sso = sso;
-				this.restTemplate = restTemplateProvider.getIfAvailable();
+				this.restTemplate = restTemplateProvider.userInfoRestTemplate();
 				this.authoritiesExtractor = authoritiesExtractorProvider.getIfAvailable();
 			}
 
@@ -393,8 +336,7 @@ public class ResourceServerTokenServicesConfiguration {
 
 	}
 
-	private static class AcceptJsonRequestInterceptor
-			implements ClientHttpRequestInterceptor {
+	static class AcceptJsonRequestInterceptor implements ClientHttpRequestInterceptor {
 
 		@Override
 		public ClientHttpResponse intercept(HttpRequest request, byte[] body,
@@ -405,7 +347,7 @@ public class ResourceServerTokenServicesConfiguration {
 
 	}
 
-	private static class AcceptJsonRequestEnhancer implements RequestEnhancer {
+	static class AcceptJsonRequestEnhancer implements RequestEnhancer {
 
 		@Override
 		public void enhance(AccessTokenRequest request,

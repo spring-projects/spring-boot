@@ -65,6 +65,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
+import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -137,6 +138,8 @@ public class OAuth2AutoConfigurationTests {
 		assertThat(handler).isInstanceOf(ApprovalStoreUserApprovalHandler.class);
 		assertThat(clientDetails).isEqualTo(config);
 		verifyAuthentication(config);
+		assertThat(this.context.getBeanNamesForType(OAuth2RestOperations.class))
+				.isEmpty();
 	}
 
 	@Test
