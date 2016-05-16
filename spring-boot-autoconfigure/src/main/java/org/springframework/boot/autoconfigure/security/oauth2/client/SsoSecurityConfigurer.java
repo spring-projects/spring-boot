@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import java.util.Collections;
 
-import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoRestTemplateConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoRestTemplateFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -84,7 +84,7 @@ class SsoSecurityConfigurer {
 	private OAuth2ClientAuthenticationProcessingFilter oauth2SsoFilter(
 			OAuth2SsoProperties sso) {
 		OAuth2RestOperations restTemplate = this.applicationContext
-				.getBean(UserInfoRestTemplateConfiguration.class).userInfoRestTemplate();
+				.getBean(UserInfoRestTemplateFactory.class).getUserInfoRestTemplate();
 		ResourceServerTokenServices tokenServices = this.applicationContext
 				.getBean(ResourceServerTokenServices.class);
 		OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(

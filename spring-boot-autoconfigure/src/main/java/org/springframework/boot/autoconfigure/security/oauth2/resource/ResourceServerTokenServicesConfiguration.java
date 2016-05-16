@@ -36,7 +36,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -49,6 +48,7 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.crypto.codec.Base64;
+import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
@@ -76,11 +76,20 @@ import org.springframework.web.client.RestTemplate;
  */
 @Configuration
 @ConditionalOnMissingBean(AuthorizationServerEndpointsConfiguration.class)
-@Import(UserInfoRestTemplateConfiguration.class)
 public class ResourceServerTokenServicesConfiguration {
 
 	private static final Log logger = LogFactory
 			.getLog(ResourceServerTokenServicesConfiguration.class);
+
+	@Bean
+	@ConditionalOnMissingBean
+	public UserInfoRestTemplateFactory userInfoRestTemplateFactory(
+			ObjectProvider<List<UserInfoRestTemplateCustomizer>> customizersProvider,
+			ObjectProvider<OAuth2ProtectedResourceDetails> detailsProvider,
+			ObjectProvider<OAuth2ClientContext> oauth2ClientContextProvider) {
+		return new UserInfoRestTemplateFactory(customizersProvider, detailsProvider,
+				oauth2ClientContextProvider);
+	}
 
 	@Configuration
 	@Conditional(NotJwtTokenCondition.class)
@@ -122,11 +131,11 @@ public class ResourceServerTokenServicesConfiguration {
 
 			public SocialTokenServicesConfiguration(ResourceServerProperties sso,
 					ObjectProvider<OAuth2ConnectionFactory<?>> connectionFactoryProvider,
-					UserInfoRestTemplateConfiguration restTemplateProvider,
+					UserInfoRestTemplateFactory restTemplateFactory,
 					ObjectProvider<AuthoritiesExtractor> authoritiesExtractorProvider) {
 				this.sso = sso;
 				this.connectionFactory = connectionFactoryProvider.getIfAvailable();
-				this.restTemplate = restTemplateProvider.userInfoRestTemplate();
+				this.restTemplate = restTemplateFactory.getUserInfoRestTemplate();
 				this.authoritiesExtractor = authoritiesExtractorProvider.getIfAvailable();
 			}
 
@@ -166,10 +175,10 @@ public class ResourceServerTokenServicesConfiguration {
 			private final AuthoritiesExtractor authoritiesExtractor;
 
 			public UserInfoTokenServicesConfiguration(ResourceServerProperties sso,
-					UserInfoRestTemplateConfiguration restTemplateProvider,
+					UserInfoRestTemplateFactory restTemplateFactory,
 					ObjectProvider<AuthoritiesExtractor> authoritiesExtractorProvider) {
 				this.sso = sso;
-				this.restTemplate = restTemplateProvider.userInfoRestTemplate();
+				this.restTemplate = restTemplateFactory.getUserInfoRestTemplate();
 				this.authoritiesExtractor = authoritiesExtractorProvider.getIfAvailable();
 			}
 

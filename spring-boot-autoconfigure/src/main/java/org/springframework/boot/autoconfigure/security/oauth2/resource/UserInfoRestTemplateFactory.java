@@ -31,22 +31,23 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.util.CollectionUtils;
 
 /**
- * Configuration acting as a factory for the rest template used for extracting user info
- * during authentication.
+ * Factory used to create the rest template used for extracting user info during
+ * authentication.
  *
  * @author Dave Syer
+ * @since 1.4.0
  */
 @Configuration
-public class UserInfoRestTemplateConfiguration {
+public class UserInfoRestTemplateFactory {
 
-	private static final AuthorizationCodeResourceDetails DEFAULT_RESOURCE_DETAILS = new AuthorizationCodeResourceDetails();
+	private static final AuthorizationCodeResourceDetails DEFAULT_RESOURCE_DETAILS;
 
 	static {
-		DEFAULT_RESOURCE_DETAILS.setClientId("<N/A>");
-		DEFAULT_RESOURCE_DETAILS
-				.setUserAuthorizationUri("Not a URI " + "because there is no client");
-		DEFAULT_RESOURCE_DETAILS
-				.setAccessTokenUri("Not a URI " + "because there is no client");
+		AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
+		details.setClientId("<N/A>");
+		details.setUserAuthorizationUri("Not a URI because there is no client");
+		details.setAccessTokenUri("Not a URI because there is no client");
+		DEFAULT_RESOURCE_DETAILS = details;
 	}
 
 	private final List<UserInfoRestTemplateCustomizer> customizers;
@@ -57,7 +58,7 @@ public class UserInfoRestTemplateConfiguration {
 
 	private OAuth2RestTemplate template;
 
-	public UserInfoRestTemplateConfiguration(
+	public UserInfoRestTemplateFactory(
 			ObjectProvider<List<UserInfoRestTemplateCustomizer>> customizersProvider,
 			ObjectProvider<OAuth2ProtectedResourceDetails> detailsProvider,
 			ObjectProvider<OAuth2ClientContext> oauth2ClientContextProvider) {
@@ -66,8 +67,7 @@ public class UserInfoRestTemplateConfiguration {
 		this.oauth2ClientContext = oauth2ClientContextProvider.getIfAvailable();
 	}
 
-	// Not a @Bean: use this method as a factory
-	public OAuth2RestTemplate userInfoRestTemplate() {
+	public OAuth2RestTemplate getUserInfoRestTemplate() {
 		if (this.template == null) {
 			this.template = getTemplate(
 					this.details == null ? DEFAULT_RESOURCE_DETAILS : this.details);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,7 @@ public class GsonJsonParser implements JsonParser {
 		if (json != null) {
 			json = json.trim();
 			if (json.startsWith("{")) {
-				TypeToken<Map<String, Object>> type = new TypeToken<Map<String, Object>>() { };
-				return this.gson.fromJson(json, type.getType());
+				return this.gson.fromJson(json, new MapTypeToken().getType());
 			}
 		}
 		throw new IllegalArgumentException("Cannot parse JSON");
@@ -52,11 +51,16 @@ public class GsonJsonParser implements JsonParser {
 		if (json != null) {
 			json = json.trim();
 			if (json.startsWith("[")) {
-				TypeToken<List<Object>> type = new TypeToken<List<Object>>() { };
+				TypeToken<List<Object>> type = new TypeToken<List<Object>>() {
+				};
 				return this.gson.fromJson(json, type.getType());
 			}
 		}
 		throw new IllegalArgumentException("Cannot parse JSON");
+	}
+
+	private static final class MapTypeToken extends TypeToken<Map<String, Object>> {
+
 	}
 
 }
