@@ -35,7 +35,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StreamUtils;
-import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,7 +65,7 @@ public class SampleJetty8ApplicationTests {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Accept-Encoding", "gzip");
 		HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
-		RestTemplate restTemplate = new TestRestTemplate();
+		TestRestTemplate restTemplate = new TestRestTemplate();
 		ResponseEntity<byte[]> entity = restTemplate.exchange(
 				"http://localhost:" + this.port, HttpMethod.GET, requestEntity,
 				byte[].class);

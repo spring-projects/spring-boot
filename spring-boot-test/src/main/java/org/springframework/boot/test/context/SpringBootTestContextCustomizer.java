@@ -23,7 +23,6 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * {@link ContextCustomizer} for {@link SpringBootTest}.
@@ -39,7 +38,7 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 		SpringBootTest annotation = AnnotatedElementUtils.getMergedAnnotation(
 				mergedContextConfiguration.getTestClass(), SpringBootTest.class);
 		if (annotation.webEnvironment().isEmbedded()) {
-			RestTemplate restTemplate = TestRestTemplateFactory
+			Object restTemplate = TestRestTemplateFactory
 					.createRestTemplate(context.getEnvironment());
 			context.getBeanFactory().registerSingleton("testRestTemplate", restTemplate);
 		}

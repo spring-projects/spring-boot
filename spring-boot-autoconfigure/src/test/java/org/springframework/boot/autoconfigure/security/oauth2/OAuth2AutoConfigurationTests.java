@@ -94,7 +94,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -327,7 +326,7 @@ public class OAuth2AutoConfigurationTests {
 	private void verifyAuthentication(ClientDetails config, HttpStatus finalStatus) {
 		String baseUrl = "http://localhost:"
 				+ this.context.getEmbeddedServletContainer().getPort();
-		RestTemplate rest = new TestRestTemplate();
+		TestRestTemplate rest = new TestRestTemplate();
 		// First, verify the web endpoint can't be reached
 		assertEndpointUnauthorized(baseUrl, rest);
 		// Since we can't reach it, need to collect an authorization token
@@ -371,7 +370,7 @@ public class OAuth2AutoConfigurationTests {
 		return body;
 	}
 
-	private void assertEndpointUnauthorized(String baseUrl, RestTemplate rest) {
+	private void assertEndpointUnauthorized(String baseUrl, TestRestTemplate rest) {
 		URI uri = URI.create(baseUrl + "/secured");
 		ResponseEntity<String> entity = rest
 				.exchange(new RequestEntity<Void>(HttpMethod.GET, uri), String.class);

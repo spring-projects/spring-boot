@@ -16,15 +16,24 @@
 
 package org.springframework.boot.test.web.client;
 
+import java.lang.reflect.Method;
+import java.net.URI;
+
 import org.apache.http.client.config.RequestConfig;
 import org.junit.Test;
 
 import org.springframework.boot.test.web.client.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ReflectionUtils.MethodCallback;
+import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link TestRestTemplate}.
@@ -37,14 +46,15 @@ public class TestRestTemplateTests {
 	@Test
 	public void simple() {
 		// The Apache client is on the classpath so we get the fully-fledged factory
-		assertThat(new TestRestTemplate().getRequestFactory())
+		assertThat(new TestRestTemplate().getRestTemplate().getRequestFactory())
 				.isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
 	}
 
 	@Test
 	public void authenticated() {
-		assertThat(new TestRestTemplate("user", "password").getRequestFactory())
-				.isInstanceOf(InterceptingClientHttpRequestFactory.class);
+		assertThat(new TestRestTemplate("user", "password").getRestTemplate()
+				.getRequestFactory())
+						.isInstanceOf(InterceptingClientHttpRequestFactory.class);
 	}
 
 	@Test
@@ -52,9 +62,59 @@ public class TestRestTemplateTests {
 		TestRestTemplate template = new TestRestTemplate(
 				HttpClientOption.ENABLE_REDIRECTS);
 		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
-				.getRequestFactory();
+				.getRestTemplate().getRequestFactory();
 		RequestConfig config = factory.getRequestConfig();
 		assertThat(config.isRedirectsEnabled()).isTrue();
 	}
 
+	@Test
+	public void restOperationsAreAvailable() throws Exception {
+		RestTemplate delegate = mock(RestTemplate.class);
+		final TestRestTemplate restTemplate = new TestRestTemplate(delegate);
+		ReflectionUtils.doWithMethods(RestOperations.class, new MethodCallback() {
+
+			@Override
+			public void doWith(Method method)
+					throws IllegalArgumentException, IllegalAccessException {
+				Method equivalent = ReflectionUtils.findMethod(TestRestTemplate.class,
+						method.getName(), method.getParameterTypes());
+				try {
+					equivalent.invoke(restTemplate,
+							mockArguments(method.getParameterTypes()));
+				}
+				catch (Exception ex) {
+					throw new IllegalStateException(ex);
+				}
+			}
+
+			private Object[] mockArguments(Class<?>[] parameterTypes) throws Exception {
+				Object[] arguments = new Object[parameterTypes.length];
+				for (int i = 0; i < parameterTypes.length; i++) {
+					arguments[i] = mockArgument(parameterTypes[i]);
+				}
+				return arguments;
+			}
+
+			private Object mockArgument(Class<?> type) throws Exception {
+				if (String.class.equals(type)) {
+					return "String";
+				}
+				if (Object[].class.equals(type)) {
+					return new Object[0];
+				}
+				if (URI.class.equals(type)) {
+					return new URI("http://localhost");
+				}
+				if (HttpMethod.class.equals(type)) {
+					return HttpMethod.GET;
+				}
+				if (Class.class.equals(type)) {
+					return Object.class;
+				}
+				return mock(type);
+			}
+
+		});
+
+	}
 }
