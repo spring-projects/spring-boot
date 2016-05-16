@@ -26,6 +26,7 @@ import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -78,6 +79,13 @@ public class ResetMocksTestExecutionListenerTests {
 		@Bean
 		public ExampleService none() {
 			return mock(ExampleService.class);
+		}
+
+		@Bean
+		@Lazy
+		public ExampleService fail() {
+			// gh-5870
+			throw new RuntimeException();
 		}
 
 	}
