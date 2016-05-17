@@ -245,7 +245,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 	protected static class PrincipalConfiguration extends ResourceConfiguration {
 
 		@Bean
-		PrincipalExtractor authoritiesExtractor() {
+		PrincipalExtractor principalExtractor() {
 			return new PrincipalExtractor() {
 
 				@Override
