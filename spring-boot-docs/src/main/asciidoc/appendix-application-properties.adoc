@@ -268,7 +268,9 @@ content into your application; rather pick only the properties that you need.
 	# HTTP encoding ({sc-spring-boot-autoconfigure}/web/HttpEncodingProperties.{sc-ext}[HttpEncodingProperties])
 	spring.http.encoding.charset=UTF-8 # Charset of HTTP requests and responses. Added to the "Content-Type" header if not set explicitly.
 	spring.http.encoding.enabled=true # Enable http encoding support.
-	spring.http.encoding.force=true # Force the encoding to the configured charset on HTTP requests and responses.
+	spring.http.encoding.force= # Force the encoding to the configured charset on HTTP requests and responses.
+	spring.http.encoding.force-request= # Force the encoding to the configured charset on HTTP requests (defaults to true when ".force" has not been specified).
+	spring.http.encoding.force-response= # Force the encoding to the configured charset on HTTP responses.
 
 	# MULTIPART ({sc-spring-boot-autoconfigure}/web/MultipartProperties.{sc-ext}[MultipartProperties])
 	spring.http.multipart.enabled=true # Enable support of multi-part uploads.

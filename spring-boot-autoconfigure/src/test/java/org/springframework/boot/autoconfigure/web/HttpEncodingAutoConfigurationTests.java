@@ -63,7 +63,7 @@ public class HttpEncodingAutoConfigurationTests {
 		load(EmptyConfiguration.class);
 		CharacterEncodingFilter filter = this.context
 				.getBean(CharacterEncodingFilter.class);
-		assertCharacterEncodingFilter(filter, "UTF-8", true);
+		assertCharacterEncodingFilter(filter, "UTF-8", true, false);
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class HttpEncodingAutoConfigurationTests {
 				"spring.http.encoding.force:false");
 		CharacterEncodingFilter filter = this.context
 				.getBean(CharacterEncodingFilter.class);
-		assertCharacterEncodingFilter(filter, "ISO-8859-15", false);
+		assertCharacterEncodingFilter(filter, "ISO-8859-15", false, false);
 	}
 
 	@Test
@@ -88,7 +88,41 @@ public class HttpEncodingAutoConfigurationTests {
 				"spring.http.encoding.force:false");
 		CharacterEncodingFilter filter = this.context
 				.getBean(CharacterEncodingFilter.class);
-		assertCharacterEncodingFilter(filter, "US-ASCII", false);
+		assertCharacterEncodingFilter(filter, "US-ASCII", false, false);
+	}
+
+	@Test
+	public void forceRequest() throws Exception {
+		load(EmptyConfiguration.class, "spring.http.encoding.force-request:false");
+		CharacterEncodingFilter filter = this.context
+				.getBean(CharacterEncodingFilter.class);
+		assertCharacterEncodingFilter(filter, "UTF-8", false, false);
+	}
+
+	@Test
+	public void forceResponse() throws Exception {
+		load(EmptyConfiguration.class, "spring.http.encoding.force-response:true");
+		CharacterEncodingFilter filter = this.context
+				.getBean(CharacterEncodingFilter.class);
+		assertCharacterEncodingFilter(filter, "UTF-8", true, true);
+	}
+
+	@Test
+	public void forceRequestOverridesForce() throws Exception {
+		load(EmptyConfiguration.class, "spring.http.encoding.force:true",
+				"spring.http.encoding.force-request:false");
+		CharacterEncodingFilter filter = this.context
+				.getBean(CharacterEncodingFilter.class);
+		assertCharacterEncodingFilter(filter, "UTF-8", false, true);
+	}
+
+	@Test
+	public void forceResponseOverridesForce() throws Exception {
+		load(EmptyConfiguration.class, "spring.http.encoding.force:true",
+				"spring.http.encoding.force-response:false");
+		CharacterEncodingFilter filter = this.context
+				.getBean(CharacterEncodingFilter.class);
+		assertCharacterEncodingFilter(filter, "UTF-8", true, false);
 	}
 
 	@Test
@@ -102,10 +136,11 @@ public class HttpEncodingAutoConfigurationTests {
 	}
 
 	private void assertCharacterEncodingFilter(CharacterEncodingFilter actual,
-			String encoding, boolean forceRequestEncoding) {
+			String encoding, boolean forceRequestEncoding,
+			boolean forceResponseEncoding) {
 		assertThat(actual.getEncoding()).isEqualTo(encoding);
 		assertThat(actual.isForceRequestEncoding()).isEqualTo(forceRequestEncoding);
-		assertThat(actual.isForceResponseEncoding()).isFalse();
+		assertThat(actual.isForceResponseEncoding()).isEqualTo(forceResponseEncoding);
 	}
 
 	private void load(Class<?> config, String... environment) {
