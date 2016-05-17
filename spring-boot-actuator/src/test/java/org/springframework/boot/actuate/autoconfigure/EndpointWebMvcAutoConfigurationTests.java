@@ -62,10 +62,12 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.testutil.Matched;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -280,6 +282,22 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/endpoint", ports.get().server, null);
 		assertContent("/controller", managementPort, null);
 		assertContent("/endpoint", managementPort, "endpointoutput");
+	}
+
+	@Test
+	public void onDifferentPortWithPrimaryFailure() throws Exception {
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
+				DifferentPortConfig.class, BaseConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		this.applicationContext.refresh();
+		ApplicationContext managementContext = this.applicationContext
+				.getBean(ManagementContextResolver.class).getApplicationContext();
+		ApplicationFailedEvent event = mock(ApplicationFailedEvent.class);
+		given(event.getApplicationContext()).willReturn(this.applicationContext);
+		this.applicationContext.publishEvent(event);
+		assertThat(((ConfigurableApplicationContext) managementContext).isActive())
+				.isFalse();
+		this.applicationContext.close();
 	}
 
 	@Test
