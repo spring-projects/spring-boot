@@ -129,14 +129,18 @@ public class ResourceServerTokenServicesConfiguration {
 
 			private final AuthoritiesExtractor authoritiesExtractor;
 
+			private final PrincipalExtractor principalExtractor;
+
 			public SocialTokenServicesConfiguration(ResourceServerProperties sso,
 					ObjectProvider<OAuth2ConnectionFactory<?>> connectionFactoryProvider,
 					UserInfoRestTemplateFactory restTemplateFactory,
-					ObjectProvider<AuthoritiesExtractor> authoritiesExtractorProvider) {
+					ObjectProvider<AuthoritiesExtractor> authoritiesExtractor,
+					ObjectProvider<PrincipalExtractor> principalExtractor) {
 				this.sso = sso;
 				this.connectionFactory = connectionFactoryProvider.getIfAvailable();
 				this.restTemplate = restTemplateFactory.getUserInfoRestTemplate();
-				this.authoritiesExtractor = authoritiesExtractorProvider.getIfAvailable();
+				this.authoritiesExtractor = authoritiesExtractor.getIfAvailable();
+				this.principalExtractor = principalExtractor.getIfAvailable();
 			}
 
 			@Bean
@@ -158,6 +162,9 @@ public class ResourceServerTokenServicesConfiguration {
 				if (this.authoritiesExtractor != null) {
 					services.setAuthoritiesExtractor(this.authoritiesExtractor);
 				}
+				if (this.principalExtractor != null) {
+					services.setPrincipalExtractor(this.principalExtractor);
+				}
 				return services;
 			}
 
@@ -174,12 +181,16 @@ public class ResourceServerTokenServicesConfiguration {
 
 			private final AuthoritiesExtractor authoritiesExtractor;
 
+			private final PrincipalExtractor principalExtractor;
+
 			public UserInfoTokenServicesConfiguration(ResourceServerProperties sso,
 					UserInfoRestTemplateFactory restTemplateFactory,
-					ObjectProvider<AuthoritiesExtractor> authoritiesExtractorProvider) {
+					ObjectProvider<AuthoritiesExtractor> authoritiesExtractor,
+					ObjectProvider<PrincipalExtractor> principalExtractor) {
 				this.sso = sso;
 				this.restTemplate = restTemplateFactory.getUserInfoRestTemplate();
-				this.authoritiesExtractor = authoritiesExtractorProvider.getIfAvailable();
+				this.authoritiesExtractor = authoritiesExtractor.getIfAvailable();
+				this.principalExtractor = principalExtractor.getIfAvailable();
 			}
 
 			@Bean
@@ -191,6 +202,9 @@ public class ResourceServerTokenServicesConfiguration {
 				services.setTokenType(this.sso.getTokenType());
 				if (this.authoritiesExtractor != null) {
 					services.setAuthoritiesExtractor(this.authoritiesExtractor);
+				}
+				if (this.principalExtractor != null) {
+					services.setPrincipalExtractor(this.principalExtractor);
 				}
 				return services;
 			}
