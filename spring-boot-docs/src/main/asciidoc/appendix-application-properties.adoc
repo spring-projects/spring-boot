@@ -551,6 +551,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.couchbase.auto-index=false # Automatically create views and indexes.
 	spring.data.couchbase.consistency=read-your-own-writes # Consistency to apply by default on generated queries.
 	spring.data.couchbase.repositories.enabled=true # Enable Couchbase repositories.
+	spring.data.couchbase.typeKey=_class # Attribute to use to store class information when marshalling to JSON.
 
 	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties])
 	spring.data.elasticsearch.cluster-name=elasticsearch # Elasticsearch cluster name.

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.data.couchbase;
 
+import java.util.Collections;
+
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -25,6 +28,9 @@ import org.springframework.data.couchbase.config.AbstractCouchbaseDataConfigurat
 import org.springframework.data.couchbase.config.BeanNames;
 import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
+import org.springframework.data.couchbase.core.convert.CustomConversions;
+import org.springframework.data.couchbase.core.convert.MappingCouchbaseConverter;
+import org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext;
 import org.springframework.data.couchbase.core.query.Consistency;
 import org.springframework.data.couchbase.repository.support.IndexManager;
 
@@ -42,10 +48,13 @@ class SpringBootCouchbaseDataConfiguration extends AbstractCouchbaseDataConfigur
 
 	private final CouchbaseConfigurer couchbaseConfigurer;
 
+	private final BeanFactory beanFactory;
+
 	SpringBootCouchbaseDataConfiguration(CouchbaseDataProperties properties,
-			ObjectProvider<CouchbaseConfigurer> couchbaseConfigurerProvider) {
+			ObjectProvider<CouchbaseConfigurer> couchbaseConfigurerProvider, BeanFactory factory) {
 		this.properties = properties;
 		this.couchbaseConfigurer = couchbaseConfigurerProvider.getIfAvailable();
+		this.beanFactory = factory;
 	}
 
 	@Override
@@ -73,6 +82,45 @@ class SpringBootCouchbaseDataConfiguration extends AbstractCouchbaseDataConfigur
 			return new IndexManager(true, true, true);
 		}
 		return new IndexManager(false, false, false);
+	}
+
+	@Override
+	public String typeKey() {
+		return this.properties.getTypeKey();
+	}
+
+	@Override
+	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
+	@Bean(name = BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
+	public CustomConversions customConversions() {
+		return new CustomConversions(Collections.emptyList());
+	}
+
+	//this method uses customeConversions() in the parent class, needs to rely on bean
+	@Override
+	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_MAPPING_CONVERTER)
+	@Bean(name = BeanNames.COUCHBASE_MAPPING_CONVERTER)
+	public MappingCouchbaseConverter mappingCouchbaseConverter() throws Exception {
+		CouchbaseMappingContext mappingContextBean = beanFactory.getBean(BeanNames.COUCHBASE_MAPPING_CONTEXT, CouchbaseMappingContext.class);
+		CustomConversions conversionsBean = beanFactory.getBean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS, CustomConversions.class);
+
+		MappingCouchbaseConverter converter = new MappingCouchbaseConverter(mappingContextBean, typeKey());
+		converter.setCustomConversions(conversionsBean);
+		return converter;
+	}
+
+	//this method uses customeConversions() in the parent class, needs to rely on bean
+	@Override
+	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_MAPPING_CONTEXT)
+	@Bean(name = BeanNames.COUCHBASE_MAPPING_CONTEXT)
+	public CouchbaseMappingContext couchbaseMappingContext() throws Exception {
+		CustomConversions conversionsBean = beanFactory.getBean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS, CustomConversions.class);
+
+		CouchbaseMappingContext mappingContext = new CouchbaseMappingContext();
+		mappingContext.setInitialEntitySet(getInitialEntitySet());
+		mappingContext.setSimpleTypeHolder(conversionsBean.getSimpleTypeHolder());
+		mappingContext.setFieldNamingStrategy(fieldNamingStrategy());
+		return mappingContext;
 	}
 
 }

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.data.couchbase;
 
+import java.util.Calendar;
+import java.util.Collections;
+
 import javax.validation.Validator;
 
 import org.junit.After;
@@ -30,9 +33,12 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.couchbase.config.AbstractCouchbaseDataConfiguration;
+import org.springframework.data.couchbase.config.BeanNames;
 import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
+import org.springframework.data.couchbase.core.convert.CustomConversions;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
 import org.springframework.data.couchbase.core.query.Consistency;
 import org.springframework.data.couchbase.repository.support.IndexManager;
@@ -99,6 +105,24 @@ public class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Test
+	public void typeKeyIsClassByDefault() throws Exception {
+		load(CouchbaseTestConfigurer.class);
+		SpringBootCouchbaseDataConfiguration configuration = this.context
+				.getBean(SpringBootCouchbaseDataConfiguration.class);
+		assertThat(configuration.typeKey()).isEqualTo("_class");
+		assertThat(configuration.mappingCouchbaseConverter().getTypeKey()).isEqualTo("_class");
+	}
+
+	@Test
+	public void changeTypeKey() throws Exception {
+		load(CouchbaseTestConfigurer.class, "spring.data.couchbase.typeKey=foo");
+		SpringBootCouchbaseDataConfiguration configuration = this.context
+				.getBean(SpringBootCouchbaseDataConfiguration.class);
+		assertThat(configuration.typeKey()).isEqualTo("foo");
+		assertThat(configuration.mappingCouchbaseConverter().getTypeKey()).isEqualTo("foo");
+	}
+
+	@Test
 	public void changeConsistency() {
 		load(CouchbaseTestConfigurer.class,
 				"spring.data.couchbase.consistency=eventually-consistent");
@@ -106,6 +130,16 @@ public class CouchbaseDataAutoConfigurationTests {
 				.getBean(SpringBootCouchbaseDataConfiguration.class);
 		assertThat(configuration.getDefaultConsistency())
 				.isEqualTo(Consistency.EVENTUALLY_CONSISTENT);
+	}
+
+	@Test
+	public void changeCustomConversions() throws Exception {
+		load(CustomConversionsConfiguration.class);
+		SpringBootCouchbaseDataConfiguration configuration = this.context
+				.getBean(SpringBootCouchbaseDataConfiguration.class);
+
+		assertThat(configuration.mappingCouchbaseConverter().getConversionService()
+				.canConvert(Thread.class, Calendar.class)).isTrue();
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -144,6 +178,22 @@ public class CouchbaseDataAutoConfigurationTests {
 			return Consistency.STRONGLY_CONSISTENT;
 		}
 
+	}
+
+	@Configuration
+	@Import(CouchbaseTestConfigurer.class)
+	static class CustomConversionsConfiguration {
+
+		@Bean(name = BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
+		public CustomConversions customConversions() {
+			return new CustomConversions(Collections.singletonList(
+					new Converter<java.lang.Thread, Calendar>() {
+						@Override
+						public Calendar convert(Thread thread) {
+							return Calendar.getInstance();
+						}
+					}));
+		}
 	}
 
 }
