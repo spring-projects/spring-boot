@@ -43,7 +43,8 @@ public class HttpEncodingProperties {
 	private Boolean force;
 
 	/**
-	 * Force the encoding to the configured charset on HTTP requests.
+	 * Force the encoding to the configured charset on HTTP requests. Defaults to true
+	 * when "force" has not been specified.
 	 */
 	private Boolean forceRequest;
 
