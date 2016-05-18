@@ -1,4 +1,4 @@
-= Starter POMs
+= Starters
 
 Spring Boot Starters are a set of convenient dependency descriptors that you can include
 in your application. You get a one-stop-shop for all the Spring and related technology

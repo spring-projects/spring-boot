@@ -147,7 +147,7 @@ Javadoc for complete details.
 
 TIP: The http://cloud.spring.io/spring-cloud-connectors/[Spring Cloud Connectors] project
 is a better fit for tasks such as configuring a DataSource. Spring Boot includes
-auto-configuration support and a `spring-boot-starter-cloud-connectors` starter POM.
+auto-configuration support and a `spring-boot-starter-cloud-connectors` starter.
 
 
 

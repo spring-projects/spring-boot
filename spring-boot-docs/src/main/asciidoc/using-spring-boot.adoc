@@ -209,7 +209,7 @@ the parent.
 
 [[using-boot-gradle]]
 === Gradle
-Gradle users can directly import "`starter POMs`" in their `dependencies` section. Unlike
+Gradle users can directly import '`starters`' in their `dependencies` section. Unlike
 Maven, there is no "`super parent`" to import to share some configuration.
 
 [source,groovy,indent=0,subs="attributes"]
@@ -345,8 +345,9 @@ you don't want to use the `spring-boot-antlib` module.
 
 
 [[using-boot-starter-poms]]
-=== Starter POMs
-Starter POMs are a set of convenient dependency descriptors that you can include in your
+[[using-boot-starter]]
+=== Starters
+Starters are a set of convenient dependency descriptors that you can include in your
 application. You get a one-stop-shop for all the Spring and related technology that you
 need, without having to hunt through sample code and copy paste loads of dependency
 descriptors. For example, if you want to get started using Spring and JPA for database
@@ -389,7 +390,7 @@ or swap specific technical facets:
 .Spring Boot technical starters
 include::../../../target/generated-resources/technical-starters.adoc[]
 
-TIP: For a list of additional community contributed starter POMs, see the
+TIP: For a list of additional community contributed starters, see the
 {github-master-code}/spring-boot-starters/README.adoc[README file] in the
 `spring-boot-starters` module on GitHub.
 

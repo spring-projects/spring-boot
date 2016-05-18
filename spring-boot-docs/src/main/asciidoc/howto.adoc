@@ -885,7 +885,7 @@ classpath to reference Tomcat 7 .
 ==== Use Tomcat 7 with Maven
 [[howto-use-tomcat-7-maven]]
 
-If you are using the starter poms and parent you can just change the Tomcat version
+If you are using the starters and parent you can just change the Tomcat version
 property, e.g. for a simple webapp or service:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -932,7 +932,7 @@ dependencies.
 [[howto-use-jetty-8-maven]]
 ==== Use Jetty 8 with Maven
 
-If you are using the starter poms and parent you can just add the Jetty starter with
+If you are using the starters and parent you can just add the Jetty starter with
 the required WebSocket exclusion and change the version properties, e.g. for a simple
 webapp or service:
 
@@ -1335,7 +1335,7 @@ have been applied from the auto-configuration:
 Spring Boot has no mandatory logging dependency, except for the `commons-logging` API, of
 which there are many implementations to choose from. To use http://logback.qos.ch[Logback]
 you need to include it, and some bindings for `commons-logging` on the classpath. The
-simplest way to do that is through the starter poms which all depend on
+simplest way to do that is through the starters which all depend on
 `spring-boot-starter-logging`. For a web application you only need
 `spring-boot-starter-web` since it depends transitively on the logging starter.
 For example, using Maven:
@@ -1438,12 +1438,12 @@ You also need to add `logging.file` to your `application.properties`:
 [[howto-configure-log4j-for-logging]]
 === Configure Log4j for logging
 Spring Boot supports http://logging.apache.org/log4j/2.x[Log4j 2] for logging
-configuration if it is on the classpath. If you are using the starter poms for
+configuration if it is on the classpath. If you are using the starters for
 assembling dependencies that means you have to exclude Logback and then include log4j 2
-instead. If you aren't using the starter poms then you need to provide `commons-logging`
+instead. If you aren't using the starters then you need to provide `commons-logging`
 (at least) in addition to Log4j 2.
 
-The simplest path is probably through the starter poms, even though it requires some
+The simplest path is probably through the starters, even though it requires some
 jiggling with excludes, .e.g. in Maven:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]

@@ -549,7 +549,7 @@ for specifying hierarchical configuration data. The `SpringApplication` class wi
 automatically support YAML as an alternative to properties whenever you have the
 http://www.snakeyaml.org/[SnakeYAML] library on your classpath.
 
-NOTE: If you use '`starter POMs`' SnakeYAML will be automatically provided via
+NOTE: If you use '`Starters`' SnakeYAML will be automatically provided via
 `spring-boot-starter`.
 
 
@@ -1038,7 +1038,7 @@ http://logging.apache.org/log4j/2.x/[Log4J2] and http://logback.qos.ch/[Logback]
 case loggers are pre-configured to use console output with optional file output also
 available.
 
-By default, If you use the '`Starter POMs`', Logback will be used for logging. Appropriate
+By default, If you use the '`Starters`', Logback will be used for logging. Appropriate
 Logback routing is also included to ensure that dependent libraries that use
 Java Util Logging, Commons Logging, Log4J or SLF4J will all work correctly.
 
@@ -1961,7 +1961,7 @@ any of your JAX-RS resources are packaged as nested jars.
 [[boot-features-embedded-container]]
 === Embedded servlet container support
 Spring Boot includes support for embedded Tomcat, Jetty, and Undertow servers. Most
-developers will simply use the appropriate '`Starter POM`' to obtain a fully configured
+developers will simply use the appropriate '`Starter`' to obtain a fully configured
 instance. By default the embedded server will listen for HTTP requests on port `8080`.
 
 
@@ -2500,7 +2500,7 @@ Here's the algorithm for choosing a specific implementation:
 * Lastly, if Commons DBCP2 is available we will use it.
 
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa`
-'`starter POMs`' you will automatically get a dependency to `tomcat-jdbc`.
+'`starters`' you will automatically get a dependency to `tomcat-jdbc`.
 
 NOTE: You can bypass that algorithm completely and specify the connection pool to use via
 the `spring.datasource.type` property. This is especially important if you are running
@@ -2922,7 +2922,7 @@ http://redis.io/[Redis] is a cache, message broker and richly-featured key-value
 Spring Boot offers basic auto-configuration for the
 https://github.com/xetorthio/jedis/[Jedis] client library and abstractions on top of it
 provided by https://github.com/spring-projects/spring-data-redis[Spring Data Redis]. There
-is a `spring-boot-starter-data-redis` '`Starter POM`' for collecting the dependencies in a
+is a `spring-boot-starter-data-redis` '`Starter`' for collecting the dependencies in a
 convenient way.
 
 
@@ -2962,7 +2962,7 @@ pooled connection factory by default.
 http://www.mongodb.com/[MongoDB] is an open-source NoSQL document database that uses a
 JSON-like schema instead of traditional table-based relational data. Spring Boot offers
 several conveniences for working with MongoDB, including the
-`spring-boot-starter-data-mongodb` '`Starter POM`'.
+`spring-boot-starter-data-mongodb` '`Starter`'.
 
 
 
@@ -3118,7 +3118,7 @@ Mongo instance's configuration and logging routing.
 http://neo4j.com/[Neo4j] is an open-source NoSQL graph database that uses a rich data
 model of nodes related by first class relationships which is better suited for connected
 big data than traditional rdbms approaches. Spring Boot offers several conveniences for
-working with Neo4j, including the `spring-boot-starter-data-neo4j` '`Starter POM`'.
+working with Neo4j, including the `spring-boot-starter-data-neo4j` '`Starter`'.
 
 
 
@@ -3238,7 +3238,7 @@ documentation].
 https://github.com/spring-projects/spring-data-gemfire[Spring Data Gemfire] provides
 convenient Spring-friendly tools for accessing the
 http://pivotal.io/big-data/pivotal-gemfire#details[Pivotal Gemfire] data management
-platform. There is a `spring-boot-starter-data-gemfire` '`Starter POM`' for collecting the
+platform. There is a `spring-boot-starter-data-gemfire` '`Starter`' for collecting the
 dependencies in a convenient way. There is currently no auto-configuration support for
 Gemfire, but you can enable Spring Data Repositories with a
 https://github.com/spring-projects/spring-data-gemfire/blob/master/src/main/java/org/springframework/data/gemfire/repository/config/EnableGemfireRepositories.java[single annotation (`@EnableGemfireRepositories`)].
@@ -3250,7 +3250,7 @@ https://github.com/spring-projects/spring-data-gemfire/blob/master/src/main/java
 http://lucene.apache.org/solr/[Apache Solr] is a search engine. Spring Boot offers basic
 auto-configuration for the Solr 5 client library and abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-solr[Spring Data Solr]. There is
-a `spring-boot-starter-data-solr` '`Starter POM`' for collecting the dependencies in a
+a `spring-boot-starter-data-solr` '`Starter`' for collecting the dependencies in a
 convenient way.
 
 
@@ -3302,7 +3302,7 @@ http://www.elasticsearch.org/[Elasticsearch] is an open source, distributed,
 real-time search and analytics engine. Spring Boot offers basic auto-configuration for
 the Elasticsearch and abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch].
-There is a `spring-boot-starter-data-elasticsearch` '`Starter POM`' for collecting the
+There is a `spring-boot-starter-data-elasticsearch` '`Starter`' for collecting the
 dependencies in a convenient way.
 
 
@@ -3372,7 +3372,7 @@ http://cassandra.apache.org/[Cassandra] is an open source, distributed database 
 system designed to handle large amounts of data across many commodity servers. Spring Boot
 offers auto-configuration for Cassandra and abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-cassandra[Spring Data Cassandra].
-There is a `spring-boot-starter-data-cassandra` '`Starter POM`' for collecting the
+There is a `spring-boot-starter-data-cassandra` '`Starter`' for collecting the
 dependencies in a convenient way.
 
 
@@ -3428,7 +3428,7 @@ http://www.couchbase.com/[Couchbase] is an open-source, distributed multi-model 
 document-oriented database that is optimized for interactive applications. Spring Boot
 offers auto-configuration for Couchbase and abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-couchbase[Spring Data Couchbase].
-There is a `spring-boot-starter-data-couchbase` '`Starter POM`' for collecting the
+There is a `spring-boot-starter-data-couchbase` '`Starter`' for collecting the
 dependencies in a convenient way.
 
 
@@ -3554,7 +3554,7 @@ enabled via the `@EnableCaching` annotation.
 NOTE: If you are using the cache infrastructure with beans that are not interface-based,
 make sure to enable the `proxyTargetClass` attribute of `@EnableCaching`.
 
-TIP: Use the `spring-boot-starter-cache` "`Starter POM`" to quickly add required caching
+TIP: Use the `spring-boot-starter-cache` '`Starter`' to quickly add required caching
 dependencies. If you are adding dependencies manually you should note that certain
 implementations are only provided by the `spring-context-support` jar.
 
@@ -4047,7 +4047,7 @@ The Advanced Message Queuing Protocol (AMQP) is a platform-neutral, wire-level p
 for message-oriented middleware. The Spring AMQP project applies core Spring concepts to
 the development of AMQP-based messaging solutions. Spring Boot offers several
 conveniences for working with AMQP via RabbitMQ, including the
-`spring-boot-starter-amqp` '`Starter POM`'.
+`spring-boot-starter-amqp` '`Starter`'.
 
 
 
@@ -4230,7 +4230,7 @@ disable the JTA auto-configuration.
 [[boot-features-jta-atomikos]]
 === Using an Atomikos transaction manager
 Atomikos is a popular open source transaction manager which can be embedded into your
-Spring Boot application. You can use the `spring-boot-starter-jta-atomikos` Starter POM to
+Spring Boot application. You can use the `spring-boot-starter-jta-atomikos` Starter to
 pull in the appropriate Atomikos libraries. Spring Boot will auto-configure Atomikos and
 ensure that appropriate `depends-on` settings are applied to your Spring beans for correct
 startup and shutdown ordering.
@@ -4254,7 +4254,7 @@ property with a different value for each instance of your application.
 [[boot-features-jta-bitronix]]
 === Using a Bitronix transaction manager
 Bitronix is popular open source JTA transaction manager implementation. You can
-use the `spring-boot-starter-jta-bitronix` starter POM to add the appropriate Bitronix
+use the `spring-boot-starter-jta-bitronix` starter to add the appropriate Bitronix
 dependencies to your project. As with Atomikos, Spring Boot will automatically configure
 Bitronix and post-process your beans to ensure that startup and shutdown ordering is
 correct.
@@ -4278,7 +4278,7 @@ property with a different value for each instance of your application.
 [[boot-features-jta-narayana]]
 === Using a Narayana transaction manager
 Narayana is popular open source JTA transaction manager implementation supported by JBoss.
-You can use the `spring-boot-starter-jta-narayana` starter POM to add the appropriate
+You can use the `spring-boot-starter-jta-narayana` starter to add the appropriate
 Narayana dependencies to your project. As with Atomikos and Bitronix, Spring Boot will
 automatically configure Narayana and post-process your beans to ensure that startup and
 shutdown ordering is correct.
@@ -4399,7 +4399,7 @@ caching is enabled.
 [[boot-features-integration]]
 == Spring Integration
 Spring Boot offers several conveniences for working with Spring Integration, including
-the `spring-boot-starter-integration` '`Starter POM`'. Spring Integration provides
+the `spring-boot-starter-integration` '`Starter`'. Spring Integration provides
 abstractions over messaging and also other transports such as HTTP, TCP etc. If Spring
 Integration is available on your classpath it will be initialized through the
 `@EnableIntegration` annotation. Message processing statistics will be published over JMX
@@ -4458,7 +4458,7 @@ Spring Boot provides a number of utilities and annotations to help when testing 
 application. Test support is provided by two modules; `spring-boot-test` contains core
 items, and `spring-boot-test-autoconfigure` supports auto-configuration for tests.
 
-Most developers will just use the `spring-boot-starter-test` '`Starter POM`' which
+Most developers will just use the `spring-boot-starter-test` '`Starter`' which
 imports both Spring Boot test modules as well has JUnit, AssertJ, Hamcrest and a number
 of other useful libraries.
 
@@ -4467,7 +4467,7 @@ of other useful libraries.
 [[boot-features-test-scope-dependencies]]
 === Test scope dependencies
 If you use the
-`spring-boot-starter-test` '`Starter POM`' (in the `test` `scope`), you will find
+`spring-boot-starter-test` '`Starter`' (in the `test` `scope`), you will find
 the following provided libraries:
 
 * http://junit.org[JUnit] -- The de-facto standard for unit testing Java applications.
@@ -4498,7 +4498,7 @@ needing to connect to other infrastructure.
 
 The Spring Framework includes a dedicated test module for just such integration testing.
 You can declare a dependency directly to `org.springframework:spring-test` or use the
-`spring-boot-starter-test` '`Starter POM`' to pull it in transitively.
+`spring-boot-starter-test` '`Starter`' to pull it in transitively.
 
 If you have not used the `spring-test` module before you should start by reading the
 {spring-reference}/#testing[relevant section] of the Spring Framework reference
