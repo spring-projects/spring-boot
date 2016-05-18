@@ -18,10 +18,8 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -68,10 +66,6 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 		SERIES_VIEWS = Collections.unmodifiableMap(views);
 	}
 
-	private static final int CACHE_LIMIT = 1024;
-
-	private static final Object UNRESOLVED = new Object();
-
 	private ApplicationContext applicationContext;
 
 	private final ResourceProperties resourceProperties;
@@ -79,30 +73,6 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	private final List<TemplateAvailabilityProvider> templateAvailabilityProviders;
 
 	private int order = Ordered.LOWEST_PRECEDENCE;
-
-	/**
-	 * resolved template views, returning already cached instances without a global lock.
-	 */
-	private final Map<Object, Object> resolved = new ConcurrentHashMap<Object, Object>(
-			CACHE_LIMIT);
-
-	/**
-	 * Map from view name resolve template view, synchronized when accessed.
-	 */
-	@SuppressWarnings("serial")
-	private final Map<Object, Object> cache = new LinkedHashMap<Object, Object>(
-			CACHE_LIMIT, 0.75f, true) {
-
-		@Override
-		protected boolean removeEldestEntry(Map.Entry<Object, Object> eldest) {
-			if (size() > CACHE_LIMIT) {
-				DefaultErrorViewResolver.this.resolved.remove(eldest.getKey());
-				return true;
-			}
-			return false;
-		}
-
-	};
 
 	/**
 	 * Create a new {@link DefaultErrorViewResolver} instance.
@@ -150,25 +120,11 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	}
 
 	private ModelAndView resolveTemplate(String viewName, Map<String, Object> model) {
-		Object resolved = this.resolved.get(viewName);
-		if (resolved == null) {
-			synchronized (this.cache) {
-				resolved = resolveTemplateViewName(viewName);
-				resolved = (resolved == null ? UNRESOLVED : resolved);
-				this.resolved.put(viewName, resolved);
-				this.cache.put(viewName, resolved);
-			}
-		}
-		return (resolved == UNRESOLVED ? null
-				: new ModelAndView((String) resolved, model));
-	}
-
-	private String resolveTemplateViewName(String viewName) {
 		for (TemplateAvailabilityProvider templateAvailabilityProvider : this.templateAvailabilityProviders) {
 			if (templateAvailabilityProvider.isTemplateAvailable("error/" + viewName,
 					this.applicationContext.getEnvironment(),
 					this.applicationContext.getClassLoader(), this.applicationContext)) {
-				return "error/" + viewName;
+				return new ModelAndView("error/" + viewName, model);
 			}
 		}
 		return null;
