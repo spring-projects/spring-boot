@@ -55,6 +55,7 @@ import static org.hamcrest.Matchers.not;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author David Harrigan
  */
 public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
@@ -124,6 +125,19 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext,
 				"classpath:logback-nondefault.xml",
+				getLogFile(tmpDir() + "/tmp.log", null));
+		this.logger.info("Hello world");
+		String output = this.output.toString().trim();
+		assertThat(output).contains("Hello world").contains(tmpDir() + "/tmp.log");
+		assertThat(output).endsWith("BOOTBOOT");
+		assertThat(new File(tmpDir() + "/tmp.log").exists()).isFalse();
+	}
+	
+	@Test
+	public void testWithResources() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, 
+				"classpath:logback-with-resources.xml", 
 				getLogFile(tmpDir() + "/tmp.log", null));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();

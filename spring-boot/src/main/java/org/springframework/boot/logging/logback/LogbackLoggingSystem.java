@@ -30,6 +30,7 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.jul.LevelChangePropagator;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.core.joran.action.PropertyAction;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.spi.FilterReply;
 import ch.qos.logback.core.status.Status;
@@ -53,6 +54,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author David Harrigan
  */
 public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
@@ -143,6 +145,10 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		StringBuilder errors = new StringBuilder();
 		for (Status status : statuses) {
 			if (status.getLevel() == Status.ERROR) {
+				if ((status.getOrigin() instanceof PropertyAction) 
+						&& (status.getMessage().indexOf("Could not find") >= 0)) {
+					continue;
+				}
 				errors.append(errors.length() > 0 ? String.format("%n") : "");
 				errors.append(status.toString());
 			}
