@@ -41,6 +41,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ErrorPage;
@@ -53,7 +54,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.core.Ordered;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
@@ -166,19 +166,15 @@ public class ErrorMvcAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			List<TemplateAvailabilityProvider> availabilityProviders = SpringFactoriesLoader
-					.loadFactories(TemplateAvailabilityProvider.class,
-							context.getClassLoader());
-
-			for (TemplateAvailabilityProvider availabilityProvider : availabilityProviders) {
-				if (availabilityProvider.isTemplateAvailable("error",
-						context.getEnvironment(), context.getClassLoader(),
-						context.getResourceLoader())) {
-					return ConditionOutcome.noMatch("Template from "
-							+ availabilityProvider + " found for error view");
-				}
+			TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(
+					context.getClassLoader());
+			TemplateAvailabilityProvider provider = providers.getProvider("error",
+					context.getEnvironment(), context.getClassLoader(),
+					context.getResourceLoader());
+			if (provider != null) {
+				return ConditionOutcome
+						.noMatch("Template from " + provider + " found for error view");
 			}
-
 			return ConditionOutcome.match("No error template view detected");
 		}
 

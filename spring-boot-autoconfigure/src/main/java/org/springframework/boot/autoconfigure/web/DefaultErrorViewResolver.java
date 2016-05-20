@@ -18,17 +18,17 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatus.Series;
 import org.springframework.http.MediaType;
@@ -70,7 +70,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 
 	private final ResourceProperties resourceProperties;
 
-	private final List<TemplateAvailabilityProvider> templateAvailabilityProviders;
+	private final TemplateAvailabilityProviders templateAvailabilityProviders;
 
 	private int order = Ordered.LOWEST_PRECEDENCE;
 
@@ -81,21 +81,27 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	 */
 	public DefaultErrorViewResolver(ApplicationContext applicationContext,
 			ResourceProperties resourceProperties) {
-		this(applicationContext, resourceProperties,
-				loadTemplateAvailabilityProviders(applicationContext));
-	}
-
-	private static List<TemplateAvailabilityProvider> loadTemplateAvailabilityProviders(
-			ApplicationContext applicationContext) {
-		return SpringFactoriesLoader.loadFactories(TemplateAvailabilityProvider.class,
-				applicationContext == null ? null : applicationContext.getClassLoader());
+		Assert.notNull(applicationContext, "ApplicationContext must not be null");
+		Assert.notNull(resourceProperties, "ResourceProperties must not be null");
+		this.applicationContext = applicationContext;
+		this.resourceProperties = resourceProperties;
+		this.templateAvailabilityProviders = new TemplateAvailabilityProviders(
+				applicationContext);
 	}
 
 	DefaultErrorViewResolver(ApplicationContext applicationContext,
 			ResourceProperties resourceProperties,
-			List<TemplateAvailabilityProvider> templateAvailabilityProviders) {
+			TemplateAvailabilityProviders templateAvailabilityProviders) {
 		Assert.notNull(applicationContext, "ApplicationContext must not be null");
 		Assert.notNull(resourceProperties, "ResourceProperties must not be null");
+		this.applicationContext = applicationContext;
+		this.resourceProperties = resourceProperties;
+		this.templateAvailabilityProviders = templateAvailabilityProviders;
+	}
+
+	DefaultErrorViewResolver(AnnotationConfigApplicationContext applicationContext,
+			ResourceProperties resourceProperties,
+			TemplateAvailabilityProviders templateAvailabilityProviders) {
 		this.applicationContext = applicationContext;
 		this.resourceProperties = resourceProperties;
 		this.templateAvailabilityProviders = templateAvailabilityProviders;
@@ -112,29 +118,20 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	}
 
 	private ModelAndView resolve(String viewName, Map<String, Object> model) {
-		ModelAndView modelAndView = resolveTemplate(viewName, model);
-		if (modelAndView == null) {
-			modelAndView = resolveResource(viewName, model);
+		String errorViewName = "error/" + viewName;
+		TemplateAvailabilityProvider provider = this.templateAvailabilityProviders
+				.getProvider(errorViewName, this.applicationContext);
+		if (provider != null) {
+			return new ModelAndView(errorViewName, model);
 		}
-		return modelAndView;
-	}
-
-	private ModelAndView resolveTemplate(String viewName, Map<String, Object> model) {
-		for (TemplateAvailabilityProvider templateAvailabilityProvider : this.templateAvailabilityProviders) {
-			if (templateAvailabilityProvider.isTemplateAvailable("error/" + viewName,
-					this.applicationContext.getEnvironment(),
-					this.applicationContext.getClassLoader(), this.applicationContext)) {
-				return new ModelAndView("error/" + viewName, model);
-			}
-		}
-		return null;
+		return resolveResource(errorViewName, model);
 	}
 
 	private ModelAndView resolveResource(String viewName, Map<String, Object> model) {
 		for (String location : this.resourceProperties.getStaticLocations()) {
 			try {
 				Resource resource = this.applicationContext.getResource(location);
-				resource = resource.createRelative("error/" + viewName + ".html");
+				resource = resource.createRelative(viewName + ".html");
 				if (resource.exists()) {
 					return new ModelAndView(new HtmlResourceView(resource), model);
 				}

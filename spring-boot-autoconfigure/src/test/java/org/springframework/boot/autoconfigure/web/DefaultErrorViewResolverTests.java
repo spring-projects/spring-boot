@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.Ordered;
@@ -78,8 +78,8 @@ public class DefaultErrorViewResolverTests {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.refresh();
 		this.resourceProperties = new ResourceProperties();
-		List<TemplateAvailabilityProvider> templateAvailabilityProviders = Collections
-				.singletonList(this.templateAvailabilityProvider);
+		TemplateAvailabilityProviders templateAvailabilityProviders = new TestTemplateAvailabilityProviders(
+				this.templateAvailabilityProvider);
 		this.resolver = new DefaultErrorViewResolver(applicationContext,
 				this.resourceProperties, templateAvailabilityProviders);
 	}
@@ -219,6 +219,15 @@ public class DefaultErrorViewResolverTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		modelAndView.getView().render(this.model, this.request, response);
 		return response;
+	}
+
+	private static class TestTemplateAvailabilityProviders
+			extends TemplateAvailabilityProviders {
+
+		TestTemplateAvailabilityProviders(TemplateAvailabilityProvider provider) {
+			super(Collections.singletonList(provider));
+		}
+
 	}
 
 }
