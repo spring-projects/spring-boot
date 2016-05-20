@@ -1230,7 +1230,7 @@ private String prefix = "metrics";
 @Bean
 @ExportMetricWriter
 MetricWriter metricWriter() {
-	return new StatsdMetricWriter(prefix, "localhost", "8125");
+	return new StatsdMetricWriter(prefix, "localhost", 8125);
 }
 ----
 
