@@ -145,7 +145,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		StringBuilder errors = new StringBuilder();
 		for (Status status : statuses) {
 			if (status.getLevel() == Status.ERROR) {
-				if ((status.getOrigin() instanceof PropertyAction) 
+				if ((status.getOrigin() instanceof PropertyAction)
 						&& (status.getMessage().indexOf("Could not find") >= 0)) {
 					continue;
 				}

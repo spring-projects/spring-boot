@@ -132,12 +132,12 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(output).endsWith("BOOTBOOT");
 		assertThat(new File(tmpDir() + "/tmp.log").exists()).isFalse();
 	}
-	
+
 	@Test
 	public void testWithResources() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(this.initializationContext, 
-				"classpath:logback-with-resources.xml", 
+		this.loggingSystem.initialize(this.initializationContext,
+				"classpath:logback-with-resources.xml",
 				getLogFile(tmpDir() + "/tmp.log", null));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
