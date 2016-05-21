@@ -39,6 +39,6 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ImportAutoConfiguration({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class })
-public @interface AutoConfigurationJson {
+public @interface AutoConfigureJson {
 
 }
