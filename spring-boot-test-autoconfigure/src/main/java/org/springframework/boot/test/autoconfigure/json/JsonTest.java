@@ -39,7 +39,7 @@ import org.springframework.test.context.BootstrapWith;
  * serialization.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
- * configuration relevant to Json tests (i.e. {@code @JsonComponent}, Jackson
+ * configuration relevant to JSON tests (i.e. {@code @JsonComponent}, Jackson
  * {@code Module})
  * <p>
  * By default, tests annotated with {@code JsonTest} will also initialize
@@ -47,7 +47,7 @@ import org.springframework.test.context.BootstrapWith;
  * provided via the {@link AutoConfigureJsonTesters @AutoConfigureJsonTesters} annotation.
  *
  * @author Phillip Webb
- * @see AutoConfigurationJson
+ * @see AutoConfigureJson
  * @see AutoConfigureJsonTesters
  * @see AutoConfigureCache
  * @since 1.4.0
@@ -60,7 +60,7 @@ import org.springframework.test.context.BootstrapWith;
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(JsonExcludeFilter.class)
 @AutoConfigureCache
-@AutoConfigurationJson
+@AutoConfigureJson
 @AutoConfigureJsonTesters
 public @interface JsonTest {
 
