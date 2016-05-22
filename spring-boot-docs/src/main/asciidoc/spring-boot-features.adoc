@@ -410,13 +410,14 @@ or as a JNDI variable `java:comp/env/spring.application.json`.
 [[boot-features-external-config-random-values]]
 === Configuring random values
 The `RandomValuePropertySource` is useful for injecting random values (e.g. into secrets
-or test cases). It can produce integers, longs or strings, e.g.
+or test cases). It can produce integers, longs, uuids or strings, e.g.
 
 [source,properties,indent=0]
 ----
 	my.secret=${random.value}
 	my.number=${random.int}
 	my.bignumber=${random.long}
+	my.uuid=${random.uuid}
 	my.number.less.than.ten=${random.int(10)}
 	my.number.in.range=${random.int[1024,65536]}
 ----

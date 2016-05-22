@@ -17,6 +17,7 @@
 package org.springframework.boot.context.config;
 
 import java.util.Random;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -47,6 +48,13 @@ public class RandomValuePropertySourceTests {
 	public void intValue() {
 		Integer value = (Integer) this.source.getProperty("random.int");
 		assertThat(value).isNotNull();
+	}
+
+	@Test
+	public void uuidValue() {
+		String value = (String) this.source.getProperty("random.uuid");
+		assertThat(value).isNotNull();
+		assertThat(UUID.fromString(value)).isNotNull();
 	}
 
 	@Test
