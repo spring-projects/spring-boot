@@ -996,7 +996,7 @@ content into your application; rather pick only the properties that you need.
 	management.context-path= # Management endpoint context-path. For instance `/actuator`
 	management.port= # Management endpoint HTTP port. Use the same port as the application by default.
 	management.security.enabled=true # Enable security.
-	management.security.role=ADMIN # Roles required to access the management endpoint.
+	management.security.roles=ADMIN # Comma-separated list of roles that can access the management endpoint.
 	management.security.sessions=stateless # Session creating policy to use (always, never, if_required, stateless).
 
 	# HEALTH INDICATORS (previously health.*)

@@ -124,7 +124,7 @@ public class ManagementWebSecurityAutoConfiguration {
 		public void init() {
 			if (this.management != null && this.security != null) {
 				this.security.getUser().getRole()
-						.addAll(this.management.getSecurity().getRole());
+						.addAll(this.management.getSecurity().getRoles());
 			}
 		}
 
@@ -297,7 +297,7 @@ public class ManagementWebSecurityAutoConfiguration {
 			requests.requestMatchers(new LazyEndpointPathRequestMatcher(
 					this.contextResolver, EndpointPaths.NON_SENSITIVE)).permitAll();
 			// Restrict the rest to the configured roles
-			List<String> roles = this.management.getSecurity().getRole();
+			List<String> roles = this.management.getSecurity().getRoles();
 			requests.anyRequest().hasAnyRole(roles.toArray(new String[roles.size()]));
 		}
 
