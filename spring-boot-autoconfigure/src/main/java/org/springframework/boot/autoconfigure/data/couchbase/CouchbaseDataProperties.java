@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.data.couchbase;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.couchbase.core.convert.DefaultCouchbaseTypeMapper;
 import org.springframework.data.couchbase.core.query.Consistency;
 
 /**
@@ -39,6 +40,11 @@ public class CouchbaseDataProperties {
 	 */
 	private Consistency consistency = Consistency.READ_YOUR_OWN_WRITES;
 
+	/**
+	 * The name of the JSON attribute in which to store class information when marshalling entities (type key).
+	 */
+	private String typeKey = DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY;
+
 	public boolean isAutoIndex() {
 		return this.autoIndex;
 	}
@@ -53,6 +59,14 @@ public class CouchbaseDataProperties {
 
 	public void setConsistency(Consistency consistency) {
 		this.consistency = consistency;
+	}
+
+	public String getTypeKey() {
+		return this.typeKey;
+	}
+
+	public void setTypeKey(String typeKey) {
+		this.typeKey = typeKey;
 	}
 
 }
