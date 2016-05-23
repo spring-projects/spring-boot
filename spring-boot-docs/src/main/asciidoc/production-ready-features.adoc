@@ -520,14 +520,14 @@ TIP: Generated passwords are logged as the application starts. Search for '`Usin
 security password`'.
 
 You can use Spring properties to change the username and password and to change the
-security role required to access the endpoints. For example, you might set the following
+security role(s) required to access the endpoints. For example, you might set the following
 in your `application.properties`:
 
 [source,properties,indent=0]
 ----
 	security.user.name=admin
 	security.user.password=secret
-	management.security.role=SUPERUSER
+	management.security.roles=SUPERUSER
 ----
 
 TIP: If you don't use Spring Security and your HTTP endpoints are exposed publicly,

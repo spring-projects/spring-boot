@@ -196,8 +196,8 @@ public class CrshAutoConfiguration {
 			// overridden by ConfigurationProperties.
 			SpringAuthenticationProperties authenticationProperties = new SpringAuthenticationProperties();
 			if (this.management != null) {
-				authenticationProperties.setRoles(
-						new String[] { this.management.getSecurity().getRole() });
+				List<String> roles = this.management.getSecurity().getRoles();
+				authenticationProperties.setRoles(roles.toArray(new String[roles.size()]));
 			}
 			return authenticationProperties;
 		}
