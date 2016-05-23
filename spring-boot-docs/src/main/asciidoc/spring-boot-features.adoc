@@ -3574,8 +3574,9 @@ providers (in this order):
 * <<boot-features-caching-provider-guava,Guava>>
 * <<boot-features-caching-provider-simple,Simple>>
 
-It is also possible to _force_ the cache provider to use via the `spring.cache.type`
-property.
+TIP: It is also possible to _force_ the cache provider to use via the `spring.cache.type`
+property. Use this property if you need to <<boot-features-caching-provider-none,disable
+caching altogether>> in certain environment (e.g. tests).
 
 If the `CacheManager` is auto-configured by Spring Boot, you can further tune its
 configuration before it is fully initialized by exposing a bean implementing the
@@ -3595,11 +3596,11 @@ configuration before it is fully initialized by exposing a bean implementing the
 ----
 
 [NOTE]
-===
+====
 In the example above, a `ConcurrentMapCacheManager` is expected to be configured. If that
 is not the case, the customizer won't be invoked at all. You can have as many customizers
 as you want and you can also order them as usual using `@Order` or `Ordered`.
-===
+====
 
 
 
@@ -3810,6 +3811,19 @@ associated to the `GuavaCacheManager`.
 If none of these options worked out, a simple implementation using `ConcurrentHashMap`
 as cache store is configured. This is the default if no caching library is present in
 your application.
+
+
+
+[[boot-features-caching-provider-none]]
+==== None
+When `@EnableCaching` is present in your configuration, a suitable cache configuration
+is expected as well. If you need to disable caching altogether in certain environments,
+force the cache type to `none` to use a no-op implementation:
+
+[source,properties,indent=0]
+----
+	spring.cache.cache.type=none
+----
 
 
 
