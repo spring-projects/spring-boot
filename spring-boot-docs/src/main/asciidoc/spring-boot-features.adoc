@@ -4717,7 +4717,7 @@ annotation.
 
 Spring Boot includes AssertJ based helpers that work with the JSONassert and JsonPath
 libraries to check that JSON is as expected. The `JacksonHelper`, `GsonHelper` and
-`BasicJsonHelper` classes can be used for Jackson, Gson and Strings respectively. Any
+`BasicJsonTester` classes can be used for Jackson, Gson and Strings respectively. Any
 helper fields on the test class will be automatically initialized when using `@JsonTest`.
 
 [source,java,indent=0]
