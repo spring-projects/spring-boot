@@ -169,6 +169,22 @@ public class AnnotationsPropertySourceTests {
 		new AnnotationsPropertySource(PropertyMappedWithSelfAnnotatingAnnotation.class);
 	}
 
+	@Test
+	public void typeLevelAnnotationOnSuperClass() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(
+				PropertyMappedAnnotationOnSuperClass.class);
+		assertThat(source.getPropertyNames()).containsExactly("value");
+		assertThat(source.getProperty("value")).isEqualTo("abc");
+	}
+
+	@Test
+	public void aliasedPropertyMappedAttributeOnSuperClass() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(
+				AliasedPropertyMappedAnnotationOnSuperClass.class);
+		assertThat(source.getPropertyNames()).containsExactly("aliasing.value");
+		assertThat(source.getProperty("aliasing.value")).isEqualTo("baz");
+	}
+
 	static class NoAnnotation {
 
 	}
@@ -356,6 +372,15 @@ public class AnnotationsPropertySourceTests {
 
 	@SelfAnnotating
 	static class PropertyMappedWithSelfAnnotatingAnnotation {
+
+	}
+
+	static class PropertyMappedAnnotationOnSuperClass extends TypeLevel {
+
+	}
+
+	static class AliasedPropertyMappedAnnotationOnSuperClass
+			extends PropertyMappedAttributeWithAnAlias {
 
 	}
 

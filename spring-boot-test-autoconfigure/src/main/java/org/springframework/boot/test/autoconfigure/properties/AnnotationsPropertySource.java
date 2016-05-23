@@ -87,11 +87,22 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		List<Annotation> mergedAnnotations = new ArrayList<Annotation>();
 		for (Annotation annotation : AnnotationUtils.getAnnotations(source)) {
 			if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
-				mergedAnnotations.add(AnnotatedElementUtils.getMergedAnnotation(root,
-						annotation.annotationType()));
+				mergedAnnotations
+						.add(findMergedAnnotation(root, annotation.annotationType()));
 			}
 		}
 		return mergedAnnotations;
+	}
+
+	private Annotation findMergedAnnotation(Class<?> source,
+			Class<? extends Annotation> annotationType) {
+		if (source == null) {
+			return null;
+		}
+		Annotation mergedAnnotation = AnnotatedElementUtils.getMergedAnnotation(source,
+				annotationType);
+		return mergedAnnotation != null ? mergedAnnotation
+				: findMergedAnnotation(source.getSuperclass(), annotationType);
 	}
 
 	private void collectProperties(Annotation annotation, Method attribute,
