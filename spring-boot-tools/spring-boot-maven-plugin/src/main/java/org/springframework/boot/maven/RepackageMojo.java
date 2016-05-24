@@ -18,6 +18,7 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -37,6 +38,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
+import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
 
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
@@ -171,6 +173,13 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	@Parameter(defaultValue = "false")
 	private boolean excludeDevtools;
 
+	/**
+	 * Include system scoped dependencies.
+	 * @since 1.4
+	 */
+	@Parameter(defaultValue = "false")
+	public boolean includeSystemScope;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.project.getPackaging().equals("pom")) {
@@ -225,14 +234,18 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private ArtifactsFilter[] getAdditionalFilters() {
+		List<ArtifactsFilter> filters = new ArrayList<ArtifactsFilter>();
 		if (this.excludeDevtools) {
 			Exclude exclude = new Exclude();
 			exclude.setGroupId("org.springframework.boot");
 			exclude.setArtifactId("spring-boot-devtools");
 			ExcludeFilter filter = new ExcludeFilter(exclude);
-			return new ArtifactsFilter[] { filter };
+			filters.add(filter);
 		}
-		return new ArtifactsFilter[] {};
+		if (!this.includeSystemScope) {
+			filters.add(new ScopeFilter(null, Artifact.SCOPE_SYSTEM));
+		}
+		return filters.toArray(new ArtifactsFilter[filters.size()]);
 	}
 
 	private LaunchScript getLaunchScript() throws IOException {
