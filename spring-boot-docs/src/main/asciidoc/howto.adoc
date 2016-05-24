@@ -1332,13 +1332,13 @@ have been applied from the auto-configuration:
 [[howto-logging]]
 == Logging
 
-Spring Boot has no mandatory logging dependency, except for the `commons-logging` API, of
+Spring Boot has no mandatory logging dependency, except for the Commons Logging API, of
 which there are many implementations to choose from. To use http://logback.qos.ch[Logback]
-you need to include it, and some bindings for `commons-logging` on the classpath. The
-simplest way to do that is through the starters which all depend on
+you need to include it and `jcl-over-slf4j` (which implements the Commons Logging API) on
+the classpath. The simplest way to do that is through the starters which all depend on
 `spring-boot-starter-logging`. For a web application you only need
-`spring-boot-starter-web` since it depends transitively on the logging starter.
-For example, using Maven:
+`spring-boot-starter-web` since it depends transitively on the logging starter. For
+example, using Maven:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1440,7 +1440,7 @@ You also need to add `logging.file` to your `application.properties`:
 Spring Boot supports http://logging.apache.org/log4j/2.x[Log4j 2] for logging
 configuration if it is on the classpath. If you are using the starters for
 assembling dependencies that means you have to exclude Logback and then include log4j 2
-instead. If you aren't using the starters then you need to provide `commons-logging`
+instead. If you aren't using the starters then you need to provide `jcl-over-slf4j`
 (at least) in addition to Log4j 2.
 
 The simplest path is probably through the starters, even though it requires some
