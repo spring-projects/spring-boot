@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Wallace Wadge
  * @author Phillip Webb
+ * @author Venil Noronha
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "management.trace")
@@ -48,12 +49,26 @@ public class TraceProperties {
 	 */
 	private Set<Include> include = new HashSet<Include>(DEFAULT_INCLUDES);
 
+	/**
+	 * Whether {@literal Cookie} and {@literal Set-Cookie} should be excluded from
+	 * request/response headers. Defaults to {@code false}.
+	 */
+	private Boolean excludeCookies = false;
+
 	public Set<Include> getInclude() {
 		return this.include;
 	}
 
 	public void setInclude(Set<Include> include) {
 		this.include = include;
+	}
+
+	public Boolean getExcludeCookies() {
+		return this.excludeCookies;
+	}
+
+	public void setExcludeCookies(Boolean excludeCookies) {
+		this.excludeCookies = excludeCookies;
 	}
 
 	/**
