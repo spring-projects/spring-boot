@@ -50,10 +50,9 @@ public class TraceProperties {
 	private Set<Include> include = new HashSet<Include>(DEFAULT_INCLUDES);
 
 	/**
-	 * Whether {@literal Cookie} and {@literal Set-Cookie} should be excluded from
-	 * request/response headers. Defaults to {@code false}.
+	 * Items to be excluded from the trace.
 	 */
-	private Boolean excludeCookies = false;
+	private Set<Exclude> exclude = new HashSet<Exclude>();
 
 	public Set<Include> getInclude() {
 		return this.include;
@@ -63,12 +62,12 @@ public class TraceProperties {
 		this.include = include;
 	}
 
-	public Boolean getExcludeCookies() {
-		return this.excludeCookies;
+	public Set<Exclude> getExclude() {
+		return this.exclude;
 	}
 
-	public void setExcludeCookies(Boolean excludeCookies) {
-		this.excludeCookies = excludeCookies;
+	public void setExclude(Set<Exclude> exclude) {
+		this.exclude = exclude;
 	}
 
 	/**
@@ -140,6 +139,18 @@ public class TraceProperties {
 		 * Include the remote user.
 		 */
 		REMOTE_USER,
+
+	}
+
+	/**
+	 * Exclude options for tracing.
+	 */
+	public enum Exclude {
+
+		/**
+		 * Exclude Cookie from request and Set-Cookie from response headers.
+		 */
+		COOKIES,
 
 	}
 

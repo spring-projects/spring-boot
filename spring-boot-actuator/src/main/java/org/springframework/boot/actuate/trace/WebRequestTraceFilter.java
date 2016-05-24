@@ -34,7 +34,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.springframework.boot.actuate.trace.TraceProperties.Exclude;
 import org.springframework.boot.actuate.trace.TraceProperties.Include;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.core.Ordered;
@@ -124,7 +124,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		trace.put("headers", headers);
 		if (isIncluded(Include.REQUEST_HEADERS)) {
 			Map<String, Object> requestHeaders = getRequestHeaders(request);
-			if (this.properties.getExcludeCookies()) {
+			if (isExcluded(Exclude.COOKIES)) {
 				requestHeaders.remove("Cookie");
 			}
 			headers.put("request", requestHeaders);
@@ -175,7 +175,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		if (isIncluded(Include.RESPONSE_HEADERS)) {
 			Map<String, Object> headers = (Map<String, Object>) trace.get("headers");
 			Map<String, String> responseHeaders = getResponseHeaders(response);
-			if (this.properties.getExcludeCookies()) {
+			if (isExcluded(Exclude.COOKIES)) {
 				responseHeaders.remove("Set-Cookie");
 			}
 			headers.put("response", responseHeaders);
@@ -211,6 +211,10 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 
 	private boolean isIncluded(Include include) {
 		return this.properties.getInclude().contains(include);
+	}
+
+	private boolean isExcluded(Exclude exclude) {
+		return this.properties.getExclude().contains(exclude);
 	}
 
 	public void setErrorAttributes(ErrorAttributes errorAttributes) {
