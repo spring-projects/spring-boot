@@ -329,8 +329,10 @@ via Spring's `Environment` abstraction or
 via `@ConfigurationProperties`.
 
 Spring Boot uses a very particular `PropertySource` order that is designed to allow
-sensible overriding of values, properties are considered in the following order:
+sensible overriding of values. Properties are considered in the following order:
 
+. {spring-javadoc}/test/context/TestPropertySource.{dc-ext}[`@TestPropertySource`] annotations
+  on your tests.
 . Command line arguments.
 . Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment variable or system property)
 . `ServletConfig` init parameters.
