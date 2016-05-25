@@ -82,7 +82,8 @@ public class ManagementServerPropertiesAutoConfigurationTests {
 
 	@Test
 	public void managementRolesSetMultipleRoles() {
-		ManagementServerProperties properties = load("management.security.roles=FOO,BAR,BIZ");
+		ManagementServerProperties properties = load(
+				"management.security.roles=FOO,BAR,BIZ");
 		assertThat(properties.getSecurity().getRoles()).containsOnly("FOO", "BAR", "BIZ");
 	}
 
