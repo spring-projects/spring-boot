@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -56,7 +57,8 @@ public class FileSystemWatcherTests {
 
 	private FileSystemWatcher watcher;
 
-	private List<Set<ChangedFiles>> changes = new ArrayList<Set<ChangedFiles>>();
+	private List<Set<ChangedFiles>> changes = Collections
+			.synchronizedList(new ArrayList<Set<ChangedFiles>>());
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
@@ -158,7 +160,6 @@ public class FileSystemWatcherTests {
 
 	@Test
 	public void waitsForPollingInterval() throws Exception {
-		this.changes.clear();
 		setupWatcher(100, 1);
 		File folder = startWithNewFolder();
 		touch(new File(folder, "test1.txt"));
