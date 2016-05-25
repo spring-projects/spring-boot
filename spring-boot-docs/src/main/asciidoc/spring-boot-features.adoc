@@ -4880,6 +4880,27 @@ configure an in-memory embedded database, scan for `@Entity` classes and configu
 Data JPA repositories. Regular `@Component` beans will not be loaded into the
 `ApplicationContext`.
 
+Data JPA tests are transactional and rollback at the end of each test by default,
+see the {spring-reference}#testcontext-tx-enabling-transactions [relevant section] in the
+Spring Reference Documentation for more details. If that's not what you want, you can
+disable transaction management for a test or for the whole class as follows:
+
+[source,java,indent=0]
+----
+	import org.junit.*;
+	import org.junit.runner.*;
+	import org.springframework.boot.test.autoconfigure.orm.jpa.*;
+    import org.springframework.test.context.transaction.TestTransaction;
+    import org.springframework.transaction.annotation.Propagation;
+
+	@RunWith(SpringRunner.class)
+	@DataJpaTest
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public class ExampleNonTransactionalTests {
+
+	}
+----
+
 Data JPA tests may also inject a
 {sc-spring-boot-test-autoconfigure}/orm/jpa/TestEntityManager.{sc-ext}[`TestEntityManager`]
 bean which provides an alternative to the standard JPA `EntityManager` specifically
