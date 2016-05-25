@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Properties;
 
+import org.springframework.data.redis.connection.ClusterInfo;
+import org.springframework.data.redis.connection.RedisClusterConnection;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisConnectionUtils;
@@ -28,10 +30,13 @@ import org.springframework.util.Assert;
  * Redis data stores.
  *
  * @author Christian Dupuis
+ * @author Richard Santana
  * @since 1.1.0
  */
 public class RedisHealthIndicator extends AbstractHealthIndicator {
 
+	private static final String VERSION = "version";
+	private static final String REDIS_VERSION = "redis_version";
 	private final RedisConnectionFactory redisConnectionFactory;
 
 	public RedisHealthIndicator(RedisConnectionFactory connectionFactory) {
@@ -44,13 +49,29 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 		RedisConnection connection = RedisConnectionUtils
 				.getConnection(this.redisConnectionFactory);
 		try {
-			Properties info = connection.info();
-			builder.up().withDetail("version", info.getProperty("redis_version"));
+			if (connection instanceof RedisClusterConnection) {
+				redisClusterInfo(builder,
+						((RedisClusterConnection) connection).clusterGetClusterInfo());
+			}
+			else {
+				Properties info = connection.info();
+				defaultRedisInfo(builder, VERSION, info.getProperty(REDIS_VERSION));
+			}
 		}
 		finally {
 			RedisConnectionUtils.releaseConnection(connection,
 					this.redisConnectionFactory);
 		}
+	}
+
+	private void redisClusterInfo(Health.Builder builder, ClusterInfo clusterInfo) {
+		defaultRedisInfo(builder, "cluster_size", clusterInfo.getClusterSize());
+		defaultRedisInfo(builder, "slots_up", clusterInfo.getSlotsOk());
+		defaultRedisInfo(builder, "slots_fail", clusterInfo.getSlotsFail());
+	}
+
+	private void defaultRedisInfo(Health.Builder builder, String key, Object value) {
+		builder.up().withDetail(key, value);
 	}
 
 }
