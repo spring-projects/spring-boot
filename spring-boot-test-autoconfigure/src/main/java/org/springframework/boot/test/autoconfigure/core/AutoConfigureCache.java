@@ -23,7 +23,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheType;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 import org.springframework.cache.support.NoOpCacheManager;
@@ -39,7 +38,7 @@ import org.springframework.cache.support.NoOpCacheManager;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@ImportAutoConfiguration(CacheAutoConfiguration.class)
+@ImportAutoConfiguration
 public @interface AutoConfigureCache {
 
 	@PropertyMapping("spring.cache.type")

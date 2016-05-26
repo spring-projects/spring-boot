@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
 
@@ -77,19 +78,25 @@ class ImportAutoConfigurationImportSelector
 		if (source != null && seen.add(source)) {
 			for (Annotation annotation : source.getDeclaredAnnotations()) {
 				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
-					collectCandidateConfigurations(annotation, candidates, seen);
+					collectCandidateConfigurations(source, annotation, candidates, seen);
 				}
 			}
 			collectCandidateConfigurations(source.getSuperclass(), candidates, seen);
 		}
 	}
 
-	private void collectCandidateConfigurations(Annotation annotation,
+	private void collectCandidateConfigurations(Class<?> source, Annotation annotation,
 			Set<String> candidates, Set<Class<?>> seen) {
 		if (ANNOTATION_NAMES.contains(annotation.annotationType().getName())) {
 			String[] value = (String[]) AnnotationUtils
 					.getAnnotationAttributes(annotation, true).get("value");
-			candidates.addAll(Arrays.asList(value));
+			if (value.length > 0) {
+				candidates.addAll(Arrays.asList(value));
+			}
+			else {
+				candidates.addAll(SpringFactoriesLoader.loadFactoryNames(source,
+						getClass().getClassLoader()));
+			}
 		}
 		collectCandidateConfigurations(annotation.annotationType(), candidates, seen);
 	}

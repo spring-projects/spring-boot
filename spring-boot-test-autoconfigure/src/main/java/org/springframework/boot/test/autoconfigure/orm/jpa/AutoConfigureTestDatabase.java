@@ -38,7 +38,7 @@ import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
-@ImportAutoConfiguration(TestDatabaseAutoConfiguration.class)
+@ImportAutoConfiguration
 @PropertyMapping("spring.test.database")
 public @interface AutoConfigureTestDatabase {
 

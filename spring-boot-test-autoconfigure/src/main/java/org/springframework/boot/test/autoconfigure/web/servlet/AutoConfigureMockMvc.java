@@ -42,9 +42,7 @@ import org.springframework.test.web.servlet.MvcResult;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
-@ImportAutoConfiguration({ MockMvcAutoConfiguration.class,
-		MockMvcWebClientAutoConfiguration.class, MockMvcWebDriverAutoConfiguration.class,
-		MockMvcSecurityAutoConfiguration.class })
+@ImportAutoConfiguration
 @PropertyMapping("spring.test.mockmvc")
 public @interface AutoConfigureMockMvc {
 

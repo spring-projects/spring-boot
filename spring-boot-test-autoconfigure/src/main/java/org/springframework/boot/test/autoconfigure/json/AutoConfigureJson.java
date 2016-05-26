@@ -23,8 +23,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 
 /**
  * {@link ImportAutoConfiguration Auto-configuration imports} for typical JSON tests. Most
@@ -38,7 +36,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ImportAutoConfiguration({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class })
+@ImportAutoConfiguration
 public @interface AutoConfigureJson {
 
 }

@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Import;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@ImportAutoConfiguration(RestDocsAutoConfiguration.class)
+@ImportAutoConfiguration
 @Import(RestDocumentationContextProviderRegistrar.class)
 @PropertyMapping("spring.test.restdocs")
 public @interface AutoConfigureRestDocs {

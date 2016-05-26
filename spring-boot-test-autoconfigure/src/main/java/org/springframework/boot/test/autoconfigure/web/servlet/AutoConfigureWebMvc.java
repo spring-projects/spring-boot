@@ -23,15 +23,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
-import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration;
-import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
-import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
-import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 
 /**
  * {@link ImportAutoConfiguration Auto-configuration imports} for typical Spring MVC
@@ -46,11 +37,7 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ImportAutoConfiguration({ WebMvcAutoConfiguration.class, GsonAutoConfiguration.class,
-		JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-		FreeMarkerAutoConfiguration.class, GroovyTemplateAutoConfiguration.class,
-		MustacheAutoConfiguration.class, ThymeleafAutoConfiguration.class,
-		HypermediaAutoConfiguration.class })
+@ImportAutoConfiguration
 public @interface AutoConfigureWebMvc {
 
 }
