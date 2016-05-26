@@ -52,7 +52,7 @@ such as the user that launched the application.
 The banner that is printed on start up can be changed by adding a `banner.txt` file
 to your classpath, or by setting `banner.location` to the location of such a file.
 If the file has an unusual encoding you can set `banner.charset` (default is `UTF-8`).
-In addition a text file, you can also add a `banner.gif`, `banner.jpg` or `banner.png`
+In addition to a text file, you can also add a `banner.gif`, `banner.jpg` or `banner.png`
 image file to your classpath, or set a `banner.image.location` property. Images will be
 converted into an ASCII art representation and printed above any text banner.
 
@@ -1741,7 +1741,7 @@ this:
 	             +- <other public assets>
 ----
 
-To map all `5xx` errors using a freemarker template, you'd have a structure like this:
+To map all `5xx` errors using a FreeMarker template, you'd have a structure like this:
 
 [source,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1750,7 +1750,7 @@ To map all `5xx` errors using a freemarker template, you'd have a structure like
 	     +- java/
 	     |   + <source code>
 	     +- resources/
-	         +- template/
+	         +- templates/
 	             +- error/
 	             |   +- 5xx.ftl
 	             +- <other templates>
@@ -1786,7 +1786,7 @@ will then pick up any unhandled exceptions.
 For applications that aren't using Spring MVC, you can use the `ErrorPageRegistrar`
 interface to directly register `ErrorPages`. This abstraction works directly with the
 underlying embedded servlet container and will work even if you don't have a Spring MVC
-`DispatcherServlet`
+`DispatcherServlet`.
 
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]

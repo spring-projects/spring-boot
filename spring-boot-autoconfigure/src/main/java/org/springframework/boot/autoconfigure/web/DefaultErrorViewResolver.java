@@ -152,7 +152,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	}
 
 	/**
-	 * {@link View} backed by a HTML resource.
+	 * {@link View} backed by an HTML resource.
 	 */
 	private static class HtmlResourceView implements View {
 

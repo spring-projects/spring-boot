@@ -66,7 +66,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * Apache Http Client 4.3.2 or better is available (recommended) it will be used as the
  * client, and by default configured to ignore cookies and redirects.
  * <p>
- * Note: To prevent injection problems this class internationally does not extend
+ * Note: To prevent injection problems this class internally does not extend
  * {@link RestTemplate}. If you need access to the underlying {@link RestTemplate} use
  * {@link #getRestTemplate()}.
  *

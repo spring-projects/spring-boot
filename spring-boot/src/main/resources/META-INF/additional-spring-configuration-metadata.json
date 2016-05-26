@@ -35,7 +35,7 @@
   {
     "name": "banner.image.margin",
     "type": "java.lang.Integer",
-    "description": "Left hand image height (in chars)."
+    "description": "Left hand image margin (in chars)."
   },
   {
     "name": "banner.image.invert",
