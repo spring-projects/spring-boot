@@ -49,7 +49,6 @@ public class OnBeanConditionTypeDeductionFailureTests {
 			fail("Context refresh was successful");
 		}
 		catch (Exception ex) {
-			ex.printStackTrace();
 			Throwable beanTypeDeductionException = findBeanTypeDeductionException(ex);
 			assertThat(beanTypeDeductionException)
 					.hasMessage("Failed to deduce bean type for "

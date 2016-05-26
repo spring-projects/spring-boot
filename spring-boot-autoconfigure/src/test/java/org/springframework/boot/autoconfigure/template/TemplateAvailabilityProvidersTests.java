@@ -196,7 +196,7 @@ public class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
-	public void getProvderWhenCacheDisabledShouldNotUseCache() throws Exception {
+	public void getProviderWhenCacheDisabledShouldNotUseCache() throws Exception {
 		given(this.provider.isTemplateAvailable(this.view, this.environment,
 				this.classLoader, this.resourceLoader)).willReturn(true);
 		this.environment.setProperty("spring.template.provider.cache", "false");

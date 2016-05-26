@@ -121,7 +121,6 @@ public class ImageBannerTests {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("gradient.gif", "banner.image.width=10",
 				"banner.image.margin=0");
-		System.out.println(banner);
 		assertThat(banner).contains("@#8&o:*.  ");
 	}
 
