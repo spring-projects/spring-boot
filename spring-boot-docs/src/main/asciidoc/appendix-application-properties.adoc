@@ -487,7 +487,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.ssl=false # Enable SSL support.
 	spring.data.cassandra.username= # Login user of the server.
 
-	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties])
+	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/data/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties])
 	spring.data.elasticsearch.cluster-name=elasticsearch # Elasticsearch cluster name.
 	spring.data.elasticsearch.cluster-nodes= # Comma-separated list of cluster node addresses. If not specified, starts a client node.
 	spring.data.elasticsearch.properties.*= # Additional properties used to configure the client.
