@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
+import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
@@ -48,7 +49,8 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 @ImportAutoConfiguration({ WebMvcAutoConfiguration.class, GsonAutoConfiguration.class,
 		JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 		FreeMarkerAutoConfiguration.class, GroovyTemplateAutoConfiguration.class,
-		MustacheAutoConfiguration.class, ThymeleafAutoConfiguration.class })
+		MustacheAutoConfiguration.class, ThymeleafAutoConfiguration.class,
+		HypermediaAutoConfiguration.class })
 public @interface AutoConfigureWebMvc {
 
 }
