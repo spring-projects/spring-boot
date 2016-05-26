@@ -19,7 +19,7 @@
   {
     "name": "banner.image.location",
     "type": "org.springframework.core.io.Resource",
-    "description": "Banner image file location.",
+    "description": "Banner image file location (jpg/png can also be used).",
     "defaultValue": "banner.gif"
   },
   {
@@ -35,7 +35,7 @@
   {
     "name": "banner.image.margin",
     "type": "java.lang.Integer",
-    "description": "Left hand image height (in chars)."
+    "description": "Left hand image margin (in chars)."
   },
   {
     "name": "banner.image.invert",

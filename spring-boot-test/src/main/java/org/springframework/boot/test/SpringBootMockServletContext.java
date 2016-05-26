@@ -20,7 +20,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.web.MockServletContext;
 
 /**
- * {@link MockServletContext} implementation for Spring Boot. Respects well know Spring
+ * {@link MockServletContext} implementation for Spring Boot. Respects well-known Spring
  * Boot resource locations and uses an empty directory for "/" if no locations can be
  * found.
  *

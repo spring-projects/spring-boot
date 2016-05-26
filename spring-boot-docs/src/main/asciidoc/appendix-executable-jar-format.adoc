@@ -97,7 +97,7 @@ a traditional web container should be placed in `WEB-INF/lib-provided`.
 The core class used to support loading nested jars is
 `org.springframework.boot.loader.jar.JarFile`. It allows you to load jar
 content from a standard jar file, or from nested child jar data. When first loaded, the
-location of each  `JarEntry` is mapped to a physical file offset of the outer jar:
+location of each `JarEntry` is mapped to a physical file offset of the outer jar:
 
 [indent=0]
 ----
