@@ -4,7 +4,8 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>1.4.0.BUILD-SNAPSHOT</version>
+		<version>1.3.5.RELEASE</version>
+		<relativePath />
 	</parent>
 	<artifactId>spring-boot-starter-remote-shell</artifactId>
 	<name>Spring Boot Remote Shell Starter</name>
@@ -31,6 +32,7 @@
 			<groupId>org.crashub</groupId>
 			<artifactId>crash.cli</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.crashub</groupId>
 			<artifactId>crash.connectors.ssh</artifactId>
@@ -39,8 +41,18 @@
 					<groupId>org.codehaus.groovy</groupId>
 					<artifactId>groovy-all</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk15on</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.47</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.crashub</groupId>
 			<artifactId>crash.connectors.telnet</artifactId>
