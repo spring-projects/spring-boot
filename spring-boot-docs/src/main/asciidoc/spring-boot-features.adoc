@@ -3859,6 +3859,10 @@ Spring Boot can also configure a `ConnectionFactory` when it detects that Active
 available on the classpath. If the broker is present, an embedded broker is started and
 configured automatically (as long as no broker URL is specified through configuration).
 
+NOTE: If you are using `spring-boot-starter-activemq` the necessary dependencies to
+connect or embed an ActiveMQ instance are provided, as well as the Spring infrastructure
+to integrate with JMS.
+
 ActiveMQ configuration is controlled by external configuration properties in
 `+spring.activemq.*+`. For example, you might declare the following section in
 `application.properties`:
