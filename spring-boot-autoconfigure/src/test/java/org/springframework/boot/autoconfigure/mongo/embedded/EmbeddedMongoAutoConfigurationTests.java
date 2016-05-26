@@ -61,7 +61,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 	@Test
 	public void defaultVersion() {
-		assertVersionConfiguration(null, "2.6.10");
+		assertVersionConfiguration(null, "3.2.2");
 	}
 
 	@Test
