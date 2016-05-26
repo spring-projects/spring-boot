@@ -3898,6 +3898,9 @@ NOTE: You should not try and use Artemis and HornetQ and the same time.
 
 [[boot-features-hornetq]]
 ==== HornetQ support
+
+NOTE: HornetQ is deprecated in 1.4, consider migrating to <<boot-features-artemis,artemis>>
+
 Spring Boot can auto-configure a `ConnectionFactory` when it detects that HornetQ is
 available on the classpath. If the broker is present, an embedded broker is started and
 configured automatically (unless the mode property has been explicitly set). The supported

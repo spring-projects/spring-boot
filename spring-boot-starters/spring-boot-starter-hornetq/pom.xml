@@ -7,8 +7,9 @@
 		<version>1.4.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-hornetq</artifactId>
-	<name>Spring Boot HornetQ Starter</name>
-	<description>Starter for JMS messaging using HornetQ</description>
+	<name>spring-boot-starter-hornetq (DEPRECATED)</name>
+	<description>Starter for JMS messaging using HornetQ. Deprecated as of 1.4 in favor
+		of spring-boot-starter-artemis</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
