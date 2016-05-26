@@ -19,7 +19,7 @@
   {
     "name": "banner.image.location",
     "type": "org.springframework.core.io.Resource",
-    "description": "Banner image file location.",
+    "description": "Banner image file location (jpg/png can also be used).",
     "defaultValue": "banner.gif"
   },
   {
