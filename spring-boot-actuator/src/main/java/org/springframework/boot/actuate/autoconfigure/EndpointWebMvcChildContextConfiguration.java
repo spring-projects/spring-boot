@@ -188,6 +188,9 @@ public class EndpointWebMvcChildContextConfiguration {
 			container.setContextPath("");
 			// and add the management-specific bits
 			container.setPort(this.managementServerProperties.getPort());
+			if (this.managementServerProperties.getSsl() != null) {
+				container.setSsl(this.managementServerProperties.getSsl());
+			}
 			container.setServerHeader(this.server.getServerHeader());
 			container.setAddress(this.managementServerProperties.getAddress());
 			container.addErrorPages(new ErrorPage(this.server.getError().getPath()));

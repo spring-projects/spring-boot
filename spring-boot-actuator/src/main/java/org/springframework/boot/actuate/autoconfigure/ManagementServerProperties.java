@@ -25,7 +25,9 @@ import javax.validation.constraints.NotNull;
 import org.springframework.boot.autoconfigure.security.SecurityPrerequisite;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -67,6 +69,9 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	 * Management endpoint HTTP port. Use the same port as the application by default.
 	 */
 	private Integer port;
+
+	@NestedConfigurationProperty
+	private Ssl ssl;
 
 	/**
 	 * Network address that the management endpoints should bind to.
@@ -110,6 +115,14 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	 */
 	public void setPort(Integer port) {
 		this.port = port;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
 	}
 
 	public InetAddress getAddress() {
