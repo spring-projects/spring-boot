@@ -103,13 +103,7 @@
 			</modules>
 		</profile>
 		<profile>
-			<id>full</id>
-		</profile>
-		<profile>
 			<id>prepare</id>
-			<properties>
-				<skipTests>true</skipTests>
-			</properties>
 			<modules>
 				<module>spring-boot-dependencies</module>
 				<module>spring-boot-parent</module>
@@ -211,13 +205,6 @@
 								</configuration>
 							</execution>
 						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<skip>true</skip>
-						</configuration>
 					</plugin>
 					<plugin>
 						<groupId>com.google.code.maven-replacer-plugin</groupId>

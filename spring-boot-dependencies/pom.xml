@@ -2548,13 +2548,22 @@
 	</build>
 	<profiles>
 		<profile>
-			<id>default</id>
+			<id>repositories</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>!skip-repositories</name>
+				</property>
 			</activation>
 			<repositories>
 				<!-- Repositories to allow snapshot and milestone BOM imports during
 					development. This section is stripped out when a full release is prepared. -->
+				<repository>
+					<id>spring-ext</id>
+					<url>http://repo.spring.io/ext-release-local/</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
 				<repository>
 					<id>spring-milestones</id>
 					<name>Spring Milestones</name>
@@ -2567,14 +2576,42 @@
 					<id>spring-snapshots</id>
 					<name>Spring Snapshots</name>
 					<url>http://repo.spring.io/snapshot</url>
+					<releases>
+						<enabled>false</enabled>
+					</releases>
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>
 				</repository>
+				<repository>
+					<id>gradle</id>
+					<url>http://repo.gradle.org/gradle/libs-releases-local</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
 			</repositories>
-		</profile>
-		<profile>
-			<id>integration-test</id>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>http://repo.spring.io/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</pluginRepository>
+				<pluginRepository>
+					<id>spring-snapshots</id>
+					<name>Spring Snapshots</name>
+					<url>http://repo.spring.io/snapshot</url>
+					<releases>
+						<enabled>false</enabled>
+					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
 		</profile>
 	</profiles>
 </project>

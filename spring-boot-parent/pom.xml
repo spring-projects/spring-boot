@@ -607,58 +607,6 @@
 	</build>
 	<profiles>
 		<profile>
-			<id>default</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<repositories>
-				<repository>
-					<id>spring-ext</id>
-					<url>http://repo.spring.io/ext-release-local/</url>
-					<releases>
-						<enabled>true</enabled>
-					</releases>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-				<repository>
-					<id>spring-milestones</id>
-					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-				<repository>
-					<id>spring-snapshots</id>
-					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</repository>
-			</repositories>
-			<pluginRepositories>
-				<pluginRepository>
-					<id>spring-milestones</id>
-					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</pluginRepository>
-				<pluginRepository>
-					<id>spring-snapshots</id>
-					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</pluginRepository>
-			</pluginRepositories>
-		</profile>
-		<profile>
 			<id>fast</id>
 			<activation>
 				<property>
@@ -668,52 +616,6 @@
 			<properties>
 				<disable.checks>true</disable.checks>
 			</properties>
-			<repositories>
-				<repository>
-					<id>spring-ext</id>
-					<url>http://repo.spring.io/ext-release-local/</url>
-					<releases>
-						<enabled>true</enabled>
-					</releases>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-				<repository>
-					<id>spring-milestones</id>
-					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-				<repository>
-					<id>spring-snapshots</id>
-					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</repository>
-			</repositories>
-			<pluginRepositories>
-				<pluginRepository>
-					<id>spring-milestones</id>
-					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</pluginRepository>
-				<pluginRepository>
-					<id>spring-snapshots</id>
-					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</pluginRepository>
-			</pluginRepositories>
 		</profile>
 		<profile>
 			<id>eclipse.profile</id>
@@ -738,67 +640,6 @@
 					</plugin>
 				</plugins>
 			</build>
-			<repositories>
-				<repository>
-					<id>spring-ext</id>
-					<url>http://repo.spring.io/ext-release-local/</url>
-					<releases>
-						<enabled>true</enabled>
-					</releases>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-				<repository>
-					<id>spring-milestones</id>
-					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-				<repository>
-					<id>spring-snapshots</id>
-					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</repository>
-			</repositories>
-			<pluginRepositories>
-				<pluginRepository>
-					<id>spring-milestones</id>
-					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</pluginRepository>
-				<pluginRepository>
-					<id>spring-snapshots</id>
-					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</pluginRepository>
-			</pluginRepositories>
-		</profile>
-		<profile>
-			<id>prepare</id>
-			<repositories>
-				<repository>
-					<id>spring-ext</id>
-					<url>http://repo.spring.io/ext-release-local/</url>
-					<releases>
-						<enabled>true</enabled>
-					</releases>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-			</repositories>
 		</profile>
 		<profile>
 			<id>full</id>
@@ -820,19 +661,6 @@
 					</plugin>
 				</plugins>
 			</build>
-			<pluginRepositories>
-				<pluginRepository>
-					<id>objectstyle</id>
-					<name>ObjectStyle.org Repository</name>
-					<url>http://objectstyle.org/maven2/</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</pluginRepository>
-			</pluginRepositories>
-		</profile>
-		<profile>
-			<id>snapshot</id>
 		</profile>
 		<profile>
 			<id>milestone</id>
