@@ -98,7 +98,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 			Context context = findContext();
 			try {
-				ContextBindings.bindClassLoader(context, context.getNamingToken(),
+				ContextBindings.bindClassLoader(context, getNamingToken(context),
 						getClass().getClassLoader());
 			}
 			catch (NamingException ex) {
@@ -191,7 +191,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		}
 		finally {
 			Context context = findContext();
-			ContextBindings.unbindClassLoader(context, context.getNamingToken(),
+			ContextBindings.unbindClassLoader(context, getNamingToken(context),
 					getClass().getClassLoader());
 		}
 	}
@@ -310,6 +310,17 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 	 */
 	public Tomcat getTomcat() {
 		return this.tomcat;
+	}
+
+	private Object getNamingToken(Context context) {
+		try {
+			return context.getNamingToken();
+		}
+		catch (NoSuchMethodError ex) {
+			// Use the context itself on Tomcat 7
+			return context;
+		}
+
 	}
 
 }
