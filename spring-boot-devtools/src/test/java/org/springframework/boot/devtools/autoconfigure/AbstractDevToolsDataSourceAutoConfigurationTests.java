@@ -16,6 +16,13 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -24,8 +31,8 @@ import java.util.Collection;
 import javax.sql.DataSource;
 
 import org.junit.Test;
-
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -34,13 +41,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Base class for tests for {@link DevToolsDataSourceAutoConfiguration}.
@@ -70,6 +70,19 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 			Statement statement = configureDataSourceBehaviour(dataSource);
 			verify(statement, times(0)).execute("SHUTDOWN");
 		}
+	}
+	
+	@Test
+	public void emptyFactoryMethodMetadataIgnored() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+		DataSource dataSource = mock(DataSource.class);
+		AnnotatedGenericBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(dataSource.getClass());
+		context.registerBeanDefinition("dataSource", beanDefinition);
+		context.register(DataSourcePropertiesConfiguration.class);
+		context.register(DevToolsDataSourceAutoConfiguration.class);
+		context.refresh();
+		context.close();
 	}
 
 	protected final Statement configureDataSourceBehaviour(DataSource dataSource)
