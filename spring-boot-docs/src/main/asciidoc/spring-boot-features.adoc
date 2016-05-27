@@ -331,10 +331,11 @@ via `@ConfigurationProperties`.
 Spring Boot uses a very particular `PropertySource` order that is designed to allow
 sensible overriding of values. Properties are considered in the following order:
 
-. {spring-javadoc}/test/context/TestPropertySource.{dc-ext}[`@TestPropertySource`] annotations
-  on your tests.
+. {spring-javadoc}/test/context/TestPropertySource.{dc-ext}[`@TestPropertySource`]
+  annotations on your tests.
 . Command line arguments.
-. Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment variable or system property)
+. Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment
+  variable or system property)
 . `ServletConfig` init parameters.
 . `ServletContext` init parameters.
 . JNDI attributes from `java:comp/env`.
@@ -351,8 +352,8 @@ sensible overriding of values. Properties are considered in the following order:
   variants).
 . Application properties packaged inside your jar (`application.properties` and YAML
   variants).
-. {spring-javadoc}/context/annotation/PropertySource.{dc-ext}[`@PropertySource`] annotations
-  on your `@Configuration` classes.
+. {spring-javadoc}/context/annotation/PropertySource.{dc-ext}[`@PropertySource`]
+  annotations on your `@Configuration` classes.
 . Default properties (specified using `SpringApplication.setDefaultProperties`).
 
 To provide a concrete example, suppose you develop a `@Component` that uses a
@@ -1091,13 +1092,13 @@ default `ERROR`, `WARN` and `INFO` level messages are logged. You can also enabl
 NOTE: you can also specify `debug=true` in your `application.properties`.
 
 When the debug mode is enabled, a selection of core loggers (embedded container, Hibernate
-and Spring Boot) are configured to output more information. Enabling the debug mode does _not_
-configure your application to log all messages with `DEBUG` level.
+and Spring Boot) are configured to output more information. Enabling the debug mode does
+_not_ configure your application to log all messages with `DEBUG` level.
 
-Alternatively, you can enable a "`trace`" mode by starting your application with a `--trace`
-flag (or `trace=true` in your `application.properties`). This will enable trace logging for a
-selection of core loggers (embedded container, Hibernate schema generation and the whole Spring
-portfolio).
+Alternatively, you can enable a "`trace`" mode by starting your application with a
+`--trace` flag (or `trace=true` in your `application.properties`). This will enable trace
+logging for a selection of core loggers (embedded container, Hibernate schema generation
+and the whole Spring portfolio).
 
 [[boot-features-logging-color-coded-output]]
 ==== Color-coded output
@@ -1289,7 +1290,8 @@ To help with the customization some other properties are transferred from the Sp
 
 |`logging.pattern.level`
 |`LOG_LEVEL_PATTERN`
-|The format to use to render the log level (default `%5p`). (The `logging.pattern.level` form is only supported by Logback.)
+|The format to use to render the log level (default `%5p`). (The `logging.pattern.level`
+ form is only supported by Logback.)
 
 |`PID`
 |`PID`
@@ -1319,7 +1321,8 @@ Logback). For example, if you use `logging.pattern.level=user:%X{user}
 if it exists, e.g.
 
 ----
-2015-09-30 12:30:04.031 user:juergen INFO 22174 --- [  nio-8080-exec-0] demo.Controller Handling authenticated request
+2015-09-30 12:30:04.031 user:juergen INFO 22174 --- [  nio-8080-exec-0] demo.Controller
+Handling authenticated request
 ----
 ====
 
@@ -1492,8 +1495,8 @@ If you need to add or customize converters you can use Spring Boot's
 	}
 ----
 
-Any `HttpMessageConverter` bean that is present in the context will be added to the list of
-converters. You can also override default converters that way.
+Any `HttpMessageConverter` bean that is present in the context will be added to the list
+of converters. You can also override default converters that way.
 
 
 
@@ -1530,8 +1533,8 @@ inner-classes. For example:
 	}
 ----
 
-All `@JsonComponent` beans in the `ApplicationContext` will be automatically registered with
-Jackson, and since `@JsonComponent` is meta-annotated with `@Component`, the usual
+All `@JsonComponent` beans in the `ApplicationContext` will be automatically registered
+with Jackson, and since `@JsonComponent` is meta-annotated with `@Component`, the usual
 component-scanning rules apply.
 
 Spring Boot also provides
@@ -1681,10 +1684,10 @@ the same data in HTML format (to customize it just add a `View` that resolves to
 type `ErrorAttributes` to use the existing mechanism but replace the contents.
 
 TIP: The `BasicErrorController` can be used as a base class for a custom `ErrorController`.
-This is particularly useful if you want to add a handler for a new content type (the default
-is to handle `text/html` specifically and provide a fallback for everything else). To do that
-just extend `BasicErrorController` and add a public method with a `@RequestMapping` that
-has a `produces` attribute, and create a bean of your new type.
+This is particularly useful if you want to add a handler for a new content type (the
+default is to handle `text/html` specifically and provide a fallback for everything else).
+To do that just extend `BasicErrorController` and add a public method with a
+`@RequestMapping` that has a `produces` attribute, and create a bean of your new type.
 
 You can also define a `@ControllerAdvice` to customize the JSON document to return for a
 particular controller and/or exception type.
@@ -1846,8 +1849,9 @@ auto-configuration for Spring HATEOAS that works well with most applications. Th
 auto-configuration replaces the need to use `@EnableHypermediaSupport` and registers a
 number of beans to ease building hypermedia-based applications including a
 `LinkDiscoverers` (for client side support) and an `ObjectMapper` configured to correctly
-marshal responses into the desired representation. The `ObjectMapper` will be customized based on the
-`spring.jackson.*` properties or a `Jackson2ObjectMapperBuilder` bean if one exists.
+marshal responses into the desired representation. The `ObjectMapper` will be customized
+based on the `spring.jackson.*` properties or a `Jackson2ObjectMapperBuilder` bean if one
+exists.
 
 You can take control of Spring HATEOAS's configuration by using
 `@EnableHypermediaSupport`. Note that this will disable the `ObjectMapper` customization
@@ -2164,8 +2168,8 @@ it you normally use external properties and beans of type `WebSecurityConfigurer
 (e.g. to add form-based login). To also switch off the authentication manager configuration
 you can add a bean of type `AuthenticationManager`, or else configure the
 global `AuthenticationManager` by autowiring an `AuthenticationManagerBuilder` into
-a method in one of your `@Configuration` classes. There are several secure applications in the
-{github-code}/spring-boot-samples/[Spring Boot samples] to get you started with common
+a method in one of your `@Configuration` classes. There are several secure applications in
+the {github-code}/spring-boot-samples/[Spring Boot samples] to get you started with common
 use cases.
 
 The basic features you get out of the box in a web application are:
@@ -3200,12 +3204,13 @@ Spring Data includes repository support for Neo4j.
 
 In fact, both Spring Data JPA and Spring Data Neo4j share the same common
 infrastructure; so you could take the JPA example from earlier and, assuming that `City`
-is now a Neo4j OGM `@NodeEntity` rather than a JPA `@Entity`, it will work in the same way.
+is now a Neo4j OGM `@NodeEntity` rather than a JPA `@Entity`, it will work in the same
+way.
 
 TIP: You can customize entity scanning locations using the `@NodeEntityScan` annotation.
 
-To enable repository support (and optionally support for `@Transactional`), add the following
-two annotations to your Spring configuration:
+To enable repository support (and optionally support for `@Transactional`), add the
+following two annotations to your Spring configuration:
 
 [source,java,indent=0]
 ----
@@ -3634,10 +3639,11 @@ you switch to a different JSR-107 implementation.
 
 There are several ways to customize the underlying `javax.cache.cacheManager`:
 
-* Caches can be created on startup via the `spring.cache.cache-names` property. If a custom
-`javax.cache.configuration.Configuration` bean is defined, it is used to customize them.
+* Caches can be created on startup via the `spring.cache.cache-names` property. If a
+  custom `javax.cache.configuration.Configuration` bean is defined, it is used to
+  customize them.
 * `org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer` beans are
-invoked with the reference of the `CacheManager` for full customization.
+  invoked with the reference of the `CacheManager` for full customization.
 
 TIP: If a standard `javax.cache.CacheManager` bean is defined, it is wrapped
 automatically in a `org.springframework.cache.CacheManager` implementation that the
@@ -4001,10 +4007,11 @@ beans are defined, they are associated automatically to the default factory.
 The default factory is transactional by default. If you are running in an infrastructure
 where a `JtaTransactionManager` is present, it will be associated to the listener container
 by default. If not, the `sessionTransacted` flag will be enabled. In that latter scenario,
-you can associate your local data store transaction to the processing of an incoming message
-by adding `@Transactional` on your listener method (or a delegate thereof). This will make
-sure that the incoming message is acknowledged once the local transaction has completed. This
-also includes sending response messages that have been performed on the same JMS session.
+you can associate your local data store transaction to the processing of an incoming
+message by adding `@Transactional` on your listener method (or a delegate thereof). This
+will make sure that the incoming message is acknowledged once the local transaction has
+completed. This also includes sending response messages that have been performed on the
+same JMS session.
 
 The following component creates a listener endpoint on the `someQueue` destination:
 
@@ -4021,15 +4028,16 @@ The following component creates a listener endpoint on the `someQueue` destinati
 	}
 ----
 
-TIP: Check {spring-javadoc}/jms/annotation/EnableJms.{dc-ext}[the Javadoc of `@EnableJms`] for
-more details.
+TIP: Check {spring-javadoc}/jms/annotation/EnableJms.{dc-ext}[the Javadoc of `@EnableJms`]
+for more details.
 
-If you need to create more `JmsListenerContainerFactory` instances or if you want to override
-the default, Spring Boot provides a `DefaultJmsListenerContainerFactoryConfigurer` that you
-can use to initialize a `DefaultJmsListenerContainerFactory` with the same settings as the one
-that is auto-configured.
+If you need to create more `JmsListenerContainerFactory` instances or if you want to
+override the default, Spring Boot provides a `DefaultJmsListenerContainerFactoryConfigurer`
+that you can use to initialize a `DefaultJmsListenerContainerFactory` with the same
+settings as the one that is auto-configured.
 
-For instance, the following exposes another factory that uses a specific `MessageConverter`:
+For instance, the following exposes another factory that uses a specific
+`MessageConverter`:
 
 [source,java,indent=0]
 ----
@@ -4130,8 +4138,8 @@ directly into your own beans:
 ----
 
 NOTE: {spring-amqp-javadoc}/rabbit/core/RabbitMessagingTemplate.{dc-ext}[`RabbitMessagingTemplate`]
-can be injected in a similar manner. If a `MessageConverter` bean is defined, it is associated
-automatically to the auto-configured `AmqpTemplate`.
+can be injected in a similar manner. If a `MessageConverter` bean is defined, it is
+associated automatically to the auto-configured `AmqpTemplate`.
 
 Any `org.springframework.amqp.core.Queue` that is defined as a bean will be automatically
 used to declare a corresponding queue on the RabbitMQ instance if necessary.
@@ -4164,12 +4172,14 @@ The following component creates a listener endpoint on the `someQueue` queue:
 TIP: Check {spring-amqp-javadoc}/rabbit/annotation/EnableRabbit.{dc-ext}[the Javadoc of `@EnableRabbit`]
 for more details.
 
-If you need to create more `RabbitListenerContainerFactory` instances or if you want to override
-the default, Spring Boot provides a `SimpleRabbitListenerContainerFactoryConfigurer` that you can
-use to initialize a `SimpleRabbitListenerContainerFactory` with the same settings as the one that
-is auto-configured.
+If you need to create more `RabbitListenerContainerFactory` instances or if you want to
+override the default, Spring Boot provides a
+`SimpleRabbitListenerContainerFactoryConfigurer` that you can use to initialize a
+`SimpleRabbitListenerContainerFactory` with the same settings as the one that is
+auto-configured.
 
-For instance, the following exposes another factory that uses a specific `MessageConverter`:
+For instance, the following exposes another factory that uses a specific
+`MessageConverter`:
 
 [source,java,indent=0]
 ----
@@ -4205,15 +4215,15 @@ Then you can use in any `@RabbitListener`-annotated method as follows:
 ----
 
 You can enable retries to handle situations where your listener throws an exception.
-When retries are exhausted, the message will be rejected and either dropped or routed to a dead-letter exchange
-if the broker is configured so.
-Retries are disabled by default.
+When retries are exhausted, the message will be rejected and either dropped or routed to a
+dead-letter exchange if the broker is configured so. Retries are disabled by default.
 
-IMPORTANT: If retries are not enabled and the listener throws an exception, by default the delivery will be retried
-indefinitely.
-You can modify this behavior in two ways; set the `defaultRequeueRejected` property to `false` and zero redeliveries
-will be attempted; or, throw an `AmqpRejectAndDontRequeueException` to signal the message should be rejected.
-This is the mechanism used when retries are enabled and the maximum delivery attempts are reached.
+IMPORTANT: If retries are not enabled and the listener throws an exception, by default the
+delivery will be retried indefinitely. You can modify this behavior in two ways; set the
+`defaultRequeueRejected` property to `false` and zero re-deliveries will be attempted; or,
+throw an `AmqpRejectAndDontRequeueException` to signal the message should be rejected.
+This is the mechanism used when retries are enabled and the maximum delivery attempts are
+reached.
 
 
 
@@ -4495,8 +4505,8 @@ If you use the
 the following provided libraries:
 
 * http://junit.org[JUnit] -- The de-facto standard for unit testing Java applications.
-* {spring-reference}/#integration-testing.html[Spring Test] & Spring Boot Test -- Utilities and integration test support for Spring Boot
-  applications.
+* {spring-reference}/#integration-testing.html[Spring Test] & Spring Boot Test --
+  Utilities and integration test support for Spring Boot applications.
 * http://joel-costigliola.github.io/assertj/[AssertJ] -- A fluent assertion library.
 * http://hamcrest.org/JavaHamcrest/[Hamcrest] -- A library of matcher objects (also known
   as constraints or predicates).
@@ -4839,7 +4849,8 @@ controllers without needing to start a full HTTP server.
 ----
 
 TIP: If you need to configure elements of the auto-configuration (for example when servlet
-filters should be applied) you can use attributes in the `@AutoConfigureMockMvc` annotation.
+filters should be applied) you can use attributes in the `@AutoConfigureMockMvc`
+annotation.
 
 If you use HtmlUnit or Selenium, auto-configuration will also provide a `WebClient` bean
 and/or a `WebDriver` bean. Here is an example that uses HtmlUnit:
@@ -5116,8 +5127,8 @@ public class MyTest {
 
 [[boot-features-rest-templates-test-utility]]
 ==== TestRestTemplate
-`TestRestTemplate` is a convenience subclass of Spring's `RestTemplate` that is useful in
-integration tests. You can get a vanilla template or one that sends Basic HTTP
+`TestRestTemplate` is a convenience alternative to Spring's `RestTemplate` that is useful
+in integration tests. You can get a vanilla template or one that sends Basic HTTP
 authentication (with a username and password). In either case the template will behave
 in a test-friendly way: not following redirects (so you can assert the response location),
 ignoring cookies (so the template is stateless), and not throwing exceptions on
@@ -5129,7 +5140,7 @@ will respond by configuring the client appropriately.
 ----
 public class MyTest {
 
-	RestTemplate template = new TestRestTemplate();
+	private TestRestTemplate template = new TestRestTemplate();
 
 	@Test
 	public void testRequest() throws Exception {
