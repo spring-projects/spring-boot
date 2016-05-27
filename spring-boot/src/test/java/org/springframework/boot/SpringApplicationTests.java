@@ -56,8 +56,10 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
@@ -76,14 +78,17 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link SpringApplication}.
@@ -672,7 +677,8 @@ public class SpringApplicationTests {
 
 	@Test
 	public void registerListener() throws Exception {
-		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		SpringApplication application = new SpringApplication(ExampleConfig.class,
+				ListenerConfig.class);
 		application.setApplicationContextClass(SpyApplicationContext.class);
 		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<ApplicationEvent>();
 		application.addListeners(new ApplicationListener<ApplicationEvent>() {
@@ -684,12 +690,18 @@ public class SpringApplicationTests {
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
+
+		ApplicationListener<ApplicationEvent> listener = this.context.getBean(
+				"testApplicationListener", ApplicationListener.class);
+		verify(listener).onApplicationEvent(argThat(isA(ContextRefreshedEvent.class)));
+		verify(listener).onApplicationEvent(argThat(isA(ApplicationReadyEvent.class)));
+		verifyNoMoreInteractions(listener);
 	}
 
 	@Test
 	public void registerListenerWithCustomMulticaster() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class,
-				Multicaster.class);
+				ListenerConfig.class, Multicaster.class);
 		application.setApplicationContextClass(SpyApplicationContext.class);
 		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<ApplicationEvent>();
 		application.addListeners(new ApplicationListener<ApplicationEvent>() {
@@ -701,6 +713,12 @@ public class SpringApplicationTests {
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
+
+		ApplicationListener<ApplicationEvent> listener = this.context.getBean(
+				"testApplicationListener", ApplicationListener.class);
+		verify(listener).onApplicationEvent(argThat(isA(ContextRefreshedEvent.class)));
+		verify(listener).onApplicationEvent(argThat(isA(ApplicationReadyEvent.class)));
+		verifyNoMoreInteractions(listener);
 	}
 
 	@Test
@@ -913,11 +931,21 @@ public class SpringApplicationTests {
 	}
 
 	@Configuration
-	static class Multicaster {
+	static class ListenerConfig {
 
 		@Bean
-		public SimpleApplicationEventMulticaster applicationEventMulticaster() {
-			return new SimpleApplicationEventMulticaster();
+		public ApplicationListener<?> testApplicationListener() {
+			return mock(ApplicationListener.class);
+		}
+
+	}
+
+	@Configuration
+	static class Multicaster {
+
+		@Bean(name = AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME)
+		public ApplicationEventMulticaster applicationEventMulticaster() {
+			return spy(new SimpleApplicationEventMulticaster());
 		}
 
 	}
