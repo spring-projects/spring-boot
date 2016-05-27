@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
@@ -399,14 +402,34 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	}
 
 	@Test
-	public void tcclOfMainThreadIsTomcatWebAppClassLoader() {
+	public void jndiLookupsCanBePerformedDuringApplicationContextRefresh()
+			throws NamingException {
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory(
+				0) {
+
+			@Override
+			protected TomcatEmbeddedServletContainer getTomcatEmbeddedServletContainer(
+					Tomcat tomcat) {
+				tomcat.enableNaming();
+				return super.getTomcatEmbeddedServletContainer(tomcat);
+			}
+
+		};
+
+		// Container is created in onRefresh
 		this.container = factory.getEmbeddedServletContainer();
+
+		// Lookups should now be possible
+		new InitialContext().lookup("java:comp/env");
+
+		// Called in finishRefresh, giving us an opportunity to remove the context binding
+		// and avoid a leak
 		this.container.start();
-		assertThat(Thread.currentThread().getContextClassLoader())
-				.isInstanceOf(TomcatEmbeddedWebappClassLoader.class);
-		this.container.stop();
+
+		// Lookups should no longer be possible
+		this.thrown.expect(NamingException.class);
+		new InitialContext().lookup("java:comp/env");
 	}
 
 	@Override
