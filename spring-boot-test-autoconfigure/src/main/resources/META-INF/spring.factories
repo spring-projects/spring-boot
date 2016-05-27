@@ -30,7 +30,7 @@ org.springframework.boot.test.autoconfigure.restdocs.RestDocsAutoConfiguration
 
 # AutoConfigureTestDatabase auto-configuration imports
 org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestDatabase=\
-org.springframework.boot.test.autoconfigure.orm.jpa.TestDataBaseAutoConfiguration
+org.springframework.boot.test.autoconfigure.orm.jpa.TestDatabaseAutoConfiguration
 
 # AutoConfigureTestEntityManager auto-configuration imports
 org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager=\
