@@ -39,7 +39,7 @@ class HornetQConnectionFactoryConfiguration {
 	public HornetQConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory,
 			HornetQProperties properties) {
 		return new HornetQConnectionFactoryFactory(beanFactory, properties)
-				.createConnectionFactory(HornetQConnectionFactory.class);
+				.createConnectionFactory(HornetQSecuredConnectionFactory.class);
 	}
 
 }

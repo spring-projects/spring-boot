@@ -111,8 +111,8 @@ class HornetQConnectionFactoryFactory {
 					this.properties.getEmbedded().generateTransportParameters());
 			ServerLocator serviceLocator = HornetQClient
 					.createServerLocatorWithoutHA(transportConfiguration);
-			return factoryClass.getConstructor(ServerLocator.class)
-					.newInstance(serviceLocator);
+			return factoryClass.getConstructor(HornetQProperties.class, ServerLocator.class)
+					.newInstance(this.properties, serviceLocator);
 		}
 		catch (NoClassDefFoundError ex) {
 			throw new IllegalStateException("Unable to create InVM "
@@ -128,9 +128,9 @@ class HornetQConnectionFactoryFactory {
 		params.put(TransportConstants.PORT_PROP_NAME, this.properties.getPort());
 		TransportConfiguration transportConfiguration = new TransportConfiguration(
 				NettyConnectorFactory.class.getName(), params);
-		Constructor<T> constructor = factoryClass.getConstructor(boolean.class,
-				TransportConfiguration[].class);
-		return constructor.newInstance(false,
+		Constructor<T> constructor = factoryClass.getConstructor(HornetQProperties.class,
+				boolean.class, TransportConfiguration[].class);
+		return constructor.newInstance(this.properties, false,
 				new TransportConfiguration[] { transportConfiguration });
 	}
 
