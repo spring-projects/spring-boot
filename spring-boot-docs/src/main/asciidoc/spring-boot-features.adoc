@@ -3824,7 +3824,7 @@ force the cache type to `none` to use a no-op implementation:
 
 [source,properties,indent=0]
 ----
-	spring.cache.cache.type=none
+	spring.cache.type=none
 ----
 
 
