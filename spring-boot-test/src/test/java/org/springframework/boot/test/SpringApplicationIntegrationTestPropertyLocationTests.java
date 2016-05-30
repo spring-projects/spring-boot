@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,12 +39,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringApplicationConfiguration({ Config.class, MoreConfig.class })
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0", "value1=123" })
 @TestPropertySource(properties = "value2=456", locations = "classpath:/test-property-source-annotation.properties")
+@Deprecated
 public class SpringApplicationIntegrationTestPropertyLocationTests {
 
 	@Autowired
@@ -54,8 +55,8 @@ public class SpringApplicationIntegrationTestPropertyLocationTests {
 	public void loadedProperties() throws Exception {
 		assertThat(this.environment.getProperty("value1")).isEqualTo("123");
 		assertThat(this.environment.getProperty("value2")).isEqualTo("456");
-		assertThat(this.environment.getProperty("annotation-referenced"))
-				.isEqualTo("fromfile");
+		assertThat(this.environment.getProperty("property-source-location"))
+				.isEqualTo("baz");
 	}
 
 	@Configuration
@@ -67,14 +68,14 @@ public class SpringApplicationIntegrationTestPropertyLocationTests {
 		@Value("${value2}")
 		private String value2;
 
-		@Value("${annotation-referenced}")
+		@Value("${property-source-location}")
 		private String annotationReferenced;
 
 		@PostConstruct
 		void checkValues() {
 			assertThat(this.value1).isEqualTo("123");
 			assertThat(this.value2).isEqualTo("456");
-			assertThat(this.annotationReferenced).isEqualTo("fromfile");
+			assertThat(this.annotationReferenced).isEqualTo("baz");
 		}
 
 	}

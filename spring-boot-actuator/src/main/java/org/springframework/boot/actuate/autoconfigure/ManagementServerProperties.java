@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.net.InetAddress;
+import java.util.Collections;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -33,6 +35,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @see ServerProperties
  */
 @ConfigurationProperties(prefix = "management", ignoreUnknownFields = true)
@@ -44,14 +47,18 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
 	 * authentication for management endpoints. If you want to add your own authentication
 	 * for all or some of those endpoints the best thing to do is add your own
-	 * WebSecurityConfigurerAdapter with lower order.
+	 * WebSecurityConfigurerAdapter with lower order, for instance by using
+	 * {@code ACCESS_OVERRIDE_ORDER}.
 	 */
 	public static final int BASIC_AUTH_ORDER = SecurityProperties.BASIC_AUTH_ORDER - 5;
 
 	/**
-	 * Order after the basic authentication access control provided automatically for the
+	 * Order before the basic authentication access control provided automatically for the
 	 * management endpoints. This is a useful place to put user-defined access rules if
-	 * you want to override the default access rules.
+	 * you want to override the default access rules for the management endpoints. If you
+	 * want to keep the default rules for management endpoints but want to override the
+	 * security for the rest of the application, use
+	 * {@code SecurityProperties.ACCESS_OVERRIDE_ORDER} instead.
 	 */
 	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER
 			- 1;
@@ -156,9 +163,9 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		private boolean enabled = true;
 
 		/**
-		 * Role required to access the management endpoint.
+		 * Comma-separated list of roles that can access the management endpoint.
 		 */
-		private String role = "ADMIN";
+		private List<String> roles = Collections.singletonList("ADMIN");
 
 		/**
 		 * Session creating policy to use (always, never, if_required, stateless).
@@ -173,12 +180,17 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 			this.sessions = sessions;
 		}
 
-		public void setRole(String role) {
-			this.role = role;
+		public void setRoles(List<String> roles) {
+			this.roles = roles;
 		}
 
-		public String getRole() {
-			return this.role;
+		@Deprecated
+		public void setRole(String role) {
+			this.roles = Collections.singletonList(role);
+		}
+
+		public List<String> getRoles() {
+			return this.roles;
 		}
 
 		public boolean isEnabled() {

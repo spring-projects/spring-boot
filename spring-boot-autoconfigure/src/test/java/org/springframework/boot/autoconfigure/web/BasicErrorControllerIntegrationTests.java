@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,26 +32,26 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.web.BasicErrorControllerIntegrationTests.TestConfiguration;
+import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.BasicErrorControllerMockMvcTests.MinimalWebConfiguration;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.View;
@@ -66,11 +66,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(TestConfiguration.class)
-@WebAppConfiguration
+@RunWith(SpringRunner.class)
 @DirtiesContext
-@IntegrationTest("server.port=0")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class BasicErrorControllerIntegrationTests {
 
 	private ConfigurableApplicationContext context;
@@ -177,6 +175,17 @@ public class BasicErrorControllerIntegrationTests {
 		assertThat(resp).contains(MethodArgumentNotValidException.class.getName());
 	}
 
+	@Test
+	public void testConventionTemplateMapping() throws Exception {
+		load();
+		RequestEntity<?> request = RequestEntity.get(URI.create(createUrl("/noStorage")))
+				.accept(MediaType.TEXT_HTML).build();
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(request,
+				String.class);
+		String resp = entity.getBody().toString();
+		assertThat(resp).contains("We are out of storage");
+	}
+
 	private void assertErrorAttributes(Map<?, ?> content, String status, String error,
 			Class<?> exception, String message, String path) {
 		assertThat(content.get("status")).as("Wrong status").isEqualTo(status);
@@ -205,6 +214,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Configuration
 	@MinimalWebConfiguration
+	@Import(FreeMarkerAutoConfiguration.class)
 	public static class TestConfiguration {
 
 		// For manual testing
@@ -253,14 +263,24 @@ public class BasicErrorControllerIntegrationTests {
 				throw error;
 			}
 
-			@RequestMapping(path = "/bodyValidation", method = RequestMethod.POST, produces = "application/json")
+			@PostMapping(path = "/bodyValidation", produces = "application/json")
 			public String bodyValidation(@Valid @RequestBody DummyBody body) {
 				return body.content;
+			}
+
+			@RequestMapping(path = "/noStorage")
+			public String noStorage() {
+				throw new InsufficientStorageException();
 			}
 
 			@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Expected!")
 			@SuppressWarnings("serial")
 			private static class ExpectedException extends RuntimeException {
+
+			}
+
+			@ResponseStatus(HttpStatus.INSUFFICIENT_STORAGE)
+			private static class InsufficientStorageException extends RuntimeException {
 
 			}
 

@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.metrics.buffer;
 /**
  * Base class for a mutable buffer containing a timestamp and a value.
  *
- * @param <T> The value type
+ * @param <T> the value type
  * @author Dave Syer
  * @author Phillip Webb
  */

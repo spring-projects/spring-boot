@@ -22,10 +22,13 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public final class Verify {
 
@@ -67,6 +71,17 @@ public final class Verify {
 
 	public static void verifyModule(File file) throws Exception {
 		new ModuleArchiveVerification(file).verify();
+	}
+
+	public static Properties verifyBuildInfo(File file, String group, String artifact,
+			String name, String version) throws IOException {
+		FileSystemResource resource = new FileSystemResource(file);
+		Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+		assertThat(properties.get("build.group")).isEqualTo(group);
+		assertThat(properties.get("build.artifact")).isEqualTo(artifact);
+		assertThat(properties.get("build.name")).isEqualTo(name);
+		assertThat(properties.get("build.version")).isEqualTo(version);
+		return properties;
 	}
 
 	public static class ArchiveVerifier {

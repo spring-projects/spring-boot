@@ -177,7 +177,6 @@ public class EntityManagerFactoryBuilder {
 			else {
 				entityManagerFactoryBean.setDataSource(this.dataSource);
 			}
-
 			entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
 			entityManagerFactoryBean.getJpaPropertyMap()
 					.putAll(EntityManagerFactoryBuilder.this.jpaProperties);

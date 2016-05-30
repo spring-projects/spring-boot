@@ -132,8 +132,11 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>animal-sniffer-maven-plugin</artifactId>
 				<configuration>
-					<!-- The use of SignalUtils seems to mess up animal sniffer -->
-					<skip>true</skip>
+					<annotations>
+						<annotation>org.springframework.boot.loader.tools.UsesUnsafeJava</annotation>
+						<annotation>org.springframework.lang.UsesJava7</annotation>
+						<annotation>org.springframework.lang.UsesJava8</annotation>
+					</annotations>
 				</configuration>
 			</plugin>
 		</plugins>

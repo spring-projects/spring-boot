@@ -18,9 +18,9 @@ package org.springframework.boot.context;
 
 import org.junit.Test;
 
-import org.springframework.boot.testutil.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,8 +43,8 @@ public class ContextIdApplicationContextInitializerTests {
 	@Test
 	public void testNameAndPort() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.application.name:foo",
-				"PORT:8080");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
+				"spring.application.name=foo", "PORT=8080");
 		this.initializer.initialize(context);
 		assertThat(context.getId()).isEqualTo("foo:8080");
 	}
@@ -52,8 +52,9 @@ public class ContextIdApplicationContextInitializerTests {
 	@Test
 	public void testNameAndProfiles() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.application.name:foo",
-				"spring.profiles.active: spam,bar", "spring.application.index:12");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
+				"spring.application.name=foo", "spring.profiles.active=spam,bar",
+				"spring.application.index=12");
 		this.initializer.initialize(context);
 		assertThat(context.getId()).isEqualTo("foo:spam,bar:12");
 	}
@@ -61,9 +62,9 @@ public class ContextIdApplicationContextInitializerTests {
 	@Test
 	public void testCloudFoundry() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.config.name:foo",
-				"PORT:8080", "vcap.application.name:bar",
-				"vcap.application.instance_index:2");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
+				"spring.config.name=foo", "PORT=8080", "vcap.application.name=bar",
+				"vcap.application.instance_index=2");
 		this.initializer.initialize(context);
 		assertThat(context.getId()).isEqualTo("bar:2");
 	}
@@ -71,9 +72,9 @@ public class ContextIdApplicationContextInitializerTests {
 	@Test
 	public void testExplicitNameIsChosenInFavorOfCloudFoundry() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.application.name:spam",
-				"spring.config.name:foo", "PORT:8080", "vcap.application.name:bar",
-				"vcap.application.instance_index:2");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
+				"spring.application.name=spam", "spring.config.name=foo", "PORT=8080",
+				"vcap.application.name=bar", "vcap.application.instance_index=2");
 		this.initializer.initialize(context);
 		assertThat(context.getId()).isEqualTo("spam:2");
 	}

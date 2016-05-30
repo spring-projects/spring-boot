@@ -40,7 +40,18 @@ public class HttpEncodingProperties {
 	/**
 	 * Force the encoding to the configured charset on HTTP requests and responses.
 	 */
-	private boolean force = true;
+	private Boolean force;
+
+	/**
+	 * Force the encoding to the configured charset on HTTP requests. Defaults to true
+	 * when "force" has not been specified.
+	 */
+	private Boolean forceRequest;
+
+	/**
+	 * Force the encoding to the configured charset on HTTP responses.
+	 */
+	private Boolean forceResponse;
 
 	public Charset getCharset() {
 		return this.charset;
@@ -51,11 +62,42 @@ public class HttpEncodingProperties {
 	}
 
 	public boolean isForce() {
-		return this.force;
+		return Boolean.TRUE.equals(this.force);
 	}
 
 	public void setForce(boolean force) {
 		this.force = force;
+	}
+
+	public boolean isForceRequest() {
+		return Boolean.TRUE.equals(this.forceRequest);
+	}
+
+	public void setForceRequest(boolean forceRequest) {
+		this.forceRequest = forceRequest;
+	}
+
+	public boolean isForceResponse() {
+		return Boolean.TRUE.equals(this.forceResponse);
+	}
+
+	public void setForceResponse(boolean forceResponse) {
+		this.forceResponse = forceResponse;
+	}
+
+	boolean shouldForce(Type type) {
+		Boolean force = (type == Type.REQUEST ? this.forceRequest : this.forceResponse);
+		if (force == null) {
+			force = this.force;
+		}
+		if (force == null) {
+			force = (type == Type.REQUEST ? true : false);
+		}
+		return force;
+	}
+
+	enum Type {
+		REQUEST, RESPONSE
 	}
 
 }

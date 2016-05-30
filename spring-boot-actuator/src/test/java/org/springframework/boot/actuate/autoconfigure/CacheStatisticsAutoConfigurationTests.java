@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.Arrays;
 import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.cache.CacheBuilder;
 import com.hazelcast.cache.HazelcastCachingProvider;
 import com.hazelcast.config.Config;
@@ -40,6 +41,7 @@ import org.springframework.boot.actuate.cache.CacheStatistics;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerUtils;
@@ -60,6 +62,7 @@ import static org.assertj.core.api.Assertions.offset;
  * Tests for {@link CacheStatisticsAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CacheStatisticsAutoConfigurationTests {
@@ -112,6 +115,14 @@ public class CacheStatisticsAutoConfigurationTests {
 		load(GuavaConfig.class);
 		CacheStatisticsProvider provider = this.context
 				.getBean("guavaCacheStatisticsProvider", CacheStatisticsProvider.class);
+		doTestCoreStatistics(provider, true);
+	}
+
+	@Test
+	public void baseCaffeineCacheStatistics() {
+		load(CaffeineCacheConfig.class);
+		CacheStatisticsProvider provider = this.context.getBean(
+				"caffeineCacheStatisticsProvider", CacheStatisticsProvider.class);
 		doTestCoreStatistics(provider, true);
 	}
 
@@ -188,7 +199,7 @@ public class CacheStatisticsAutoConfigurationTests {
 
 	private Cache getCache(String cacheName) {
 		Cache cache = this.cacheManager.getCache(cacheName);
-		Assert.notNull("No cache with name '" + cacheName + "' found.");
+		Assert.notNull(cache, "No cache with name '" + cacheName + "' found.");
 		return cache;
 	}
 
@@ -309,6 +320,19 @@ public class CacheStatisticsAutoConfigurationTests {
 		@Bean
 		public NoOpCacheManager cacheManager() {
 			return new NoOpCacheManager();
+		}
+
+	}
+
+	@Configuration
+	static class CaffeineCacheConfig {
+
+		@Bean
+		public CaffeineCacheManager cacheManager() {
+			CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+			cacheManager.setCaffeine(Caffeine.newBuilder().recordStats());
+			cacheManager.setCacheNames(Arrays.asList("books", "speaker"));
+			return cacheManager;
 		}
 
 	}

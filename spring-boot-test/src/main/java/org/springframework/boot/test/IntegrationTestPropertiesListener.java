@@ -30,7 +30,9 @@ import org.springframework.test.util.ReflectionTestUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @since 1.2.0
+ * @deprecated as of 1.4 as no longer used by {@code @IntegrationTest}.
  */
+@Deprecated
 public class IntegrationTestPropertiesListener extends AbstractTestExecutionListener {
 
 	@Override

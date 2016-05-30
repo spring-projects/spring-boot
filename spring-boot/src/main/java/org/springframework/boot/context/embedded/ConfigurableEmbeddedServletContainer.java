@@ -22,6 +22,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.servlet.ErrorPageRegistry;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
+
 /**
  * Simple interface that represents customizations to an
  * {@link EmbeddedServletContainerFactory}.
@@ -33,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  * @see EmbeddedServletContainerFactory
  * @see EmbeddedServletContainerCustomizer
  */
-public interface ConfigurableEmbeddedServletContainer {
+public interface ConfigurableEmbeddedServletContainer extends ErrorPageRegistry {
 
 	/**
 	 * Sets the context path for the embedded servlet container. The context should start
@@ -100,16 +104,10 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setRegisterDefaultServlet(boolean registerDefaultServlet);
 
 	/**
-	 * Adds error pages that will be used when handling exceptions.
-	 * @param errorPages the error pages
-	 */
-	void addErrorPages(ErrorPage... errorPages);
-
-	/**
 	 * Sets the error pages that will be used when handling exceptions.
 	 * @param errorPages the error pages
 	 */
-	void setErrorPages(Set<ErrorPage> errorPages);
+	void setErrorPages(Set<? extends ErrorPage> errorPages);
 
 	/**
 	 * Sets the mime-type mappings.
@@ -150,6 +148,12 @@ public interface ConfigurableEmbeddedServletContainer {
 	 * @param ssl the SSL configuration
 	 */
 	void setSsl(Ssl ssl);
+
+	/**
+	 * Sets a provider that will be used to obtain SSL stores.
+	 * @param sslStoreProvider the SSL store provider
+	 */
+	void setSslStoreProvider(SslStoreProvider sslStoreProvider);
 
 	/**
 	 * Sets the configuration that will be applied to the container's JSP servlet.

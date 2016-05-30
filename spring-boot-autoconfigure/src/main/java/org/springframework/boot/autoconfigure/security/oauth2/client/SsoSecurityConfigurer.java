@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@ package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import java.util.Collections;
 
-import org.springframework.beans.factory.BeanFactory;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoRestTemplateFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
@@ -37,16 +38,22 @@ import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 
+/**
+ * Configurer for OAuth2 Single Sign On (SSO).
+ *
+ * @author Dave Syer
+ */
 class SsoSecurityConfigurer {
 
-	private BeanFactory beanFactory;
+	private ApplicationContext applicationContext;
 
-	SsoSecurityConfigurer(BeanFactory beanFactory) {
-		this.beanFactory = beanFactory;
+	SsoSecurityConfigurer(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
 	}
 
 	public void configure(HttpSecurity http) throws Exception {
-		OAuth2SsoProperties sso = this.beanFactory.getBean(OAuth2SsoProperties.class);
+		OAuth2SsoProperties sso = this.applicationContext
+				.getBean(OAuth2SsoProperties.class);
 		// Delay the processing of the filter until we know the
 		// SessionAuthenticationStrategy is available:
 		http.apply(new OAuth2ClientAuthenticationConfigurer(oauth2SsoFilter(sso)));
@@ -76,14 +83,15 @@ class SsoSecurityConfigurer {
 
 	private OAuth2ClientAuthenticationProcessingFilter oauth2SsoFilter(
 			OAuth2SsoProperties sso) {
-		OAuth2RestOperations restTemplate = this.beanFactory
-				.getBean(OAuth2RestOperations.class);
-		ResourceServerTokenServices tokenServices = this.beanFactory
+		OAuth2RestOperations restTemplate = this.applicationContext
+				.getBean(UserInfoRestTemplateFactory.class).getUserInfoRestTemplate();
+		ResourceServerTokenServices tokenServices = this.applicationContext
 				.getBean(ResourceServerTokenServices.class);
 		OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
 				sso.getLoginPath());
 		filter.setRestTemplate(restTemplate);
 		filter.setTokenServices(tokenServices);
+		filter.setApplicationEventPublisher(this.applicationContext);
 		return filter;
 	}
 

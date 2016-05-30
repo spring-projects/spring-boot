@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -245,6 +245,8 @@ public class SpringBootWebSecurityConfigurationTests {
 	protected static class TestInjectWebConfiguration
 			extends WebSecurityConfigurerAdapter {
 
+		private final AuthenticationManagerBuilder auth;
+
 		// It's a bad idea to inject an AuthenticationManager into a
 		// WebSecurityConfigurerAdapter because it can cascade early instantiation,
 		// unless you explicitly want the Boot default AuthenticationManager. It's
@@ -252,8 +254,9 @@ public class SpringBootWebSecurityConfigurationTests {
 		// might even be necessary to wrap the builder in a lazy AuthenticationManager
 		// (that calls getOrBuild() only when the AuthenticationManager is actually
 		// called).
-		@Autowired
-		private AuthenticationManagerBuilder auth;
+		protected TestInjectWebConfiguration(AuthenticationManagerBuilder auth) {
+			this.auth = auth;
+		}
 
 		@Override
 		public void init(WebSecurity web) throws Exception {

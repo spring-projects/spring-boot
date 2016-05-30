@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.cache;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
@@ -37,8 +36,15 @@ import org.springframework.context.annotation.Configuration;
 @Conditional(CacheCondition.class)
 class SimpleCacheConfiguration {
 
-	@Autowired
-	private CacheProperties cacheProperties;
+	private final CacheProperties cacheProperties;
+
+	private final CacheManagerCustomizers customizerInvoker;
+
+	SimpleCacheConfiguration(CacheProperties cacheProperties,
+			CacheManagerCustomizers customizerInvoker) {
+		this.cacheProperties = cacheProperties;
+		this.customizerInvoker = customizerInvoker;
+	}
 
 	@Bean
 	public ConcurrentMapCacheManager cacheManager() {
@@ -47,7 +53,7 @@ class SimpleCacheConfiguration {
 		if (!cacheNames.isEmpty()) {
 			cacheManager.setCacheNames(cacheNames);
 		}
-		return cacheManager;
+		return this.customizerInvoker.customize(cacheManager);
 	}
 
 }

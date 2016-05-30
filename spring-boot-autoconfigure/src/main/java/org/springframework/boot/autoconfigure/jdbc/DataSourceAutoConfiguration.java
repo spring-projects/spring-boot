@@ -27,7 +27,6 @@ import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -113,8 +112,11 @@ public class DataSourceAutoConfiguration {
 	@Conditional(DataSourceAutoConfiguration.DataSourceAvailableCondition.class)
 	protected static class JdbcTemplateConfiguration {
 
-		@Autowired(required = false)
-		private DataSource dataSource;
+		private final DataSource dataSource;
+
+		public JdbcTemplateConfiguration(DataSource dataSource) {
+			this.dataSource = dataSource;
+		}
 
 		@Bean
 		@ConditionalOnMissingBean(JdbcOperations.class)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.cache;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ResourceCondition;
@@ -45,12 +44,19 @@ import org.springframework.core.io.Resource;
 		EhCacheCacheConfiguration.ConfigAvailableCondition.class })
 class EhCacheCacheConfiguration {
 
-	@Autowired
-	private CacheProperties cacheProperties;
+	private final CacheProperties cacheProperties;
+
+	private final CacheManagerCustomizers customizers;
+
+	EhCacheCacheConfiguration(CacheProperties cacheProperties,
+			CacheManagerCustomizers customizers) {
+		this.cacheProperties = cacheProperties;
+		this.customizers = customizers;
+	}
 
 	@Bean
 	public EhCacheCacheManager cacheManager(CacheManager ehCacheCacheManager) {
-		return new EhCacheCacheManager(ehCacheCacheManager);
+		return this.customizers.customize(new EhCacheCacheManager(ehCacheCacheManager));
 	}
 
 	@Bean

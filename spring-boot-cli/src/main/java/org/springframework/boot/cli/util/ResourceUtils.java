@@ -66,20 +66,16 @@ public abstract class ResourceUtils {
 	 * @return a list of URLs
 	 */
 	public static List<String> getUrls(String path, ClassLoader classLoader) {
-
 		if (classLoader == null) {
 			classLoader = ClassUtils.getDefaultClassLoader();
 		}
-
 		path = StringUtils.cleanPath(path);
-
 		try {
 			return getUrlsFromWildcardPath(path, classLoader);
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException(
 					"Cannot create URL from path [" + path + "]", ex);
-
 		}
 	}
 
@@ -88,7 +84,6 @@ public abstract class ResourceUtils {
 		if (path.contains(":")) {
 			return getUrlsFromPrefixedWildcardPath(path, classLoader);
 		}
-
 		Set<String> result = new LinkedHashSet<String>();
 		try {
 			result.addAll(getUrls(FILE_URL_PREFIX + path, classLoader));
@@ -96,7 +91,6 @@ public abstract class ResourceUtils {
 		catch (IllegalArgumentException ex) {
 			// ignore
 		}
-
 		path = stripLeadingSlashes(path);
 		result.addAll(getUrls(ALL_CLASSPATH_URL_PREFIX + path, classLoader));
 		return new ArrayList<String>(result);

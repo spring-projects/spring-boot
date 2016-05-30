@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.spring.provider.SpringEmbeddedCacheManager;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.CacheManager;
@@ -48,16 +48,27 @@ import org.springframework.util.CollectionUtils;
 @Conditional(CacheCondition.class)
 public class InfinispanCacheConfiguration {
 
-	@Autowired
-	private CacheProperties cacheProperties;
+	private final CacheProperties cacheProperties;
 
-	@Autowired(required = false)
-	private ConfigurationBuilder defaultConfigurationBuilder;
+	private final CacheManagerCustomizers customizers;
+
+	private final ConfigurationBuilder defaultConfigurationBuilder;
+
+	public InfinispanCacheConfiguration(CacheProperties cacheProperties,
+			CacheManagerCustomizers customizers,
+			ObjectProvider<ConfigurationBuilder> defaultConfigurationBuilderProvider) {
+		this.cacheProperties = cacheProperties;
+		this.customizers = customizers;
+		this.defaultConfigurationBuilder = defaultConfigurationBuilderProvider
+				.getIfAvailable();
+	}
 
 	@Bean
 	public SpringEmbeddedCacheManager cacheManager(
 			EmbeddedCacheManager embeddedCacheManager) {
-		return new SpringEmbeddedCacheManager(embeddedCacheManager);
+		SpringEmbeddedCacheManager cacheManager = new SpringEmbeddedCacheManager(
+				embeddedCacheManager);
+		return this.customizers.customize(cacheManager);
 	}
 
 	@Bean(destroyMethod = "stop")

@@ -18,13 +18,14 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -48,8 +49,11 @@ import org.springframework.jmx.support.JmxUtils;
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class JndiDataSourceAutoConfiguration {
 
-	@Autowired(required = false)
-	private MBeanExporter mbeanExporter;
+	private final ApplicationContext context;
+
+	public JndiDataSourceAutoConfiguration(ApplicationContext context) {
+		this.context = context;
+	}
 
 	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
@@ -61,8 +65,14 @@ public class JndiDataSourceAutoConfiguration {
 	}
 
 	private void excludeMBeanIfNecessary(Object candidate, String beanName) {
-		if (this.mbeanExporter != null && JmxUtils.isMBean(candidate.getClass())) {
-			this.mbeanExporter.addExcludedBean(beanName);
+		try {
+			MBeanExporter mbeanExporter = this.context.getBean(MBeanExporter.class);
+			if (JmxUtils.isMBean(candidate.getClass())) {
+				mbeanExporter.addExcludedBean(beanName);
+			}
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			// No exporter. Exclusion is unnecessary
 		}
 	}
 

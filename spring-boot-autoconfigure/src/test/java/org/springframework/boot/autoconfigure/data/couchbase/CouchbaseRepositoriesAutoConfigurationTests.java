@@ -16,18 +16,17 @@
 
 package org.springframework.boot.autoconfigure.data.couchbase;
 
-import com.couchbase.client.java.Bucket;
 import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfiguration;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
 import org.springframework.boot.autoconfigure.data.couchbase.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -38,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link CouchbaseRepositoriesAutoConfiguration}.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 public class CouchbaseRepositoriesAutoConfigurationTests {
 
@@ -45,39 +45,66 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 
 	@After
 	public void close() {
-		this.context.close();
+		if (this.context != null) {
+			this.context.close();
+		}
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		assertThat(this.context.getBean(Bucket.class)).isNotNull();
+	public void couchbaseNotAvailable() throws Exception {
+		load(null);
+		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EmptyConfiguration.class, TestConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(Bucket.class)).isNotNull();
+	public void defaultRepository() throws Exception {
+		load(DefaultConfiguration.class);
+		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(1);
+	}
+
+	@Test
+	public void disableRepository() {
+		load(DefaultConfiguration.class,
+				"spring.data.couchbase.repositories.enabled=false");
+		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
+	}
+
+	@Test
+	public void noRepositoryAvailable() throws Exception {
+		load(NoRepositoryConfiguration.class);
+		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
+	}
+
+	private void load(Class<?> config, String... environment) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, environment);
+		if (config != null) {
+			context.register(config);
+		}
+		context.register(PropertyPlaceholderAutoConfiguration.class,
+				CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
+				CouchbaseRepositoriesAutoConfiguration.class);
+		context.refresh();
+		this.context = context;
 	}
 
 	@Configuration
 	@TestAutoConfigurationPackage(City.class)
-	@EnableConfigurationProperties(CouchbaseProperties.class)
-	@Import({ CouchbaseRepositoriesRegistrar.class, CouchbaseTestConfiguration.class })
-	static class TestConfiguration {
+	static class CouchbaseNotAvailableConfiguration {
+
+	}
+
+	@Configuration
+	@TestAutoConfigurationPackage(City.class)
+	@Import(CouchbaseTestConfigurer.class)
+	static class DefaultConfiguration {
 
 	}
 
 	@Configuration
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
-	protected static class EmptyConfiguration {
+	@Import(CouchbaseTestConfigurer.class)
+	protected static class NoRepositoryConfiguration {
 
 	}
 

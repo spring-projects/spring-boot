@@ -20,7 +20,6 @@ import com.sendgrid.SendGrid;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -44,8 +43,11 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(SendGridProperties.class)
 public class SendGridAutoConfiguration {
 
-	@Autowired
-	private SendGridProperties properties;
+	private final SendGridProperties properties;
+
+	public SendGridAutoConfiguration(SendGridProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(SendGrid.class)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.introspect.Annotated;
@@ -50,10 +50,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.jackson.JsonComponent;
+import org.springframework.boot.jackson.JsonObjectSerializer;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
@@ -69,6 +72,7 @@ import static org.mockito.Mockito.mock;
  * @author Marcel Overdijk
  * @author Sebastien Deleuze
  * @author Johannes Edmeier
+ * @author Grzegorz Poznachowski
  */
 public class JacksonAutoConfigurationTests {
 
@@ -167,22 +171,22 @@ public class JacksonAutoConfigurationTests {
 	public void customPropertyNamingStrategyField() throws Exception {
 		this.context.register(JacksonAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jackson.property-naming-strategy:CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES");
+				"spring.jackson.property-naming-strategy:SNAKE_CASE");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
 		assertThat(mapper.getPropertyNamingStrategy())
-				.isInstanceOf(LowerCaseWithUnderscoresStrategy.class);
+				.isInstanceOf(SnakeCaseStrategy.class);
 	}
 
 	@Test
 	public void customPropertyNamingStrategyClass() throws Exception {
 		this.context.register(JacksonAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jackson.property-naming-strategy:com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy");
+				"spring.jackson.property-naming-strategy:com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
 		assertThat(mapper.getPropertyNamingStrategy())
-				.isInstanceOf(LowerCaseWithUnderscoresStrategy.class);
+				.isInstanceOf(SnakeCaseStrategy.class);
 	}
 
 	@Test
@@ -347,6 +351,7 @@ public class JacksonAutoConfigurationTests {
 		assertThat(this.context.getBean(CustomModule.class).getOwners())
 				.contains((ObjectCodec) objectMapper);
 		assertThat(objectMapper.canSerialize(LocalDateTime.class)).isTrue();
+		assertThat(objectMapper.canSerialize(Baz.class)).isTrue();
 	}
 
 	@Test
@@ -355,8 +360,8 @@ public class JacksonAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context
 				.getBean(Jackson2ObjectMapperBuilder.class).build();
-		assertThat(objectMapper.getSerializationConfig().getSerializationInclusion())
-				.isEqualTo(JsonInclude.Include.ALWAYS);
+		assertThat(objectMapper.getSerializationConfig().getDefaultPropertyInclusion()
+				.getValueInclusion()).isEqualTo(JsonInclude.Include.USE_DEFAULTS);
 	}
 
 	@Test
@@ -367,8 +372,8 @@ public class JacksonAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context
 				.getBean(Jackson2ObjectMapperBuilder.class).build();
-		assertThat(objectMapper.getSerializationConfig().getSerializationInclusion())
-				.isEqualTo(JsonInclude.Include.NON_NULL);
+		assertThat(objectMapper.getSerializationConfig().getDefaultPropertyInclusion()
+				.getValueInclusion()).isEqualTo(JsonInclude.Include.NON_NULL);
 	}
 
 	@Test
@@ -416,6 +421,15 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
+	public void additionalJacksonBuilderCustomization() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class,
+				ObjectMapperBuilderCustomConfig.class);
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		assertThat(mapper.getDateFormat()).isInstanceOf(MyDateFormat.class);
+	}
+
+	@Test
 	public void parameterNamesModuleIsAutoConfigured() {
 		assertParameterNamesModuleCreatorBinding(Mode.DEFAULT,
 				JacksonAutoConfiguration.class);
@@ -456,12 +470,14 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Configuration
+	@Import(BazSerializer.class)
 	protected static class ModuleConfig {
 
 		@Bean
 		public CustomModule jacksonModule() {
 			return new CustomModule();
 		}
+
 	}
 
 	@Configuration
@@ -504,6 +520,22 @@ public class JacksonAutoConfigurationTests {
 
 	}
 
+	@Configuration
+	protected static class ObjectMapperBuilderCustomConfig {
+
+		@Bean
+		public Jackson2ObjectMapperBuilderCustomizer customDateFormat() {
+			return new Jackson2ObjectMapperBuilderCustomizer() {
+				@Override
+				public void customize(
+						Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
+					jackson2ObjectMapperBuilder.dateFormat(new MyDateFormat());
+				}
+			};
+		}
+
+	}
+
 	protected static final class Foo {
 
 		private String name;
@@ -538,6 +570,20 @@ public class JacksonAutoConfigurationTests {
 		}
 	}
 
+	@JsonComponent
+	private static class BazSerializer extends JsonObjectSerializer<Baz> {
+
+		@Override
+		protected void serializeObject(Baz value, JsonGenerator jgen,
+				SerializerProvider provider) throws IOException {
+		}
+
+	}
+
+	private static class Baz {
+
+	}
+
 	private static class CustomModule extends SimpleModule {
 
 		private Set<ObjectCodec> owners = new HashSet<ObjectCodec>();
@@ -552,4 +598,5 @@ public class JacksonAutoConfigurationTests {
 		}
 
 	}
+
 }

@@ -139,6 +139,22 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests
 	}
 
 	@Test
+	public void emptyGroups() throws IOException {
+		InputStream in = getInputStreamFor("empty-groups");
+		try {
+			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder
+					.create(in).build();
+			validateEmptyGroup(repo);
+			assertThat(repo.getAllGroups()).hasSize(1);
+			contains(repo.getAllProperties(), "name", "title");
+			assertThat(repo.getAllProperties()).hasSize(2);
+		}
+		finally {
+			in.close();
+		}
+	}
+
+	@Test
 	public void builderInstancesAreIsolated() throws IOException {
 		InputStream foo = getInputStreamFor("foo");
 		InputStream bar = getInputStreamFor("bar");
@@ -239,6 +255,19 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests
 				.hasSize(1);
 		assertThat(values.getHints().getValueProviders().get(0).getParameters()
 				.get("target")).isEqualTo("java.lang.Integer");
+	}
+
+	private void validateEmptyGroup(ConfigurationMetadataRepository repo) {
+		ConfigurationMetadataGroup group = repo.getAllGroups().get("");
+		contains(group.getSources(), "org.acme.Foo", "org.acme.Bar");
+		ConfigurationMetadataSource source = group.getSources().get("org.acme.Foo");
+		contains(source.getProperties(), "name");
+		assertThat(source.getProperties()).hasSize(1);
+		ConfigurationMetadataSource source2 = group.getSources().get("org.acme.Bar");
+		contains(source2.getProperties(), "title");
+		assertThat(source2.getProperties()).hasSize(1);
+		validatePropertyHints(repo.getAllProperties().get("name"), 0, 0);
+		validatePropertyHints(repo.getAllProperties().get("title"), 0, 0);
 	}
 
 	private void validatePropertyHints(ConfigurationMetadataProperty property,

@@ -16,13 +16,13 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
-import java.util.List;
-
-import javax.validation.Validator;
-
+import com.couchbase.client.java.Bucket;
+import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseBucket;
+import com.couchbase.client.java.CouchbaseCluster;
+import com.couchbase.client.java.cluster.ClusterInfo;
+import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -33,11 +33,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
-import org.springframework.data.couchbase.core.CouchbaseTemplate;
-import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
-import org.springframework.data.couchbase.core.query.Consistency;
-import org.springframework.data.couchbase.repository.support.IndexManager;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-Configuration} for Couchbase.
@@ -47,69 +44,86 @@ import org.springframework.data.couchbase.repository.support.IndexManager;
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({ CouchbaseBucket.class, AbstractCouchbaseConfiguration.class })
+@ConditionalOnClass({ CouchbaseBucket.class, Cluster.class })
 @Conditional(CouchbaseAutoConfiguration.CouchbaseCondition.class)
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class CouchbaseAutoConfiguration {
 
-	@Bean
-	@ConditionalOnBean(Validator.class)
-	public ValidatingCouchbaseEventListener validationEventListener(Validator validator) {
-		return new ValidatingCouchbaseEventListener(validator);
-	}
-
 	@Configuration
-	@ConditionalOnMissingBean(AbstractCouchbaseConfiguration.class)
-	public static class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
+	@ConditionalOnMissingBean({ CouchbaseConfigurer.class, CouchbaseConfiguration.class })
+	public static class CouchbaseConfiguration {
 
-		@Autowired
-		private CouchbaseProperties properties;
+		private final CouchbaseProperties properties;
 
-		@Override
-		protected List<String> getBootstrapHosts() {
-			return this.properties.getBootstrapHosts();
+		public CouchbaseConfiguration(CouchbaseProperties properties) {
+			this.properties = properties;
 		}
 
-		@Override
-		protected String getBucketName() {
-			return this.properties.getBucket().getName();
+		@Bean
+		@Primary
+		public DefaultCouchbaseEnvironment couchbaseEnvironment() throws Exception {
+			return initializeEnvironmentBuilder(this.properties).build();
 		}
 
-		@Override
-		protected String getBucketPassword() {
-			return this.properties.getBucket().getPassword();
+		@Bean
+		@Primary
+		public Cluster couchbaseCluster() throws Exception {
+			return CouchbaseCluster.create(couchbaseEnvironment(),
+					this.properties.getBootstrapHosts());
 		}
 
-		@Override
-		protected Consistency getDefaultConsistency() {
-			return this.properties.getConsistency();
+		@Bean
+		@Primary
+		public ClusterInfo couchbaseClusterInfo() throws Exception {
+			return couchbaseCluster()
+					.clusterManager(this.properties.getBucket().getName(),
+							this.properties.getBucket().getPassword())
+					.info();
 		}
 
-		@Override
-		@ConditionalOnMissingBean(name = "couchbaseTemplate")
-		@Bean(name = "couchbaseTemplate")
-		public CouchbaseTemplate couchbaseTemplate() throws Exception {
-			return super.couchbaseTemplate();
+		@Bean
+		@Primary
+		public Bucket couchbaseClient() throws Exception {
+			return couchbaseCluster().openBucket(this.properties.getBucket().getName(),
+					this.properties.getBucket().getPassword());
 		}
 
-		@Override
-		@ConditionalOnMissingBean(name = "couchbaseIndexManager")
-		@Bean(name = "couchbaseIndexManager")
-		public IndexManager indexManager() {
-			if (this.properties.isAutoIndex()) {
-				return new IndexManager(true, true, true);
+		/**
+		 * Initialize an environment builder based on the specified settings.
+		 * @param properties the couchbase properties to use
+		 * @return the {@link DefaultCouchbaseEnvironment} builder.
+		 */
+		protected DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(
+				CouchbaseProperties properties) {
+			CouchbaseProperties.Endpoints endpoints = properties.getEnv().getEndpoints();
+			CouchbaseProperties.Timeouts timeouts = properties.getEnv().getTimeouts();
+			DefaultCouchbaseEnvironment.Builder builder = DefaultCouchbaseEnvironment
+					.builder().connectTimeout(timeouts.getConnect())
+					.kvEndpoints(endpoints.getKeyValue())
+					.kvTimeout(timeouts.getKeyValue())
+					.queryEndpoints(endpoints.getQuery())
+					.queryTimeout(timeouts.getQuery()).viewEndpoints(endpoints.getView())
+					.socketConnectTimeout(timeouts.getSocketConnect())
+					.viewTimeout(timeouts.getView());
+			CouchbaseProperties.Ssl ssl = properties.getEnv().getSsl();
+			if (ssl.getEnabled()) {
+				builder.sslEnabled(true);
+				if (ssl.getKeyStore() != null) {
+					builder.sslKeystoreFile(ssl.getKeyStore());
+				}
+				if (ssl.getKeyStorePassword() != null) {
+					builder.sslKeystorePassword(ssl.getKeyStorePassword());
+				}
 			}
-			else {
-				return new IndexManager(false, false, false);
-			}
+			return builder;
 		}
 
 	}
 
 	/**
 	 * Determine if Couchbase should be configured. This happens if either the
-	 * user-configuration defines a couchbase configuration or if at least the bucket name
-	 * is specified.
+	 * user-configuration defines a {@link CouchbaseConfigurer} or if at least the
+	 * "bootstrapHosts" property is specified.
 	 */
 	static class CouchbaseCondition extends AnyNestedCondition {
 
@@ -117,12 +131,12 @@ public class CouchbaseAutoConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.data.couchbase.bucket", name = "name")
-		static class BucketNameProperty {
+		@ConditionalOnProperty(prefix = "spring.couchbase", name = "bootstrapHosts")
+		static class BootstrapHostsProperty {
 		}
 
-		@ConditionalOnBean(AbstractCouchbaseConfiguration.class)
-		static class CouchbaseConfiguration {
+		@ConditionalOnBean(CouchbaseConfigurer.class)
+		static class CouchbaseConfigurerAvailable {
 		}
 
 	}

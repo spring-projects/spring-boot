@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,15 @@ import javax.servlet.DispatcherType;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.context.embedded.DelegatingFilterProxyRegistrationBean;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -442,8 +441,11 @@ public class SecurityAutoConfigurationTests {
 	@Configuration
 	protected static class SecurityCustomizer extends WebSecurityConfigurerAdapter {
 
-		@Autowired
-		AuthenticationManager authenticationManager;
+		final AuthenticationManager authenticationManager;
+
+		protected SecurityCustomizer(AuthenticationManager authenticationManager) {
+			this.authenticationManager = authenticationManager;
+		}
 
 	}
 
@@ -451,11 +453,14 @@ public class SecurityAutoConfigurationTests {
 	protected static class WorkaroundSecurityCustomizer
 			extends WebSecurityConfigurerAdapter {
 
-		@Autowired
-		private AuthenticationManagerBuilder builder;
+		private final AuthenticationManagerBuilder builder;
 
 		@SuppressWarnings("unused")
 		private AuthenticationManager authenticationManager;
+
+		protected WorkaroundSecurityCustomizer(AuthenticationManagerBuilder builder) {
+			this.builder = builder;
+		}
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {

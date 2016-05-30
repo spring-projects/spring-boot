@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -59,7 +60,7 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	 * Endpoint URL path.
 	 */
 	@NotNull
-	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
+	@Pattern(regexp = "/.*", message = "Path must start with /")
 	private String path = "/logfile";
 
 	/**
@@ -71,6 +72,12 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	 * Mark if the endpoint exposes sensitive information.
 	 */
 	private Boolean sensitive;
+
+	/**
+	 * External Logfile to be accessed. Can be used if the logfile is written by output
+	 * redirect and not by the logging-system itself.
+	 */
+	private File externalFile;
 
 	private Environment environment;
 
@@ -105,6 +112,14 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		this.sensitive = sensitive;
 	}
 
+	public File getExternalFile() {
+		return this.externalFile;
+	}
+
+	public void setExternalFile(File externalFile) {
+		this.externalFile = externalFile;
+	}
+
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Class<? extends Endpoint> getEndpointType() {
@@ -119,23 +134,25 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 			return;
 		}
 		Resource resource = getLogFileResource();
+		if (resource != null && !resource.exists()) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Log file '" + resource + "' does not exist");
+			}
+			resource = null;
+		}
 		new Handler(resource).handleRequest(request, response);
 	}
 
 	private Resource getLogFileResource() {
+		if (this.externalFile != null) {
+			return new FileSystemResource(this.externalFile);
+		}
 		LogFile logFile = LogFile.get(this.environment);
 		if (logFile == null) {
 			logger.debug("Missing 'logging.file' or 'logging.path' properties");
 			return null;
 		}
-		FileSystemResource resource = new FileSystemResource(logFile.toString());
-		if (!resource.exists()) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Log file '" + resource + "' does not exist");
-			}
-			return null;
-		}
-		return resource;
+		return new FileSystemResource(logFile.toString());
 	}
 
 	/**
@@ -147,6 +164,12 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 
 		Handler(Resource resource) {
 			this.resource = resource;
+			try {
+				afterPropertiesSet();
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException(ex);
+			}
 		}
 
 		@Override

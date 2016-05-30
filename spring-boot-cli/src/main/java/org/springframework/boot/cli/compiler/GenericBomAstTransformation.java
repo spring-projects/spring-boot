@@ -40,7 +40,7 @@ import org.springframework.core.Ordered;
 
 /**
  * A base class that lets plugin authors easily add additional BOMs to all apps. All the
- * dependencies in the BOM (and it's transitives) will be added to the dependency
+ * dependencies in the BOM (and its transitives) will be added to the dependency
  * management lookup, so an app can use just the artifact id (e.g. "spring-jdbc") in a
  * {@code @Grab}. To install, implement the missing methods and list the class in
  * {@code META-INF/services/org.springframework.boot.cli.compiler.SpringBootAstTransformation}

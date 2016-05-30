@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -197,6 +198,50 @@ public class DataSourceInitializerTests {
 			SQLException sqlException = ex.getSQLException();
 			int expectedCode = -5501; // user lacks privilege or object not found
 			assertThat(sqlException.getErrorCode()).isEqualTo(expectedCode);
+		}
+	}
+
+	@Test
+	public void testDataSourceInitializedWithSchemaCredentials() {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.sqlScriptEncoding:UTF-8",
+				"spring.datasource.schema:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "encoding-schema.sql"),
+				"spring.datasource.data:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "encoding-data.sql"),
+				"spring.datasource.schema-username:admin",
+				"spring.datasource.schema-password:admin");
+		try {
+			this.context.refresh();
+			fail("User does not exist");
+		}
+		catch (Exception ex) {
+			assertThat(ex).isInstanceOf(UnsatisfiedDependencyException.class);
+		}
+	}
+
+	@Test
+	public void testDataSourceInitializedWithDataCredentials() {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.sqlScriptEncoding:UTF-8",
+				"spring.datasource.schema:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "encoding-schema.sql"),
+				"spring.datasource.data:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "encoding-data.sql"),
+				"spring.datasource.data-username:admin",
+				"spring.datasource.data-password:admin");
+		try {
+			this.context.refresh();
+			fail("User does not exist");
+		}
+		catch (Exception ex) {
+			assertThat(ex).isInstanceOf(UnsatisfiedDependencyException.class);
 		}
 	}
 

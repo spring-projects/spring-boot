@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-mustache</artifactId>
 	<name>Spring Boot Mustache Starter</name>
-	<description>Spring Boot Mustache Starter</description>
+	<description>Starter for building MVC web applications using Mustache views</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

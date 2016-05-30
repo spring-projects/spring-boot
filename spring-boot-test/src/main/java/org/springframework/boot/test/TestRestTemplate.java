@@ -51,7 +51,10 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @deprecated as of 1.4 in favor of
+ * {@link org.springframework.boot.test.web.client.TestRestTemplate}
  */
+@Deprecated
 public class TestRestTemplate extends RestTemplate {
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");

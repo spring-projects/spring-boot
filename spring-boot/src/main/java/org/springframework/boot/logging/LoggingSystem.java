@@ -37,6 +37,12 @@ public abstract class LoggingSystem {
 	 */
 	public static final String SYSTEM_PROPERTY = LoggingSystem.class.getName();
 
+	/**
+	 * The value of the {@link #SYSTEM_PROPERTY} that can be used to indicate that no
+	 * {@link LoggingSystem} should be used.
+	 */
+	public static final String NONE = "none";
+
 	private static final Map<String, String> SYSTEMS;
 
 	static {
@@ -101,6 +107,9 @@ public abstract class LoggingSystem {
 	public static LoggingSystem get(ClassLoader classLoader) {
 		String loggingSystem = System.getProperty(SYSTEM_PROPERTY);
 		if (StringUtils.hasLength(loggingSystem)) {
+			if (NONE.equals(loggingSystem)) {
+				return new NoOpLoggingSystem();
+			}
 			return get(classLoader, loggingSystem);
 		}
 		for (Map.Entry<String, String> entry : SYSTEMS.entrySet()) {
@@ -120,6 +129,23 @@ public abstract class LoggingSystem {
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	/**
+	 * {@link LoggingSystem} that does nothing.
+	 */
+	static class NoOpLoggingSystem extends LoggingSystem {
+
+		@Override
+		public void beforeInitialize() {
+
+		}
+
+		@Override
+		public void setLogLevel(String loggerName, LogLevel level) {
+
+		}
+
 	}
 
 }

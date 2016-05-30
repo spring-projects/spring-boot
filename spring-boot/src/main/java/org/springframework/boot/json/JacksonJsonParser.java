@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.json;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -30,10 +31,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JacksonJsonParser implements JsonParser {
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Map<String, Object> parseMap(String json) {
 		try {
-			return new ObjectMapper().readValue(json, Map.class);
+			return new ObjectMapper().readValue(json, new MapTypeReference());
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException("Cannot parse JSON", ex);
@@ -41,14 +41,19 @@ public class JacksonJsonParser implements JsonParser {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Object> parseList(String json) {
 		try {
-			return new ObjectMapper().readValue(json, List.class);
+			TypeReference<List<Object>> type = new TypeReference<List<Object>>() {
+			};
+			return new ObjectMapper().readValue(json, type);
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException("Cannot parse JSON", ex);
 		}
 	}
+
+	private static class MapTypeReference extends TypeReference<Map<String, Object>> {
+
+	};
 
 }

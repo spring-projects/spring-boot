@@ -37,19 +37,16 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
-@ConfigurationProperties(prefix = "shell", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = ShellProperties.SHELL_PREFIX, ignoreUnknownFields = true)
 public class ShellProperties {
+
+	public static final String SHELL_PREFIX = "management.shell";
 
 	private static final Log logger = LogFactory.getLog(ShellProperties.class);
 
-	/**
-	 * Authentication type. Auto-detected according to the environment (i.e. if Spring
-	 * Security is available, "spring" is used by default).
-	 */
-	private String auth = "simple";
-
-	private boolean defaultAuth = true;
+	private final Auth auth = new Auth();
 
 	@Autowired(required = false)
 	private CrshShellProperties[] additionalProperties = new CrshShellProperties[] {
@@ -86,13 +83,7 @@ public class ShellProperties {
 
 	private final Telnet telnet = new Telnet();
 
-	public void setAuth(String auth) {
-		Assert.hasLength(auth, "Auth must not be empty");
-		this.auth = auth;
-		this.defaultAuth = false;
-	}
-
-	public String getAuth() {
+	public Auth getAuth() {
 		return this.auth;
 	}
 
@@ -191,15 +182,7 @@ public class ShellProperties {
 	 * @param properties the properties to validate
 	 */
 	protected void validateCrshShellConfig(Properties properties) {
-		String finalAuth = properties.getProperty("crash.auth");
-		if (!this.defaultAuth && !this.auth.equals(finalAuth)) {
-			logger.warn(String.format(
-					"Shell authentication fell back to method '%s' opposed to "
-							+ "configured method '%s'. Please check your classpath.",
-					finalAuth, this.auth));
-		}
-		// Make sure we keep track of final authentication method
-		this.auth = finalAuth;
+		getAuth().validateCrshShellConfig(properties);
 	}
 
 	/**
@@ -220,6 +203,44 @@ public class ShellProperties {
 	 */
 	public static abstract class CrshShellAuthenticationProperties
 			extends CrshShellProperties {
+
+	}
+
+	public static class Auth {
+
+		/**
+		 * Authentication type. Auto-detected according to the environment (i.e. if Spring
+		 * Security is available, "spring" is used by default).
+		 */
+		private String type = "simple";
+
+		private boolean defaultAuth = true;
+
+		public String getType() {
+			return this.type;
+		}
+
+		public void setType(String type) {
+			Assert.hasLength(type, "Auth type must not be empty");
+			this.type = type;
+			this.defaultAuth = false;
+		}
+
+		/**
+		 * Basic validation of applied CRaSH shell configuration.
+		 * @param properties the properties to validate
+		 */
+		protected void validateCrshShellConfig(Properties properties) {
+			String finalAuth = properties.getProperty("crash.auth");
+			if (!this.defaultAuth && !this.type.equals(finalAuth)) {
+				logger.warn(String.format(
+						"Shell authentication fell back to method '%s' opposed to "
+								+ "configured method '%s'. Please check your classpath.",
+						finalAuth, this.type));
+			}
+			// Make sure we keep track of final authentication method
+			this.type = finalAuth;
+		}
 
 	}
 
@@ -354,7 +375,8 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for JAAS authentication.
 	 */
-	@ConfigurationProperties(prefix = "shell.auth.jaas", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX
+			+ ".auth.jaas", ignoreUnknownFields = false)
 	public static class JaasAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
@@ -383,7 +405,8 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for key authentication.
 	 */
-	@ConfigurationProperties(prefix = "shell.auth.key", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX
+			+ ".auth.key", ignoreUnknownFields = false)
 	public static class KeyAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
@@ -414,7 +437,8 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for simple authentication.
 	 */
-	@ConfigurationProperties(prefix = "shell.auth.simple", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX
+			+ ".auth.simple", ignoreUnknownFields = false)
 	public static class SimpleAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
@@ -490,7 +514,8 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for Spring authentication.
 	 */
-	@ConfigurationProperties(prefix = "shell.auth.spring", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = SHELL_PREFIX
+			+ ".auth.spring", ignoreUnknownFields = false)
 	public static class SpringAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 

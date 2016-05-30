@@ -16,45 +16,23 @@
 
 package org.springframework.boot.test;
 
-import org.apache.http.client.config.RequestConfig;
 import org.junit.Test;
-
-import org.springframework.boot.test.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
-import org.springframework.boot.test.TestRestTemplate.HttpClientOption;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link TestRestTemplate}.
+ * Tests for the deprecated {@link TestRestTemplate}.
  *
  * @author Dave Syer
- * @author Phillip Webb
  */
+@Deprecated
 public class TestRestTemplateTests {
 
 	@Test
-	public void simple() {
-		// The Apache client is on the classpath so we get the fully-fledged factory
-		assertThat(new TestRestTemplate().getRequestFactory())
-				.isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
-	}
-
-	@Test
-	public void authenticated() {
-		assertThat(new TestRestTemplate("user", "password").getRequestFactory())
-				.isInstanceOf(InterceptingClientHttpRequestFactory.class);
-	}
-
-	@Test
-	public void options() throws Exception {
+	public void canCreateTemplateFromOwnOptions() {
 		TestRestTemplate template = new TestRestTemplate(
-				HttpClientOption.ENABLE_REDIRECTS);
-		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
-				.getRequestFactory();
-		RequestConfig config = factory.getRequestConfig();
-		assertThat(config.isRedirectsEnabled()).isTrue();
+				TestRestTemplate.HttpClientOption.ENABLE_REDIRECTS);
+		assertThat(template).isNotNull();
 	}
 
 }

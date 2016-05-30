@@ -21,7 +21,7 @@ import org.springframework.core.ResolvableType;
 /**
  * Abstract base class for most {@code FailureAnalyzer} implementations.
  *
- * @param <T> The type of exception to analyze
+ * @param <T> the type of exception to analyze
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 1.4.0

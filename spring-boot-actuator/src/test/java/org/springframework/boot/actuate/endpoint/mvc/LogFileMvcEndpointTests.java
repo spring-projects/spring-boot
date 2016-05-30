@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,6 +108,17 @@ public class LogFileMvcEndpointTests {
 		this.mvc.invoke(request, response);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 		assertThat(response.getContentAsString()).isEqualTo("--TEST--");
+	}
+
+	@Test
+	public void invokeGetsContentExternalFile() throws Exception {
+		this.mvc.setExternalFile(this.logFile);
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.GET.name(),
+				"/logfile");
+		this.mvc.invoke(request, response);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat("--TEST--").isEqualTo(response.getContentAsString());
 	}
 
 }

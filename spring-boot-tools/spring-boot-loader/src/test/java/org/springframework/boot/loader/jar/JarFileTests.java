@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -313,8 +313,17 @@ public class JarFileTests {
 
 	@Test
 	public void createNonNestedUrlFromString() throws Exception {
+		nonNestedJarFileFromString("jar:" + this.rootJarFile.toURI() + "!/2.dat");
+	}
+
+	@Test
+	public void createNonNestedUrlFromPathString() throws Exception {
+		nonNestedJarFileFromString(
+				"jar:" + this.rootJarFile.toPath().toUri() + "!/2.dat");
+	}
+
+	private void nonNestedJarFileFromString(String spec) throws Exception {
 		JarFile.registerUrlProtocolHandler();
-		String spec = "jar:" + this.rootJarFile.toURI() + "!/2.dat";
 		URL url = new URL(spec);
 		assertThat(url.toString()).isEqualTo(spec);
 		InputStream inputStream = url.openStream();

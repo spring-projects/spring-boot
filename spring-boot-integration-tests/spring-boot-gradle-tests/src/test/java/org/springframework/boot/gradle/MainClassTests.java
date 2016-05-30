@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,30 +18,55 @@ package org.springframework.boot.gradle;
 
 import java.io.IOException;
 
+import org.gradle.tooling.BuildException;
 import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
- * Tests for configuring a project's main class
+ * Tests for configuring a project's main class.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class MainClassTests {
 
-	private static ProjectConnection project;
-
 	private static final String BOOT_VERSION = Versions.getBootVersion();
+
+	private static ProjectConnection project;
 
 	@BeforeClass
 	public static void createProject() throws IOException {
-		project = new ProjectCreator().createProject("main-in-boot-run");
+		project = new ProjectCreator().createProject("main-class");
 	}
 
 	@Test
 	public void mainFromBootRun() {
 		project.newBuild().forTasks("build")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "--info").run();
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-PbootRunMain=true")
+				.run();
+	}
+
+	@Test
+	public void nonJavaExecRunTaskIsIgnored() {
+		try {
+			project.newBuild().forTasks("build").withArguments(
+					"-PbootVersion=" + BOOT_VERSION, "-PnonJavaExecRun=true").run();
+		}
+		catch (BuildException ex) {
+			Throwable rootCause = getRootCause(ex);
+			assertThat(rootCause.getMessage()).isEqualTo("Unable to find main class");
+		}
+	}
+
+	private Throwable getRootCause(Throwable ex) {
+		Throwable candidate = ex;
+		while (candidate.getCause() != null) {
+			candidate = candidate.getCause();
+		}
+		return candidate;
 	}
 
 }

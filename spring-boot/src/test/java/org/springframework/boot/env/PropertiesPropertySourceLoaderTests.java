@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,8 @@ public class PropertiesPropertySourceLoaderTests {
 
 	@Test
 	public void getFileExtensions() throws Exception {
-		assertThat(this.loader.getFileExtensions()).containsExactly("properties", "xml");
+		assertThat(this.loader.getFileExtensions())
+				.isEqualTo(new String[] { "properties", "xml" });
 	}
 
 	@Test
@@ -42,13 +43,6 @@ public class PropertiesPropertySourceLoaderTests {
 		PropertySource<?> source = this.loader.load("test.properties",
 				new ClassPathResource("test-properties.properties", getClass()), null);
 		assertThat(source.getProperty("test")).isEqualTo("properties");
-	}
-
-	@Test
-	public void loadPropertiesEncoded() throws Exception {
-		PropertySource<?> source = this.loader.load("encoded.properties",
-				new ClassPathResource("test-encoded.properties", getClass()), null);
-		assertThat(source.getProperty("test")).isEqualTo("prकperties");
 	}
 
 	@Test

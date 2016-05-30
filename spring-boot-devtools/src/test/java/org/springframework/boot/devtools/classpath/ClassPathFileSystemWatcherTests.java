@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
@@ -78,11 +77,17 @@ public class ClassPathFileSystemWatcherTests {
 		context.getEnvironment().getPropertySources().addLast(propertySource);
 		context.register(Config.class);
 		context.refresh();
-		Thread.sleep(100);
+		Thread.sleep(200);
 		File classFile = new File(folder, "Example.class");
 		FileCopyUtils.copy("file".getBytes(), classFile);
-		Thread.sleep(1100);
+		Thread.sleep(1000);
 		List<ClassPathChangedEvent> events = context.getBean(Listener.class).getEvents();
+		for (int i = 0; i < 20; i++) {
+			if (!events.isEmpty()) {
+				break;
+			}
+			Thread.sleep(500);
+		}
 		assertThat(events.size()).isEqualTo(1);
 		assertThat(events.get(0).getChangeSet().iterator().next().getFiles().iterator()
 				.next().getFile()).isEqualTo(classFile);
@@ -92,8 +97,11 @@ public class ClassPathFileSystemWatcherTests {
 	@Configuration
 	public static class Config {
 
-		@Autowired
-		public Environment environment;
+		public final Environment environment;
+
+		public Config(Environment environment) {
+			this.environment = environment;
+		}
 
 		@Bean
 		public ClassPathFileSystemWatcher watcher() {

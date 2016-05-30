@@ -16,26 +16,20 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
-import javax.validation.Validator;
-
 import com.couchbase.client.java.Bucket;
-import org.junit.After;
+import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.CouchbaseBucket;
+import com.couchbase.client.java.cluster.ClusterInfo;
+import com.couchbase.client.java.env.CouchbaseEnvironment;
+import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.beans.DirectFieldAccessor;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration.CouchbaseConfiguration;
+import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
-import org.springframework.data.couchbase.core.CouchbaseTemplate;
-import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
-import org.springframework.data.couchbase.core.query.Consistency;
-import org.springframework.data.couchbase.repository.support.IndexManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -46,126 +40,135 @@ import static org.mockito.Mockito.mock;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-public class CouchbaseAutoConfigurationTests {
+public class CouchbaseAutoConfigurationTests
+		extends AbstractCouchbaseAutoConfigurationTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
-
 	@Test
-	public void bucketNameIsRequired() {
+	public void bootstrapHostsIsRequired() {
 		load(null);
-		assertThat(this.context.getBeansOfType(CouchbaseTemplate.class)).isEmpty();
+		assertNoCouchbaseBeans();
+	}
+
+	@Test
+	public void bootstrapHostsNotRequiredIfCouchbaseConfigurerIsSet() {
+		load(CouchbaseTestConfigurer.class);
+		assertThat(this.context.getBeansOfType(CouchbaseTestConfigurer.class)).hasSize(1);
+		// No beans are going to be created
+		assertNoCouchbaseBeans();
+	}
+
+	@Test
+	public void bootstrapHostsIgnoredIfCouchbaseConfigurerIsSet() {
+		load(CouchbaseTestConfigurer.class, "spring.couchbase.bootstrapHosts=localhost");
+		assertThat(this.context.getBeansOfType(CouchbaseTestConfigurer.class)).hasSize(1);
+		assertNoCouchbaseBeans();
+	}
+
+	private void assertNoCouchbaseBeans() {
+		// No beans are going to be created
+		assertThat(this.context.getBeansOfType(CouchbaseEnvironment.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(ClusterInfo.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(Cluster.class)).isEmpty();
 		assertThat(this.context.getBeansOfType(Bucket.class)).isEmpty();
-		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class))
-				.isEmpty();
 	}
 
 	@Test
-	public void bucketNameIsNotRequiredIfCustomConfigurationIsSpecified()
+	public void customizeEnvEndpoints() throws Exception {
+		DefaultCouchbaseEnvironment env = customizeEnv(
+				"spring.couchbase.env.endpoints.keyValue=4",
+				"spring.couchbase.env.endpoints.query=5",
+				"spring.couchbase.env.endpoints.view=6");
+		assertThat(env.kvEndpoints()).isEqualTo(4);
+		assertThat(env.queryEndpoints()).isEqualTo(5);
+		assertThat(env.viewEndpoints()).isEqualTo(6);
+	}
+
+	@Test
+	public void customizeEnvTimeouts() throws Exception {
+		DefaultCouchbaseEnvironment env = customizeEnv(
+				"spring.couchbase.env.timeouts.connect=100",
+				"spring.couchbase.env.timeouts.keyValue=200",
+				"spring.couchbase.env.timeouts.query=300",
+				"spring.couchbase.env.timeouts.socket-connect=400",
+				"spring.couchbase.env.timeouts.view=500");
+		assertThat(env.connectTimeout()).isEqualTo(100);
+		assertThat(env.kvTimeout()).isEqualTo(200);
+		assertThat(env.queryTimeout()).isEqualTo(300);
+		assertThat(env.socketConnectTimeout()).isEqualTo(400);
+		assertThat(env.viewTimeout()).isEqualTo(500);
+	}
+
+	@Test
+	public void enableSslNoEnabledFlag() throws Exception {
+		DefaultCouchbaseEnvironment env = customizeEnv(
+				"spring.couchbase.env.ssl.keyStore=foo",
+				"spring.couchbase.env.ssl.keyStorePassword=secret");
+		assertThat(env.sslEnabled()).isTrue();
+		assertThat(env.sslKeystoreFile()).isEqualTo("foo");
+		assertThat(env.sslKeystorePassword()).isEqualTo("secret");
+	}
+
+	@Test
+	public void disableSslEvenWithKeyStore() throws Exception {
+		DefaultCouchbaseEnvironment env = customizeEnv(
+				"spring.couchbase.env.ssl.enabled=false",
+				"spring.couchbase.env.ssl.keyStore=foo",
+				"spring.couchbase.env.ssl.keyStorePassword=secret");
+		assertThat(env.sslEnabled()).isFalse();
+		assertThat(env.sslKeystoreFile()).isNull();
+		assertThat(env.sslKeystorePassword()).isNull();
+	}
+
+	@Test
+	public void customizeEnvWithCustomCouchbaseConfiguration() {
+		load(CustomCouchbaseConfiguration.class,
+				"spring.couchbase.bootstrap-hosts=localhost",
+				"spring.couchbase.env.timeouts.connect=100");
+		assertThat(this.context.getBeansOfType(CouchbaseConfiguration.class)).hasSize(1);
+		DefaultCouchbaseEnvironment env = this.context
+				.getBean(DefaultCouchbaseEnvironment.class);
+		assertThat(env.socketConnectTimeout()).isEqualTo(5000);
+		assertThat(env.connectTimeout()).isEqualTo(2000);
+	}
+
+	private DefaultCouchbaseEnvironment customizeEnv(String... environment)
 			throws Exception {
-		load(CouchbaseTestConfiguration.class);
-		assertThat(this.context.getBeansOfType(AbstractCouchbaseConfiguration.class))
-				.hasSize(1);
-		CouchbaseTestConfiguration configuration = this.context
-				.getBean(CouchbaseTestConfiguration.class);
-		assertThat(this.context.getBean(CouchbaseTemplate.class))
-				.isSameAs(configuration.couchbaseTemplate());
-		assertThat(this.context.getBean(Bucket.class))
-				.isSameAs(configuration.couchbaseClient());
-		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class))
-				.isEmpty();
-	}
-
-	@Test
-	public void validatorIsPresent() {
-		load(ValidatorConfiguration.class);
-
-		ValidatingCouchbaseEventListener listener = this.context
-				.getBean(ValidatingCouchbaseEventListener.class);
-		assertThat(new DirectFieldAccessor(listener).getPropertyValue("validator"))
-				.isEqualTo(this.context.getBean(Validator.class));
-	}
-
-	@Test
-	public void autoIndexIsDisabledByDefault() {
-		load(CouchbaseTestConfiguration.class);
-		CouchbaseTestConfiguration configuration = this.context
-				.getBean(CouchbaseTestConfiguration.class);
-		IndexManager indexManager = configuration.indexManager();
-		assertThat(indexManager.isIgnoreViews()).isTrue();
-		assertThat(indexManager.isIgnoreN1qlPrimary()).isTrue();
-		assertThat(indexManager.isIgnoreN1qlSecondary()).isTrue();
-	}
-
-	@Test
-	public void enableAutoIndex() {
-		load(CouchbaseTestConfiguration.class, "spring.data.couchbase.auto-index=true");
-		CouchbaseTestConfiguration configuration = this.context
-				.getBean(CouchbaseTestConfiguration.class);
-		IndexManager indexManager = configuration.indexManager();
-		assertThat(indexManager.isIgnoreViews()).isFalse();
-		assertThat(indexManager.isIgnoreN1qlPrimary()).isFalse();
-		assertThat(indexManager.isIgnoreN1qlSecondary()).isFalse();
-	}
-
-	@Test
-	public void changeConsistency() {
-		load(CouchbaseTestConfiguration.class,
-				"spring.data.couchbase.consistency=eventually-consistent");
-		CouchbaseTestConfiguration configuration = this.context
-				.getBean(CouchbaseTestConfiguration.class);
-		assertThat(configuration.getDefaultConsistency())
-				.isEqualTo(Consistency.EVENTUALLY_CONSISTENT);
-	}
-
-	@Test
-	public void overrideCouchbaseOperations() {
-		load(CouchbaseTemplateConfiguration.class);
-		CouchbaseTemplateConfiguration configuration = this.context
-				.getBean(CouchbaseTemplateConfiguration.class);
-		assertThat(this.context.getBean(CouchbaseTemplate.class))
-				.isSameAs(configuration.myCouchbaseTemplate());
-	}
-
-	private void load(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, environment);
-		if (config != null) {
-			context.register(config);
-		}
-		context.register(PropertyPlaceholderAutoConfiguration.class,
-				CouchbaseAutoConfiguration.class);
-		context.refresh();
-		this.context = context;
+		load(CouchbaseTestConfigurer.class, environment);
+		CouchbaseProperties properties = this.context.getBean(CouchbaseProperties.class);
+		return new CouchbaseConfiguration(properties).couchbaseEnvironment();
 	}
 
 	@Configuration
-	@Import(CouchbaseTestConfiguration.class)
-	static class ValidatorConfiguration {
+	@Import(CouchbaseDataAutoConfiguration.class)
+	static class CustomCouchbaseConfiguration extends CouchbaseConfiguration {
 
-		@Bean
-		public Validator myValidator() {
-			return mock(Validator.class);
+		CustomCouchbaseConfiguration(CouchbaseProperties properties) {
+			super(properties);
 		}
 
-	}
+		@Override
+		protected DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(
+				CouchbaseProperties properties) {
+			return super.initializeEnvironmentBuilder(properties)
+					.socketConnectTimeout(5000).connectTimeout(2000);
+		}
 
-	@Configuration
-	@Import(CouchbaseTestConfiguration.class)
-	static class CouchbaseTemplateConfiguration {
+		@Override
+		public Cluster couchbaseCluster() throws Exception {
+			return mock(Cluster.class);
+		}
 
-		@Bean(name = "couchbaseTemplate")
-		public CouchbaseTemplate myCouchbaseTemplate() {
-			return mock(CouchbaseTemplate.class);
+		@Override
+		public ClusterInfo couchbaseClusterInfo() {
+			return mock(ClusterInfo.class);
+		}
+
+		@Override
+		public Bucket couchbaseClient() {
+			return mock(CouchbaseBucket.class);
 		}
 
 	}

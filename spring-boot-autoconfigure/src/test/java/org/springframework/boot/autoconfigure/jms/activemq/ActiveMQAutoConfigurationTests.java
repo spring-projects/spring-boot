@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import org.apache.activemq.pool.PooledConnectionFactory;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,6 +37,8 @@ import static org.mockito.Mockito.mockingDetails;
  * Tests for {@link ActiveMQAutoConfiguration}
  *
  * @author Andy Wilkinson
+ * @author Aurélien Leboulanger
+ * @author Stephane Nicoll
  */
 public class ActiveMQAutoConfigurationTests {
 
@@ -60,14 +62,34 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
+	public void customPooledConnectionFactoryConfiguration() {
+		load(EmptyConfiguration.class, "spring.activemq.pool.enabled:true",
+				"spring.activemq.pool.maxConnections:256",
+				"spring.activemq.pool.idleTimeout:512",
+				"spring.activemq.pool.expiryTimeout:4096",
+				"spring.activemq.pool.configuration.maximumActiveSessionPerConnection:1024",
+				"spring.activemq.pool.configuration.timeBetweenExpirationCheckMillis:2048");
+		ConnectionFactory connectionFactory = this.context
+				.getBean(ConnectionFactory.class);
+		assertThat(connectionFactory).isInstanceOf(PooledConnectionFactory.class);
+		PooledConnectionFactory pooledConnectionFactory = (PooledConnectionFactory) connectionFactory;
+		assertThat(pooledConnectionFactory.getMaxConnections()).isEqualTo(256);
+		assertThat(pooledConnectionFactory.getIdleTimeout()).isEqualTo(512);
+		assertThat(pooledConnectionFactory.getMaximumActiveSessionPerConnection())
+				.isEqualTo(1024);
+		assertThat(pooledConnectionFactory.getTimeBetweenExpirationCheckMillis())
+				.isEqualTo(2048);
+		assertThat(pooledConnectionFactory.getExpiryTimeout()).isEqualTo(4096);
+	}
+
+	@Test
 	public void pooledConnectionFactoryConfiguration() throws JMSException {
-		load(EmptyConfiguration.class, "spring.activemq.pooled:true");
+		load(EmptyConfiguration.class, "spring.activemq.pool.enabled:true");
 		ConnectionFactory connectionFactory = this.context
 				.getBean(ConnectionFactory.class);
 		assertThat(connectionFactory).isInstanceOf(PooledConnectionFactory.class);
 		this.context.close();
-		assertThat(((PooledConnectionFactory) connectionFactory).createConnection())
-				.isNull();
+		assertThat(connectionFactory.createConnection()).isNull();
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -97,6 +119,7 @@ public class ActiveMQAutoConfigurationTests {
 		public ConnectionFactory connectionFactory() {
 			return mock(ConnectionFactory.class);
 		}
+
 	}
 
 }

@@ -73,7 +73,19 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			throws ClassNotFoundException {
 		Handler.setUseFastConnectionExceptions(true);
 		try {
-			definePackageIfNecessary(name);
+			try {
+				definePackageIfNecessary(name);
+			}
+			catch (IllegalArgumentException ex) {
+				// Tolerate race condition due to being parallel capable
+				if (getPackage(name) == null) {
+					// This should never happen as the IllegalArgumentException indicates
+					// that the package has already been defined and, therefore,
+					// getPackage(name) should not return null.
+					throw new AssertionError("Package " + name + " has already been "
+							+ "defined but it could not be found");
+				}
+			}
 			return super.loadClass(name, resolve);
 		}
 		finally {
@@ -92,22 +104,37 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		if (lastDot >= 0) {
 			String packageName = className.substring(0, lastDot);
 			if (getPackage(packageName) == null) {
-				definePackage(packageName);
+				try {
+					definePackage(className, packageName);
+				}
+				catch (IllegalArgumentException ex) {
+					// Tolerate race condition due to being parallel capable
+					if (getPackage(packageName) == null) {
+						// This should never happen as the IllegalArgumentException
+						// indicates that the package has already been defined and,
+						// therefore, getPackage(name) should not have returned null.
+						throw new AssertionError(
+								"Package " + packageName + " has already been defined "
+										+ "but it could not be found");
+					}
+				}
 			}
 		}
 	}
 
-	private void definePackage(final String packageName) {
+	private void definePackage(final String className, final String packageName) {
 		try {
 			AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
 				@Override
 				public Object run() throws ClassNotFoundException {
 					String packageEntryName = packageName.replace(".", "/") + "/";
+					String classEntryName = className.replace(".", "/") + ".class";
 					for (URL url : getURLs()) {
 						try {
 							if (url.getContent() instanceof JarFile) {
 								JarFile jarFile = (JarFile) url.getContent();
-								if (jarFile.getEntry(packageEntryName) != null
+								if (jarFile.getEntry(classEntryName) != null
+										&& jarFile.getEntry(packageEntryName) != null
 										&& jarFile.getManifest() != null) {
 									definePackage(packageName, jarFile.getManifest(),
 											url);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "endpoints.configprops", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "endpoints.configprops")
 public class ConfigurationPropertiesReportEndpoint
 		extends AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
 
@@ -310,7 +310,7 @@ public class ConfigurationPropertiesReportEndpoint
 
 		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
 			String parentType = beanDesc.getType().getRawClass().getName();
-			String type = writer.getPropertyType().getName();
+			String type = writer.getType().getTypeName();
 			AnnotatedMethod setter = findSetter(beanDesc, writer);
 			// If there's a setter, we assume it's OK to report on the value,
 			// similarly, if there's no setter but the package names match, we assume
@@ -324,7 +324,7 @@ public class ConfigurationPropertiesReportEndpoint
 		private AnnotatedMethod findSetter(BeanDescription beanDesc,
 				BeanPropertyWriter writer) {
 			String name = "set" + StringUtils.capitalize(writer.getName());
-			Class<?> type = writer.getPropertyType();
+			Class<?> type = writer.getType().getRawClass();
 			AnnotatedMethod setter = beanDesc.findMethod(name, new Class<?>[] { type });
 			// The enabled property of endpoints returns a boolean primitive but is set
 			// using a Boolean class

@@ -16,13 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,11 +24,14 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -55,9 +52,13 @@ import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfigurat
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.boot.context.event.ApplicationFailedEvent;
+import org.springframework.boot.web.filter.ApplicationContextHeaderFilter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -73,7 +74,6 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -89,6 +89,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Andy Wilkinson
  * @author Johannes Edmeier
  * @author Eddú Meléndez
+ * @author Venil Noronha
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
@@ -164,7 +165,7 @@ public class EndpointWebMvcAutoConfiguration
 	}
 
 	private void createChildManagementContext() {
-		final AnnotationConfigEmbeddedWebApplicationContext childContext = new AnnotationConfigEmbeddedWebApplicationContext();
+		AnnotationConfigEmbeddedWebApplicationContext childContext = new AnnotationConfigEmbeddedWebApplicationContext();
 		childContext.setParent(this.applicationContext);
 		childContext.setNamespace("management");
 		childContext.setId(this.applicationContext.getId() + ":management");
@@ -172,10 +173,28 @@ public class EndpointWebMvcAutoConfiguration
 				PropertyPlaceholderAutoConfiguration.class,
 				EmbeddedServletContainerAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
-		CloseEventPropagationListener.addIfPossible(this.applicationContext,
+		registerEmbeddedServletContainerFactory(childContext);
+		CloseManagementContextListener.addIfPossible(this.applicationContext,
 				childContext);
 		childContext.refresh();
 		managementContextResolver().setApplicationContext(childContext);
+	}
+
+	private void registerEmbeddedServletContainerFactory(
+			AnnotationConfigEmbeddedWebApplicationContext childContext) {
+		try {
+			EmbeddedServletContainerFactory servletContainerFactory = this.applicationContext
+					.getBean(EmbeddedServletContainerFactory.class);
+			ConfigurableListableBeanFactory beanFactory = childContext.getBeanFactory();
+			if (beanFactory instanceof BeanDefinitionRegistry) {
+				BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+				registry.registerBeanDefinition("embeddedServletContainerFactory",
+						new RootBeanDefinition(servletContainerFactory.getClass()));
+			}
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			// Ignore and assume auto-configuration
+		}
 	}
 
 	/**
@@ -218,47 +237,42 @@ public class EndpointWebMvcAutoConfiguration
 	}
 
 	/**
-	 * {@link OncePerRequestFilter} to add the {@literal X-Application-Context} if
-	 * required.
+	 * {@link ApplicationListener} to propagate the {@link ContextClosedEvent} and
+	 * {@link ApplicationFailedEvent} from a parent to a child.
 	 */
-	private static class ApplicationContextHeaderFilter extends OncePerRequestFilter {
-
-		private final ApplicationContext applicationContext;
-
-		ApplicationContextHeaderFilter(ApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
-		}
-
-		@Override
-		protected void doFilterInternal(HttpServletRequest request,
-				HttpServletResponse response, FilterChain filterChain)
-						throws ServletException, IOException {
-			response.addHeader("X-Application-Context", this.applicationContext.getId());
-			filterChain.doFilter(request, response);
-		}
-
-	}
-
-	/**
-	 * {@link ApplicationListener} to propagate the {@link ContextClosedEvent} from a
-	 * parent to a child.
-	 */
-	private static class CloseEventPropagationListener
-			implements ApplicationListener<ContextClosedEvent> {
+	private static class CloseManagementContextListener
+			implements ApplicationListener<ApplicationEvent> {
 
 		private final ApplicationContext parentContext;
 
 		private final ConfigurableApplicationContext childContext;
 
-		CloseEventPropagationListener(ApplicationContext parentContext,
+		CloseManagementContextListener(ApplicationContext parentContext,
 				ConfigurableApplicationContext childContext) {
 			this.parentContext = parentContext;
 			this.childContext = childContext;
 		}
 
 		@Override
-		public void onApplicationEvent(ContextClosedEvent event) {
-			if (event.getApplicationContext() == this.parentContext) {
+		public void onApplicationEvent(ApplicationEvent event) {
+			if (event instanceof ContextClosedEvent) {
+				onContextClosedEvent((ContextClosedEvent) event);
+			}
+			if (event instanceof ApplicationFailedEvent) {
+				onApplicationFailedEvent((ApplicationFailedEvent) event);
+			}
+		};
+
+		private void onContextClosedEvent(ContextClosedEvent event) {
+			propagateCloseIfNecessary(event.getApplicationContext());
+		}
+
+		private void onApplicationFailedEvent(ApplicationFailedEvent event) {
+			propagateCloseIfNecessary(event.getApplicationContext());
+		}
+
+		private void propagateCloseIfNecessary(ApplicationContext applicationContext) {
+			if (applicationContext == this.parentContext) {
 				this.childContext.close();
 			}
 		}
@@ -273,7 +287,7 @@ public class EndpointWebMvcAutoConfiguration
 		private static void add(ConfigurableApplicationContext parentContext,
 				ConfigurableApplicationContext childContext) {
 			parentContext.addApplicationListener(
-					new CloseEventPropagationListener(parentContext, childContext));
+					new CloseManagementContextListener(parentContext, childContext));
 		}
 
 	}

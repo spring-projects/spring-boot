@@ -34,6 +34,19 @@ include::{generated}/logfile/http-request.adoc[]
 Example HTTP response:
 include::{generated}/logfile/http-response.adoc[]
 
+==== Partial content
+
+You can use the `Range` header to retrieve part of the log file's content.
+
+Example curl request:
+include::{generated}/partial-logfile/curl-request.adoc[]
+
+Example HTTP request:
+include::{generated}/partial-logfile/http-request.adoc[]
+
+Example HTTP response:
+include::{generated}/partial-logfile/http-response.adoc[]
+
 
 
 === /docs
@@ -49,7 +62,7 @@ on the classpath by default) then the Actuator endpoint responses are enhanced w
 hypermedia in the form of "links". The default media type for responses is
 http://stateless.co/hal_specification.html[HAL], resulting in each resource having an
 extra property called "_links". You can change the media type to another one supported by
-Spring HATEOAS by providing your own  `@EnableHypermedia` annotation and custom providers
+Spring HATEOAS by providing your own `@EnableHypermedia` annotation and custom providers
 as necessary.
 
 Example enhanced "/metrics" endpoint with additional "_links":

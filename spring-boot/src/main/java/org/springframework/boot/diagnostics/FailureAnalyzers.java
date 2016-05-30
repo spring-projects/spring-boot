@@ -18,11 +18,19 @@ package org.springframework.boot.diagnostics;
 
 import java.util.List;
 
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * Utility to trigger {@link FailureAnalyzer} and {@link FailureAnalysisReporter}
  * instances loaded from {@code spring.factories}.
+ * <p>
+ * A {@code FailureAnalyzer} that requires access to the {@link BeanFactory} in order to
+ * perform its analysis can implement {@code BeanFactoryAware} to have the
+ * {@code BeanFactory} injected prior to {@link FailureAnalyzer#analyze(Throwable)} being
+ * called.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
@@ -33,24 +41,33 @@ public final class FailureAnalyzers {
 	private FailureAnalyzers() {
 	}
 
-	public static boolean analyzeAndReport(Throwable failure, ClassLoader classLoader) {
+	public static boolean analyzeAndReport(Throwable failure, ClassLoader classLoader,
+			ConfigurableApplicationContext context) {
 		List<FailureAnalyzer> analyzers = SpringFactoriesLoader
 				.loadFactories(FailureAnalyzer.class, classLoader);
 		List<FailureAnalysisReporter> reporters = SpringFactoriesLoader
 				.loadFactories(FailureAnalysisReporter.class, classLoader);
-		FailureAnalysis analysis = analyze(failure, analyzers);
+		FailureAnalysis analysis = analyze(failure, analyzers, context);
 		return report(analysis, reporters);
 	}
 
 	private static FailureAnalysis analyze(Throwable failure,
-			List<FailureAnalyzer> analyzers) {
+			List<FailureAnalyzer> analyzers, ConfigurableApplicationContext context) {
 		for (FailureAnalyzer analyzer : analyzers) {
+			prepareAnalyzer(context, analyzer);
 			FailureAnalysis analysis = analyzer.analyze(failure);
 			if (analysis != null) {
 				return analysis;
 			}
 		}
 		return null;
+	}
+
+	private static void prepareAnalyzer(ConfigurableApplicationContext context,
+			FailureAnalyzer analyzer) {
+		if (analyzer instanceof BeanFactoryAware) {
+			((BeanFactoryAware) analyzer).setBeanFactory(context.getBeanFactory());
+		}
 	}
 
 	private static boolean report(FailureAnalysis analysis,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,10 @@ import java.nio.charset.Charset;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -154,7 +154,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 			return new DispatcherServlet();
 			// Alternatively you can use ServletContextInitializer beans including
 			// ServletRegistration and FilterRegistration. Read the
-			// EmbeddedWebApplicationContext javadoc for details
+			// EmbeddedWebApplicationContext Javadoc for details.
 		}
 
 		@Bean
@@ -168,8 +168,11 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 	@PropertySource("classpath:/org/springframework/boot/context/embedded/conf.properties")
 	public static class AdvancedConfig {
 
-		@Autowired
-		private Environment env;
+		private final Environment env;
+
+		public AdvancedConfig(Environment env) {
+			this.env = env;
+		}
 
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {

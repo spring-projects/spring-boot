@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,15 +60,20 @@ public class MetricCopyExporterTests {
 	}
 
 	@Test
-	public void counterWithGaugeWriter() {
+	public void counterWithGaugeWriter() throws Exception {
 		SimpleGaugeWriter writer = new SimpleGaugeWriter();
 		MetricCopyExporter exporter = new MetricCopyExporter(this.reader, writer);
-		this.reader.increment(new Delta<Number>("counter.foo", 2));
-		exporter.export();
-		this.reader.increment(new Delta<Number>("counter.foo", 3));
-		exporter.export();
-		exporter.flush();
-		assertThat(writer.getValue().getValue()).isEqualTo(5L);
+		try {
+			this.reader.increment(new Delta<Number>("counter.foo", 2));
+			exporter.export();
+			this.reader.increment(new Delta<Number>("counter.foo", 3));
+			exporter.export();
+			exporter.flush();
+			assertThat(writer.getValue().getValue()).isEqualTo(5L);
+		}
+		finally {
+			exporter.close();
+		}
 	}
 
 	@Test

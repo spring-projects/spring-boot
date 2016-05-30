@@ -39,8 +39,8 @@ import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.testutil.Matched;
-import org.springframework.boot.testutil.OutputCapture;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
@@ -59,7 +59,7 @@ import static org.hamcrest.Matchers.not;
 public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public InternalOutputCapture output = new InternalOutputCapture();
 
 	private final LogbackLoggingSystem loggingSystem = new LogbackLoggingSystem(
 			getClass().getClassLoader());
@@ -68,11 +68,13 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private LoggingInitializationContext initializationContext;
 
+	private MockEnvironment environment;
+
 	@Before
 	public void setup() {
 		this.logger = new SLF4JLogFactory().getInstance(getClass().getName());
-		this.initializationContext = new LoggingInitializationContext(
-				new MockEnvironment());
+		this.environment = new MockEnvironment();
+		this.initializationContext = new LoggingInitializationContext(this.environment);
 	}
 
 	@Override
@@ -299,6 +301,18 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		finally {
 			System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");
 		}
+	}
+
+	@Test
+	public void reinitializeShouldSetSystemProperty() throws Exception {
+		// gh-5491
+		this.loggingSystem.beforeInitialize();
+		this.logger.info("Hidden");
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		LogFile logFile = getLogFile(tmpDir() + "/example.log", null, false);
+		this.loggingSystem.initialize(this.initializationContext,
+				"classpath:logback-nondefault.xml", logFile);
+		assertThat(System.getProperty("LOG_FILE")).endsWith("example.log");
 	}
 
 	private String getLineWithText(File file, String outputSearch) throws Exception {

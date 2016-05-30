@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.boot.loader.tools.RunProcess;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 @Mojo(name = "run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE, requiresDependencyResolution = ResolutionScope.TEST)
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
@@ -41,8 +42,10 @@ public class RunMojo extends AbstractRunMojo {
 	@Override
 	protected void runWithForkedJvm(List<String> args) throws MojoExecutionException {
 		try {
-			new RunProcess(new JavaExecutable().toString()).run(true,
-					args.toArray(new String[args.size()]));
+			RunProcess runProcess = new RunProcess(new JavaExecutable().toString());
+			Runtime.getRuntime()
+					.addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
+			runProcess.run(true, args.toArray(new String[args.size()]));
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not exec java", ex);
@@ -80,6 +83,21 @@ public class RunMojo extends AbstractRunMojo {
 			}
 		}
 		while (hasNonDaemonThreads);
+	}
+
+	private static final class RunProcessKiller implements Runnable {
+
+		private final RunProcess runProcess;
+
+		private RunProcessKiller(RunProcess runProcess) {
+			this.runProcess = runProcess;
+		}
+
+		@Override
+		public void run() {
+			this.runProcess.kill();
+		}
+
 	}
 
 }

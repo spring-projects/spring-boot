@@ -32,10 +32,10 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -243,6 +243,18 @@ public class ThymeleafAutoConfigurationTests {
 		LayoutDialect layoutDialect = this.context.getBean(LayoutDialect.class);
 		assertThat(ReflectionTestUtils.getField(layoutDialect, "sortingStrategy"))
 				.isInstanceOf(GroupingStrategy.class);
+	}
+
+	@Test
+	public void cachingCanBeDisabled() {
+		this.context.register(ThymeleafAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.thymeleaf.cache:false");
+		this.context.refresh();
+		assertThat(this.context.getBean(ThymeleafViewResolver.class).isCache()).isFalse();
+		TemplateResolver templateResolver = this.context.getBean(TemplateResolver.class);
+		templateResolver.initialize();
+		assertThat(templateResolver.isCacheable()).isFalse();
 	}
 
 	@Configuration

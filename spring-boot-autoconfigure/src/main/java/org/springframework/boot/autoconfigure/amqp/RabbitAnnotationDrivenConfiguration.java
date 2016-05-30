@@ -20,6 +20,8 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -36,18 +38,33 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(EnableRabbit.class)
 class RabbitAnnotationDrivenConfiguration {
 
+	private final ObjectProvider<MessageConverter> messageConverter;
+
+	private final RabbitProperties properties;
+
+	RabbitAnnotationDrivenConfiguration(ObjectProvider<MessageConverter> messageConverter,
+			RabbitProperties properties) {
+		this.messageConverter = messageConverter;
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public RabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactoryConfigurer() {
-		return new RabbitListenerContainerFactoryConfigurer();
+	public SimpleRabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactoryConfigurer() {
+		SimpleRabbitListenerContainerFactoryConfigurer configurer = new SimpleRabbitListenerContainerFactoryConfigurer();
+		configurer.setMessageConverter(this.messageConverter.getIfUnique());
+		configurer.setRabbitProperties(this.properties);
+		return configurer;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-			RabbitListenerContainerFactoryConfigurer configurer,
+			SimpleRabbitListenerContainerFactoryConfigurer configurer,
 			ConnectionFactory connectionFactory) {
-		return configurer.createRabbitListenerContainerFactory(connectionFactory);
+		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+		configurer.configure(factory, connectionFactory);
+		return factory;
 	}
 
 	@EnableRabbit

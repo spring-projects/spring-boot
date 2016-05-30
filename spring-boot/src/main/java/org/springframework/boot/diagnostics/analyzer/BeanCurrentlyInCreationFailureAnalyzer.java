@@ -21,20 +21,20 @@ import java.util.List;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
+import org.springframework.beans.factory.InjectionPoint;
+import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link AbstractFailureAnalyzer} the performs analysis of failures caused by a
+ * An {@link AbstractFailureAnalyzer} that performs analysis of failures caused by a
  * {@link BeanCurrentlyInCreationException}.
  *
  * @author Andy Wilkinson
  */
 class BeanCurrentlyInCreationFailureAnalyzer
 		extends AbstractFailureAnalyzer<BeanCurrentlyInCreationException> {
-
-	private static final String FIELD_AUTOWIRING_FAILURE_MESSAGE_PREFIX = "Could not autowire field: ";
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
@@ -66,19 +66,18 @@ class BeanCurrentlyInCreationFailureAnalyzer
 		if (StringUtils.hasText(ex.getResourceDescription())) {
 			return String.format(" defined in %s", ex.getResourceDescription());
 		}
-		if (causedByFieldAutowiringFailure(ex)) {
-			return String.format(" (field %s)",
-					ex.getCause().getMessage().substring(
-							FIELD_AUTOWIRING_FAILURE_MESSAGE_PREFIX.length(),
-							ex.getCause().getMessage().indexOf(";")));
-
+		InjectionPoint failedInjectionPoint = findFailedInjectionPoint(ex);
+		if (failedInjectionPoint != null && failedInjectionPoint.getField() != null) {
+			return String.format(" (field %s)", failedInjectionPoint.getField());
 		}
 		return "";
 	}
 
-	private boolean causedByFieldAutowiringFailure(BeanCreationException ex) {
-		return ex.getCause() instanceof BeanCreationException && ex.getCause()
-				.getMessage().startsWith(FIELD_AUTOWIRING_FAILURE_MESSAGE_PREFIX);
+	private InjectionPoint findFailedInjectionPoint(BeanCreationException ex) {
+		if (!(ex instanceof UnsatisfiedDependencyException)) {
+			return null;
+		}
+		return ((UnsatisfiedDependencyException) ex).getInjectionPoint();
 	}
 
 }

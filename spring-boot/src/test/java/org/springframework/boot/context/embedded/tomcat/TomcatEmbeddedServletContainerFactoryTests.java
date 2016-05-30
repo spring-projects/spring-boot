@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
@@ -37,6 +40,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -44,6 +48,7 @@ import org.springframework.boot.context.embedded.AbstractEmbeddedServletContaine
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 
@@ -66,6 +71,9 @@ import static org.mockito.Mockito.verify;
  */
 public class TomcatEmbeddedServletContainerFactoryTests
 		extends AbstractEmbeddedServletContainerFactoryTests {
+
+	@Rule
+	public InternalOutputCapture outputCapture = new InternalOutputCapture();
 
 	@Override
 	protected TomcatEmbeddedServletContainerFactory getFactory() {
@@ -311,12 +319,10 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	@Test
 	public void primaryConnectorPortClashThrowsIllegalStateException()
 			throws InterruptedException, IOException {
-		final int port = SocketUtils.findAvailableTcpPort(40000);
-
-		doWithBlockedPort(port, new Runnable() {
+		doWithBlockedPort(new BlockedPortAction() {
 
 			@Override
-			public void run() {
+			public void run(int port) {
 				TomcatEmbeddedServletContainerFactory factory = getFactory();
 				factory.setPort(port);
 
@@ -332,7 +338,15 @@ public class TomcatEmbeddedServletContainerFactoryTests
 			}
 
 		});
+	}
 
+	@Test
+	public void startupFailureDoesNotResultInUnstoppedThreadsBeingReported()
+			throws IOException {
+		super.portClashOfPrimaryConnectorResultsInPortInUseException();
+		String string = this.outputCapture.toString();
+		assertThat(string)
+				.doesNotContain("appears to have started a thread named [main]");
 	}
 
 	@Override
@@ -388,14 +402,34 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	}
 
 	@Test
-	public void tcclOfMainThreadIsTomcatWebAppClassLoader() {
+	public void jndiLookupsCanBePerformedDuringApplicationContextRefresh()
+			throws NamingException {
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory(
+				0) {
+
+			@Override
+			protected TomcatEmbeddedServletContainer getTomcatEmbeddedServletContainer(
+					Tomcat tomcat) {
+				tomcat.enableNaming();
+				return super.getTomcatEmbeddedServletContainer(tomcat);
+			}
+
+		};
+
+		// Container is created in onRefresh
 		this.container = factory.getEmbeddedServletContainer();
+
+		// Lookups should now be possible
+		new InitialContext().lookup("java:comp/env");
+
+		// Called in finishRefresh, giving us an opportunity to remove the context binding
+		// and avoid a leak
 		this.container.start();
-		assertThat(Thread.currentThread().getContextClassLoader())
-				.isInstanceOf(TomcatEmbeddedWebappClassLoader.class);
-		this.container.stop();
+
+		// Lookups should no longer be possible
+		this.thrown.expect(NamingException.class);
+		new InitialContext().lookup("java:comp/env");
 	}
 
 	@Override

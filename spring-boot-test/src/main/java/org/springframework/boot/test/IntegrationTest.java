@@ -23,11 +23,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
@@ -41,6 +41,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
  *
  * @author Dave Syer
  * @see WebIntegrationTest
+ * @deprecated as of 1.4 in favor of {@link SpringBootTest}
  */
 @Documented
 @Inherited
@@ -49,10 +50,10 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 // Leave out the ServletTestExecutionListener because it only deals with Mock* servlet
 // stuff. A real embedded application will not need the mocks.
 @TestExecutionListeners(listeners = { IntegrationTestPropertiesListener.class,
-		DirtiesContextBeforeModesTestExecutionListener.class,
 		DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class,
 		TransactionalTestExecutionListener.class, SqlScriptsTestExecutionListener.class })
+@Deprecated
 public @interface IntegrationTest {
 
 	/**

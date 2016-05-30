@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -42,9 +43,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.web.OrderedHiddenHttpMethodFilter;
-import org.springframework.boot.context.web.OrderedHttpPutFormContentFilter;
-import org.springframework.boot.context.web.OrderedRequestContextFilter;
+import org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter;
+import org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter;
+import org.springframework.boot.web.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -137,20 +138,27 @@ public class WebMvcAutoConfiguration {
 		private static final Log logger = LogFactory
 				.getLog(WebMvcConfigurerAdapter.class);
 
-		@Autowired
-		private ResourceProperties resourceProperties = new ResourceProperties();
+		private final ResourceProperties resourceProperties;
 
-		@Autowired
-		private WebMvcProperties mvcProperties = new WebMvcProperties();
+		private final WebMvcProperties mvcProperties;
 
-		@Autowired
-		private ListableBeanFactory beanFactory;
+		private final ListableBeanFactory beanFactory;
 
-		@Autowired
-		private HttpMessageConverters messageConverters;
+		private final HttpMessageConverters messageConverters;
 
-		@Autowired(required = false)
-		ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+		final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+
+		public WebMvcAutoConfigurationAdapter(ResourceProperties resourceProperties,
+				WebMvcProperties mvcProperties, ListableBeanFactory beanFactory,
+				HttpMessageConverters messageConverters,
+				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider) {
+			this.resourceProperties = resourceProperties;
+			this.mvcProperties = mvcProperties;
+			this.beanFactory = beanFactory;
+			this.messageConverters = messageConverters;
+			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider
+					.getIfAvailable();
+		}
 
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -191,6 +199,7 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnBean(View.class)
+		@ConditionalOnMissingBean
 		public BeanNameViewResolver beanNameViewResolver() {
 			BeanNameViewResolver resolver = new BeanNameViewResolver();
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
@@ -296,8 +305,11 @@ public class WebMvcAutoConfiguration {
 		@ConditionalOnProperty(value = "spring.mvc.favicon.enabled", matchIfMissing = true)
 		public static class FaviconConfiguration {
 
-			@Autowired
-			private ResourceProperties resourceProperties = new ResourceProperties();
+			private final ResourceProperties resourceProperties;
+
+			public FaviconConfiguration(ResourceProperties resourceProperties) {
+				this.resourceProperties = resourceProperties;
+			}
 
 			@Bean
 			public SimpleUrlHandlerMapping faviconHandlerMapping() {
@@ -326,11 +338,16 @@ public class WebMvcAutoConfiguration {
 	@Configuration
 	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration {
 
-		@Autowired(required = false)
-		private WebMvcProperties mvcProperties;
+		private final WebMvcProperties mvcProperties;
 
-		@Autowired
-		private ListableBeanFactory beanFactory;
+		private final ListableBeanFactory beanFactory;
+
+		public EnableWebMvcConfiguration(
+				ObjectProvider<WebMvcProperties> mvcPropertiesProvider,
+				ListableBeanFactory beanFactory) {
+			this.mvcProperties = mvcPropertiesProvider.getIfAvailable();
+			this.beanFactory = beanFactory;
+		}
 
 		@Bean
 		@Override

@@ -116,7 +116,6 @@ public class AuthenticationManagerConfiguration {
 
 		private final SecurityProperties securityProperties;
 
-		@Autowired
 		SpringBootAuthenticationConfigurerAdapter(SecurityProperties securityProperties) {
 			this.securityProperties = securityProperties;
 		}

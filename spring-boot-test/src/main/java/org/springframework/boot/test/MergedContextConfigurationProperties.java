@@ -27,8 +27,9 @@ import org.springframework.test.util.ReflectionTestUtils;
  * Provides access to {@link MergedContextConfiguration} properties.
  *
  * @author Phillip Webb
- * @since 1.2.1
+ * @deprecated as of 1.4 along with {@link IntegrationTestPropertiesListener}
  */
+@Deprecated
 class MergedContextConfigurationProperties {
 
 	private final MergedContextConfiguration configuration;
@@ -55,7 +56,7 @@ class MergedContextConfigurationProperties {
 	 * @param propertySourceProperties the property source properties
 	 */
 	private void addIntegrationTestProperty(Set<String> propertySourceProperties) {
-		propertySourceProperties.add(IntegrationTest.class.getName() + "=true");
+		propertySourceProperties.add(WebIntegrationTest.class.getName() + "=true");
 	}
 
 }

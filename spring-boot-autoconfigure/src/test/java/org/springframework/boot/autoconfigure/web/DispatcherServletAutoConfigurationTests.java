@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
-import org.springframework.boot.context.embedded.MultipartConfigFactory;
-import org.springframework.boot.context.embedded.ServletRegistrationBean;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DispatcherServletAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class DispatcherServletAutoConfigurationTests {
 
@@ -145,23 +147,42 @@ public class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void dispatcherServletConfig() {
+	public void dispatcherServletDefaultConfig() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(ServerPropertiesAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
+		this.context.refresh();
+		DispatcherServlet bean = this.context.getBean(DispatcherServlet.class);
+		assertThat(bean).extracting("throwExceptionIfNoHandlerFound")
+				.containsExactly(false);
+		assertThat(bean).extracting("dispatchOptionsRequest").containsExactly(true);
+		assertThat(bean).extracting("dispatchTraceRequest").containsExactly(false);
+		assertThat(new DirectFieldAccessor(
+				this.context.getBean("dispatcherServletRegistration"))
+						.getPropertyValue("loadOnStartup")).isEqualTo(-1);
+	}
+
+	@Test
+	public void dispatcherServletCustomConfig() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(ServerPropertiesAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.throw-exception-if-no-handler-found:true");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.dispatch-options-request:true");
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.dispatch-trace-request:true");
+				"spring.mvc.throw-exception-if-no-handler-found:true",
+				"spring.mvc.dispatch-options-request:false",
+				"spring.mvc.dispatch-trace-request:true",
+				"spring.mvc.servlet.load-on-startup=5");
 		this.context.refresh();
 		DispatcherServlet bean = this.context.getBean(DispatcherServlet.class);
 		assertThat(bean).extracting("throwExceptionIfNoHandlerFound")
 				.containsExactly(true);
-		assertThat(bean).extracting("dispatchOptionsRequest").containsExactly(true);
+		assertThat(bean).extracting("dispatchOptionsRequest").containsExactly(false);
 		assertThat(bean).extracting("dispatchTraceRequest").containsExactly(true);
+		assertThat(new DirectFieldAccessor(
+				this.context.getBean("dispatcherServletRegistration"))
+						.getPropertyValue("loadOnStartup")).isEqualTo(5);
 	}
 
 	@Configuration

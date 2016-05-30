@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,9 +33,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
 @DirtiesContext
 @ContextConfiguration(classes = ConfigFileApplicationContextInitializerTests.Config.class, initializers = ConfigFileApplicationContextInitializer.class)
+@Deprecated
+@SuppressWarnings("deprecation")
 public class ConfigFileApplicationContextInitializerTests {
 
 	@Autowired

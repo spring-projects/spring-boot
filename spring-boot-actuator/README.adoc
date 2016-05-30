@@ -10,8 +10,8 @@ covers the features in more detail.
 
 == Enabling the Actuator
 The simplest way to enable the features is to add a dependency to the
-`spring-boot-starter-actuator` "`Starter POM`". To add the actuator to a Maven based
-project, add the following "`starter`" dependency:
+`spring-boot-starter-actuator` '`Starter`'. To add the actuator to a Maven based
+project, add the following '`Starter`' dependency:
 
 [source,xml,indent=0]
 ----

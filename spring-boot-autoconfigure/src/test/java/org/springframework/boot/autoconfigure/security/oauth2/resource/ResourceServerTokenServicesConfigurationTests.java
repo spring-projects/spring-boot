@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -35,7 +34,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -124,6 +123,19 @@ public class ResourceServerTokenServicesConfigurationTests {
 		assertThat(services).isNotNull();
 		assertThat(services).extracting("authoritiesExtractor")
 				.containsExactly(this.context.getBean(AuthoritiesExtractor.class));
+	}
+
+	@Test
+	public void userInfoWithPrincipal() {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"security.oauth2.resource.userInfoUri:http://example.com");
+		this.context = new SpringApplicationBuilder(PrincipalConfiguration.class)
+				.environment(this.environment).web(false).run();
+		UserInfoTokenServices services = this.context
+				.getBean(UserInfoTokenServices.class);
+		assertThat(services).isNotNull();
+		assertThat(services).extracting("principalExtractor")
+				.containsExactly(this.context.getBean(PrincipalExtractor.class));
 	}
 
 	@Test
@@ -229,6 +241,23 @@ public class ResourceServerTokenServicesConfigurationTests {
 
 	}
 
+	@Configuration
+	protected static class PrincipalConfiguration extends ResourceConfiguration {
+
+		@Bean
+		PrincipalExtractor principalExtractor() {
+			return new PrincipalExtractor() {
+
+				@Override
+				public Object extractPrincipal(Map<String, Object> map) {
+					return "boot";
+				}
+
+			};
+		}
+
+	}
+
 	@Import({ OAuth2RestOperationsConfiguration.class })
 	protected static class ResourceNoClientConfiguration extends ResourceConfiguration {
 
@@ -242,8 +271,11 @@ public class ResourceServerTokenServicesConfigurationTests {
 	@Configuration
 	protected static class ResourceServerPropertiesConfiguration {
 
-		@Autowired
 		private OAuth2ClientProperties credentials;
+
+		public ResourceServerPropertiesConfiguration(OAuth2ClientProperties credentials) {
+			this.credentials = credentials;
+		}
 
 		@Bean
 		public ResourceServerProperties resourceServerProperties() {

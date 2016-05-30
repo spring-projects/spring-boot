@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,17 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +41,7 @@ import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
  * @author Maciej Walkowiak
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class ConditionalOnPropertyTests {
 
@@ -226,6 +232,44 @@ public class ConditionalOnPropertyTests {
 		load(NameAndValueAttribute.class, "some.property");
 	}
 
+	@Test
+	public void metaAnnotationConditionMatchesWhenPropertyIsSet() throws Exception {
+		load(MetaAnnotation.class, "my.feature.enabled=true");
+		assertThat(this.context.containsBean("foo")).isTrue();
+	}
+
+	@Test
+	public void metaAnnotationConditionDoesNotMatchWhenPropertyIsNotSet()
+			throws Exception {
+		load(MetaAnnotation.class);
+		assertThat(this.context.containsBean("foo")).isFalse();
+	}
+
+	@Test
+	public void metaAndDirectAnnotationConditionDoesNotMatchWhenOnlyDirectPropertyIsSet() {
+		load(MetaAnnotationAndDirectAnnotation.class, "my.other.feature.enabled=true");
+		assertThat(this.context.containsBean("foo")).isFalse();
+	}
+
+	@Test
+	public void metaAndDirectAnnotationConditionDoesNotMatchWhenOnlyMetaPropertyIsSet() {
+		load(MetaAnnotationAndDirectAnnotation.class, "my.feature.enabled=true");
+		assertThat(this.context.containsBean("foo")).isFalse();
+	}
+
+	@Test
+	public void metaAndDirectAnnotationConditionDoesNotMatchWhenNeitherPropertyIsSet() {
+		load(MetaAnnotationAndDirectAnnotation.class);
+		assertThat(this.context.containsBean("foo")).isFalse();
+	}
+
+	@Test
+	public void metaAndDirectAnnotationConditionMatchesWhenBothPropertiesAreSet() {
+		load(MetaAnnotationAndDirectAnnotation.class, "my.feature.enabled=true",
+				"my.other.feature.enabled=true");
+		assertThat(this.context.containsBean("foo")).isTrue();
+	}
+
 	private void load(Class<?> config, String... environment) {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
@@ -387,6 +431,34 @@ public class ConditionalOnPropertyTests {
 		public String foo() {
 			return "foo";
 		}
+
+	}
+
+	@ConditionalOnMyFeature
+	protected static class MetaAnnotation {
+
+		@Bean
+		public String foo() {
+			return "foo";
+		}
+
+	}
+
+	@ConditionalOnMyFeature
+	@ConditionalOnProperty(prefix = "my.other.feature", name = "enabled", havingValue = "true", matchIfMissing = false)
+	protected static class MetaAnnotationAndDirectAnnotation {
+
+		@Bean
+		public String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE, ElementType.METHOD })
+	@ConditionalOnProperty(prefix = "my.feature", name = "enabled", havingValue = "true", matchIfMissing = false)
+	public @interface ConditionalOnMyFeature {
 
 	}
 }

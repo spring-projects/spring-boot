@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -71,6 +74,12 @@ import org.mockito.InOrder;
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -84,9 +93,11 @@ import org.springframework.util.concurrent.ListenableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Base for testing classes that extends {@link AbstractEmbeddedServletContainerFactory}.
@@ -335,6 +346,19 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
+	public void errorPageFromPutRequest() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.addErrorPages(new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/hello"));
+		this.container = factory.getEmbeddedServletContainer(exampleServletRegistration(),
+				errorServletRegistration());
+		this.container.start();
+		assertThat(getResponse(getLocalUrl("/hello"), HttpMethod.PUT))
+				.isEqualTo("Hello World");
+		assertThat(getResponse(getLocalUrl("/bang"), HttpMethod.PUT))
+				.isEqualTo("Hello World");
+	}
+
+	@Test
 	public void basicSslFromClassPath() throws Exception {
 		testBasicSslWithKeyStore("classpath:test.jks");
 	}
@@ -504,6 +528,37 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				httpClient);
 		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory))
 				.isEqualTo("test");
+	}
+
+	@Test
+	public void sslWithCustomSslStoreProvider() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		addTestTxtFile(factory);
+		Ssl ssl = new Ssl();
+		ssl.setClientAuth(ClientAuth.NEED);
+		ssl.setKeyPassword("password");
+		factory.setSsl(ssl);
+		SslStoreProvider sslStoreProvider = mock(SslStoreProvider.class);
+		given(sslStoreProvider.getKeyStore()).willReturn(loadStore());
+		given(sslStoreProvider.getTrustStore()).willReturn(loadStore());
+		factory.setSslStoreProvider(sslStoreProvider);
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+		keyStore.load(new FileInputStream(new File("src/test/resources/test.jks")),
+				"secret".toCharArray());
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder()
+						.loadTrustMaterial(null, new TrustSelfSignedStrategy())
+						.loadKeyMaterial(keyStore, "password".toCharArray()).build());
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
+				httpClient);
+		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory))
+				.isEqualTo("test");
+		verify(sslStoreProvider).getKeyStore();
+		verify(sslStoreProvider).getTrustStore();
 	}
 
 	@Test
@@ -749,19 +804,15 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void portClashOfPrimaryConnectorResultsInPortInUseException()
 			throws IOException {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
-
-		final int port = SocketUtils.findAvailableTcpPort(40000);
-
-		factory.setPort(port);
-
-		this.container = factory.getEmbeddedServletContainer();
-
-		doWithBlockedPort(port, new Runnable() {
+		doWithBlockedPort(new BlockedPortAction() {
 
 			@Override
-			public void run() {
+			public void run(int port) {
 				try {
+					AbstractEmbeddedServletContainerFactory factory = getFactory();
+					factory.setPort(port);
+					AbstractEmbeddedServletContainerFactoryTests.this.container = factory
+							.getEmbeddedServletContainer();
 					AbstractEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
@@ -771,25 +822,21 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			}
 
 		});
-
 	}
 
 	@Test
 	public void portClashOfSecondaryConnectorResultsInPortInUseException()
 			throws IOException {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		factory.setPort(SocketUtils.findAvailableTcpPort(40000));
-
-		final int port = SocketUtils.findAvailableTcpPort(40000);
-
-		addConnector(port, factory);
-		this.container = factory.getEmbeddedServletContainer();
-
-		doWithBlockedPort(port, new Runnable() {
+		doWithBlockedPort(new BlockedPortAction() {
 
 			@Override
-			public void run() {
+			public void run(int port) {
 				try {
+					AbstractEmbeddedServletContainerFactory factory = getFactory();
+					factory.setPort(SocketUtils.findAvailableTcpPort(40000));
+					addConnector(port, factory);
+					AbstractEmbeddedServletContainerFactoryTests.this.container = factory
+							.getEmbeddedServletContainer();
 					AbstractEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
@@ -869,7 +916,12 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected String getResponse(String url, String... headers)
 			throws IOException, URISyntaxException {
-		ClientHttpResponse response = getClientResponse(url, headers);
+		return getResponse(url, HttpMethod.GET, headers);
+	}
+
+	protected String getResponse(String url, HttpMethod method, String... headers)
+			throws IOException, URISyntaxException {
+		ClientHttpResponse response = getClientResponse(url, method, headers);
 		try {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
 		}
@@ -881,7 +933,14 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	protected String getResponse(String url,
 			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
 					throws IOException, URISyntaxException {
-		ClientHttpResponse response = getClientResponse(url, requestFactory, headers);
+		return getResponse(url, HttpMethod.GET, requestFactory, headers);
+	}
+
+	protected String getResponse(String url, HttpMethod method,
+			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
+					throws IOException, URISyntaxException {
+		ClientHttpResponse response = getClientResponse(url, method, requestFactory,
+				headers);
 		try {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
 		}
@@ -892,21 +951,27 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected ClientHttpResponse getClientResponse(String url, String... headers)
 			throws IOException, URISyntaxException {
-		return getClientResponse(url, new HttpComponentsClientHttpRequestFactory() {
-
-			@Override
-			protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
-				return AbstractEmbeddedServletContainerFactoryTests.this.httpClientContext;
-			}
-
-		}, headers);
+		return getClientResponse(url, HttpMethod.GET, headers);
 	}
 
-	protected ClientHttpResponse getClientResponse(String url,
+	protected ClientHttpResponse getClientResponse(String url, HttpMethod method,
+			String... headers) throws IOException, URISyntaxException {
+		return getClientResponse(url, method,
+				new HttpComponentsClientHttpRequestFactory() {
+
+					@Override
+					protected HttpContext createHttpContext(HttpMethod httpMethod,
+							URI uri) {
+						return AbstractEmbeddedServletContainerFactoryTests.this.httpClientContext;
+					}
+
+				}, headers);
+	}
+
+	protected ClientHttpResponse getClientResponse(String url, HttpMethod method,
 			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
 					throws IOException, URISyntaxException {
-		ClientHttpRequest request = requestFactory.createRequest(new URI(url),
-				HttpMethod.GET);
+		ClientHttpRequest request = requestFactory.createRequest(new URI(url), method);
 		request.getHeaders().add("Cookie", "JSESSIONID=" + "123");
 		for (String header : headers) {
 			String[] parts = header.split(":");
@@ -967,15 +1032,36 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		return bean;
 	}
 
-	protected final void doWithBlockedPort(final int port, Runnable action)
-			throws IOException {
+	protected final void doWithBlockedPort(BlockedPortAction action) throws IOException {
+		int port = SocketUtils.findAvailableTcpPort(40000);
 		ServerSocket serverSocket = new ServerSocket();
-		serverSocket.bind(new InetSocketAddress(port));
+		for (int i = 0; i < 10; i++) {
+			try {
+				serverSocket.bind(new InetSocketAddress(port));
+				break;
+			}
+			catch (Exception ex) {
+			}
+		}
 		try {
-			action.run();
+			action.run(port);
 		}
 		finally {
 			serverSocket.close();
+		}
+	}
+
+	private KeyStore loadStore() throws KeyStoreException, IOException,
+			NoSuchAlgorithmException, CertificateException {
+		KeyStore keyStore = KeyStore.getInstance("JKS");
+		Resource resource = new ClassPathResource("test.jks");
+		InputStream inputStream = resource.getInputStream();
+		try {
+			keyStore.load(inputStream, "secret".toCharArray());
+			return keyStore;
+		}
+		finally {
+			inputStream.close();
 		}
 	}
 
@@ -1019,5 +1105,11 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}
 
 	};
+
+	public interface BlockedPortAction {
+
+		void run(int port);
+
+	}
 
 }

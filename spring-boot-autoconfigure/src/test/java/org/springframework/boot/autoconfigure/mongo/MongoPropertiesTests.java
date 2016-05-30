@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,15 @@ import java.util.List;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import com.mongodb.connection.Cluster;
+import com.mongodb.connection.ClusterSettings;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,7 +58,7 @@ public class MongoPropertiesTests {
 		MongoProperties properties = new MongoProperties();
 		properties.setPort(12345);
 		MongoClient client = properties.createMongoClient(null, null);
-		List<ServerAddress> allAddresses = client.getAllAddress();
+		List<ServerAddress> allAddresses = extractServerAddresses(client);
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "localhost", 12345);
 	}
@@ -65,7 +68,7 @@ public class MongoPropertiesTests {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("mongo.example.com");
 		MongoClient client = properties.createMongoClient(null, null);
-		List<ServerAddress> allAddresses = client.getAllAddress();
+		List<ServerAddress> allAddresses = extractServerAddresses(client);
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "mongo.example.com", 27017);
 	}
@@ -108,13 +111,21 @@ public class MongoPropertiesTests {
 		properties.setUri("mongodb://user:secret@mongo1.example.com:12345,"
 				+ "mongo2.example.com:23456/test");
 		MongoClient client = properties.createMongoClient(null, null);
-		List<ServerAddress> allAddresses = client.getAllAddress();
+		List<ServerAddress> allAddresses = extractServerAddresses(client);
 		assertThat(allAddresses).hasSize(2);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
 		assertServerAddress(allAddresses.get(1), "mongo2.example.com", 23456);
 		List<MongoCredential> credentialsList = client.getCredentialsList();
 		assertThat(credentialsList).hasSize(1);
 		assertMongoCredential(credentialsList.get(0), "user", "secret", "test");
+	}
+
+	private List<ServerAddress> extractServerAddresses(MongoClient client) {
+		Cluster cluster = (Cluster) ReflectionTestUtils.getField(client, "cluster");
+		ClusterSettings clusterSettings = (ClusterSettings) ReflectionTestUtils
+				.getField(cluster, "settings");
+		List<ServerAddress> allAddresses = clusterSettings.getHosts();
+		return allAddresses;
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,

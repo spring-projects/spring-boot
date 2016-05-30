@@ -228,7 +228,7 @@ For example, the following declaration:
 	@DependencyManagementBom("com.example.custom-bom:1.0.0")
 ----
 
-Will pick up  `custom-bom-1.0.0.pom` in a Maven repository under
+Will pick up `custom-bom-1.0.0.pom` in a Maven repository under
 `com/example/custom-versions/1.0.0/`.
 
 When multiple BOMs are specified they are applied in the order that they're declared.
@@ -415,7 +415,7 @@ From inside the embedded shell you can run other commands directly:
 ----
 
 The embedded shell supports ANSI color output as well as `tab` completion. If you need
-to run a native command you can use the `$` prefix. Hitting `ctrl-c` will exit the
+to run a native command you can use the `!` prefix. Hitting `ctrl-c` will exit the
 embedded shell.
 
 
@@ -514,7 +514,7 @@ further information.
 == What to read next
 There are some {github-code}/spring-boot-cli/samples[sample groovy
 scripts] available from the GitHub repository that you can use to try out the
-Spring Boot CLI. There is also extensive javadoc throughout the
+Spring Boot CLI. There is also extensive Javadoc throughout the
 {sc-spring-boot-cli}[source code].
 
 If you find that you reach the limit of the CLI tool, you will probably want to look

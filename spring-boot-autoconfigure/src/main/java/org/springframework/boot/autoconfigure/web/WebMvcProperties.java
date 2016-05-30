@@ -59,7 +59,7 @@ public class WebMvcProperties {
 	/**
 	 * Dispatch OPTIONS requests to the FrameworkServlet doService method.
 	 */
-	private boolean dispatchOptionsRequest = false;
+	private boolean dispatchOptionsRequest = true;
 
 	/**
 	 * If the content of the "default" model should be ignored during redirect scenarios.
@@ -83,6 +83,8 @@ public class WebMvcProperties {
 	private String staticPathPattern = "/**";
 
 	private final Async async = new Async();
+
+	private final Servlet servlet = new Servlet();
 
 	private final View view = new View();
 
@@ -164,6 +166,10 @@ public class WebMvcProperties {
 		return this.async;
 	}
 
+	public Servlet getServlet() {
+		return this.servlet;
+	}
+
 	public View getView() {
 		return this.view;
 	}
@@ -183,6 +189,23 @@ public class WebMvcProperties {
 
 		public void setRequestTimeout(Long requestTimeout) {
 			this.requestTimeout = requestTimeout;
+		}
+
+	}
+
+	public static class Servlet {
+
+		/**
+		 * Load on startup priority of the dispatcher servlet.
+		 */
+		private int loadOnStartup = -1;
+
+		public int getLoadOnStartup() {
+			return this.loadOnStartup;
+		}
+
+		public void setLoadOnStartup(int loadOnStartup) {
+			this.loadOnStartup = loadOnStartup;
 		}
 
 	}

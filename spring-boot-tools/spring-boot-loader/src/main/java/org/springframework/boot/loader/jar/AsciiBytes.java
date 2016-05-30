@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ final class AsciiBytes {
 
 	public AsciiBytes substring(int beginIndex, int endIndex) {
 		int length = endIndex - beginIndex;
-		if (this.offset + length > this.length) {
+		if (this.offset + length > this.bytes.length) {
 			throw new IndexOutOfBoundsException();
 		}
 		return new AsciiBytes(this.bytes, this.offset + beginIndex, length);

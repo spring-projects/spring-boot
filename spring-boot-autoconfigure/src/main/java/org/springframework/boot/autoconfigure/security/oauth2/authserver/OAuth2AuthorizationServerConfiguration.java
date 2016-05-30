@@ -25,7 +25,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -68,17 +68,23 @@ public class OAuth2AuthorizationServerConfiguration
 	private static final Log logger = LogFactory
 			.getLog(OAuth2AuthorizationServerConfiguration.class);
 
-	@Autowired
-	private BaseClientDetails details;
+	private final BaseClientDetails details;
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+	private final AuthenticationManager authenticationManager;
 
-	@Autowired(required = false)
-	private TokenStore tokenStore;
+	private final TokenStore tokenStore;
 
-	@Autowired
-	private AuthorizationServerProperties properties;
+	private final AuthorizationServerProperties properties;
+
+	public OAuth2AuthorizationServerConfiguration(BaseClientDetails details,
+			AuthenticationManager authenticationManager,
+			ObjectProvider<TokenStore> tokenStoreProvider,
+			AuthorizationServerProperties properties) {
+		this.details = details;
+		this.authenticationManager = authenticationManager;
+		this.tokenStore = tokenStoreProvider.getIfAvailable();
+		this.properties = properties;
+	}
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -139,8 +145,11 @@ public class OAuth2AuthorizationServerConfiguration
 	@Configuration
 	protected static class ClientDetailsLogger {
 
-		@Autowired
-		private OAuth2ClientProperties credentials;
+		private final OAuth2ClientProperties credentials;
+
+		protected ClientDetailsLogger(OAuth2ClientProperties credentials) {
+			this.credentials = credentials;
+		}
 
 		@PostConstruct
 		public void init() {
@@ -158,8 +167,11 @@ public class OAuth2AuthorizationServerConfiguration
 	@ConditionalOnMissingBean(BaseClientDetails.class)
 	protected static class BaseClientDetailsConfiguration {
 
-		@Autowired
-		private OAuth2ClientProperties client;
+		private final OAuth2ClientProperties client;
+
+		protected BaseClientDetailsConfiguration(OAuth2ClientProperties client) {
+			this.client = client;
+		}
 
 		@Bean
 		@ConfigurationProperties("security.oauth2.client")

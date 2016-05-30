@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter</artifactId>
 	<name>Spring Boot Starter</name>
-	<description>Spring Boot Starter</description>
+	<description>Core starter, including auto-configuration support, logging and YAML</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

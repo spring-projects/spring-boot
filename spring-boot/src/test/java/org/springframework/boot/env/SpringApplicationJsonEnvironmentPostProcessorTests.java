@@ -18,9 +18,9 @@ package org.springframework.boot.env;
 
 import org.junit.Test;
 
-import org.springframework.boot.testutil.EnvironmentTestUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,7 +38,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	@Test
 	public void error() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json=foo:bar");
 		this.processor.postProcessEnvironment(this.environment, null);
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
@@ -54,7 +54,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	@Test
 	public void empty() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json={}");
 		this.processor.postProcessEnvironment(this.environment, null);
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
@@ -63,7 +63,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	@Test
 	public void periodSeparated() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json={\"foo\":\"bar\"}");
 		this.processor.postProcessEnvironment(this.environment, null);
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("bar");
@@ -72,7 +72,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	@Test
 	public void envVar() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":\"bar\"}");
 		this.processor.postProcessEnvironment(this.environment, null);
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("bar");
@@ -81,7 +81,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	@Test
 	public void nested() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":{\"bar\":\"spam\",\"rab\":\"maps\"}}");
 		this.processor.postProcessEnvironment(this.environment, null);
 		assertThat(this.environment.resolvePlaceholders("${foo.bar:}")).isEqualTo("spam");
@@ -91,7 +91,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	@Test
 	public void prefixed() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo.bar\":\"spam\"}");
 		this.processor.postProcessEnvironment(this.environment, null);
 		assertThat(this.environment.resolvePlaceholders("${foo.bar:}")).isEqualTo("spam");
@@ -100,7 +100,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	@Test
 	public void list() {
 		assertThat(this.environment.resolvePlaceholders("${foo[1]:}")).isEmpty();
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":[\"bar\",\"spam\"]}");
 		this.processor.postProcessEnvironment(this.environment, null);
 		assertThat(this.environment.resolvePlaceholders("${foo[1]:}")).isEqualTo("spam");
@@ -109,7 +109,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	@Test
 	public void listOfObject() {
 		assertThat(this.environment.resolvePlaceholders("${foo[0].bar:}")).isEmpty();
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":[{\"bar\":\"spam\"}]}");
 		this.processor.postProcessEnvironment(this.environment, null);
 		assertThat(this.environment.resolvePlaceholders("${foo[0].bar:}"))

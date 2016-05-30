@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.FileConfigurationMonitor;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -36,8 +35,8 @@ import org.junit.Test;
 
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.testutil.Matched;
-import org.springframework.boot.testutil.OutputCapture;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
@@ -55,7 +54,7 @@ import static org.hamcrest.Matchers.not;
 public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public InternalOutputCapture output = new InternalOutputCapture();
 
 	private final TestLog4J2LoggingSystem loggingSystem = new TestLog4J2LoggingSystem();
 
@@ -104,10 +103,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(new File(tmpDir() + "/tmp.log").exists()).isFalse();
 		assertThat(configuration.getConfigurationSource().getFile().getAbsolutePath())
 				.contains("log4j2-nondefault.xml");
-		// we assume that "log4j2-nondefault.xml" contains the 'monitorInterval'
-		// attribute, so we check that a monitor is created
-		assertThat(configuration.getConfigurationMonitor())
-				.isInstanceOf(FileConfigurationMonitor.class);
+		assertThat(configuration.getWatchManager().getIntervalSeconds()).isEqualTo(30);
 	}
 
 	@Test(expected = IllegalStateException.class)

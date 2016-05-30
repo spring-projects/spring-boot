@@ -107,7 +107,7 @@ It's easy to then verify the status of the deployed application:
 
 Once Cloud Foundry acknowledges that your application has been deployed, you should be
 able to hit the application at the URI given, in this case
-`http://acloudyspringtime.cfapps.io/`.
+`\http://acloudyspringtime.cfapps.io/`.
 
 
 
@@ -142,12 +142,12 @@ Spring's `Environment` abstraction:
 
 All Cloud Foundry properties are prefixed with `vcap`. You can use vcap properties to
 access application information (such as the public URL of the application) and service
-information (such as database credentials). See `VcapApplicationListener` Javadoc for
-complete details.
+information (such as database credentials). See `CloudFoundryVcapEnvironmentPostProcessor`
+Javadoc for complete details.
 
 TIP: The http://cloud.spring.io/spring-cloud-connectors/[Spring Cloud Connectors] project
 is a better fit for tasks such as configuring a DataSource. Spring Boot includes
-auto-configuration support and a `spring-boot-starter-cloud-connectors` starter POM.
+auto-configuration support and a `spring-boot-starter-cloud-connectors` starter.
 
 
 
@@ -367,11 +367,8 @@ of this guide.
 [[deployment-install]]
 == Installing Spring Boot applications
 In additional to running Spring Boot applications using `java -jar` it is also possible
-to make fully executable applications for Unix systems (Linux, OSX, FreeBSD etc).
-This makes it very easy to install and manage Spring Boot applications in common
-production environments. As long as you are generating '`fully executable`' jars from your
-build, and you are not using a custom `embeddedLaunchScript`, the following techniques
-can be used.
+to make fully executable applications for Unix systems. This makes it very easy to install
+and manage Spring Boot applications in common production environments.
 
 To create a '`fully executable`' jar with Maven use the following plugin configuration:
 
@@ -400,6 +397,13 @@ With Gradle, the equivalent configuration would be:
 NOTE: Fully executable jars work by embedding an extra script at the front of the file.
 Not all tools currently accept this format so you may not always be able to use this
 technique.
+
+NOTE: The default script supports most Linux distributions and is tested on CentOS and
+Ubuntu. Other platforms, such as OS X and FreeBSD, will require the use of a custom
+`embeddedLaunchScript`.
+
+NOTE: When a fully executable jar is run, it uses the jar's directory as the working
+directory.
 
 
 
@@ -568,6 +572,9 @@ the default behavior in a script or on the command line:
 |`LOG_FOLDER`
 |The name of the folder to put log files in (`/var/log` by default).
 
+|`CONF_FOLDER`
+|The name of the folder to read .conf files from (same folder as jar-file by default).
+
 |`LOG_FILENAME`
 |The name of the log file in the `LOG_FOLDER` (`<appname>.log` by default).
 
@@ -626,6 +633,12 @@ for Gradle and to `${project.name}` for Maven.
 |`initInfoChkconfig`
 |The `chkconfig` section of "`INIT INFO`". Defaults to `2345 99 01`.
 
+|`logFolder`
+|The default value for `LOG_FOLDER`. Only valid for an `init.d` service.
+
+|`pidFolder`
+|The default value for `PID_FOLDER`. Only valid for an `init.d` service.
+
 |`useStartStopDaemon`
 |If the `start-stop-daemon` command, when it's available, should be used to control the
  process. Defaults to `true`.
@@ -645,9 +658,10 @@ a `.conf` file,
 	LOG_FOLDER=/custom/log/folder
 ----
 
-The file should be situated next to the jar file and have the same name but suffixed with
+The file is expected next to the jar file and have the same name but suffixed with
 `.conf` rather than `.jar`. For example, a jar named `/var/myapp/myapp.jar` will use the
-configuration file named `/var/myapp/myapp.conf` if it exists.
+configuration file named `/var/myapp/myapp.conf` if it exists. You can also use the
+`CONF_FOLDER` property to customize the location of that file.
 
 To learn about securing this file appropriately, please refer to
 <<deployment-initd-service-securing,the guidelines for securing an init.d service>>.

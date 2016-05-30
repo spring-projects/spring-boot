@@ -10,7 +10,8 @@
 	<artifactId>spring-boot-starter-parent</artifactId>
 	<packaging>pom</packaging>
 	<name>Spring Boot Starter Parent</name>
-	<description>Spring Boot Starter Parent</description>
+	<description>Parent pom providing dependency and plugin management for applications
+		built with Maven</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

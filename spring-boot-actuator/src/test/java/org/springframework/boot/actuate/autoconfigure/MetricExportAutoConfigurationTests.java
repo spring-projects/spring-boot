@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.boot.actuate.metrics.export.MetricExporters;
 import org.springframework.boot.actuate.metrics.statsd.StatsdMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,6 +66,21 @@ public class MetricExportAutoConfigurationTests {
 	}
 
 	@Test
+	public void metricsFlushAutomatically() throws Exception {
+		this.context = new AnnotationConfigApplicationContext(WriterConfig.class,
+				MetricRepositoryAutoConfiguration.class,
+				MetricExportAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		GaugeService gaugeService = this.context.getBean(GaugeService.class);
+		assertThat(gaugeService).isNotNull();
+		gaugeService.submit("foo", 2.7);
+		MetricExporters flusher = this.context.getBean(MetricExporters.class);
+		flusher.close(); // this will be called by Spring on shutdown
+		MetricWriter writer = this.context.getBean("writer", MetricWriter.class);
+		Mockito.verify(writer, Mockito.atLeastOnce()).set(Matchers.any(Metric.class));
+	}
+
+	@Test
 	public void defaultExporterWhenMessageChannelAvailable() throws Exception {
 		this.context = new AnnotationConfigApplicationContext(
 				MessageChannelConfiguration.class,
@@ -75,6 +90,7 @@ public class MetricExportAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		MetricExporters exporter = this.context.getBean(MetricExporters.class);
 		assertThat(exporter).isNotNull();
+		assertThat(exporter.getExporters()).containsKey("messageChannelMetricWriter");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.context.web.OrderedHiddenHttpMethodFilter;
-import org.springframework.boot.context.web.OrderedHttpPutFormContentFilter;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter;
+import org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,7 +63,7 @@ public class HttpEncodingAutoConfigurationTests {
 		load(EmptyConfiguration.class);
 		CharacterEncodingFilter filter = this.context
 				.getBean(CharacterEncodingFilter.class);
-		assertCharacterEncodingFilter(filter, "UTF-8", true);
+		assertCharacterEncodingFilter(filter, "UTF-8", true, false);
 	}
 
 	@Test
@@ -80,7 +79,7 @@ public class HttpEncodingAutoConfigurationTests {
 				"spring.http.encoding.force:false");
 		CharacterEncodingFilter filter = this.context
 				.getBean(CharacterEncodingFilter.class);
-		assertCharacterEncodingFilter(filter, "ISO-8859-15", false);
+		assertCharacterEncodingFilter(filter, "ISO-8859-15", false, false);
 	}
 
 	@Test
@@ -89,7 +88,41 @@ public class HttpEncodingAutoConfigurationTests {
 				"spring.http.encoding.force:false");
 		CharacterEncodingFilter filter = this.context
 				.getBean(CharacterEncodingFilter.class);
-		assertCharacterEncodingFilter(filter, "US-ASCII", false);
+		assertCharacterEncodingFilter(filter, "US-ASCII", false, false);
+	}
+
+	@Test
+	public void forceRequest() throws Exception {
+		load(EmptyConfiguration.class, "spring.http.encoding.force-request:false");
+		CharacterEncodingFilter filter = this.context
+				.getBean(CharacterEncodingFilter.class);
+		assertCharacterEncodingFilter(filter, "UTF-8", false, false);
+	}
+
+	@Test
+	public void forceResponse() throws Exception {
+		load(EmptyConfiguration.class, "spring.http.encoding.force-response:true");
+		CharacterEncodingFilter filter = this.context
+				.getBean(CharacterEncodingFilter.class);
+		assertCharacterEncodingFilter(filter, "UTF-8", true, true);
+	}
+
+	@Test
+	public void forceRequestOverridesForce() throws Exception {
+		load(EmptyConfiguration.class, "spring.http.encoding.force:true",
+				"spring.http.encoding.force-request:false");
+		CharacterEncodingFilter filter = this.context
+				.getBean(CharacterEncodingFilter.class);
+		assertCharacterEncodingFilter(filter, "UTF-8", false, true);
+	}
+
+	@Test
+	public void forceResponseOverridesForce() throws Exception {
+		load(EmptyConfiguration.class, "spring.http.encoding.force:true",
+				"spring.http.encoding.force-response:false");
+		CharacterEncodingFilter filter = this.context
+				.getBean(CharacterEncodingFilter.class);
+		assertCharacterEncodingFilter(filter, "UTF-8", true, false);
 	}
 
 	@Test
@@ -103,11 +136,11 @@ public class HttpEncodingAutoConfigurationTests {
 	}
 
 	private void assertCharacterEncodingFilter(CharacterEncodingFilter actual,
-			String encoding, boolean forceEncoding) {
-		DirectFieldAccessor accessor = new DirectFieldAccessor(actual);
-		assertThat(accessor.getPropertyValue("encoding")).as("Wrong encoding")
-				.isEqualTo(encoding);
-		assertThat(accessor.getPropertyValue("forceEncoding")).isEqualTo(forceEncoding);
+			String encoding, boolean forceRequestEncoding,
+			boolean forceResponseEncoding) {
+		assertThat(actual.getEncoding()).isEqualTo(encoding);
+		assertThat(actual.isForceRequestEncoding()).isEqualTo(forceRequestEncoding);
+		assertThat(actual.isForceResponseEncoding()).isEqualTo(forceResponseEncoding);
 	}
 
 	private void load(Class<?> config, String... environment) {

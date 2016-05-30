@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,11 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
@@ -42,6 +43,7 @@ import org.springframework.jms.config.SimpleJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,6 +54,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Greg Turnquist
  * @author Stephane Nicoll
+ * @author Aurélien Leboulanger
  */
 public class JmsAutoConfigurationTests {
 
@@ -203,6 +206,20 @@ public class JmsAutoConfigurationTests {
 	}
 
 	@Test
+	public void testDefaultContainerFactoryWithMessageConverters() {
+		this.context = createContext(MessageConvertersConfiguration.class,
+				EnableJmsConfiguration.class);
+		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context.getBean(
+				"jmsListenerContainerFactory", JmsListenerContainerFactory.class);
+		assertThat(jmsListenerContainerFactory.getClass())
+				.isEqualTo(DefaultJmsListenerContainerFactory.class);
+		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
+				.createListenerContainer(mock(JmsListenerEndpoint.class));
+		assertThat(listenerContainer.getMessageConverter())
+				.isSameAs(this.context.getBean("myMessageConverter"));
+	}
+
+	@Test
 	public void testCustomContainerFactoryWithConfigurer() {
 		this.context = doLoad(
 				new Class<?>[] { TestConfiguration9.class, EnableJmsConfiguration.class },
@@ -217,6 +234,14 @@ public class JmsAutoConfigurationTests {
 		assertThat(listenerContainer.getCacheLevel())
 				.isEqualTo(DefaultMessageListenerContainer.CACHE_CONSUMER);
 		assertThat(listenerContainer.isAutoStartup()).isFalse();
+	}
+
+	@Test
+	public void testJmsTemplateWithMessageConverters() {
+		load(MessageConvertersConfiguration.class);
+		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
+		assertThat(jmsTemplate.getMessageConverter())
+				.isSameAs(this.context.getBean("myMessageConverter"));
 	}
 
 	@Test
@@ -285,7 +310,7 @@ public class JmsAutoConfigurationTests {
 
 	@Test
 	public void testActiveMQOverriddenPool() {
-		load(TestConfiguration.class, "spring.activemq.pooled:true");
+		load(TestConfiguration.class, "spring.activemq.pool.enabled:true");
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		PooledConnectionFactory pool = this.context
 				.getBean(PooledConnectionFactory.class);
@@ -299,7 +324,7 @@ public class JmsAutoConfigurationTests {
 
 	@Test
 	public void testActiveMQOverriddenPoolAndStandalone() {
-		load(TestConfiguration.class, "spring.activemq.pooled:true",
+		load(TestConfiguration.class, "spring.activemq.pool.enabled:true",
 				"spring.activemq.inMemory:false");
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		PooledConnectionFactory pool = this.context
@@ -314,7 +339,7 @@ public class JmsAutoConfigurationTests {
 
 	@Test
 	public void testActiveMQOverriddenPoolAndRemoteServer() {
-		load(TestConfiguration.class, "spring.activemq.pooled:true",
+		load(TestConfiguration.class, "spring.activemq.pool.enabled:true",
 				"spring.activemq.brokerUrl:tcp://remote-host:10000");
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		PooledConnectionFactory pool = this.context
@@ -453,14 +478,30 @@ public class JmsAutoConfigurationTests {
 	}
 
 	@Configuration
+	protected static class MessageConvertersConfiguration {
+
+		@Bean
+		@Primary
+		public MessageConverter myMessageConverter() {
+			return mock(MessageConverter.class);
+		}
+
+		@Bean
+		public MessageConverter anotherMessageConverter() {
+			return mock(MessageConverter.class);
+		}
+
+	}
+
+	@Configuration
 	protected static class TestConfiguration9 {
 
 		@Bean
 		JmsListenerContainerFactory<?> customListenerContainerFactory(
-				JmsListenerContainerFactoryConfigurer configurer,
+				DefaultJmsListenerContainerFactoryConfigurer configurer,
 				ConnectionFactory connectionFactory) {
-			DefaultJmsListenerContainerFactory factory = configurer
-					.createJmsListenerContainerFactory(connectionFactory);
+			DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+			configurer.configure(factory, connectionFactory);
 			factory.setCacheLevel(DefaultMessageListenerContainer.CACHE_CONSUMER);
 			return factory;
 

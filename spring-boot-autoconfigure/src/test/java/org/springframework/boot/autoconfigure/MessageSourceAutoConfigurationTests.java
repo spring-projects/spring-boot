@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
@@ -114,6 +114,21 @@ public class MessageSourceAutoConfigurationTests {
 				"spring.messages.fallback-to-system-locale:false");
 		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
 				.isFallbackToSystemLocale()).isFalse();
+	}
+
+	@Test
+	public void testFormatMessageDefault() throws Exception {
+		load("spring.messages.basename:test/messages");
+		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
+				.isAlwaysUseMessageFormat()).isFalse();
+	}
+
+	@Test
+	public void testFormatMessageOn() throws Exception {
+		load("spring.messages.basename:test/messages",
+				"spring.messages.always-use-message-format:true");
+		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class)
+				.isAlwaysUseMessageFormat()).isTrue();
 	}
 
 	@Test

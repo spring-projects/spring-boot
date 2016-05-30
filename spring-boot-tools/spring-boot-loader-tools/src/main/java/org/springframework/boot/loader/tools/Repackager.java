@@ -29,6 +29,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.tools.JarWriter.EntryTransformer;
+import org.springframework.lang.UsesJava8;
 
 /**
  * Utility class that can be used to repackage an archive so that it can be executed using
@@ -36,6 +37,7 @@ import org.springframework.boot.loader.tools.JarWriter.EntryTransformer;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class Repackager {
 
@@ -139,8 +141,7 @@ public class Repackager {
 		destination = destination.getAbsoluteFile();
 		File workingSource = this.source;
 		if (this.source.equals(destination)) {
-			workingSource = new File(this.source.getParentFile(),
-					this.source.getName() + ".original");
+			workingSource = getBackupFile();
 			workingSource.delete();
 			renameFile(this.source, workingSource);
 		}
@@ -159,6 +160,14 @@ public class Repackager {
 				deleteFile(workingSource);
 			}
 		}
+	}
+
+	/**
+	 * Return the {@link File} to use to backup the original source.
+	 * @return the file to use to backup the original source
+	 */
+	public final File getBackupFile() {
+		return new File(this.source.getParentFile(), this.source.getName() + ".original");
 	}
 
 	private boolean alreadyRepackaged() throws IOException {
@@ -180,6 +189,7 @@ public class Repackager {
 			final List<Library> unpackLibraries = new ArrayList<Library>();
 			final List<Library> standardLibraries = new ArrayList<Library>();
 			libraries.doWithLibraries(new LibraryCallback() {
+
 				@Override
 				public void library(Library library) throws IOException {
 					File file = library.getFile();
@@ -192,6 +202,7 @@ public class Repackager {
 						}
 					}
 				}
+
 			});
 			writer.writeManifest(buildManifest(sourceJar));
 			Set<String> seen = new HashSet<String>();
@@ -339,19 +350,49 @@ public class Repackager {
 			}
 			renamedEntry.setCompressedSize(entry.getCompressedSize());
 			renamedEntry.setCrc(entry.getCrc());
-			if (entry.getCreationTime() != null) {
-				renamedEntry.setCreationTime(entry.getCreationTime());
-			}
+			setCreationTimeIfPossible(entry, renamedEntry);
 			if (entry.getExtra() != null) {
 				renamedEntry.setExtra(entry.getExtra());
 			}
-			if (entry.getLastAccessTime() != null) {
-				renamedEntry.setLastAccessTime(entry.getLastAccessTime());
-			}
-			if (entry.getLastModifiedTime() != null) {
-				renamedEntry.setLastModifiedTime(entry.getLastModifiedTime());
-			}
+			setLastAccessTimeIfPossible(entry, renamedEntry);
+			setLastModifiedTimeIfPossible(entry, renamedEntry);
 			return renamedEntry;
+		}
+
+		@UsesJava8
+		private void setCreationTimeIfPossible(JarEntry source, JarEntry target) {
+			try {
+				if (source.getCreationTime() != null) {
+					target.setCreationTime(source.getCreationTime());
+				}
+			}
+			catch (NoSuchMethodError ex) {
+				// Not running on Java 8. Continue.
+			}
+		}
+
+		@UsesJava8
+		private void setLastAccessTimeIfPossible(JarEntry source, JarEntry target) {
+			try {
+				if (source.getLastAccessTime() != null) {
+					target.setLastAccessTime(source.getLastAccessTime());
+				}
+			}
+			catch (NoSuchMethodError ex) {
+				// Not running on Java 8. Continue.
+			}
+		}
+
+		@UsesJava8
+		private void setLastModifiedTimeIfPossible(JarEntry source, JarEntry target) {
+			try {
+				if (source.getLastModifiedTime() != null) {
+					target.setLastModifiedTime(source.getLastModifiedTime());
+				}
+			}
+			catch (NoSuchMethodError ex) {
+				// Not running on Java 8. Continue.
+			}
 		}
 
 	}

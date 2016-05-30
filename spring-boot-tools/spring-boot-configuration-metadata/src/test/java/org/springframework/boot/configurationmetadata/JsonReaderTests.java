@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,18 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 	public void invalidMetadata() throws IOException {
 		this.thrown.expect(JSONException.class);
 		readFor("invalid");
+	}
+
+	@Test
+	public void emptyGroupName() throws IOException {
+		RawConfigurationMetadata rawMetadata = readFor("empty-groups");
+		List<ConfigurationMetadataItem> items = rawMetadata.getItems();
+		assertThat(items).hasSize(2);
+
+		ConfigurationMetadataItem name = items.get(0);
+		assertProperty(name, "name", "name", String.class, null);
+		ConfigurationMetadataItem dotTitle = items.get(1);
+		assertProperty(dotTitle, "title", "title", String.class, null);
 	}
 
 	@Test
