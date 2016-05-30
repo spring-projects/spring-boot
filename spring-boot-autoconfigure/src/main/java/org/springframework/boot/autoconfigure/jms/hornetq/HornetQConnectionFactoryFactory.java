@@ -128,9 +128,9 @@ class HornetQConnectionFactoryFactory {
 		params.put(TransportConstants.PORT_PROP_NAME, this.properties.getPort());
 		TransportConfiguration transportConfiguration = new TransportConfiguration(
 				NettyConnectorFactory.class.getName(), params);
-		Constructor<T> constructor = factoryClass.getConstructor(boolean.class,
+		Constructor<T> constructor = factoryClass.getConstructor(HornetQProperties.class, boolean.class,
 				TransportConfiguration[].class);
-		return constructor.newInstance(false,
+		return constructor.newInstance(this.properties, false,
 				new TransportConfiguration[] { transportConfiguration });
 	}
 
