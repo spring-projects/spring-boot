@@ -634,6 +634,12 @@ public class ServerProperties
 		 * Character encoding to use to decode the URI.
 		 */
 		private Charset uriEncoding;
+		/**
+		 * The number of milliseconds connectors will wait for another HTTP request before closing the connection.
+		 * The default value is to use the value that has been set for the connectionTimeout attribute.
+		 * Use a value of -1 to indicate no (i.e. infinite) timeout.
+		 */
+		private int connectionTimeout = -1;
 
 		public int getMaxThreads() {
 			return this.maxThreads;
@@ -649,6 +655,14 @@ public class ServerProperties
 
 		public void setMinSpareThreads(int minSpareThreads) {
 			this.minSpareThreads = minSpareThreads;
+		}
+
+		public int getConnectionTimeout() {
+			return connectionTimeout;
+		}
+
+		public void setConnectionTimeout(final int connectionTimeout) {
+			this.connectionTimeout = connectionTimeout;
 		}
 
 		/**
@@ -768,6 +782,11 @@ public class ServerProperties
 			}
 			if (getUriEncoding() != null) {
 				factory.setUriEncoding(getUriEncoding());
+			}
+			for (Connector connector : factory.getAdditionalTomcatConnectors()) {
+				if (connector.getProtocolHandler() instanceof AbstractProtocol) {
+					((AbstractProtocol) connector.getProtocolHandler()).setConnectionTimeout(this.connectionTimeout);
+				}
 			}
 		}
 
