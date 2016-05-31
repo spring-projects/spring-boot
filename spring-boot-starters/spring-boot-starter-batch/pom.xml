@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-batch</artifactId>
 	<name>Spring Boot Batch Starter</name>
-	<description>Starter for using Spring Batch, including HSQLDB in-memory database</description>
+	<description>Starter for using Spring Batch</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
@@ -23,12 +23,8 @@
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.batch</groupId>
