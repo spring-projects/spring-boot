@@ -4227,6 +4227,42 @@ reached.
 
 
 
+[[boot-features-restclient]]
+== Calling REST services
+If you need to call remote REST services from your application, you can use Spring
+Framework's `RestTemplate` class. Since `RestTemplate` instances often needs to be
+customized before being used, Spring Boot does not provide any single auto-configured
+`RestTemplate` bean. It does, however, auto-configure a `RestTemplateBuilder` which can be
+used to create `RestTemplate` instances when needed. The auto-configured
+`RestTemplateBuilder` will ensure that sensible `HttpMessageConverters` are applied
+to `RestTemplate` instances.
+
+Here's a typical example:
+
+[source,java,indent=0]
+----
+	@Service
+	public class MyBean {
+
+		private final RestTemplate restTemplate;
+
+		public MyBean(RestTemplateBuilder restTemplateBuilder) {
+			this.restTemplate = restTemplateBuilder.build();
+		}
+
+		public String someRestCall(String name) {
+			return this.restTemplate.getForObject("/{name}/details", Details.class, name);
+		}
+
+	}
+----
+
+TIP: `RestTemplateBuilder` includes a number of useful methods that can be used to quickly
+configure a `RestTemplate`. For example, to add BASIC auth support you can use
+`build.basicAuthorization("user', "password").build()`.
+
+
+
 [[boot-features-email]]
 == Sending email
 The Spring Framework provides an easy abstraction for sending email using the
@@ -4893,7 +4929,7 @@ and/or a `WebDriver` bean. Here is an example that uses HtmlUnit:
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test]]
 ==== Auto-configured Data JPA tests
-The `@DataJpaTest` can be used if you want to test JPA applications. By default it will
+`@DataJpaTest` can be used if you want to test JPA applications. By default it will
 configure an in-memory embedded database, scan for `@Entity` classes and configure Spring
 Data JPA repositories. Regular `@Component` beans will not be loaded into the
 `ApplicationContext`.
@@ -4972,9 +5008,44 @@ database you can use the `@AutoConfigureTestDatabase` annotation:
 
 
 
+
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-client]]
+==== Auto-configured REST clients
+Use `@RestClientTest` annotation can be used if you want to test REST clients. By default
+it will auto configure Jackson and GSON support, configure a `RestTemplateBuilder` and
+add support for `MockRestServiceServer`. The specific beans that you want to test should
+be specified using `value` or `components` attribute of `@RestClientTest`:
+
+
+[source,java,indent=0]
+----
+	@RunWith(SpringRunner.class)
+	@RestClientTest(RemoteVehicleDetailsService.class)
+	public class ExampleRestClientTest {
+
+		@Autowired
+		private MyService service;
+
+		@Autowired
+		private MockRestServiceServer server;
+
+		@Test
+		public void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails()
+				throws Exception {
+			this.server.expect(requestTo("/greet/details"))
+					.andRespond(withSuccess("hello", MediaType.TEXT_PLAIN));
+			String greeting  = this.service.callRestService();
+			assertThat(greeting).isEqualTo("hello");
+		}
+
+	}
+----
+
+
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs]]
 ==== Auto-configured Spring REST Docs tests
-`@AutoConfigureRestDocs` annotation can be used if you want to use Spring REST Docs
+The `@AutoConfigureRestDocs` annotation can be used if you want to use Spring REST Docs
 in your tests. It will automatically configure `MockMvc` to use Spring REST Docs and
 remove the need for Spring REST Docs' JUnit rule.
 
