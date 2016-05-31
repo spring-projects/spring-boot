@@ -33,11 +33,12 @@ import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
  * {@link EnableAutoConfiguration Auto-configuration} for Spring REST Docs.
  *
  * @author Andy Wilkinson
+ * @since 1.4.0
  */
 @Configuration
 @ConditionalOnWebApplication
 @EnableConfigurationProperties
-class RestDocsAutoConfiguration {
+public class RestDocsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MockMvcRestDocumentationConfigurer.class)

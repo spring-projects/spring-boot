@@ -38,12 +38,13 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @see AutoConfigureWebMvc
+ * @since 1.4.0
  */
 @Configuration
 @ConditionalOnWebApplication
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties
-class MockMvcAutoConfiguration {
+public class MockMvcAutoConfiguration {
 
 	private final WebApplicationContext context;
 

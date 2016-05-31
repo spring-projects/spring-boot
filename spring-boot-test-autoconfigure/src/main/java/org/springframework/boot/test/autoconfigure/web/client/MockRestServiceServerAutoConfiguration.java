@@ -38,11 +38,12 @@ import org.springframework.web.client.RestTemplate;
  * Auto-configuration for {@link MockRestServiceServer} support.
  *
  * @author Phillip Webb
+ * @since 1.4.0
  * @see AutoConfigureMockRestServiceServer
  */
 @Configuration
 @ConditionalOnProperty(prefix = "spring.test.webclient.mockrestserviceserver", name = "enabled")
-class MockRestServiceServerAutoConfiguration {
+public class MockRestServiceServerAutoConfiguration {
 
 	@Bean
 	public MockServerRestTemplateCustomizer mockServerRestTemplateCustomizer() {
