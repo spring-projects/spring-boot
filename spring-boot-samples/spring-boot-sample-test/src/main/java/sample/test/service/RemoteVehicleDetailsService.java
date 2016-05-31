@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sample.test.domain.VehicleIdentificationNumber;
 
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -37,27 +38,22 @@ public class RemoteVehicleDetailsService implements VehicleDetailsService {
 	private static final Logger logger = LoggerFactory
 			.getLogger(RemoteVehicleDetailsService.class);
 
-	private final ServiceProperties properties;
-
 	private final RestTemplate restTemplate;
 
-	public RemoteVehicleDetailsService(ServiceProperties properties) {
-		this.properties = properties;
-		this.restTemplate = new RestTemplate();
-	}
-
-	protected final RestTemplate getRestTemplate() {
-		return this.restTemplate;
+	public RemoteVehicleDetailsService(ServiceProperties properties,
+			RestTemplateBuilder restTemplateBuilder) {
+		this.restTemplate = restTemplateBuilder
+				.rootUri(properties.getVehicleServiceRootUrl()).build();
 	}
 
 	@Override
 	public VehicleDetails getVehicleDetails(VehicleIdentificationNumber vin)
 			throws VehicleIdentificationNumberNotFoundException {
 		Assert.notNull(vin, "VIN must not be null");
-		String url = this.properties.getVehicleServiceRootUrl() + "vehicle/{vin}/details";
-		logger.debug("Retrieving vehicle data for: " + vin + " from: " + url);
+		logger.debug("Retrieving vehicle data for: " + vin);
 		try {
-			return this.restTemplate.getForObject(url, VehicleDetails.class, vin);
+			return this.restTemplate.getForObject("/vehicle/{vin}/details",
+					VehicleDetails.class, vin);
 		}
 		catch (HttpStatusCodeException ex) {
 			if (HttpStatus.NOT_FOUND.equals(ex.getStatusCode())) {
