@@ -47,7 +47,7 @@ public class LocalHostUriTemplateHandlerTests {
 		environment.setProperty("local.server.port", "1234");
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
 				environment);
-		assertThat(handler.getBaseUrl()).isEqualTo("http://localhost:1234");
+		assertThat(handler.getRootUri()).isEqualTo("http://localhost:1234");
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class LocalHostUriTemplateHandlerTests {
 		MockEnvironment environment = new MockEnvironment();
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
 				environment);
-		assertThat(handler.getBaseUrl()).isEqualTo("http://localhost:8080");
+		assertThat(handler.getRootUri()).isEqualTo("http://localhost:8080");
 	}
 
 }
