@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -50,6 +51,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  * @author Martin Lau
+ * @author Andy Wilkinson
  */
 public class JarFileTests {
 
@@ -208,6 +210,10 @@ public class JarFileTests {
 		assertThat(jarURLConnection.getContentLength()).isEqualTo(1);
 		assertThat(jarURLConnection.getContent()).isInstanceOf(InputStream.class);
 		assertThat(jarURLConnection.getContentType()).isEqualTo("content/unknown");
+		assertThat(jarURLConnection.getPermission()).isInstanceOf(FilePermission.class);
+		FilePermission permission = (FilePermission) jarURLConnection.getPermission();
+		assertThat(permission.getActions()).isEqualTo("read");
+		assertThat(permission.getName()).isEqualTo(this.rootJarFile.getPath());
 	}
 
 	@Test
@@ -261,6 +267,10 @@ public class JarFileTests {
 		assertThat(conn.getJarFile()).isSameAs(nestedJarFile);
 		assertThat(conn.getJarFileURL().toString())
 				.isEqualTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar");
+		assertThat(conn.getPermission()).isInstanceOf(FilePermission.class);
+		FilePermission permission = (FilePermission) conn.getPermission();
+		assertThat(permission.getActions()).isEqualTo("read");
+		assertThat(permission.getName()).isEqualTo(this.rootJarFile.getPath());
 	}
 
 	@Test
@@ -284,7 +294,7 @@ public class JarFileTests {
 	}
 
 	@Test
-	public void getNestJarEntryUrl() throws Exception {
+	public void getNestedJarEntryUrl() throws Exception {
 		JarFile nestedJarFile = this.jarFile
 				.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
 		URL url = nestedJarFile.getJarEntry("3.dat").getUrl();
