@@ -112,7 +112,7 @@ class HornetQConnectionFactoryFactory {
 			ServerLocator serviceLocator = HornetQClient
 					.createServerLocatorWithoutHA(transportConfiguration);
 			return factoryClass.getConstructor(HornetQProperties.class, ServerLocator.class)
-					.newInstance(this.properties,serviceLocator);
+					.newInstance(this.properties, serviceLocator);
 		}
 		catch (NoClassDefFoundError ex) {
 			throw new IllegalStateException("Unable to create InVM "
