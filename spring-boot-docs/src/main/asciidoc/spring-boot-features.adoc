@@ -1457,12 +1457,16 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Custom `Favicon` support.
 * Automatic use of a `ConfigurableWebBindingInitializer` bean (see below).
 
-If you want to take complete control of Spring MVC, you can add your own `@Configuration`
-annotated with `@EnableWebMvc`. If you want to keep Spring Boot MVC features, and
+If you want to keep Spring Boot MVC features, and
 you just want to add additional {spring-reference}#mvc[MVC configuration] (interceptors,
 formatters, view controllers etc.) you can add your own `@Bean` of type
-`WebMvcConfigurerAdapter`, but *without* `@EnableWebMvc`.
+`WebMvcConfigurerAdapter`, but *without* `@EnableWebMvc`. If you wish to provide custom
+instances of `RequestMappingHandlerMapping`, `RequestMappingHandlerAdapter` or
+`ExceptionHandlerExceptionResolver` you can declare a `WebMvcRegistrationsAdapter`
+instance providing such components.
 
+If you want to take complete control of Spring MVC, you can add your own `@Configuration`
+annotated with `@EnableWebMvc`.
 
 
 [[boot-features-spring-mvc-message-converters]]
