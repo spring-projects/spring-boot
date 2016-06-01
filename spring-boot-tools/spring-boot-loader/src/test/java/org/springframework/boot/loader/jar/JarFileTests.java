@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -45,6 +46,7 @@ import org.springframework.util.StreamUtils;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
@@ -58,6 +60,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  * @author Martin Lau
+ * @author Andy Wilkinson
  */
 public class JarFileTests {
 
@@ -216,6 +219,11 @@ public class JarFileTests {
 		assertThat(jarURLConnection.getContentLength(), equalTo(1));
 		assertThat(jarURLConnection.getContent(), instanceOf(InputStream.class));
 		assertThat(jarURLConnection.getContentType(), equalTo("content/unknown"));
+		assertThat(jarURLConnection.getPermission(),
+				is(instanceOf(FilePermission.class)));
+		FilePermission permission = (FilePermission) jarURLConnection.getPermission();
+		assertThat(permission.getActions(), equalTo("read"));
+		assertThat(permission.getName(), equalTo(this.rootJarFile.getPath()));
 	}
 
 	@Test
@@ -269,6 +277,10 @@ public class JarFileTests {
 		assertThat(conn.getJarFile(), sameInstance(nestedJarFile));
 		assertThat(conn.getJarFileURL().toString(),
 				equalTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar"));
+		assertThat(conn.getPermission(), is(instanceOf(FilePermission.class)));
+		FilePermission permission = (FilePermission) conn.getPermission();
+		assertThat(permission.getActions(), equalTo("read"));
+		assertThat(permission.getName(), equalTo(this.rootJarFile.getPath()));
 	}
 
 	@Test
@@ -292,7 +304,7 @@ public class JarFileTests {
 	}
 
 	@Test
-	public void getNestJarEntryUrl() throws Exception {
+	public void getNestedJarEntryUrl() throws Exception {
 		JarFile nestedJarFile = this.jarFile
 				.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
 		URL url = nestedJarFile.getJarEntry("3.dat").getUrl();

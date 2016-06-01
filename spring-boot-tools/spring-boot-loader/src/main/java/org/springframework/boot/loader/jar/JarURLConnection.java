@@ -18,12 +18,14 @@ package org.springframework.boot.loader.jar;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.security.Permission;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.util.AsciiBytes;
@@ -32,6 +34,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class JarURLConnection extends java.net.JarURLConnection {
 
@@ -61,9 +64,13 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private static final String FILE_COLON_DOUBLE_SLASH = "file://";
 
+	private static final String READ_ACTION = "read";
+
 	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<Boolean>();
 
 	private final JarFile jarFile;
+
+	private final Permission permission;
 
 	private JarEntryData jarEntryData;
 
@@ -84,6 +91,8 @@ class JarURLConnection extends java.net.JarURLConnection {
 		}
 		this.jarFile = jarFile;
 		this.jarEntryName = getJarEntryName(spec);
+		this.permission = new FilePermission(jarFile.getRootJarFile().getFile().getPath(),
+				READ_ACTION);
 	}
 
 	private String getNormalizedFile(URL url) {
@@ -212,6 +221,11 @@ class JarURLConnection extends java.net.JarURLConnection {
 	@Override
 	public String getContentType() {
 		return this.jarEntryName.getContentType();
+	}
+
+	@Override
+	public Permission getPermission() throws IOException {
+		return this.permission;
 	}
 
 	static void setUseFastExceptions(boolean useFastExceptions) {
