@@ -43,8 +43,15 @@ public class WebMvcProperties {
 
 	/**
 	 * Locale to use.
+	 * Enable FixedLocaleResolver bean.
 	 */
 	private Locale locale;
+
+	/**
+	 * Default Locale to use.
+	 * Enable AcceptHeaderLocaleResolver bean.
+	 */
+	private Locale defaultLocale;
 
 	/**
 	 * Date format to use (e.g. dd/MM/yyyy).
@@ -103,6 +110,14 @@ public class WebMvcProperties {
 
 	public void setLocale(Locale locale) {
 		this.locale = locale;
+	}
+
+	public Locale getDefaultLocale() {
+		return this.defaultLocale;
+	}
+
+	public void setDefaultLocale(Locale defaultLocale) {
+		this.defaultLocale = defaultLocale;
 	}
 
 	public String getDateFormat() {
