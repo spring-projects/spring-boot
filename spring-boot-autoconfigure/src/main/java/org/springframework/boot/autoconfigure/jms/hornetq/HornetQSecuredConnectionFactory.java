@@ -24,9 +24,9 @@ import org.hornetq.jms.client.HornetQConnectionFactory;
 
 /**
  * Secured HornetQ implementation of a JMS ConnectionFactory.
- * 
+ *
  * @author Stéphane Lagraulet
- * 
+ *
  * @since 1.3.6
  *
  */
@@ -41,7 +41,7 @@ public class HornetQSecuredConnectionFactory extends HornetQConnectionFactory {
 	}
 
 	public Connection createConnection() throws JMSException {
-		return createConnection(properties.getUser(), properties.getPassword());
+		return createConnection(this.properties.getUser(), this.properties.getPassword());
 	}
 
 }
