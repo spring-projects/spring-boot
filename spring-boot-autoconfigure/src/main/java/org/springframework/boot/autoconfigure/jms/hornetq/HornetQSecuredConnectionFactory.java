@@ -20,6 +20,7 @@ import javax.jms.Connection;
 import javax.jms.JMSException;
 
 import org.hornetq.api.core.TransportConfiguration;
+import org.hornetq.api.core.client.ServerLocator;
 import org.hornetq.jms.client.HornetQConnectionFactory;
 
 /**
@@ -33,6 +34,12 @@ import org.hornetq.jms.client.HornetQConnectionFactory;
 public class HornetQSecuredConnectionFactory extends HornetQConnectionFactory {
 
 	private HornetQProperties properties;
+
+	public HornetQSecuredConnectionFactory(HornetQProperties properties,
+			final ServerLocator serverLocator) {
+		super(serverLocator);
+		this.properties = properties;
+	}
 
 	public HornetQSecuredConnectionFactory(HornetQProperties properties, final boolean ha,
 			final TransportConfiguration... initialConnectors) {

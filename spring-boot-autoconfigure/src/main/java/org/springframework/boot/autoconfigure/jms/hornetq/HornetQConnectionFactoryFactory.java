@@ -111,7 +111,7 @@ class HornetQConnectionFactoryFactory {
 					this.properties.getEmbedded().generateTransportParameters());
 			ServerLocator serviceLocator = HornetQClient
 					.createServerLocatorWithoutHA(transportConfiguration);
-			return factoryClass.getConstructor(ServerLocator.class)
+			return factoryClass.getConstructor(HornetQProperties.class, ServerLocator.class)
 					.newInstance(serviceLocator);
 		}
 		catch (NoClassDefFoundError ex) {
