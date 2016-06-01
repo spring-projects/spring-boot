@@ -91,30 +91,22 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate(String username, String password,
 			HttpClientOption... httpClientOptions) {
-		this.restTemplate = createRestTemplate(username, password, httpClientOptions);
+		this(new RestTemplate(), username, password, httpClientOptions);
 	}
 
-	/**
-	 * Factory method used to create the underlying {@link RestTemplate}.
-	 * @param username the username to use (or {@code null})
-	 * @param password the password (or {@code null})
-	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
-	 * @return the delegate {@link RestTemplate}
-	 */
-	protected RestTemplate createRestTemplate(String username, String password,
+	public TestRestTemplate(RestTemplate restTemplate) {
+		this(restTemplate, null, null);
+	}
+
+	public TestRestTemplate(RestTemplate restTemplate, String username, String password,
 			HttpClientOption... httpClientOptions) {
-		RestTemplate restTemplate = new RestTemplate();
+		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
 			restTemplate.setRequestFactory(
 					new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
 		}
 		addAuthentication(restTemplate, username, password);
 		restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
-		return restTemplate;
-	}
-
-	public TestRestTemplate(RestTemplate restTemplate) {
-		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		this.restTemplate = restTemplate;
 	}
 
