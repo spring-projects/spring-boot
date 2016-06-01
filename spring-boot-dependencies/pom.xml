@@ -123,7 +123,7 @@
 		<log4j2.version>2.6</log4j2.version>
 		<logback.version>1.1.7</logback.version>
 		<lombok.version>1.16.8</lombok.version>
-		<mariadb.version>1.4.4</mariadb.version>
+		<mariadb.version>1.4.5</mariadb.version>
 		<mockito.version>1.10.19</mockito.version>
 		<mongodb.version>3.2.2</mongodb.version>
 		<mysql.version>5.1.39</mysql.version>
