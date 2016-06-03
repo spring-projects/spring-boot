@@ -156,7 +156,7 @@
 		<spring-retry.version>1.1.2.RELEASE</spring-retry.version>
 		<spring-security.version>4.1.0.RELEASE</spring-security.version>
 		<spring-security-jwt.version>1.0.4.RELEASE</spring-security-jwt.version>
-		<spring-security-oauth.version>2.0.9.RELEASE</spring-security-oauth.version>
+		<spring-security-oauth.version>2.0.10.RELEASE</spring-security-oauth.version>
 		<spring-session.version>1.2.0.RELEASE</spring-session.version>
 		<spring-social.version>1.1.4.RELEASE</spring-social.version>
 		<spring-social-facebook.version>2.0.3.RELEASE</spring-social-facebook.version>
