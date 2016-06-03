@@ -260,7 +260,7 @@ public class RestTemplateBuilder {
 	/**
 	 * Set the {@link ResponseErrorHandler} that should be used with the
 	 * {@link RestTemplate}.
-	 * @param errorHandler the error hander to use
+	 * @param errorHandler the error handler to use
 	 * @return a new builder instance
 	 */
 	public RestTemplateBuilder errorHandler(ResponseErrorHandler errorHandler) {

@@ -65,7 +65,7 @@ public class MockServerRestTemplateCustomizerTests {
 	}
 
 	@Test
-	public void createShouldUseExpectationMangerClass() throws Exception {
+	public void createShouldUseExpectationManagerClass() throws Exception {
 		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer(
 				UnorderedRequestExpectationManager.class);
 		customizer.customize(new RestTemplate());

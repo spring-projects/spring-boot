@@ -75,7 +75,7 @@ public class WebClientAutoConfigurationTests {
 	}
 
 	@Test
-	public void restTemplateWhenHasCustomMesssageConvertersShouldHaveMessageConverters() {
+	public void restTemplateWhenHasCustomMessageConvertersShouldHaveMessageConverters() {
 		load(CustomHttpMessageConverter.class,
 				HttpMessageConvertersAutoConfiguration.class, RestTemplateConfig.class);
 		RestTemplate restTemplate = this.context.getBean(RestTemplate.class);
