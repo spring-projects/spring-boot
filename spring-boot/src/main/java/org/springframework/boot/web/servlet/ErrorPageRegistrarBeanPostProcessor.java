@@ -28,7 +28,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 /**
- * {@link BeanPostProcessor} that apply all {@link ErrorPageRegistrar}s from the bean
+ * {@link BeanPostProcessor} that applies all {@link ErrorPageRegistrar}s from the bean
  * factory to {@link ErrorPageRegistry} beans.
  *
  * @author Phillip Webb

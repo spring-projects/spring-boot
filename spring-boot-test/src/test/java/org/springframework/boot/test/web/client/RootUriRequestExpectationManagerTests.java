@@ -86,7 +86,7 @@ public class RootUriRequestExpectationManagerTests {
 	}
 
 	@Test
-	public void expectRequestShouldDelegateToExpecationManager() throws Exception {
+	public void expectRequestShouldDelegateToExpectationManager() throws Exception {
 		ExpectedCount count = mock(ExpectedCount.class);
 		RequestMatcher requestMatcher = mock(RequestMatcher.class);
 		this.manager.expectRequest(count, requestMatcher);
@@ -128,7 +128,7 @@ public class RootUriRequestExpectationManagerTests {
 	}
 
 	@Test
-	public void resetRequestShouldDelegateToExpecationManager() throws Exception {
+	public void resetRequestShouldDelegateToExpectationManager() throws Exception {
 		this.manager.reset();
 		verify(this.delegate).reset();
 	}

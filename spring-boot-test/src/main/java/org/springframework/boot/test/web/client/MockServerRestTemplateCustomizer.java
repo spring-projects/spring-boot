@@ -82,7 +82,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 
 	@Override
 	public void customize(RestTemplate restTemplate) {
-		RequestExpectationManager expectationManager = createExpecationManager();
+		RequestExpectationManager expectationManager = createExpectationManager();
 		if (this.detectRootUri) {
 			expectationManager = RootUriRequestExpectationManager
 					.forRestTemplate(restTemplate, expectationManager);
@@ -93,7 +93,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 		this.servers.put(restTemplate, server);
 	}
 
-	protected RequestExpectationManager createExpecationManager() {
+	protected RequestExpectationManager createExpectationManager() {
 		return BeanUtils.instantiate(this.expectationManager);
 	}
 

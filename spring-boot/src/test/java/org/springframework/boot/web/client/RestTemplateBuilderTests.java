@@ -141,7 +141,7 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
-	public void messageConvertersShouldRepalceExisting() throws Exception {
+	public void messageConvertersShouldReplaceExisting() throws Exception {
 		RestTemplate template = this.builder
 				.messageConverters(new ResourceHttpMessageConverter())
 				.messageConverters(Collections.singleton(this.messageConverter)).build();
@@ -308,7 +308,7 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
-	public void customizersShouldRepalceExisting() throws Exception {
+	public void customizersShouldReplaceExisting() throws Exception {
 		RestTemplateCustomizer customizer1 = mock(RestTemplateCustomizer.class);
 		RestTemplateCustomizer customizer2 = mock(RestTemplateCustomizer.class);
 		RestTemplate template = this.builder.customizers(customizer1)
