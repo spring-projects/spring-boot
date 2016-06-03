@@ -75,7 +75,7 @@ the underlying `HazelcastInstance`.
 
 
 === Infinispan
-Add the org.infinispan:infinispan-spring4-embedded` dependency to enable support for
+Add the `org.infinispan:infinispan-spring4-embedded` dependency to enable support for
 Infinispan. There is no default location that Infinispan uses to look for a config file
 so if you don't specify anything it will bootstrap on a hardcoded default. You can set
 the `spring.cache.infinispan.config` property to use the provided `infinispan.xml`
