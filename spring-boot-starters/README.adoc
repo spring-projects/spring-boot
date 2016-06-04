@@ -97,4 +97,7 @@ do as they were designed before this was clarified.
 | JSF (https://javaserverfaces.java.net/[Mojarra], http://primefaces.org/[Prime Faces] and http://omnifaces.org/[OmniFaces])
 | https://github.com/persapiens/jsf-spring-boot-starter
 
+| Charon reverse proxy
+| https://github.com/mkopylec/charon-spring-boot-starter
+
 |===
