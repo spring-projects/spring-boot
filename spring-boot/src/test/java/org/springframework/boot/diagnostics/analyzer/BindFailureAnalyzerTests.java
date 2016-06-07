@@ -16,10 +16,14 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
+import java.util.Locale;
+
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -27,6 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,6 +41,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 public class BindFailureAnalyzerTests {
+
+	@Before
+	public void setup() {
+		LocaleContextHolder.setLocale(Locale.US);
+	}
+
+	@After
+	public void cleanup() {
+		LocaleContextHolder.resetLocaleContext();
+	}
 
 	@Test
 	public void bindExceptionDueToValidationFailure() {
