@@ -28,7 +28,7 @@ import org.hornetq.jms.client.HornetQConnectionFactory;
  *
  * @author Stéphane Lagraulet
  *
- * @since 1.3.6
+ * @since 1.4.0
  *
  */
 public class HornetQSecuredConnectionFactory extends HornetQConnectionFactory {
