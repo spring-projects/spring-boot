@@ -62,8 +62,9 @@ public class RestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 	private RestDocumentationResultHandler document;
 
 	@Test
+	@Deprecated
 	public void snippetGeneration() throws Exception {
-		this.document.document(links(
+		this.document.snippets(links(
 				linkWithRel("self").description("Canonical location of this resource")));
 		this.mvc.perform(get("/"));
 		File defaultSnippetsDir = new File(
