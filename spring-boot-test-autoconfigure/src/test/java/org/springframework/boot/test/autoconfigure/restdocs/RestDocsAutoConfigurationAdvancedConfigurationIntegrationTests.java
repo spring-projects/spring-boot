@@ -41,6 +41,8 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 /**
+ * Tests for {@link AutoConfigureRestDocs}.
+ *
  * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
@@ -61,7 +63,7 @@ public class RestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 
 	@Test
 	public void snippetGeneration() throws Exception {
-		this.document.snippets(links(
+		this.document.document(links(
 				linkWithRel("self").description("Canonical location of this resource")));
 		this.mvc.perform(get("/"));
 		File defaultSnippetsDir = new File(

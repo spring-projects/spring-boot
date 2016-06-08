@@ -682,20 +682,17 @@ public class SpringApplicationTests {
 		application.setApplicationContextClass(SpyApplicationContext.class);
 		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<ApplicationEvent>();
 		application.addListeners(new ApplicationListener<ApplicationEvent>() {
+
 			@Override
 			public void onApplicationEvent(ApplicationEvent event) {
 				events.add(event);
 			}
+
 		});
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
-
-		ApplicationListener<ApplicationEvent> listener = this.context.getBean(
-				"testApplicationListener", ApplicationListener.class);
-		verify(listener).onApplicationEvent(argThat(isA(ContextRefreshedEvent.class)));
-		verify(listener).onApplicationEvent(argThat(isA(ApplicationReadyEvent.class)));
-		verifyNoMoreInteractions(listener);
+		verifyTestListenerEvents();
 	}
 
 	@Test
@@ -705,17 +702,23 @@ public class SpringApplicationTests {
 		application.setApplicationContextClass(SpyApplicationContext.class);
 		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<ApplicationEvent>();
 		application.addListeners(new ApplicationListener<ApplicationEvent>() {
+
 			@Override
 			public void onApplicationEvent(ApplicationEvent event) {
 				events.add(event);
 			}
+
 		});
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
+		verifyTestListenerEvents();
+	}
 
-		ApplicationListener<ApplicationEvent> listener = this.context.getBean(
-				"testApplicationListener", ApplicationListener.class);
+	@SuppressWarnings("unchecked")
+	private void verifyTestListenerEvents() {
+		ApplicationListener<ApplicationEvent> listener = this.context
+				.getBean("testApplicationListener", ApplicationListener.class);
 		verify(listener).onApplicationEvent(argThat(isA(ContextRefreshedEvent.class)));
 		verify(listener).onApplicationEvent(argThat(isA(ApplicationReadyEvent.class)));
 		verifyNoMoreInteractions(listener);
