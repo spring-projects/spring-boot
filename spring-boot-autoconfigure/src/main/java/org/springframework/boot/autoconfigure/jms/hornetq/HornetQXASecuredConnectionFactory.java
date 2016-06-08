@@ -16,7 +16,9 @@
 
 package org.springframework.boot.autoconfigure.jms.hornetq;
 
-import org.hornetq.api.core.DiscoveryGroupConfiguration;
+import javax.jms.Connection;
+import javax.jms.JMSException;
+
 import org.hornetq.api.core.TransportConfiguration;
 import org.hornetq.api.core.client.ServerLocator;
 import org.hornetq.jms.client.HornetQXAConnectionFactory;
@@ -43,6 +45,10 @@ public class HornetQXASecuredConnectionFactory extends HornetQXAConnectionFactor
 			TransportConfiguration... initialConnectors) {
 		super(ha, initialConnectors);
 		this.properties = properties;
+	}
+
+	public Connection createConnection() throws JMSException {
+		return createConnection(this.properties.getUser(), this.properties.getPassword());
 	}
 
 }
