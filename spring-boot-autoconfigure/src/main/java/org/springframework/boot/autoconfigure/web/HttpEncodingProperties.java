@@ -91,7 +91,7 @@ public class HttpEncodingProperties {
 			force = this.force;
 		}
 		if (force == null) {
-			force = (type == Type.REQUEST ? true : false);
+			force = (type == Type.REQUEST);
 		}
 		return force;
 	}
