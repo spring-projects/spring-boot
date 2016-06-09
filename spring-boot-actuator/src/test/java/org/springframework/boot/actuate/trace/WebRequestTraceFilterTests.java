@@ -32,7 +32,6 @@ import javax.servlet.http.Cookie;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.trace.TraceProperties.Exclude;
 import org.springframework.boot.actuate.trace.TraceProperties.Include;
 import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -159,7 +158,7 @@ public class WebRequestTraceFilterTests {
 	@SuppressWarnings({ "unchecked" })
 	public void filterDoesNotAddRequestCookiesWithCookiesExclude()
 			throws ServletException, IOException {
-		this.properties.setExclude(Collections.singleton(Exclude.COOKIES));
+		this.properties.setInclude(Collections.singleton(Include.REQUEST_HEADERS));
 		MockHttpServletRequest request = spy(new MockHttpServletRequest("GET", "/foo"));
 		request.addHeader("Accept", "application/json");
 		request.addHeader("Cookie", "testCookie=testValue;");
@@ -172,7 +171,7 @@ public class WebRequestTraceFilterTests {
 	@SuppressWarnings({ "unchecked" })
 	public void filterDoesNotAddResponseCookiesWithCookiesExclude()
 			throws ServletException, IOException {
-		this.properties.setExclude(Collections.singleton(Exclude.COOKIES));
+		this.properties.setInclude(Collections.singleton(Include.RESPONSE_HEADERS));
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.addHeader("Content-Type", "application/json");

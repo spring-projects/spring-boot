@@ -40,6 +40,7 @@ public class TraceProperties {
 		Set<Include> defaultIncludes = new LinkedHashSet<Include>();
 		defaultIncludes.add(Include.REQUEST_HEADERS);
 		defaultIncludes.add(Include.RESPONSE_HEADERS);
+		defaultIncludes.add(Include.COOKIES);
 		defaultIncludes.add(Include.ERRORS);
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(defaultIncludes);
 	}
@@ -49,25 +50,12 @@ public class TraceProperties {
 	 */
 	private Set<Include> include = new HashSet<Include>(DEFAULT_INCLUDES);
 
-	/**
-	 * Items to be excluded from the trace.
-	 */
-	private Set<Exclude> exclude = new HashSet<Exclude>();
-
 	public Set<Include> getInclude() {
 		return this.include;
 	}
 
 	public void setInclude(Set<Include> include) {
 		this.include = include;
-	}
-
-	public Set<Exclude> getExclude() {
-		return this.exclude;
-	}
-
-	public void setExclude(Set<Exclude> exclude) {
-		this.exclude = exclude;
 	}
 
 	/**
@@ -84,6 +72,11 @@ public class TraceProperties {
 		 * Include response headers.
 		 */
 		RESPONSE_HEADERS,
+
+		/**
+		 * Include Cookie in request and Set-Cookie in response headers.
+		 */
+		COOKIES,
 
 		/**
 		 * Include errors (if any).
@@ -139,18 +132,6 @@ public class TraceProperties {
 		 * Include the remote user.
 		 */
 		REMOTE_USER,
-
-	}
-
-	/**
-	 * Exclude options for tracing.
-	 */
-	public enum Exclude {
-
-		/**
-		 * Exclude Cookie from request and Set-Cookie from response headers.
-		 */
-		COOKIES,
 
 	}
 
