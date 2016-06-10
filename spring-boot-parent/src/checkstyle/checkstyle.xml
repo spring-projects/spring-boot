@@ -1,84 +1,145 @@
 <?xml version="1.0"?>
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN" "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
-<module name="Checker">
+<module name="com.puppycrawl.tools.checkstyle.Checker">
+	<property name="severity" value="error"/>
 
 	<!-- Root Checks -->
-	<module name="RegexpHeader">
+	<module name="com.puppycrawl.tools.checkstyle.checks.header.RegexpHeaderCheck">
+		<property name="severity" value="error"/>
 		<property name="headerFile" value="${checkstyle.header.file}" />
 		<property name="fileExtensions" value="java" />
 	</module>
-	<module name="NewlineAtEndOfFile">
+	<module name="com.puppycrawl.tools.checkstyle.checks.NewlineAtEndOfFileCheck">
+		<property name="severity" value="error"/>
 		<property name="lineSeparator" value="lf"/>
 	</module>
 
 	<!-- TreeWalker Checks -->
-	<module name="TreeWalker">
+	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
+		<property name="severity" value="error"/>
 
 		<!-- Annotations -->
-		<module name="AnnotationUseStyle">
+		<module name="com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck">
+			<property name="severity" value="error"/>
 			<property name="elementStyle" value="compact" />
 		</module>
-		<module name="MissingOverride" />
-		<module name="PackageAnnotation" />
-		<module name="AnnotationLocation">
+		<module name="com.puppycrawl.tools.checkstyle.checks.annotation.MissingOverrideCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.annotation.PackageAnnotationCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationLocationCheck">
+			<property name="severity" value="error"/>
 			<property name="allowSamelineSingleParameterlessAnnotation"
 				value="false" />
 		</module>
 
 		<!-- Block Checks -->
-		<module name="EmptyBlock">
+		<module name="com.puppycrawl.tools.checkstyle.checks.blocks.EmptyBlockCheck">
+			<property name="severity" value="error"/>
 			<property name="option" value="text" />
 		</module>
-		<module name="LeftCurly" />
-		<module name="RightCurly">
+		<module name="com.puppycrawl.tools.checkstyle.checks.blocks.LeftCurlyCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.blocks.RightCurlyCheck">
+			<property name="severity" value="error"/>
 			<property name="option" value="alone" />
 		</module>
-		<module name="NeedBraces" />
-		<module name="AvoidNestedBlocks" />
+		<module name="com.puppycrawl.tools.checkstyle.checks.blocks.NeedBracesCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.blocks.AvoidNestedBlocksCheck">
+			<property name="severity" value="error"/>
+		</module>
 
 		<!-- Class Design -->
-		<module name="FinalClass" />
-		<module name="InterfaceIsType" />
-		<module name="HideUtilityClassConstructor" />
-		<module name="MutableException" />
-		<module name="InnerTypeLast" />
-		<module name="OneTopLevelClass" />
+		<module name="com.puppycrawl.tools.checkstyle.checks.design.FinalClassCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.design.InterfaceIsTypeCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.design.HideUtilityClassConstructorCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.design.MutableExceptionCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.design.InnerTypeLastCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.design.OneTopLevelClassCheck">
+			<property name="severity" value="error"/>
+		</module>
 
 		<!-- Coding -->
-		<module name="CovariantEquals" />
-		<module name="EmptyStatement" />
-		<module name="EqualsHashCode" />
-		<module name="InnerAssignment" />
-		<module name="SimplifyBooleanExpression" />
-		<module name="SimplifyBooleanReturn" />
-		<module name="StringLiteralEquality" />
-		<module name="NestedForDepth">
+		<module name="com.puppycrawl.tools.checkstyle.checks.coding.CovariantEqualsCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.coding.EmptyStatementCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.coding.EqualsHashCodeCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.coding.InnerAssignmentCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.coding.SimplifyBooleanExpressionCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.coding.SimplifyBooleanReturnCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.coding.StringLiteralEqualityCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.coding.NestedForDepthCheck">
+			<property name="severity" value="error"/>
 			<property name="max" value="3" />
 		</module>
-		<module name="NestedIfDepth">
+		<module name="com.puppycrawl.tools.checkstyle.checks.coding.NestedIfDepthCheck">
+			<property name="severity" value="error"/>
 			<property name="max" value="3" />
 		</module>
-		<module name="NestedTryDepth">
+		<module name="com.puppycrawl.tools.checkstyle.checks.coding.NestedTryDepthCheck">
+			<property name="severity" value="error"/>
 			<property name="max" value="3" />
 		</module>
-		<module name="MultipleVariableDeclarations" />
-		<module name="RequireThis">
+		<module name="com.puppycrawl.tools.checkstyle.checks.coding.MultipleVariableDeclarationsCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.coding.RequireThisCheck">
+			<property name="severity" value="error"/>
 			<property name="checkMethods" value="false" />
 		</module>
-		<module name="OneStatementPerLine" />
+		<module name="com.puppycrawl.tools.checkstyle.checks.coding.OneStatementPerLineCheck">
+			<property name="severity" value="error"/>
+		</module>
 
 		<!-- Imports -->
-		<module name="AvoidStarImport" />
-		<module name="AvoidStaticImport">
+		<module name="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStaticImportCheck">
+			<property name="severity" value="error"/>
 			<property name="excludes"
 				value="org.assertj.core.api.Assertions.*, org.junit.Assert.*, org.junit.Assume.*, org.junit.internal.matchers.ThrowableMessageMatcher.*, org.hamcrest.CoreMatchers.*, org.hamcrest.Matchers.*, org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.*, org.springframework.boot.configurationprocessor.TestCompiler.*, org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.*, org.mockito.Mockito.*, org.mockito.BDDMockito.*, org.mockito.Matchers.*, org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*, org.springframework.restdocs.hypermedia.HypermediaDocumentation.*, org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*, org.springframework.test.web.servlet.result.MockMvcResultMatchers.*, org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*, org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*, org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo, org.springframework.test.web.client.match.MockRestRequestMatchers.*, org.springframework.test.web.client.response.MockRestResponseCreators.*" />
 		</module>
-		<module name="IllegalImport" />
-		<module name="RedundantImport" />
-		<module name="UnusedImports">
+		<module name="com.puppycrawl.tools.checkstyle.checks.imports.IllegalImportCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.imports.RedundantImportCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.imports.UnusedImportsCheck">
+			<property name="severity" value="error"/>
 			<property name="processJavadoc" value="true" />
 		</module>
-		<module name="ImportOrder">
+		<module name="com.puppycrawl.tools.checkstyle.checks.imports.ImportOrderCheck">
+			<property name="severity" value="error"/>
 			<property name="groups" value="java,/^javax?\./,*,org.springframework" />
 			<property name="ordered" value="true" />
 			<property name="separated" value="true" />
@@ -87,81 +148,118 @@
 		</module>
 
 		<!-- Javadoc Comments -->
-		<module name="JavadocType">
+		<module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck">
+			<property name="severity" value="error"/>
 			<property name="scope" value="package"/>
 			<property name="authorFormat" value=".+\s.+"/>
 		</module>
-		<module name="JavadocMethod">
+		<module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck">
+			<property name="severity" value="error"/>
 			<property name="allowMissingJavadoc" value="true" />
 		</module>
-		<module name="JavadocVariable">
+		<module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck">
+			<property name="severity" value="error"/>
 			<property name="scope" value="public"/>
 		</module>
-		<module name="JavadocStyle">
+		<module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck">
+			<property name="severity" value="error"/>
 			<property name="checkEmptyJavadoc" value="true"/>
 		</module>
-		<module name="NonEmptyAtclauseDescription" />
-		<module name="JavadocTagContinuationIndentation">
+		<module name="com.puppycrawl.tools.checkstyle.checks.javadoc.NonEmptyAtclauseDescriptionCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTagContinuationIndentationCheck">
+			<property name="severity" value="error"/>
 			<property name="offset" value="0"/>
 		</module>
-		<module name="AtclauseOrder">
+		<module name="com.puppycrawl.tools.checkstyle.checks.javadoc.AtclauseOrderCheck">
+			<property name="severity" value="error"/>
 			<property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF"/>
     		<property name="tagOrder" value="@param, @author, @since, @see, @version, @serial, @deprecated"/>
 		</module>
- 		<module name="AtclauseOrder">
+ 		<module name="com.puppycrawl.tools.checkstyle.checks.javadoc.AtclauseOrderCheck">
+			<property name="severity" value="error"/>
 			<property name="target" value="METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
     		<property name="tagOrder" value="@param, @return, @throws, @since, @deprecated, @see"/>
 		</module>
 
 		<!-- Miscellaneous -->
-		<module name="CommentsIndentation">
+		<module name="com.puppycrawl.tools.checkstyle.checks.indentation.CommentsIndentationCheck">
+			<property name="severity" value="error"/>
 			<property name="tokens" value="BLOCK_COMMENT_BEGIN"/>
 		</module>
-		<module name="UpperEll" />
-		<module name="ArrayTypeStyle" />
-		<module name="OuterTypeFilename" />
+		<module name="com.puppycrawl.tools.checkstyle.checks.UpperEllCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.ArrayTypeStyleCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.OuterTypeFilenameCheck">
+			<property name="severity" value="error"/>
+		</module>
 
 		<!-- Modifiers -->
-		<module name="RedundantModifier" />
+		<module name="com.puppycrawl.tools.checkstyle.checks.modifier.RedundantModifierCheck">
+			<property name="severity" value="error"/>
+		</module>
 
 		<!-- Regexp -->
- 		<module name="RegexpSinglelineJava">
+ 		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+			<property name="severity" value="error"/>
 			<property name="format" value="^\t* +\t*\S" />
 			<property name="message"
 				value="Line has leading space characters; indentation should be performed with tabs only." />
 			<property name="ignoreComments" value="true" />
 		</module>
- 		<module name="RegexpSinglelineJava">
+ 		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+			<property name="severity" value="error"/>
  			<property name="maximum" value="0"/>
 			<property name="format" value="org\.mockito\.Mockito\.(when|doThrow|doAnswer)" />
 			<property name="message"
 				value="Please use BDDMockto imports." />
 			<property name="ignoreComments" value="true" />
 		</module>
- 		<module name="RegexpSinglelineJava">
+ 		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+			<property name="severity" value="error"/>
  			<property name="maximum" value="0"/>
 			<property name="format" value="org\.junit\.Assert\.assert" />
 			<property name="message"
 				value="Please use AssertJ imports." />
 			<property name="ignoreComments" value="true" />
 		</module>
-		<module name="Regexp">
+		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpCheck">
+			<property name="severity" value="error"/>
 			<property name="format" value="[ \t]+$" />
 			<property name="illegalPattern" value="true" />
 			<property name="message" value="Trailing whitespace" />
 		</module>
 
 		<!-- Whitespace -->
-		<module name="GenericWhitespace" />
-		<module name="MethodParamPad" />
-		<module name="NoWhitespaceAfter" >
+		<module name="com.puppycrawl.tools.checkstyle.checks.whitespace.GenericWhitespaceCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.whitespace.MethodParamPadCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.whitespace.NoWhitespaceAfterCheck" >
+			<property name="severity" value="error"/>
 			<property name="tokens" value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS, ARRAY_DECLARATOR"/>
 		</module>
-		<module name="NoWhitespaceBefore" />
-		<module name="ParenPad" />
-		<module name="TypecastParenPad" />
-		<module name="WhitespaceAfter" />
-		<module name="WhitespaceAround" />
+		<module name="com.puppycrawl.tools.checkstyle.checks.whitespace.NoWhitespaceBeforeCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.whitespace.ParenPadCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.whitespace.TypecastParenPadCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAfterCheck">
+			<property name="severity" value="error"/>
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAroundCheck">
+			<property name="severity" value="error"/>
+		</module>
 
  	</module>
 </module>
