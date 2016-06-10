@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.embedded.config;
+package org.springframework.boot.context.config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.boot.ansi.AnsiOutputEnabledValue;
-import org.springframework.boot.context.config.AnsiOutputApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
