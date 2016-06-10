@@ -75,6 +75,7 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
@@ -250,8 +251,9 @@ public class JettyEmbeddedServletContainerFactory
 		configureSslClientAuth(factory, ssl);
 		configureSslPasswords(factory, ssl);
 		factory.setCertAlias(ssl.getKeyAlias());
-		if (ssl.getCiphers() != null) {
+		if (!ObjectUtils.isEmpty(ssl.getCiphers() != null)) {
 			factory.setIncludeCipherSuites(ssl.getCiphers());
+			factory.setExcludeCipherSuites();
 		}
 		if (ssl.getEnabledProtocols() != null) {
 			factory.setIncludeProtocols(ssl.getEnabledProtocols());
