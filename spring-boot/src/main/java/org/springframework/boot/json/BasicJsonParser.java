@@ -93,14 +93,14 @@ public class BasicJsonParser implements JsonParser {
 	}
 
 	private static String trimTrailingCharacter(String string, char c) {
-		if (string.length() >= 0 && string.charAt(string.length() - 1) == c) {
+		if (string.length() > 0 && string.charAt(string.length() - 1) == c) {
 			return string.substring(0, string.length() - 1);
 		}
 		return string;
 	}
 
 	private static String trimLeadingCharacter(String string, char c) {
-		if (string.length() >= 0 && string.charAt(0) == c) {
+		if (string.length() > 0 && string.charAt(0) == c) {
 			return string.substring(1);
 		}
 		return string;
