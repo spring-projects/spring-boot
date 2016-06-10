@@ -16,11 +16,11 @@
 
 package org.springframework.boot.actuate.metrics.writer;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -31,7 +31,6 @@ import static org.mockito.Mockito.verify;
  *
  * @author Dave Syer
  */
-@RunWith(MockitoJUnitRunner.class)
 public class DefaultCounterServiceTests {
 
 	private final MetricWriter repository = mock(MetricWriter.class);
@@ -41,6 +40,11 @@ public class DefaultCounterServiceTests {
 
 	@Captor
 	private ArgumentCaptor<Delta<Number>> captor;
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
 
 	@Test
 	public void incrementWithExistingCounter() {

@@ -16,9 +16,9 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import org.springframework.test.context.ContextCustomizer;
 
@@ -29,10 +29,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(MockitoJUnitRunner.class)
 public class MockitoContextCustomizerFactoryTests {
 
 	private final MockitoContextCustomizerFactory factory = new MockitoContextCustomizerFactory();
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
 
 	@Test
 	public void getContextCustomizerWithoutAnnotationReturnsCustomizer()
@@ -57,8 +61,8 @@ public class MockitoContextCustomizerFactoryTests {
 		ContextCustomizer same = this.factory
 				.createContextCustomizer(WithSameMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();
-		ContextCustomizer different = this.factory.createContextCustomizer(
-				WithDifferentMockBeanAnnotation.class, null);
+		ContextCustomizer different = this.factory
+				.createContextCustomizer(WithDifferentMockBeanAnnotation.class, null);
 		assertThat(different).isNotNull();
 		assertThat(customizer.hashCode()).isEqualTo(same.hashCode());
 		assertThat(customizer.hashCode()).isNotEqualTo(different.hashCode());

@@ -19,12 +19,12 @@ package org.springframework.boot;
 import java.io.PrintStream;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.testutil.InternalOutputCapture;
@@ -47,7 +47,6 @@ import static org.mockito.Mockito.verify;
  * @author Michael Stummvoll
  * @author Michael Simons
  */
-@RunWith(MockitoJUnitRunner.class)
 public class BannerTests {
 
 	private ConfigurableApplicationContext context;
@@ -64,6 +63,11 @@ public class BannerTests {
 
 	@Captor
 	private ArgumentCaptor<Class<?>> sourceClassCaptor;
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
 
 	@Test
 	public void testDefaultBanner() throws Exception {
