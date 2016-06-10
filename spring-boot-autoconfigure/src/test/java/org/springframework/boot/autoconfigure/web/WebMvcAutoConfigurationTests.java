@@ -45,6 +45,7 @@ import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.format.support.FormattingConversionService;
@@ -65,6 +66,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
 import org.springframework.web.servlet.resource.CachingResourceResolver;
 import org.springframework.web.servlet.resource.CachingResourceTransformer;
@@ -468,6 +470,29 @@ public class WebMvcAutoConfigurationTests {
 						.isInstanceOf(CustomWebBindingInitializer.class);
 	}
 
+	@Test
+	public void customRequestMappingHandlerMapping() {
+		load(CustomRequestMappingHandlerMapping.class);
+		assertThat(this.context.getBean(RequestMappingHandlerMapping.class))
+				.isInstanceOf(MyRequestMappingHandlerMapping.class);
+	}
+
+	@Test
+	public void customRequestMappingHandlerAdapter() {
+		load(CustomRequestMappingHandlerAdapter.class);
+		assertThat(this.context.getBean(RequestMappingHandlerAdapter.class))
+				.isInstanceOf(MyRequestMappingHandlerAdapter.class);
+	}
+
+	@Test
+	public void multipleWebMvcRegistrations() {
+		load(MultipleWebMvcRegistrations.class);
+		assertThat(this.context.getBean(RequestMappingHandlerMapping.class))
+				.isNotInstanceOf(MyRequestMappingHandlerMapping.class);
+		assertThat(this.context.getBean(RequestMappingHandlerAdapter.class))
+				.isNotInstanceOf(MyRequestMappingHandlerAdapter.class);
+	}
+
 	private void load(Class<?> config, String... environment) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
@@ -591,6 +616,55 @@ public class WebMvcAutoConfigurationTests {
 		public HttpPutFormContentFilter customHttpPutFormContentFilter() {
 			return new HttpPutFormContentFilter();
 		}
+
+	}
+
+	@Configuration
+	static class CustomRequestMappingHandlerMapping {
+
+		@Bean
+		public WebMvcRegistrationsAdapter webMvcRegistrationsHandlerMapping() {
+			return new WebMvcRegistrationsAdapter() {
+
+				@Override
+				public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
+					return new MyRequestMappingHandlerMapping();
+				}
+
+			};
+		}
+	}
+
+	private static class MyRequestMappingHandlerMapping
+			extends RequestMappingHandlerMapping {
+
+	}
+
+	@Configuration
+	static class CustomRequestMappingHandlerAdapter {
+
+		@Bean
+		public WebMvcRegistrationsAdapter webMvcRegistrationsHandlerAdapter() {
+			return new WebMvcRegistrationsAdapter() {
+
+				@Override
+				public RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
+					return new MyRequestMappingHandlerAdapter();
+				}
+
+			};
+		}
+	}
+
+	private static class MyRequestMappingHandlerAdapter
+			extends RequestMappingHandlerAdapter {
+
+	}
+
+	@Configuration
+	@Import({ CustomRequestMappingHandlerMapping.class,
+			CustomRequestMappingHandlerAdapter.class })
+	static class MultipleWebMvcRegistrations {
 
 	}
 
