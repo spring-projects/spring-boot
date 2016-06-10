@@ -251,7 +251,7 @@ public class JettyEmbeddedServletContainerFactory
 		configureSslClientAuth(factory, ssl);
 		configureSslPasswords(factory, ssl);
 		factory.setCertAlias(ssl.getKeyAlias());
-		if (!ObjectUtils.isEmpty(ssl.getCiphers() != null)) {
+		if (!ObjectUtils.isEmpty(ssl.getCiphers())) {
 			factory.setIncludeCipherSuites(ssl.getCiphers());
 			factory.setExcludeCipherSuites();
 		}
