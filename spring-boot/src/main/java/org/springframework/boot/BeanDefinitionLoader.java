@@ -33,6 +33,7 @@ import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -201,7 +202,7 @@ class BeanDefinitionLoader {
 		int loadCount = 0;
 		boolean atLeastOneResourceExists = false;
 		for (Resource resource : resources) {
-			if (resource != null && resource.exists()) {
+			if (isLoadCandidate(resource)) {
 				atLeastOneResourceExists = true;
 				loadCount += load(resource);
 			}
@@ -233,6 +234,28 @@ class BeanDefinitionLoader {
 		catch (IOException ex) {
 			throw new IllegalStateException("Error reading source '" + source + "'");
 		}
+	}
+
+	private boolean isLoadCandidate(Resource resource) {
+		if (resource == null || !resource.exists()) {
+			return false;
+		}
+		if (resource instanceof ClassPathResource) {
+			// A simple package without a '.' may accidentally get loaded as an XML
+			// document if we're not careful. The result of getInputStream() will be
+			// a file list of the package content. We double check here that it's not
+			// actually a package.
+			String path = ((ClassPathResource) resource).getPath();
+			if (path.indexOf(".") == -1) {
+				try {
+					return Package.getPackage(path) == null;
+				}
+				catch (Exception ex) {
+					// Ignore
+				}
+			}
+		}
+		return true;
 	}
 
 	private Package findPackage(CharSequence source) {
