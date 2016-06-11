@@ -130,8 +130,8 @@ public class BeanDefinitionLoaderTests {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				MyComponentInPackageWithoutDot.class.getPackage().getName());
 		int loaded = loader.load();
-		assertThat(loaded, equalTo(1));
-		assertTrue(this.registry.containsBean("myComponentInPackageWithoutDot"));
+		assertThat(loaded).isEqualTo(1);
+		assertThat(this.registry.containsBean("myComponentInPackageWithoutDot")).isTrue();
 	}
 
 	@Test
