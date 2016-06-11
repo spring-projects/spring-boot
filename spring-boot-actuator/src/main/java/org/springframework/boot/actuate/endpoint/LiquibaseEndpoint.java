@@ -54,8 +54,13 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<Map<String, ?>>> {
 			DatabaseFactory factory = DatabaseFactory.getInstance();
 			DataSource dataSource = this.liquibase.getDataSource();
 			JdbcConnection connection = new JdbcConnection(dataSource.getConnection());
-			Database database = factory.findCorrectDatabaseImplementation(connection);
-			return service.queryDatabaseChangeLogTable(database);
+			try {
+				Database database = factory.findCorrectDatabaseImplementation(connection);
+				return service.queryDatabaseChangeLogTable(database);
+			}
+			finally {
+				connection.close();
+			}
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable to get Liquibase changelog", ex);
