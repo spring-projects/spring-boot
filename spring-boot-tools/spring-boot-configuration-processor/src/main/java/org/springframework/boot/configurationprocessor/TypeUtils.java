@@ -27,7 +27,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Types;
 
 /**
@@ -73,12 +72,25 @@ class TypeUtils {
 	TypeUtils(ProcessingEnvironment env) {
 		this.env = env;
 		Types types = env.getTypeUtils();
-		WildcardType wc = types.getWildcardType(null, null);
-		this.collectionType = types.getDeclaredType(
-				this.env.getElementUtils().getTypeElement(Collection.class.getName()),
-				wc);
-		this.mapType = types.getDeclaredType(
-				this.env.getElementUtils().getTypeElement(Map.class.getName()), wc, wc);
+		this.collectionType = getDeclaredType(types, Collection.class, 1);
+		this.mapType = getDeclaredType(types, Map.class, 2);
+	}
+
+	private TypeMirror getDeclaredType(Types types, Class<?> typeClass,
+			int numberOfTypeArgs) {
+		TypeMirror[] typeArgs = new TypeMirror[numberOfTypeArgs];
+		for (int i = 0; i < typeArgs.length; i++) {
+			typeArgs[i] = types.getWildcardType(null, null);
+		}
+		TypeElement typeElement = this.env.getElementUtils()
+				.getTypeElement(typeClass.getName());
+		try {
+			return types.getDeclaredType(typeElement, typeArgs);
+		}
+		catch (IllegalArgumentException ex) {
+			// Try again without generics for older Java versions
+			return types.getDeclaredType(typeElement);
+		}
 	}
 
 	public String getType(Element element) {

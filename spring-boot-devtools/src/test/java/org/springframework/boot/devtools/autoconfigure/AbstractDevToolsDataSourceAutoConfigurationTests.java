@@ -76,7 +76,6 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	@Test
 	public void emptyFactoryMethodMetadataIgnored() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
 		DataSource dataSource = mock(DataSource.class);
 		AnnotatedGenericBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(
 				dataSource.getClass());
