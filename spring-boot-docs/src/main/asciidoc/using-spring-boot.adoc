@@ -817,10 +817,9 @@ Project`) will have the same effect.
 ====
 You can also start your application via the supported build plugins (i.e. Maven and
 Gradle) as long as forking is enabled since DevTools need an isolated application
-classloader to operate properly. You can force the plugin to fork the process as
-follows:
+classloader to operate properly. Gradle does this by default and you can force the Maven
+plugin to fork the process as follows:
 
-.Maven
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	<build>
@@ -836,13 +835,6 @@ follows:
 	</build>
 ----
 
-.Gradle
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	bootRun {
-		addResources = true
-	}
-----
 ====
 
 TIP: Automatic restart works very well when used with LiveReload.
