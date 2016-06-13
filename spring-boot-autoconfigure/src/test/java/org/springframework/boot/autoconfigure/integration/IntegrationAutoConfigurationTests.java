@@ -24,11 +24,23 @@ import javax.management.MBeanServer;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfigurationTests;
+import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.integration.context.IntegrationContextUtils;
+import org.springframework.integration.http.management.IntegrationGraphController;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerExecutionChain;
+import org.springframework.web.servlet.HandlerMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -97,6 +109,42 @@ public class IntegrationAutoConfigurationTests {
 		assertDomains(mBeanServer, false, "org.springframework.integration",
 				"org.springframework.integration.monitor");
 	}
+
+	@Test
+	public void customizeChannelsAutoCreate() {
+		load("spring.integration.channels.auto-create=false");
+		Object channelInitializer = this.context.getBean(IntegrationContextUtils.CHANNEL_INITIALIZER_BEAN_NAME);
+		assertThat(ReflectionTestUtils.getField(channelInitializer, "autoCreate")).isEqualTo(Boolean.FALSE);
+	}
+
+	@Test
+	public void customizeIntegrationGraphPath() throws Exception {
+		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
+				"spring.integration.graph-controller-path=/foo");
+		context.register(WebMvcAutoConfigurationTests.Config.class, WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class, JmxAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, IntegrationAutoConfiguration.class);
+		context.refresh();
+
+		HandlerMapping handlerMapping = context.getBean("requestMappingHandlerMapping", HandlerMapping.class);
+
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setMethod("GET");
+		request.setRequestURI("/foo");
+
+		HandlerExecutionChain executionChain = handlerMapping.getHandler(request);
+		assertThat(executionChain).isNotNull();
+
+		Object handler = executionChain.getHandler();
+		assertThat(handler).isInstanceOf(HandlerMethod.class);
+
+		HandlerMethod handlerMethod = (HandlerMethod) handler;
+		assertThat(handlerMethod.getBean()).isInstanceOf(IntegrationGraphController.class);
+
+		context.close();
+	}
+
 
 	private static void assertDomains(MBeanServer mBeanServer, boolean expected,
 			String... domains) {
