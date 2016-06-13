@@ -629,6 +629,13 @@ content into your application; rather pick only the properties that you need.
 	spring.h2.console.settings.trace=false # Enable trace output.
 	spring.h2.console.settings.web-allow-others=false # Enable remote access.
 
+	# JEST (ElasticSearch HTTP client) ({sc-spring-boot-autoconfigure}/jest/JestProperties.{sc-ext}[JestProperties])
+	spring.jest.connection-timeout=3000 # Connection timeout in milliseconds.
+	spring.jest.password= # Login password.
+	spring.jest.read-timeout=3000 # Read timeout in milliseconds.
+	spring.jest.uris=http://localhost:9200 # Comma-separated list of the elasticsearch instances to use.
+	spring.jest.username= # Login user.
+
 	# JOOQ ({sc-spring-boot-autoconfigure}/jooq/JooqAutoConfiguration.{sc-ext}[JooqAutoConfiguration])
 	spring.jooq.sql-dialect= # SQLDialect JOOQ used when communicating with the configured datasource. For instance `POSTGRES`
 

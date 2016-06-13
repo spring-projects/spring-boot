@@ -3315,12 +3315,31 @@ real-time search and analytics engine. Spring Boot offers basic auto-configurati
 the Elasticsearch and abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch].
 There is a `spring-boot-starter-data-elasticsearch` '`Starter`' for collecting the
-dependencies in a convenient way.
+dependencies in a convenient way. Spring Boot also supports
+https://github.com/searchbox-io/Jest[Jest].
 
+
+
+[[boot-features-connecting-to-elasticsearch-jest]]
+==== Connecting to Elasticsearch using Spring Data
+If you have `Jest` on the classpath, you can inject an auto-configured `JestClient`
+targeting `http://localhost:9200` by default. You can further tune how the client is
+configured:
+
+[source,properties,indent=0]
+----
+	spring.jest.uris=http://search.example.com:9200
+	spring.jest.read-timeout=10000
+	spring.jest.username=user
+	spring.jest.password=secret
+----
+
+To take full control over the registration, define a `JestClient` bean.
 
 
 [[boot-features-connecting-to-elasticsearch]]
-==== Connecting to Elasticsearch
+[[boot-features-connecting-to-elasticsearch-spring-data]]
+==== Connecting to Elasticsearch using Spring Data
 You can inject an auto-configured `ElasticsearchTemplate` or Elasticsearch `Client`
 instance as you would any other Spring Bean. By default the instance will embed a
 local in-memory server (a `Node` in ElasticSearch terms) and use the current working

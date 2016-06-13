@@ -106,6 +106,7 @@
 		<jdom2.version>2.0.6</jdom2.version>
 		<jedis.version>2.8.1</jedis.version>
 		<jersey.version>2.23</jersey.version>
+		<jest.version>2.0.3</jest.version>
 		<jetty.version>9.2.17.v20160517</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jmustache.version>1.12</jmustache.version>
@@ -927,6 +928,11 @@
 				<groupId>io.projectreactor.spring</groupId>
 				<artifactId>reactor-spring-webmvc</artifactId>
 				<version>${reactor-spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.searchbox</groupId>
+				<artifactId>jest</artifactId>
+				<version>${jest.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.undertow</groupId>
