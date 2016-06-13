@@ -4500,7 +4500,10 @@ if `'spring-integration-jmx'` is also on the classpath. See the
 {sc-spring-boot-autoconfigure}/integration/IntegrationAutoConfiguration.{sc-ext}[`IntegrationAutoConfiguration`]
 class for more details.
 
+If `'spring-integration-http'` is preset on the classpath, the `@EnableIntegrationGraphController` will be switched on with `/integration` as default request mapping path.
+That path can be overridden with `spring.integration.graph-controller-path` configuration property.
 
+In addition all Spring Integration global properties is exposed as an `IntegrationProperties` `@ConfigurationProperties`.
 
 [[boot-features-session]]
 == Spring Session
