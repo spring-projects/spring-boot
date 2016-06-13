@@ -59,14 +59,12 @@ public class RestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 	private MockMvc mvc;
 
 	@Autowired
-	private RestDocumentationResultHandler document;
+	private RestDocumentationResultHandler documentationHandler;
 
 	@Test
-	@Deprecated
 	public void snippetGeneration() throws Exception {
-		this.document.snippets(links(
-				linkWithRel("self").description("Canonical location of this resource")));
-		this.mvc.perform(get("/"));
+		this.mvc.perform(get("/")).andDo(this.documentationHandler.document(links(
+				linkWithRel("self").description("Canonical location of this resource"))));
 		File defaultSnippetsDir = new File(
 				"target/generated-snippets/snippet-generation");
 		assertThat(defaultSnippetsDir).exists();
