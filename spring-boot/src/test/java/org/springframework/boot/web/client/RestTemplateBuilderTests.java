@@ -264,22 +264,14 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
-	public void customizersWhenNullArrayShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
-		RestTemplateCustomizer[] customizers = null;
-		this.builder.customizers(customizers);
-	}
-
-	@Test
-	public void customizersWhenConvertersAreNullShouldThrowException() throws Exception {
+	public void customizersWhenCustomizersAreNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("RestTemplateCustomizers must not be null");
 		this.builder.customizers((RestTemplateCustomizer[]) null);
 	}
 
 	@Test
-	public void customizersCollectionWhenConvertersAreNullShouldThrowException()
+	public void customizersCollectionWhenCustomizersAreNullShouldThrowException()
 			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("RestTemplateCustomizers must not be null");
@@ -318,7 +310,7 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
-	public void additionalCustomizersWhenConvertersAreNullShouldThrowException()
+	public void additionalCustomizersWhenCustomizersAreNullShouldThrowException()
 			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("RestTemplateCustomizers must not be null");
@@ -326,7 +318,7 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
-	public void additionalCustomizersCollectionWhenConvertersAreNullShouldThrowException()
+	public void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException()
 			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("RestTemplateCustomizers must not be null");
