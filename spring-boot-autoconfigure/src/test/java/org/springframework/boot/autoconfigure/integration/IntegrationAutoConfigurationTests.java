@@ -121,7 +121,7 @@ public class IntegrationAutoConfigurationTests {
 	public void customizeIntegrationGraphPath() throws Exception {
 		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
-				"spring.integration.graph-controller-path=/foo");
+				"SPRING_INTEGRATION_GRAPH_CONTROLLER_PATH:/foo");
 		context.register(WebMvcAutoConfigurationTests.Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class, JmxAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, IntegrationAutoConfiguration.class);
