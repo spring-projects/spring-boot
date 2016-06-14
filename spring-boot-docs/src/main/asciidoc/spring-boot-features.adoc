@@ -2181,7 +2181,7 @@ The basic features you get out of the box in a web application are:
 * An `AuthenticationManager` bean with in-memory store and a single user (see
   `SecurityProperties.User` for the properties of the user).
 * Ignored (insecure) paths for common static resource locations (`+/css/**+`, `+/js/**+`,
-  `+/images/**+` and `+**/favicon.ico+`).
+  `+/images/**+`, `+/webjars/**+` and `+**/favicon.ico+`).
 * HTTP Basic security for all other endpoints.
 * Security events published to Spring's `ApplicationEventPublisher` (successful and
   unsuccessful authentication and access denied).

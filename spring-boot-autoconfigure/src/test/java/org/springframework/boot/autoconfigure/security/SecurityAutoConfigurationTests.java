@@ -90,9 +90,9 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
-		// 4 for static resources and one for the rest
+		// 5 for static resources and one for the rest
 		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains())
-				.hasSize(5);
+				.hasSize(6);
 	}
 
 	@Test
