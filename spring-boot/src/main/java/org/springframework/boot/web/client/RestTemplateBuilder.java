@@ -285,7 +285,7 @@ public class RestTemplateBuilder {
 	}
 
 	/**
-	 * Set the {@link HttpMessageConverter HttpMessageConverters} that should be applied
+	 * Set the {@link RestTemplateCustomizer RestTemplateCustomizers} that should be applied
 	 * to the {@link RestTemplate}. Customizers are applied in the order that they were
 	 * added after builder configuration has been applied. Setting this value will replace
 	 * any previously configured customizers.
@@ -301,7 +301,7 @@ public class RestTemplateBuilder {
 	}
 
 	/**
-	 * Set the {@link HttpMessageConverter HttpMessageConverters} that should be applied
+	 * Set the {@link RestTemplateCustomizer RestTemplateCustomizers} that should be applied
 	 * to the {@link RestTemplate}. Customizers are applied in the order that they were
 	 * added after builder configuration has been applied. Setting this value will replace
 	 * any previously configured customizers.
@@ -321,7 +321,7 @@ public class RestTemplateBuilder {
 	}
 
 	/**
-	 * Add {@link HttpMessageConverter HttpMessageConverters} that should be applied to
+	 * Add {@link RestTemplateCustomizer RestTemplateCustomizers} that should be applied to
 	 * the {@link RestTemplate}. Customizers are applied in the order that they were added
 	 * after builder configuration has been applied.
 	 * @param restTemplateCustomizers the customizers to add
@@ -336,7 +336,7 @@ public class RestTemplateBuilder {
 	}
 
 	/**
-	 * Add {@link HttpMessageConverter HttpMessageConverters} that should be applied to
+	 * Add {@link RestTemplateCustomizer RestTemplateCustomizers} that should be applied to
 	 * the {@link RestTemplate}. Customizers are applied in the order that they were added
 	 * after builder configuration has been applied.
 	 * @param customizers the customizers to add

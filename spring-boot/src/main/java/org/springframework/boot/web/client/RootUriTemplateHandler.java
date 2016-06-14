@@ -26,7 +26,7 @@ import org.springframework.web.util.DefaultUriTemplateHandler;
 import org.springframework.web.util.UriTemplateHandler;
 
 /**
- * {@link UriTemplateHandler} to set the root for URI that start with {@code '/'}.
+ * {@link UriTemplateHandler} to set the root for URI that starts with {@code '/'}.
  *
  * @author Phillip Webb
  * @since 1.4.0
@@ -44,7 +44,7 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 
 	/**
 	 * Create a new {@link RootUriTemplateHandler} instance.
-	 * @param rootUri the root URI to used to prefix relative URLs
+	 * @param rootUri the root URI to be used to prefix relative URLs
 	 */
 	public RootUriTemplateHandler(String rootUri) {
 		this(rootUri, new DefaultUriTemplateHandler());
@@ -52,7 +52,7 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 
 	/**
 	 * Create a new {@link RootUriTemplateHandler} instance.
-	 * @param rootUri the root URI to used to prefix relative URLs
+	 * @param rootUri the root URI to be used to prefix relative URLs
 	 * @param handler the delegate handler
 	 */
 	public RootUriTemplateHandler(String rootUri, UriTemplateHandler handler) {

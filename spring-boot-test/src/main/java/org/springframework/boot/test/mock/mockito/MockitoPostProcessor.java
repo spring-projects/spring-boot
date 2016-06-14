@@ -416,7 +416,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	/**
 	 * {@link BeanPostProcessor} to handle {@link SpyBean} definitions. Registered as a
-	 * separate processor so that it can ordered above AOP post processors.
+	 * separate processor so that it can be ordered above AOP post processors.
 	 */
 	static class SpyPostProcessor extends InstantiationAwareBeanPostProcessorAdapter
 			implements PriorityOrdered {
@@ -466,7 +466,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	/**
-	 * An registered field item.
+	 * A registered field item.
 	 */
 	private static class RegisteredField {
 
