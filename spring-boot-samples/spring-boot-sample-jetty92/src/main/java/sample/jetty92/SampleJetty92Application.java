@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-package sample.jetty93.web;
+package sample.jetty92;
 
-import sample.jetty93.service.HelloWorldService;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+@SpringBootApplication
+public class SampleJetty92Application {
 
-@Controller
-public class SampleController {
-
-	@Autowired
-	private HelloWorldService helloWorldService;
-
-	@GetMapping("/")
-	@ResponseBody
-	public String helloWorld() {
-		return this.helloWorldService.getHelloMessage();
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SampleJetty92Application.class, args);
 	}
 
 }

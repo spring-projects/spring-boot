@@ -7,9 +7,9 @@
 		<artifactId>spring-boot-samples</artifactId>
 		<version>1.4.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-sample-jetty93</artifactId>
-	<name>Spring Boot Jetty 9.3 Sample</name>
-	<description>Spring Boot Jetty 9.3 Sample</description>
+	<artifactId>spring-boot-sample-jetty92</artifactId>
+	<name>Spring Boot Jetty 9.2 Sample</name>
+	<description>Spring Boot Jetty 9.2 Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
@@ -17,7 +17,7 @@
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
-		<jetty.version>9.3.0.v20150612</jetty.version>
+		<jetty.version>9.2.17.v20160517</jetty.version>
 	</properties>
 	<dependencies>
 		<dependency>

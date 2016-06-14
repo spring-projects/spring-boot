@@ -117,8 +117,8 @@ The following sample applications are provided:
 | link:spring-boot-sample-jetty8-ssl[spring-boot-sample-jetty8-ssl]
 | Embedded Jetty 8 SSL
 
-| link:spring-boot-sample-jetty93[spring-boot-sample-jetty93]
-| Embedded Jetty 9.3
+| link:spring-boot-sample-jetty92[spring-boot-sample-jetty92]
+| Embedded Jetty 9.2
 
 | link:spring-boot-sample-jooq[spring-boot-sample-jooq]
 | Stores data using jOOQ

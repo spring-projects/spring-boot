@@ -48,11 +48,11 @@ import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
-import org.eclipse.jetty.servlets.gzip.GzipHandler;
 import org.eclipse.jetty.util.resource.JarResource;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -754,14 +754,26 @@ public class JettyEmbeddedServletContainerFactory
 
 		@Override
 		public HandlerWrapper createGzipHandler(Compression compression) {
-			GzipHandler gzipHandler = new GzipHandler();
-			gzipHandler.setMinGzipSize(compression.getMinResponseSize());
-			gzipHandler.addIncludedMimeTypes(compression.getMimeTypes());
-			if (compression.getExcludedUserAgents() != null) {
-				gzipHandler.setExcluded(new HashSet<String>(
-						Arrays.asList(compression.getExcludedUserAgents())));
+			try {
+				Class<?> handlerClass = ClassUtils.forName(GZIP_HANDLER_JETTY_9_2,
+						getClass().getClassLoader());
+				HandlerWrapper gzipHandler = (HandlerWrapper) handlerClass.newInstance();
+				ReflectionUtils.findMethod(handlerClass, "setMinGzipSize", int.class)
+						.invoke(gzipHandler, compression.getMinResponseSize());
+				ReflectionUtils
+						.findMethod(handlerClass, "addIncludedMimeTypes", String[].class)
+						.invoke(gzipHandler, new Object[] { compression.getMimeTypes() });
+				if (compression.getExcludedUserAgents() != null) {
+					ReflectionUtils.findMethod(handlerClass, "setExcluded", Set.class)
+							.invoke(gzipHandler, new HashSet<String>(
+									Arrays.asList(compression.getExcludedUserAgents())));
+				}
+				return gzipHandler;
 			}
-			return gzipHandler;
+			catch (Exception ex) {
+				throw new RuntimeException("Failed to configure Jetty 9.2 gzip handler",
+						ex);
+			}
 		}
 
 	}
@@ -770,28 +782,13 @@ public class JettyEmbeddedServletContainerFactory
 
 		@Override
 		public HandlerWrapper createGzipHandler(Compression compression) {
-			try {
-				Class<?> handlerClass = ClassUtils.forName(GZIP_HANDLER_JETTY_9_3,
-						getClass().getClassLoader());
-				HandlerWrapper handler = (HandlerWrapper) handlerClass.newInstance();
-				ReflectionUtils.findMethod(handlerClass, "setMinGzipSize", int.class)
-						.invoke(handler, compression.getMinResponseSize());
-				ReflectionUtils
-						.findMethod(handlerClass, "setIncludedMimeTypes", String[].class)
-						.invoke(handler, new Object[] { compression.getMimeTypes() });
-				if (compression.getExcludedUserAgents() != null) {
-					ReflectionUtils
-							.findMethod(handlerClass, "setExcludedAgentPatterns",
-									String[].class)
-							.invoke(handler,
-									new Object[] { compression.getExcludedUserAgents() });
-				}
-				return handler;
+			GzipHandler handler = new GzipHandler();
+			handler.setMinGzipSize(compression.getMinResponseSize());
+			handler.setIncludedMimeTypes(compression.getMimeTypes());
+			if (compression.getExcludedUserAgents() != null) {
+				handler.setExcludedAgentPatterns(compression.getExcludedUserAgents());
 			}
-			catch (Exception ex) {
-				throw new RuntimeException("Failed to configure Jetty 9.3 gzip handler",
-						ex);
-			}
+			return handler;
 		}
 
 	}

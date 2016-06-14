@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.jetty93;
+package sample.jetty92;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-public class SampleJetty93ApplicationTests {
+public class SampleJetty92ApplicationTests {
 
 	@LocalServerPort
 	private int port;

@@ -920,10 +920,67 @@ You can change the Tomcat version by setting the `tomcat.version` property:
 
 
 
+[[howto-use-jetty-9.2]]
+=== Use Jetty 9.2
+Jetty 9.2 works with Spring Boot, but the default is to use Jetty 9.3. If you cannot use
+Jetty 9.3 (for example, because you are using Java 7) you will need to change your
+classpath to reference Jetty 9.2.
+
+
+
+[[howto-use-jetty-9.2-maven]]
+==== Use Jetty 9.2 with Maven
+
+If you are using the starters and parent you can just add the Jetty starter and override
+the `jetty.version` property:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<properties>
+		<jetty.version>9.2.17.v20160517</jetty.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jetty</artifactId>
+		</dependency>
+	</dependencies>
+----
+
+
+
+[[howto-use-jetty-9.2-gradle]]
+==== Use Jetty 9.2 with Gradle
+
+You can set the `jetty.version` property. For example, for a simple webapp or service:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	ext['jetty.version'] = '9.2.17.v20160517'
+	dependencies {
+		compile ('org.springframework.boot:spring-boot-starter-web') {
+			exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+		}
+		compile ('org.springframework.boot:spring-boot-starter-jetty')
+	}
+----
+
+
+
 [[howto-use-jetty-8]]
 === Use Jetty 8
-Jetty 8 works with Spring Boot, but the default is to use Jetty 9. If you cannot use
-Jetty 9 (for example, because you are using Java 1.6) you will need to change your
+Jetty 8 works with Spring Boot, but the default is to use Jetty 9.3. If you cannot use
+Jetty 9.3 (for example, because you are using Java 1.6) you will need to change your
 classpath to reference Jetty 8. You will also need to exclude Jetty's WebSocket-related
 dependencies.
 
