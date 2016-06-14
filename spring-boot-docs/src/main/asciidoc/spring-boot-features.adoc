@@ -4253,7 +4253,7 @@ reached.
 [[boot-features-restclient]]
 == Calling REST services
 If you need to call remote REST services from your application, you can use Spring
-Framework's `RestTemplate` class. Since `RestTemplate` instances often needs to be
+Framework's `RestTemplate` class. Since `RestTemplate` instances often need to be
 customized before being used, Spring Boot does not provide any single auto-configured
 `RestTemplate` bean. It does, however, auto-configure a `RestTemplateBuilder` which can be
 used to create `RestTemplate` instances when needed. The auto-configured
@@ -4273,7 +4273,7 @@ Here's a typical example:
 			this.restTemplate = restTemplateBuilder.build();
 		}
 
-		public String someRestCall(String name) {
+		public Details someRestCall(String name) {
 			return this.restTemplate.getForObject("/{name}/details", Details.class, name);
 		}
 
@@ -5035,7 +5035,7 @@ database you can use the `@AutoConfigureTestDatabase` annotation:
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-client]]
 ==== Auto-configured REST clients
 Use `@RestClientTest` annotation can be used if you want to test REST clients. By default
-it will auto configure Jackson and GSON support, configure a `RestTemplateBuilder` and
+it will auto-configure Jackson and GSON support, configure a `RestTemplateBuilder` and
 add support for `MockRestServiceServer`. The specific beans that you want to test should
 be specified using `value` or `components` attribute of `@RestClientTest`:
 
@@ -5047,7 +5047,7 @@ be specified using `value` or `components` attribute of `@RestClientTest`:
 	public class ExampleRestClientTest {
 
 		@Autowired
-		private MyService service;
+		private RemoteVehicleDetailsService service;
 
 		@Autowired
 		private MockRestServiceServer server;
@@ -5057,7 +5057,7 @@ be specified using `value` or `components` attribute of `@RestClientTest`:
 				throws Exception {
 			this.server.expect(requestTo("/greet/details"))
 					.andRespond(withSuccess("hello", MediaType.TEXT_PLAIN));
-			String greeting  = this.service.callRestService();
+			String greeting = this.service.callRestService();
 			assertThat(greeting).isEqualTo("hello");
 		}
 

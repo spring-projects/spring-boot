@@ -54,7 +54,7 @@ public class BasicAuthorizationInterceptorTests {
 	@Test
 	public void createWhenPasswordIsNullShouldUseEmptyPassword() throws Exception {
 		BasicAuthorizationInterceptor interceptor = new BasicAuthorizationInterceptor(
-				"username", "");
+				"username", null);
 		assertThat(interceptor).extracting("password").containsExactly("");
 	}
 
