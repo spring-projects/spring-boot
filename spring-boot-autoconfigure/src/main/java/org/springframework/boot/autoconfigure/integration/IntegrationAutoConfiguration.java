@@ -147,12 +147,12 @@ public class IntegrationAutoConfiguration {
 	@Configuration
 	@ConditionalOnWebApplication
 	@ConditionalOnClass(EnableIntegrationGraphController.class)
-	@ConditionalOnMissingBean(value = IntegrationGraphController.class)
+	@ConditionalOnMissingBean(IntegrationGraphController.class)
 	protected static class IntegrationGraphControllerConfiguration
 			implements BeanFactoryPostProcessor, EnvironmentAware {
 
 		@Bean
-		@ConditionalOnMissingBean(value = IntegrationGraphServer.class)
+		@ConditionalOnMissingBean(IntegrationGraphServer.class)
 		public IntegrationGraphServer integrationGraphServer() {
 			return new IntegrationGraphServer();
 		}
