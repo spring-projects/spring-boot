@@ -68,6 +68,12 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.ext</groupId>
 			<artifactId>jersey-spring3</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jvnet</groupId>
+  					<artifactId>tiger-types</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
