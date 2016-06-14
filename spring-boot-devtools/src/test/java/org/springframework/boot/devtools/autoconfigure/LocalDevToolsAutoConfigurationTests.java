@@ -31,7 +31,6 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
-import org.springframework.boot.devtools.autoconfigure.RestartCompatibleRedisSerializerConfigurer.RestartCompatibleRedisSerializer;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
@@ -233,31 +232,6 @@ public class LocalDevToolsAutoConfigurationTests {
 		assertThat(folders).hasSize(2)
 				.containsKey(new File("src/main/java").getAbsoluteFile())
 				.containsKey(new File("src/test/java").getAbsoluteFile());
-	}
-
-	@Test
-	public void sessionRedisTemplateIsConfiguredWithCustomDeserializers()
-			throws Exception {
-		sessionRedisTemplateIsConfiguredWithCustomDeserializers(
-				SessionRedisTemplateConfig.class);
-	}
-
-	private void sessionRedisTemplateIsConfiguredWithCustomDeserializers(
-			Object sessionConfig) throws Exception {
-		SpringApplication application = new SpringApplication(sessionConfig,
-				LocalDevToolsAutoConfiguration.class);
-		application.setWebEnvironment(false);
-		this.context = application.run();
-		RedisTemplate<?, ?> redisTemplate = this.context.getBean("sessionRedisTemplate",
-				RedisTemplate.class);
-		assertThat(redisTemplate.getHashKeySerializer())
-				.isInstanceOf(RestartCompatibleRedisSerializer.class);
-		assertThat(redisTemplate.getHashValueSerializer())
-				.isInstanceOf(RestartCompatibleRedisSerializer.class);
-		assertThat(redisTemplate.getKeySerializer())
-				.isInstanceOf(RestartCompatibleRedisSerializer.class);
-		assertThat(redisTemplate.getValueSerializer())
-				.isInstanceOf(RestartCompatibleRedisSerializer.class);
 	}
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config,
