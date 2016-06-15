@@ -352,6 +352,7 @@ public class JettyEmbeddedServletContainerFactory
 		}
 		if (shouldRegisterJspServlet()) {
 			addJspServlet(context);
+			context.addBean(new JasperInitializer(context), true);
 		}
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
 		Configuration[] configurations = getWebAppContextConfigurations(context,
