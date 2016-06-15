@@ -163,6 +163,17 @@ public class RepackagingTests {
 		assertThat(isDevToolsJarIncluded(repackageFile)).isFalse();
 	}
 
+	@Test
+	public void customRepackagingTaskWithOwnMainClassNameAnNoGlobalMainClassName() {
+		project.newBuild().forTasks("clean", "customRepackagedJarWithOwnMainClass")
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true",
+						"-PexcludeDevtools=false", "-PnoMainClass=true")
+				.run();
+		File buildLibs = new File("target/repackage/build/libs");
+		assertThat(new File(buildLibs, "custom.jar").exists()).isTrue();
+		assertThat(new File(buildLibs, "custom.jar.original").exists()).isTrue();
+	}
+
 	private boolean isDevToolsJarIncluded(File repackageFile) throws IOException {
 		JarFile jarFile = new JarFile(repackageFile);
 		try {

@@ -254,8 +254,13 @@ public class RepackageTask extends DefaultTask {
 							.property("main");
 				}
 			}
-			getLogger().info("Setting mainClass: " + mainClassName);
-			repackager.setMainClass(mainClassName);
+			if (mainClassName != null) {
+				getLogger().info("Setting mainClass: " + mainClassName);
+				repackager.setMainClass(mainClassName);
+			}
+			else {
+				getLogger().info("No mainClass configured");
+			}
 		}
 
 		private String getMainClassNameProperty() {
@@ -264,7 +269,10 @@ public class RepackageTask extends DefaultTask {
 			}
 			ExtraPropertiesExtension extraProperties = (ExtraPropertiesExtension) getProject()
 					.getExtensions().getByName("ext");
-			return (String) extraProperties.get("mainClassName");
+			if (extraProperties.has("mainClassName")) {
+				return (String) extraProperties.get("mainClassName");
+			}
+			return null;
 		}
 
 		private LaunchScript getLaunchScript() throws IOException {
