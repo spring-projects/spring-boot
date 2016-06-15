@@ -97,7 +97,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 * @deprecated as of 1.4 in favor of
-	 * {@link #UndertowEmbeddedServletContainer(Builder, DeploymentManager, String, boolean, Compression)}
+	 * {@link #UndertowEmbeddedServletContainer(Undertow.Builder, DeploymentManager, String, boolean, Compression)}
 	 */
 	@Deprecated
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
@@ -115,7 +115,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 * @deprecated as of 1.4 in favor of
-	 * {@link #UndertowEmbeddedServletContainer(Builder, DeploymentManager, String, boolean, boolean, Compression)}
+	 * {@link #UndertowEmbeddedServletContainer(Undertow.Builder, DeploymentManager, String, boolean, boolean, Compression)}
 	 */
 	@Deprecated
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
@@ -135,7 +135,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * @param compression compression configuration
 	 * @param serverHeader string to be used in HTTP header
 	 * @deprecated as of 1.4 in favor of
-	 * {@link #UndertowEmbeddedServletContainer(Builder, DeploymentManager, String, boolean, boolean, Compression, String)}
+	 * {@link #UndertowEmbeddedServletContainer(Undertow.Builder, DeploymentManager, String, boolean, boolean, Compression, String)}
 	 */
 	@Deprecated
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
