@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +37,7 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.archive.Archive.Entry;
 import org.springframework.boot.loader.util.AsciiBytes;
+import org.springframework.util.StringUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -50,6 +50,7 @@ import static org.junit.Assert.assertThat;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class ExplodedArchiveTests {
 
@@ -62,10 +63,20 @@ public class ExplodedArchiveTests {
 
 	@Before
 	public void setup() throws Exception {
+		createArchive();
+	}
+
+	private void createArchive() throws Exception {
+		createArchive(null);
+	}
+
+	private void createArchive(String folderName) throws Exception {
 		File file = this.temporaryFolder.newFile();
 		TestJarCreator.createTestJar(file);
 
-		this.rootFolder = this.temporaryFolder.newFolder();
+		this.rootFolder = StringUtils.hasText(folderName)
+				? this.temporaryFolder.newFolder(folderName)
+				: this.temporaryFolder.newFolder();
 		JarFile jarFile = new JarFile(file);
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
@@ -107,9 +118,13 @@ public class ExplodedArchiveTests {
 
 	@Test
 	public void getUrl() throws Exception {
-		URL url = this.archive.getUrl();
-		assertThat(new File(URLDecoder.decode(url.getFile(), "UTF-8")),
-				equalTo(this.rootFolder));
+		assertThat(this.archive.getUrl(), equalTo(this.rootFolder.toURI().toURL()));
+	}
+
+	@Test
+	public void getUrlWithSpaceInPath() throws Exception {
+		createArchive("spaces in the name");
+		assertThat(this.archive.getUrl(), equalTo(this.rootFolder.toURI().toURL()));
 	}
 
 	@Test
