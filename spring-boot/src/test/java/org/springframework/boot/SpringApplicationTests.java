@@ -53,6 +53,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
@@ -393,6 +394,21 @@ public class SpringApplicationTests {
 	public void customBeanNameGenerator() throws Exception {
 		TestSpringApplication application = new TestSpringApplication(
 				ExampleWebConfig.class);
+		BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+		application.setBeanNameGenerator(beanNameGenerator);
+		this.context = application.run();
+		verify(application.getLoader()).setBeanNameGenerator(beanNameGenerator);
+		assertThat(
+				this.context
+						.getBean(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR),
+				sameInstance((Object) beanNameGenerator));
+	}
+
+	@Test
+	public void customBeanNameGeneratorWithNonWebApplication() throws Exception {
+		TestSpringApplication application = new TestSpringApplication(
+				ExampleWebConfig.class);
+		application.setWebEnvironment(false);
 		BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
 		application.setBeanNameGenerator(beanNameGenerator);
 		this.context = application.run();
