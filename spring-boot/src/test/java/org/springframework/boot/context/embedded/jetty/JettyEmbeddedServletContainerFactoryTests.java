@@ -17,6 +17,7 @@
 package org.springframework.boot.context.embedded.jetty;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +38,8 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -46,6 +49,7 @@ import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyObject;
@@ -63,6 +67,12 @@ import static org.mockito.Mockito.mock;
  */
 public class JettyEmbeddedServletContainerFactoryTests
 		extends AbstractEmbeddedServletContainerFactoryTests {
+
+	@BeforeClass
+	@AfterClass
+	public static void uninstallUrlStreamHandlerFactory() {
+		ReflectionTestUtils.setField(URL.class, "factory", null);
+	}
 
 	@Override
 	protected JettyEmbeddedServletContainerFactory getFactory() {
@@ -136,8 +146,8 @@ public class JettyEmbeddedServletContainerFactoryTests
 				.getConnectionFactory(SslConnectionFactory.class);
 		assertThat(connectionFactory.getSslContextFactory().getIncludeCipherSuites())
 				.containsExactly("ALPHA", "BRAVO", "CHARLIE");
-		assertThat(connectionFactory.getSslContextFactory()
-				.getExcludeCipherSuites()).isEmpty();
+		assertThat(connectionFactory.getSslContextFactory().getExcludeCipherSuites())
+				.isEmpty();
 	}
 
 	@Override
