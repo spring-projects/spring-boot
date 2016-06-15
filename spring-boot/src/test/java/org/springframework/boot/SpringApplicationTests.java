@@ -405,6 +405,20 @@ public class SpringApplicationTests {
 	}
 
 	@Test
+	public void customBeanNameGeneratorWithNonWebApplication() throws Exception {
+		TestSpringApplication application = new TestSpringApplication(
+				ExampleWebConfig.class);
+		application.setWebEnvironment(false);
+		BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+		application.setBeanNameGenerator(beanNameGenerator);
+		this.context = application.run();
+		verify(application.getLoader()).setBeanNameGenerator(beanNameGenerator);
+		Object bean = this.context
+				.getBean(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
+		assertThat(bean).isSameAs(beanNameGenerator);
+	}
+
+	@Test
 	public void commandLinePropertySource() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
