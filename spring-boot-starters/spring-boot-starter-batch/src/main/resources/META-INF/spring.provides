@@ -1,1 +1,1 @@
-provides: spring-batch
+provides: spring-batch-core
