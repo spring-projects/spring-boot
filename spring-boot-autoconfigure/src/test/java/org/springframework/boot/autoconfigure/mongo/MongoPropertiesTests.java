@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.net.UnknownHostException;
+import java.util.List;
+
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
@@ -23,14 +26,13 @@ import com.mongodb.ServerAddress;
 import com.mongodb.connection.Cluster;
 import com.mongodb.connection.ClusterSettings;
 import org.junit.Test;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.net.UnknownHostException;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
