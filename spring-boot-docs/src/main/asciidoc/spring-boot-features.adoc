@@ -1282,16 +1282,15 @@ To help with the customization some other properties are transferred from the Sp
 
 |`logging.pattern.console`
 |`CONSOLE_LOG_PATTERN`
-|The log pattern to use on the console (stdout). (Not supported with JDK logger.)
+|The log pattern to use on the console (stdout). (Only supported with the default logback setup.)
 
 |`logging.pattern.file`
 |`FILE_LOG_PATTERN`
-|The log pattern to use in a file (if LOG_FILE enabled). (Not supported with JDK logger.)
+|The log pattern to use in a file (if LOG_FILE enabled). (Only supported with the default logback setup.)
 
 |`logging.pattern.level`
 |`LOG_LEVEL_PATTERN`
-|The format to use to render the log level (default `%5p`). (The `logging.pattern.level`
- form is only supported by Logback.)
+|The format to use to render the log level (default `%5p`). (Only supported with the default logback setup.)
 
 |`PID`
 |`PID`
