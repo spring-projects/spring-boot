@@ -3953,6 +3953,8 @@ HornetQ configuration is controlled by external configuration properties in
 	spring.hornetq.mode=native
 	spring.hornetq.host=192.168.1.210
 	spring.hornetq.port=9876
+	spring.hornetq.user=admin
+	spring.hornetq.password=secret
 ----
 
 When embedding the broker, you can choose if you want to enable persistence, and the list

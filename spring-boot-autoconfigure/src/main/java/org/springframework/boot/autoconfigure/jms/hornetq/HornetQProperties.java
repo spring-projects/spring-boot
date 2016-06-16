@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,12 +51,12 @@ public class HornetQProperties {
 	private int port = 5445;
 
 	/**
-	 * User for a secured connection.
+	 * Login user of the broker.
 	 */
 	private String user;
 
 	/**
-	 * Password for a secured connection.
+	 * Login password of the broker.
 	 */
 	private String password;
 
@@ -86,10 +86,6 @@ public class HornetQProperties {
 		this.port = port;
 	}
 
-	public Embedded getEmbedded() {
-		return this.embedded;
-	}
-
 	public String getUser() {
 		return this.user;
 	}
@@ -104,6 +100,10 @@ public class HornetQProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public Embedded getEmbedded() {
+		return this.embedded;
 	}
 
 	/**

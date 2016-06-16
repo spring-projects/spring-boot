@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,34 +21,38 @@ import javax.jms.JMSException;
 
 import org.hornetq.api.core.TransportConfiguration;
 import org.hornetq.api.core.client.ServerLocator;
-import org.hornetq.jms.client.HornetQXAConnectionFactory;
+import org.hornetq.jms.client.HornetQConnectionFactory;
+
+import org.springframework.util.StringUtils;
 
 /**
- * Secured HornetQ XA implementation of a JMS ConnectionFactory.
+ * A {@link HornetQConnectionFactory} that manages the credentials of the connection.
  *
  * @author Stéphane Lagraulet
- *
- * @since 1.4.0
- *
+ * @author Stephane Nicoll
  */
-public class HornetQXASecuredConnectionFactory extends HornetQXAConnectionFactory {
+class SpringBootHornetQConnectionFactory extends HornetQConnectionFactory {
 
-	private HornetQProperties properties;
+	private final HornetQProperties properties;
 
-	public HornetQXASecuredConnectionFactory(HornetQProperties properties,
+	SpringBootHornetQConnectionFactory(HornetQProperties properties,
 			ServerLocator serverLocator) {
 		super(serverLocator);
 		this.properties = properties;
 	}
 
-	public HornetQXASecuredConnectionFactory(HornetQProperties properties, boolean ha,
+	SpringBootHornetQConnectionFactory(HornetQProperties properties, boolean ha,
 			TransportConfiguration... initialConnectors) {
 		super(ha, initialConnectors);
 		this.properties = properties;
 	}
 
 	public Connection createConnection() throws JMSException {
-		return createConnection(this.properties.getUser(), this.properties.getPassword());
+		String user = this.properties.getUser();
+		if (StringUtils.hasText(user)) {
+			return createConnection(user, this.properties.getPassword());
+		}
+		return super.createConnection();
 	}
 
 }

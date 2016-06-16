@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -55,6 +56,9 @@ import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link HornetQAutoConfiguration}.
@@ -92,6 +96,22 @@ public class HornetQAutoConfigurationTests {
 		HornetQConnectionFactory connectionFactory = this.context
 				.getBean(HornetQConnectionFactory.class);
 		assertNettyConnectionFactory(connectionFactory, "192.168.1.144", 9876);
+	}
+
+	@Test
+	public void nativeConnectionFactoryCredentials() throws JMSException {
+		load(EmptyConfiguration.class, "spring.hornetq.mode:native",
+				"spring.hornetq.user:user", "spring.hornetq.password:secret");
+		HornetQConnectionFactory connectionFactory = this.context
+				.getBean(HornetQConnectionFactory.class);
+
+		// Validate the secured variant is invoked
+		HornetQConnectionFactory testCf = spy(connectionFactory);
+		Connection connection = mock(Connection.class);
+		doReturn(connection).when(testCf).createConnection("user", "secret");
+
+		Connection actual = testCf.createConnection();
+		assertThat(actual).isSameAs(connection);
 	}
 
 	@Test

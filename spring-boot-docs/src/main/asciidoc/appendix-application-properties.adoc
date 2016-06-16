@@ -848,7 +848,9 @@ content into your application; rather pick only the properties that you need.
 	spring.hornetq.embedded.topics= # Comma-separated list of topics to create on startup.
 	spring.hornetq.host=localhost # HornetQ broker host.
 	spring.hornetq.mode= # HornetQ deployment mode, auto-detected by default. Can be explicitly set to "native" or "embedded".
+	spring.hornetq.password= # Login password of the broker.
 	spring.hornetq.port=5445 # HornetQ broker port.
+	spring.hornetq.user= # Login user of the broker.
 
 	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsProperties.{sc-ext}[JmsProperties])
 	spring.jms.jndi-name= # Connection factory JNDI name. When set, takes precedence to others connection factory auto-configurations.
