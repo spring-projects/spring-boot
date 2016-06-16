@@ -42,9 +42,14 @@ public class WebMvcProperties {
 	private DefaultMessageCodesResolver.Format messageCodesResolverFormat;
 
 	/**
-	 * Locale to use.
+	 * Locale to use. By default, this locale is overridden by the "Accept-Language" header.
 	 */
 	private Locale locale;
+
+	/**
+	 * Define how the locale should be resolved.
+	 */
+	private LocaleResolver localeResolver = LocaleResolver.ACCEPT_HEADER;
 
 	/**
 	 * Date format to use (e.g. dd/MM/yyyy).
@@ -103,6 +108,14 @@ public class WebMvcProperties {
 
 	public void setLocale(Locale locale) {
 		this.locale = locale;
+	}
+
+	public LocaleResolver getLocaleResolver() {
+		return this.localeResolver;
+	}
+
+	public void setLocaleResolver(LocaleResolver localeResolver) {
+		this.localeResolver = localeResolver;
 	}
 
 	public String getDateFormat() {
@@ -237,6 +250,21 @@ public class WebMvcProperties {
 		public void setSuffix(String suffix) {
 			this.suffix = suffix;
 		}
+
+	}
+
+	public enum LocaleResolver {
+
+		/**
+		 * Always use the configured locale.
+		 */
+		FIXED,
+
+		/**
+		 * Use the "Accept-Language" header or the configured locale if the header
+		 * is not set.
+		 */
+		ACCEPT_HEADER
 
 	}
 

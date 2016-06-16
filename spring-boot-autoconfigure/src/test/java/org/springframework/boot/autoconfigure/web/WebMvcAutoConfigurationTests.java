@@ -49,6 +49,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
@@ -64,6 +65,7 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -258,14 +260,42 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void overrideLocale() throws Exception {
+		load(AllResources.class, "spring.mvc.locale:en_UK",
+				"spring.mvc.locale-resolver=fixed");
+		// mock request and set user preferred locale
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
+		request.addHeader(HttpHeaders.ACCEPT_LANGUAGE, "nl_NL");
+		LocaleResolver localeResolver = this.context.getBean(LocaleResolver.class);
+		assertThat(localeResolver).isInstanceOf(FixedLocaleResolver.class);
+		Locale locale = localeResolver.resolveLocale(request);
+		// test locale resolver uses fixed locale and not user preferred locale
+		assertThat(locale.toString()).isEqualTo("en_UK");
+	}
+
+	@Test
+	public void useAcceptHeaderLocale() {
 		load(AllResources.class, "spring.mvc.locale:en_UK");
 		// mock request and set user preferred locale
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
+		request.addHeader(HttpHeaders.ACCEPT_LANGUAGE, "nl_NL");
 		LocaleResolver localeResolver = this.context.getBean(LocaleResolver.class);
+		assertThat(localeResolver).isInstanceOf(AcceptHeaderLocaleResolver.class);
 		Locale locale = localeResolver.resolveLocale(request);
-		assertThat(localeResolver).isInstanceOf(FixedLocaleResolver.class);
-		// test locale resolver uses fixed locale and not user preferred locale
+		// test locale resolver uses user preferred locale
+		assertThat(locale.toString()).isEqualTo("nl_NL");
+	}
+
+	@Test
+	public void useDefaultLocaleIfAcceptHeaderNoSet() {
+		load(AllResources.class, "spring.mvc.locale:en_UK");
+		// mock request and set user preferred locale
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		LocaleResolver localeResolver = this.context.getBean(LocaleResolver.class);
+		assertThat(localeResolver).isInstanceOf(AcceptHeaderLocaleResolver.class);
+		Locale locale = localeResolver.resolveLocale(request);
+		// test locale resolver uses default locale if no header is set
 		assertThat(locale.toString()).isEqualTo("en_UK");
 	}
 

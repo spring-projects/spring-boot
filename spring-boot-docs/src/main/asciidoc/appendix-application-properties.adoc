@@ -336,7 +336,8 @@ content into your application; rather pick only the properties that you need.
 	spring.mvc.dispatch-options-request=false # Dispatch OPTIONS requests to the FrameworkServlet doService method.
 	spring.mvc.favicon.enabled=true # Enable resolution of favicon.ico.
 	spring.mvc.ignore-default-model-on-redirect=true # If the content of the "default" model should be ignored during redirect scenarios.
-	spring.mvc.locale= # Locale to use.
+	spring.mvc.locale= # Locale to use. By default, this locale is overridden by the "Accept-Language" header.
+	spring.mvc.locale-resolver=accept-header # Define how the locale should be resolved.
 	spring.mvc.media-types.*= # Maps file extensions to media types for content negotiation.
 	spring.mvc.message-codes-resolver-format= # Formatting strategy for message codes. For instance `PREFIX_ERROR_CODE`.
 	spring.mvc.servlet.load-on-startup=-1 # Load on startup priority of the Spring Web Services servlet.
