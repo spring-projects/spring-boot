@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -64,6 +65,7 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -267,6 +269,21 @@ public class WebMvcAutoConfigurationTests {
 		assertThat(localeResolver).isInstanceOf(FixedLocaleResolver.class);
 		// test locale resolver uses fixed locale and not user preferred locale
 		assertThat(locale.toString()).isEqualTo("en_UK");
+	}
+
+	@Test
+	public void overrideLocaleViaHeader() throws Exception {
+		load(AllResources.class, "spring.mvc.default-locale:ja_JP");
+
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		LocaleResolver localeResolver = this.context.getBean(LocaleResolver.class);
+		assertThat(localeResolver).isInstanceOf(AcceptHeaderLocaleResolver.class);
+
+		assertThat(localeResolver.resolveLocale(request).toString()).isEqualTo("ja_JP");
+
+		request.addHeader("Accept-Language", "es_PE");
+		request.setPreferredLocales(Collections.singletonList(new Locale("es", "PE")));
+		assertThat(localeResolver.resolveLocale(request).toString()).isEqualTo("es_PE");
 	}
 
 	@Test
