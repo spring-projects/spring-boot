@@ -45,7 +45,12 @@ public class RunMojo extends AbstractRunMojo {
 			RunProcess runProcess = new RunProcess(new JavaExecutable().toString());
 			Runtime.getRuntime()
 					.addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
-			runProcess.run(true, args.toArray(new String[args.size()]));
+			int exitCode = runProcess.run(true, args.toArray(new String[args.size()]));
+
+			if (exitCode != 0) {
+				throw new MojoExecutionException(
+						"Application finished with non-zero exit code: " + exitCode);
+			}
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not exec java", ex);
