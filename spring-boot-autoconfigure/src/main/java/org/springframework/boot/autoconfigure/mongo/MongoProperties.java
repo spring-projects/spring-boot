@@ -39,6 +39,7 @@ import org.springframework.core.env.Environment;
  * @author Josh Long
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Nasko Vasilev
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {
@@ -278,6 +279,15 @@ public class MongoProperties {
 			builder.threadsAllowedToBlockForConnectionMultiplier(
 					options.getThreadsAllowedToBlockForConnectionMultiplier());
 			builder.writeConcern(options.getWriteConcern());
+			builder.minConnectionsPerHost(options.getMinConnectionsPerHost());
+			builder.maxConnectionIdleTime(options.getMaxConnectionIdleTime());
+			builder.maxConnectionLifeTime(options.getMaxConnectionLifeTime());
+			builder.heartbeatFrequency(options.getHeartbeatFrequency());
+			builder.minHeartbeatFrequency(options.getMinHeartbeatFrequency());
+			builder.heartbeatConnectTimeout(options.getHeartbeatConnectTimeout());
+			builder.heartbeatSocketTimeout(options.getHeartbeatSocketTimeout());
+			builder.localThreshold(options.getLocalThreshold());
+			builder.requiredReplicaSetName(options.getRequiredReplicaSetName());
 		}
 		return builder;
 	}
