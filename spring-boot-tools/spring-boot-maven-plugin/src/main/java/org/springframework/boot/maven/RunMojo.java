@@ -41,8 +41,12 @@ public class RunMojo extends AbstractRunMojo {
 	@Override
 	protected void runWithForkedJvm(List<String> args) throws MojoExecutionException {
 		try {
-			new RunProcess(new JavaExecutable().toString()).run(true,
+			int exitCode = new RunProcess(new JavaExecutable().toString()).run(true,
 					args.toArray(new String[args.size()]));
+			if (exitCode != 0) {
+				throw new MojoExecutionException(
+						"Application finished with non-zero exit code: " + exitCode);
+			}
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not exec java", ex);
