@@ -2629,6 +2629,28 @@ http://spring.io/guides/gs/accessing-data-jpa/['`Accessing Data with JPA`'] guid
 http://spring.io and read the http://projects.spring.io/spring-data-jpa/[Spring Data JPA]
 and  http://hibernate.org/orm/documentation/[Hibernate] reference documentation.
 
+[NOTE]
+====
+As of Hibernate 5.2, the `hibernate-entitymanager` module has been merged in
+`hibernate-core`. If you need to downgrade, you'll have to add `hibernate-entitymanager`
+yourself, something like:
+
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+<dependency>
+	<groupId>org.hibernate</groupId>
+	<artifactId>hibernate-entitymanager</artifactId>
+	<version>${hibernate.version}</version>
+</dependency>
+```
+
+As Hibernate does not bundle the `hibernate-entitymanager` and `hibernate-java8`
+artifacts anymore, Spring Boot doesn't provide dependency management for them.
+====
+
 
 
 [[boot-features-entity-classes]]
