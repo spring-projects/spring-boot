@@ -829,7 +829,9 @@ content into your application; rather pick only the properties that you need.
 	spring.artemis.embedded.topics= # Comma-separated list of topics to create on startup.
 	spring.artemis.host=localhost # Artemis broker host.
 	spring.artemis.mode= # Artemis deployment mode, auto-detected by default. Can be explicitly set to "native" or "embedded".
+	spring.artemis.password= # Login password of the broker.
 	spring.artemis.port=61616 # Artemis broker port.
+	spring.artemis.user= # Login user of the broker.
 
 	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchProperties.{sc-ext}[BatchProperties])
 	spring.batch.initializer.enabled=true # Create the required batch tables on startup if necessary.
