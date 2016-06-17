@@ -84,11 +84,10 @@ public class HalBrowserMvcEndpointServerContextPathIntegrationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/spring/actuator/browser.html", HttpMethod.GET,
-				new HttpEntity<Void>(null, headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
-				entity.getBody().contains("entryPoint: '/spring/actuator'"));
+				"http://localhost:" + this.port + "/spring/actuator/browser.html",
+				HttpMethod.GET, new HttpEntity<Void>(null, headers), String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("entryPoint: '/spring/actuator'");
 	}
 
 	@Test
