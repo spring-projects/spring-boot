@@ -39,6 +39,7 @@ import org.springframework.core.env.Environment;
  * @author Josh Long
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {
@@ -257,6 +258,7 @@ public class MongoProperties {
 			builder.description(options.getDescription());
 			builder.maxWaitTime(options.getMaxWaitTime());
 			builder.readPreference(options.getReadPreference());
+			builder.sslEnabled(options.isSslEnabled());
 			builder.socketFactory(options.getSocketFactory());
 			builder.socketKeepAlive(options.isSocketKeepAlive());
 			builder.socketTimeout(options.getSocketTimeout());
