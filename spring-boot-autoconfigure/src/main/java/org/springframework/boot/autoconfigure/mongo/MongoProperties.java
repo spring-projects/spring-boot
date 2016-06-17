@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.mongodb.MongoClient;
@@ -209,7 +209,7 @@ public class MongoProperties {
 				}
 				String host = this.host == null ? "localhost" : this.host;
 				int port = determinePort(environment);
-				return new MongoClient(Arrays.asList(new ServerAddress(host, port)),
+				return new MongoClient(Collections.singletonList(new ServerAddress(host, port)),
 						credentials, options);
 			}
 			// The options and credentials are in the URI

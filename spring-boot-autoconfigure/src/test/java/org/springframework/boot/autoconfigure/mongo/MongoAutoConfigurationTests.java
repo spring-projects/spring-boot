@@ -57,7 +57,6 @@ public class MongoAutoConfigurationTests {
 		assertThat(this.context.getBeanNamesForType(Mongo.class).length).isEqualTo(1);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void optionsAdded() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -66,11 +65,10 @@ public class MongoAutoConfigurationTests {
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(Mongo.class).getMongoOptions().getSocketTimeout())
-				.isEqualTo(300);
+		assertThat(this.context.getBean(MongoClient.class).getMongoClientOptions()
+				.getSocketTimeout()).isEqualTo(300);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void optionsAddedButNoHost() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -79,8 +77,8 @@ public class MongoAutoConfigurationTests {
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(Mongo.class).getMongoOptions().getSocketTimeout())
-				.isEqualTo(300);
+		assertThat(this.context.getBean(MongoClient.class).getMongoClientOptions()
+				.getSocketTimeout()).isEqualTo(300);
 	}
 
 	@Test
