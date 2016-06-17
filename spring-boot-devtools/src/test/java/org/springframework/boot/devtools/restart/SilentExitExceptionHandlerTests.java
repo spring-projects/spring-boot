@@ -16,11 +16,14 @@
 
 package org.springframework.boot.devtools.restart;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -57,6 +60,24 @@ public class SilentExitExceptionHandlerTests {
 		assertThat(testThread.getThrown().getMessage(), equalTo("Expected"));
 	}
 
+	@Test
+	public void preventsNonZeroExitCodeWhenAllOtherThreadsAreDaemonThreads() {
+		try {
+			SilentExitExceptionHandler.exitCurrentThread();
+		}
+		catch (Exception ex) {
+			TestSilentExitExceptionHandler silentExitExceptionHandler = new TestSilentExitExceptionHandler();
+			silentExitExceptionHandler.uncaughtException(Thread.currentThread(), ex);
+			try {
+				assertTrue(silentExitExceptionHandler.nonZeroExitCodePrevented);
+			}
+			finally {
+				silentExitExceptionHandler.cleanUp();
+			}
+		}
+
+	}
+
 	private static abstract class TestThread extends Thread {
 
 		private Throwable thrown;
@@ -77,6 +98,60 @@ public class SilentExitExceptionHandlerTests {
 		public void startAndJoin() throws InterruptedException {
 			start();
 			join();
+		}
+
+	}
+
+	private static class TestSilentExitExceptionHandler
+			extends SilentExitExceptionHandler {
+
+		private boolean nonZeroExitCodePrevented;
+
+		private final Object monitor = new Object();
+
+		TestSilentExitExceptionHandler() {
+			super(null);
+		}
+
+		@Override
+		protected void preventNonZeroExitCode() {
+			this.nonZeroExitCodePrevented = true;
+		}
+
+		@Override
+		protected Thread[] getAllThreads() {
+			final CountDownLatch threadRunning = new CountDownLatch(1);
+			Thread daemonThread = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					synchronized (TestSilentExitExceptionHandler.this.monitor) {
+						threadRunning.countDown();
+						try {
+							TestSilentExitExceptionHandler.this.monitor.wait();
+						}
+						catch (InterruptedException ex) {
+							Thread.currentThread().interrupt();
+						}
+					}
+				}
+
+			});
+			daemonThread.setDaemon(true);
+			daemonThread.start();
+			try {
+				threadRunning.await();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			return new Thread[] { Thread.currentThread(), daemonThread };
+		}
+
+		private void cleanUp() {
+			synchronized (this.monitor) {
+				this.monitor.notifyAll();
+			}
 		}
 
 	}
