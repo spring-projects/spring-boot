@@ -437,6 +437,7 @@ public class TomcatEmbeddedServletContainerFactory
 		else {
 			context.addLifecycleListener(new DisablePersistSessionListener());
 		}
+		context.addLifecycleListener(new LazySessionIdGeneratorListener());
 	}
 
 	private void configurePersistSession(Manager manager) {
@@ -801,6 +802,21 @@ public class TomcatEmbeddedServletContainerFactory
 				Manager manager = context.getManager();
 				if (manager != null && manager instanceof StandardManager) {
 					((StandardManager) manager).setPathname(null);
+				}
+			}
+		}
+
+	}
+
+	private static class LazySessionIdGeneratorListener implements LifecycleListener {
+
+		@Override
+		public void lifecycleEvent(LifecycleEvent event) {
+			if (event.getType().equals(Lifecycle.START_EVENT)) {
+				Context context = (Context) event.getLifecycle();
+				Manager manager = context.getManager();
+				if (manager != null) {
+					manager.setSessionIdGenerator(new LazySessionIdGenerator());
 				}
 			}
 		}
