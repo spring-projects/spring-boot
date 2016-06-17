@@ -87,6 +87,8 @@
 		<module>spring-boot-sample-tomcat-ssl</module>
 		<module>spring-boot-sample-tomcat-multi-connectors</module>
 		<module>spring-boot-sample-tomcat7-jsp</module>
+		<module>spring-boot-sample-tomcat7-ssl</module>
+		<module>spring-boot-sample-tomcat80-ssl</module>
 		<module>spring-boot-sample-traditional</module>
 		<module>spring-boot-sample-undertow</module>
 		<module>spring-boot-sample-undertow-ssl</module>

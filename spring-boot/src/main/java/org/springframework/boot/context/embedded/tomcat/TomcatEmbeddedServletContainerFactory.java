@@ -16,12 +16,19 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
+import java.net.URLStreamHandlerFactory;
 import java.nio.charset.Charset;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,11 +55,13 @@ import org.apache.catalina.session.ManagerBase;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.coyote.http11.Http11NioProtocol;
+import org.apache.tomcat.util.net.SSLHostConfig;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
@@ -301,7 +310,7 @@ public class TomcatEmbeddedServletContainerFactory
 			Compression compression = getCompression();
 			protocol.setCompression("on");
 			protocol.setCompressionMinSize(compression.getMinResponseSize());
-			protocol.setCompressableMimeTypes(
+			protocol.setCompressableMimeType(
 					StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
 			if (getCompression().getExcludedUserAgents() != null) {
 				protocol.setNoCompressionUserAgents(
@@ -323,13 +332,33 @@ public class TomcatEmbeddedServletContainerFactory
 		protocol.setKeystorePass(ssl.getKeyStorePassword());
 		protocol.setKeyPass(ssl.getKeyPassword());
 		protocol.setKeyAlias(ssl.getKeyAlias());
-		protocol.setCiphers(StringUtils.arrayToCommaDelimitedString(ssl.getCiphers()));
+		String ciphers = StringUtils.arrayToCommaDelimitedString(ssl.getCiphers());
+		protocol.setCiphers(StringUtils.hasText(ciphers) ? ciphers : null);
 		if (ssl.getEnabledProtocols() != null) {
-			protocol.setProperty("sslEnabledProtocols",
-					StringUtils.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
+			try {
+				for (SSLHostConfig sslHostConfig : protocol.findSslHostConfigs()) {
+					sslHostConfig.setProtocols(StringUtils
+							.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
+				}
+			}
+			catch (NoSuchMethodError ex) {
+				// Tomcat 8.0.x or earlier
+				Assert.isTrue(
+						protocol.setProperty("sslEnabledProtocols",
+								StringUtils.arrayToCommaDelimitedString(
+										ssl.getEnabledProtocols())),
+						"Failed to set sslEnabledProtocols");
+			}
 		}
 		if (getSslStoreProvider() != null) {
-			configureSslStoreProvider(protocol, getSslStoreProvider());
+			TomcatURLStreamHandlerFactory instance = TomcatURLStreamHandlerFactory
+					.getInstance();
+			instance.addUserFactory(
+					new SslStoreProviderUrlStreamHandlerFactory(getSslStoreProvider()));
+			protocol.setKeystoreFile(
+					SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
+			protocol.setTruststoreFile(
+					SslStoreProviderUrlStreamHandlerFactory.TRUST_STORE_URL);
 		}
 		else {
 			configureSslKeyStore(protocol, ssl);
@@ -350,10 +379,6 @@ public class TomcatEmbeddedServletContainerFactory
 			SslStoreProvider sslStoreProvider) {
 		Assert.isInstanceOf(Http11NioProtocol.class, protocol,
 				"SslStoreProvider can only be used with Http11NioProtocol");
-		((Http11NioProtocol) protocol).getEndpoint().setAttribute("sslStoreProvider",
-				sslStoreProvider);
-		protocol.setSslImplementationName(
-				TomcatEmbeddedJSSEImplementation.class.getName());
 	}
 
 	private void configureSslKeyStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
@@ -677,6 +702,89 @@ public class TomcatEmbeddedServletContainerFactory
 		return this.uriEncoding;
 	}
 
+	/**
+	 * A {@link URLStreamHandlerFactory} that provides a {@link URLStreamHandler} for
+	 * accessing an {@link SslStoreProvider}'s key store and trust store from a URL.
+	 */
+	private static final class SslStoreProviderUrlStreamHandlerFactory
+			implements URLStreamHandlerFactory {
+
+		private static final String PROTOCOL = "springbootssl";
+
+		private static final String KEY_STORE_PATH = "keyStore";
+
+		private static final String KEY_STORE_URL = PROTOCOL + ":" + KEY_STORE_PATH;
+
+		private static final String TRUST_STORE_PATH = "trustStore";
+
+		private static final String TRUST_STORE_URL = PROTOCOL + ":" + TRUST_STORE_PATH;
+
+		private final SslStoreProvider sslStoreProvider;
+
+		private SslStoreProviderUrlStreamHandlerFactory(
+				SslStoreProvider sslStoreProvider) {
+			this.sslStoreProvider = sslStoreProvider;
+		}
+
+		@Override
+		public URLStreamHandler createURLStreamHandler(String protocol) {
+			if (PROTOCOL.equals(protocol)) {
+				return new URLStreamHandler() {
+
+					@Override
+					protected URLConnection openConnection(URL url) throws IOException {
+						try {
+							if (KEY_STORE_PATH.equals(url.getPath())) {
+								return new KeyStoreUrlConnection(url,
+										SslStoreProviderUrlStreamHandlerFactory.this.sslStoreProvider
+												.getKeyStore());
+							}
+							if (TRUST_STORE_PATH.equals(url.getPath())) {
+								return new KeyStoreUrlConnection(url,
+										SslStoreProviderUrlStreamHandlerFactory.this.sslStoreProvider
+												.getTrustStore());
+							}
+						}
+						catch (Exception ex) {
+							throw new IOException(ex);
+						}
+						throw new IOException("Invalid path: " + url.getPath());
+					}
+				};
+			}
+			return null;
+		}
+
+		private static final class KeyStoreUrlConnection extends URLConnection {
+
+			private final KeyStore keyStore;
+
+			private KeyStoreUrlConnection(URL url, KeyStore keyStore) {
+				super(url);
+				this.keyStore = keyStore;
+			}
+
+			@Override
+			public void connect() throws IOException {
+
+			}
+
+			@Override
+			public InputStream getInputStream() throws IOException {
+
+				try {
+					ByteArrayOutputStream stream = new ByteArrayOutputStream();
+					this.keyStore.store(stream, new char[0]);
+					return new ByteArrayInputStream(stream.toByteArray());
+				}
+				catch (Exception ex) {
+					throw new IOException(ex);
+				}
+			}
+
+		}
+	}
+
 	private static class TomcatErrorPage {
 
 		private static final String ERROR_PAGE_CLASS = "org.apache.tomcat.util.descriptor.web.ErrorPage";
@@ -752,8 +860,7 @@ public class TomcatEmbeddedServletContainerFactory
 	 */
 	private static class StoreMergedWebXmlListener implements LifecycleListener {
 
-		@SuppressWarnings("deprecation")
-		private final String MERGED_WEB_XML = org.apache.tomcat.util.scan.Constants.MERGED_WEB_XML;
+		private static final String MERGED_WEB_XML = "org.apache.tomcat.util.scan.MergedWebXml";
 
 		@Override
 		public void lifecycleEvent(LifecycleEvent event) {
@@ -764,8 +871,10 @@ public class TomcatEmbeddedServletContainerFactory
 
 		private void onStart(Context context) {
 			ServletContext servletContext = context.getServletContext();
-			if (servletContext.getAttribute(this.MERGED_WEB_XML) == null) {
-				servletContext.setAttribute(this.MERGED_WEB_XML, getEmptyWebXml());
+			if (servletContext
+					.getAttribute(StoreMergedWebXmlListener.MERGED_WEB_XML) == null) {
+				servletContext.setAttribute(StoreMergedWebXmlListener.MERGED_WEB_XML,
+						getEmptyWebXml());
 			}
 			TomcatResources.get(context).addClasspathResources();
 		}

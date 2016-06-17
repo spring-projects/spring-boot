@@ -55,6 +55,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.InputStreamFactory;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -124,6 +125,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@BeforeClass
 	@AfterClass
 	public static void uninstallUrlStreamHandlerFactory() {
+		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
+				null);
 		ReflectionTestUtils.setField(URL.class, "factory", null);
 	}
 
@@ -589,7 +592,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
-	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore) {
+	protected Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore) {
 		return getSsl(clientAuth, keyPassword, keyStore, null, null, null);
 	}
 

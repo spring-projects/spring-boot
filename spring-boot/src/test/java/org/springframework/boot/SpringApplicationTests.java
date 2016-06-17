@@ -40,7 +40,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -971,8 +971,8 @@ public class SpringApplicationTests {
 	static class ExampleWebConfig {
 
 		@Bean
-		public JettyEmbeddedServletContainerFactory container() {
-			return new JettyEmbeddedServletContainerFactory(0);
+		public TomcatEmbeddedServletContainerFactory container() {
+			return new TomcatEmbeddedServletContainerFactory(0);
 		}
 
 	}

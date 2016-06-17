@@ -300,8 +300,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-logging-juli</artifactId>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-juli</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
