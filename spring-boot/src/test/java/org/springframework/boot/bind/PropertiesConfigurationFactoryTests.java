@@ -167,7 +167,7 @@ public class PropertiesConfigurationFactoryTests {
 	@Test
 	public void propertyWithAllUpperCaseSuffixCanBeBound() throws Exception {
 		Foo foo = createFoo("foo-bar-u-r-i:baz");
-		assertEquals("baz", foo.fooBarURI);
+		assertThat(foo.fooBarURI).isEqualTo("baz");
 	}
 
 	private Foo createFoo(final String values) throws Exception {
