@@ -164,6 +164,12 @@ public class PropertiesConfigurationFactoryTests {
 		assertEquals("blah", foo.name);
 	}
 
+	@Test
+	public void propertyWithAllUpperCaseSuffixCanBeBound() throws Exception {
+		Foo foo = createFoo("foo-bar-u-r-i:baz");
+		assertEquals("baz", foo.fooBarURI);
+	}
+
 	private Foo createFoo(final String values) throws Exception {
 		setupFactory();
 		return bindFoo(values);
@@ -195,6 +201,8 @@ public class PropertiesConfigurationFactoryTests {
 
 		private String fooBar;
 
+		private String fooBarURI;
+
 		public String getSpringFooBaz() {
 			return this.spring_foo_baz;
 		}
@@ -225,6 +233,14 @@ public class PropertiesConfigurationFactoryTests {
 
 		public void setFooBar(String fooBar) {
 			this.fooBar = fooBar;
+		}
+
+		public String getFooBarURI() {
+			return this.fooBarURI;
+		}
+
+		public void setFooBarURI(String fooBarURI) {
+			this.fooBarURI = fooBarURI;
 		}
 
 	}
