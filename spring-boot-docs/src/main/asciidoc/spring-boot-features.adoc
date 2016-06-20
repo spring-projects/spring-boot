@@ -2134,6 +2134,8 @@ packaged as an executable archive), there are some limitations in the JSP suppor
 
 * Creating a custom `error.jsp` page won't override the default view for
 <<boot-features-error-handling,error handling>>.
+<<boot-features-error-handling-custom-error-pages,Custom error pages>> should be used
+instead.
 
 There is a {github-code}/spring-boot-samples/spring-boot-sample-web-jsp[JSP sample] so you
 can see how to set things up.
