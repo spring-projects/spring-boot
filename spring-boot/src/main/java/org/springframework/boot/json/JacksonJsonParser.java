@@ -30,10 +30,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class JacksonJsonParser implements JsonParser {
 
+	private static final TypeReference<List<Object>> LIST_TYPE = new TypeReference<List<Object>>() {
+	};
+	private static final TypeReference<Map<String, Object>> MAP_TYPE = new TypeReference<Map<String, Object>>() {
+	};
+
+	private final ObjectMapper objectMapper = new ObjectMapper();
+
 	@Override
 	public Map<String, Object> parseMap(String json) {
 		try {
-			return new ObjectMapper().readValue(json, new MapTypeReference());
+			return this.objectMapper.readValue(json, MAP_TYPE);
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException("Cannot parse JSON", ex);
@@ -43,17 +50,11 @@ public class JacksonJsonParser implements JsonParser {
 	@Override
 	public List<Object> parseList(String json) {
 		try {
-			TypeReference<List<Object>> type = new TypeReference<List<Object>>() {
-			};
-			return new ObjectMapper().readValue(json, type);
+			return this.objectMapper.readValue(json, LIST_TYPE);
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException("Cannot parse JSON", ex);
 		}
 	}
-
-	private static class MapTypeReference extends TypeReference<Map<String, Object>> {
-
-	};
 
 }
