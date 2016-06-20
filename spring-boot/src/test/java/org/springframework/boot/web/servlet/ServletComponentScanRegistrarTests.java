@@ -23,6 +23,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationConfigurationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,14 +75,9 @@ public class ServletComponentScanRegistrarTests {
 
 	@Test
 	public void packagesConfiguredWithBothValueAndBasePackages() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("@ServletComponentScan basePackages and value"
-				+ " attributes are mutually exclusive");
-		this.context = new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
-		ServletComponentRegisteringPostProcessor postProcessor = this.context
-				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan())
-				.contains(getClass().getPackage().getName());
+		this.thrown.expect(AnnotationConfigurationException.class);
+		this.thrown.expectMessage("attribute 'value' and its alias 'basePackages' are declared");
+		new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
 	}
 
 	@Test

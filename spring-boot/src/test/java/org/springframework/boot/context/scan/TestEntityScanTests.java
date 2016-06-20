@@ -25,6 +25,7 @@ import org.springframework.boot.context.scan.TestEntityScanRegistrar.TestFactory
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationConfigurationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,10 +76,11 @@ public class TestEntityScanTests {
 
 	@Test
 	public void valueAndBasePackagesThrows() throws Exception {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("@TestEntityScan basePackages and value "
-				+ "attributes are mutually exclusive");
-		this.context = new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
+		this.thrown.expect(AnnotationConfigurationException.class);
+		this.thrown.expectMessage("attribute 'value' and its alias 'basePackages' are declared");
+		this.thrown.expectMessage("com.mycorp.entity");
+		this.thrown.expectMessage("com.mycorp");
+		new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
 	}
 
 	@Test
