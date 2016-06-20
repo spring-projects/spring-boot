@@ -7,7 +7,7 @@
 		<artifactId>spring-boot-samples</artifactId>
 		<version>1.4.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-sample-tomcat-ssl</artifactId>
+	<artifactId>spring-boot-sample-tomcat80-ssl</artifactId>
 	<name>Spring Boot Tomcat 8.0 SSL Sample</name>
 	<description>Spring Boot Tomcat 8.0 SSL Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
