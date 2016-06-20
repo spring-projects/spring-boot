@@ -91,7 +91,7 @@ public class IntegrationAutoConfigurationTests {
 
 	@Test
 	public void customizeJmxDomain() {
-		load("spring.jmx.default-domain=org.foo");
+		load("SPRING_JMX_DEFAULT_DOMAIN=org.foo");
 		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
 		assertDomains(mBeanServer, true, "org.foo");
 		assertDomains(mBeanServer, false, "org.springframework.integration",
