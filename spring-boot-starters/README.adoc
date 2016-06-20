@@ -94,7 +94,7 @@ do as they were designed before this was clarified.
 | http://resteasy.jboss.org/[RESTEasy]
 | https://github.com/paypal/resteasy-spring-boot
 
-| JSF (https://javaserverfaces.java.net/[Mojarra], http://primefaces.org/[Prime Faces] and http://omnifaces.org/[OmniFaces])
+| JSF (http://primefaces.org/[PrimeFaces], http://primefaces-extensions.github.io/[PrimeFaces Extensions], http://omnifaces.org/[OmniFaces], https://javaserverfaces.java.net/[Mojarra] and http://myfaces.apache.org[MyFaces])
 | https://github.com/persapiens/jsf-spring-boot-starter
 
 | Charon reverse proxy
