@@ -82,6 +82,15 @@ by the `ApplicationContext` as well. See
 _<<spring-boot-features.adoc#boot-features-application-events-and-listeners>>_ in the
 '`Spring Boot features`' section for a complete list.
 
+It is also possible to customize the `Environment` before the application context is
+refreshed using `EnvironmentPostProcessor`. Each implementation should be registered in
+`META-INF/spring.factories`:
+
+[source,properties,indent=0]
+----
+	org.springframework.boot.env.EnvironmentPostProcessor=com.example.YourEnvironmentPostProcessor
+----
+
 
 
 [[howto-build-an-application-context-hierarchy]]
