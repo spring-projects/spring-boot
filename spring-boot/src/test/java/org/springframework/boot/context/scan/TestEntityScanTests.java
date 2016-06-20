@@ -28,6 +28,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationConfigurationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 
 /**
  * Tests for {@link TestEntityScan}.
@@ -77,9 +79,11 @@ public class TestEntityScanTests {
 	@Test
 	public void valueAndBasePackagesThrows() throws Exception {
 		this.thrown.expect(AnnotationConfigurationException.class);
-		this.thrown.expectMessage("attribute 'value' and its alias 'basePackages' are declared");
-		this.thrown.expectMessage("com.mycorp.entity");
-		this.thrown.expectMessage("com.mycorp");
+		this.thrown.expectMessage(allOf(
+				containsString("'value'"),
+				containsString("'basePackages'"),
+				containsString("com.mycorp.entity"),
+				containsString("com.mycorp")));
 		new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
 	}
 

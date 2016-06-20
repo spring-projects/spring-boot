@@ -26,6 +26,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationConfigurationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 
 /**
  * Tests for {@link ServletComponentScanRegistrar}
@@ -76,7 +78,11 @@ public class ServletComponentScanRegistrarTests {
 	@Test
 	public void packagesConfiguredWithBothValueAndBasePackages() {
 		this.thrown.expect(AnnotationConfigurationException.class);
-		this.thrown.expectMessage("attribute 'value' and its alias 'basePackages' are declared");
+		this.thrown.expectMessage(allOf(
+				containsString("'value'"),
+				containsString("'basePackages'"),
+				containsString("com.example.foo"),
+				containsString("com.example.bar")));
 		new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
 	}
 
