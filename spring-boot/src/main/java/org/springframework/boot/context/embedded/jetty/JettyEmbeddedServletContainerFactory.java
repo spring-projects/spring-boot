@@ -891,6 +891,13 @@ public class JettyEmbeddedServletContainerFactory
 			ServerConnector connector = new ServerConnector(server, acceptors, selectors);
 			connector.setHost(address.getHostName());
 			connector.setPort(address.getPort());
+			for (ConnectionFactory connectionFactory : connector
+					.getConnectionFactories()) {
+				if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
+					((HttpConfiguration.ConnectionFactory) connectionFactory)
+							.getHttpConfiguration().setSendServerVersion(false);
+				}
+			}
 			return connector;
 		}
 
@@ -912,8 +919,16 @@ public class JettyEmbeddedServletContainerFactory
 						.findMethod(Server.class, "setThreadPool", ThreadPool.class)
 						.invoke(server, threadPool);
 			}
-			catch (Exception e) {
-				throw new RuntimeException("Failed to configure Jetty 8 ThreadPool", e);
+			catch (Exception ex) {
+				throw new RuntimeException("Failed to configure Jetty 8 ThreadPool", ex);
+			}
+			try {
+				ReflectionUtils
+						.findMethod(Server.class, "setSendServerVersion", boolean.class)
+						.invoke(server, false);
+			}
+			catch (Exception ex) {
+				throw new RuntimeException("Failed to disable Server header", ex);
 			}
 			return server;
 		}

@@ -814,6 +814,16 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
+	public void serverHeaderIsDisabledByDefault() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory
+				.getEmbeddedServletContainer(exampleServletRegistration());
+		this.container.start();
+		ClientHttpResponse response = getClientResponse(getLocalUrl("/hello"));
+		assertThat(response.getHeaders().getFirst("server")).isNull();
+	}
+
+	@Test
 	public void portClashOfPrimaryConnectorResultsInPortInUseException()
 			throws IOException {
 		doWithBlockedPort(new BlockedPortAction() {
