@@ -43,14 +43,14 @@ class ElasticsearchHealthIndicatorConfiguration {
 	@ConditionalOnBean(Client.class)
 	@ConditionalOnEnabledHealthIndicator("elasticsearch")
 	@EnableConfigurationProperties(ElasticsearchHealthIndicatorProperties.class)
-	static class SpringData extends
+	static class ElasticsearchSpringDataHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<ElasticsearchHealthIndicator, Client> {
 
 		private final Map<String, Client> clients;
 
 		private final ElasticsearchHealthIndicatorProperties properties;
 
-		SpringData(Map<String, Client> clients,
+		ElasticsearchSpringDataHealthIndicatorConfiguration(Map<String, Client> clients,
 				ElasticsearchHealthIndicatorProperties properties) {
 			this.clients = clients;
 			this.properties = properties;
@@ -72,12 +72,12 @@ class ElasticsearchHealthIndicatorConfiguration {
 	@Configuration
 	@ConditionalOnBean(JestClient.class)
 	@ConditionalOnEnabledHealthIndicator("elasticsearch")
-	static class Jest extends
+	static class ElasticsearchJestHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<ElasticsearchJestHealthIndicator, JestClient> {
 
 		private final Map<String, JestClient> clients;
 
-		Jest(Map<String, JestClient> clients) {
+		ElasticsearchJestHealthIndicatorConfiguration(Map<String, JestClient> clients) {
 			this.clients = clients;
 		}
 
@@ -88,9 +88,11 @@ class ElasticsearchHealthIndicatorConfiguration {
 		}
 
 		@Override
-		protected ElasticsearchJestHealthIndicator createHealthIndicator(JestClient client) {
+		protected ElasticsearchJestHealthIndicator createHealthIndicator(
+				JestClient client) {
 			return new ElasticsearchJestHealthIndicator(client);
 		}
+
 	}
 
 }

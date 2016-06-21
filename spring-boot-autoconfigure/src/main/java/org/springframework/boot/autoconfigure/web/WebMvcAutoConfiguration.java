@@ -226,14 +226,13 @@ public class WebMvcAutoConfiguration {
 		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = "spring.mvc", name = "locale")
 		public LocaleResolver localeResolver() {
-			if (this.mvcProperties.getLocaleResolver() == WebMvcProperties.LocaleResolver.FIXED) {
+			if (this.mvcProperties
+					.getLocaleResolver() == WebMvcProperties.LocaleResolver.FIXED) {
 				return new FixedLocaleResolver(this.mvcProperties.getLocale());
 			}
-			else {
-				AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
-				localeResolver.setDefaultLocale(this.mvcProperties.getLocale());
-				return localeResolver;
-			}
+			AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
+			localeResolver.setDefaultLocale(this.mvcProperties.getLocale());
+			return localeResolver;
 		}
 
 		@Bean

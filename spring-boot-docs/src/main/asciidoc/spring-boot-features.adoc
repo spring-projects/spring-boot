@@ -2637,20 +2637,21 @@ and  http://hibernate.org/orm/documentation/[Hibernate] reference documentation.
 [NOTE]
 ====
 As of Hibernate 5.2, the `hibernate-entitymanager` module has been merged in
-`hibernate-core`. If you need to downgrade, you'll have to add `hibernate-entitymanager`
-yourself, something like:
+`hibernate-core`. If you need to downgrade, you'll need to directly add the
+dependency yourself, for example:
 
-```xml
-<dependency>
-	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-starter-data-jpa</artifactId>
-</dependency>
-<dependency>
-	<groupId>org.hibernate</groupId>
-	<artifactId>hibernate-entitymanager</artifactId>
-	<version>${hibernate.version}</version>
-</dependency>
-```
+[source,xml,indent=0]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-data-jpa</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-entitymanager</artifactId>
+		<version>${hibernate.version}</version>
+	</dependency>
+----
 
 As Hibernate does not bundle the `hibernate-entitymanager` and `hibernate-java8`
 artifacts anymore, Spring Boot doesn't provide dependency management for them.
@@ -3362,6 +3363,7 @@ configured:
 ----
 
 To take full control over the registration, define a `JestClient` bean.
+
 
 
 [[boot-features-connecting-to-elasticsearch]]

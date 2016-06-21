@@ -59,7 +59,6 @@ public class ElasticsearchJestHealthIndicatorTests {
 	public void elasticSearchIsDown() throws IOException {
 		given(this.jestClient.execute(any(Action.class))).willThrow(
 				new CouldNotConnectException("http://localhost:9200", new IOException()));
-
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
@@ -69,7 +68,6 @@ public class ElasticsearchJestHealthIndicatorTests {
 	public void elasticSearchIsOutOfService() throws IOException {
 		given(this.jestClient.execute(any(Action.class)))
 				.willReturn(createJestResult(4, 1));
-
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 	}
@@ -77,7 +75,6 @@ public class ElasticsearchJestHealthIndicatorTests {
 	private static JestResult createJestResult(int shards, int failedShards) {
 		String json = String.format("{_shards: {\n" + "total: %s,\n" + "successful: %s,\n"
 				+ "failed: %s\n" + "}}", shards, shards - failedShards, failedShards);
-
 		SearchResult searchResult = new SearchResult(new Gson());
 		searchResult.setJsonString(json);
 		searchResult.setJsonObject(new JsonParser().parse(json).getAsJsonObject());

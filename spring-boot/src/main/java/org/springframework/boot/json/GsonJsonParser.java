@@ -33,10 +33,9 @@ import com.google.gson.reflect.TypeToken;
  */
 public class GsonJsonParser implements JsonParser {
 
-	private static final TypeToken<List<Object>> LIST_TYPE = new TypeToken<List<Object>>() {
-	};
-	private static final TypeToken<Map<String, Object>> MAP_TYPE = new TypeToken<Map<String, Object>>() {
-	};
+	private static final TypeToken<?> MAP_TYPE = new MapTypeToken();
+
+	private static final TypeToken<?> LIST_TYPE = new ListTypeToken();
 
 	private Gson gson = new GsonBuilder().create();
 
@@ -60,6 +59,14 @@ public class GsonJsonParser implements JsonParser {
 			}
 		}
 		throw new IllegalArgumentException("Cannot parse JSON");
+	}
+
+	private static final class MapTypeToken extends TypeToken<Map<String, Object>> {
+
+	}
+
+	private static final class ListTypeToken extends TypeToken<List<Object>> {
+
 	}
 
 }

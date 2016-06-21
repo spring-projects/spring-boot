@@ -92,7 +92,8 @@ public class MongoAutoConfigurationTests {
 		MongoClient mongo = this.context.getBean(MongoClient.class);
 		MongoClientOptions options = mongo.getMongoClientOptions();
 		assertThat(options.isSslEnabled()).isTrue();
-		assertThat(options.getSocketFactory()).isSameAs(this.context.getBean("mySocketFactory"));
+		assertThat(options.getSocketFactory())
+				.isSameAs(this.context.getBean("mySocketFactory"));
 	}
 
 	@Configuration
@@ -110,7 +111,8 @@ public class MongoAutoConfigurationTests {
 
 		@Bean
 		public MongoClientOptions mongoClientOptions() {
-			return MongoClientOptions.builder().sslEnabled(true).socketFactory(mySocketFactory()).build();
+			return MongoClientOptions.builder().sslEnabled(true)
+					.socketFactory(mySocketFactory()).build();
 		}
 
 		@Bean

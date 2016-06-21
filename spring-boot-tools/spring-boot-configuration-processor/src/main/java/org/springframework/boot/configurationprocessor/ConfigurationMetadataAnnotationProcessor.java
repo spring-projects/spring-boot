@@ -172,12 +172,15 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			Element returns = this.processingEnv.getTypeUtils()
 					.asElement(element.getReturnType());
 			if (returns instanceof TypeElement) {
-				ItemMetadata group = ItemMetadata.newGroup(prefix, this.typeUtils.getType(returns),
+				ItemMetadata group = ItemMetadata.newGroup(prefix,
+						this.typeUtils.getType(returns),
 						this.typeUtils.getType(element.getEnclosingElement()),
 						element.toString());
 				if (this.metadataCollector.hasSimilarGroup(group)) {
 					this.processingEnv.getMessager().printMessage(Kind.ERROR,
-							"Duplicate `@ConfigurationProperties` definition for prefix '" + prefix + "'", element);
+							"Duplicate `@ConfigurationProperties` definition for prefix '"
+									+ prefix + "'",
+							element);
 				}
 				else {
 					this.metadataCollector.add(group);

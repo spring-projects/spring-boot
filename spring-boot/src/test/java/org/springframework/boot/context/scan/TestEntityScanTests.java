@@ -79,12 +79,10 @@ public class TestEntityScanTests {
 	@Test
 	public void valueAndBasePackagesThrows() throws Exception {
 		this.thrown.expect(AnnotationConfigurationException.class);
-		this.thrown.expectMessage(allOf(
-				containsString("'value'"),
-				containsString("'basePackages'"),
-				containsString("com.mycorp.entity"),
+		this.thrown.expectMessage(allOf(containsString("'value'"),
+				containsString("'basePackages'"), containsString("com.mycorp.entity"),
 				containsString("com.mycorp")));
-		new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
+		this.context = new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
 	}
 
 	@Test

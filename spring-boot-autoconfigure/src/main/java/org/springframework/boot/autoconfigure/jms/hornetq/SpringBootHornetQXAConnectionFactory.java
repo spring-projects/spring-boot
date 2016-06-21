@@ -47,6 +47,7 @@ class SpringBootHornetQXAConnectionFactory extends HornetQXAConnectionFactory {
 		this.properties = properties;
 	}
 
+	@Override
 	public Connection createConnection() throws JMSException {
 		String user = this.properties.getUser();
 		if (StringUtils.hasText(user)) {

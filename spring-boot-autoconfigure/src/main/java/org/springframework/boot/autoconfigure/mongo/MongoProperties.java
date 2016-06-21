@@ -209,7 +209,8 @@ public class MongoProperties {
 				}
 				String host = this.host == null ? "localhost" : this.host;
 				int port = determinePort(environment);
-				return new MongoClient(Collections.singletonList(new ServerAddress(host, port)),
+				return new MongoClient(
+						Collections.singletonList(new ServerAddress(host, port)),
 						credentials, options);
 			}
 			// The options and credentials are in the URI

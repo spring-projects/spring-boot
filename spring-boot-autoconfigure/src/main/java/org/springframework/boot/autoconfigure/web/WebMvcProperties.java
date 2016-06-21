@@ -42,7 +42,8 @@ public class WebMvcProperties {
 	private DefaultMessageCodesResolver.Format messageCodesResolverFormat;
 
 	/**
-	 * Locale to use. By default, this locale is overridden by the "Accept-Language" header.
+	 * Locale to use. By default, this locale is overridden by the "Accept-Language"
+	 * header.
 	 */
 	private Locale locale;
 
@@ -261,8 +262,8 @@ public class WebMvcProperties {
 		FIXED,
 
 		/**
-		 * Use the "Accept-Language" header or the configured locale if the header
-		 * is not set.
+		 * Use the "Accept-Language" header or the configured locale if the header is not
+		 * set.
 		 */
 		ACCEPT_HEADER
 

@@ -132,7 +132,7 @@ class ArtemisConnectionFactoryFactory {
 		Constructor<T> constructor = factoryClass.getConstructor(boolean.class,
 				TransportConfiguration[].class);
 		T connectionFactory = constructor.newInstance(false,
-				new TransportConfiguration[] {transportConfiguration});
+				new TransportConfiguration[] { transportConfiguration });
 		String user = this.properties.getUser();
 		if (StringUtils.hasText(user)) {
 			connectionFactory.setUser(user);

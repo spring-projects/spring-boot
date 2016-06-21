@@ -19,8 +19,7 @@ package org.springframework.boot.configurationsample.specific;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
- * Test that the same type can be registered several times if the prefix is
- * different.
+ * Test that the same type can be registered several times if the prefix is different.
  *
  * @author Stephane Nicoll
  */

@@ -16,19 +16,11 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
 import java.nio.charset.Charset;
-import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -63,7 +55,6 @@ import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.coyote.http11.Http11NioProtocol;
 import org.apache.tomcat.util.net.SSLHostConfig;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -79,7 +70,6 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -700,158 +690,6 @@ public class TomcatEmbeddedServletContainerFactory
 	 */
 	public Charset getUriEncoding() {
 		return this.uriEncoding;
-	}
-
-	/**
-	 * A {@link URLStreamHandlerFactory} that provides a {@link URLStreamHandler} for
-	 * accessing an {@link SslStoreProvider}'s key store and trust store from a URL.
-	 */
-	private static final class SslStoreProviderUrlStreamHandlerFactory
-			implements URLStreamHandlerFactory {
-
-		private static final String PROTOCOL = "springbootssl";
-
-		private static final String KEY_STORE_PATH = "keyStore";
-
-		private static final String KEY_STORE_URL = PROTOCOL + ":" + KEY_STORE_PATH;
-
-		private static final String TRUST_STORE_PATH = "trustStore";
-
-		private static final String TRUST_STORE_URL = PROTOCOL + ":" + TRUST_STORE_PATH;
-
-		private final SslStoreProvider sslStoreProvider;
-
-		private SslStoreProviderUrlStreamHandlerFactory(
-				SslStoreProvider sslStoreProvider) {
-			this.sslStoreProvider = sslStoreProvider;
-		}
-
-		@Override
-		public URLStreamHandler createURLStreamHandler(String protocol) {
-			if (PROTOCOL.equals(protocol)) {
-				return new URLStreamHandler() {
-
-					@Override
-					protected URLConnection openConnection(URL url) throws IOException {
-						try {
-							if (KEY_STORE_PATH.equals(url.getPath())) {
-								return new KeyStoreUrlConnection(url,
-										SslStoreProviderUrlStreamHandlerFactory.this.sslStoreProvider
-												.getKeyStore());
-							}
-							if (TRUST_STORE_PATH.equals(url.getPath())) {
-								return new KeyStoreUrlConnection(url,
-										SslStoreProviderUrlStreamHandlerFactory.this.sslStoreProvider
-												.getTrustStore());
-							}
-						}
-						catch (Exception ex) {
-							throw new IOException(ex);
-						}
-						throw new IOException("Invalid path: " + url.getPath());
-					}
-				};
-			}
-			return null;
-		}
-
-		private static final class KeyStoreUrlConnection extends URLConnection {
-
-			private final KeyStore keyStore;
-
-			private KeyStoreUrlConnection(URL url, KeyStore keyStore) {
-				super(url);
-				this.keyStore = keyStore;
-			}
-
-			@Override
-			public void connect() throws IOException {
-
-			}
-
-			@Override
-			public InputStream getInputStream() throws IOException {
-
-				try {
-					ByteArrayOutputStream stream = new ByteArrayOutputStream();
-					this.keyStore.store(stream, new char[0]);
-					return new ByteArrayInputStream(stream.toByteArray());
-				}
-				catch (Exception ex) {
-					throw new IOException(ex);
-				}
-			}
-
-		}
-	}
-
-	private static class TomcatErrorPage {
-
-		private static final String ERROR_PAGE_CLASS = "org.apache.tomcat.util.descriptor.web.ErrorPage";
-
-		private static final String LEGACY_ERROR_PAGE_CLASS = "org.apache.catalina.deploy.ErrorPage";
-
-		private final String location;
-
-		private final String exceptionType;
-
-		private final int errorCode;
-
-		private final Object nativePage;
-
-		TomcatErrorPage(ErrorPage errorPage) {
-			this.location = errorPage.getPath();
-			this.exceptionType = errorPage.getExceptionName();
-			this.errorCode = errorPage.getStatusCode();
-			this.nativePage = createNativePage(errorPage);
-		}
-
-		private Object createNativePage(ErrorPage errorPage) {
-			Object nativePage = null;
-			try {
-				if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
-					nativePage = BeanUtils
-							.instantiate(ClassUtils.forName(ERROR_PAGE_CLASS, null));
-				}
-				else if (ClassUtils.isPresent(LEGACY_ERROR_PAGE_CLASS, null)) {
-					nativePage = BeanUtils.instantiate(
-							ClassUtils.forName(LEGACY_ERROR_PAGE_CLASS, null));
-				}
-			}
-			catch (ClassNotFoundException ex) {
-				// Swallow and continue
-			}
-			catch (LinkageError ex) {
-				// Swallow and continue
-			}
-			return nativePage;
-		}
-
-		public void addToContext(Context context) {
-			Assert.state(this.nativePage != null,
-					"Neither Tomcat 7 nor 8 detected so no native error page exists");
-			if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
-				org.apache.tomcat.util.descriptor.web.ErrorPage errorPage = (org.apache.tomcat.util.descriptor.web.ErrorPage) this.nativePage;
-				errorPage.setLocation(this.location);
-				errorPage.setErrorCode(this.errorCode);
-				errorPage.setExceptionType(this.exceptionType);
-				context.addErrorPage(errorPage);
-			}
-			else {
-				callMethod(this.nativePage, "setLocation", this.location, String.class);
-				callMethod(this.nativePage, "setErrorCode", this.errorCode, int.class);
-				callMethod(this.nativePage, "setExceptionType", this.exceptionType,
-						String.class);
-				callMethod(context, "addErrorPage", this.nativePage,
-						this.nativePage.getClass());
-			}
-		}
-
-		private void callMethod(Object target, String name, Object value, Class<?> type) {
-			Method method = ReflectionUtils.findMethod(target.getClass(), name, type);
-			ReflectionUtils.invokeMethod(method, target, value);
-		}
-
 	}
 
 	/**

@@ -78,12 +78,10 @@ public class ServletComponentScanRegistrarTests {
 	@Test
 	public void packagesConfiguredWithBothValueAndBasePackages() {
 		this.thrown.expect(AnnotationConfigurationException.class);
-		this.thrown.expectMessage(allOf(
-				containsString("'value'"),
-				containsString("'basePackages'"),
-				containsString("com.example.foo"),
+		this.thrown.expectMessage(allOf(containsString("'value'"),
+				containsString("'basePackages'"), containsString("com.example.foo"),
 				containsString("com.example.bar")));
-		new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
+		this.context = new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
 	}
 
 	@Test

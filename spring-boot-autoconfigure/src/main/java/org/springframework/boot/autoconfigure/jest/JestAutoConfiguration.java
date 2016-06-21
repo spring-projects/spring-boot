@@ -48,7 +48,8 @@ public class JestAutoConfiguration {
 
 	private final ObjectProvider<Gson> gsonProvider;
 
-	public JestAutoConfiguration(JestProperties properties, ObjectProvider<Gson> gsonProvider) {
+	public JestAutoConfiguration(JestProperties properties,
+			ObjectProvider<Gson> gsonProvider) {
 		this.properties = properties;
 		this.gsonProvider = gsonProvider;
 	}
@@ -62,8 +63,8 @@ public class JestAutoConfiguration {
 	}
 
 	protected HttpClientConfig createHttpClientConfig() {
-		HttpClientConfig.Builder builder = new HttpClientConfig
-				.Builder(this.properties.getUris());
+		HttpClientConfig.Builder builder = new HttpClientConfig.Builder(
+				this.properties.getUris());
 		if (StringUtils.hasText(this.properties.getUsername())) {
 			builder.defaultCredentials(this.properties.getUsername(),
 					this.properties.getPassword());
@@ -73,8 +74,7 @@ public class JestAutoConfiguration {
 			builder.gson(gson);
 		}
 		return builder.connTimeout(this.properties.getConnectionTimeout())
-				.readTimeout(this.properties.getReadTimeout())
-				.build();
+				.readTimeout(this.properties.getReadTimeout()).build();
 	}
 
 }
