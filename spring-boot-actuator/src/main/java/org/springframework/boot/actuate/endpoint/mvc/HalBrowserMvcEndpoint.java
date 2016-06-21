@@ -148,10 +148,12 @@ public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
 			return resource;
 		}
 
-		private Resource replaceInitialLink(String contextPath, Resource resource) throws IOException {
+		private Resource replaceInitialLink(String contextPath, Resource resource)
+				throws IOException {
 			byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
 			String content = new String(bytes, DEFAULT_CHARSET);
-			String initial = contextPath + getManagementServletContext().getContextPath() + getPath();
+			String initial = contextPath + getManagementServletContext().getContextPath()
+					+ getPath();
 			content = content.replace("entryPoint: '/'", "entryPoint: '" + initial + "'");
 			return new TransformedResource(resource, content.getBytes(DEFAULT_CHARSET));
 		}

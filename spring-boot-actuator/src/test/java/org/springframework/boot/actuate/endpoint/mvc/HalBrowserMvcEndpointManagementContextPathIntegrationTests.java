@@ -92,7 +92,8 @@ public class HalBrowserMvcEndpointManagementContextPathIntegrationTests {
 
 	@Test
 	public void actuatorBrowserHtml() throws Exception {
-		this.mockMvc.perform(get("/admin/browser.html").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc
+				.perform(get("/admin/browser.html").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("entryPoint: '/admin'")));
 	}

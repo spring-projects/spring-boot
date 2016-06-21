@@ -64,7 +64,8 @@ public class IntegrationAutoConfiguration {
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
 	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
 	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
-	protected static class IntegrationJmxConfiguration implements EnvironmentAware, BeanFactoryAware {
+	protected static class IntegrationJmxConfiguration
+			implements EnvironmentAware, BeanFactoryAware {
 
 		private BeanFactory beanFactory;
 
@@ -81,7 +82,8 @@ public class IntegrationAutoConfiguration {
 
 		@Override
 		public void setEnvironment(Environment environment) {
-			this.propertyResolver = new RelaxedPropertyResolver(environment, "spring.jmx.");
+			this.propertyResolver = new RelaxedPropertyResolver(environment,
+					"spring.jmx.");
 		}
 
 		@Bean
