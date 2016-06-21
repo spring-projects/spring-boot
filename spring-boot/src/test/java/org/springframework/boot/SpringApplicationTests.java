@@ -399,9 +399,9 @@ public class SpringApplicationTests {
 		application.setBeanNameGenerator(beanNameGenerator);
 		this.context = application.run();
 		verify(application.getLoader()).setBeanNameGenerator(beanNameGenerator);
-		Object bean = this.context
+		Object actualGenerator = this.context
 				.getBean(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
-		assertThat(bean).isSameAs(beanNameGenerator);
+		assertThat(actualGenerator).isSameAs(beanNameGenerator);
 	}
 
 	@Test
@@ -413,9 +413,9 @@ public class SpringApplicationTests {
 		application.setBeanNameGenerator(beanNameGenerator);
 		this.context = application.run();
 		verify(application.getLoader()).setBeanNameGenerator(beanNameGenerator);
-		Object bean = this.context
+		Object actualGenerator = this.context
 				.getBean(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
-		assertThat(bean).isSameAs(beanNameGenerator);
+		assertThat(actualGenerator).isSameAs(beanNameGenerator);
 	}
 
 	@Test

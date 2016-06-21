@@ -27,6 +27,7 @@ import static org.junit.Assert.fail;
  * Tests for {@link SilentExitExceptionHandler}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class SilentExitExceptionHandlerTests {
 

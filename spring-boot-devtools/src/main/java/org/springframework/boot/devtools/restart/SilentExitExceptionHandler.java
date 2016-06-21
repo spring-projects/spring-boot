@@ -36,7 +36,7 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 	@Override
 	public void uncaughtException(Thread thread, Throwable exception) {
 		if (exception instanceof SilentExitException) {
-			if (jvmWillExit(thread)) {
+			if (isJvmExiting(thread)) {
 				preventNonZeroExitCode();
 			}
 			return;
@@ -44,6 +44,38 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 		if (this.delegate != null) {
 			this.delegate.uncaughtException(thread, exception);
 		}
+	}
+
+	private boolean isJvmExiting(Thread exceptionThread) {
+		for (Thread thread : getAllThreads()) {
+			if (thread != exceptionThread && thread.isAlive() && !thread.isDaemon()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	protected Thread[] getAllThreads() {
+		ThreadGroup rootThreadGroup = getRootThreadGroup();
+		Thread[] threads = new Thread[32];
+		int count = rootThreadGroup.enumerate(threads);
+		while (count == threads.length) {
+			threads = new Thread[threads.length * 2];
+			count = rootThreadGroup.enumerate(threads);
+		}
+		return Arrays.copyOf(threads, count);
+	}
+
+	private ThreadGroup getRootThreadGroup() {
+		ThreadGroup candidate = Thread.currentThread().getThreadGroup();
+		while (candidate.getParent() != null) {
+			candidate = candidate.getParent();
+		}
+		return candidate;
+	}
+
+	protected void preventNonZeroExitCode() {
+		System.exit(0);
 	}
 
 	public static void setup(Thread thread) {
@@ -56,41 +88,6 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 
 	public static void exitCurrentThread() {
 		throw new SilentExitException();
-	}
-
-	private boolean jvmWillExit(Thread exceptionThread) {
-		for (Thread thread : getAllThreads()) {
-			if (thread != exceptionThread && thread.isAlive() && !thread.isDaemon()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	protected void preventNonZeroExitCode() {
-		System.exit(0);
-	}
-
-	protected Thread[] getAllThreads() {
-		ThreadGroup rootThreadGroup = getRootThreadGroup();
-		int size = 32;
-		int threadCount;
-		Thread[] threads;
-		do {
-			size *= 2;
-			threads = new Thread[size];
-			threadCount = rootThreadGroup.enumerate(threads);
-		}
-		while (threadCount == threads.length);
-		return Arrays.copyOf(threads, threadCount);
-	}
-
-	private ThreadGroup getRootThreadGroup() {
-		ThreadGroup candidate = Thread.currentThread().getThreadGroup();
-		while (candidate.getParent() != null) {
-			candidate = candidate.getParent();
-		}
-		return candidate;
 	}
 
 	private static class SilentExitException extends RuntimeException {
