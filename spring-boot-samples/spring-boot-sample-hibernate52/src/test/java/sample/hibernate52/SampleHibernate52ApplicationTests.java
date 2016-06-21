@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.hibernate4;
+package sample.hibernate52;
 
 import java.lang.management.ManagementFactory;
 
@@ -51,7 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 		"spring.datasource.jmx-enabled:true" })
 @ActiveProfiles("scratch")
 // Separate profile for web tests to avoid clashing databases
-public class SampleDataJpaApplicationTests {
+public class SampleHibernate52ApplicationTests {
 
 	@Autowired
 	private WebApplicationContext context;

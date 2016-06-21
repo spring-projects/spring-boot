@@ -7,9 +7,9 @@
 		<artifactId>spring-boot-samples</artifactId>
 		<version>1.4.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-sample-hibernate4</artifactId>
-	<name>Spring Boot Hibernate 4 Sample</name>
-	<description>Spring Boot Hibernate 4 Sample</description>
+	<artifactId>spring-boot-sample-hibernate52</artifactId>
+	<name>Spring Boot Hibernate 5.2 Sample</name>
+	<description>Spring Boot Hibernate 5.2 Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
@@ -17,12 +17,18 @@
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
-		<hibernate.version>4.3.11.Final</hibernate.version>
+		<hibernate.version>5.2.0.Final</hibernate.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate-entitymanager</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
