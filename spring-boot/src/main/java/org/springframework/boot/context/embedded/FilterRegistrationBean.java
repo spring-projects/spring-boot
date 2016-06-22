@@ -21,7 +21,6 @@ import javax.servlet.ServletContext;
 
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
 
 /**
  * A {@link ServletContextInitializer} to register {@link Filter}s in a Servlet 3.0+
