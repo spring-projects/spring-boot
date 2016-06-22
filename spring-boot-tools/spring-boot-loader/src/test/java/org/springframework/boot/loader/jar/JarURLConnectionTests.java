@@ -52,30 +52,28 @@ public class JarURLConnectionTests {
 
 	@Test
 	public void connectionToRootUsingAbsoluteUrl() throws Exception {
-		URL absoluteUrl = new URL(
-				"jar:file:" + this.rootJarFile.getAbsoluteFile() + "!/");
+		URL absoluteUrl = new URL("jar:file:" + getAbsolutePath() + "!/");
 		assertThat(new JarURLConnection(absoluteUrl, this.jarFile).getContent())
 				.isSameAs(this.jarFile);
 	}
 
 	@Test
 	public void connectionToRootUsingRelativeUrl() throws Exception {
-		URL relativeUrl = new URL("jar:file:" + this.rootJarFile + "!/");
+		URL relativeUrl = new URL("jar:file:" + getRelativePath() + "!/");
 		assertThat(new JarURLConnection(relativeUrl, this.jarFile).getContent())
 				.isSameAs(this.jarFile);
 	}
 
 	@Test
 	public void connectionToEntryUsingAbsoluteUrl() throws Exception {
-		URL absoluteUrl = new URL(
-				"jar:file:" + this.rootJarFile.getAbsoluteFile() + "!/1.dat");
+		URL absoluteUrl = new URL("jar:file:" + getAbsolutePath() + "!/1.dat");
 		assertThat(new JarURLConnection(absoluteUrl, this.jarFile).getInputStream())
 				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 1 }));
 	}
 
 	@Test
 	public void connectionToEntryUsingRelativeUrl() throws Exception {
-		URL relativeUrl = new URL("jar:file:" + this.rootJarFile + "!/1.dat");
+		URL relativeUrl = new URL("jar:file:" + getRelativePath() + "!/1.dat");
 		assertThat(new JarURLConnection(relativeUrl, this.jarFile).getInputStream())
 				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 1 }));
 	}
@@ -83,8 +81,7 @@ public class JarURLConnectionTests {
 	@Test
 	public void connectionToEntryUsingAbsoluteUrlWithFileColonSlashSlashPrefix()
 			throws Exception {
-		URL absoluteUrl = new URL(
-				"jar:file:/" + this.rootJarFile.getAbsoluteFile() + "!/1.dat");
+		URL absoluteUrl = new URL("jar:file:/" + getAbsolutePath() + "!/1.dat");
 		assertThat(new JarURLConnection(absoluteUrl, this.jarFile).getInputStream())
 				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 1 }));
 	}
@@ -92,16 +89,25 @@ public class JarURLConnectionTests {
 	@Test
 	public void connectionToEntryUsingAbsoluteUrlForNestedEntry() throws Exception {
 		URL absoluteUrl = new URL(
-				"jar:file:" + this.rootJarFile.getAbsoluteFile() + "!/nested.jar!/3.dat");
+				"jar:file:" + getAbsolutePath() + "!/nested.jar!/3.dat");
 		assertThat(new JarURLConnection(absoluteUrl, this.jarFile).getInputStream())
 				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 3 }));
 	}
 
 	@Test
 	public void connectionToEntryUsingRelativeUrlForNestedEntry() throws Exception {
-		URL relativeUrl = new URL("jar:file:" + this.rootJarFile + "!/nested.jar!/3.dat");
+		URL relativeUrl = new URL(
+				"jar:file:" + getRelativePath() + "!/nested.jar!/3.dat");
 		assertThat(new JarURLConnection(relativeUrl, this.jarFile).getInputStream())
 				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 3 }));
+	}
+
+	private String getAbsolutePath() {
+		return this.rootJarFile.getAbsolutePath().replace('\\', '/');
+	}
+
+	private String getRelativePath() {
+		return this.rootJarFile.getPath().replace('\\', '/');
 	}
 
 }
