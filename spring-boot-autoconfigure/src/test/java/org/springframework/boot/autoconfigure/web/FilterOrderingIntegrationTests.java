@@ -41,6 +41,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.session.web.http.SessionRepositoryFilter;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -98,6 +99,11 @@ public class FilterOrderingIntegrationTests {
 
 	@Configuration
 	static class MockEmbeddedServletContainerConfiguration {
+
+		@Bean
+		public DispatcherServlet dispatcherServlet() {
+			return new DispatcherServlet();
+		}
 
 		@Bean
 		public MockEmbeddedServletContainerFactory containerFactory() {
