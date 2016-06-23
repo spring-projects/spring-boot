@@ -89,6 +89,7 @@
 									<fileset xmlns="antlib:org.apache.tools.ant" dir="${project.build.directory}/it" includes="**/build.xml" />
 								</antunit>
 							</target>
+							<skip>${skipTests}</skip>
 						</configuration>
 						<goals>
 							<goal>run</goal>
