@@ -92,8 +92,22 @@ Usage
 </build>
 ---
 
-  The layout property defaults to a guess based on the archive type (jar or war). For the
-  <<<PropertiesLauncher>>> the layout is <<<ZIP>>> (even though the output might be a jar file).
+  The <<<layout>>> property defaults to a guess based on the archive type (<<<jar>>> or <<<war>>>). The
+  following layouts are available:
+
+    * <<<JAR>>>: regular executable JAR layout.
+
+    * <<<WAR>>>: executable WAR layout. <<<provided>>> dependencies are placed in <<<WEB-INF/lib-provided>>>
+      to avoid any clash when the <<<war>>> is deployed in a servlet container.
+
+    * <<<ZIP>>> (alias to <<<DIR>>>): similar to the <<<JAR>>> layout using <<<PropertiesLauncher>>>.
+
+    * <<<MODULE>>>: Bundle dependencies (excluding those with <<<provided>>> scope) and project resources.
+      Does not bundle a bootstrap loader.
+
+    * <<<NONE>>>: Bundle all dependencies and project resources. Does not bundle a bootstrap loader.
+
+    []
 
   For more detailed examples of how to configure this goal see:
 

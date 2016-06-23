@@ -485,12 +485,51 @@ The following configuration options are available:
 
 |`layout`
 |The type of archive, corresponding to how the dependencies are laid out inside
- (defaults to a guess based on the archive type).
+ (defaults to a guess based on the archive type). See
+ <<build-tool-plugins-gradle-configuration-layouts,available layouts for more details>>.
 
 |`requiresUnpack`
 |A list of dependencies (in the form "`groupId:artifactId`" that must be unpacked from
  fat jars in order to run. Items are still packaged into the fat jar, but they will be
  automatically unpacked when it runs.
+|===
+
+
+
+[[build-tool-plugins-gradle-configuration-layouts]]
+==== Available layouts
+
+The `layout` attribute configures the format of the archive and whether the bootstrap
+loader should be included or not. The following layouts are available:
+
+[cols="2,4,1"]
+|===
+|Name |Description |Executable
+
+|`JAR`
+|Regular executable
+ <<appendix-executable-jar-format.adoc#executable-jar-jar-file-structure,JAR layout>>.
+|Yes
+
+|`WAR`
+|Executable
+ <<appendix-executable-jar-format.adoc#executable-jar-war-file-structure,WAR layout>>.
+ `provided` dependencies are placed in `WEB-INF/lib-provided` to avoid any clash when
+ the `war` is deployed in a servlet container.
+|Yes
+
+|`ZIP` (alias to `DIR`)
+|Similar to `JAR` layout, using
+ <<appendix-executable-jar-format.adoc#executable-jar-property-launcher-features,`PropertiesLauncher`>>.
+| Yes
+
+|`MODULE`
+|Bundle dependencies (excluding those with `provided` scope) and project resources.
+|No
+
+|`NONE`
+|Bundle all dependencies and project resources.
+|No
 |===
 
 
