@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
+import org.springframework.boot.actuate.endpoint.SessionEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
@@ -35,6 +36,7 @@ import org.springframework.boot.actuate.endpoint.mvc.LogFileMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
+import org.springframework.boot.actuate.endpoint.mvc.SessionMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ShutdownMvcEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -55,6 +57,7 @@ import org.springframework.web.cors.CorsConfiguration;
  * Configuration to expose {@link Endpoint} instances over Spring MVC.
  *
  * @author Dave Syer
+ * @author Eddú Meléndez
  * @since 1.3.0
  */
 @ManagementContextConfiguration
@@ -165,6 +168,13 @@ public class EndpointWebMvcManagementContextConfiguration {
 	@ConditionalOnEnabledEndpoint(value = "shutdown", enabledByDefault = false)
 	public ShutdownMvcEndpoint shutdownMvcEndpoint(ShutdownEndpoint delegate) {
 		return new ShutdownMvcEndpoint(delegate);
+	}
+
+	@Bean
+	@ConditionalOnBean(SessionEndpoint.class)
+	@ConditionalOnEnabledEndpoint(value = "session", enabledByDefault = false)
+	public SessionMvcEndpoint sessionMvcEndpoint(SessionEndpoint delegate) {
+		return new SessionMvcEndpoint(delegate);
 	}
 
 	private static class LogFileCondition extends SpringBootCondition {

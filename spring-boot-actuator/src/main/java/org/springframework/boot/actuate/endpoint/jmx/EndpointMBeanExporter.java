@@ -58,6 +58,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 public class EndpointMBeanExporter extends MBeanExporter
 		implements SmartLifecycle, ApplicationContextAware {
@@ -188,6 +189,9 @@ public class EndpointMBeanExporter extends MBeanExporter
 	}
 
 	protected EndpointMBean getEndpointMBean(String beanName, Endpoint<?> endpoint) {
+		if (endpoint instanceof SessionEndpointMBean) {
+			return new SessionEndpointMBean(beanName, endpoint, this.objectMapper);
+		}
 		if (endpoint instanceof ShutdownEndpoint) {
 			return new ShutdownEndpointMBean(beanName, endpoint, this.objectMapper);
 		}

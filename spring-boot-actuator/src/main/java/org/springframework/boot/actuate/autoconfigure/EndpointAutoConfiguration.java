@@ -40,6 +40,7 @@ import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
+import org.springframework.boot.actuate.endpoint.SessionEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.health.HealthAggregator;
@@ -61,6 +62,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 
 /**
@@ -212,6 +214,19 @@ public class EndpointAutoConfiguration {
 		public RequestMappingEndpoint requestMappingEndpoint() {
 			RequestMappingEndpoint endpoint = new RequestMappingEndpoint();
 			return endpoint;
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnBean(FindByIndexNameSessionRepository.class)
+	@ConditionalOnClass(FindByIndexNameSessionRepository.class)
+	static class SessionEndpointConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public SessionEndpoint sessionEndpoint() {
+			return new SessionEndpoint();
 		}
 
 	}

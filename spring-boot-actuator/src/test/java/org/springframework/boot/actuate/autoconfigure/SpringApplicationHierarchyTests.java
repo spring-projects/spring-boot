@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRe
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
+import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.util.ApplicationContextTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -65,7 +66,8 @@ public class SpringApplicationHierarchyTests {
 			ElasticsearchRepositoriesAutoConfiguration.class,
 			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
 			Neo4jAutoConfiguration.class, RedisAutoConfiguration.class,
-			RedisRepositoriesAutoConfiguration.class }, excludeName = {
+			RedisRepositoriesAutoConfiguration.class,
+			SessionAutoConfiguration.class }, excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Child {
 
