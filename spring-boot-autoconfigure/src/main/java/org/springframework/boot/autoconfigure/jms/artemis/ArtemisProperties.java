@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,16 @@ public class ArtemisProperties {
 	 */
 	private int port = 61616;
 
+	/**
+	 * Login user of the broker.
+	 */
+	private String user;
+
+	/**
+	 * Login password of the broker.
+	 */
+	private String password;
+
 	private final Embedded embedded = new Embedded();
 
 	public ArtemisMode getMode() {
@@ -75,6 +85,22 @@ public class ArtemisProperties {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public String getUser() {
+		return this.user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public Embedded getEmbedded() {

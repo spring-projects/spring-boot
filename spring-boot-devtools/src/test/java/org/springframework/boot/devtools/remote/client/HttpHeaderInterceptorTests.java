@@ -22,9 +22,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -41,7 +40,6 @@ import static org.mockito.BDDMockito.given;
  * @author Rob Winch
  * @since 1.3.0
  */
-@RunWith(MockitoJUnitRunner.class)
 public class HttpHeaderInterceptorTests {
 
 	@Rule
@@ -66,7 +64,8 @@ public class HttpHeaderInterceptorTests {
 	private MockHttpServletRequest httpRequest;
 
 	@Before
-	public void setup() throws IOException {
+	public void setup() throws Exception {
+		MockitoAnnotations.initMocks(this);
 		this.body = new byte[] {};
 		this.httpRequest = new MockHttpServletRequest();
 		this.request = new ServletServerHttpRequest(this.httpRequest);

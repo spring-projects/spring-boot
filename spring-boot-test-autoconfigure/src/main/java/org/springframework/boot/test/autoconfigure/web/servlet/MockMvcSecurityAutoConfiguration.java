@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Import;
  * Auto-configuration for Spring Security's testing support.
  *
  * @author Andy Wilkinson
+ * @since 1.4.0
  */
 @Configuration
 @ConditionalOnProperty(prefix = "spring.test.mockmvc", name = "secure", havingValue = "true", matchIfMissing = true)

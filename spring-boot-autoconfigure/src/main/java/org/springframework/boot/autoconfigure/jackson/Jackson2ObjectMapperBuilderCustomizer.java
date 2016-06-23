@@ -31,8 +31,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 public interface Jackson2ObjectMapperBuilderCustomizer {
 
 	/**
-	 * Customize the jacksonObjectMapperBuilder.
-	 * @param jacksonObjectMapperBuilder the jacksonObjectMapperBuilder to customize
+	 * Customize the JacksonObjectMapperBuilder.
+	 * @param jacksonObjectMapperBuilder the JacksonObjectMapperBuilder to customize
 	 */
 	void customize(Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder);
 

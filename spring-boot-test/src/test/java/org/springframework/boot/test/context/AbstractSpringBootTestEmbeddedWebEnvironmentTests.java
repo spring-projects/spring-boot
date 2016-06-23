@@ -60,6 +60,10 @@ public abstract class AbstractSpringBootTestEmbeddedWebEnvironmentTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
+	public TestRestTemplate getRestTemplate() {
+		return this.restTemplate;
+	}
+
 	@Test
 	public void runAndTestHttpEndpoint() {
 		assertThat(this.port).isNotEqualTo(8080).isNotEqualTo(0);

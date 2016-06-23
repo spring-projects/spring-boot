@@ -28,6 +28,7 @@ import org.hornetq.core.remoting.impl.netty.NettyConnectorFactory;
 import org.hornetq.core.remoting.impl.netty.TransportConstants;
 import org.hornetq.jms.client.HornetQConnectionFactory;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -111,8 +112,10 @@ class HornetQConnectionFactoryFactory {
 					this.properties.getEmbedded().generateTransportParameters());
 			ServerLocator serviceLocator = HornetQClient
 					.createServerLocatorWithoutHA(transportConfiguration);
-			return factoryClass.getConstructor(ServerLocator.class)
-					.newInstance(serviceLocator);
+			Constructor<T> constructor = factoryClass
+					.getDeclaredConstructor(HornetQProperties.class, ServerLocator.class);
+			return BeanUtils.instantiateClass(constructor, this.properties,
+					serviceLocator);
 		}
 		catch (NoClassDefFoundError ex) {
 			throw new IllegalStateException("Unable to create InVM "
@@ -128,9 +131,9 @@ class HornetQConnectionFactoryFactory {
 		params.put(TransportConstants.PORT_PROP_NAME, this.properties.getPort());
 		TransportConfiguration transportConfiguration = new TransportConfiguration(
 				NettyConnectorFactory.class.getName(), params);
-		Constructor<T> constructor = factoryClass.getConstructor(boolean.class,
-				TransportConfiguration[].class);
-		return constructor.newInstance(false,
+		Constructor<T> constructor = factoryClass.getDeclaredConstructor(
+				HornetQProperties.class, boolean.class, TransportConfiguration[].class);
+		return BeanUtils.instantiateClass(constructor, this.properties, false,
 				new TransportConfiguration[] { transportConfiguration });
 	}
 

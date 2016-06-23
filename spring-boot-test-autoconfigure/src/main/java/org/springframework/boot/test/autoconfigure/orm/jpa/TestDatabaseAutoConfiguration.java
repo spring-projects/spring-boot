@@ -50,11 +50,12 @@ import org.springframework.util.ObjectUtils;
  * Auto-configuration for a test database.
  *
  * @author Phillip Webb
+ * @since 1.4.0
  * @see AutoConfigureTestDatabase
  */
 @Configuration
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
-class TestDatabaseAutoConfiguration {
+public class TestDatabaseAutoConfiguration {
 
 	private final Environment environment;
 

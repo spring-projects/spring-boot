@@ -26,6 +26,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.AliasFor;
 
 /**
  * Configures the {@link SessionFactory} to scan for Neo4J {@link NodeEntity} classes in
@@ -58,6 +59,7 @@ public @interface NodeEntityScan {
 	 * {@code @NodeEntityScan(basePackages="org.my.pkg")}.
 	 * @return the base packages to scan
 	 */
+	@AliasFor("basePackages")
 	String[] value() default {};
 
 	/**
@@ -68,6 +70,7 @@ public @interface NodeEntityScan {
 	 * package names.
 	 * @return the base packages to scan
 	 */
+	@AliasFor("value")
 	String[] basePackages() default {};
 
 	/**

@@ -23,7 +23,9 @@ dependencies {
 }
 
 springBoot {
-	mainClass = 'foo.bar.Baz'
+	if (!project.hasProperty("noMainClass")) {
+		mainClass = 'foo.bar.Baz'
+	}
 	excludeDevtools = Boolean.valueOf(project.excludeDevtools)
 }
 
@@ -49,4 +51,9 @@ task customRepackagedJar(type: BootRepackage, dependsOn: customJar) {
 
 task customRepackagedJarWithStringReference(type: BootRepackage, dependsOn: customJar) {
 	withJarTask = 'customJar'
+}
+
+task customRepackagedJarWithOwnMainClass(type: BootRepackage, dependsOn: customJar) {
+	withJarTask = customJar
+	mainClass = 'foo.bar.Baz'
 }

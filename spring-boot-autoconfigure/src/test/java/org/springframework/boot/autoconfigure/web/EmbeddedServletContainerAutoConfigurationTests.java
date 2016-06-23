@@ -217,7 +217,7 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 			return new DispatcherServlet();
 		}
 
-		@Bean
+		@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
 		public ServletRegistrationBean dispatcherRegistration() {
 			return new ServletRegistrationBean(dispatcherServlet(), "/app/*");
 		}

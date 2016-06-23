@@ -17,15 +17,19 @@
 package org.springframework.boot.loader.jar;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.URLStreamHandler;
+import java.security.Permission;
 
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
@@ -59,11 +63,13 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private static final JarEntryName EMPTY_JAR_ENTRY_NAME = new JarEntryName("");
 
-	private static final String FILE_COLON_DOUBLE_SLASH = "file://";
+	private static final String READ_ACTION = "read";
 
 	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<Boolean>();
 
 	private final JarFile jarFile;
+
+	private final Permission permission;
 
 	private URL jarFileUrl;
 
@@ -75,7 +81,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 		// What we pass to super is ultimately ignored
 		super(EMPTY_JAR_URL);
 		this.url = url;
-		String spec = getNormalizedFile(url)
+		String spec = getNormalizedFileUrl(url)
 				.substring(jarFile.getUrl().getFile().length());
 		int separator;
 		while ((separator = spec.indexOf(SEPARATOR)) > 0) {
@@ -84,13 +90,14 @@ class JarURLConnection extends java.net.JarURLConnection {
 		}
 		this.jarFile = jarFile;
 		this.jarEntryName = getJarEntryName(spec);
+		this.permission = new FilePermission(jarFile.getRootJarFile().getFile().getPath(),
+				READ_ACTION);
 	}
 
-	private String getNormalizedFile(URL url) {
-		if (!url.getFile().startsWith(FILE_COLON_DOUBLE_SLASH)) {
-			return url.getFile();
-		}
-		return "file:" + url.getFile().substring(FILE_COLON_DOUBLE_SLASH.length());
+	private String getNormalizedFileUrl(URL url) {
+		String fileName = url.getFile();
+		return new File(URI.create(fileName).getSchemeSpecificPart()).getAbsoluteFile()
+				.toURI().toString() + (fileName.endsWith("/") ? "/" : "");
 	}
 
 	private JarFile getNestedJarFile(JarFile jarFile, String name) throws IOException {
@@ -208,6 +215,11 @@ class JarURLConnection extends java.net.JarURLConnection {
 	@Override
 	public String getContentType() {
 		return this.jarEntryName.getContentType();
+	}
+
+	@Override
+	public Permission getPermission() throws IOException {
+		return this.permission;
 	}
 
 	static void setUseFastExceptions(boolean useFastExceptions) {

@@ -28,4 +28,29 @@
 			<artifactId>spring-data-elasticsearch</artifactId>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.basepom.maven</groupId>
+				<artifactId>duplicate-finder-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>duplicate-dependencies</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<ignoredClassPatterns>
+								<ignoredClassPattern>org.joda.time.base.BaseDateTime</ignoredClassPattern>
+							</ignoredClassPatterns>
+							<ignoredResourcePatterns>
+								<ignoredResourcePattern>changelog.txt</ignoredResourcePattern>
+							</ignoredResourcePatterns>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

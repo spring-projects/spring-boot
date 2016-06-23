@@ -25,8 +25,11 @@ import org.springframework.boot.context.scan.TestEntityScanRegistrar.TestFactory
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationConfigurationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 
 /**
  * Tests for {@link TestEntityScan}.
@@ -75,9 +78,10 @@ public class TestEntityScanTests {
 
 	@Test
 	public void valueAndBasePackagesThrows() throws Exception {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("@TestEntityScan basePackages and value "
-				+ "attributes are mutually exclusive");
+		this.thrown.expect(AnnotationConfigurationException.class);
+		this.thrown.expectMessage(allOf(containsString("'value'"),
+				containsString("'basePackages'"), containsString("com.mycorp.entity"),
+				containsString("com.mycorp")));
 		this.context = new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
 	}
 

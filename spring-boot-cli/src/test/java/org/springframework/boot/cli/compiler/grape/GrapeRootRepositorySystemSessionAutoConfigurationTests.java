@@ -24,11 +24,11 @@ import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +43,6 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-@RunWith(MockitoJUnitRunner.class)
 public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 
 	private DefaultRepositorySystemSession session = MavenRepositorySystemUtils
@@ -51,6 +50,11 @@ public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 
 	@Mock
 	private RepositorySystem repositorySystem;
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
 
 	@Test
 	public void noLocalRepositoryWhenNoGrapeRoot() {

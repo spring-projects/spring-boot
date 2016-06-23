@@ -136,6 +136,8 @@ public class JettyEmbeddedServletContainerFactoryTests
 				.getConnectionFactory(SslConnectionFactory.class);
 		assertThat(connectionFactory.getSslContextFactory().getIncludeCipherSuites())
 				.containsExactly("ALPHA", "BRAVO", "CHARLIE");
+		assertThat(connectionFactory.getSslContextFactory().getExcludeCipherSuites())
+				.isEmpty();
 	}
 
 	@Override

@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -94,14 +93,6 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 			TemplateAvailabilityProviders templateAvailabilityProviders) {
 		Assert.notNull(applicationContext, "ApplicationContext must not be null");
 		Assert.notNull(resourceProperties, "ResourceProperties must not be null");
-		this.applicationContext = applicationContext;
-		this.resourceProperties = resourceProperties;
-		this.templateAvailabilityProviders = templateAvailabilityProviders;
-	}
-
-	DefaultErrorViewResolver(AnnotationConfigApplicationContext applicationContext,
-			ResourceProperties resourceProperties,
-			TemplateAvailabilityProviders templateAvailabilityProviders) {
 		this.applicationContext = applicationContext;
 		this.resourceProperties = resourceProperties;
 		this.templateAvailabilityProviders = templateAvailabilityProviders;

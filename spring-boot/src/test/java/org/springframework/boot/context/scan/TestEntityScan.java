@@ -23,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.AliasFor;
 
 /**
  * EntityScan test annotation.
@@ -35,8 +36,10 @@ import org.springframework.context.annotation.Import;
 @Import(TestEntityScanRegistrar.class)
 public @interface TestEntityScan {
 
+	@AliasFor("basePackages")
 	String[] value() default {};
 
+	@AliasFor("value")
 	String[] basePackages() default {};
 
 	Class<?>[] basePackageClasses() default {};

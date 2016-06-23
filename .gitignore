@@ -35,3 +35,4 @@ overridedb.*
 .DS_Store
 .factorypath
 dump.rdb
+transaction-logs

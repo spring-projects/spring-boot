@@ -38,7 +38,7 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.RemoteIpValve;
-import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
+import org.apache.tomcat.util.net.SSLHostConfig;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -266,16 +266,14 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		Tomcat tomcat = getTomcat(factory);
 		Connector connector = tomcat.getConnector();
 
-		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector
-				.getProtocolHandler();
-		assertThat(jsseProtocol.getCiphers()).isEqualTo("ALPHA,BRAVO,CHARLIE");
+		SSLHostConfig[] sslHostConfigs = connector.getProtocolHandler()
+				.findSslHostConfigs();
+		assertThat(sslHostConfigs[0].getCiphers()).isEqualTo("ALPHA:BRAVO:CHARLIE");
 	}
 
 	@Test
 	public void sslEnabledMultipleProtocolsConfiguration() throws Exception {
-		Ssl ssl = new Ssl();
-		ssl.setKeyStore("test.jks");
-		ssl.setKeyStorePassword("secret");
+		Ssl ssl = getSsl(null, "password", "src/test/resources/test.jks");
 		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
 		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
 
@@ -284,21 +282,20 @@ public class TomcatEmbeddedServletContainerFactoryTests
 
 		this.container = factory
 				.getEmbeddedServletContainer(sessionServletRegistration());
+		this.container.start();
 		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
 		Connector connector = tomcat.getConnector();
 
-		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector
-				.getProtocolHandler();
-		assertThat(jsseProtocol.getSslProtocol()).isEqualTo("TLS");
-		assertThat(jsseProtocol.getProperty("sslEnabledProtocols"))
-				.isEqualTo("TLSv1.1,TLSv1.2");
+		SSLHostConfig sslHostConfig = connector.getProtocolHandler()
+				.findSslHostConfigs()[0];
+		assertThat(sslHostConfig.getSslProtocol()).isEqualTo("TLS");
+		assertThat(sslHostConfig.getEnabledProtocols())
+				.containsExactlyInAnyOrder("TLSv1.1", "TLSv1.2");
 	}
 
 	@Test
 	public void sslEnabledProtocolsConfiguration() throws Exception {
-		Ssl ssl = new Ssl();
-		ssl.setKeyStore("test.jks");
-		ssl.setKeyStorePassword("secret");
+		Ssl ssl = getSsl(null, "password", "src/test/resources/test.jks");
 		ssl.setEnabledProtocols(new String[] { "TLSv1.2" });
 		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
 
@@ -310,10 +307,11 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
 		Connector connector = tomcat.getConnector();
 
-		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector
-				.getProtocolHandler();
-		assertThat(jsseProtocol.getSslProtocol()).isEqualTo("TLS");
-		assertThat(jsseProtocol.getProperty("sslEnabledProtocols")).isEqualTo("TLSv1.2");
+		this.container.start();
+		SSLHostConfig sslHostConfig = connector.getProtocolHandler()
+				.findSslHostConfigs()[0];
+		assertThat(sslHostConfig.getSslProtocol()).isEqualTo("TLS");
+		assertThat(sslHostConfig.getEnabledProtocols()).containsExactly("TLSv1.2");
 	}
 
 	@Test

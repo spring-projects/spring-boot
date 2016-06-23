@@ -163,7 +163,7 @@ content into your application; rather pick only the properties that you need.
 	server.jsp-servlet.init-parameters.*= # Init parameters used to configure the JSP servlet
 	server.jsp-servlet.registered=true # Whether or not the JSP servlet is registered
 	server.port=8080 # Server HTTP port.
-	server.server-header= # The value sent in the server response header (uses servlet container default if empty)
+	server.server-header= # Value to use for the Server response header (no header is sent if empty)
 	server.servlet-path=/ # Path of the main dispatcher servlet.
 	server.use-forward-headers= # If X-Forwarded-* headers should be applied to the HttpRequest.
 	server.session.cookie.comment= # Comment for the session cookie.
@@ -334,10 +334,11 @@ content into your application; rather pick only the properties that you need.
 	spring.mvc.async.request-timeout= # Amount of time (in milliseconds) before asynchronous request handling times out.
 	spring.mvc.date-format= # Date format to use. For instance `dd/MM/yyyy`.
 	spring.mvc.dispatch-trace-request=false # Dispatch TRACE requests to the FrameworkServlet doService method.
-	spring.mvc.dispatch-options-request=false # Dispatch OPTIONS requests to the FrameworkServlet doService method.
+	spring.mvc.dispatch-options-request=true # Dispatch OPTIONS requests to the FrameworkServlet doService method.
 	spring.mvc.favicon.enabled=true # Enable resolution of favicon.ico.
 	spring.mvc.ignore-default-model-on-redirect=true # If the content of the "default" model should be ignored during redirect scenarios.
-	spring.mvc.locale= # Locale to use.
+	spring.mvc.locale= # Locale to use. By default, this locale is overridden by the "Accept-Language" header.
+	spring.mvc.locale-resolver=accept-header # Define how the locale should be resolved.
 	spring.mvc.media-types.*= # Maps file extensions to media types for content negotiation.
 	spring.mvc.message-codes-resolver-format= # Formatting strategy for message codes. For instance `PREFIX_ERROR_CODE`.
 	spring.mvc.servlet.load-on-startup=-1 # Load on startup priority of the Spring Web Services servlet.
@@ -624,6 +625,13 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.url= # JDBC url of the database.
 	spring.datasource.username=
 
+	# JEST (ElasticSearch HTTP client) ({sc-spring-boot-autoconfigure}/jest/JestProperties.{sc-ext}[JestProperties])
+	spring.elasticsearch.jest.connection-timeout=3000 # Connection timeout in milliseconds.
+	spring.elasticsearch.jest.password= # Login password.
+	spring.elasticsearch.jest.read-timeout=3000 # Read timeout in milliseconds.
+	spring.elasticsearch.jest.uris=http://localhost:9200 # Comma-separated list of the elasticsearch instances to use.
+	spring.elasticsearch.jest.username= # Login user.
+
 	# H2 Web Console ({sc-spring-boot-autoconfigure}/h2/H2ConsoleProperties.{sc-ext}[H2ConsoleProperties])
 	spring.h2.console.enabled=false # Enable the console.
 	spring.h2.console.path=/h2-console # Path at which the console will be available.
@@ -822,7 +830,9 @@ content into your application; rather pick only the properties that you need.
 	spring.artemis.embedded.topics= # Comma-separated list of topics to create on startup.
 	spring.artemis.host=localhost # Artemis broker host.
 	spring.artemis.mode= # Artemis deployment mode, auto-detected by default. Can be explicitly set to "native" or "embedded".
+	spring.artemis.password= # Login password of the broker.
 	spring.artemis.port=61616 # Artemis broker port.
+	spring.artemis.user= # Login user of the broker.
 
 	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchProperties.{sc-ext}[BatchProperties])
 	spring.batch.initializer.enabled=true # Create the required batch tables on startup if necessary.
@@ -841,7 +851,9 @@ content into your application; rather pick only the properties that you need.
 	spring.hornetq.embedded.topics= # Comma-separated list of topics to create on startup.
 	spring.hornetq.host=localhost # HornetQ broker host.
 	spring.hornetq.mode= # HornetQ deployment mode, auto-detected by default. Can be explicitly set to "native" or "embedded".
+	spring.hornetq.password= # Login password of the broker.
 	spring.hornetq.port=5445 # HornetQ broker port.
+	spring.hornetq.user= # Login user of the broker.
 
 	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsProperties.{sc-ext}[JmsProperties])
 	spring.jms.jndi-name= # Connection factory JNDI name. When set, takes precedence to others connection factory auto-configurations.
@@ -857,7 +869,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.cache.channel.size= # Number of channels to retain in the cache.
 	spring.rabbitmq.cache.connection.mode=CHANNEL # Connection factory cache mode.
 	spring.rabbitmq.cache.connection.size= # Number of connections to cache.
-	spring.rabbitmq.connection-timeout=0 # Connection timeout, in milliseconds; zero for infinite.
+	spring.rabbitmq.connection-timeout= # Connection timeout, in milliseconds; zero for infinite.
 	spring.rabbitmq.dynamic=true # Create an AmqpAdmin bean.
 	spring.rabbitmq.host=localhost # RabbitMQ host.
 	spring.rabbitmq.listener.acknowledge-mode= # Acknowledge mode of container.

@@ -131,7 +131,7 @@ public class ServerProperties
 	private Boolean useForwardHeaders;
 
 	/**
-	 * Value to use for the server header (uses servlet container default if empty).
+	 * Value to use for the Server response header (no header is sent if empty).
 	 */
 	private String serverHeader;
 
@@ -1024,12 +1024,17 @@ public class ServerProperties
 				public void customize(Server server) {
 					for (org.eclipse.jetty.server.Connector connector : server
 							.getConnectors()) {
-						for (ConnectionFactory connectionFactory : connector
-								.getConnectionFactories()) {
-							if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
-								customize(
-										(HttpConfiguration.ConnectionFactory) connectionFactory);
+						try {
+							for (ConnectionFactory connectionFactory : connector
+									.getConnectionFactories()) {
+								if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
+									customize(
+											(HttpConfiguration.ConnectionFactory) connectionFactory);
+								}
 							}
+						}
+						catch (NoSuchMethodError ex) {
+							customizeOnJetty8(connector, maxHttpHeaderSize);
 						}
 					}
 
@@ -1039,6 +1044,20 @@ public class ServerProperties
 					HttpConfiguration configuration = factory.getHttpConfiguration();
 					configuration.setRequestHeaderSize(maxHttpHeaderSize);
 					configuration.setResponseHeaderSize(maxHttpHeaderSize);
+				}
+
+				private void customizeOnJetty8(
+						org.eclipse.jetty.server.Connector connector,
+						int maxHttpHeaderSize) {
+					try {
+						connector.getClass().getMethod("setRequestHeaderSize", int.class)
+								.invoke(connector, maxHttpHeaderSize);
+						connector.getClass().getMethod("setResponseHeaderSize", int.class)
+								.invoke(connector, maxHttpHeaderSize);
+					}
+					catch (Exception ex) {
+						throw new RuntimeException(ex);
+					}
 				}
 
 			});

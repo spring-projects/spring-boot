@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,16 +43,18 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.loader.WebappLoader;
+import org.apache.catalina.session.ManagerBase;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.coyote.http11.Http11NioProtocol;
+import org.apache.tomcat.util.net.SSLHostConfig;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -69,7 +70,6 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -300,7 +300,7 @@ public class TomcatEmbeddedServletContainerFactory
 			Compression compression = getCompression();
 			protocol.setCompression("on");
 			protocol.setCompressionMinSize(compression.getMinResponseSize());
-			protocol.setCompressableMimeTypes(
+			protocol.setCompressableMimeType(
 					StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
 			if (getCompression().getExcludedUserAgents() != null) {
 				protocol.setNoCompressionUserAgents(
@@ -322,13 +322,33 @@ public class TomcatEmbeddedServletContainerFactory
 		protocol.setKeystorePass(ssl.getKeyStorePassword());
 		protocol.setKeyPass(ssl.getKeyPassword());
 		protocol.setKeyAlias(ssl.getKeyAlias());
-		protocol.setCiphers(StringUtils.arrayToCommaDelimitedString(ssl.getCiphers()));
+		String ciphers = StringUtils.arrayToCommaDelimitedString(ssl.getCiphers());
+		protocol.setCiphers(StringUtils.hasText(ciphers) ? ciphers : null);
 		if (ssl.getEnabledProtocols() != null) {
-			protocol.setProperty("sslEnabledProtocols",
-					StringUtils.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
+			try {
+				for (SSLHostConfig sslHostConfig : protocol.findSslHostConfigs()) {
+					sslHostConfig.setProtocols(StringUtils
+							.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
+				}
+			}
+			catch (NoSuchMethodError ex) {
+				// Tomcat 8.0.x or earlier
+				Assert.isTrue(
+						protocol.setProperty("sslEnabledProtocols",
+								StringUtils.arrayToCommaDelimitedString(
+										ssl.getEnabledProtocols())),
+						"Failed to set sslEnabledProtocols");
+			}
 		}
 		if (getSslStoreProvider() != null) {
-			configureSslStoreProvider(protocol, getSslStoreProvider());
+			TomcatURLStreamHandlerFactory instance = TomcatURLStreamHandlerFactory
+					.getInstance();
+			instance.addUserFactory(
+					new SslStoreProviderUrlStreamHandlerFactory(getSslStoreProvider()));
+			protocol.setKeystoreFile(
+					SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
+			protocol.setTruststoreFile(
+					SslStoreProviderUrlStreamHandlerFactory.TRUST_STORE_URL);
 		}
 		else {
 			configureSslKeyStore(protocol, ssl);
@@ -349,10 +369,6 @@ public class TomcatEmbeddedServletContainerFactory
 			SslStoreProvider sslStoreProvider) {
 		Assert.isInstanceOf(Http11NioProtocol.class, protocol,
 				"SslStoreProvider can only be used with Http11NioProtocol");
-		((Http11NioProtocol) protocol).getEndpoint().setAttribute("sslStoreProvider",
-				sslStoreProvider);
-		protocol.setSslImplementationName(
-				TomcatEmbeddedJSSEImplementation.class.getName());
 	}
 
 	private void configureSslKeyStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
@@ -437,6 +453,7 @@ public class TomcatEmbeddedServletContainerFactory
 		else {
 			context.addLifecycleListener(new DisablePersistSessionListener());
 		}
+		context.addLifecycleListener(new LazySessionIdGeneratorListener());
 	}
 
 	private void configurePersistSession(Manager manager) {
@@ -675,83 +692,13 @@ public class TomcatEmbeddedServletContainerFactory
 		return this.uriEncoding;
 	}
 
-	private static class TomcatErrorPage {
-
-		private static final String ERROR_PAGE_CLASS = "org.apache.tomcat.util.descriptor.web.ErrorPage";
-
-		private static final String LEGACY_ERROR_PAGE_CLASS = "org.apache.catalina.deploy.ErrorPage";
-
-		private final String location;
-
-		private final String exceptionType;
-
-		private final int errorCode;
-
-		private final Object nativePage;
-
-		TomcatErrorPage(ErrorPage errorPage) {
-			this.location = errorPage.getPath();
-			this.exceptionType = errorPage.getExceptionName();
-			this.errorCode = errorPage.getStatusCode();
-			this.nativePage = createNativePage(errorPage);
-		}
-
-		private Object createNativePage(ErrorPage errorPage) {
-			Object nativePage = null;
-			try {
-				if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
-					nativePage = BeanUtils
-							.instantiate(ClassUtils.forName(ERROR_PAGE_CLASS, null));
-				}
-				else if (ClassUtils.isPresent(LEGACY_ERROR_PAGE_CLASS, null)) {
-					nativePage = BeanUtils.instantiate(
-							ClassUtils.forName(LEGACY_ERROR_PAGE_CLASS, null));
-				}
-			}
-			catch (ClassNotFoundException ex) {
-				// Swallow and continue
-			}
-			catch (LinkageError ex) {
-				// Swallow and continue
-			}
-			return nativePage;
-		}
-
-		public void addToContext(Context context) {
-			Assert.state(this.nativePage != null,
-					"Neither Tomcat 7 nor 8 detected so no native error page exists");
-			if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
-				org.apache.tomcat.util.descriptor.web.ErrorPage errorPage = (org.apache.tomcat.util.descriptor.web.ErrorPage) this.nativePage;
-				errorPage.setLocation(this.location);
-				errorPage.setErrorCode(this.errorCode);
-				errorPage.setExceptionType(this.exceptionType);
-				context.addErrorPage(errorPage);
-			}
-			else {
-				callMethod(this.nativePage, "setLocation", this.location, String.class);
-				callMethod(this.nativePage, "setErrorCode", this.errorCode, int.class);
-				callMethod(this.nativePage, "setExceptionType", this.exceptionType,
-						String.class);
-				callMethod(context, "addErrorPage", this.nativePage,
-						this.nativePage.getClass());
-			}
-		}
-
-		private void callMethod(Object target, String name, Object value, Class<?> type) {
-			Method method = ReflectionUtils.findMethod(target.getClass(), name, type);
-			ReflectionUtils.invokeMethod(method, target, value);
-		}
-
-	}
-
 	/**
 	 * {@link LifecycleListener} that stores an empty merged web.xml. This is critical for
 	 * Jasper to prevent warnings about missing web.xml files and to enable EL.
 	 */
 	private static class StoreMergedWebXmlListener implements LifecycleListener {
 
-		@SuppressWarnings("deprecation")
-		private final String MERGED_WEB_XML = org.apache.tomcat.util.scan.Constants.MERGED_WEB_XML;
+		private static final String MERGED_WEB_XML = "org.apache.tomcat.util.scan.MergedWebXml";
 
 		@Override
 		public void lifecycleEvent(LifecycleEvent event) {
@@ -762,8 +709,10 @@ public class TomcatEmbeddedServletContainerFactory
 
 		private void onStart(Context context) {
 			ServletContext servletContext = context.getServletContext();
-			if (servletContext.getAttribute(this.MERGED_WEB_XML) == null) {
-				servletContext.setAttribute(this.MERGED_WEB_XML, getEmptyWebXml());
+			if (servletContext
+					.getAttribute(StoreMergedWebXmlListener.MERGED_WEB_XML) == null) {
+				servletContext.setAttribute(StoreMergedWebXmlListener.MERGED_WEB_XML,
+						getEmptyWebXml());
 			}
 			TomcatResources.get(context).addClasspathResources();
 		}
@@ -801,6 +750,22 @@ public class TomcatEmbeddedServletContainerFactory
 				Manager manager = context.getManager();
 				if (manager != null && manager instanceof StandardManager) {
 					((StandardManager) manager).setPathname(null);
+				}
+			}
+		}
+
+	}
+
+	private static class LazySessionIdGeneratorListener implements LifecycleListener {
+
+		@Override
+		public void lifecycleEvent(LifecycleEvent event) {
+			if (event.getType().equals(Lifecycle.START_EVENT)) {
+				Context context = (Context) event.getLifecycle();
+				Manager manager = context.getManager();
+				if (manager instanceof ManagerBase) {
+					((ManagerBase) manager)
+							.setSessionIdGenerator(new LazySessionIdGenerator());
 				}
 			}
 		}

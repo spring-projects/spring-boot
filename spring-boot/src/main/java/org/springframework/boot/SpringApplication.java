@@ -71,7 +71,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -602,15 +601,10 @@ public class SpringApplication {
 	 * @param context the application context
 	 */
 	protected void postProcessApplicationContext(ConfigurableApplicationContext context) {
-		if (this.webEnvironment) {
-			if (context instanceof ConfigurableWebApplicationContext) {
-				ConfigurableWebApplicationContext configurableContext = (ConfigurableWebApplicationContext) context;
-				if (this.beanNameGenerator != null) {
-					configurableContext.getBeanFactory().registerSingleton(
-							AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
-							this.beanNameGenerator);
-				}
-			}
+		if (this.beanNameGenerator != null) {
+			context.getBeanFactory().registerSingleton(
+					AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
+					this.beanNameGenerator);
 		}
 		if (this.resourceLoader != null) {
 			if (context instanceof GenericApplicationContext) {

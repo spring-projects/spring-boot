@@ -29,9 +29,7 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
 
 /**
  * A base {@link ImportBeanDefinitionRegistrar} used to collect the packages to scan for a
@@ -88,17 +86,9 @@ public abstract class AbstractEntityScanRegistrar
 	protected Set<String> getPackagesToScan(AnnotationMetadata metadata) {
 		AnnotationAttributes attributes = AnnotationAttributes
 				.fromMap(metadata.getAnnotationAttributes(this.annotationType.getName()));
-		String[] value = attributes.getStringArray("value");
 		String[] basePackages = attributes.getStringArray("basePackages");
 		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
-		if (!ObjectUtils.isEmpty(value)) {
-			Assert.state(ObjectUtils.isEmpty(basePackages),
-					String.format(
-							"@%s basePackages and value attributes are mutually exclusive",
-							this.annotationType.getSimpleName()));
-		}
 		Set<String> packagesToScan = new LinkedHashSet<String>();
-		packagesToScan.addAll(Arrays.asList(value));
 		packagesToScan.addAll(Arrays.asList(basePackages));
 		for (Class<?> basePackageClass : basePackageClasses) {
 			packagesToScan.add(ClassUtils.getPackageName(basePackageClass));

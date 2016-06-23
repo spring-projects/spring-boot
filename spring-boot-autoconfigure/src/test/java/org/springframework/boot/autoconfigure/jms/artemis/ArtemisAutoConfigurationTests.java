@@ -84,6 +84,8 @@ public class ArtemisAutoConfigurationTests {
 				.getBean(ActiveMQConnectionFactory.class);
 		assertThat(connectionFactory).isEqualTo(jmsTemplate.getConnectionFactory());
 		assertNettyConnectionFactory(connectionFactory, "localhost", 61616);
+		assertThat(connectionFactory.getUser()).isNull();
+		assertThat(connectionFactory.getPassword()).isNull();
 	}
 
 	@Test
@@ -93,6 +95,19 @@ public class ArtemisAutoConfigurationTests {
 		ActiveMQConnectionFactory connectionFactory = this.context
 				.getBean(ActiveMQConnectionFactory.class);
 		assertNettyConnectionFactory(connectionFactory, "192.168.1.144", 9876);
+	}
+
+	@Test
+	public void nativeConnectionFactoryCredentials() {
+		load(EmptyConfiguration.class, "spring.artemis.mode:native",
+				"spring.artemis.user:user", "spring.artemis.password:secret");
+		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
+		ActiveMQConnectionFactory connectionFactory = this.context
+				.getBean(ActiveMQConnectionFactory.class);
+		assertThat(connectionFactory).isEqualTo(jmsTemplate.getConnectionFactory());
+		assertNettyConnectionFactory(connectionFactory, "localhost", 61616);
+		assertThat(connectionFactory.getUser()).isEqualTo("user");
+		assertThat(connectionFactory.getPassword()).isEqualTo("secret");
 	}
 
 	@Test

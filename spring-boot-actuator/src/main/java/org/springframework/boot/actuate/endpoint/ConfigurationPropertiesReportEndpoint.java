@@ -220,8 +220,7 @@ public class ConfigurationPropertiesReportEndpoint
 				annotation = override;
 			}
 		}
-		return (StringUtils.hasLength(annotation.value()) ? annotation.value()
-				: annotation.prefix());
+		return annotation.prefix();
 	}
 
 	/**

@@ -18,7 +18,6 @@ package org.springframework.boot.test.web.client;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,20 +36,18 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 
+import org.springframework.boot.web.client.BasicAuthorizationInterceptor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.util.Assert;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RequestCallback;
@@ -76,8 +73,6 @@ import org.springframework.web.util.UriTemplateHandler;
  */
 public class TestRestTemplate {
 
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
-
 	private final RestTemplate restTemplate;
 
 	/**
@@ -96,30 +91,22 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate(String username, String password,
 			HttpClientOption... httpClientOptions) {
-		this.restTemplate = createRestTemplate(username, password, httpClientOptions);
+		this(new RestTemplate(), username, password, httpClientOptions);
 	}
 
-	/**
-	 * Factory method used to create the underlying {@link RestTemplate}.
-	 * @param username the username to use (or {@code null})
-	 * @param password the password (or {@code null})
-	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
-	 * @return the delegate {@link RestTemplate}
-	 */
-	protected RestTemplate createRestTemplate(String username, String password,
+	public TestRestTemplate(RestTemplate restTemplate) {
+		this(restTemplate, null, null);
+	}
+
+	public TestRestTemplate(RestTemplate restTemplate, String username, String password,
 			HttpClientOption... httpClientOptions) {
-		RestTemplate restTemplate = new RestTemplate();
+		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
 			restTemplate.setRequestFactory(
 					new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
 		}
 		addAuthentication(restTemplate, username, password);
 		restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
-		return restTemplate;
-	}
-
-	public TestRestTemplate(RestTemplate restTemplate) {
-		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		this.restTemplate = restTemplate;
 	}
 
@@ -909,29 +896,6 @@ public class TestRestTemplate {
 		 * Use a {@link SSLConnectionSocketFactory} with {@link TrustSelfSignedStrategy}.
 		 */
 		SSL
-
-	}
-
-	private static class BasicAuthorizationInterceptor
-			implements ClientHttpRequestInterceptor {
-
-		private final String username;
-
-		private final String password;
-
-		BasicAuthorizationInterceptor(String username, String password) {
-			this.username = username;
-			this.password = (password == null ? "" : password);
-		}
-
-		@Override
-		public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-				ClientHttpRequestExecution execution) throws IOException {
-			String token = Base64Utils.encodeToString(
-					(this.username + ":" + this.password).getBytes(UTF_8));
-			request.getHeaders().add("Authorization", "Basic " + token);
-			return execution.execute(request, body);
-		}
 
 	}
 

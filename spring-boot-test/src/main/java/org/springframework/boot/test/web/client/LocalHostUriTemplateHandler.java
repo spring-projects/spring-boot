@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.web.client;
 
+import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.web.util.DefaultUriTemplateHandler;
@@ -28,17 +29,18 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Phillip Webb
  * @since 1.4.0
  */
-public class LocalHostUriTemplateHandler extends DefaultUriTemplateHandler {
+public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 
 	private final Environment environment;
 
 	public LocalHostUriTemplateHandler(Environment environment) {
+		super(new DefaultUriTemplateHandler());
 		Assert.notNull(environment, "Environment must not be null");
 		this.environment = environment;
 	}
 
 	@Override
-	public String getBaseUrl() {
+	public String getRootUri() {
 		String port = this.environment.getProperty("local.server.port", "8080");
 		return "http://localhost:" + port;
 	}

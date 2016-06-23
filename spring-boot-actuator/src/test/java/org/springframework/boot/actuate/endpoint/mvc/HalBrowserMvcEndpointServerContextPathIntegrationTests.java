@@ -80,6 +80,17 @@ public class HalBrowserMvcEndpointServerContextPathIntegrationTests {
 	}
 
 	@Test
+	public void actuatorBrowserEntryPoint() throws Exception {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(
+				"http://localhost:" + this.port + "/spring/actuator/browser.html",
+				HttpMethod.GET, new HttpEntity<Void>(null, headers), String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("entryPoint: '/spring/actuator'");
+	}
+
+	@Test
 	public void actuatorLinks() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));

@@ -70,4 +70,37 @@
 			<artifactId>spring-test</artifactId>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.basepom.maven</groupId>
+				<artifactId>duplicate-finder-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>duplicate-dependencies</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<exceptions>
+								<exception>
+									<conflictingDependencies>
+										<dependency>
+											<groupId>org.ow2.asm</groupId>
+											<artifactId>asm</artifactId>
+										</dependency>
+										<dependency>
+											<groupId>net.minidev</groupId>
+											<artifactId>accessors-smart</artifactId>
+										</dependency>
+									</conflictingDependencies>
+								</exception>
+							</exceptions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

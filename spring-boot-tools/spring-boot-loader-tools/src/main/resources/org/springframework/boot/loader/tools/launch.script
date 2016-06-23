@@ -144,8 +144,8 @@ start() {
 do_start() {
   working_dir=$(dirname "$jarfile")
   pushd "$working_dir" > /dev/null
+  mkdir "$PID_FOLDER" &> /dev/null
   if [[ -n "$run_user" ]]; then
-    mkdir "$PID_FOLDER" &> /dev/null
     checkPermissions || return $?
     chown "$run_user" "$PID_FOLDER"
     chown "$run_user" "$pid_file"

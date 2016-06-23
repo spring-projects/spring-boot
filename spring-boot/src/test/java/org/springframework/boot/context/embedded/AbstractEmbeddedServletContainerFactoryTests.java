@@ -55,6 +55,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.InputStreamFactory;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -65,6 +66,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -86,6 +89,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.SocketUtils;
 import org.springframework.util.StreamUtils;
@@ -117,6 +121,14 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	protected EmbeddedServletContainer container;
 
 	private final HttpClientContext httpClientContext = HttpClientContext.create();
+
+	@BeforeClass
+	@AfterClass
+	public static void uninstallUrlStreamHandlerFactory() {
+		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
+				null);
+		ReflectionTestUtils.setField(URL.class, "factory", null);
+	}
 
 	@After
 	public void tearDown() {
@@ -580,7 +592,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
-	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore) {
+	protected Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore) {
 		return getSsl(clientAuth, keyPassword, keyStore, null, null, null);
 	}
 
@@ -799,6 +811,16 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container.start();
 		ClientHttpResponse response = getClientResponse(getLocalUrl("/hello"));
 		assertThat(response.getHeaders().getFirst("server")).isEqualTo("MyServer");
+	}
+
+	@Test
+	public void serverHeaderIsDisabledByDefault() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory
+				.getEmbeddedServletContainer(exampleServletRegistration());
+		this.container.start();
+		ClientHttpResponse response = getClientResponse(getLocalUrl("/hello"));
+		assertThat(response.getHeaders().getFirst("server")).isNull();
 	}
 
 	@Test
