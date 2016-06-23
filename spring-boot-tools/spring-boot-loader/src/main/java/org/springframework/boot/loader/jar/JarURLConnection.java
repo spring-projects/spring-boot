@@ -30,6 +30,9 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.URLStreamHandler;
 import java.security.Permission;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
@@ -65,6 +68,16 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private static final String READ_ACTION = "read";
 
+	private static final Map<String, String> absoluteFileCache = Collections
+			.synchronizedMap(new LinkedHashMap<String, String>(16, 0.75f, true) {
+
+				@Override
+				protected boolean removeEldestEntry(Map.Entry<String, String> eldest) {
+					return size() >= 50;
+				}
+
+			});
+
 	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<Boolean>();
 
 	private final JarFile jarFile;
@@ -95,9 +108,20 @@ class JarURLConnection extends java.net.JarURLConnection {
 	}
 
 	private String getNormalizedFileUrl(URL url) {
-		String fileName = url.getFile();
-		return new File(URI.create(fileName).getSchemeSpecificPart()).getAbsoluteFile()
-				.toURI().toString() + (fileName.endsWith("/") ? "/" : "");
+		String file = url.getFile();
+		String path = "";
+		int separatorIndex = file.indexOf(SEPARATOR);
+		if (separatorIndex > 0) {
+			path = file.substring(separatorIndex);
+			file = file.substring(0, separatorIndex);
+		}
+		String absoluteFile = JarURLConnection.absoluteFileCache.get(file);
+		if (absoluteFile == null) {
+			absoluteFile = new File(URI.create(file).getSchemeSpecificPart())
+					.getAbsoluteFile().toURI().toString();
+			JarURLConnection.absoluteFileCache.put(file, absoluteFile);
+		}
+		return absoluteFile + path;
 	}
 
 	private JarFile getNestedJarFile(JarFile jarFile, String name) throws IOException {
