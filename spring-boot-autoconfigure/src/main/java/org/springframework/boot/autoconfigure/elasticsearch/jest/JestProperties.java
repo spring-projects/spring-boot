@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jest;
+package org.springframework.boot.autoconfigure.elasticsearch.jest;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@ConfigurationProperties("spring.jest")
+@ConfigurationProperties("spring.elasticsearch.jest")
 public class JestProperties {
 
 	/**

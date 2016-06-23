@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jest;
+package org.springframework.boot.autoconfigure.elasticsearch.jest;
 
 import com.google.gson.Gson;
 import io.searchbox.client.JestClient;

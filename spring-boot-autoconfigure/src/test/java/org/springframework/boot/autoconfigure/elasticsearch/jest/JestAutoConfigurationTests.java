@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jest;
+package org.springframework.boot.autoconfigure.elasticsearch.jest;
 
 import com.google.gson.Gson;
 import io.searchbox.client.JestClient;
@@ -55,13 +55,13 @@ public class JestAutoConfigurationTests {
 
 	@Test
 	public void customJestClient() {
-		load(CustomJestClient.class, "spring.jest.uris=http://localhost:9200");
+		load(CustomJestClient.class, "spring.elasticsearch.jest.uris=http://localhost:9200");
 		assertThat(this.context.getBeansOfType(JestClient.class)).hasSize(1);
 	}
 
 	@Test
 	public void customGson() {
-		load(CustomGson.class, "spring.jest.uris=http://localhost:9200");
+		load(CustomGson.class, "spring.elasticsearch.jest.uris=http://localhost:9200");
 		JestHttpClient client = (JestHttpClient) this.context.getBean(JestClient.class);
 		assertThat(client.getGson()).isSameAs(this.context.getBean("customGson"));
 	}

@@ -3342,10 +3342,10 @@ configured:
 
 [source,properties,indent=0]
 ----
-	spring.jest.uris=http://search.example.com:9200
-	spring.jest.read-timeout=10000
-	spring.jest.username=user
-	spring.jest.password=secret
+	spring.elasticsearch.jest.uris=http://search.example.com:9200
+	spring.elasticsearch.jest.read-timeout=10000
+	spring.elasticsearch.jest.username=user
+	spring.elasticsearch.jest.password=secret
 ----
 
 To take full control over the registration, define a `JestClient` bean.
