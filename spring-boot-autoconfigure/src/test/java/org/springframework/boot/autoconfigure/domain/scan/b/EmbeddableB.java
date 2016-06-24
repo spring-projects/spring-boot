@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-/**
- * Neo4j support classes.
- */
-package org.springframework.boot.neo4j;
+package org.springframework.boot.autoconfigure.domain.scan.b;
+
+import javax.persistence.Embeddable;
+
+@Embeddable
+public class EmbeddableB {
+
+}

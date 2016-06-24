@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Neo4j.
+ * General purpose domain annotations and classes.
  */
-package org.springframework.boot.autoconfigure.neo4j;
+package org.springframework.boot.autoconfigure.domain;

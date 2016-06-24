@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.neo4j;
+package org.springframework.boot.autoconfigure.data.neo4j;
 
 import java.net.URI;
 import java.net.URISyntaxException;

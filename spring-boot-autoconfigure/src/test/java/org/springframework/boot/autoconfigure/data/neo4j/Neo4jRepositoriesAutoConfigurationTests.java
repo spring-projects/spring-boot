@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.data.alt.neo4j.CityNeo4jRepository
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
 import org.springframework.boot.autoconfigure.data.neo4j.city.CityRepository;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -57,32 +56,27 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		prepareApplicationContext(TestConfiguration.class);
-
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 		Neo4jMappingContext mappingContext = this.context
 				.getBean(Neo4jMappingContext.class);
 		assertThat(mappingContext.getPersistentEntity(City.class)).isNotNull();
-
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
 		prepareApplicationContext(EmptyConfiguration.class);
-
 		assertThat(this.context.getBean(SessionFactory.class)).isNotNull();
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		prepareApplicationContext(CustomizedConfiguration.class);
-
 		assertThat(this.context.getBean(CityNeo4jRepository.class)).isNotNull();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
 		prepareApplicationContext(SortOfInvalidCustomConfiguration.class);
-
 		this.context.getBean(CityRepository.class);
 	}
 
@@ -91,7 +85,8 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.data.neo4j.uri=http://localhost:9797");
 		this.context.register(configurationClasses);
-		this.context.register(Neo4jAutoConfiguration.class,
+		this.context.register(Neo4jDataAutoConfiguration.class,
+				Neo4jDataAutoConfiguration.class,
 				Neo4jRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

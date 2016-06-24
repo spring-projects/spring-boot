@@ -24,9 +24,9 @@ import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfigurati
 import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.util.ApplicationContextTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -64,7 +64,7 @@ public class SpringApplicationHierarchyTests {
 	@EnableAutoConfiguration(exclude = { ElasticsearchDataAutoConfiguration.class,
 			ElasticsearchRepositoriesAutoConfiguration.class,
 			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-			Neo4jAutoConfiguration.class, RedisAutoConfiguration.class,
+			Neo4jDataAutoConfiguration.class, RedisAutoConfiguration.class,
 			RedisRepositoriesAutoConfiguration.class }, excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Child {
@@ -76,7 +76,7 @@ public class SpringApplicationHierarchyTests {
 			ElasticsearchDataAutoConfiguration.class,
 			ElasticsearchRepositoriesAutoConfiguration.class,
 			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-			Neo4jAutoConfiguration.class, RedisAutoConfiguration.class,
+			Neo4jDataAutoConfiguration.class, RedisAutoConfiguration.class,
 			RedisRepositoriesAutoConfiguration.class }, excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Parent {

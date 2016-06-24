@@ -97,7 +97,7 @@ public class MongoAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class OptionsConfig {
+	static class OptionsConfig {
 
 		@Bean
 		public MongoClientOptions mongoOptions() {
@@ -107,7 +107,7 @@ public class MongoAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class SslOptionsConfig {
+	static class SslOptionsConfig {
 
 		@Bean
 		public MongoClientOptions mongoClientOptions() {

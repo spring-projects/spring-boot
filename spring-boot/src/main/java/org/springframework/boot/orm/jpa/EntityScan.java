@@ -43,11 +43,14 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * annotation.
  *
  * @author Phillip Webb
+ * @deprecated as of 1.4 in favor of explicit configuration or
+ * {@code @org.springframework.boot.autoconfigure.domain.EntityScan}
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(JpaEntityScanRegistrar.class)
+@Import(EntityScanRegistrar.class)
+@Deprecated
 public @interface EntityScan {
 
 	/**
