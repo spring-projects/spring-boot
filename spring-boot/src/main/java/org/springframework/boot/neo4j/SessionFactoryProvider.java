@@ -25,7 +25,6 @@ import org.neo4j.ogm.session.SessionFactory;
  *
  * @author Stephane Nicoll
  * @since 1.4.0
- * @see NodeEntityScan
  */
 public class SessionFactoryProvider {
 
