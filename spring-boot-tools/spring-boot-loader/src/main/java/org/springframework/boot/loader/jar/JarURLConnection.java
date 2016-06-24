@@ -96,8 +96,8 @@ class JarURLConnection extends java.net.JarURLConnection {
 		if (separatorIndex < 0) {
 			return "";
 		}
-		return file
-				.substring(separatorIndex + SEPARATOR.length() + pathFromRoot.length());
+		int specIndex = separatorIndex + SEPARATOR.length() + pathFromRoot.length();
+		return file.substring(specIndex);
 	}
 
 	private JarFile getNestedJarFile(JarFile jarFile, String name) throws IOException {
