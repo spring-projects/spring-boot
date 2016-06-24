@@ -1024,8 +1024,7 @@ public class ServerProperties
 
 			customizeConnectionTimeout(serverProperties, factory);
 		}
-
-		private void customizeConnectionTimeout(final ServerProperties serverProperties, 
+		private void customizeConnectionTimeout(final ServerProperties serverProperties,
 													final JettyEmbeddedServletContainerFactory factory) {
 			factory.addServerCustomizers(new JettyServerCustomizer() {
 				@Override
@@ -1230,7 +1229,6 @@ public class ServerProperties
 
 			customizeConnectionTimeout(serverProperties, factory);
 		}
-		
 		private void customizeConnectionTimeout(final ServerProperties serverProperties,
 													final UndertowEmbeddedServletContainerFactory factory) {
 			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
