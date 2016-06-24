@@ -30,6 +30,7 @@ import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
 import javax.validation.constraints.NotNull;
 
+import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowOptions;
 import org.apache.catalina.Context;
@@ -43,6 +44,7 @@ import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
@@ -145,6 +147,13 @@ public class ServerProperties
 	 */
 	private int maxHttpPostSize = 0; // bytes
 
+	/**
+	 * The number of milliseconds connectors will wait for another HTTP request before closing the connection.
+	 * The default value is to use the value that has been set for the connectionTimeout attribute.
+	 * Use a value of -1 to indicate no (i.e. infinite) timeout.
+	 */
+	private int connectionTimeout = -1;
+	
 	private Session session = new Session();
 
 	@NestedConfigurationProperty
@@ -366,6 +375,14 @@ public class ServerProperties
 		return (platform == null ? false : platform.isUsingForwardHeaders());
 	}
 
+	public int getConnectionTimeout() {
+		return connectionTimeout;
+	}
+
+	public void setConnectionTimeout(final int connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
+	}
+	
 	public ErrorProperties getError() {
 		return this.error;
 	}
@@ -634,12 +651,6 @@ public class ServerProperties
 		 * Character encoding to use to decode the URI.
 		 */
 		private Charset uriEncoding;
-		/**
-		 * The number of milliseconds connectors will wait for another HTTP request before closing the connection.
-		 * The default value is to use the value that has been set for the connectionTimeout attribute.
-		 * Use a value of -1 to indicate no (i.e. infinite) timeout.
-		 */
-		private int connectionTimeout = -1;
 
 		public int getMaxThreads() {
 			return this.maxThreads;
@@ -656,14 +667,7 @@ public class ServerProperties
 		public void setMinSpareThreads(int minSpareThreads) {
 			this.minSpareThreads = minSpareThreads;
 		}
-
-		public int getConnectionTimeout() {
-			return connectionTimeout;
-		}
-
-		public void setConnectionTimeout(final int connectionTimeout) {
-			this.connectionTimeout = connectionTimeout;
-		}
+		
 
 		/**
 		 * Get the max http header size.
@@ -783,9 +787,14 @@ public class ServerProperties
 			if (getUriEncoding() != null) {
 				factory.setUriEncoding(getUriEncoding());
 			}
+			customizeConnectionTimeout(serverProperties, factory);
+		}
+
+		private void customizeConnectionTimeout(final ServerProperties serverProperties, final TomcatEmbeddedServletContainerFactory factory) {
 			for (Connector connector : factory.getAdditionalTomcatConnectors()) {
 				if (connector.getProtocolHandler() instanceof AbstractProtocol) {
-					((AbstractProtocol) connector.getProtocolHandler()).setConnectionTimeout(this.connectionTimeout);
+					final AbstractProtocol handler = (AbstractProtocol) connector.getProtocolHandler();
+					handler.setConnectionTimeout(serverProperties.getConnectionTimeout());
 				}
 			}
 		}
@@ -997,8 +1006,8 @@ public class ServerProperties
 			this.selectors = selectors;
 		}
 
-		void customizeJetty(ServerProperties serverProperties,
-				JettyEmbeddedServletContainerFactory factory) {
+		void customizeJetty(final ServerProperties serverProperties,
+							JettyEmbeddedServletContainerFactory factory) {
 			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
 			if (this.acceptors != null) {
 				factory.setAcceptors(this.acceptors);
@@ -1013,6 +1022,23 @@ public class ServerProperties
 			if (serverProperties.getMaxHttpPostSize() > 0) {
 				customizeMaxHttpPostSize(factory, serverProperties.getMaxHttpPostSize());
 			}
+
+			customizeConnectionTimeout(serverProperties, factory);
+		}
+
+		private void customizeConnectionTimeout(final ServerProperties serverProperties, 
+													 final JettyEmbeddedServletContainerFactory factory) {
+			factory.addServerCustomizers(new JettyServerCustomizer() {
+				@Override
+				public void customize(final Server server) {
+					for (org.eclipse.jetty.server.Connector connector : server.getConnectors()) {
+						if (connector instanceof ServerConnector) {
+							ServerConnector serverConnector = (ServerConnector) connector;
+							serverConnector.setSoLingerTime(serverProperties.getConnectionTimeout());
+						}
+					}
+				}
+			});
 		}
 
 		private void customizeMaxHttpHeaderSize(
@@ -1168,8 +1194,8 @@ public class ServerProperties
 			return this.accesslog;
 		}
 
-		void customizeUndertow(ServerProperties serverProperties,
-				UndertowEmbeddedServletContainerFactory factory) {
+		void customizeUndertow(final ServerProperties serverProperties,
+							   UndertowEmbeddedServletContainerFactory factory) {
 			if (this.bufferSize != null) {
 				factory.setBufferSize(this.bufferSize);
 			}
@@ -1202,6 +1228,18 @@ public class ServerProperties
 			if (serverProperties.getMaxHttpPostSize() > 0) {
 				customizeMaxHttpPostSize(factory, serverProperties.getMaxHttpPostSize());
 			}
+
+			customizeConnectionTimeout(serverProperties, factory);
+		}
+
+		private void customizeConnectionTimeout(final ServerProperties serverProperties, 
+												final UndertowEmbeddedServletContainerFactory factory) {
+			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
+				@Override
+				public void customize(Builder builder) {
+					builder.setSocketOption(UndertowOptions.REQUEST_PARSE_TIMEOUT, serverProperties.getConnectionTimeout());
+				}
+			});
 		}
 
 		private void customizeMaxHttpHeaderSize(
