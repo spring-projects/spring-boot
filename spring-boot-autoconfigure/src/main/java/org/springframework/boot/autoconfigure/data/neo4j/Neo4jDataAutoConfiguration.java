@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.neo4j;
+package org.springframework.boot.autoconfigure.data.neo4j;
 
 import java.util.List;
 
@@ -57,7 +57,7 @@ import org.springframework.data.neo4j.template.Neo4jTemplate;
 @ConditionalOnClass({ Neo4jSession.class, Neo4jOperations.class })
 @ConditionalOnMissingBean(Neo4jOperations.class)
 @EnableConfigurationProperties(Neo4jProperties.class)
-public class Neo4jAutoConfiguration {
+public class Neo4jDataAutoConfiguration {
 
 	@Configuration
 	@Import(SessionFactoryProviderConfiguration.class)
