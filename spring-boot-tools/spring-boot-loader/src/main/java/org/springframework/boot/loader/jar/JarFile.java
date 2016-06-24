@@ -364,6 +364,10 @@ public class JarFile extends java.util.jar.JarFile {
 		this.entries.clearCache();
 	}
 
+	protected String getPathFromRoot() {
+		return this.pathFromRoot;
+	}
+
 	/**
 	 * Register a {@literal 'java.protocol.handler.pkgs'} property so that a
 	 * {@link URLStreamHandler} will be located to deal with jar URLs.

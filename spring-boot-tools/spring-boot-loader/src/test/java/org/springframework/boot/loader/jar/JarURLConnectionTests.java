@@ -102,6 +102,28 @@ public class JarURLConnectionTests {
 				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 3 }));
 	}
 
+	@Test
+	public void connectionToEntryUsingAbsoluteUrlForEntryFromNestedJarFile()
+			throws Exception {
+		URL absoluteUrl = new URL(
+				"jar:file:" + getAbsolutePath() + "!/nested.jar!/3.dat");
+		assertThat(new JarURLConnection(absoluteUrl,
+				this.jarFile.getNestedJarFile(this.jarFile.getEntry("nested.jar")))
+						.getInputStream()).hasSameContentAs(
+								new ByteArrayInputStream(new byte[] { 3 }));
+	}
+
+	@Test
+	public void connectionToEntryUsingRelativeUrlForEntryFromNestedJarFile()
+			throws Exception {
+		URL absoluteUrl = new URL(
+				"jar:file:" + getRelativePath() + "!/nested.jar!/3.dat");
+		assertThat(new JarURLConnection(absoluteUrl,
+				this.jarFile.getNestedJarFile(this.jarFile.getEntry("nested.jar")))
+						.getInputStream()).hasSameContentAs(
+								new ByteArrayInputStream(new byte[] { 3 }));
+	}
+
 	private String getAbsolutePath() {
 		return this.rootJarFile.getAbsolutePath().replace('\\', '/');
 	}

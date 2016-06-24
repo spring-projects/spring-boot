@@ -17,22 +17,17 @@
 package org.springframework.boot.loader.jar;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.URLStreamHandler;
 import java.security.Permission;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
@@ -68,16 +63,6 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private static final String READ_ACTION = "read";
 
-	private static final Map<String, String> absoluteFileCache = Collections
-			.synchronizedMap(new LinkedHashMap<String, String>(16, 0.75f, true) {
-
-				@Override
-				protected boolean removeEldestEntry(Map.Entry<String, String> eldest) {
-					return size() >= 50;
-				}
-
-			});
-
 	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<Boolean>();
 
 	private final JarFile jarFile;
@@ -94,32 +79,25 @@ class JarURLConnection extends java.net.JarURLConnection {
 		// What we pass to super is ultimately ignored
 		super(EMPTY_JAR_URL);
 		this.url = url;
-		String spec = getNormalizedFileUrl(url)
-				.substring(jarFile.getUrl().getFile().length());
+		String spec = extractFullSpec(url, jarFile.getPathFromRoot());
 		int separator;
-		while ((separator = spec.indexOf(SEPARATOR)) > 0) {
-			jarFile = getNestedJarFile(jarFile, spec.substring(0, separator));
-			spec = spec.substring(separator + SEPARATOR.length());
+		int index = 0;
+		while ((separator = spec.indexOf(SEPARATOR, index)) > 0) {
+			jarFile = getNestedJarFile(jarFile, spec.substring(index, separator));
+			index += separator + SEPARATOR.length();
 		}
 		this.jarFile = jarFile;
-		this.jarEntryName = getJarEntryName(spec);
+		this.jarEntryName = getJarEntryName(spec.substring(index));
 	}
 
-	private String getNormalizedFileUrl(URL url) {
+	private String extractFullSpec(URL url, String pathFromRoot) {
 		String file = url.getFile();
-		String path = "";
 		int separatorIndex = file.indexOf(SEPARATOR);
-		if (separatorIndex > 0) {
-			path = file.substring(separatorIndex);
-			file = file.substring(0, separatorIndex);
+		if (separatorIndex < 0) {
+			return "";
 		}
-		String absoluteFile = JarURLConnection.absoluteFileCache.get(file);
-		if (absoluteFile == null) {
-			absoluteFile = new File(URI.create(file).getSchemeSpecificPart())
-					.getAbsoluteFile().toURI().toString();
-			JarURLConnection.absoluteFileCache.put(file, absoluteFile);
-		}
-		return absoluteFile + path;
+		return file
+				.substring(separatorIndex + SEPARATOR.length() + pathFromRoot.length());
 	}
 
 	private JarFile getNestedJarFile(JarFile jarFile, String name) throws IOException {
@@ -266,14 +244,13 @@ class JarURLConnection extends java.net.JarURLConnection {
 		}
 
 		private String decode(String source) {
-			int length = (source == null ? 0 : source.length());
-			if ((length == 0) || (source.indexOf('%') < 0)) {
-				return new AsciiBytes(source).toString();
+			if (source.length() == 0 || (source.indexOf('%') < 0)) {
+				return source;
 			}
-			ByteArrayOutputStream bos = new ByteArrayOutputStream(length);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream(source.length());
 			write(source, bos);
 			// AsciiBytes is what is used to store the JarEntries so make it symmetric
-			return new AsciiBytes(bos.toByteArray()).toString();
+			return AsciiBytes.toString(bos.toByteArray());
 		}
 
 		private void write(String source, ByteArrayOutputStream outputStream) {
