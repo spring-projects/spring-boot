@@ -70,7 +70,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private final JarFile jarFile;
 
-	private final Permission permission;
+	private Permission permission;
 
 	private JarEntryData jarEntryData;
 
@@ -91,8 +91,6 @@ class JarURLConnection extends java.net.JarURLConnection {
 		}
 		this.jarFile = jarFile;
 		this.jarEntryName = getJarEntryName(spec);
-		this.permission = new FilePermission(jarFile.getRootJarFile().getFile().getPath(),
-				READ_ACTION);
 	}
 
 	private String getNormalizedFile(URL url) {
@@ -225,6 +223,10 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public Permission getPermission() throws IOException {
+		if (this.permission == null) {
+			this.permission = new FilePermission(
+					this.jarFile.getRootJarFile().getFile().getPath(), READ_ACTION);
+		}
 		return this.permission;
 	}
 
