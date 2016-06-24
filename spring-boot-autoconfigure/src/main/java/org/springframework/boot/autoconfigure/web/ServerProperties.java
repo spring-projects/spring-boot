@@ -153,7 +153,7 @@ public class ServerProperties
 	 * Use a value of -1 to indicate no (i.e. infinite) timeout.
 	 */
 	private int connectionTimeout = -1;
-	
+
 	private Session session = new Session();
 
 	@NestedConfigurationProperty
@@ -382,7 +382,7 @@ public class ServerProperties
 	public void setConnectionTimeout(final int connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
 	}
-	
+
 	public ErrorProperties getError() {
 		return this.error;
 	}
@@ -667,7 +667,6 @@ public class ServerProperties
 		public void setMinSpareThreads(int minSpareThreads) {
 			this.minSpareThreads = minSpareThreads;
 		}
-		
 
 		/**
 		 * Get the max http header size.
@@ -1027,7 +1026,7 @@ public class ServerProperties
 		}
 
 		private void customizeConnectionTimeout(final ServerProperties serverProperties, 
-													 final JettyEmbeddedServletContainerFactory factory) {
+													final JettyEmbeddedServletContainerFactory factory) {
 			factory.addServerCustomizers(new JettyServerCustomizer() {
 				@Override
 				public void customize(final Server server) {
@@ -1195,7 +1194,7 @@ public class ServerProperties
 		}
 
 		void customizeUndertow(final ServerProperties serverProperties,
-							   UndertowEmbeddedServletContainerFactory factory) {
+								UndertowEmbeddedServletContainerFactory factory) {
 			if (this.bufferSize != null) {
 				factory.setBufferSize(this.bufferSize);
 			}
@@ -1231,9 +1230,9 @@ public class ServerProperties
 
 			customizeConnectionTimeout(serverProperties, factory);
 		}
-
-		private void customizeConnectionTimeout(final ServerProperties serverProperties, 
-												final UndertowEmbeddedServletContainerFactory factory) {
+		
+		private void customizeConnectionTimeout(final ServerProperties serverProperties,
+													final UndertowEmbeddedServletContainerFactory factory) {
 			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
 				@Override
 				public void customize(Builder builder) {
