@@ -16,18 +16,24 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
+import java.util.Set;
+
 import com.datastax.driver.core.Session;
 import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.cassandra.city.City;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.cassandra.core.CassandraTemplate;
+import org.springframework.data.cassandra.mapping.CassandraMappingContext;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -59,6 +65,21 @@ public class CassandraDataAutoConfigurationTests {
 				.isEqualTo(1);
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void entityScanShouldSetInitialEntitySet() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(TestConfiguration.class, EntityScanConfig.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
+		this.context.refresh();
+		CassandraMappingContext mappingContext = this.context
+				.getBean(CassandraMappingContext.class);
+		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
+				.getField(mappingContext, "initialEntitySet");
+		assertThat(initialEntitySet).containsOnly(City.class);
+	}
+
 	@Configuration
 	@ComponentScan(excludeFilters = @ComponentScan.Filter(classes = {
 			Session.class }, type = FilterType.ASSIGNABLE_TYPE))
@@ -73,6 +94,12 @@ public class CassandraDataAutoConfigurationTests {
 		public Session getObject() {
 			return mock(Session.class);
 		}
+
+	}
+
+	@Configuration
+	@EntityScan("org.springframework.boot.autoconfigure.data.cassandra.city")
+	static class EntityScanConfig {
 
 	}
 

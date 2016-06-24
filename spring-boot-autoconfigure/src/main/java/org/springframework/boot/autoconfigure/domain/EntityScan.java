@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.orm.jpa;
+package org.springframework.boot.autoconfigure.domain;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -24,18 +24,26 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
- * Configures the {@link LocalContainerEntityManagerFactoryBean} to scan for entity
- * classes in the classpath. This annotation provides an alternative to manually setting
- * {@link LocalContainerEntityManagerFactoryBean#setPackagesToScan(String...)} and is
- * particularly useful if you want to configure entity scanning in a type-safe way, or if
- * your {@link LocalContainerEntityManagerFactoryBean} is auto-configured.
+ * Configures the base packages used by auto-configuration when scanning for entity
+ * classes.
  * <p>
- * A {@link LocalContainerEntityManagerFactoryBean} must be configured within your Spring
- * ApplicationContext in order to use entity scanning. Furthermore, any existing
- * {@code packagesToScan} setting will be replaced.
+ * Using {@code @EntityScan} will cause auto-configuration to:
+ * <ul>
+ * <li>Set the
+ * {@link org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean#setPackagesToScan(String...)
+ * packages scanned} for JPA entities.</li>
+ * <li>Set the packages used with Neo4J's {@link org.neo4j.ogm.session.SessionFactory
+ * SessionFactory}.</li>
+ * <li>Set the
+ * {@link org.springframework.data.mapping.context.AbstractMappingContext#setInitialEntitySet(java.util.Set)
+ * initial entity set} used with Spring Data
+ * {@link org.springframework.data.mongodb.core.mapping.MongoMappingContext MongoDB},
+ * {@link org.springframework.data.cassandra.mapping.CassandraMappingContext Cassandra}
+ * and {@link org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext
+ * Couchbase} mapping contexts.</li>
+ * </ul>
  * <p>
  * One of {@link #basePackageClasses()}, {@link #basePackages()} or its alias
  * {@link #value()} may be specified to define specific packages to scan. If specific
@@ -43,14 +51,13 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * annotation.
  *
  * @author Phillip Webb
- * @deprecated as of 1.4 in favor of explicit configuration or
- * {@code @org.springframework.boot.autoconfigure.domain.EntityScan}
+ * @since 1.4.0
+ * @see EntityScanPackages
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(EntityScanRegistrar.class)
-@Deprecated
+@Import(EntityScanPackages.Registrar.class)
 public @interface EntityScan {
 
 	/**
@@ -63,8 +70,8 @@ public @interface EntityScan {
 	String[] value() default {};
 
 	/**
-	 * Base packages to scan for annotated entities. {@link #value()} is an alias for (and
-	 * mutually exclusive with) this attribute.
+	 * Base packages to scan for entities. {@link #value()} is an alias for (and mutually
+	 * exclusive with) this attribute.
 	 * <p>
 	 * Use {@link #basePackageClasses()} for a type-safe alternative to String-based
 	 * package names.
@@ -75,7 +82,7 @@ public @interface EntityScan {
 
 	/**
 	 * Type-safe alternative to {@link #basePackages()} for specifying the packages to
-	 * scan for annotated entities. The package of each class specified will be scanned.
+	 * scan for entities. The package of each class specified will be scanned.
 	 * <p>
 	 * Consider creating a special no-op marker class or interface in each package that
 	 * serves no purpose other than being referenced by this attribute.

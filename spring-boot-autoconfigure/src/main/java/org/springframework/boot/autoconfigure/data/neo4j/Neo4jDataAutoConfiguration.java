@@ -22,30 +22,22 @@ import org.neo4j.ogm.session.Neo4jSession;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.neo4j.SessionFactoryProvider;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.template.Neo4jOperations;
-import org.springframework.data.neo4j.template.Neo4jTemplate;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Neo4j support.
- * <p>
- * Registers a {@link Neo4jTemplate} bean if no other bean of the same type is configured.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Data Neo4j.
  *
  * @author Michael Hunger
  * @author Josh Long
@@ -59,82 +51,51 @@ import org.springframework.data.neo4j.template.Neo4jTemplate;
 @EnableConfigurationProperties(Neo4jProperties.class)
 public class Neo4jDataAutoConfiguration {
 
+	private final Neo4jProperties properties;
+
+	public Neo4jDataAutoConfiguration(Neo4jProperties properties) {
+		this.properties = properties;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public org.neo4j.ogm.config.Configuration configuration() {
+		return this.properties.createConfiguration();
+	}
+
 	@Configuration
-	@Import(SessionFactoryProviderConfiguration.class)
-	public static class SpringBootNeo4jConfiguration extends Neo4jConfiguration {
+	static class SpringBootNeo4jConfiguration extends Neo4jConfiguration {
 
-		private final ObjectProvider<SessionFactoryProvider> sessionFactoryProvider;
+		private final ApplicationContext applicationContext;
 
-		public SpringBootNeo4jConfiguration(
-				ObjectProvider<SessionFactoryProvider> sessionFactoryProvider) {
-			this.sessionFactoryProvider = sessionFactoryProvider;
+		private final org.neo4j.ogm.config.Configuration configuration;
+
+		SpringBootNeo4jConfiguration(ApplicationContext applicationContext,
+				org.neo4j.ogm.config.Configuration configuration) {
+			this.applicationContext = applicationContext;
+			this.configuration = configuration;
 		}
 
 		@Override
 		public SessionFactory getSessionFactory() {
-			return this.sessionFactoryProvider.getObject().getSessionFactory();
+			return new SessionFactory(this.configuration, getPackagesToScan());
 		}
 
+		private String[] getPackagesToScan() {
+			List<String> packages = EntityScanPackages.get(this.applicationContext)
+					.getPackageNames();
+			if (packages.isEmpty()
+					&& AutoConfigurationPackages.has(this.applicationContext)) {
+				packages = AutoConfigurationPackages.get(this.applicationContext);
+			}
+			return packages.toArray(new String[packages.size()]);
+		}
+
+		@Override
 		@Bean
 		@Scope(scopeName = "${spring.data.neo4j.session.scope:singleton}", proxyMode = ScopedProxyMode.TARGET_CLASS)
-		@Override
 		public Session getSession() throws Exception {
-			return getSessionFactory().openSession();
-		}
-
-	}
-
-	@Configuration
-	@Import(Neo4jConfigurationConfiguration.class)
-	static class SessionFactoryProviderConfiguration implements BeanFactoryAware {
-
-		private final org.neo4j.ogm.config.Configuration configuration;
-
-		private ConfigurableListableBeanFactory beanFactory;
-
-		SessionFactoryProviderConfiguration(
-				org.neo4j.ogm.config.Configuration configuration) {
-			this.configuration = configuration;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public SessionFactoryProvider sessionFactoryProvider() {
-			SessionFactoryProvider provider = new SessionFactoryProvider();
-			provider.setConfiguration(this.configuration);
-			provider.setPackagesToScan(getPackagesToScan());
-			return provider;
-		}
-
-		@Override
-		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-			this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
-		}
-
-		protected String[] getPackagesToScan() {
-			if (AutoConfigurationPackages.has(this.beanFactory)) {
-				List<String> basePackages = AutoConfigurationPackages
-						.get(this.beanFactory);
-				return basePackages.toArray(new String[basePackages.size()]);
-			}
-			return new String[0];
-		}
-
-	}
-
-	@Configuration
-	static class Neo4jConfigurationConfiguration {
-
-		private final Neo4jProperties properties;
-
-		Neo4jConfigurationConfiguration(Neo4jProperties properties) {
-			this.properties = properties;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public org.neo4j.ogm.config.Configuration configuration() {
-			return this.properties.createConfiguration();
+			return super.getSession();
 		}
 
 	}

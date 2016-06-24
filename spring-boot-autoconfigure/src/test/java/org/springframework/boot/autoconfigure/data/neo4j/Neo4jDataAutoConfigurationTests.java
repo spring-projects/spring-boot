@@ -18,7 +18,9 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.assertj.core.api.Assertions;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.neo4j.ogm.drivers.http.driver.HttpDriver;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
@@ -38,13 +40,16 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link Neo4jDataAutoConfiguration}. Tests can't use the embedded driver as we
- * use lucene 4 and Neo4j still requires 3.
+ * use Lucene 4 and Neo4j still requires 3.
  *
  * @author Stephane Nicoll
  * @author Michael Hunger
  * @author Vince Bickers
  */
 public class Neo4jDataAutoConfigurationTests {
+
+	@Rule
+	public final ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -107,7 +112,7 @@ public class Neo4jDataAutoConfigurationTests {
 				City.class);
 	}
 
-	public void load(Class<?> config, String... environment) {
+	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(ctx, environment);
 		if (config != null) {
