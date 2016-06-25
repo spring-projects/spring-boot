@@ -35,9 +35,15 @@ import java.security.Permission;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class JarURLConnection extends java.net.JarURLConnection {
+final class JarURLConnection extends java.net.JarURLConnection {
 
-	private static final FileNotFoundException FILE_NOT_FOUND_EXCEPTION = new FileNotFoundException();
+	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<Boolean>();
+
+	private static final FileNotFoundException FILE_NOT_FOUND_EXCEPTION = new FileNotFoundException(
+			"Jar file or entry not found");
+
+	private static final IllegalStateException NOT_FOUND_CONNECTION_EXCEPTION = new IllegalStateException(
+			FILE_NOT_FOUND_EXCEPTION);
 
 	private static final String SEPARATOR = "!/";
 
@@ -63,7 +69,8 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private static final String READ_ACTION = "read";
 
-	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<Boolean>();
+	private static final JarURLConnection NOT_FOUND_CONNECTION = JarURLConnection
+			.notFound();
 
 	private final JarFile jarFile;
 
@@ -75,48 +82,20 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private JarEntry jarEntry;
 
-	protected JarURLConnection(URL url, JarFile jarFile) throws IOException {
+	private JarURLConnection(URL url, JarFile jarFile, JarEntryName jarEntryName)
+			throws IOException {
 		// What we pass to super is ultimately ignored
 		super(EMPTY_JAR_URL);
 		this.url = url;
-		String spec = extractFullSpec(url, jarFile.getPathFromRoot());
-		int separator;
-		int index = 0;
-		while ((separator = spec.indexOf(SEPARATOR, index)) > 0) {
-			jarFile = getNestedJarFile(jarFile, spec.substring(index, separator));
-			index += separator + SEPARATOR.length();
-		}
 		this.jarFile = jarFile;
-		this.jarEntryName = getJarEntryName(spec.substring(index));
-	}
-
-	private String extractFullSpec(URL url, String pathFromRoot) {
-		String file = url.getFile();
-		int separatorIndex = file.indexOf(SEPARATOR);
-		if (separatorIndex < 0) {
-			return "";
-		}
-		int specIndex = separatorIndex + SEPARATOR.length() + pathFromRoot.length();
-		return file.substring(specIndex);
-	}
-
-	private JarFile getNestedJarFile(JarFile jarFile, String name) throws IOException {
-		JarEntry jarEntry = jarFile.getJarEntry(name);
-		if (jarEntry == null) {
-			throwFileNotFound(jarEntry, jarFile);
-		}
-		return jarFile.getNestedJarFile(jarEntry);
-	}
-
-	private JarEntryName getJarEntryName(String spec) {
-		if (spec.length() == 0) {
-			return EMPTY_JAR_ENTRY_NAME;
-		}
-		return new JarEntryName(spec);
+		this.jarEntryName = jarEntryName;
 	}
 
 	@Override
 	public void connect() throws IOException {
+		if (this.jarFile == null) {
+			throw FILE_NOT_FOUND_EXCEPTION;
+		}
 		if (!this.jarEntryName.isEmpty() && this.jarEntry == null) {
 			this.jarEntry = this.jarFile.getJarEntry(getEntryName());
 			if (this.jarEntry == null) {
@@ -124,15 +103,6 @@ class JarURLConnection extends java.net.JarURLConnection {
 			}
 		}
 		this.connected = true;
-	}
-
-	private void throwFileNotFound(Object entry, JarFile jarFile)
-			throws FileNotFoundException {
-		if (Boolean.TRUE.equals(useFastExceptions.get())) {
-			throw FILE_NOT_FOUND_EXCEPTION;
-		}
-		throw new FileNotFoundException(
-				"JAR entry " + entry + " not found in " + jarFile.getName());
 	}
 
 	@Override
@@ -143,6 +113,9 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public URL getJarFileURL() {
+		if (this.jarFile == null) {
+			throw NOT_FOUND_CONNECTION_EXCEPTION;
+		}
 		if (this.jarFileUrl == null) {
 			this.jarFileUrl = buildJarFileUrl();
 		}
@@ -167,7 +140,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public JarEntry getJarEntry() throws IOException {
-		if (this.jarEntryName.isEmpty()) {
+		if (this.jarEntryName == null || this.jarEntryName.isEmpty()) {
 			return null;
 		}
 		connect();
@@ -176,11 +149,17 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public String getEntryName() {
+		if (this.jarFile == null) {
+			throw NOT_FOUND_CONNECTION_EXCEPTION;
+		}
 		return this.jarEntryName.toString();
 	}
 
 	@Override
 	public InputStream getInputStream() throws IOException {
+		if (this.jarFile == null) {
+			throw FILE_NOT_FOUND_EXCEPTION;
+		}
 		if (this.jarEntryName.isEmpty()) {
 			throw new IOException("no entry name specified");
 		}
@@ -192,8 +171,20 @@ class JarURLConnection extends java.net.JarURLConnection {
 		return inputStream;
 	}
 
+	private void throwFileNotFound(Object entry, JarFile jarFile)
+			throws FileNotFoundException {
+		if (Boolean.TRUE.equals(useFastExceptions.get())) {
+			throw FILE_NOT_FOUND_EXCEPTION;
+		}
+		throw new FileNotFoundException(
+				"JAR entry " + entry + " not found in " + jarFile.getName());
+	}
+
 	@Override
 	public int getContentLength() {
+		if (this.jarFile == null) {
+			return -1;
+		}
 		try {
 			if (this.jarEntryName.isEmpty()) {
 				return this.jarFile.size();
@@ -214,11 +205,14 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public String getContentType() {
-		return this.jarEntryName.getContentType();
+		return (this.jarEntryName == null ? null : this.jarEntryName.getContentType());
 	}
 
 	@Override
 	public Permission getPermission() throws IOException {
+		if (this.jarFile == null) {
+			throw FILE_NOT_FOUND_EXCEPTION;
+		}
 		if (this.permission == null) {
 			this.permission = new FilePermission(
 					this.jarFile.getRootJarFile().getFile().getPath(), READ_ACTION);
@@ -228,6 +222,56 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	static void setUseFastExceptions(boolean useFastExceptions) {
 		JarURLConnection.useFastExceptions.set(useFastExceptions);
+	}
+
+	static JarURLConnection get(URL url, JarFile jarFile) throws IOException {
+		String spec = extractFullSpec(url, jarFile.getPathFromRoot());
+		int separator;
+		int index = 0;
+		while ((separator = spec.indexOf(SEPARATOR, index)) > 0) {
+			String entryName = spec.substring(index, separator);
+			JarEntry jarEntry = jarFile.getJarEntry(entryName);
+			if (jarEntry == null) {
+				return JarURLConnection.notFound(jarFile, JarEntryName.get(entryName));
+			}
+			jarFile = jarFile.getNestedJarFile(jarEntry);
+			index += separator + SEPARATOR.length();
+		}
+		JarEntryName jarEntryName = JarEntryName.get(spec, index);
+		if (Boolean.TRUE.equals(useFastExceptions.get())) {
+			if (!jarEntryName.isEmpty()
+					&& !jarFile.containsEntry(jarEntryName.toString())) {
+				return NOT_FOUND_CONNECTION;
+			}
+		}
+		return new JarURLConnection(url, jarFile, jarEntryName);
+	}
+
+	private static String extractFullSpec(URL url, String pathFromRoot) {
+		String file = url.getFile();
+		int separatorIndex = file.indexOf(SEPARATOR);
+		if (separatorIndex < 0) {
+			return "";
+		}
+		int specIndex = separatorIndex + SEPARATOR.length() + pathFromRoot.length();
+		return file.substring(specIndex);
+	}
+
+	private static JarURLConnection notFound() {
+		try {
+			return notFound(null, null);
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
+	private static JarURLConnection notFound(JarFile jarFile, JarEntryName jarEntryName)
+			throws IOException {
+		if (Boolean.TRUE.equals(useFastExceptions.get())) {
+			return NOT_FOUND_CONNECTION;
+		}
+		return new JarURLConnection(null, jarFile, jarEntryName);
 	}
 
 	/**
@@ -314,6 +358,17 @@ class JarURLConnection extends java.net.JarURLConnection {
 			type = (type != null ? type : guessContentTypeFromName(toString()));
 			type = (type != null ? type : "content/unknown");
 			return type;
+		}
+
+		public static JarEntryName get(String spec) {
+			return get(spec, 0);
+		}
+
+		public static JarEntryName get(String spec, int beginIndex) {
+			if (spec.length() <= beginIndex) {
+				return EMPTY_JAR_ENTRY_NAME;
+			}
+			return new JarEntryName(spec.substring(beginIndex));
 		}
 
 	}
