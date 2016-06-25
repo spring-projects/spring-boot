@@ -38,6 +38,8 @@ import javax.lang.model.util.Types;
  */
 class TypeUtils {
 
+	private static final String VALID_JAVADOC_CHARS = ".-='/\\!&():;";
+
 	private static final Map<TypeKind, Class<?>> PRIMITIVE_WRAPPERS;
 
 	static {
@@ -137,7 +139,85 @@ class TypeUtils {
 		if (javadoc != null) {
 			javadoc = javadoc.trim();
 		}
-		return ("".equals(javadoc) ? null : javadoc);
+		// need to clean javadoc
+		return cleanJavaDoc(javadoc, false);
+	}
+
+	/**
+	 * Cleans the javadoc to removed invalid characters so it can be used as json description.
+	 *
+	 * @param javadoc  the javadoc
+	 * @param summary  whether to grab the first paragraph to be used as a summary
+	 * @return the javadoc as valid json
+	 */
+	private String cleanJavaDoc(String javadoc, boolean summary) {
+		if (javadoc == null || javadoc.trim().isEmpty()) {
+			return null;
+		}
+
+		StringBuilder sb = new StringBuilder();
+
+		// split into lines
+		String[] lines = javadoc.split("\n");
+
+		boolean first = true;
+		for (String line : lines) {
+			line = line.trim();
+
+			// terminate if we reach @param, @return or @deprecated as we only want the javadoc before that
+			if (line.startsWith("@param") || line.startsWith("@return") || line.startsWith("@deprecated")) {
+				break;
+			}
+
+			// skip lines that are javadoc references
+			if (line.startsWith("@")) {
+				continue;
+			}
+
+			// remove all HTML tags
+			line = line.replaceAll("<.*?>", "");
+
+			// remove all inlined javadoc links, eg such as {@link java.util.List}
+			line = line.replaceAll("\\{\\@\\w+\\s([\\w.]+)\\}", "$1");
+
+			// we are starting from a new line, so add a whitespace
+			if (!first) {
+				sb.append(' ');
+			}
+
+			// create a new line
+			StringBuilder cb = new StringBuilder();
+			for (char c : line.toCharArray()) {
+				// lets just use what java accepts as identifiers and a few other characters we accept
+				if (Character.isJavaIdentifierPart(c) || VALID_JAVADOC_CHARS.indexOf(c) != -1) {
+					cb.append(c);
+				}
+				else if (Character.isWhitespace(c)) {
+					// always use space as whitespace, also for line feeds etc
+					cb.append(' ');
+				}
+			}
+
+			// append data
+			String s = cb.toString().trim();
+			sb.append(s);
+
+			boolean empty = s.trim().isEmpty();
+			boolean endWithDot = s.endsWith(".");
+			boolean haveText = sb.length() > 0;
+
+			if (haveText && summary && (empty || endWithDot)) {
+				// if we only want a summary, then skip at first empty line we encounter, or if the sentence ends with a dot
+				break;
+			}
+
+			first = false;
+		}
+
+		// remove double whitespaces, and trim
+		String s = sb.toString();
+		s = s.replaceAll("\\s+", " ");
+		return s.trim();
 	}
 
 	public TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
