@@ -3260,15 +3260,225 @@ documentation].
 
 
 [[boot-features-gemfire]]
-=== Gemfire
-https://github.com/spring-projects/spring-data-gemfire[Spring Data Gemfire] provides
-convenient Spring-friendly tools for accessing the
-http://pivotal.io/big-data/pivotal-gemfire#details[Pivotal Gemfire] data management
-platform. There is a `spring-boot-starter-data-gemfire` '`Starter`' for collecting the
-dependencies in a convenient way. There is currently no auto-configuration support for
-Gemfire, but you can enable Spring Data Repositories with a
-https://github.com/spring-projects/spring-data-gemfire/blob/master/src/main/java/org/springframework/data/gemfire/repository/config/EnableGemfireRepositories.java[single annotation (`@EnableGemfireRepositories`)].
+=== GemFire
+http://pivotal.io/big-data/pivotal-gemfire#details[Pivotal GemFire] is an In-Memory
+Data Grid (IMDG), key-value store, with elastic compute and data management features,
+capable of linear scale out in a shared nothing architecture for real-time,
+low-latency/high-throughput data access.
 
+https://github.com/spring-projects/spring-data-gemfire[Spring Data GemFire] uses the
+powerful and consistent Spring programming model to provide a convenient and highly
+familiar framework for accessing the
+https://pivotal.io/big-data/pivotal-gemfire[Pivotal GemFire] data management platform.
+
+Spring Boot provides a convenient '`Starter`' (`spring-boot-starter-data-gemfire`)
+for collecting the necessary dependencies to easily build Spring-powered, Pivotal GemFire
+applications.  In addition, there is also support for enabling Spring Data GemFire
+http://docs.spring.io/spring-data-gemfire/docs/current/reference/html/#gemfire-repositories[Repositories]
+using Spring Boot auto-configuration.
+
+
+[[boot-features-connecting-to-gemfire]]
+==== Connecting to Pivotal GemFire using Spring Data GemFire
+
+To use Spring Boot's auto-configuration support for Spring Data GemFire's Repository
+infrastructure extension, not only do you need Spring Data GemFire and Pivotal GemFire
+on your classpath, in addition to your application-defined Repositories, but you also
+need to define a GemFire cache instance.  There are 2 options for defining a GemFire
+cache depending on the GemFire topology choice used in your application's architecture.
+
+First, you might choose to embed a GemFire cache in your application, participating as a
+http://gemfire.docs.pivotal.io/docs-gemfire/latest/topologies_and_comm/p2p_configuration/chapter_overview.html[peer member]
+in the GemFire cluster. To do so, you must define a peer cache instance using
+Spring Data GemFire's `CacheFactoryBean`...
+
+[source,java,indent=0]
+----
+@Configuration
+class PeerCacheConfiguration {
+
+	Properties gemfireProperties() {
+		Properties gemfireProperties = new Properties();
+
+		gemfireProperties.setProperty("name", "PeerExample");
+		gemfireProperties.setProperty("mcast-port", "0");
+		gemfireProperties.setProperty("log-level", "config");
+
+		return gemfireProperties;
+	}
+
+	@Bean
+	CacheFactoryBean gemfireCache() {
+		CacheFactoryBean gemfireCache = new CacheFactoryBean();
+
+		gemfireCache.setClose(true);
+		gemfireCache.setProperties(gemfireProperties());
+
+		return gemfireCache;
+	}
+}
+----
+
+You might also choose to use GemFire's
+http://gemfire.docs.pivotal.io/docs-gemfire/latest/topologies_and_comm/cs_configuration/chapter_overview.html[client/server topology]
+to connect to a cluster of GemFire Servers running elsewhere.  If so, you must configure
+your application as a GemFire cache client using Spring Data GemFire's
+`ClientCacheFactoryBean`...
+
+[source,java,indent=0]
+----
+@Configuration
+class ClientCacheConfiguration {
+
+	Properties gemfireProperties() {
+		Properties gemfireProperties = new Properties();
+
+		gemfireProperties.setProperty("name", "ClientExample");
+		gemfireProperties.setProperty("log-level", "config");
+
+		return gemfireProperties;
+	}
+
+	@Bean
+	ClientCacheFactoryBean gemfireCache() {
+		ClientCacheFactoryBean gemfireCache = new ClientCacheFactoryBean();
+
+		gemfireCache.setClose(true);
+		gemfireCache.setProperties(gemfireProperties());
+
+		return gemfireCache;
+	}
+
+	@Bean
+	PoolFactoryBean gemfirePool() {
+		PoolFactoryBean gemfirePool = new PoolFactoryBean();
+
+		gemfirePool.setFreeConnectionTimeout(5000);
+		gemfirePool.setIdleTimeout(30000);
+		gemfirePool.setMinConnections(50);
+		gemfirePool.setPrSingleHopEnabled(true);
+		gemfirePool.setPingInterval(20000);
+		gemfirePool.setReadTimeout(15000);
+		gemfirePool.setSubscriptionEnabled(true);
+
+		return gemfirePool;
+	}
+}
+----
+
+The GemFire `Pool` is a pool of connections needed by a cache client to communicate to
+the GemFire servers in the cluster during Region data access operations.
+
+[[boot-features-spring-data-gemfire-repositories]]
+==== Spring Data GemFire Repositories
+
+Regardless of the GemFire topology used, either 'peer-to-peer' (P2P) or 'client/server',
+you need to define the Regions that will store your application data.
+
+With a peer cache, you have a choice of different
+http://gemfire.docs.pivotal.io/docs-gemfire/latest/developing/region_options/region_types.html[Region types]
+corresponding to different data management policies and consistency options. You can
+choose from `LOCAL`, `REPLICATE` and `PARTITION`.  On the client, a developer can choose
+from one of several
+http://data-docs-samples.cfapps.io/docs-gemfire/latest/javadocs/japi/com/gemstone/gemfire/cache/client/ClientRegionShortcut.html[ClientRegionShortcuts].
+
+When using Spring Data GemFire, the developer only need define an appropriate SDG
+`FactoryBean` based on the Region's type.  For instance, in a peer cache application,
+a developer could define either a `ReplicatedRegionFactoryBean` or
+`PartitionedRegionFactoryBean`.  As a client cache application, the developer just
+defines a `ClientRegionFactoryBean` with an appropriate `ClientRegionShortcut`.
+
+Along with the Region, or Regions that hold the application data, a developer defines
+application domain object/persistent entity types and annotates them with
+Spring Data GemFire's `@Region` annotation...
+
+[source,java,indent=0]
+----
+@Region("Customers")
+public class Customer {
+
+ @Id private Long id;
+
+ String firstName;
+ String lastName;
+
+ ...
+
+}
+----
+
+Then, you define the corresponding Spring Data (GemFire) Repository...
+
+[source,java,indent=0]
+----
+public interface CustomerRepository extends GemfireRepository<Customer, Long> {
+
+ Customer save(Customer);
+
+ Customer findById(Long id);
+
+ List<Customer> findByLastNameLike(String lastName);
+
+}
+----
+
+Providing the `CustomerRepository` and persistent entity type, `Customer`, are found
+on the application's classpath, Spring Boot will create and conveniently auto-configure
+your application Repositories with Spring Data GemFire.
+
+Do not forget to define the corresponding Region(s) in the Spring application context.
+For example, in a peer cache application...
+
+[source,java,indent=0]
+----
+class PeerCacheConfiguration {
+
+    ...
+
+	@Bean(name = "Customers")
+	PartitionedRegionFactoryBean<Long, Customer> customersRegion(GemFireCache gemfireCache) {
+
+		PartitionedRegionFactoryBean<Long, Customer> customersRegion =
+			new PartitionedRegionFactoryBean<Long, Customer>();
+
+		customersRegion.setCache(gemfireCache);
+		customersRegion.setClose(false);
+		customersRegion.setPersistent(false);
+
+		return customersRegion;
+	}
+}
+----
+
+Or, in a client cache application...
+
+[source,java,indent=0]
+----
+class ClientCacheConfiguration {
+
+    ...
+
+	@Bean(name = "Customers")
+	ClientRegionFactoryBean<Long, Customer> customersRegion(GemFireCache gemfireCache) {
+
+		ClientRegionFactoryBean<Long, Customer> customersRegion  =
+			new ClientRegionFactoryBean<Long, Customer>();
+
+		customersRegion.setCache(gemfireCache);
+		customersRegion.setClose(false);
+		customersRegion.setShortcut(ClientRegionShortcut.CACHING_PROXY);
+
+		return customersRegion;
+	}
+}
+----
+
+Make sure both the client and server cache Region names match.
+
+For more information, refer to the
+http://docs.spring.io/spring-data-gemfire/docs/current/reference/html/[Spring Data GemFire Reference Guide]
+along with the
+http://gemfire.docs.pivotal.io/docs-gemfire/about_users_guide.html[Pivotal GemFire User's Guide].
 
 
 [[boot-features-solr]]

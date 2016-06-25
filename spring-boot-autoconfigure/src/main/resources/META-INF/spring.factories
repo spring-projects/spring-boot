@@ -28,6 +28,7 @@ org.springframework.boot.autoconfigure.data.couchbase.CouchbaseRepositoriesAutoC
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.gemfire.GemFireRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration,\
