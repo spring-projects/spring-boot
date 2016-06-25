@@ -571,6 +571,12 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(
 				Metadata.withProperty("foo.counter").fromSource(FooProperties.class));
 		assertThat(metadata).has(
+				Metadata.withProperty("foo.counter").withDescription("A nice counter description.").fromSource(FooProperties.class));
+		assertThat(metadata).has(
+				Metadata.withProperty("foo.name")
+						.withDescription("A javadoc method that has some inlined reference to a java.util.List list and some more text on a new line with a hyperlink spring boot.")
+						.fromSource(FooProperties.class));
+		assertThat(metadata).has(
 				Metadata.withProperty("bar.counter").fromSource(BarProperties.class));
 		metadata = project.incrementalBuild(BarProperties.class);
 		assertThat(metadata).has(

@@ -21,6 +21,12 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 @ConfigurationProperties("foo")
 public class FooProperties {
 
+	/**
+	 * A javadoc method that has some inlined reference to a {@link java.util.List} list
+	 * and some more text on a new line with a hyperlink <a href="https://github.com/spring-projects/spring-boot">spring boot</a>.
+	 *
+	 * @see BarProperties for the bar
+	 */
 	private String name;
 
 	private String description;
