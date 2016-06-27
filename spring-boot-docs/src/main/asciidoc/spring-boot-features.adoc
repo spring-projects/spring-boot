@@ -4666,7 +4666,7 @@ automatically whenever you don't explicitly define one.
 
 The search algorithm works up from the package that contains the test until it finds a
 `@SpringBootApplication` or `@SpringBootConfiguration` annotated class. As long as you've
-<<using-boot-structuring-your-code, structure your code>> in a sensible way your main
+<<using-boot-structuring-your-code, structured your code>> in a sensible way your main
 configuration is usually found.
 
 If you want to customize the primary configuration, you can use a nested
@@ -4981,11 +4981,12 @@ disable transaction management for a test or for the whole class as follows:
 
 [source,java,indent=0]
 ----
-	import org.junit.*;
-	import org.junit.runner.*;
-	import org.springframework.boot.test.autoconfigure.orm.jpa.*;
-    import org.springframework.test.context.transaction.TestTransaction;
-    import org.springframework.transaction.annotation.Propagation;
+	import org.junit.Test;
+	import org.junit.runner.RunWith;
+	import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+	import org.springframework.transaction.annotation.Propagation;
+	import org.springframework.transaction.annotation.Transactional;
 
 	@RunWith(SpringRunner.class)
 	@DataJpaTest
