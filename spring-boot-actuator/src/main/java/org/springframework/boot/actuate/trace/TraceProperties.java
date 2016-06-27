@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Wallace Wadge
  * @author Phillip Webb
+ * @author Venil Noronha
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "management.trace")
@@ -39,12 +40,14 @@ public class TraceProperties {
 		Set<Include> defaultIncludes = new LinkedHashSet<Include>();
 		defaultIncludes.add(Include.REQUEST_HEADERS);
 		defaultIncludes.add(Include.RESPONSE_HEADERS);
+		defaultIncludes.add(Include.COOKIES);
 		defaultIncludes.add(Include.ERRORS);
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(defaultIncludes);
 	}
 
 	/**
-	 * Items to be included in the trace. Defaults to request/response headers and errors.
+	 * Items to be included in the trace. Defaults to request/response headers (including cookies)
+	 * and errors.
 	 */
 	private Set<Include> include = new HashSet<Include>(DEFAULT_INCLUDES);
 
@@ -70,6 +73,11 @@ public class TraceProperties {
 		 * Include response headers.
 		 */
 		RESPONSE_HEADERS,
+
+		/**
+		 * Include "Cookie" in request and "Set-Cookie" in response headers.
+		 */
+		COOKIES,
 
 		/**
 		 * Include errors (if any).

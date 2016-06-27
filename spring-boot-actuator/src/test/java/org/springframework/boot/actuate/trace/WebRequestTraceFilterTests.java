@@ -28,7 +28,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
 
 import org.junit.Test;
 
@@ -50,6 +49,8 @@ import static org.mockito.Mockito.verify;
  * @author Wallace Wadge
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Venil Noronha
+ * @author Stephane Nicoll
  */
 public class WebRequestTraceFilterTests {
 
@@ -79,6 +80,7 @@ public class WebRequestTraceFilterTests {
 		this.properties.setInclude(EnumSet.allOf(Include.class));
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		request.addHeader("Accept", "application/json");
+		request.addHeader("Cookie", "testCookie=testValue;");
 		request.setContextPath("some.context.path");
 		request.setContent("Hello, World!".getBytes());
 		request.setRemoteAddr("some.remote.addr");
@@ -88,8 +90,6 @@ public class WebRequestTraceFilterTests {
 		String url = tmp.toURI().toURL().toString();
 		request.setPathInfo(url);
 		tmp.deleteOnExit();
-		Cookie cookie = new Cookie("testCookie", "testValue");
-		request.setCookies(cookie);
 		request.setAuthType("authType");
 		Principal principal = new Principal() {
 
@@ -102,6 +102,7 @@ public class WebRequestTraceFilterTests {
 		request.setUserPrincipal(principal);
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.addHeader("Content-Type", "application/json");
+		response.addHeader("Set-Cookie", "a=b");
 		this.filter.doFilterInternal(request, response, new FilterChain() {
 
 			@Override
@@ -120,7 +121,7 @@ public class WebRequestTraceFilterTests {
 		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
 
 		assertThat(map.get("response").toString())
-				.isEqualTo("{Content-Type=application/json, status=200}");
+				.isEqualTo("{Content-Type=application/json, Set-Cookie=a=b, status=200}");
 		assertThat(trace.get("method")).isEqualTo("GET");
 		assertThat(trace.get("path")).isEqualTo("/foo");
 		assertThat(((String[]) ((Map) trace.get("parameters")).get("param"))[0])
@@ -131,7 +132,8 @@ public class WebRequestTraceFilterTests {
 		assertThat(trace.get("contextPath")).isEqualTo("some.context.path");
 		assertThat(trace.get("pathInfo")).isEqualTo(url);
 		assertThat(trace.get("authType")).isEqualTo("authType");
-		assertThat(map.get("request").toString()).isEqualTo("{Accept=application/json}");
+		assertThat(map.get("request").toString())
+				.isEqualTo("{Accept=application/json, Cookie=testCookie=testValue;}");
 	}
 
 	@Test
@@ -151,6 +153,35 @@ public class WebRequestTraceFilterTests {
 		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
 		assertThat(headers.get("response") == null).isTrue();
+	}
+
+	@Test
+	@SuppressWarnings({ "unchecked" })
+	public void filterDoesNotAddRequestCookiesWithCookiesExclude()
+			throws ServletException, IOException {
+		this.properties.setInclude(Collections.singleton(Include.REQUEST_HEADERS));
+		MockHttpServletRequest request = spy(new MockHttpServletRequest("GET", "/foo"));
+		request.addHeader("Accept", "application/json");
+		request.addHeader("Cookie", "testCookie=testValue;");
+		Map<String, Object> map = (Map<String, Object>) this.filter.getTrace(request)
+				.get("headers");
+		assertThat(map.get("request").toString()).isEqualTo("{Accept=application/json}");
+	}
+
+	@Test
+	@SuppressWarnings({ "unchecked" })
+	public void filterDoesNotAddResponseCookiesWithCookiesExclude()
+			throws ServletException, IOException {
+		this.properties.setInclude(Collections.singleton(Include.RESPONSE_HEADERS));
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		response.addHeader("Content-Type", "application/json");
+		response.addHeader("Set-Cookie", "testCookie=testValue;");
+		Map<String, Object> trace = this.filter.getTrace(request);
+		this.filter.enhanceTrace(trace, response);
+		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
+		assertThat(map.get("response").toString())
+				.isEqualTo("{Content-Type=application/json, status=200}");
 	}
 
 	@Test
