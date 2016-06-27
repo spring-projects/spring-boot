@@ -149,6 +149,7 @@ content into your application; rather pick only the properties that you need.
 	server.compression.excluded-user-agents= # List of user-agents to exclude from compression.
 	server.compression.mime-types= # Comma-separated list of MIME types that should be compressed. For instance `text/html,text/css,application/json`
 	server.compression.min-response-size= # Minimum response size that is required for compression to be performed. For instance 2048
+	server.connection-timeout= # Time in milliseconds that connectors will wait for another HTTP request before closing the connection. When not set, the connector's container-specific default will be used. Use a value of -1 to indicate no (i.e. infinite) timeout.
 	server.context-parameters.*= # Servlet context init parameters. For instance `server.context-parameters.a=alpha`
 	server.context-path= # Context path of the application.
 	server.display-name=application # Display name of the application.
