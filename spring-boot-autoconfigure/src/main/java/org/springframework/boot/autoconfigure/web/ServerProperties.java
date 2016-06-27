@@ -1032,7 +1032,7 @@ public class ServerProperties
 					for (org.eclipse.jetty.server.Connector connector : server.getConnectors()) {
 						if (connector instanceof ServerConnector) {
 							ServerConnector serverConnector = (ServerConnector) connector;
-							serverConnector.setSoLingerTime(serverProperties.getConnectionTimeout());
+							serverConnector.setIdleTimeout(serverProperties.getConnectionTimeout());
 						}
 					}
 				}
@@ -1234,7 +1234,7 @@ public class ServerProperties
 			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
 				@Override
 				public void customize(Builder builder) {
-					builder.setSocketOption(UndertowOptions.REQUEST_PARSE_TIMEOUT, serverProperties.getConnectionTimeout());
+					builder.setSocketOption(UndertowOptions.NO_REQUEST_TIMEOUT, serverProperties.getConnectionTimeout());
 				}
 			});
 		}
