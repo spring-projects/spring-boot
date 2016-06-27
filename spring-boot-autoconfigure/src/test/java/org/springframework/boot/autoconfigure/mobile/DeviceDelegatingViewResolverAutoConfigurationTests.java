@@ -24,6 +24,7 @@ import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.mobile.DeviceDelegatingViewResolverAutoConfiguration.DeviceDelegatingViewResolverConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
@@ -38,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mobile.device.view.AbstractDeviceDelegatingViewResolver;
 import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -134,7 +136,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		ThymeleafViewResolver thymeleafViewResolver = this.context
 				.getBean(ThymeleafViewResolver.class);
 		AbstractDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context
-				.getBean("deviceDelegatingViewResolver",
+				.getBean("deviceDelegatingThymeleafViewResolver",
 						AbstractDeviceDelegatingViewResolver.class);
 		assertThat(thymeleafViewResolver).isNotNull();
 		assertThat(deviceDelegatingViewResolver).isNotNull();
@@ -161,6 +163,131 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		assertThat(this.context.getBean(ThymeleafViewResolver.class)).isNotNull();
 		this.context.getBean("deviceDelegatingViewResolver",
 				AbstractDeviceDelegatingViewResolver.class);
+	}
+
+	@Test
+	public void deviceDelegatingFreeMarkerViewResolverEnabled() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:true");
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				FreeMarkerAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				DeviceDelegatingViewResolverConfiguration.class);
+		this.context.refresh();
+		FreeMarkerViewResolver freeMarkerViewResolver = this.context
+				.getBean(FreeMarkerViewResolver.class);
+		AbstractDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context
+				.getBean("deviceDelegatingViewResolver",
+						AbstractDeviceDelegatingViewResolver.class);
+		assertThat(freeMarkerViewResolver).isNotNull();
+		assertThat(deviceDelegatingViewResolver).isNotNull();
+		assertThat(deviceDelegatingViewResolver.getViewResolver())
+				.isInstanceOf(FreeMarkerViewResolver.class);
+		assertThat(this.context.getBean(InternalResourceViewResolver.class)).isNotNull();
+		assertThat(this.context.getBean(FreeMarkerViewResolver.class)).isNotNull();
+		assertThat(deviceDelegatingViewResolver.getOrder())
+				.isEqualTo(freeMarkerViewResolver.getOrder() - 1);
+	}
+
+	@Test(expected = NoSuchBeanDefinitionException.class)
+	public void deviceDelegatingFreeMarkerViewResolverDisabled() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:false");
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				FreeMarkerAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				DeviceDelegatingViewResolverConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(InternalResourceViewResolver.class)).isNotNull();
+		assertThat(this.context.getBean(FreeMarkerViewResolver.class)).isNotNull();
+		this.context.getBean("deviceDelegatingViewResolver",
+				AbstractDeviceDelegatingViewResolver.class);
+	}
+
+	@Test
+	public void deviceDelegatingThymeleafAndFreeMarkerViewResolversEnabled() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:true");
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				ThymeleafAutoConfiguration.class,
+				FreeMarkerAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				DeviceDelegatingViewResolverConfiguration.class);
+		this.context.refresh();
+		ThymeleafViewResolver thymeleafViewResolver = this.context
+				.getBean(ThymeleafViewResolver.class);
+		FreeMarkerViewResolver freeMarkerViewResolver = this.context
+				.getBean(FreeMarkerViewResolver.class);
+		AbstractDeviceDelegatingViewResolver deviceDelegatingThymeleafViewResolver = this.context
+				.getBean("deviceDelegatingThymeleafViewResolver",
+						AbstractDeviceDelegatingViewResolver.class);
+		AbstractDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context
+				.getBean("deviceDelegatingViewResolver",
+						AbstractDeviceDelegatingViewResolver.class);
+		assertThat(thymeleafViewResolver).isNotNull();
+		assertThat(freeMarkerViewResolver).isNotNull();
+		assertThat(deviceDelegatingThymeleafViewResolver).isNotNull();
+		assertThat(deviceDelegatingViewResolver).isNotNull();
+		assertThat(deviceDelegatingThymeleafViewResolver.getViewResolver())
+				.isInstanceOf(ThymeleafViewResolver.class);
+		assertThat(deviceDelegatingViewResolver.getViewResolver())
+				.isInstanceOf(FreeMarkerViewResolver.class);
+		assertThat(this.context.getBean(InternalResourceViewResolver.class)).isNotNull();
+		assertThat(this.context.getBean(FreeMarkerViewResolver.class)).isNotNull();
+		assertThat(this.context.getBean(ThymeleafViewResolver.class)).isNotNull();
+		assertThat(deviceDelegatingThymeleafViewResolver.getOrder())
+				.isEqualTo(thymeleafViewResolver.getOrder() - 1);
+		assertThat(deviceDelegatingViewResolver.getOrder())
+				.isEqualTo(freeMarkerViewResolver.getOrder() - 1);
+	}
+
+	@Test
+	public void deviceDelegatingThymeleafAndInternalResourceViewResolversEnabled() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:true");
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				ThymeleafAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				DeviceDelegatingViewResolverConfiguration.class);
+		this.context.refresh();
+		ThymeleafViewResolver thymeleafViewResolver = this.context
+				.getBean(ThymeleafViewResolver.class);
+		InternalResourceViewResolver internalResourceViewResolver = this.context
+				.getBean(InternalResourceViewResolver.class);
+		AbstractDeviceDelegatingViewResolver deviceDelegatingThymeleafViewResolver = this.context
+				.getBean("deviceDelegatingThymeleafViewResolver",
+						AbstractDeviceDelegatingViewResolver.class);
+		AbstractDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context
+				.getBean("deviceDelegatingViewResolver",
+						AbstractDeviceDelegatingViewResolver.class);
+		assertThat(thymeleafViewResolver).isNotNull();
+		assertThat(internalResourceViewResolver).isNotNull();
+		assertThat(deviceDelegatingThymeleafViewResolver).isNotNull();
+		assertThat(deviceDelegatingViewResolver).isNotNull();
+		assertThat(deviceDelegatingThymeleafViewResolver.getViewResolver())
+				.isInstanceOf(ThymeleafViewResolver.class);
+		assertThat(deviceDelegatingViewResolver.getViewResolver())
+				.isInstanceOf(InternalResourceViewResolver.class);
+		assertThat(this.context.getBean(InternalResourceViewResolver.class)).isNotNull();
+		assertThat(this.context.getBean(ThymeleafViewResolver.class)).isNotNull();
+		try {
+			this.context.getBean(FreeMarkerViewResolver.class);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			// expected. FreeMarkerViewResolver shouldn't be defined.
+		}
+		assertThat(deviceDelegatingThymeleafViewResolver.getOrder())
+				.isEqualTo(thymeleafViewResolver.getOrder() - 1);
+		assertThat(deviceDelegatingViewResolver.getOrder())
+				.isEqualTo(internalResourceViewResolver.getOrder() - 1);
 	}
 
 	@Test

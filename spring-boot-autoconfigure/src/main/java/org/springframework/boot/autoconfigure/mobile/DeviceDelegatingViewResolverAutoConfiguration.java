@@ -37,6 +37,7 @@ import org.springframework.core.Ordered;
 import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Mobile's
@@ -106,7 +107,7 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 			}
 
 			@Bean
-			public LiteDeviceDelegatingViewResolver deviceDelegatingViewResolver() {
+			public LiteDeviceDelegatingViewResolver deviceDelegatingThymeleafViewResolver() {
 				if (logger.isDebugEnabled()) {
 					logger.debug("LiteDeviceDelegatingViewResolver delegates to "
 							+ "ThymeleafViewResolver");
@@ -118,8 +119,32 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 		}
 
 		@Configuration
+		@ConditionalOnBean(name = "freeMarkerViewResolver")
+		protected static class FreeMarkerViewResolverViewResolverDelegateConfiguration
+				extends AbstractDelegateConfiguration {
+
+			private final FreeMarkerViewResolver viewResolver;
+
+			protected FreeMarkerViewResolverViewResolverDelegateConfiguration(
+					FreeMarkerViewResolver viewResolver) {
+				this.viewResolver = viewResolver;
+			}
+
+			@Bean
+			public LiteDeviceDelegatingViewResolver deviceDelegatingViewResolver() {
+				if (logger.isDebugEnabled()) {
+					logger.debug("LiteDeviceDelegatingViewResolver delegates to "
+							+ "FreeMarkerViewResolver");
+				}
+				return getConfiguredViewResolver(this.viewResolver,
+						this.viewResolver.getOrder());
+			}
+
+		}
+
+		@Configuration
 		@EnableConfigurationProperties(DeviceDelegatingViewResolverProperties.class)
-		@ConditionalOnMissingBean(name = "thymeleafViewResolver")
+		@ConditionalOnMissingBean(name = "freeMarkerViewResolver")
 		@ConditionalOnBean(InternalResourceViewResolver.class)
 		protected static class InternalResourceViewResolverDelegateConfiguration
 				extends AbstractDelegateConfiguration {
