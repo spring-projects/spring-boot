@@ -93,7 +93,7 @@ public class SysVinitLaunchScriptIT {
 		assertThat(output).contains("Status: 3");
 		assertThat(output).has(coloredString(AnsiColor.RED, "Not running"));
 	}
-	
+
 	@Test
 	public void statusWhenForceStopped() throws Exception {
 		String output = doTest("status-when-force-stopped.sh");
@@ -216,7 +216,7 @@ public class SysVinitLaunchScriptIT {
 		try {
 			copyFilesToContainer(docker, container, script);
 			docker.startContainerCmd(container).exec();
-			StringBuilder output = new StringBuilder();
+			final StringBuilder output = new StringBuilder();
 			AttachContainerResultCallback resultCallback = docker
 					.attachContainerCmd(container).withStdOut(true).withStdErr(true)
 					.withFollowStream(true).withLogs(true)
