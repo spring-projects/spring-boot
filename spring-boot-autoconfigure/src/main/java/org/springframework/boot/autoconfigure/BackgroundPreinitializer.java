@@ -51,7 +51,7 @@ public class BackgroundPreinitializer
 					runSafely(new MBeanFactoryInitializer());
 					runSafely(new ValidationInitializer());
 					runSafely(new JacksonInitializer());
-					runSafely(new ConverstionServiceInitializer());
+					runSafely(new ConversionServiceInitializer());
 				}
 
 				public void runSafely(Runnable runnable) {
@@ -122,9 +122,9 @@ public class BackgroundPreinitializer
 	}
 
 	/**
-	 * Early initializer for Spring's ConverstionService.
+	 * Early initializer for Spring's ConversionService.
 	 */
-	private static class ConverstionServiceInitializer implements Runnable {
+	private static class ConversionServiceInitializer implements Runnable {
 
 		@Override
 		public void run() {

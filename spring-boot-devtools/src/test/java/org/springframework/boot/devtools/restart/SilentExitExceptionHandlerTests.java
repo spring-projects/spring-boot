@@ -46,7 +46,7 @@ public class SilentExitExceptionHandlerTests {
 	}
 
 	@Test
-	public void doesntInterferWithOtherExceptions() throws Exception {
+	public void doesntInterfereWithOtherExceptions() throws Exception {
 		TestThread testThread = new TestThread() {
 			@Override
 			public void run() {
