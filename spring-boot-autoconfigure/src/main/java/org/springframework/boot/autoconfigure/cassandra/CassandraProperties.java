@@ -117,6 +117,53 @@ public class CassandraProperties {
 	 */
 	private boolean ssl = false;
 
+	/**
+	 * Socket option: TCP keepalive.
+	 */
+	private Boolean keepAlive;
+
+	/**
+	 * Pooling option: core number of connections per local host.
+	 */
+	private Integer corePoolLocal;
+
+	/**
+	 * Pooling option: maximum number of connections per local host.
+	 */
+	private Integer maxPoolLocal;
+
+	/**
+	 * Pooling option: core number of connections per remote host.
+	 */
+	private Integer corePoolRemote;
+
+	/**
+	 * Pooling option: maximum number of connections per remote host.
+	 */
+	private Integer maxPoolRemote;
+
+	/**
+	 * Pooling option: threshold that triggers the creation of a new connection to a local
+	 * host.
+	 */
+	private Integer newConnectionThresholdLocal;
+
+	/**
+	 * Pooling option: threshold that triggers the creation of a new connection to a
+	 * remote host.
+	 */
+	private Integer newConnectionThresholdRemote;
+
+	/**
+	 * Pooling option: maximum number of requests per local connection.
+	 */
+	private Integer maxRequestsPerConnectionLocal;
+
+	/**
+	 * Pooling option: maximum number of requests per remote connection.
+	 */
+	private Integer maxRequestsPerConnectionRemote;
+
 	public String getKeyspaceName() {
 		return this.keyspaceName;
 	}
@@ -245,6 +292,78 @@ public class CassandraProperties {
 
 	public void setSsl(boolean ssl) {
 		this.ssl = ssl;
+	}
+
+	public Boolean isKeepAlive() {
+		return this.keepAlive;
+	}
+
+	public void setKeepAlive(Boolean keepAlive) {
+		this.keepAlive = keepAlive;
+	}
+
+	public Integer getCorePoolLocal() {
+		return this.corePoolLocal;
+	}
+
+	public void setCorePoolLocal(Integer corePoolLocal) {
+		this.corePoolLocal = corePoolLocal;
+	}
+
+	public Integer getMaxPoolLocal() {
+		return this.maxPoolLocal;
+	}
+
+	public void setMaxPoolLocal(Integer maxPoolLocal) {
+		this.maxPoolLocal = maxPoolLocal;
+	}
+
+	public Integer getCorePoolRemote() {
+		return this.corePoolRemote;
+	}
+
+	public void setCorePoolRemote(Integer corePoolRemote) {
+		this.corePoolRemote = corePoolRemote;
+	}
+
+	public Integer getMaxPoolRemote() {
+		return this.maxPoolRemote;
+	}
+
+	public void setMaxPoolRemote(Integer maxPoolRemote) {
+		this.maxPoolRemote = maxPoolRemote;
+	}
+
+	public Integer getNewConnectionThresholdLocal() {
+		return this.newConnectionThresholdLocal;
+	}
+
+	public void setNewConnectionThresholdLocal(Integer newConnectionThresholdLocal) {
+		this.newConnectionThresholdLocal = newConnectionThresholdLocal;
+	}
+
+	public Integer getNewConnectionThresholdRemote() {
+		return this.newConnectionThresholdRemote;
+	}
+
+	public void setNewConnectionThresholdRemote(Integer newConnectionThresholdRemote) {
+		this.newConnectionThresholdRemote = newConnectionThresholdRemote;
+	}
+
+	public Integer getMaxRequestsPerConnectionLocal() {
+		return this.maxRequestsPerConnectionLocal;
+	}
+
+	public void setMaxRequestsPerConnectionLocal(Integer maxRequestsPerConnectionLocal) {
+		this.maxRequestsPerConnectionLocal = maxRequestsPerConnectionLocal;
+	}
+
+	public Integer getMaxRequestsPerConnectionRemote() {
+		return this.maxRequestsPerConnectionRemote;
+	}
+
+	public void setMaxRequestsPerConnectionRemote(Integer maxRequestsPerConnectionRemote) {
+		this.maxRequestsPerConnectionRemote = maxRequestsPerConnectionRemote;
 	}
 
 }
