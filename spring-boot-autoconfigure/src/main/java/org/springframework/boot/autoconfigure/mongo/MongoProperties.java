@@ -271,23 +271,23 @@ public class MongoProperties {
 			builder.dbDecoderFactory(options.getDbDecoderFactory());
 			builder.dbEncoderFactory(options.getDbEncoderFactory());
 			builder.description(options.getDescription());
+			builder.heartbeatConnectTimeout(options.getHeartbeatConnectTimeout());
+			builder.heartbeatFrequency(options.getHeartbeatFrequency());
+			builder.heartbeatSocketTimeout(options.getHeartbeatSocketTimeout());
+			builder.localThreshold(options.getLocalThreshold());
+			builder.minConnectionsPerHost(options.getMinConnectionsPerHost());
+			builder.minHeartbeatFrequency(options.getMinHeartbeatFrequency());
+			builder.maxConnectionIdleTime(options.getMaxConnectionIdleTime());
+			builder.maxConnectionLifeTime(options.getMaxConnectionLifeTime());
 			builder.maxWaitTime(options.getMaxWaitTime());
 			builder.readPreference(options.getReadPreference());
+			builder.requiredReplicaSetName(options.getRequiredReplicaSetName());
 			builder.socketFactory(options.getSocketFactory());
 			builder.socketKeepAlive(options.isSocketKeepAlive());
 			builder.socketTimeout(options.getSocketTimeout());
 			builder.threadsAllowedToBlockForConnectionMultiplier(
 					options.getThreadsAllowedToBlockForConnectionMultiplier());
 			builder.writeConcern(options.getWriteConcern());
-			builder.minConnectionsPerHost(options.getMinConnectionsPerHost());
-			builder.maxConnectionIdleTime(options.getMaxConnectionIdleTime());
-			builder.maxConnectionLifeTime(options.getMaxConnectionLifeTime());
-			builder.heartbeatFrequency(options.getHeartbeatFrequency());
-			builder.minHeartbeatFrequency(options.getMinHeartbeatFrequency());
-			builder.heartbeatConnectTimeout(options.getHeartbeatConnectTimeout());
-			builder.heartbeatSocketTimeout(options.getHeartbeatSocketTimeout());
-			builder.localThreshold(options.getLocalThreshold());
-			builder.requiredReplicaSetName(options.getRequiredReplicaSetName());
 		}
 		return builder;
 	}
