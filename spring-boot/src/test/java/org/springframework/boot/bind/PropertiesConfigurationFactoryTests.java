@@ -170,6 +170,12 @@ public class PropertiesConfigurationFactoryTests {
 		assertThat(foo.fooBarURI).isEqualTo("baz");
 	}
 
+	@Test
+	public void propertyWithAllUpperCaseInTheMiddleCanBeBound() throws Exception {
+		Foo foo = createFoo("foo-d-l-q-bar:baz");
+		assertEquals("baz", foo.fooDLQBar);
+	}
+
 	private Foo createFoo(final String values) throws Exception {
 		setupFactory();
 		return bindFoo(values);
@@ -203,6 +209,8 @@ public class PropertiesConfigurationFactoryTests {
 		private String fooBar;
 
 		private String fooBarURI;
+
+		private String fooDLQBar;
 
 		public String getSpringFooBaz() {
 			return this.spring_foo_baz;
@@ -244,6 +252,13 @@ public class PropertiesConfigurationFactoryTests {
 			this.fooBarURI = fooBarURI;
 		}
 
+		public String getFooDLQBar() {
+			return this.fooDLQBar;
+		}
+
+		public void setFooDLQBar(String fooDLQBar) {
+			this.fooDLQBar = fooDLQBar;
+		}
 	}
 
 }

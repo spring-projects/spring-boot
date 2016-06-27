@@ -33,6 +33,16 @@ public class ConfigurationMetadataTests {
 	}
 
 	@Test
+	public void toDashedCaseUpperCamelCaseSuffix() {
+		assertThat(toDashedCase("myDLQ"), is("my-d-l-q"));
+	}
+
+	@Test
+	public void toDashedCaseUpperCamelCaseMiddle() {
+		assertThat(toDashedCase("someDLQKey"), is("some-d-l-q-key"));
+	}
+
+	@Test
 	public void toDashedCaseWordsUnderscore() {
 		assertThat(toDashedCase("Word_With_underscore"))
 				.isEqualTo("word_with_underscore");
@@ -62,6 +72,8 @@ public class ConfigurationMetadataTests {
 	@Test
 	public void toDashedCaseUppercase() {
 		assertThat(toDashedCase("UPPERCASE")).isEqualTo("uppercase");
+	public void toDashedCaseMultipleUnderscores() {
+		assertThat(toDashedCase("super___crazy"), is("super---crazy"));
 	}
 
 	@Test

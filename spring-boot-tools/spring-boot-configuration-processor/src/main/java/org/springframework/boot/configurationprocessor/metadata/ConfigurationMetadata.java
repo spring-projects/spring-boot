@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@
 package org.springframework.boot.configurationprocessor.metadata;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -38,7 +37,7 @@ import org.springframework.util.ObjectUtils;
  */
 public class ConfigurationMetadata {
 
-	private static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("([^A-Z-])([A-Z])");
+	private static final List<Character> SEPARATORS = Arrays.asList('-', '_');
 
 	private final MultiValueMap<String, ItemMetadata> items;
 
@@ -160,23 +159,23 @@ public class ConfigurationMetadata {
 	}
 
 	static String toDashedCase(String name) {
-		Matcher matcher = CAMEL_CASE_PATTERN.matcher(name);
-		StringBuffer result = new StringBuffer();
-		while (matcher.find()) {
-			matcher.appendReplacement(result, getDashed(matcher));
-		}
-		matcher.appendTail(result);
-		return result.toString().toLowerCase();
-	}
+		StringBuilder sb = new StringBuilder();
+		Character previous = null;
+		for (char current : name.toCharArray()) {
+			if (SEPARATORS.contains(current)) {
+				sb.append("-");
+			}
+			else if (Character.isUpperCase(current) && previous != null
+					&& !SEPARATORS.contains(previous)) {
+				sb.append("-").append(current);
+			}
+			else {
+				sb.append(current);
+			}
+			previous = current;
 
-	private static String getDashed(Matcher matcher) {
-		String first = matcher.group(1);
-		String second = matcher.group(2);
-		if (first.equals("_")) {
-			// not a word for the binder
-			return first + second;
 		}
-		return first + "-" + second;
+		return sb.toString().toLowerCase();
 	}
 
 	private static <T extends Comparable<T>> List<T> flattenValues(
