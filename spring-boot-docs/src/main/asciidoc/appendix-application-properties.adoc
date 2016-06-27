@@ -1006,10 +1006,25 @@ content into your application; rather pick only the properties that you need.
 	management.add-application-context-header=true # Add the "X-Application-Context" HTTP header in each response.
 	management.address= # Network address that the management endpoints should bind to.
 	management.context-path= # Management endpoint context-path. For instance `/actuator`
-	management.port= # Management endpoint HTTP port. Use the same port as the application by default.
+	management.port= # Management endpoint HTTP port. Uses the same port as the application by default. Configure a different port to use management-specific SSL.
 	management.security.enabled=true # Enable security.
 	management.security.roles=ADMIN # Comma-separated list of roles that can access the management endpoint.
 	management.security.sessions=stateless # Session creating policy to use (always, never, if_required, stateless).
+	management.ssl.ciphers= # Supported SSL ciphers. Requires a custom management.port.
+	management.ssl.client-auth= # Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store. Requires a custom management.port.
+	management.ssl.enabled= # Enable SSL support. Requires a custom management.port.
+	management.ssl.enabled-protocols= # Enabled SSL protocols. Requires a custom management.port.
+	management.ssl.key-alias= # Alias that identifies the key in the key store. Requires a custom management.port.
+	management.ssl.key-password= # Password used to access the key in the key store. Requires a custom management.port.
+	management.ssl.key-store= # Path to the key store that holds the SSL certificate (typically a jks file). Requires a custom management.port.
+	management.ssl.key-store-password= # Password used to access the key store. Requires a custom management.port.
+	management.ssl.key-store-provider= # Provider for the key store. Requires a custom management.port.
+	management.ssl.key-store-type= # Type of the key store. Requires a custom management.port.
+	management.ssl.protocol=TLS # SSL protocol to use. Requires a custom management.port.
+	management.ssl.trust-store= # Trust store that holds SSL certificates. Requires a custom management.port.
+	management.ssl.trust-store-password= # Password used to access the trust store. Requires a custom management.port.
+	management.ssl.trust-store-provider= # Provider for the trust store. Requires a custom management.port.
+	management.ssl.trust-store-type= # Type of the trust store. Requires a custom management.port.
 
 	# HEALTH INDICATORS (previously health.*)
 	management.health.db.enabled=true # Enable database health check.
