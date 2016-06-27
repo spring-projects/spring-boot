@@ -20,6 +20,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.connection.Cluster;
@@ -118,6 +119,54 @@ public class MongoPropertiesTests {
 		List<MongoCredential> credentialsList = client.getCredentialsList();
 		assertThat(credentialsList).hasSize(1);
 		assertMongoCredential(credentialsList.get(0), "user", "secret", "test");
+	}
+
+	@Test
+	public void allMongoClientOptionsCanBeSet() throws UnknownHostException {
+		MongoClientOptions mco = MongoClientOptions.builder()
+				.alwaysUseMBeans(true)
+				.connectionsPerHost(101)
+				.connectTimeout(10001)
+				.cursorFinalizerEnabled(false)
+				.description("test")
+				.maxWaitTime(120001)
+				.socketKeepAlive(true)
+				.socketTimeout(1000)
+				.threadsAllowedToBlockForConnectionMultiplier(6)
+				.minConnectionsPerHost(0)
+				.maxConnectionIdleTime(60000)
+				.maxConnectionLifeTime(60000)
+				.heartbeatFrequency(10001)
+				.minHeartbeatFrequency(501)
+				.heartbeatConnectTimeout(20001)
+				.heartbeatSocketTimeout(20001)
+				.localThreshold(20)
+				.requiredReplicaSetName("testReplicaSetName")
+				.build();
+
+		MongoProperties properties = new MongoProperties();
+		MongoClient client = properties.createMongoClient(mco, null);
+		MongoClientOptions wrappedMco = client.getMongoClientOptions();
+
+		assertThat(wrappedMco.isAlwaysUseMBeans()).isEqualTo(mco.isAlwaysUseMBeans());
+		assertThat(wrappedMco.getConnectionsPerHost()).isEqualTo(mco.getConnectionsPerHost());
+		assertThat(wrappedMco.getConnectTimeout()).isEqualTo(mco.getConnectTimeout());
+		assertThat(wrappedMco.isCursorFinalizerEnabled()).isEqualTo(mco.isCursorFinalizerEnabled());
+		assertThat(wrappedMco.getDescription()).isEqualTo(mco.getDescription());
+		assertThat(wrappedMco.getMaxWaitTime()).isEqualTo(mco.getMaxWaitTime());
+		assertThat(wrappedMco.getSocketTimeout()).isEqualTo(mco.getSocketTimeout());
+		assertThat(wrappedMco.isSocketKeepAlive()).isEqualTo(mco.isSocketKeepAlive());
+		assertThat(wrappedMco.getThreadsAllowedToBlockForConnectionMultiplier()).isEqualTo(
+				mco.getThreadsAllowedToBlockForConnectionMultiplier());
+		assertThat(wrappedMco.getMinConnectionsPerHost()).isEqualTo(mco.getMinConnectionsPerHost());
+		assertThat(wrappedMco.getMaxConnectionIdleTime()).isEqualTo(mco.getMaxConnectionIdleTime());
+		assertThat(wrappedMco.getMaxConnectionLifeTime()).isEqualTo(mco.getMaxConnectionLifeTime());
+		assertThat(wrappedMco.getHeartbeatFrequency()).isEqualTo(mco.getHeartbeatFrequency());
+		assertThat(wrappedMco.getMinHeartbeatFrequency()).isEqualTo(mco.getMinHeartbeatFrequency());
+		assertThat(wrappedMco.getHeartbeatConnectTimeout()).isEqualTo(mco.getHeartbeatConnectTimeout());
+		assertThat(wrappedMco.getHeartbeatSocketTimeout()).isEqualTo(mco.getHeartbeatSocketTimeout());
+		assertThat(wrappedMco.getLocalThreshold()).isEqualTo(mco.getLocalThreshold());
+		assertThat(wrappedMco.getRequiredReplicaSetName()).isEqualTo(mco.getRequiredReplicaSetName());
 	}
 
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {
