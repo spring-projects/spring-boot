@@ -50,6 +50,7 @@ import static org.mockito.Mockito.verify;
  * @author Wallace Wadge
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Venil Noronha
  */
 public class WebRequestTraceFilterTests {
 
@@ -151,6 +152,35 @@ public class WebRequestTraceFilterTests {
 		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
 		assertThat(headers.get("response") == null).isTrue();
+	}
+
+	@Test
+	@SuppressWarnings({ "unchecked" })
+	public void filterDoesNotAddRequestCookiesWithCookiesExclude()
+			throws ServletException, IOException {
+		this.properties.setInclude(Collections.singleton(Include.REQUEST_HEADERS));
+		MockHttpServletRequest request = spy(new MockHttpServletRequest("GET", "/foo"));
+		request.addHeader("Accept", "application/json");
+		request.addHeader("Cookie", "testCookie=testValue;");
+		Map<String, Object> map = (Map<String, Object>) this.filter.getTrace(request)
+				.get("headers");
+		assertThat(map.get("request").toString()).isEqualTo("{Accept=application/json}");
+	}
+
+	@Test
+	@SuppressWarnings({ "unchecked" })
+	public void filterDoesNotAddResponseCookiesWithCookiesExclude()
+			throws ServletException, IOException {
+		this.properties.setInclude(Collections.singleton(Include.RESPONSE_HEADERS));
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		response.addHeader("Content-Type", "application/json");
+		response.addHeader("Set-Cookie", "testCookie=testValue;");
+		Map<String, Object> trace = this.filter.getTrace(request);
+		this.filter.enhanceTrace(trace, response);
+		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
+		assertThat(map.get("response").toString())
+				.isEqualTo("{Content-Type=application/json, status=200}");
 	}
 
 	@Test
