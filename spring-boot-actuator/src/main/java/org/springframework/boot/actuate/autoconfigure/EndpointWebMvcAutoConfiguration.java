@@ -160,10 +160,19 @@ public class EndpointWebMvcAutoConfiguration
 						+ "through JMX)");
 			}
 		}
-		if (managementPort == ManagementServerPort.SAME && this.applicationContext
-				.getEnvironment() instanceof ConfigurableEnvironment) {
-			addLocalManagementPortPropertyAlias(
-					(ConfigurableEnvironment) this.applicationContext.getEnvironment());
+		if (managementPort == ManagementServerPort.SAME) {
+			if (new RelaxedPropertyResolver(this.applicationContext.getEnvironment(),
+					"management.ssl.").getProperty("enabled") != null) {
+				throw new IllegalStateException(
+						"Management-specific SSL cannot be configured as the management "
+								+ "server is not listening on a separate port");
+			}
+			if (this.applicationContext
+					.getEnvironment() instanceof ConfigurableEnvironment) {
+				addLocalManagementPortPropertyAlias(
+						(ConfigurableEnvironment) this.applicationContext
+								.getEnvironment());
+			}
 		}
 	}
 

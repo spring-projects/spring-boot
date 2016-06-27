@@ -595,6 +595,39 @@ disable the management security in this way, and it might even break the applica
 
 
 
+[[production-ready-management-specific-ssl]]
+=== Configuring management-specific SSL
+When configured to use a custom port, the management server can also be configured with
+its own SSL using the various `management.ssl.*` properties. For example, this allows a
+management server to be available via HTTP while the main application uses HTTPS:
+
+[source,properties,indent=0]
+----
+	server.port=8443
+	server.ssl.enabled=true
+	server.ssl.key-store=classpath:store.jks
+	server.ssl.key-password=secret
+	management.port=8080
+	management.ssl.enable=false
+----
+
+Alternatively, both the main server and the management server can use SSL but with
+different key stores:
+
+[source,properties,indent=0]
+----
+	server.port=8443
+	server.ssl.enabled=true
+	server.ssl.key-store=classpath:main.jks
+	server.ssl.key-password=secret
+	management.port=8080
+	management.ssl.enable=true
+	management.ssl.key-store=classpath:management.jks
+	management.ssl.key-password=secret
+----
+
+
+
 [[production-ready-customizing-management-server-address]]
 === Customizing the management server address
 You can customize the address that the management endpoints are available on by
