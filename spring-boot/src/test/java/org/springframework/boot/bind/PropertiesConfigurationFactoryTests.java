@@ -173,7 +173,7 @@ public class PropertiesConfigurationFactoryTests {
 	@Test
 	public void propertyWithAllUpperCaseInTheMiddleCanBeBound() throws Exception {
 		Foo foo = createFoo("foo-d-l-q-bar:baz");
-		assertEquals("baz", foo.fooDLQBar);
+		assertThat(foo.fooDLQBar).isEqualTo(("baz"));
 	}
 
 	private Foo createFoo(final String values) throws Exception {
