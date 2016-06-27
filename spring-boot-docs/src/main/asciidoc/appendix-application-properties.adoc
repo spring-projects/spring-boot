@@ -166,6 +166,7 @@ content into your application; rather pick only the properties that you need.
 	server.server-header= # Value to use for the Server response header (no header is sent if empty)
 	server.servlet-path=/ # Path of the main dispatcher servlet.
 	server.use-forward-headers= # If X-Forwarded-* headers should be applied to the HttpRequest.
+	server.connectionTimeout=-1 # The number of milliseconds connectors will wait for another HTTP request before closing the connection.
 	server.session.cookie.comment= # Comment for the session cookie.
 	server.session.cookie.domain= # Domain for the session cookie.
 	server.session.cookie.http-only= # "HttpOnly" flag for the session cookie.
