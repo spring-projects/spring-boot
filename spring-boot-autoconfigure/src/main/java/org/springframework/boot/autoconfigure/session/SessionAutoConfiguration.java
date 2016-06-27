@@ -77,7 +77,7 @@ public class SessionAutoConfiguration {
 
 	/**
 	 * Bean used to validate that a {@link SessionRepository} exists and provide a
-	 * meaningful if that's not the case.
+	 * meaningful message if that's not the case.
 	 */
 	static class SessionRepositoryValidator {
 
