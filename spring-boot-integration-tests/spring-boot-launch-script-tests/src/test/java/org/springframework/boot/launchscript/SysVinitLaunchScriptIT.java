@@ -95,8 +95,8 @@ public class SysVinitLaunchScriptIT {
 	}
 
 	@Test
-	public void forceStopWhenStopped() throws Exception {
-		String output = doTest("force-stop-when-stopped.sh");
+	public void statusWhenForceStopped() throws Exception {
+		String output = doTest("status-when-force-stopped.sh");
 		assertThat(output).contains("Status: 3");
 		assertThat(output).has(coloredString(AnsiColor.RED, "Not running"));
 	}
@@ -120,6 +120,14 @@ public class SysVinitLaunchScriptIT {
 	@Test
 	public void stopWhenStopped() throws Exception {
 		String output = doTest("stop-when-stopped.sh");
+		assertThat(output).contains("Status: 0");
+		assertThat(output)
+				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
+	}
+
+	@Test
+	public void forceStopWhenStopped() throws Exception {
+		String output = doTest("force-stop-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output)
 				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
