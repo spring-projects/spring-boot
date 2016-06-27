@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,6 +170,12 @@ public class PropertiesConfigurationFactoryTests {
 		assertEquals("baz", foo.fooBarURI);
 	}
 
+	@Test
+	public void propertyWithAllUpperCaseInTheMiddleCanBeBound() throws Exception {
+		Foo foo = createFoo("foo-d-l-q-bar:baz");
+		assertEquals("baz", foo.fooDLQBar);
+	}
+
 	private Foo createFoo(final String values) throws Exception {
 		setupFactory();
 		return bindFoo(values);
@@ -202,6 +208,8 @@ public class PropertiesConfigurationFactoryTests {
 		private String fooBar;
 
 		private String fooBarURI;
+
+		private String fooDLQBar;
 
 		public String getSpringFooBaz() {
 			return this.spring_foo_baz;
@@ -243,6 +251,13 @@ public class PropertiesConfigurationFactoryTests {
 			this.fooBarURI = fooBarURI;
 		}
 
+		public String getFooDLQBar() {
+			return this.fooDLQBar;
+		}
+
+		public void setFooDLQBar(String fooDLQBar) {
+			this.fooDLQBar = fooDLQBar;
+		}
 	}
 
 }

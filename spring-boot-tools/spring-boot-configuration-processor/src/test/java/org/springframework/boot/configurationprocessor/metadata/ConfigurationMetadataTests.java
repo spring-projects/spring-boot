@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,34 +34,44 @@ public class ConfigurationMetadataTests {
 	}
 
 	@Test
+	public void toDashedCaseUpperCamelCaseSuffix() {
+		assertThat(toDashedCase("myDLQ"), is("my-d-l-q"));
+	}
+
+	@Test
+	public void toDashedCaseUpperCamelCaseMiddle() {
+		assertThat(toDashedCase("someDLQKey"), is("some-d-l-q-key"));
+	}
+
+	@Test
 	public void toDashedCaseWordsUnderscore() {
-		assertThat(toDashedCase("Word_With_underscore"), is("word_with_underscore"));
+		assertThat(toDashedCase("Word_With_underscore"), is("word-with-underscore"));
 	}
 
 	@Test
 	public void toDashedCaseWordsSeveralUnderscores() {
 		assertThat(toDashedCase("Word___With__underscore"),
-				is("word___with__underscore"));
+				is("word---with--underscore"));
 	}
 
 	@Test
 	public void toDashedCaseLowerCaseUnderscore() {
-		assertThat(toDashedCase("lower_underscore"), is("lower_underscore"));
+		assertThat(toDashedCase("lower_underscore"), is("lower-underscore"));
 	}
 
 	@Test
-	public void toDashedCaseUpperUnderscore() {
-		assertThat(toDashedCase("UPPER_UNDERSCORE"), is("upper_underscore"));
+	public void toDashedCaseUpperUnderscoreSuffix() {
+		assertThat(toDashedCase("my_DLQ"), is("my-d-l-q"));
+	}
+
+	@Test
+	public void toDashedCaseUpperUnderscoreMiddle() {
+		assertThat(toDashedCase("some_DLQ_key"), is("some-d-l-q-key"));
 	}
 
 	@Test
 	public void toDashedCaseMultipleUnderscores() {
-		assertThat(toDashedCase("super___crazy"), is("super___crazy"));
-	}
-
-	@Test
-	public void toDashedCaseUppercase() {
-		assertThat(toDashedCase("UPPERCASE"), is("uppercase"));
+		assertThat(toDashedCase("super___crazy"), is("super---crazy"));
 	}
 
 	@Test
