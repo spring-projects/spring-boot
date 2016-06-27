@@ -93,6 +93,13 @@ public class SysVinitLaunchScriptIT {
 		assertThat(output).contains("Status: 3");
 		assertThat(output).has(coloredString(AnsiColor.RED, "Not running"));
 	}
+	
+	@Test
+	public void statusWhenForceStopped() throws Exception {
+		String output = doTest("status-when-force-stopped.sh");
+		assertThat(output).contains("Status: 3");
+		assertThat(output).has(coloredString(AnsiColor.RED, "Not running"));
+	}
 
 	@Test
 	public void statusWhenStarted() throws Exception {
