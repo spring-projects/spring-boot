@@ -46,7 +46,8 @@ public class TraceProperties {
 	}
 
 	/**
-	 * Items to be included in the trace. Defaults to request/response headers and errors.
+	 * Items to be included in the trace. Defaults to request/response headers (including cookies)
+	 * and errors.
 	 */
 	private Set<Include> include = new HashSet<Include>(DEFAULT_INCLUDES);
 
@@ -74,7 +75,7 @@ public class TraceProperties {
 		RESPONSE_HEADERS,
 
 		/**
-		 * Include Cookie in request and Set-Cookie in response headers.
+		 * Include "Cookie" in request and "Set-Cookie" in response headers.
 		 */
 		COOKIES,
 

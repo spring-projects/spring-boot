@@ -123,11 +123,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		trace.put("path", request.getRequestURI());
 		trace.put("headers", headers);
 		if (isIncluded(Include.REQUEST_HEADERS)) {
-			Map<String, Object> requestHeaders = getRequestHeaders(request);
-			if (!isIncluded(Include.COOKIES)) {
-				requestHeaders.remove("Cookie");
-			}
-			headers.put("request", requestHeaders);
+			headers.put("request", getRequestHeaders(request));
 		}
 		add(trace, Include.PATH_INFO, "pathInfo", request.getPathInfo());
 		add(trace, Include.PATH_TRANSLATED, "pathTranslated",
@@ -167,6 +163,9 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 			}
 			headers.put(name, value);
 		}
+		if (!isIncluded(Include.COOKIES)) {
+			headers.remove("Cookie");
+		}
 		return headers;
 	}
 
@@ -174,11 +173,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	protected void enhanceTrace(Map<String, Object> trace, HttpServletResponse response) {
 		if (isIncluded(Include.RESPONSE_HEADERS)) {
 			Map<String, Object> headers = (Map<String, Object>) trace.get("headers");
-			Map<String, String> responseHeaders = getResponseHeaders(response);
-			if (!isIncluded(Include.COOKIES)) {
-				responseHeaders.remove("Set-Cookie");
-			}
-			headers.put("response", responseHeaders);
+			headers.put("response", getResponseHeaders(response));
 		}
 	}
 
@@ -187,6 +182,9 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		for (String header : response.getHeaderNames()) {
 			String value = response.getHeader(header);
 			headers.put(header, value);
+		}
+		if (!isIncluded(Include.COOKIES)) {
+			headers.remove("Set-Cookie");
 		}
 		headers.put("status", "" + response.getStatus());
 		return headers;
