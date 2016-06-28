@@ -101,13 +101,12 @@ public class CassandraDataAutoConfiguration {
 	@ConditionalOnMissingBean(Session.class)
 	public CassandraSessionFactoryBean session(CassandraConverter converter)
 			throws Exception {
-
 		CassandraSessionFactoryBean session = new CassandraSessionFactoryBean();
 		session.setCluster(this.cluster);
 		session.setConverter(converter);
 		session.setKeyspaceName(this.properties.getKeyspaceName());
-
-		SchemaAction schemaAction = propertyResolver.getProperty("schemaAction", SchemaAction.class, SchemaAction.NONE);
+		SchemaAction schemaAction = this.propertyResolver
+				.getProperty("schemaAction", SchemaAction.class, SchemaAction.NONE);
 		session.setSchemaAction(schemaAction);
 		return session;
 	}

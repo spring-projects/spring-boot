@@ -18,26 +18,20 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 
 import java.util.Set;
 
-import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.exceptions.DriverException;
 
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
-import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -49,7 +43,6 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link CassandraDataAutoConfiguration}
  *
  * @author Eddú Meléndez
- * @author Mark Paluch
  */
 public class CassandraDataAutoConfigurationTests {
 
@@ -74,47 +67,6 @@ public class CassandraDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void hasDefaultSchemaActionSet() {
-
-		if (isCassandraAvailable()) {
-
-			this.context = new AnnotationConfigApplicationContext();
-			String cityPackage = City.class.getPackage().getName();
-			AutoConfigurationPackages.register(this.context, cityPackage);
-			this.context.register(CassandraAutoConfiguration.class,
-					CassandraDataAutoConfiguration.class);
-			this.context.refresh();
-
-			CassandraSessionFactoryBean bean = this.context
-					.getBean(CassandraSessionFactoryBean.class);
-			assertThat(bean.getSchemaAction()).isEqualTo(SchemaAction.NONE);
-		}
-	}
-
-	@Test
-	public void hasRecreateSchemaActionSet() {
-
-		if (isCassandraAvailable()) {
-			createTestKeyspaceIfNotExists();
-
-			this.context = new AnnotationConfigApplicationContext();
-			String cityPackage = City.class.getPackage().getName();
-			AutoConfigurationPackages.register(this.context, cityPackage);
-
-			EnvironmentTestUtils.addEnvironment(this.context,
-					"spring.data.cassandra.schemaAction:RECREATE_DROP_UNUSED", "spring.data.cassandra.keyspaceName:boot_test");
-
-			this.context.register(CassandraAutoConfiguration.class,
-					CassandraDataAutoConfiguration.class);
-			this.context.refresh();
-
-			CassandraSessionFactoryBean bean = this.context
-					.getBean(CassandraSessionFactoryBean.class);
-			assertThat(bean.getSchemaAction()).isEqualTo(SchemaAction.RECREATE_DROP_UNUSED);
-		}
-	}
-
-	@Test
 	@SuppressWarnings("unchecked")
 	public void entityScanShouldSetInitialEntitySet() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
@@ -127,42 +79,6 @@ public class CassandraDataAutoConfigurationTests {
 		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
 				.getField(mappingContext, "initialEntitySet");
 		assertThat(initialEntitySet).containsOnly(City.class);
-	}
-
-	/**
-	 * @return {@literal true} if Cassandra is available
-	 */
-	private static boolean isCassandraAvailable() {
-
-		Cluster cluster = newCluster();
-		try {
-			cluster.connect().close();
-			return true;
-		}
-		catch (DriverException exception) {
-			return false;
-		}
-		finally {
-			cluster.closeAsync();
-		}
-	}
-
-	private static void createTestKeyspaceIfNotExists() {
-
-		Cluster cluster = newCluster();
-		try {
-			Session session = cluster.connect();
-			session.execute("CREATE KEYSPACE IF NOT EXISTS boot_test"
-					+ "  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");
-			session.close();
-		}
-		finally {
-			cluster.closeAsync();
-		}
-	}
-
-	private static Cluster newCluster() {
-		return Cluster.builder().addContactPoint("localhost").build();
 	}
 
 	@Configuration

@@ -48,6 +48,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Eddú Meléndez
  * @author Mark Paluch
+ * @author Stephane Nicoll
  */
 public class CassandraRepositoriesAutoConfigurationTests {
 
@@ -68,39 +69,29 @@ public class CassandraRepositoriesAutoConfigurationTests {
 		addConfigurations(TestConfiguration.class);
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 		assertThat(this.context.getBean(Cluster.class)).isNotNull();
-
-		BasicCassandraMappingContext mappingContext = this.context
-				.getBean(BasicCassandraMappingContext.class);
-		@SuppressWarnings("unchecked")
-		Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
-				.getField(mappingContext, "initialEntitySet");
-		assertThat(entities).hasSize(1);
+		assertThat(getInitialEntitySet()).hasSize(1);
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() {
 		addConfigurations(TestExcludeConfiguration.class, EmptyConfiguration.class);
 		assertThat(this.context.getBean(Cluster.class)).isNotNull();
-
-		BasicCassandraMappingContext mappingContext = this.context
-				.getBean(BasicCassandraMappingContext.class);
-		@SuppressWarnings("unchecked")
-		Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
-				.getField(mappingContext, "initialEntitySet");
-		assertThat(entities).hasSize(1).containsOnly(City.class);
+		assertThat(getInitialEntitySet()).hasSize(1).containsOnly(City.class);
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		addConfigurations(TestExcludeConfiguration.class, CustomizedConfiguration.class);
 		assertThat(this.context.getBean(CityCassandraRepository.class)).isNotNull();
+		assertThat(getInitialEntitySet()).hasSize(1).containsOnly(City.class);
+	}
 
+	@SuppressWarnings("unchecked")
+	private Set<? extends Class<?>> getInitialEntitySet() {
 		BasicCassandraMappingContext mappingContext = this.context
 				.getBean(BasicCassandraMappingContext.class);
-		@SuppressWarnings("unchecked")
-		Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
+		return (Set<? extends Class<?>>) ReflectionTestUtils
 				.getField(mappingContext, "initialEntitySet");
-		assertThat(entities).hasSize(1).containsOnly(City.class);
 	}
 
 	private void addConfigurations(Class<?>... configurations) {
