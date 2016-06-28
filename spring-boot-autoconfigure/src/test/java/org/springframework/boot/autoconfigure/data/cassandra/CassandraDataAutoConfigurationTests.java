@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 import java.util.Set;
 
 import com.datastax.driver.core.Session;
+
 import org.junit.After;
 import org.junit.Test;
 

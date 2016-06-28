@@ -30,9 +30,12 @@ import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.data.cassandra.config.CassandraEntityClassScanner;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
@@ -48,6 +51,7 @@ import org.springframework.data.cassandra.mapping.CassandraMappingContext;
  *
  * @author Julien Dubois
  * @author Eddú Meléndez
+ * @author Mark Paluch
  * @since 1.3.0
  */
 @Configuration
@@ -62,11 +66,14 @@ public class CassandraDataAutoConfiguration {
 
 	private final Cluster cluster;
 
+	private final PropertyResolver propertyResolver;
+
 	public CassandraDataAutoConfiguration(BeanFactory beanFactory,
-			CassandraProperties properties, Cluster cluster) {
+			CassandraProperties properties, Cluster cluster, Environment environment) {
 		this.beanFactory = beanFactory;
 		this.properties = properties;
 		this.cluster = cluster;
+		this.propertyResolver = new RelaxedPropertyResolver(environment, "spring.data.cassandra.");
 	}
 
 	@Bean
@@ -98,7 +105,9 @@ public class CassandraDataAutoConfiguration {
 		session.setCluster(this.cluster);
 		session.setConverter(converter);
 		session.setKeyspaceName(this.properties.getKeyspaceName());
-		session.setSchemaAction(SchemaAction.NONE);
+		SchemaAction schemaAction = this.propertyResolver
+				.getProperty("schemaAction", SchemaAction.class, SchemaAction.NONE);
+		session.setSchemaAction(schemaAction);
 		return session;
 	}
 
