@@ -32,6 +32,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Julien Dubois
  * @author Phillip Webb
+ * @author Mark Paluch
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.data.cassandra")
@@ -111,6 +112,11 @@ public class CassandraProperties {
 	 * Socket option: read time out.
 	 */
 	private int readTimeoutMillis = SocketOptions.DEFAULT_READ_TIMEOUT_MILLIS;
+
+	/**
+	 * Action to take at startup.
+	 */
+	private String schemaAction = "none";
 
 	/**
 	 * Enable SSL support.
@@ -245,6 +251,14 @@ public class CassandraProperties {
 
 	public void setSsl(boolean ssl) {
 		this.ssl = ssl;
+	}
+
+	public String getSchemaAction() {
+		return this.schemaAction;
+	}
+
+	public void setSchemaAction(String schemaAction) {
+		this.schemaAction = schemaAction;
 	}
 
 }

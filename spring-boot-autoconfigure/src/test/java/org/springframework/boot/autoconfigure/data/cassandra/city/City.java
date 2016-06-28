@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra.city;
 
+import com.datastax.driver.core.DataType.Name;
+
+import org.springframework.data.cassandra.mapping.CassandraType;
 import org.springframework.data.cassandra.mapping.Column;
 import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
@@ -24,6 +27,7 @@ import org.springframework.data.cassandra.mapping.Table;
 public class City {
 
 	@PrimaryKey
+	@CassandraType(type = Name.BIGINT)
 	private Long id;
 
 	@Column
