@@ -21,7 +21,9 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
@@ -121,7 +123,10 @@ public class SitePreferenceAutoConfigurationTests {
 	public void sitePreferenceHandlerInterceptorRegistered() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+		this.context.register(Config.class,
+				ServerPropertiesAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class,
+				WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				SitePreferenceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);

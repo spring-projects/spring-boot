@@ -29,7 +29,9 @@ import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoCon
 import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Import;
@@ -225,6 +227,7 @@ public class MvcEndpointIntegrationTests {
 			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
 			EndpointWebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	static class DefaultConfiguration {
 
@@ -234,6 +237,7 @@ public class MvcEndpointIntegrationTests {
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	static class SpringHateoasConfiguration {
 
@@ -244,6 +248,7 @@ public class MvcEndpointIntegrationTests {
 			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
 			EndpointWebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	static class SpringDataRestConfiguration {
 

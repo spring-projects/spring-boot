@@ -59,6 +59,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.filter.HttpPutFormContentFilter;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerMapping;
@@ -618,6 +619,11 @@ public class WebMvcAutoConfigurationTests {
 
 	@Configuration
 	public static class Config {
+
+		@Bean
+		public DispatcherServlet dispatcherServlet() {
+			return new DispatcherServlet();
+		}
 
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {

@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mobile.device.view.AbstractDeviceDelegatingViewResolver;
 import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -261,6 +262,11 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 
 	@Configuration
 	protected static class Config {
+
+		@Bean
+		DispatcherServlet dispatcherServlet() {
+			return new DispatcherServlet();
+		}
 
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {

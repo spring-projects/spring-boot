@@ -23,7 +23,9 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -106,7 +108,9 @@ public class DeviceResolverAutoConfigurationTests {
 	}
 
 	@Configuration
-	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class,
+	@ImportAutoConfiguration({ServerPropertiesAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class,
+			WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
 			DeviceResolverAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class,
