@@ -133,6 +133,7 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.accesslog.pattern", "%h %t '%r' %s %b");
 		map.put("server.tomcat.accesslog.prefix", "foo");
+		map.put("server.tomcat.accesslog.rename-on-rotate", "true");
 		map.put("server.tomcat.accesslog.suffix", "-bar.log");
 		map.put("server.tomcat.protocol_header", "X-Forwarded-Protocol");
 		map.put("server.tomcat.remote_ip_header", "Remote-Ip");
@@ -141,6 +142,7 @@ public class ServerPropertiesTests {
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		assertThat(tomcat.getAccesslog().getPattern()).isEqualTo("%h %t '%r' %s %b");
 		assertThat(tomcat.getAccesslog().getPrefix()).isEqualTo("foo");
+		assertThat(tomcat.getAccesslog().isRenameOnRotate()).isTrue();
 		assertThat(tomcat.getAccesslog().getSuffix()).isEqualTo("-bar.log");
 		assertThat(tomcat.getRemoteIpHeader()).isEqualTo("Remote-Ip");
 		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");

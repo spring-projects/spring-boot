@@ -907,6 +907,7 @@ public class ServerProperties
 			valve.setDirectory(this.accesslog.getDirectory());
 			valve.setPrefix(this.accesslog.getPrefix());
 			valve.setSuffix(this.accesslog.getSuffix());
+			valve.setRenameOnRotate(this.accesslog.isRenameOnRotate());
 			factory.addContextValves(valve);
 		}
 
@@ -937,6 +938,11 @@ public class ServerProperties
 			 * Log file name suffix.
 			 */
 			private String suffix = ".log";
+
+			/**
+			 * Defer inclusion of the date stamp in the file name until rotate time.
+			 */
+			private boolean renameOnRotate;
 
 			public boolean isEnabled() {
 				return this.enabled;
@@ -977,6 +983,15 @@ public class ServerProperties
 			public void setSuffix(String suffix) {
 				this.suffix = suffix;
 			}
+
+			public boolean isRenameOnRotate() {
+				return this.renameOnRotate;
+			}
+
+			public void setRenameOnRotate(boolean renameOnRotate) {
+				this.renameOnRotate = renameOnRotate;
+			}
+
 		}
 
 	}

@@ -198,6 +198,7 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.accesslog.enabled=false # Enable access log.
 	server.tomcat.accesslog.pattern=common # Format pattern for access logs.
 	server.tomcat.accesslog.prefix=access_log # Log file name prefix.
+	server.tomcat.accesslog.rename-on-rotate=false # Defer inclusion of the date stamp in the file name until rotate time.
 	server.tomcat.accesslog.suffix=.log # Log file name suffix.
 	server.tomcat.background-processor-delay=30 # Delay in seconds between the invocation of backgroundProcess methods.
 	server.tomcat.basedir= # Tomcat base directory. If not specified a temporary directory will be used.
