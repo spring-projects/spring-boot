@@ -629,11 +629,11 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.url= # JDBC url of the database.
 	spring.datasource.username=
 
-	# JEST (ElasticSearch HTTP client) ({sc-spring-boot-autoconfigure}/jest/JestProperties.{sc-ext}[JestProperties])
+	# JEST (Elasticsearch HTTP client) ({sc-spring-boot-autoconfigure}/jest/JestProperties.{sc-ext}[JestProperties])
 	spring.elasticsearch.jest.connection-timeout=3000 # Connection timeout in milliseconds.
 	spring.elasticsearch.jest.password= # Login password.
 	spring.elasticsearch.jest.read-timeout=3000 # Read timeout in milliseconds.
-	spring.elasticsearch.jest.uris=http://localhost:9200 # Comma-separated list of the elasticsearch instances to use.
+	spring.elasticsearch.jest.uris=http://localhost:9200 # Comma-separated list of the Elasticsearch instances to use.
 	spring.elasticsearch.jest.username= # Login user.
 
 	# H2 Web Console ({sc-spring-boot-autoconfigure}/h2/H2ConsoleProperties.{sc-ext}[H2ConsoleProperties])

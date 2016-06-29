@@ -3335,7 +3335,7 @@ https://github.com/searchbox-io/Jest[Jest].
 
 
 [[boot-features-connecting-to-elasticsearch-jest]]
-==== Connecting to Elasticsearch using Spring Data
+==== Connecting to Elasticsearch using Jest
 If you have `Jest` on the classpath, you can inject an auto-configured `JestClient`
 targeting `http://localhost:9200` by default. You can further tune how the client is
 configured:
@@ -3352,14 +3352,13 @@ To take full control over the registration, define a `JestClient` bean.
 
 
 
-[[boot-features-connecting-to-elasticsearch]]
 [[boot-features-connecting-to-elasticsearch-spring-data]]
 ==== Connecting to Elasticsearch using Spring Data
 You can inject an auto-configured `ElasticsearchTemplate` or Elasticsearch `Client`
 instance as you would any other Spring Bean. By default the instance will embed a
-local in-memory server (a `Node` in ElasticSearch terms) and use the current working
+local in-memory server (a `Node` in Elasticsearch terms) and use the current working
 directory as the home directory for the server. In this setup, the first thing to do
-is to tell ElasticSearch where to store its files:
+is to tell Elasticsearch where to store its files:
 
 [source,properties,indent=0]
 ----

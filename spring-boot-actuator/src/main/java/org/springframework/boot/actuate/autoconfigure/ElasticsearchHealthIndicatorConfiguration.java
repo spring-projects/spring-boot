@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Actual ElasticSearch health indicator configurations imported by
+ * Actual Elasticsearch health indicator configurations imported by
  * {@link HealthIndicatorAutoConfiguration}.
  *
  * @author Stephane Nicoll
