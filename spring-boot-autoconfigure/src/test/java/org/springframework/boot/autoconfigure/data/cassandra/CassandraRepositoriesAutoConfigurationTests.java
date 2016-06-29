@@ -87,11 +87,11 @@ public class CassandraRepositoriesAutoConfigurationTests {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Set<? extends Class<?>> getInitialEntitySet() {
+	private Set<Class<?>> getInitialEntitySet() {
 		BasicCassandraMappingContext mappingContext = this.context
 				.getBean(BasicCassandraMappingContext.class);
-		return (Set<? extends Class<?>>) ReflectionTestUtils
-				.getField(mappingContext, "initialEntitySet");
+		return (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
+				"initialEntitySet");
 	}
 
 	private void addConfigurations(Class<?>... configurations) {
