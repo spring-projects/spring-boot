@@ -26,9 +26,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.client.BasicAuthorizationInterceptor;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
