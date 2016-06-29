@@ -18,7 +18,6 @@ package org.springframework.boot.test;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -54,8 +53,6 @@ import org.springframework.web.client.RestTemplate;
  */
 @Deprecated
 public class TestRestTemplate extends RestTemplate {
-
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	/**
 	 * Create a new {@link TestRestTemplate} instance.
