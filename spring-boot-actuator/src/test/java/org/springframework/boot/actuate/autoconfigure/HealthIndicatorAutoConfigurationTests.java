@@ -427,7 +427,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void notElasticSearchHealthIndicator() {
+	public void notElasticsearchHealthIndicator() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.elasticsearch.enabled:false",
 				"spring.data.elasticsearch.properties.path.home:target",

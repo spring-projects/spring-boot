@@ -292,7 +292,7 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |Checks that a connection to `DataSource` can be obtained.
 
 |{sc-spring-boot-actuator}/health/ElasticsearchHealthIndicator.{sc-ext}[`ElasticsearchHealthIndicator`]
-|Checks that an ElasticSearch cluster is up.
+|Checks that an Elasticsearch cluster is up.
 
 |{sc-spring-boot-actuator}/health/JmsHealthIndicator.{sc-ext}[`JmsHealthIndicator`]
 |Checks that a JMS broker is up.

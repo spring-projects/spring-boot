@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JestProperties {
 
 	/**
-	 * Comma-separated list of the elasticsearch instances to use.
+	 * Comma-separated list of the Elasticsearch instances to use.
 	 */
 	private List<String> uris = Collections.singletonList("http://localhost:9200");
 

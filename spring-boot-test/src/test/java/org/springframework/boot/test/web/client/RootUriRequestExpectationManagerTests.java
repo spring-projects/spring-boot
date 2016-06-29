@@ -134,7 +134,7 @@ public class RootUriRequestExpectationManagerTests {
 	}
 
 	@Test
-	public void bindToShouldReturnMockResetServiceServer() throws Exception {
+	public void bindToShouldReturnMockRestServiceServer() throws Exception {
 		RestTemplate restTemplate = new RestTemplateBuilder().build();
 		MockRestServiceServer bound = RootUriRequestExpectationManager
 				.bindTo(restTemplate);
@@ -142,7 +142,7 @@ public class RootUriRequestExpectationManagerTests {
 	}
 
 	@Test
-	public void bindToWithExpectationManagerShouldReturnMockResetServiceServer()
+	public void bindToWithExpectationManagerShouldReturnMockRestServiceServer()
 			throws Exception {
 		RestTemplate restTemplate = new RestTemplateBuilder().build();
 		MockRestServiceServer bound = RootUriRequestExpectationManager
@@ -161,7 +161,7 @@ public class RootUriRequestExpectationManagerTests {
 	}
 
 	@Test
-	public void forRestTemplateWhenNotUsingRootUriTemplateHandlerShouldReturnOriginalUriRequestExpectationManager()
+	public void forRestTemplateWhenNotUsingRootUriTemplateHandlerShouldReturnOriginalRequestExpectationManager()
 			throws Exception {
 		RestTemplate restTemplate = new RestTemplateBuilder().build();
 		RequestExpectationManager actual = RootUriRequestExpectationManager
