@@ -91,7 +91,8 @@ public class CassandraTestServer implements TestRule {
 
 		@Override
 		public void evaluate() throws Throwable {
-			Assume.assumeTrue("Skipping test due to Cassandra not being available", false);
+			Assume.assumeTrue("Skipping test due to Cassandra not being available",
+					false);
 		}
 
 	}

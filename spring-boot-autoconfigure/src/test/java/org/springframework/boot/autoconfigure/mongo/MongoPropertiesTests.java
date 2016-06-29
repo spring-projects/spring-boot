@@ -48,7 +48,7 @@ public class MongoPropertiesTests {
 		// gh-1572
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(context, "spring.data.mongodb.password:word");
-		context.register(Conf.class);
+		context.register(Config.class);
 		context.refresh();
 		MongoProperties properties = context.getBean(MongoProperties.class);
 		assertThat(properties.getPassword()).isEqualTo("word".toCharArray());
@@ -123,50 +123,58 @@ public class MongoPropertiesTests {
 
 	@Test
 	public void allMongoClientOptionsCanBeSet() throws UnknownHostException {
-		MongoClientOptions mco = MongoClientOptions.builder()
-				.alwaysUseMBeans(true)
-				.connectionsPerHost(101)
-				.connectTimeout(10001)
-				.cursorFinalizerEnabled(false)
-				.description("test")
-				.maxWaitTime(120001)
-				.socketKeepAlive(true)
-				.socketTimeout(1000)
-				.threadsAllowedToBlockForConnectionMultiplier(6)
-				.minConnectionsPerHost(0)
-				.maxConnectionIdleTime(60000)
-				.maxConnectionLifeTime(60000)
-				.heartbeatFrequency(10001)
-				.minHeartbeatFrequency(501)
-				.heartbeatConnectTimeout(20001)
-				.heartbeatSocketTimeout(20001)
-				.localThreshold(20)
-				.requiredReplicaSetName("testReplicaSetName")
-				.build();
-
+		MongoClientOptions.Builder builder = MongoClientOptions.builder();
+		builder.alwaysUseMBeans(true);
+		builder.connectionsPerHost(101);
+		builder.connectTimeout(10001);
+		builder.cursorFinalizerEnabled(false);
+		builder.description("test");
+		builder.maxWaitTime(120001);
+		builder.socketKeepAlive(true);
+		builder.socketTimeout(1000);
+		builder.threadsAllowedToBlockForConnectionMultiplier(6);
+		builder.minConnectionsPerHost(0);
+		builder.maxConnectionIdleTime(60000);
+		builder.maxConnectionLifeTime(60000);
+		builder.heartbeatFrequency(10001);
+		builder.minHeartbeatFrequency(501);
+		builder.heartbeatConnectTimeout(20001);
+		builder.heartbeatSocketTimeout(20001);
+		builder.localThreshold(20);
+		builder.requiredReplicaSetName("testReplicaSetName");
+		MongoClientOptions options = builder.build();
 		MongoProperties properties = new MongoProperties();
-		MongoClient client = properties.createMongoClient(mco, null);
-		MongoClientOptions wrappedMco = client.getMongoClientOptions();
-
-		assertThat(wrappedMco.isAlwaysUseMBeans()).isEqualTo(mco.isAlwaysUseMBeans());
-		assertThat(wrappedMco.getConnectionsPerHost()).isEqualTo(mco.getConnectionsPerHost());
-		assertThat(wrappedMco.getConnectTimeout()).isEqualTo(mco.getConnectTimeout());
-		assertThat(wrappedMco.isCursorFinalizerEnabled()).isEqualTo(mco.isCursorFinalizerEnabled());
-		assertThat(wrappedMco.getDescription()).isEqualTo(mco.getDescription());
-		assertThat(wrappedMco.getMaxWaitTime()).isEqualTo(mco.getMaxWaitTime());
-		assertThat(wrappedMco.getSocketTimeout()).isEqualTo(mco.getSocketTimeout());
-		assertThat(wrappedMco.isSocketKeepAlive()).isEqualTo(mco.isSocketKeepAlive());
-		assertThat(wrappedMco.getThreadsAllowedToBlockForConnectionMultiplier()).isEqualTo(
-				mco.getThreadsAllowedToBlockForConnectionMultiplier());
-		assertThat(wrappedMco.getMinConnectionsPerHost()).isEqualTo(mco.getMinConnectionsPerHost());
-		assertThat(wrappedMco.getMaxConnectionIdleTime()).isEqualTo(mco.getMaxConnectionIdleTime());
-		assertThat(wrappedMco.getMaxConnectionLifeTime()).isEqualTo(mco.getMaxConnectionLifeTime());
-		assertThat(wrappedMco.getHeartbeatFrequency()).isEqualTo(mco.getHeartbeatFrequency());
-		assertThat(wrappedMco.getMinHeartbeatFrequency()).isEqualTo(mco.getMinHeartbeatFrequency());
-		assertThat(wrappedMco.getHeartbeatConnectTimeout()).isEqualTo(mco.getHeartbeatConnectTimeout());
-		assertThat(wrappedMco.getHeartbeatSocketTimeout()).isEqualTo(mco.getHeartbeatSocketTimeout());
-		assertThat(wrappedMco.getLocalThreshold()).isEqualTo(mco.getLocalThreshold());
-		assertThat(wrappedMco.getRequiredReplicaSetName()).isEqualTo(mco.getRequiredReplicaSetName());
+		MongoClient client = properties.createMongoClient(options, null);
+		MongoClientOptions wrapped = client.getMongoClientOptions();
+		assertThat(wrapped.isAlwaysUseMBeans()).isEqualTo(options.isAlwaysUseMBeans());
+		assertThat(wrapped.getConnectionsPerHost())
+				.isEqualTo(options.getConnectionsPerHost());
+		assertThat(wrapped.getConnectTimeout()).isEqualTo(options.getConnectTimeout());
+		assertThat(wrapped.isCursorFinalizerEnabled())
+				.isEqualTo(options.isCursorFinalizerEnabled());
+		assertThat(wrapped.getDescription()).isEqualTo(options.getDescription());
+		assertThat(wrapped.getMaxWaitTime()).isEqualTo(options.getMaxWaitTime());
+		assertThat(wrapped.getSocketTimeout()).isEqualTo(options.getSocketTimeout());
+		assertThat(wrapped.isSocketKeepAlive()).isEqualTo(options.isSocketKeepAlive());
+		assertThat(wrapped.getThreadsAllowedToBlockForConnectionMultiplier())
+				.isEqualTo(options.getThreadsAllowedToBlockForConnectionMultiplier());
+		assertThat(wrapped.getMinConnectionsPerHost())
+				.isEqualTo(options.getMinConnectionsPerHost());
+		assertThat(wrapped.getMaxConnectionIdleTime())
+				.isEqualTo(options.getMaxConnectionIdleTime());
+		assertThat(wrapped.getMaxConnectionLifeTime())
+				.isEqualTo(options.getMaxConnectionLifeTime());
+		assertThat(wrapped.getHeartbeatFrequency())
+				.isEqualTo(options.getHeartbeatFrequency());
+		assertThat(wrapped.getMinHeartbeatFrequency())
+				.isEqualTo(options.getMinHeartbeatFrequency());
+		assertThat(wrapped.getHeartbeatConnectTimeout())
+				.isEqualTo(options.getHeartbeatConnectTimeout());
+		assertThat(wrapped.getHeartbeatSocketTimeout())
+				.isEqualTo(options.getHeartbeatSocketTimeout());
+		assertThat(wrapped.getLocalThreshold()).isEqualTo(options.getLocalThreshold());
+		assertThat(wrapped.getRequiredReplicaSetName())
+				.isEqualTo(options.getRequiredReplicaSetName());
 	}
 
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {
@@ -192,7 +200,7 @@ public class MongoPropertiesTests {
 
 	@Configuration
 	@EnableConfigurationProperties(MongoProperties.class)
-	static class Conf {
+	static class Config {
 
 	}
 

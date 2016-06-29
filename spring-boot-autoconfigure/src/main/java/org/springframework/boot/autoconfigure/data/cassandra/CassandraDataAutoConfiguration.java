@@ -73,7 +73,8 @@ public class CassandraDataAutoConfiguration {
 		this.beanFactory = beanFactory;
 		this.properties = properties;
 		this.cluster = cluster;
-		this.propertyResolver = new RelaxedPropertyResolver(environment, "spring.data.cassandra.");
+		this.propertyResolver = new RelaxedPropertyResolver(environment,
+				"spring.data.cassandra.");
 	}
 
 	@Bean
@@ -105,8 +106,8 @@ public class CassandraDataAutoConfiguration {
 		session.setCluster(this.cluster);
 		session.setConverter(converter);
 		session.setKeyspaceName(this.properties.getKeyspaceName());
-		SchemaAction schemaAction = this.propertyResolver
-				.getProperty("schemaAction", SchemaAction.class, SchemaAction.NONE);
+		SchemaAction schemaAction = this.propertyResolver.getProperty("schemaAction",
+				SchemaAction.class, SchemaAction.NONE);
 		session.setSchemaAction(schemaAction);
 		return session;
 	}

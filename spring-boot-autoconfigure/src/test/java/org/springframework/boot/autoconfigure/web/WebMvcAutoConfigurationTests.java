@@ -541,20 +541,22 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	private void testLogResolvedExceptionCustomization(final boolean expected) {
-		HandlerExceptionResolver exceptionResolver = this.context.getBean(
-				HandlerExceptionResolver.class);
-		assertThat(exceptionResolver).isInstanceOf(HandlerExceptionResolverComposite.class);
-		List<HandlerExceptionResolver> delegates =
-				((HandlerExceptionResolverComposite) exceptionResolver).getExceptionResolvers();
+		HandlerExceptionResolver exceptionResolver = this.context
+				.getBean(HandlerExceptionResolver.class);
+		assertThat(exceptionResolver)
+				.isInstanceOf(HandlerExceptionResolverComposite.class);
+		List<HandlerExceptionResolver> delegates = ((HandlerExceptionResolverComposite) exceptionResolver)
+				.getExceptionResolvers();
 		for (HandlerExceptionResolver delegate : delegates) {
 			if (delegate instanceof AbstractHandlerMethodAdapter) {
-				assertThat(new DirectFieldAccessor(delegate).getPropertyValue("warnLogger"))
-						.is(new Condition<Object>() {
-							@Override
-							public boolean matches(Object value) {
-								return (expected ? value != null : value == null);
-							}
-						});
+				assertThat(
+						new DirectFieldAccessor(delegate).getPropertyValue("warnLogger"))
+								.is(new Condition<Object>() {
+									@Override
+									public boolean matches(Object value) {
+										return (expected ? value != null : value == null);
+									}
+								});
 			}
 		}
 	}

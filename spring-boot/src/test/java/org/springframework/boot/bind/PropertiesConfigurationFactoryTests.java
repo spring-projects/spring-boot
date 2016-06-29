@@ -259,6 +259,7 @@ public class PropertiesConfigurationFactoryTests {
 		public void setFooDLQBar(String fooDLQBar) {
 			this.fooDLQBar = fooDLQBar;
 		}
+
 	}
 
 }

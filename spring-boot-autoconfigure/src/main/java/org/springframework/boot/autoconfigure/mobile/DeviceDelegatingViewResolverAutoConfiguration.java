@@ -53,9 +53,9 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 @ConditionalOnClass(LiteDeviceDelegatingViewResolver.class)
 @ConditionalOnProperty(prefix = "spring.mobile.devicedelegatingviewresolver", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(DeviceDelegatingViewResolverProperties.class)
-@AutoConfigureAfter({WebMvcAutoConfiguration.class, FreeMarkerAutoConfiguration.class,
+@AutoConfigureAfter({ WebMvcAutoConfiguration.class, FreeMarkerAutoConfiguration.class,
 		GroovyTemplateAutoConfiguration.class, MustacheAutoConfiguration.class,
-		ThymeleafAutoConfiguration.class})
+		ThymeleafAutoConfiguration.class })
 public class DeviceDelegatingViewResolverAutoConfiguration {
 
 	@Configuration

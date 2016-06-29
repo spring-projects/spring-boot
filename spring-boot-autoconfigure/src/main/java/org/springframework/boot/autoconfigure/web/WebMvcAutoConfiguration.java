@@ -429,8 +429,7 @@ public class WebMvcAutoConfiguration {
 				for (HandlerExceptionResolver resolver : exceptionResolvers) {
 					if (resolver instanceof AbstractHandlerExceptionResolver) {
 						((AbstractHandlerExceptionResolver) resolver)
-								.setWarnLogCategory(resolver.getClass()
-										.getName());
+								.setWarnLogCategory(resolver.getClass().getName());
 					}
 				}
 			}

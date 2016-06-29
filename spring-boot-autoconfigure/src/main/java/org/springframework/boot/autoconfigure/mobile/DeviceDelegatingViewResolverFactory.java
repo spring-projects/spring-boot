@@ -21,8 +21,8 @@ import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
 import org.springframework.web.servlet.ViewResolver;
 
 /**
- * A factory for {@link LiteDeviceDelegatingViewResolver} that applies customizations
- * of {@link DeviceDelegatingViewResolverProperties}.
+ * A factory for {@link LiteDeviceDelegatingViewResolver} that applies customizations of
+ * {@link DeviceDelegatingViewResolverProperties}.
  *
  * @author Stephane Nicoll
  * @since 1.4.0
@@ -31,7 +31,8 @@ public class DeviceDelegatingViewResolverFactory {
 
 	private final DeviceDelegatingViewResolverProperties properties;
 
-	public DeviceDelegatingViewResolverFactory(DeviceDelegatingViewResolverProperties properties) {
+	public DeviceDelegatingViewResolverFactory(
+			DeviceDelegatingViewResolverProperties properties) {
 		this.properties = properties;
 	}
 
@@ -42,8 +43,8 @@ public class DeviceDelegatingViewResolverFactory {
 	 * @param delegatingOrder the order of the {@link LiteDeviceDelegatingViewResolver}
 	 * @return a {@link LiteDeviceDelegatingViewResolver} handling the specified resolver
 	 */
-	public LiteDeviceDelegatingViewResolver createViewResolver(
-			ViewResolver delegate, int delegatingOrder) {
+	public LiteDeviceDelegatingViewResolver createViewResolver(ViewResolver delegate,
+			int delegatingOrder) {
 		LiteDeviceDelegatingViewResolver resolver = new LiteDeviceDelegatingViewResolver(
 				delegate);
 		resolver.setEnableFallback(this.properties.isEnableFallback());
@@ -67,7 +68,8 @@ public class DeviceDelegatingViewResolverFactory {
 	 */
 	public LiteDeviceDelegatingViewResolver createViewResolver(ViewResolver delegate) {
 		if (!(delegate instanceof Ordered)) {
-			throw new IllegalStateException("ViewResolver " + delegate + "should implement " + Ordered.class.getName());
+			throw new IllegalStateException("ViewResolver " + delegate
+					+ "should implement " + Ordered.class.getName());
 		}
 		int delegateOrder = ((Ordered) delegate).getOrder();
 		return createViewResolver(delegate, adjustOrder(delegateOrder));

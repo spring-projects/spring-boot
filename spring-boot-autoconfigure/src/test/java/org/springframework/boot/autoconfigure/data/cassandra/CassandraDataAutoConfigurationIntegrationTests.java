@@ -71,14 +71,12 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(this.context, cityPackage);
-
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.cassandra.schemaAction:RECREATE_DROP_UNUSED", "spring.data.cassandra.keyspaceName:boot_test");
-
+				"spring.data.cassandra.schemaAction:RECREATE_DROP_UNUSED",
+				"spring.data.cassandra.keyspaceName:boot_test");
 		this.context.register(CassandraAutoConfiguration.class,
 				CassandraDataAutoConfiguration.class);
 		this.context.refresh();
-
 		CassandraSessionFactoryBean bean = this.context
 				.getBean(CassandraSessionFactoryBean.class);
 		assertThat(bean.getSchemaAction()).isEqualTo(SchemaAction.RECREATE_DROP_UNUSED);

@@ -79,7 +79,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	@Test
 	public void deviceDelegatingJspResourceViewResolver() throws Exception {
 		load("spring.mobile.devicedelegatingviewresolver.enabled:true");
-		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
+				.hasSize(1);
 		InternalResourceViewResolver internalResourceViewResolver = this.context
 				.getBean(InternalResourceViewResolver.class);
 		assertLiteDeviceDelegatingViewResolver(internalResourceViewResolver,
@@ -90,8 +91,10 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	public void deviceDelegatingFreemarkerViewResolver() throws Exception {
 		load(Collections.<Class<?>>singletonList(FreeMarkerAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:true");
-		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class)).hasSize(2);
-		assertLiteDeviceDelegatingViewResolver(this.context.getBean(FreeMarkerViewResolver.class),
+		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
+				.hasSize(2);
+		assertLiteDeviceDelegatingViewResolver(
+				this.context.getBean(FreeMarkerViewResolver.class),
 				"deviceDelegatingFreemarkerViewResolver");
 	}
 
@@ -99,8 +102,10 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	public void deviceDelegatingGroovyMarkupViewResolver() throws Exception {
 		load(Collections.<Class<?>>singletonList(GroovyTemplateAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:true");
-		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class)).hasSize(2);
-		assertLiteDeviceDelegatingViewResolver(this.context.getBean(GroovyMarkupViewResolver.class),
+		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
+				.hasSize(2);
+		assertLiteDeviceDelegatingViewResolver(
+				this.context.getBean(GroovyMarkupViewResolver.class),
 				"deviceDelegatingGroovyMarkupViewResolver");
 	}
 
@@ -108,8 +113,10 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	public void deviceDelegatingMustacheViewResolver() throws Exception {
 		load(Collections.<Class<?>>singletonList(MustacheAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:true");
-		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class)).hasSize(2);
-		assertLiteDeviceDelegatingViewResolver(this.context.getBean(MustacheViewResolver.class),
+		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
+				.hasSize(2);
+		assertLiteDeviceDelegatingViewResolver(
+				this.context.getBean(MustacheViewResolver.class),
 				"deviceDelegatingMustacheViewResolver");
 	}
 
@@ -117,26 +124,30 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	public void deviceDelegatingThymeleafViewResolver() throws Exception {
 		load(Collections.<Class<?>>singletonList(ThymeleafAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:true");
-		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class)).hasSize(2);
-		assertLiteDeviceDelegatingViewResolver(this.context.getBean(ThymeleafViewResolver.class),
+		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
+				.hasSize(2);
+		assertLiteDeviceDelegatingViewResolver(
+				this.context.getBean(ThymeleafViewResolver.class),
 				"deviceDelegatingThymeleafViewResolver");
 	}
 
-	public void assertLiteDeviceDelegatingViewResolver(ViewResolver delegate, String delegatingBeanName) {
+	public void assertLiteDeviceDelegatingViewResolver(ViewResolver delegate,
+			String delegatingBeanName) {
 		LiteDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context
 				.getBean(delegatingBeanName, LiteDeviceDelegatingViewResolver.class);
-		assertThat(deviceDelegatingViewResolver.getViewResolver())
-				.isSameAs(delegate);
+		assertThat(deviceDelegatingViewResolver.getViewResolver()).isSameAs(delegate);
 		assertThat(deviceDelegatingViewResolver.getOrder())
 				.isEqualTo(((Ordered) delegate).getOrder() - 1);
 	}
 
 	@Test
 	public void deviceDelegatingViewResolverDisabled() throws Exception {
-		load(Arrays.asList(FreeMarkerAutoConfiguration.class, GroovyTemplateAutoConfiguration.class,
-				MustacheAutoConfiguration.class, ThymeleafAutoConfiguration.class),
+		load(Arrays.asList(FreeMarkerAutoConfiguration.class,
+				GroovyTemplateAutoConfiguration.class, MustacheAutoConfiguration.class,
+				ThymeleafAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:false");
-		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class)).hasSize(0);
+		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
+				.hasSize(0);
 	}
 
 	@Test
