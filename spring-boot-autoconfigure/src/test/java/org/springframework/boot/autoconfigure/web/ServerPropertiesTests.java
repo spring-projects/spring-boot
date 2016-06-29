@@ -29,6 +29,7 @@ import javax.servlet.ServletException;
 import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
 
+import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.junit.Before;
@@ -41,6 +42,7 @@ import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -148,6 +150,30 @@ public class ServerPropertiesTests {
 		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
 		assertThat(tomcat.getInternalProxies())
 				.isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+	}
+
+	@Test
+	public void redirectContextRootIsNotConfiguredByDefault() throws Exception {
+		bindProperties(new HashMap<String, String>());
+		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
+		assertThat(tomcat.getRedirectContextRoot()).isNull();
+	}
+
+	@Test
+	public void redirectContextRootCanBeConfigured() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.redirect-context-root", "false");
+		bindProperties(map);
+		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
+		assertThat(tomcat.getRedirectContextRoot()).isEqualTo(false);
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(container);
+		Context context = mock(Context.class);
+		for (TomcatContextCustomizer customizer : container
+				.getTomcatContextCustomizers()) {
+			customizer.customize(context);
+		}
+		verify(context).setMapperContextRootRedirectEnabled(false);
 	}
 
 	@Test

@@ -647,6 +647,12 @@ public class ServerProperties
 		private int maxHttpHeaderSize = 0; // bytes
 
 		/**
+		 * Whether requests to the context root should be redirected by appending a / to
+		 * the path.
+		 */
+		private Boolean redirectContextRoot;
+
+		/**
 		 * Character encoding to use to decode the URI.
 		 */
 		private Charset uriEncoding;
@@ -742,6 +748,14 @@ public class ServerProperties
 			this.portHeader = portHeader;
 		}
 
+		public Boolean getRedirectContextRoot() {
+			return this.redirectContextRoot;
+		}
+
+		public void setRedirectContextRoot(Boolean redirectContextRoot) {
+			this.redirectContextRoot = redirectContextRoot;
+		}
+
 		public String getRemoteIpHeader() {
 			return this.remoteIpHeader;
 		}
@@ -788,6 +802,9 @@ public class ServerProperties
 			if (serverProperties.getConnectionTimeout() != null) {
 				customizeConnectionTimeout(factory,
 						serverProperties.getConnectionTimeout());
+			}
+			if (this.redirectContextRoot != null) {
+				customizeRedirectContextRoot(factory, this.redirectContextRoot);
 			}
 		}
 
@@ -909,6 +926,19 @@ public class ServerProperties
 			valve.setSuffix(this.accesslog.getSuffix());
 			valve.setRenameOnRotate(this.accesslog.isRenameOnRotate());
 			factory.addContextValves(valve);
+		}
+
+		private void customizeRedirectContextRoot(
+				TomcatEmbeddedServletContainerFactory factory,
+				final boolean redirectContextRoot) {
+			factory.addContextCustomizers(new TomcatContextCustomizer() {
+
+				@Override
+				public void customize(Context context) {
+					context.setMapperContextRootRedirectEnabled(redirectContextRoot);
+				}
+
+			});
 		}
 
 		public static class Accesslog {
