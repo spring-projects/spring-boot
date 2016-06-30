@@ -20,11 +20,13 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessionConfiguration;
 
@@ -36,6 +38,7 @@ import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessi
  * @author Vedran Pavic
  */
 @Configuration
+@ConditionalOnClass(JdbcTemplate.class)
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(DataSource.class)
 @Conditional(SessionCondition.class)

@@ -52,22 +52,21 @@ public class JdbcSessionDatabaseInitializer {
 
 	@PostConstruct
 	protected void initialize() {
-		if (!this.properties.getJdbc().getInitializer().isEnabled()) {
-			return;
+		if (this.properties.getJdbc().getInitializer().isEnabled()) {
+			String platform = getDatabaseType();
+			if ("hsql".equals(platform)) {
+				platform = "hsqldb";
+			}
+			if ("postgres".equals(platform)) {
+				platform = "postgresql";
+			}
+			ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+			String schemaLocation = this.properties.getJdbc().getSchema();
+			schemaLocation = schemaLocation.replace("@@platform@@", platform);
+			populator.addScript(this.resourceLoader.getResource(schemaLocation));
+			populator.setContinueOnError(true);
+			DatabasePopulatorUtils.execute(populator, this.dataSource);
 		}
-		String platform = getDatabaseType();
-		if ("hsql".equals(platform)) {
-			platform = "hsqldb";
-		}
-		if ("postgres".equals(platform)) {
-			platform = "postgresql";
-		}
-		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-		String schemaLocation = this.properties.getJdbc().getSchema();
-		schemaLocation = schemaLocation.replace("@@platform@@", platform);
-		populator.addScript(this.resourceLoader.getResource(schemaLocation));
-		populator.setContinueOnError(true);
-		DatabasePopulatorUtils.execute(populator, this.dataSource);
 	}
 
 	private String getDatabaseType() {

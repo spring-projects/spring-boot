@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.session;
 
 import java.util.Arrays;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -27,11 +25,9 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,35 +35,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * JDBC specific tests for {@link SessionAutoConfiguration}.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  */
 public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfigurationTests {
 
 	@Rule
-	public ExpectedException expected = ExpectedException.none();
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void defaultConfig() {
 		load(Arrays.asList(EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class),
 				"spring.session.store-type=jdbc");
-		JdbcOperationsSessionRepository repository = validateSessionRepository(
-				JdbcOperationsSessionRepository.class);
-		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
-				.isEqualTo("SPRING_SESSION");
-		assertThat(this.context.getBean(JdbcOperations.class)
-				.queryForList("select * from SPRING_SESSION")).isEmpty();
-	}
-
-	@Test
-	public void usingJpa() {
-		load(Arrays.<Class<?>>asList(EmbeddedDataSourceConfiguration.class,
-				HibernateJpaAutoConfiguration.class),
-				"spring.session.store-type=jdbc");
-		PlatformTransactionManager transactionManager = this.context
-				.getBean(PlatformTransactionManager.class);
-		assertThat(transactionManager.toString().contains("JpaTransactionManager"))
-				.isTrue();
-		assertThat(this.context.getBean(EntityManagerFactory.class)).isNotNull();
 		JdbcOperationsSessionRepository repository = validateSessionRepository(
 				JdbcOperationsSessionRepository.class);
 		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
@@ -86,7 +65,7 @@ public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfig
 				JdbcOperationsSessionRepository.class);
 		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
 				.isEqualTo("SPRING_SESSION");
-		this.expected.expect(BadSqlGrammarException.class);
+		this.thrown.expect(BadSqlGrammarException.class);
 		assertThat(this.context.getBean(JdbcOperations.class)
 				.queryForList("select * from SPRING_SESSION")).isEmpty();
 	}
