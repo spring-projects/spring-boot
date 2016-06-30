@@ -214,6 +214,7 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.port-header=X-Forwarded-Port # Name of the HTTP header used to override the original port value.
 	server.tomcat.protocol-header= # Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
 	server.tomcat.protocol-header-https-value=https # Value of the protocol header that indicates that the incoming request uses SSL.
+	server.tomcat.redirect-context-root= # Whether requests to the context root should be redirected by appending a / to the path.
 	server.tomcat.remote-ip-header= # Name of the http header from which the remote ip is extracted. For instance `X-FORWARDED-FOR`
 	server.tomcat.uri-encoding=UTF-8 # Character encoding to use to decode the URI.
 	server.undertow.accesslog.dir= # Undertow access log directory.
@@ -366,6 +367,8 @@ content into your application; rather pick only the properties that you need.
 
 	# SPRING SESSION ({sc-spring-boot-autoconfigure}/session/SessionProperties.{sc-ext}[SessionProperties])
 	spring.session.hazelcast.map-name=spring:session:sessions # Name of the map used to store sessions.
+	spring.session.jdbc.initializer.enabled=true # Create the required session tables on startup if necessary.
+	spring.session.jdbc.schema=classpath:org/springframework/session/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.session.jdbc.table-name=SPRING_SESSION # Name of database table used to store sessions.
 	spring.session.mongo.collection-name=sessions # Collection name used to store sessions.
 	spring.session.redis.flush-mode= # Flush mode for the Redis sessions.

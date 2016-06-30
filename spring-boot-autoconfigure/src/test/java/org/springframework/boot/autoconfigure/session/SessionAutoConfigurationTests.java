@@ -29,8 +29,6 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +37,6 @@ import org.springframework.session.ExpiringSession;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
-import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -104,29 +101,6 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		MapSessionRepository repository = validateSessionRepository(
 				MapSessionRepository.class);
 		assertThat(getSessionTimeout(repository)).isNull();
-	}
-
-	@Test
-	public void jdbcSessionStore() {
-		load(Arrays.asList(EmbeddedDataSourceConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class),
-				"spring.session.store-type=jdbc");
-		JdbcOperationsSessionRepository repository = validateSessionRepository(
-				JdbcOperationsSessionRepository.class);
-		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
-				.isEqualTo("SPRING_SESSION");
-	}
-
-	@Test
-	public void jdbcSessionStoreCustomTableName() {
-		load(Arrays.asList(EmbeddedDataSourceConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class),
-				"spring.session.store-type=jdbc",
-				"spring.session.jdbc.table-name=FOO_BAR");
-		JdbcOperationsSessionRepository repository = validateSessionRepository(
-				JdbcOperationsSessionRepository.class);
-		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
-				.isEqualTo("FOO_BAR");
 	}
 
 	@Test
