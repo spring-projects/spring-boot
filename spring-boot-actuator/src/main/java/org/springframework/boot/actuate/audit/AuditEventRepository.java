@@ -47,12 +47,12 @@ public interface AuditEventRepository {
 	 * Find audit events of specified type relating to the specified principal since the
 	 * time provided.
 	 * @param principal the principal name to search for
-	 * @param type the event type to search for
 	 * @param after timestamp of earliest result required
+	 * @param type the event type to search for
 	 * @return audit events of specified type relating to the principal
 	 * @since 1.4.0
 	 */
-	List<AuditEvent> find(String principal, String type, Date after);
+	List<AuditEvent> find(String principal, Date after, String type);
 
 	/**
 	 * Log an event.

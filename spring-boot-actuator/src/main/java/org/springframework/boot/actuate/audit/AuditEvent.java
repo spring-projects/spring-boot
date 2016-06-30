@@ -111,8 +111,8 @@ public class AuditEvent implements Serializable {
 	}
 
 	/**
-	 * Returns the user principal responsible for the event or {@code null}.
-	 * @return the principal or {@code null}
+	 * Returns the user principal responsible for the event.
+	 * @return the principal
 	 */
 	public String getPrincipal() {
 		return this.principal;

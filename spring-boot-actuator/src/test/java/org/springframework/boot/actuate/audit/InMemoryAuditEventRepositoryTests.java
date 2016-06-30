@@ -91,7 +91,7 @@ public class InMemoryAuditEventRepositoryTests {
 		repository.add(new AuditEvent("phil", "b"));
 		repository.add(new AuditEvent("dave", "c"));
 		repository.add(new AuditEvent("phil", "d"));
-		List<AuditEvent> events = repository.find("dave", "a", null);
+		List<AuditEvent> events = repository.find("dave", null, "a");
 		assertThat(events.size()).isEqualTo(1);
 		assertThat(events.get(0).getPrincipal()).isEqualTo("dave");
 		assertThat(events.get(0).getType()).isEqualTo("a");
