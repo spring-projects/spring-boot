@@ -58,6 +58,8 @@ import org.springframework.util.StringUtils;
  */
 public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
+	private static final String FILE_PROTOCOL = "file";
+
 	private static final Map<LogLevel, Level> LEVELS;
 
 	static {
@@ -172,7 +174,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	private ConfigurationSource getConfigurationSource(URL url) throws IOException {
 		InputStream stream = url.openStream();
-		if (ResourceUtils.isFileURL(url)) {
+		if (FILE_PROTOCOL.equals(url.getProtocol())) {
 			return new ConfigurationSource(stream, ResourceUtils.getFile(url));
 		}
 		return new ConfigurationSource(stream, url);
