@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,14 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.springframework.util.Assert;
+
 /**
  * In-memory {@link AuditEventRepository} implementation.
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Vedran Pavic
  */
 public class InMemoryAuditEventRepository implements AuditEventRepository {
 
@@ -54,11 +57,26 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 	}
 
 	@Override
-	public synchronized List<AuditEvent> find(String principal, Date after) {
+	public synchronized List<AuditEvent> find(Date after) {
 		LinkedList<AuditEvent> events = new LinkedList<AuditEvent>();
 		for (int i = 0; i < this.events.length; i++) {
-			int index = ((this.tail + this.events.length - i) % this.events.length);
-			AuditEvent event = this.events[index];
+			AuditEvent event = resolveTailEvent(i);
+			if (event == null) {
+				break;
+			}
+			if (isMatch(event, after)) {
+				events.addFirst(event);
+			}
+		}
+		return events;
+	}
+
+	@Override
+	public synchronized List<AuditEvent> find(String principal, Date after) {
+		Assert.notNull(principal, "Principal must not be null");
+		LinkedList<AuditEvent> events = new LinkedList<AuditEvent>();
+		for (int i = 0; i < this.events.length; i++) {
+			AuditEvent event = resolveTailEvent(i);
 			if (event == null) {
 				break;
 			}
@@ -69,15 +87,45 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 		return events;
 	}
 
-	private boolean isMatch(AuditEvent auditEvent, String principal, Date after) {
-		return (principal == null || auditEvent.getPrincipal().equals(principal))
-				&& (after == null || auditEvent.getTimestamp().compareTo(after) >= 0);
+	@Override
+	public synchronized List<AuditEvent> find(String principal, Date after, String type) {
+		Assert.notNull(principal, "Principal must not be null");
+		Assert.notNull(type, "Type must not be null");
+		LinkedList<AuditEvent> events = new LinkedList<AuditEvent>();
+		for (int i = 0; i < this.events.length; i++) {
+			AuditEvent event = resolveTailEvent(i);
+			if (event == null) {
+				break;
+			}
+			if (isMatch(event, principal, type, after)) {
+				events.addFirst(event);
+			}
+		}
+		return events;
 	}
 
 	@Override
 	public synchronized void add(AuditEvent event) {
+		Assert.notNull(event, "AuditEvent must not be null");
 		this.tail = (this.tail + 1) % this.events.length;
 		this.events[this.tail] = event;
+	}
+
+	private AuditEvent resolveTailEvent(int offset) {
+		int index = ((this.tail + this.events.length - offset) % this.events.length);
+		return this.events[index];
+	}
+
+	private boolean isMatch(AuditEvent event, Date after) {
+		return (after == null || event.getTimestamp().compareTo(after) >= 0);
+	}
+
+	private boolean isMatch(AuditEvent event, String principal, Date after) {
+		return (event.getPrincipal().equals(principal) && isMatch(event, after));
+	}
+
+	private boolean isMatch(AuditEvent event, String principal, String type, Date after) {
+		return (event.getType().equals(type) && isMatch(event, principal, after));
 	}
 
 }

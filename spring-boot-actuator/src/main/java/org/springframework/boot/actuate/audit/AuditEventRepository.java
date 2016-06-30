@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,17 @@ import java.util.List;
  * Repository for {@link AuditEvent}s.
  *
  * @author Dave Syer
+ * @author Vedran Pavic
  */
 public interface AuditEventRepository {
+
+	/**
+	 * Find audit events since the time provided.
+	 * @param after timestamp of earliest result required
+	 * @return audit events
+	 * @since 1.4.0
+	 */
+	List<AuditEvent> find(Date after);
 
 	/**
 	 * Find audit events relating to the specified principal since the time provided.
@@ -33,6 +42,17 @@ public interface AuditEventRepository {
 	 * @return audit events relating to the principal
 	 */
 	List<AuditEvent> find(String principal, Date after);
+
+	/**
+	 * Find audit events of specified type relating to the specified principal since the
+	 * time provided.
+	 * @param principal the principal name to search for
+	 * @param after timestamp of earliest result required
+	 * @param type the event type to search for
+	 * @return audit events of specified type relating to the principal
+	 * @since 1.4.0
+	 */
+	List<AuditEvent> find(String principal, Date after, String type);
 
 	/**
 	 * Log an event.
