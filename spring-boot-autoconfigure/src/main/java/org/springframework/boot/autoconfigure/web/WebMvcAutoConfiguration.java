@@ -196,13 +196,6 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean({ RequestContextListener.class,
-				RequestContextFilter.class })
-		public RequestContextFilter requestContextFilter() {
-			return new OrderedRequestContextFilter();
-		}
-
-		@Bean
 		@ConditionalOnBean(View.class)
 		@ConditionalOnMissingBean
 		public BeanNameViewResolver beanNameViewResolver() {
@@ -310,6 +303,13 @@ public class WebMvcAutoConfiguration {
 				logger.info("Adding welcome page: " + page);
 				registry.addViewController("/").setViewName("forward:index.html");
 			}
+		}
+
+		@Bean
+		@ConditionalOnMissingBean({ RequestContextListener.class,
+				RequestContextFilter.class })
+		public static RequestContextFilter requestContextFilter() {
+			return new OrderedRequestContextFilter();
 		}
 
 		@Configuration
