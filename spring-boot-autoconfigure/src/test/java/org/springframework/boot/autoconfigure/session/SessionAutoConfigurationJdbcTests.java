@@ -37,7 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  */
-public class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfigurationTests {
+public class SessionAutoConfigurationJdbcTests
+		extends AbstractSessionAutoConfigurationTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();

@@ -136,7 +136,7 @@ public class SessionProperties {
 		}
 
 		public Initializer getInitializer() {
-			return initializer;
+			return this.initializer;
 		}
 
 		public static class Initializer {

@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
@@ -33,6 +37,15 @@ import org.springframework.util.Assert;
  * @since 1.4.0
  */
 public class JdbcSessionDatabaseInitializer {
+
+	private static Map<String, String> ALIASES;
+
+	static {
+		Map<String, String> aliases = new HashMap<String, String>();
+		aliases.put("hsql", "hsqldb");
+		aliases.put("postgres", "postgresql");
+		ALIASES = Collections.unmodifiableMap(aliases);
+	}
 
 	private SessionProperties properties;
 
@@ -53,26 +66,28 @@ public class JdbcSessionDatabaseInitializer {
 	@PostConstruct
 	protected void initialize() {
 		if (this.properties.getJdbc().getInitializer().isEnabled()) {
-			String platform = getDatabaseType();
-			if ("hsql".equals(platform)) {
-				platform = "hsqldb";
-			}
-			if ("postgres".equals(platform)) {
-				platform = "postgresql";
-			}
 			ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 			String schemaLocation = this.properties.getJdbc().getSchema();
-			schemaLocation = schemaLocation.replace("@@platform@@", platform);
+			schemaLocation = schemaLocation.replace("@@platform@@", getPlatform());
 			populator.addScript(this.resourceLoader.getResource(schemaLocation));
 			populator.setContinueOnError(true);
 			DatabasePopulatorUtils.execute(populator, this.dataSource);
 		}
 	}
 
-	private String getDatabaseType() {
+	private String getPlatform() {
+		String databaseName = getDatabaseName();
+		if (ALIASES.containsKey(databaseName)) {
+			return ALIASES.get(databaseName);
+		}
+		return databaseName;
+	}
+
+	private String getDatabaseName() {
 		try {
-			String databaseProductName = JdbcUtils.extractDatabaseMetaData(
-					this.dataSource, "getDatabaseProductName").toString();
+			String databaseProductName = JdbcUtils
+					.extractDatabaseMetaData(this.dataSource, "getDatabaseProductName")
+					.toString();
 			return JdbcUtils.commonDatabaseName(databaseProductName).toLowerCase();
 		}
 		catch (MetaDataAccessException ex) {
