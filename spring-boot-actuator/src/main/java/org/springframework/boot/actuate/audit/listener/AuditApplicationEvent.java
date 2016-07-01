@@ -89,4 +89,5 @@ public class AuditApplicationEvent extends ApplicationEvent {
 	public AuditEvent getAuditEvent() {
 		return this.auditEvent;
 	}
+
 }

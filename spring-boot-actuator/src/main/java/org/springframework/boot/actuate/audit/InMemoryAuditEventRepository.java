@@ -57,75 +57,45 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 	}
 
 	@Override
-	public synchronized List<AuditEvent> find(Date after) {
-		LinkedList<AuditEvent> events = new LinkedList<AuditEvent>();
-		for (int i = 0; i < this.events.length; i++) {
-			AuditEvent event = resolveTailEvent(i);
-			if (event == null) {
-				break;
-			}
-			if (isMatch(event, after)) {
-				events.addFirst(event);
-			}
-		}
-		return events;
-	}
-
-	@Override
-	public synchronized List<AuditEvent> find(String principal, Date after) {
-		Assert.notNull(principal, "Principal must not be null");
-		LinkedList<AuditEvent> events = new LinkedList<AuditEvent>();
-		for (int i = 0; i < this.events.length; i++) {
-			AuditEvent event = resolveTailEvent(i);
-			if (event == null) {
-				break;
-			}
-			if (isMatch(event, principal, after)) {
-				events.addFirst(event);
-			}
-		}
-		return events;
-	}
-
-	@Override
-	public synchronized List<AuditEvent> find(String principal, Date after, String type) {
-		Assert.notNull(principal, "Principal must not be null");
-		Assert.notNull(type, "Type must not be null");
-		LinkedList<AuditEvent> events = new LinkedList<AuditEvent>();
-		for (int i = 0; i < this.events.length; i++) {
-			AuditEvent event = resolveTailEvent(i);
-			if (event == null) {
-				break;
-			}
-			if (isMatch(event, principal, type, after)) {
-				events.addFirst(event);
-			}
-		}
-		return events;
-	}
-
-	@Override
 	public synchronized void add(AuditEvent event) {
 		Assert.notNull(event, "AuditEvent must not be null");
 		this.tail = (this.tail + 1) % this.events.length;
 		this.events[this.tail] = event;
 	}
 
+	@Override
+	public synchronized List<AuditEvent> find(Date after) {
+		return find(null, after, null);
+	}
+
+	@Override
+	public synchronized List<AuditEvent> find(String principal, Date after) {
+		return find(principal, after, null);
+	}
+
+	@Override
+	public synchronized List<AuditEvent> find(String principal, Date after, String type) {
+		LinkedList<AuditEvent> events = new LinkedList<AuditEvent>();
+		for (int i = 0; i < this.events.length; i++) {
+			AuditEvent event = resolveTailEvent(i);
+			if (event != null && isMatch(principal, after, type, event)) {
+				events.addFirst(event);
+			}
+		}
+		return events;
+	}
+
+	private boolean isMatch(String principal, Date after, String type, AuditEvent event) {
+		boolean match = true;
+		match &= (principal == null || event.getPrincipal().equals(principal));
+		match &= (after == null || event.getTimestamp().compareTo(after) >= 0);
+		match &= (type == null || event.getType().equals(type));
+		return match;
+	}
+
 	private AuditEvent resolveTailEvent(int offset) {
 		int index = ((this.tail + this.events.length - offset) % this.events.length);
 		return this.events[index];
-	}
-
-	private boolean isMatch(AuditEvent event, Date after) {
-		return (after == null || event.getTimestamp().compareTo(after) >= 0);
-	}
-
-	private boolean isMatch(AuditEvent event, String principal, Date after) {
-		return (event.getPrincipal().equals(principal) && isMatch(event, after));
-	}
-
-	private boolean isMatch(AuditEvent event, String principal, String type, Date after) {
-		return (event.getType().equals(type) && isMatch(event, principal, after));
 	}
 
 }

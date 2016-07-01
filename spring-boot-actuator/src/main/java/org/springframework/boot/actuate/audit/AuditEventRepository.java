@@ -28,8 +28,15 @@ import java.util.List;
 public interface AuditEventRepository {
 
 	/**
+	 * Log an event.
+	 * @param event the audit event to log
+	 */
+	void add(AuditEvent event);
+
+	/**
 	 * Find audit events since the time provided.
-	 * @param after timestamp of earliest result required
+	 * @param after timestamp of earliest result required (or {@code null} if
+	 * unrestricted)
 	 * @return audit events
 	 * @since 1.4.0
 	 */
@@ -37,8 +44,9 @@ public interface AuditEventRepository {
 
 	/**
 	 * Find audit events relating to the specified principal since the time provided.
-	 * @param principal the principal name to search for
-	 * @param after timestamp of earliest result required
+	 * @param principal the principal name to search for (or {@code null} if unrestricted)
+	 * @param after timestamp of earliest result required (or {@code null} if
+	 * unrestricted)
 	 * @return audit events relating to the principal
 	 */
 	List<AuditEvent> find(String principal, Date after);
@@ -46,18 +54,13 @@ public interface AuditEventRepository {
 	/**
 	 * Find audit events of specified type relating to the specified principal since the
 	 * time provided.
-	 * @param principal the principal name to search for
-	 * @param after timestamp of earliest result required
-	 * @param type the event type to search for
+	 * @param principal the principal name to search for (or {@code null} if unrestricted)
+	 * @param after timestamp of earliest result required (or {@code null} if
+	 * unrestricted)
+	 * @param type the event type to search for (or {@code null} if unrestricted)
 	 * @return audit events of specified type relating to the principal
 	 * @since 1.4.0
 	 */
 	List<AuditEvent> find(String principal, Date after, String type);
-
-	/**
-	 * Log an event.
-	 * @param event the audit event to log
-	 */
-	void add(AuditEvent event);
 
 }
