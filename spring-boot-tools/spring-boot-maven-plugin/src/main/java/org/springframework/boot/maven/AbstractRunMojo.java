@@ -426,6 +426,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	class IsolatedThreadGroup extends ThreadGroup {
 
+		private final Object monitor = new Object();
+
 		private Throwable exception;
 
 		IsolatedThreadGroup(String name) {
@@ -435,18 +437,21 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		@Override
 		public void uncaughtException(Thread thread, Throwable ex) {
 			if (!(ex instanceof ThreadDeath)) {
-				synchronized (this) {
+				synchronized (this.monitor) {
 					this.exception = (this.exception == null ? ex : this.exception);
 				}
 				getLog().warn(ex);
 			}
 		}
 
-		public synchronized void rethrowUncaughtException()
-				throws MojoExecutionException {
-			if (this.exception != null) {
-				throw new MojoExecutionException("An exception occurred while running. "
-						+ this.exception.getMessage(), this.exception);
+		public void rethrowUncaughtException() throws MojoExecutionException {
+			synchronized (this.monitor) {
+				if (this.exception != null) {
+					throw new MojoExecutionException(
+							"An exception occurred while running. "
+									+ this.exception.getMessage(),
+							this.exception);
+				}
 			}
 		}
 

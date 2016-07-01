@@ -33,6 +33,8 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 
 	private static final int DEFAULT_CAPACITY = 4000;
 
+	private final Object monitor = new Object();
+
 	/**
 	 * Circular buffer of the event with tail pointing to the last element.
 	 */
@@ -52,34 +54,40 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 	 * Set the capacity of this event repository.
 	 * @param capacity the capacity
 	 */
-	public synchronized void setCapacity(int capacity) {
-		this.events = new AuditEvent[capacity];
+	public void setCapacity(int capacity) {
+		synchronized (this.monitor) {
+			this.events = new AuditEvent[capacity];
+		}
 	}
 
 	@Override
-	public synchronized void add(AuditEvent event) {
+	public void add(AuditEvent event) {
 		Assert.notNull(event, "AuditEvent must not be null");
-		this.tail = (this.tail + 1) % this.events.length;
-		this.events[this.tail] = event;
+		synchronized (this.monitor) {
+			this.tail = (this.tail + 1) % this.events.length;
+			this.events[this.tail] = event;
+		}
 	}
 
 	@Override
-	public synchronized List<AuditEvent> find(Date after) {
+	public List<AuditEvent> find(Date after) {
 		return find(null, after, null);
 	}
 
 	@Override
-	public synchronized List<AuditEvent> find(String principal, Date after) {
+	public List<AuditEvent> find(String principal, Date after) {
 		return find(principal, after, null);
 	}
 
 	@Override
-	public synchronized List<AuditEvent> find(String principal, Date after, String type) {
+	public List<AuditEvent> find(String principal, Date after, String type) {
 		LinkedList<AuditEvent> events = new LinkedList<AuditEvent>();
-		for (int i = 0; i < this.events.length; i++) {
-			AuditEvent event = resolveTailEvent(i);
-			if (event != null && isMatch(principal, after, type, event)) {
-				events.addFirst(event);
+		synchronized (this.events) {
+			for (int i = 0; i < this.events.length; i++) {
+				AuditEvent event = resolveTailEvent(i);
+				if (event != null && isMatch(principal, after, type, event)) {
+					events.addFirst(event);
+				}
 			}
 		}
 		return events;

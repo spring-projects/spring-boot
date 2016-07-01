@@ -51,7 +51,7 @@ public class AtomikosDataSourceBeanTests {
 		}
 
 		@Override
-		public synchronized void close() {
+		public void close() {
 		}
 
 	}

@@ -89,6 +89,8 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 
 	private static class Verification {
 
+		private final Object monitor = new Object();
+
 		private final MockingProgress progress;
 
 		Verification(Object target) {
@@ -101,25 +103,29 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 			this.progress = (MockingProgress) ReflectionUtils.getField(field, container);
 		}
 
-		public synchronized boolean isVerifying() {
-			VerificationMode mode = this.progress.pullVerificationMode();
-			if (mode != null) {
-				this.progress.verificationStarted(mode);
-				return true;
+		public boolean isVerifying() {
+			synchronized (this.monitor) {
+				VerificationMode mode = this.progress.pullVerificationMode();
+				if (mode != null) {
+					this.progress.verificationStarted(mode);
+					return true;
+				}
+				return false;
 			}
-			return false;
 		}
 
-		public synchronized void replaceVerifyMock(Object source, Object target) {
-			VerificationMode mode = this.progress.pullVerificationMode();
-			if (mode != null) {
-				if (mode instanceof MockAwareVerificationMode) {
-					MockAwareVerificationMode mockAwareMode = (MockAwareVerificationMode) mode;
-					if (mockAwareMode.getMock() == source) {
-						mode = new MockAwareVerificationMode(target, mockAwareMode);
+		public void replaceVerifyMock(Object source, Object target) {
+			synchronized (this.monitor) {
+				VerificationMode mode = this.progress.pullVerificationMode();
+				if (mode != null) {
+					if (mode instanceof MockAwareVerificationMode) {
+						MockAwareVerificationMode mockAwareMode = (MockAwareVerificationMode) mode;
+						if (mockAwareMode.getMock() == source) {
+							mode = new MockAwareVerificationMode(target, mockAwareMode);
+						}
 					}
+					this.progress.verificationStarted(mode);
 				}
-				this.progress.verificationStarted(mode);
 			}
 		}
 
