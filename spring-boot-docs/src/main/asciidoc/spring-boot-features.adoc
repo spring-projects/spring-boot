@@ -4099,6 +4099,7 @@ For instance, the following exposes another factory that uses a specific
 Then you can use in any `@JmsListener`-annotated method as follows:
 
 [source,java,indent=0]
+[subs="verbatim,quotes"]
 ----
 	@Component
 	public class MyBean {
@@ -4241,6 +4242,7 @@ For instance, the following exposes another factory that uses a specific
 Then you can use in any `@RabbitListener`-annotated method as follows:
 
 [source,java,indent=0]
+[subs="verbatim,quotes"]
 ----
 	@Component
 	public class MyBean {
