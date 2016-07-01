@@ -168,9 +168,9 @@ public class ArtemisAutoConfigurationTests {
 		DestinationChecker checker = new DestinationChecker(this.context);
 		checker.checkQueue("Queue1", true);
 		checker.checkQueue("Queue2", true);
-		checker.checkQueue("QueueDoesNotExist", true);
+		checker.checkQueue("QueueWillNotBeAutoCreated", true);
 		checker.checkTopic("Topic1", true);
-		checker.checkTopic("TopicDoesNotExist", false);
+		checker.checkTopic("TopicWillBeAutoCreated", true);
 	}
 
 	@Test
