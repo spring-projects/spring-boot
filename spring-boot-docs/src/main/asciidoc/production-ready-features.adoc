@@ -62,7 +62,7 @@ The way that endpoints are exposed will depend on the type of technology that yo
 Most applications choose HTTP monitoring, where the ID of the endpoint is mapped
 to a URL. For example, by default, the `health` endpoint will be mapped to `/health`.
 
-The following endpoints are available:
+The following technology agnostic endpoints are available:
 
 [cols="2,5,1"]
 |===
@@ -86,11 +86,6 @@ HATEOAS to be on the classpath.
 |Displays a collated list of all `@ConfigurationProperties`.
 |true
 
-|`docs`
-|Displays documentation, including example requests and responses, for the Actuator's
-endpoints. Requires `spring-boot-actuator-docs` to be on the classpath.
-|false
-
 |`dump`
 |Performs a thread dump.
 |true
@@ -104,8 +99,9 @@ endpoints. Requires `spring-boot-actuator-docs` to be on the classpath.
 |true
 
 |`health`
-|Shows application health information (when the application is secure, a simple '`status`' when accessed over an
-unauthenticated connection or full message details when authenticated).
+|Shows application health information (when the application is secure, a simple '`status`'
+when accessed over an unauthenticated connection or full message details when
+authenticated).
 |false
 
 |`info`
@@ -114,12 +110,6 @@ unauthenticated connection or full message details when authenticated).
 
 |`liquibase`
 |Shows any Liquibase database migrations that have been applied.
-|true
-
-|`logfile`
-|Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
-been set). Only available via MVC. Supports the use of the HTTP `Range` header to retrieve
-part of the log file's content.
 |true
 
 |`metrics`
@@ -136,6 +126,32 @@ part of the log file's content.
 
 |`trace`
 |Displays trace information (by default the last few HTTP requests).
+|true
+|===
+
+If you are using Spring MVC, the following additional endpoints can also be used:
+
+[cols="2,5,1"]
+|===
+| ID | Description | Sensitive Default
+
+|`docs`
+|Displays documentation, including example requests and responses, for the Actuator's
+endpoints. Requires `spring-boot-actuator-docs` to be on the classpath.
+|false
+
+|`heapdump`
+|Returns a GZip compressed `hprof` heap dump file.
+|true
+
+|`jolokia`
+|Exposes JMX beans over HTTP (when Jolokia is on the classpath).
+|true
+
+|`logfile`
+|Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
+been set). Supports the use of the HTTP `Range` header to retrieve part of the log file's
+content.
 |true
 |===
 
