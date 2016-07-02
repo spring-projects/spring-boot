@@ -18,16 +18,13 @@ package sample.activemq;
 
 import javax.jms.JMSException;
 
-import org.junit.Rule;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for demo application.
@@ -35,20 +32,31 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest
+// @SpringBootTest
+@SpringApplicationConfiguration(SampleActiveMQApplication.class)
 public class SampleActiveMqTests {
-
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
 
 	@Autowired
 	private Producer producer;
 
+	@Autowired
+	private Consumer consumer;
+
+	@Value("${sample.producer.sendRepeatCount:2}")
+	protected int sendRepeatCount = 2;
+	
 	@Test
 	public void sendSimpleMessage() throws InterruptedException, JMSException {
-		this.producer.send("Test message");
+		// this.producer.send("Test message"); // see messages already sent in main... or use @SpringBootTest ??
 		Thread.sleep(1000L);
-		assertThat(this.outputCapture.toString().contains("Test message")).isTrue();
+		
+		Assert.assertTrue(0 < consumer.getCountReceived_TestQueue1());
+		Assert.assertEquals(0, consumer.getCountReceived_TestTopic1()); // this receiver does not work!
+		Assert.assertTrue( 0 < consumer.getCountReceived_TestTopic1_withContainerFactory());
+		
+		Assert.assertEquals(1 + sendRepeatCount, (consumer.getCountReceived_TestQueue1() + consumer.getCountReceived_TestQueue1_withContainerFactory()));
+		Assert.assertEquals(1 + sendRepeatCount, consumer.getCountReceived_TestTopic1_withContainerFactory());
+		
 	}
 
 }
