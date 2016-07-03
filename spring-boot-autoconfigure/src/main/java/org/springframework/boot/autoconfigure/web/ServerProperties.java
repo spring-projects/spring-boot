@@ -851,7 +851,7 @@ public class ServerProperties
 				valve.setPortHeader(getPortHeader());
 				valve.setProtocolHeaderHttpsValue(getProtocolHeaderHttpsValue());
 				// ... so it's safe to add this valve by default.
-				factory.addContextValves(valve);
+				factory.addEngineValves(valve);
 			}
 		}
 
