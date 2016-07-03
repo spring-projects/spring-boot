@@ -925,7 +925,7 @@ public class ServerProperties
 			valve.setPrefix(this.accesslog.getPrefix());
 			valve.setSuffix(this.accesslog.getSuffix());
 			valve.setRenameOnRotate(this.accesslog.isRenameOnRotate());
-			factory.addContextValves(valve);
+			factory.addEngineValves(valve);
 		}
 
 		private void customizeRedirectContextRoot(
