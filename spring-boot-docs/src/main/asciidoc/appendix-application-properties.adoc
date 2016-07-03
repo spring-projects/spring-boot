@@ -970,6 +970,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.liquibase.id= # Endpoint identifier.
 	endpoints.liquibase.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.logfile.enabled=true # Enable the endpoint.
+	endpoints.logfile.external-file= # External Logfile to be accessed.
 	endpoints.logfile.path=/logfile # Endpoint URL path.
 	endpoints.logfile.sensitive=true # Enable security on the endpoint.
 	endpoints.mappings.enabled= # Enable the endpoint.
