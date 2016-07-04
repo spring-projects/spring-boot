@@ -342,6 +342,7 @@ additional details to be displayed.
 
 [source,java,indent=0]
 ----
+	import org.springframework.boot.actuate.health.Health;
 	import org.springframework.boot.actuate.health.HealthIndicator;
 	import org.springframework.stereotype.Component;
 
