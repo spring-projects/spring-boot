@@ -70,6 +70,20 @@
     "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
   },
   {
+    "name": "logging.file.max-size",
+    "type": "java.lang.String",
+    "description": "Maximum log file size. Only supported with the default logback setup.",
+    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+    "defaultValue": "10MB"
+  },
+  {
+    "name": "logging.file.max-history",
+    "type": "java.lang.Integer",
+    "description": "Maximum number of archive log files to keep. Only supported with the default logback setup.",
+    "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+    "defaultValue": 0
+  },
+  {
     "name": "logging.level",
     "type": "java.util.Map<java.lang.String,java.lang.String>",
     "description": "Log levels severity mapping. Use 'root' for the root logger.",
