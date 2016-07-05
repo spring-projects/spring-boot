@@ -1496,8 +1496,13 @@ current directory.
 relative to the current directory.
 |===
 
-Log files will rotate when they reach 10 MB and as with console output, `ERROR`, `WARN`
-and `INFO` level messages are logged by default.
+Log files will rotate daily and, in addition to time limit, when they reach the size limit
+which is 10 MB by default. Size limit can be changed using `logging.file.max-size`
+property. By default, archived log file is unbounded meaning entire history will be
+preserved. You can use `logging.file.max-history` property to limit the number of archive
+files to keep.
+
+As with console output, `ERROR`, `WARN` and `INFO` level messages are logged by default.
 
 NOTE: The logging system is initialized early in the application lifecycle and as such
 logging properties will not be found in property files loaded via `@PropertySource`
@@ -1583,6 +1588,14 @@ To help with the customization some other properties are transferred from the Sp
 |`logging.file`
 |`LOG_FILE`
 |Used in default log configuration if defined.
+
+|`logging.file.max-size`
+|`LOG_FILE_MAX_SIZE`
+|Maximum log file size (if LOG_FILE enabled). (Only supported with the default logback setup.)
+
+|`logging.file.max-history`
+|`LOG_FILE_MAX_HISTORY`
+|Maximum number of archive log files to keep (if LOG_FILE enabled). (Only supported with the default logback setup.)
 
 |`logging.path`
 |`LOG_PATH`

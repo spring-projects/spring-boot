@@ -12,12 +12,10 @@ initialization performed by Boot
 			<pattern>${FILE_LOG_PATTERN}</pattern>
 		</encoder>
 		<file>${LOG_FILE}</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-			<fileNamePattern>${LOG_FILE}.%i</fileNamePattern>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+			<maxFileSize>${MAX_FILE_SIZE:-10MB}</maxFileSize>
+			<maxHistory>${MAX_HISTORY:-0}</maxHistory>
 		</rollingPolicy>
-		<triggeringPolicy
-			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-			<MaxFileSize>10MB</MaxFileSize>
-		</triggeringPolicy>
 	</appender>
 </included>
