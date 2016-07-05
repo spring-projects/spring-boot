@@ -4300,7 +4300,7 @@ Here's a typical example:
 
 TIP: `RestTemplateBuilder` includes a number of useful methods that can be used to quickly
 configure a `RestTemplate`. For example, to add BASIC auth support you can use
-`build.basicAuthorization("user', "password").build()`.
+`builder.basicAuthorization("user", "password").build()`.
 
 
 
@@ -5058,7 +5058,7 @@ database you can use the `@AutoConfigureTestDatabase` annotation:
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-client]]
 ==== Auto-configured REST clients
-Use `@RestClientTest` annotation can be used if you want to test REST clients. By default
+The `@RestClientTest` annotation can be used if you want to test REST clients. By default
 it will auto-configure Jackson and GSON support, configure a `RestTemplateBuilder` and
 add support for `MockRestServiceServer`. The specific beans that you want to test should
 be specified using `value` or `components` attribute of `@RestClientTest`:
