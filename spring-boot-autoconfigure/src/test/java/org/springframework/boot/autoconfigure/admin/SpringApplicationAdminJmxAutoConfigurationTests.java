@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
+
 import java.lang.management.ManagementFactory;
 
 import javax.management.InstanceNotFoundException;
@@ -30,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
@@ -39,9 +43,6 @@ import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link SpringApplicationAdminJmxAutoConfiguration}.
@@ -119,6 +120,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 						ServerPropertiesAutoConfiguration.class,
 						DispatcherServletAutoConfiguration.class,
 						JmxAutoConfiguration.class,
+						IntegrationAutoConfiguration.class,
 						SpringApplicationAdminJmxAutoConfiguration.class)
 				.run("--" + ENABLE_ADMIN_PROP, "--server.port=0");
 		assertThat(this.context).isInstanceOf(EmbeddedWebApplicationContext.class);
@@ -152,6 +154,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.register(JmxAutoConfiguration.class,
+				IntegrationAutoConfiguration.class,
 				SpringApplicationAdminJmxAutoConfiguration.class);
 		applicationContext.refresh();
 		this.context = applicationContext;
