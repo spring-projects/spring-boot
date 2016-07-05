@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '1.4.0.BUILD-SNAPSHOT'
+		springBootVersion = '1.4.0.RC1'
 	}
 	repositories {
 		// NOTE: You should declare only repositories that you need here
@@ -25,9 +25,7 @@ jar {
 }
 
 group = 'org.springframework.boot'
-version = springBootVersion
-
-repositories {
+version = springBootVersion = '1.4.0.RC1'
 	// NOTE: You should declare only repositories that you need here
 	mavenLocal()
 	mavenCentral()
