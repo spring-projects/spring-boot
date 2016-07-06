@@ -23,6 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
@@ -68,6 +69,7 @@ import org.springframework.web.client.RestTemplate;
 @AutoConfigureCache
 @AutoConfigureWebClient
 @AutoConfigureMockRestServiceServer
+@ImportAutoConfiguration
 public @interface RestClientTest {
 
 	/**

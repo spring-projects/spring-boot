@@ -76,12 +76,21 @@ TestSlice createTestSlice(Properties springFactories, ClassMetadata classMetadat
 }
 
 Set<String> getImportedAutoConfiguration(Properties springFactories, ClassMetadata classMetadata, AnnotationMetadata annotationMetadata) {
+	Set<String> importers = findMetaImporters(annotationMetadata)
+	if (annotationMetadata.isAnnotated('org.springframework.boot.autoconfigure.ImportAutoConfiguration')) {
+		importers.add(annotationMetadata.className)
+	}
+	importers
+		.collect { autoConfigurationImporter ->
+			StringUtils.commaDelimitedListToSet(springFactories.get(autoConfigurationImporter))
+		}.flatten()
+}
+
+Set<String> findMetaImporters(AnnotationMetadata annotationMetadata) {
 	annotationMetadata.annotationTypes
 		.findAll { annotationType ->
 			isAutoConfigurationImporter(annotationType, annotationMetadata)
-		}.collect { autoConfigurationImporter ->
-			StringUtils.commaDelimitedListToSet(springFactories.get(autoConfigurationImporter))
-		}.flatten()
+		}
 }
 
 boolean isAutoConfigurationImporter(String annotationType, AnnotationMetadata metadata) {
