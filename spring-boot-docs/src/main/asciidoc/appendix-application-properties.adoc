@@ -634,6 +634,8 @@ content into your application; rather pick only the properties that you need.
 	# JEST (Elasticsearch HTTP client) ({sc-spring-boot-autoconfigure}/jest/JestProperties.{sc-ext}[JestProperties])
 	spring.elasticsearch.jest.connection-timeout=3000 # Connection timeout in milliseconds.
 	spring.elasticsearch.jest.password= # Login password.
+	spring.elasticsearch.jest.proxy.host= # Proxy host the HTTP client should use.
+	spring.elasticsearch.jest.proxy.port= # Proxy port the HTTP client should use.
 	spring.elasticsearch.jest.read-timeout=3000 # Read timeout in milliseconds.
 	spring.elasticsearch.jest.uris=http://localhost:9200 # Comma-separated list of the Elasticsearch instances to use.
 	spring.elasticsearch.jest.username= # Login user.

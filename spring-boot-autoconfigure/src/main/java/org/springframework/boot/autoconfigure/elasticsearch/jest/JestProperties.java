@@ -55,6 +55,11 @@ public class JestProperties {
 	 */
 	private int readTimeout = 3000;
 
+	/**
+	 * Proxy settings.
+	 */
+	private final Proxy proxy = new Proxy();
+
 	public List<String> getUris() {
 		return this.uris;
 	}
@@ -93,6 +98,40 @@ public class JestProperties {
 
 	public void setReadTimeout(int readTimeout) {
 		this.readTimeout = readTimeout;
+	}
+
+	public Proxy getProxy() {
+		return this.proxy;
+	}
+
+	public static class Proxy {
+
+		/**
+		 * Proxy host the HTTP client should use.
+		 */
+		private String host;
+
+		/**
+		 * Proxy port the HTTP client should use.
+		 */
+		private Integer port;
+
+		public String getHost() {
+			return this.host;
+		}
+
+		public void setHost(String host) {
+			this.host = host;
+		}
+
+		public Integer getPort() {
+			return this.port;
+		}
+
+		public void setPort(Integer port) {
+			this.port = port;
+		}
+
 	}
 
 }

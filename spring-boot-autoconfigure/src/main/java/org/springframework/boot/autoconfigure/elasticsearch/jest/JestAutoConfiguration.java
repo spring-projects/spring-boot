@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
+import org.apache.http.HttpHost;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -30,6 +31,7 @@ import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -68,6 +70,12 @@ public class JestAutoConfiguration {
 		if (StringUtils.hasText(this.properties.getUsername())) {
 			builder.defaultCredentials(this.properties.getUsername(),
 					this.properties.getPassword());
+		}
+		String proxyHost = this.properties.getProxy().getHost();
+		if (StringUtils.hasText(proxyHost)) {
+			Integer proxyPort = this.properties.getProxy().getPort();
+			Assert.notNull(proxyPort, "Proxy port must not be null");
+			builder.proxy(new HttpHost(proxyHost, proxyPort));
 		}
 		Gson gson = this.gsonProvider.getIfUnique();
 		if (gson != null) {

@@ -20,8 +20,11 @@ import com.google.gson.Gson;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.http.JestHttpClient;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -37,6 +40,9 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 public class JestAutoConfigurationTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	protected AnnotationConfigApplicationContext context;
 
@@ -65,6 +71,15 @@ public class JestAutoConfigurationTests {
 		JestHttpClient client = (JestHttpClient) this.context.getBean(JestClient.class);
 		assertThat(client.getGson()).isSameAs(this.context.getBean("customGson"));
 	}
+
+	@Test
+	public void proxyHostWithoutPort() {
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("Proxy port must not be null");
+		load("spring.elasticsearch.jest.uris=http://localhost:9200",
+				"spring.elasticsearch.jest.proxy.host=proxy.example.com");
+	}
+
 
 	private void load(String... environment) {
 		load(null, environment);
