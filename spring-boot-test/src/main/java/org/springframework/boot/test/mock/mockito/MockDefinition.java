@@ -24,6 +24,7 @@ import java.util.Set;
 import org.mockito.Answers;
 import org.mockito.MockSettings;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
@@ -151,11 +152,21 @@ class MockDefinition extends Definition {
 		if (!this.extraInterfaces.isEmpty()) {
 			settings.extraInterfaces(this.extraInterfaces.toArray(new Class<?>[] {}));
 		}
-		settings.defaultAnswer(this.answer.get());
+		settings.defaultAnswer(getMockitoVersionIndependentDefaultAnswerForAnswer(this.answer));
 		if (this.serializable) {
 			settings.serializable();
 		}
 		return (T) Mockito.mock(this.classToMock, settings);
 	}
 
+	@SuppressWarnings({"UnnecessaryLocalVariable", "ConstantConditions"})
+	private Answer<?> getMockitoVersionIndependentDefaultAnswerForAnswer(Answers answer) {	//Issue #6320
+		Object answerAsObject = answer;
+		if (answerAsObject instanceof Answer) {	//Mockito 2.0.2-beta+
+			return (Answer) answerAsObject;
+		}
+		else {	//Mockito 1.x and <2.0.47-beta
+			return answer.get();	//TODO: once internally switched to mockito 2.x drop support for 1.x or handle it with reflection
+		}
+	}
 }
