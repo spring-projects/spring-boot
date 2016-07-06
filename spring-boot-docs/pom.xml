@@ -886,6 +886,25 @@
 									</artifactItems>
 								</configuration>
 							</execution>
+							<execution>
+								<id>unpack-test-slices</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>org.springframework.boot</groupId>
+											<artifactId>spring-boot-test-autoconfigure</artifactId>
+											<version>${project.version}</version>
+											<outputDirectory>
+												${project.build.directory}/test-auto-config
+											</outputDirectory>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
 						</executions>
 					</plugin>
 					<plugin>
@@ -932,6 +951,7 @@
 							<scripts>
 								<script>file:///${project.basedir}/src/main/groovy/generateAutoConfigurationClassTables.groovy</script>
 								<script>file:///${project.basedir}/src/main/groovy/generateStarterTables.groovy</script>
+								<script>file:///${project.basedir}/src/main/groovy/generateTestSlicesTable.groovy</script>
 							</scripts>
 						</configuration>
 						<dependencies>
@@ -939,6 +959,11 @@
 								<groupId>org.codehaus.groovy</groupId>
 								<artifactId>groovy-all</artifactId>
 								<version>${groovy.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.springframework</groupId>
+								<artifactId>spring-core</artifactId>
+								<version>${spring.version}</version>
 							</dependency>
 						</dependencies>
 					</plugin>

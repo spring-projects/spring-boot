@@ -4879,6 +4879,9 @@ NOTE: JSON helper classes can also be used directly in standard unit tests. Simp
 call the `initFields` method of the helper in your `@Before` method if you aren't using
 `@JsonTest`.
 
+A list of the auto-configuration that is enabled by `@JsonTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-mvc-tests]]
@@ -4971,6 +4974,9 @@ and/or a `WebDriver` bean. Here is an example that uses HtmlUnit:
 	}
 ----
 
+A list of the auto-configuration that is enabled by `@WebMvcTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test]]
@@ -5053,6 +5059,8 @@ database you can use the `@AutoConfigureTestDatabase` annotation:
 	}
 ----
 
+A list of the auto-configuration that is enabled by `@DataJpaTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 
 
@@ -5087,6 +5095,9 @@ be specified using `value` or `components` attribute of `@RestClientTest`:
 
 	}
 ----
+
+A list of the auto-configuration that is enabled by `@RestClientTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 
 

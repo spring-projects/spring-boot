@@ -1,0 +1,7 @@
+[appendix]
+[[test-auto-configuration]]
+== Test auto-configuration annotations
+Here is a table of the various `@…Test` annotations that can be used to test
+slices of your application and the auto-configuration that they import by default:
+
+include::../../../target/generated-resources/test-slice-auto-configuration.adoc[]
