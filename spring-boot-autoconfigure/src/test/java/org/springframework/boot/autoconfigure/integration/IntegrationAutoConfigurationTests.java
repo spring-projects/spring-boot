@@ -27,10 +27,15 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
+import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link IntegrationAutoConfiguration}.
@@ -98,6 +103,14 @@ public class IntegrationAutoConfigurationTests {
 				"org.springframework.integration.monitor");
 	}
 
+	@Test
+	public void primaryExporterIsAllowed() {
+		load(CustomMBeanExporter.class);
+		assertThat(this.context.getBeansOfType(MBeanExporter.class)).hasSize(2);
+		assertThat(this.context.getBean(MBeanExporter.class)).isSameAs(
+				this.context.getBean("myMBeanExporter"));
+	}
+
 	private static void assertDomains(MBeanServer mBeanServer, boolean expected,
 			String... domains) {
 		List<String> actual = Arrays.asList(mBeanServer.getDomains());
@@ -106,12 +119,30 @@ public class IntegrationAutoConfigurationTests {
 		}
 	}
 
-	private void load(String... environment) {
+	public void load(String... environment) {
+		load(null, environment);
+	}
+
+	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		if (config != null) {
+			ctx.register(config);
+		}
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(ctx, environment);
 		ctx.register(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
+	}
+
+	@Configuration
+	static class CustomMBeanExporter {
+
+		@Bean
+		@Primary
+		public MBeanExporter myMBeanExporter() {
+			return mock(MBeanExporter.class);
+		}
+
 	}
 
 }
