@@ -243,4 +243,23 @@ public class WebRequestTraceFilterTests {
 		}
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void postProcessRequestHeaders() throws Exception {
+		this.filter = new WebRequestTraceFilter(this.repository, this.properties) {
+
+			@Override
+			protected void postProcessRequestHeaders(Map<String, Object> headers) {
+				headers.remove("Test");
+			}
+
+		};
+		MockHttpServletRequest request = spy(new MockHttpServletRequest("GET", "/foo"));
+		request.addHeader("Accept", "application/json");
+		request.addHeader("Test", "spring");
+		Map<String, Object> map = (Map<String, Object>) this.filter.getTrace(request)
+				.get("headers");
+		assertThat(map.get("request").toString()).isEqualTo("{Accept=application/json}");
+	}
+
 }

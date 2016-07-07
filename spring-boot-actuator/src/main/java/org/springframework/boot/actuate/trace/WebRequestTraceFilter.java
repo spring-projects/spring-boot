@@ -166,7 +166,16 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		if (!isIncluded(Include.COOKIES)) {
 			headers.remove("Cookie");
 		}
+		postProcessRequestHeaders(headers);
 		return headers;
+	}
+
+	/**
+	 * Post process request headers before they are added to the trace.
+	 * @param headers a mutable map containing the request headers to trace
+	 * @since 1.4.0
+	 */
+	protected void postProcessRequestHeaders(Map<String, Object> headers) {
 	}
 
 	@SuppressWarnings("unchecked")
