@@ -24,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationConfigurationException;
@@ -108,6 +109,17 @@ public class EntityScanPackagesTests {
 			throws Exception {
 		this.context = new AnnotationConfigApplicationContext(
 				EntityScanValueConfig.class);
+		EntityScanPackages packages = EntityScanPackages.get(this.context);
+		assertThat(packages.getPackageNames()).containsExactly("a");
+	}
+
+	@Test
+	public void entityScanAnnotationWhenHasValueAttributeShouldSetupPackagesAsm()
+			throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.registerBeanDefinition("entityScanValueConfig",
+				new RootBeanDefinition(EntityScanValueConfig.class.getName()));
+		this.context.refresh();
 		EntityScanPackages packages = EntityScanPackages.get(this.context);
 		assertThat(packages.getPackageNames()).containsExactly("a");
 	}

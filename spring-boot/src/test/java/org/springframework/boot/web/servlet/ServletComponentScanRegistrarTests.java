@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationConfigurationException;
@@ -51,6 +52,18 @@ public class ServletComponentScanRegistrarTests {
 	@Test
 	public void packagesConfiguredWithValue() {
 		this.context = new AnnotationConfigApplicationContext(ValuePackages.class);
+		ServletComponentRegisteringPostProcessor postProcessor = this.context
+				.getBean(ServletComponentRegisteringPostProcessor.class);
+		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo",
+				"com.example.bar");
+	}
+
+	@Test
+	public void packagesConfiguredWithValueAsm() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.registerBeanDefinition("valuePackages",
+				new RootBeanDefinition(ValuePackages.class.getName()));
+		this.context.refresh();
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
 		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo",

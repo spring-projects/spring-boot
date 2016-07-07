@@ -155,7 +155,8 @@ public class EntityScanPackages {
 		private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
 			AnnotationAttributes attributes = AnnotationAttributes.fromMap(
 					metadata.getAnnotationAttributes(EntityScan.class.getName()));
-			String[] basePackages = attributes.getStringArray("basePackages");
+			String[] basePackages = attributes.getAliasedStringArray("basePackages",
+					EntityScan.class, metadata.getClassName());
 			Class<?>[] basePackageClasses = attributes
 					.getClassArray("basePackageClasses");
 			Set<String> packagesToScan = new LinkedHashSet<String>();
