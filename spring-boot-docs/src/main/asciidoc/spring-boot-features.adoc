@@ -4302,6 +4302,22 @@ TIP: `RestTemplateBuilder` includes a number of useful methods that can be used 
 configure a `RestTemplate`. For example, to add BASIC auth support you can use
 `builder.basicAuthorization("user", "password").build()`.
 
+[[boot-features-restclient-customization]]
+=== RestTemplate customization
+When a `RestTemplateBuilder` builds a `RestTemplate` it can be further customized using
+a `RestTemplateCustomizer`. Any `RestTemplateCustomizer` beans will be automatically
+added to the auto-configured `RestTemplateBuilder`. Furthermore, a new
+`RestTemplateBuilder` with additional customizers can be created by calling
+`additionalCustomizers(RestTemplateCustomizer...)`.
+
+Here's an example of a customizer that configures the use of a proxy for all hosts except
+`192.168.0.5`:
+
+[source,java,indent=0]
+----
+include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[tag=customizer]
+----
+
 
 
 [[boot-features-email]]

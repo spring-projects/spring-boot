@@ -1395,6 +1395,30 @@ have been applied from the auto-configuration:
 
 
 
+[[howto-http-clients]]
+== HTTP clients
+
+
+
+[[howto-http-clients-proxy-configuration]]
+=== Configure RestTemplate to use a proxy
+As described in <<spring-boot-features.adoc#boot-features-restclient-customization>>,
+a `RestTemplateCustomizer` can be used with `RestTemplateBuilder` to build a customized
+`RestTemplate`. This is the recommended approach for creating a `RestTemplate` configured
+to use a proxy.
+
+The exact details of the proxy configuration depend on the underlying client request
+factory that is being used. Here's an example of configuring
+`HttpComponentsClientRequestFactory` with an `HttpClient` that uses a proxy for all hosts
+except `192.168.0.5`.
+
+[source,java,indent=0]
+----
+include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[tag=customizer]
+----
+
+
+
 [[howto-logging]]
 == Logging
 
