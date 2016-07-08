@@ -84,7 +84,7 @@
 		<hazelcast.version>3.6.4</hazelcast.version>
 		<hibernate.version>5.0.9.Final</hibernate.version>
 		<hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
-		<hikaricp.version>2.4.6</hikaricp.version>
+		<hikaricp.version>2.4.7</hikaricp.version>
 		<hikaricp-java6.version>2.3.13</hikaricp-java6.version>
 		<hornetq.version>2.4.7.Final</hornetq.version>
 		<hsqldb.version>2.3.4</hsqldb.version>
