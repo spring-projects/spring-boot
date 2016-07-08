@@ -73,7 +73,7 @@ public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint implements MvcEndpo
 		this.timeout = timeout;
 	}
 
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	@RequestMapping(method = {RequestMethod.GET,RequestMethod.HEAD}, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public void invoke(@RequestParam(defaultValue = "true") boolean live,
 			HttpServletRequest request, HttpServletResponse response)
 					throws IOException, ServletException {
@@ -84,7 +84,12 @@ public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint implements MvcEndpo
 		try {
 			if (this.lock.tryLock(this.timeout, TimeUnit.MILLISECONDS)) {
 				try {
-					dumpHeap(live, request, response);
+					if (this.heapDumper == null) {
+						this.heapDumper = createHeapDumper();
+					}
+					if (RequestMethod.GET.toString().equals(request.getMethod())) {
+						dumpHeap(live, request, response);
+					}
 					return;
 				}
 				finally {
@@ -101,9 +106,6 @@ public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint implements MvcEndpo
 	private void dumpHeap(boolean live, HttpServletRequest request,
 			HttpServletResponse response)
 					throws IOException, ServletException, InterruptedException {
-		if (this.heapDumper == null) {
-			this.heapDumper = createHeapDumper();
-		}
 		File file = createTempFile(live);
 		try {
 			this.heapDumper.dumpHeap(file, live);
