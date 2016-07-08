@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle;
+package org.springframework.boot.gradle.plugin;
 
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
@@ -23,6 +23,7 @@ import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.compile.JavaCompile;
 
+import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.gradle.agent.AgentPluginFeatures;
 import org.springframework.boot.gradle.dependencymanagement.DependencyManagementPluginFeatures;
 import org.springframework.boot.gradle.repackage.RepackagePluginFeatures;
