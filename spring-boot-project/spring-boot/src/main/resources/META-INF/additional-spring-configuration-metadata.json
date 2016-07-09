@@ -86,6 +86,18 @@
       "defaultValue": 0
     },
     {
+      "name": "logging.filter.console",
+      "type": "java.lang.String[]",
+      "description": "Comma-separated list of filter classes to apply to console appender. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+    },
+    {
+      "name": "logging.filter.file",
+      "type": "java.lang.String[]",
+      "description": "Comma-separated list of filter classes to apply to file appender. Only supported with the default logback setup.",
+      "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+    },
+    {
       "name": "logging.level",
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Log levels severity mapping. For instance, 'logging.level.org.springframework=DEBUG'",

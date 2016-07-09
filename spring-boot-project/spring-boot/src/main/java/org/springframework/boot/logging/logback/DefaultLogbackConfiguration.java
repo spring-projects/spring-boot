@@ -25,6 +25,8 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.CoreConstants;
+import ch.qos.logback.core.OutputStreamAppender;
+import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.util.FileSize;
@@ -120,6 +122,11 @@ class DefaultLogbackConfiguration {
 		encoder.setCharset(StandardCharsets.UTF_8);
 		config.start(encoder);
 		appender.setEncoder(encoder);
+		String[] filterClasses = this.patterns.getProperty("logging.filters.console",
+				String[].class);
+		if (filterClasses != null) {
+			configureFilters(config, appender, filterClasses);
+		}
 		config.appender("CONSOLE", appender);
 		return appender;
 	}
@@ -135,6 +142,11 @@ class DefaultLogbackConfiguration {
 		config.start(encoder);
 		appender.setFile(logFile);
 		setRollingPolicy(appender, config, logFile);
+		String[] filterClasses = this.patterns.getProperty("logging.filters.file",
+				String[].class);
+		if (filterClasses != null) {
+			configureFilters(config, appender, filterClasses);
+		}
 		config.appender("FILE", appender);
 		return appender;
 	}
@@ -163,6 +175,22 @@ class DefaultLogbackConfiguration {
 			Method method = ReflectionUtils.findMethod(
 					SizeAndTimeBasedRollingPolicy.class, "setMaxFileSize", String.class);
 			ReflectionUtils.invokeMethod(method, rollingPolicy, maxFileSize);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void configureFilters(LogbackConfigurator config,
+			OutputStreamAppender appender, String[] filterClasses) {
+		for (String filterClass : filterClasses) {
+			try {
+				Filter filter = (Filter) Class.forName(filterClass).newInstance();
+				config.start(filter);
+				appender.addFilter(filter);
+			}
+			catch (Exception e) {
+				throw new IllegalStateException(
+						"Unable to configure " + filterClass + " logging filter");
+			}
 		}
 	}
 

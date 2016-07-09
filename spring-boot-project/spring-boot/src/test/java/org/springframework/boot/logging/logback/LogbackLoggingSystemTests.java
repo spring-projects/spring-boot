@@ -26,11 +26,14 @@ import java.util.logging.LogManager;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggerContextListener;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.CoreConstants;
+import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
+import ch.qos.logback.core.spi.FilterReply;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.impl.SLF4JLogFactory;
 import org.hamcrest.Matcher;
@@ -487,6 +490,45 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				.containsPattern("\\d{4}-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
 	}
 
+	@Test
+	public void consoleFiltersProperty() throws Exception {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.filters.console", HelloFilter.class.getName() +
+				"," + HiFilter.class.getName());
+		LoggingInitializationContext loggingInitializationContext =
+				new LoggingInitializationContext(environment);
+		this.loggingSystem.initialize(loggingInitializationContext, null, null);
+		this.logger.info("Hello world");
+		this.logger.info("Hi world");
+		this.logger.info("Bye world");
+		String output = this.output.toString().trim();
+		assertThat(output).doesNotContain("Hello world");
+		assertThat(output).doesNotContain("Hi world");
+		assertThat(output).contains("Bye world");
+	}
+
+	@Test
+	public void fileFiltersProperty() throws Exception {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.filters.file", HelloFilter.class.getName() +
+				"," + HiFilter.class.getName());
+		LoggingInitializationContext loggingInitializationContext =
+				new LoggingInitializationContext(environment);
+		this.loggingSystem.initialize(loggingInitializationContext, null,
+				getLogFile(null, tmpDir()));
+		this.logger.info("Hello world");
+		this.logger.info("Hi world");
+		this.logger.info("Bye world");
+		String output = this.output.toString().trim();
+		File file = new File(tmpDir() + "/spring.log");
+		assertThat(output).contains("Hello world");
+		assertThat(output).contains("Hi world");
+		assertThat(output).contains("Bye world");
+		assertThat(getLineWithText(file, "Hello world")).isNull();
+		assertThat(getLineWithText(file, "Hi world")).isNull();
+		assertThat(getLineWithText(file, "Bye world")).isNotEmpty();
+	}
+
 	private static Logger getRootLogger() {
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
 		LoggerContext context = (LoggerContext) factory;
@@ -518,6 +560,26 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			}
 		}
 		return null;
+	}
+
+	static class HelloFilter extends Filter<ILoggingEvent> {
+
+		@Override
+		public FilterReply decide(ILoggingEvent event) {
+			return event.getMessage().contains("Hello")
+					? FilterReply.DENY : FilterReply.NEUTRAL;
+		}
+
+	}
+
+	static class HiFilter extends Filter<ILoggingEvent> {
+
+		@Override
+		public FilterReply decide(ILoggingEvent event) {
+			return event.getMessage().contains("Hi")
+					? FilterReply.DENY : FilterReply.NEUTRAL;
+		}
+
 	}
 
 }
