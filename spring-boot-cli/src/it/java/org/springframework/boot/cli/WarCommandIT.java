@@ -16,16 +16,17 @@
 
 package org.springframework.boot.cli;
 
-import java.io.File;
-
 import org.junit.Test;
-
 import org.springframework.boot.cli.command.archive.WarCommand;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker.Invocation;
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.util.SocketUtils;
 
+import java.io.File;
+import java.util.zip.ZipFile;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -34,6 +35,7 @@ import static org.junit.Assert.assertTrue;
  * Integration test for {@link WarCommand}.
  *
  * @author Andrey Stolyarov
+ * @author Henri Kerola
  */
 public class WarCommandIT {
 
@@ -60,6 +62,25 @@ public class WarCommandIT {
 		assertThat(invocation.getOutput(),
 				containsString("/WEB-INF/lib-provided/tomcat-embed-core"));
 		process.destroy();
+	}
+
+	@Test
+	public void resourcesAreCopiedToWebInfClasses() throws Exception {
+		File war = new File("target/test-app.war");
+		Invocation invocation = this.cli.invoke("war", war.getAbsolutePath(),
+				"war.groovy");
+		invocation.await();
+		assertTrue(war.exists());
+
+		ZipFile warFile = new ZipFile(war.getAbsolutePath());
+		try {
+			assertThat(warFile.getEntry("application.properties")).isNull();
+			assertThat(warFile.getEntry("WEB-INF/classes/application.properties")).isNotNull();
+		}
+		finally {
+			warFile.close();
+		}
+
 	}
 
 }
