@@ -27,9 +27,6 @@ import java.io.File;
 import java.util.zip.ZipFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Integration test for {@link WarCommand}.
@@ -49,18 +46,18 @@ public class WarCommandIT {
 		Invocation invocation = this.cli.invoke("war", war.getAbsolutePath(),
 				"war.groovy");
 		invocation.await();
-		assertTrue(war.exists());
+		assertThat(war.exists()).isTrue();
 		Process process = new JavaExecutable()
 				.processBuilder("-jar", war.getAbsolutePath(), "--server.port=" + port)
 				.start();
 		invocation = new Invocation(process);
 		invocation.await();
-		assertThat(invocation.getOutput(), containsString("onStart error"));
-		assertThat(invocation.getOutput(), containsString("Tomcat started"));
-		assertThat(invocation.getOutput(),
-				containsString("/WEB-INF/lib-provided/tomcat-embed-core"));
-		assertThat(invocation.getOutput(),
-				containsString("/WEB-INF/lib-provided/tomcat-embed-core"));
+		assertThat(invocation.getOutput()).contains("onStart error");
+		assertThat(invocation.getOutput()).contains("Tomcat started");
+		assertThat(invocation.getOutput())
+				.contains("/WEB-INF/lib-provided/tomcat-embed-core");
+		assertThat(invocation.getOutput())
+				.contains("/WEB-INF/lib-provided/tomcat-embed-core");
 		process.destroy();
 	}
 
@@ -70,7 +67,7 @@ public class WarCommandIT {
 		Invocation invocation = this.cli.invoke("war", war.getAbsolutePath(),
 				"war.groovy");
 		invocation.await();
-		assertTrue(war.exists());
+		assertThat(war.exists()).isTrue();
 
 		ZipFile warFile = new ZipFile(war.getAbsolutePath());
 		try {
