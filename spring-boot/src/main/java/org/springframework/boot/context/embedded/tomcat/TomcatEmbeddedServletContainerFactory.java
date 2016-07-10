@@ -529,7 +529,7 @@ public class TomcatEmbeddedServletContainerFactory
 
 	/**
 	 * Set {@link Valve}s that should be applied to the Tomcat {@link Context}. Calling
-	 * this method will replace any existing listeners.
+	 * this method will replace any existing valves.
 	 * @param contextValves the valves to set
 	 */
 	public void setContextValves(Collection<? extends Valve> contextValves) {
