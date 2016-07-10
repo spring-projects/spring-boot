@@ -17,7 +17,6 @@
 package org.springframework.boot.cli.command.archive;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,6 +72,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Andrey Stolyarov
+ * @author Henri Kerola
  */
 abstract class ArchiveCommand extends OptionParsingCommand {
 
@@ -93,7 +93,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 
 		private final String type;
 
-		private final Layout layout;
+		protected final Layout layout;
 
 		private OptionSpec<String> includeOption;
 
@@ -278,12 +278,14 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 					libraries.add(new Library(entry.getFile(), LibraryScope.COMPILE));
 				}
 				else {
-					writer.writeEntry(entry.getName(),
-							new FileInputStream(entry.getFile()));
+					writeClasspathEntry(writer, entry);
 				}
 			}
 			return libraries;
 		}
+
+		protected abstract void writeClasspathEntry(JarWriter writer,
+				MatchedResource entry) throws IOException;
 
 		protected abstract LibraryScope getLibraryScope(File file);
 

@@ -17,6 +17,7 @@
 package org.springframework.boot.cli.command.archive;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.springframework.boot.cli.command.Command;
@@ -29,6 +30,7 @@ import org.springframework.boot.loader.tools.LibraryScope;
  *
  * @author Andrey Stolyarov
  * @author Phillip Webb
+ * @author Henri Kerola
  * @since 1.3.0
  */
 public class WarCommand extends ArchiveCommand {
@@ -61,6 +63,12 @@ public class WarCommand extends ArchiveCommand {
 			super.addCliClasses(writer);
 		}
 
+		@Override
+		protected void writeClasspathEntry(JarWriter writer,
+				ResourceMatcher.MatchedResource entry) throws IOException {
+			writer.writeEntry(this.layout.getClassesLocation() + entry.getName(),
+					new FileInputStream(entry.getFile()));
+		}
 	}
 
 }
