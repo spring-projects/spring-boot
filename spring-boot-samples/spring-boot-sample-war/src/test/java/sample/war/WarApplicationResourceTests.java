@@ -16,20 +16,27 @@
 
 package sample.war;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.support.SpringBootServletInitializer;
-import org.springframework.context.annotation.PropertySource;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-/**
- * Sample WAR application
- */
-@SpringBootApplication
-@PropertySource(value = { "WEB-INF/custom.properties" })
-public class SampleWarApplication extends SpringBootServletInitializer {
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-	public static void main(String[] args) {
-		SpringApplication.run(SampleWarApplication.class, args);
+import static org.assertj.core.api.Assertions.assertThat;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class WarApplicationResourceTests {
+
+	// gh-6371
+
+	@Value("${demo.string.value}")
+	private String demoStringValue;
+
+	@Test
+	public void contextLoads() {
+		assertThat(this.demoStringValue).isEqualTo("demo");
 	}
 
 }
