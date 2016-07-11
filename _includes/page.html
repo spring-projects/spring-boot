@@ -1,10 +1,10 @@
 <head>
     <title>{{ site.name }}</title>
 
-    <link rel="icon" type="image/png" href="{{site.baseurl}}/favicon.png"/>
+    <link rel="icon" type="image/png" href="{{site.baseurl}}/favicon.png" />
 
     <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/bootstrap/css/bootstrap.min.css" />
-    <link href='//fonts.googleapis.com/css?family=Varela+Round|Montserrat:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Varela+Round|Montserrat:400,700" />
     <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/font-awesome/css/font-awesome.min.css" />
     <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/bootstrap/css/bootstrap-select.css" />
 
@@ -18,21 +18,21 @@
 
     {{ head_links }}
 
-    <script type="text/javascript" src="{{site.baseurl}}/js/jquery.js"></script>
-    <script type="text/javascript" src="{{site.baseurl}}/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="{{site.baseurl}}/bootstrap/js/bootstrap-select.js"></script>
+    <script src="{{site.baseurl}}/js/jquery.js"></script>
+    <script src="{{site.baseurl}}/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{site.baseurl}}/bootstrap/js/bootstrap-select.js"></script>
 
-    <script type="text/javascript" src="{{site.baseurl}}/js/underscore.js"></script>
-    <script type="text/javascript" src="{{site.baseurl}}/js/backbone.js"></script>
-    <script type="text/javascript" src="{{site.baseurl}}/js/projectDocumentationWidget.js"></script>
-    <script type="text/javascript" src="{{site.baseurl}}/js/application.js"></script>
-    <script type="text/javascript" src="{{site.baseurl}}/js/clipboard.min.js"></script>
-    <script type="text/javascript">
-        var apiBaseUrl = "{{ site.main_site_url }}";
-        var projectId = "{{ site.project }}";
-        var siteBaseUrl = "{{ site.baseurl }}";
+    <script src="{{site.baseurl}}/js/underscore.js"></script>
+    <script src="{{site.baseurl}}/js/backbone.js"></script>
+    <script src="{{site.baseurl}}/js/projectDocumentationWidget.js"></script>
+    <script src="{{site.baseurl}}/js/application.js"></script>
+    <script src="{{site.baseurl}}/js/clipboard.min.js"></script>
+    <script>
+        var apiBaseUrl  = "{{ site.main_site_url }}",
+            projectId   = "{{ site.project }}",
+            siteBaseUrl = "{{ site.baseurl }}";
     </script>
-    <script type="text/javascript" src="{{site.baseurl}}/js/copySnippets.js"></script>
+    <script src="{{site.baseurl}}/js/copySnippets.js"></script>
     <meta name="google-site-verification" content="7qGntFPD9lWAVCtUu5U77v4l68PsTHf6xpzgjQv2j2M" />
     <script>
         var _gaq = _gaq || [];
@@ -84,12 +84,12 @@
             <div class="container-fluid">
                 <div class="search-form--container">
                     <form class="form-inline form-search"
-                        action="{{site.main_site_url}}/search" method="get">
-                        <input type="text"
+                        action="{{site.main_site_url}}/search">
+                        <input type="search"
                             class="search-query search-form--form js-search-input"
                             placeholder="Search for documention, guides, and posts..."
                             name="q" />
-                        <button type="submit" class="search-form--submit">
+                        <button class="search-form--submit">
                             <i class="icon-search"></i>
                         </button>
                     </form>
@@ -113,10 +113,10 @@
                             </ul>
                         </div>
                     </div>
-                    &copy; <script type="text/javascript"> var d = new Date();
+                    &copy; <script> var d = new Date();
                     document.write(d.getFullYear());</script> <a href="https://www.pivotal.io">Pivotal Software</a>, Inc. All Rights Reserved.
-                    <a href="https://www.pivotal.io/terms-of-use">Terms of Use</a> and
-                    <a href="https://www.pivotal.io/privacy-policy">Privacy</a>
+                    <a href="https://pivotal.io/terms-of-use">Terms of Use</a> and
+                    <a href="https://pivotal.io/privacy-policy">Privacy</a>
                 </div>
             </div>
         </div>
