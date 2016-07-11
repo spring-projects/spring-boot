@@ -4948,9 +4948,11 @@ will not be scanned when using this annotation.
 Often `@WebMvcTest` will be limited to a single controller and used in combination with
 `@MockBean` to provide mock implementations for required collaborators.
 
-`@WebMvcTest` is meta-annotated with `@AutoConfigureMockMvc` which provides
-auto-configuration of `MockMvc`. Mock MVC offers a powerful way to quickly test MVC
-controllers without needing to start a full HTTP server.
+`@WebMvcTest` also auto-configures `MockMvc`. Mock MVC offers a powerful way to quickly
+test MVC controllers without needing to start a full HTTP server.
+
+TIP: You can also auto-configure `MockMvc` in a non-`@WebMvcTest` (e.g. `SpringBootTest`)
+by annotating it with `@AutoConfigureMockMvc`.
 
 [source,java,indent=0]
 ----
