@@ -957,10 +957,9 @@ section for details.
 
 [[boot-features-external-config-vs-value]]
 ==== @ConfigurationProperties vs. @Value
-
-`@Value` is a core container feature and it does not provide the same features as type-safe
-Configuration Properties. The table below summarizes the features that are supported by
-`@ConfigurationProperties` and `@Value`:
+`@Value` is a core container feature and it does not provide the same features as
+type-safe Configuration Properties. The table below summarizes the features that are
+supported by `@ConfigurationProperties` and `@Value`:
 
 [cols="4,2,2"]
 |===
@@ -977,11 +976,10 @@ Configuration Properties. The table below summarizes the features that are suppo
 | `SpEL` evaluation
 | No
 | Yes
-
 |===
 
 If you define a set of configuration keys for your own components, we recommend you to
-group them in a pojo annotated with `@ConfigurationProperties`. Please also be aware
+group them in a POJO annotated with `@ConfigurationProperties`. Please also be aware
 that since `@Value` does not support relaxed binding, it isn't a great candidate if you
 need to provide the value using environment variables.
 
