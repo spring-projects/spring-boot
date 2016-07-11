@@ -106,7 +106,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 					this.serverThread.join(2000);
 				}
 				catch (InterruptedException ex) {
-					// Ignore
+					Thread.currentThread().interrupt();
 				}
 				this.serverThread = null;
 			}

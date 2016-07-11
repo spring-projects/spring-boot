@@ -93,6 +93,7 @@ public class HeapdumpMvcEndpointTests {
 	public void invokeWhenLockedShouldReturnTooManyRequestsStatus() throws Exception {
 		this.endpoint.setLocked(true);
 		this.mvc.perform(get("/heapdump")).andExpect(status().isTooManyRequests());
+		assertThat(Thread.interrupted()).isTrue();
 	}
 
 	@Test

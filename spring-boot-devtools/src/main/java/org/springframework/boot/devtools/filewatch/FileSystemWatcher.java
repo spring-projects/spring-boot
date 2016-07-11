@@ -239,7 +239,7 @@ public class FileSystemWatcher {
 					scan();
 				}
 				catch (InterruptedException ex) {
-					// Ignore
+					Thread.currentThread().interrupt();
 				}
 				remainingScans = this.remainingScans.get();
 			}

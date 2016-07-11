@@ -252,6 +252,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 						: file);
 			}
 			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
 				throw new IOException(ex);
 			}
 		}
@@ -276,6 +277,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 				}
 			}
 			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
 				throw new IOException(ex);
 			}
 		}
