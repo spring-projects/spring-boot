@@ -66,7 +66,7 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>>
 						Thread.sleep(500L);
 					}
 					catch (InterruptedException ex) {
-						// Swallow exception and continue
+						Thread.currentThread().interrupt();
 					}
 					ShutdownEndpoint.this.context.close();
 				}
