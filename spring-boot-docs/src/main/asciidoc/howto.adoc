@@ -1395,6 +1395,30 @@ have been applied from the auto-configuration:
 
 
 
+[[howto-use-thymeleaf-3]]
+=== Use Thymeleaf 3
+By default, `spring-boot-starter-thymeleaf` uses Thymeleaf 2.1. You can use Thymeleaf
+3 by overriding the `thymeleaf.version` and `thymeleaf-layout-dialect.version` properties,
+for example:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<properties>
+		<thymeleaf.version>3.0.0.RELEASE</thymeleaf.version>
+		<thymeleaf-layout-dialect.version>2.0.0</thymeleaf-layout-dialect.version>
+	</dependency>
+----
+
+Please refer to the
+{github-code}/spring-boot-samples/spring-boot-sample-web-thymeleaf3[Thymeleaf 3 sample] to
+see this in action.
+
+If you are using any of the other auto-configured Thymeleaf Extras (Spring Security,
+Data Attribute, or Java 8 Time) you should also override each of their versions to one
+that is compatible with Thymeleaf 3.0.
+
+
+
 [[howto-http-clients]]
 == HTTP clients
 
