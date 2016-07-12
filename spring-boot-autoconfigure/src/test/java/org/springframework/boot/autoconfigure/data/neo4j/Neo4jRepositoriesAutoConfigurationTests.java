@@ -86,7 +86,6 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 				"spring.data.neo4j.uri=http://localhost:9797");
 		this.context.register(configurationClasses);
 		this.context.register(Neo4jDataAutoConfiguration.class,
-				Neo4jDataAutoConfiguration.class,
 				Neo4jRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

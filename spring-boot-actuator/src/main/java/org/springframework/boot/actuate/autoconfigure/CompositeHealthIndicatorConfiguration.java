@@ -28,8 +28,8 @@ import org.springframework.core.ResolvableType;
  * Base class for configurations that can combine source beans using a
  * {@link CompositeHealthIndicator}.
  *
- * @param <H> The health indicator type
- * @param <S> T he bean source type
+ * @param <H> the health indicator type
+ * @param <S> the bean source type
  * @author Stephane Nicoll
  * @since 1.4.0
  */

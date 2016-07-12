@@ -78,7 +78,7 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 	}
 
 	/**
-	 * {@link FactoryBean} used to create a configure a {@link TestRestTemplate}.
+	 * {@link FactoryBean} used to create and configure a {@link TestRestTemplate}.
 	 */
 	public static class TestRestTemplateFactory
 			implements FactoryBean<TestRestTemplate>, ApplicationContextAware {

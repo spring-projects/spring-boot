@@ -46,7 +46,7 @@ public class ElasticsearchJestHealthIndicatorTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void elasticSearchIsUp() throws IOException {
+	public void elasticsearchIsUp() throws IOException {
 		given(this.jestClient.execute(any(Action.class)))
 				.willReturn(createJestResult(4, 0));
 
@@ -56,7 +56,7 @@ public class ElasticsearchJestHealthIndicatorTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void elasticSearchIsDown() throws IOException {
+	public void elasticsearchIsDown() throws IOException {
 		given(this.jestClient.execute(any(Action.class))).willThrow(
 				new CouldNotConnectException("http://localhost:9200", new IOException()));
 		Health health = this.healthIndicator.health();
@@ -65,7 +65,7 @@ public class ElasticsearchJestHealthIndicatorTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void elasticSearchIsOutOfService() throws IOException {
+	public void elasticsearchIsOutOfService() throws IOException {
 		given(this.jestClient.execute(any(Action.class)))
 				.willReturn(createJestResult(4, 1));
 		Health health = this.healthIndicator.health();
