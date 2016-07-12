@@ -929,6 +929,15 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Returns whether this {@link SpringApplication} is running within a web environment.
+	 * @return {@code true} if running within a web environment, otherwise {@code false}.
+	 * @see #setWebEnvironment(boolean)
+	 */
+	public boolean isWebEnvironment() {
+		return this.webEnvironment;
+	}
+
+	/**
 	 * Sets if this application is running within a web environment. If not specified will
 	 * attempt to deduce the environment based on the classpath.
 	 * @param webEnvironment if the application is running in a web environment

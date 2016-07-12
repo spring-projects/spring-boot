@@ -37,7 +37,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
 
 /**
- * {@link RequestExpectationManager} that strips any the specified root URI from the
+ * {@link RequestExpectationManager} that strips the specified root URI from the
  * request before verification. Can be used to simply test declarations when all REST
  * calls start the same way. For example: <pre class="code">
  * RestTemplate restTemplate = new RestTemplateBuilder().rootUri("http://example.com").build();
@@ -107,7 +107,7 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	/**
 	 * Return a bound {@link MockRestServiceServer} for the given {@link RestTemplate},
 	 * configured with {@link RootUriRequestExpectationManager} when possible.
-	 * @param restTemplate the source reset template
+	 * @param restTemplate the source REST template
 	 * @return a configured {@link MockRestServiceServer}
 	 */
 	public static MockRestServiceServer bindTo(RestTemplate restTemplate) {
@@ -117,7 +117,7 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	/**
 	 * Return a bound {@link MockRestServiceServer} for the given {@link RestTemplate},
 	 * configured with {@link RootUriRequestExpectationManager} when possible.
-	 * @param restTemplate the source reset template
+	 * @param restTemplate the source REST template
 	 * @param expectationManager the source {@link RequestExpectationManager}
 	 * @return a configured {@link MockRestServiceServer}
 	 */
@@ -132,7 +132,7 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	 * {@link RestTemplate}. If the {@link RestTemplate} is using a
 	 * {@link RootUriTemplateHandler} then a {@link RootUriRequestExpectationManager} is
 	 * returned, otherwise the source manager is returned unchanged.
-	 * @param restTemplate the source reset template
+	 * @param restTemplate the source REST template
 	 * @param expectationManager the source {@link RequestExpectationManager}
 	 * @return a {@link RequestExpectationManager} to be bound to the template
 	 */

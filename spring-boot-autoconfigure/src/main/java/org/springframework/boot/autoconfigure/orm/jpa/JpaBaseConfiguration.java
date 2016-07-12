@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
@@ -62,8 +63,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @EnableConfigurationProperties(JpaProperties.class)
 @Import(DataSourceInitializedPublisher.Registrar.class)
 public abstract class JpaBaseConfiguration implements BeanFactoryAware {
-
-	private static final String[] NO_PACKAGES = new String[0];
 
 	private final DataSource dataSource;
 
@@ -138,11 +137,12 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	}
 
 	protected String[] getPackagesToScan() {
-		if (AutoConfigurationPackages.has(this.beanFactory)) {
-			List<String> basePackages = AutoConfigurationPackages.get(this.beanFactory);
-			return basePackages.toArray(new String[basePackages.size()]);
+		List<String> packages = EntityScanPackages.get(this.beanFactory)
+				.getPackageNames();
+		if (packages.isEmpty() && AutoConfigurationPackages.has(this.beanFactory)) {
+			packages = AutoConfigurationPackages.get(this.beanFactory);
 		}
-		return NO_PACKAGES;
+		return packages.toArray(new String[packages.size()]);
 	}
 
 	/**

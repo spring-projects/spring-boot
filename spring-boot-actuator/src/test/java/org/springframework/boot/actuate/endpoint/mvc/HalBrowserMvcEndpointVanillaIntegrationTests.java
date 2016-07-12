@@ -122,7 +122,7 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 	@Test
 	public void endpointsEachHaveSelf() throws Exception {
 		Set<String> collections = new HashSet<String>(
-				Arrays.asList("/trace", "/beans", "/dump"));
+				Arrays.asList("/trace", "/beans", "/dump", "/heapdump"));
 		for (MvcEndpoint endpoint : this.mvcEndpoints.getEndpoints()) {
 			String path = endpoint.getPath();
 			if (collections.contains(path)) {

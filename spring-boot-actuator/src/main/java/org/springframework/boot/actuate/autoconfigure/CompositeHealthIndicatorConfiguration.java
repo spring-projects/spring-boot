@@ -30,6 +30,7 @@ import org.springframework.core.ResolvableType;
  *
  * @param <H> The health indicator type
  * @param <S> T he bean source type
+ * @author Stephane Nicoll
  * @since 1.4.0
  */
 public abstract class CompositeHealthIndicatorConfiguration<H extends HealthIndicator, S> {
@@ -61,8 +62,8 @@ public abstract class CompositeHealthIndicatorConfiguration<H extends HealthIndi
 			return indicatorClass.getConstructor(sourceClass).newInstance(source);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create indicator "
-					+ indicatorClass + " for source " + sourceClass, ex);
+			throw new IllegalStateException("Unable to create indicator " + indicatorClass
+					+ " for source " + sourceClass, ex);
 		}
 	}
 

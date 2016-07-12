@@ -133,4 +133,12 @@
 	<activeProfiles>
 		<activeProfile>@profile@</activeProfile>
 	</activeProfiles>
+	<servers>
+		<server>
+			<id>central</id>
+			<configuration>
+				<timeout>120000</timeout>
+			</configuration>
+		</server>
+	</servers>
 </settings>

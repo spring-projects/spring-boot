@@ -31,13 +31,19 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.util.ClassUtils;
 
 /**
- * Jetty {@link AbstractLifeCycle} to initialize jasper.
+ * Jetty {@link AbstractLifeCycle} to initialize Jasper.
  *
  * @author Vladimir Tsanev
+ * @author Phillip Webb
  */
-public class JasperInitializer extends AbstractLifeCycle {
+class JasperInitializer extends AbstractLifeCycle {
+
+	private static final String[] INITIALIZER_CLASSES = {
+			"org.eclipse.jetty.apache.jsp.JettyJasperInitializer",
+			"org.apache.jasper.servlet.JasperInitializer" };
 
 	private final WebAppContext context;
+
 	private final ServletContainerInitializer initializer;
 
 	JasperInitializer(WebAppContext context) {
@@ -45,24 +51,17 @@ public class JasperInitializer extends AbstractLifeCycle {
 		this.initializer = newInitializer();
 	}
 
-	private static ServletContainerInitializer newInitializer() {
-		try {
+	private ServletContainerInitializer newInitializer() {
+		for (String className : INITIALIZER_CLASSES) {
 			try {
-				return (ServletContainerInitializer) ClassUtils
-						.forName("org.eclipse.jetty.apache.jsp.JettyJasperInitializer",
-								null)
-						.newInstance();
+				Class<?> initializerClass = ClassUtils.forName(className, null);
+				return (ServletContainerInitializer) initializerClass.newInstance();
 			}
 			catch (Exception ex) {
-				// try the original initializer
-				return (ServletContainerInitializer) ClassUtils
-						.forName("org.apache.jasper.servlet.JasperInitializer", null)
-						.newInstance();
+				// Ignore
 			}
 		}
-		catch (Exception ex) {
-			return null;
-		}
+		return null;
 	}
 
 	@Override
@@ -71,22 +70,14 @@ public class JasperInitializer extends AbstractLifeCycle {
 			return;
 		}
 		try {
-			URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
-				@Override
-				public URLStreamHandler createURLStreamHandler(String protocol) {
-					if ("war".equals(protocol)) {
-						return new WarUrlStreamHandler();
-					}
-					return null;
-				}
-			});
+			URL.setURLStreamHandlerFactory(new WarUrlStreamHandlerFactory());
 		}
 		catch (Error ex) {
 			// Ignore
 		}
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		Thread.currentThread().setContextClassLoader(this.context.getClassLoader());
 		try {
+			Thread.currentThread().setContextClassLoader(this.context.getClassLoader());
 			try {
 				setExtendedListenerTypes(true);
 				this.initializer.onStartup(null, this.context.getServletContext());
@@ -110,22 +101,35 @@ public class JasperInitializer extends AbstractLifeCycle {
 	}
 
 	/**
+	 * {@link URLStreamHandlerFactory} to support {@literal war} protocol.
+	 */
+	private static class WarUrlStreamHandlerFactory implements URLStreamHandlerFactory {
+
+		@Override
+		public URLStreamHandler createURLStreamHandler(String protocol) {
+			if ("war".equals(protocol)) {
+				return new WarUrlStreamHandler();
+			}
+			return null;
+		}
+
+	}
+
+	/**
 	 * {@link URLStreamHandler} for {@literal war} protocol compatible with jasper's
 	 * {@link URL urls} produced by
 	 * {@link org.apache.tomcat.util.scan.JarFactory#getJarEntryURL(URL, String)}.
 	 */
-	static class WarUrlStreamHandler extends URLStreamHandler {
+	private static class WarUrlStreamHandler extends URLStreamHandler {
 
 		@Override
 		protected void parseURL(URL u, String spec, int start, int limit) {
 			String path = "jar:" + spec.substring("war:".length());
-
 			int separator = path.indexOf("*/");
 			if (separator >= 0) {
 				path = path.substring(0, separator) + "!/"
 						+ path.substring(separator + 2);
 			}
-
 			setURL(u, u.getProtocol(), "", -1, null, null, path, null, null);
 		}
 
@@ -133,12 +137,13 @@ public class JasperInitializer extends AbstractLifeCycle {
 		protected URLConnection openConnection(URL u) throws IOException {
 			return new WarURLConnection(u);
 		}
+
 	}
 
 	/**
 	 * {@link URLConnection} to support {@literal war} protocol.
 	 */
-	static class WarURLConnection extends URLConnection {
+	private static class WarURLConnection extends URLConnection {
 
 		private final URLConnection connection;
 
@@ -160,6 +165,7 @@ public class JasperInitializer extends AbstractLifeCycle {
 			connect();
 			return this.connection.getInputStream();
 		}
+
 	}
 
 }

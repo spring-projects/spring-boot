@@ -31,12 +31,14 @@ org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositor
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.solr.SolrRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration,\
+org.springframework.boot.autoconfigure.elasticsearch.jest.JestAutoConfiguration,\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration,\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
 org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration,\
@@ -50,7 +52,6 @@ org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration,\
-org.springframework.boot.autoconfigure.jest.JestAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration,\
 org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.JndiConnectionFactoryAutoConfiguration,\
@@ -70,7 +71,6 @@ org.springframework.boot.autoconfigure.mobile.SitePreferenceAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
-org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration,\

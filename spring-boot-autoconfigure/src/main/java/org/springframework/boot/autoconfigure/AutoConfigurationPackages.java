@@ -69,8 +69,6 @@ public abstract class AutoConfigurationPackages {
 	 * @throws IllegalStateException if auto-configuration is not enabled
 	 */
 	public static List<String> get(BeanFactory beanFactory) {
-		// Currently we only store a single base package, but we return a list to
-		// allow this to change in the future if needed
 		try {
 			return beanFactory.getBean(BEAN, BasePackages.class).get();
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.web.servlet.resource.TransformedResource;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 1.3.0
  */
 public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
@@ -142,15 +143,17 @@ public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
 			resource = transformerChain.transform(request, resource);
 			if (resource.getFilename().equalsIgnoreCase(
 					HalBrowserMvcEndpoint.this.location.getHtmlFile())) {
-				return replaceInitialLink(resource);
+				return replaceInitialLink(request.getContextPath(), resource);
 			}
 			return resource;
 		}
 
-		private Resource replaceInitialLink(Resource resource) throws IOException {
+		private Resource replaceInitialLink(String contextPath, Resource resource)
+				throws IOException {
 			byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
 			String content = new String(bytes, DEFAULT_CHARSET);
-			String initial = getManagementServletContext().getContextPath() + getPath();
+			String initial = contextPath + getManagementServletContext().getContextPath()
+					+ getPath();
 			content = content.replace("entryPoint: '/'", "entryPoint: '" + initial + "'");
 			return new TransformedResource(resource, content.getBytes(DEFAULT_CHARSET));
 		}

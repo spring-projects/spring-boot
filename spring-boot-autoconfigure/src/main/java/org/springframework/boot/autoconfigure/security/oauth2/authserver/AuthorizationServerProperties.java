@@ -27,10 +27,24 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("security.oauth2.authorization")
 public class AuthorizationServerProperties {
 
+	/**
+	 * Spring Security access rule for the check token endpoint (e.g. a SpEL expression
+	 * like "isAuthenticated()") . Default is empty, which is interpreted as "denyAll()"
+	 * (no access).
+	 */
 	private String checkTokenAccess;
 
+	/**
+	 * Spring Security access rule for the token key endpoint (e.g. a SpEL expression like
+	 * "isAuthenticated()"). Default is empty, which is interpreted as "denyAll()" (no
+	 * access).
+	 */
 	private String tokenKeyAccess;
 
+	/**
+	 * Realm name for client authentication. If an unauthenticated request comes in to the
+	 * token endpoint, it will respond with a challenge including this name.
+	 */
 	private String realm;
 
 	public String getCheckTokenAccess() {

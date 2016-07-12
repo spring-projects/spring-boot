@@ -325,10 +325,8 @@ public class ConfigurationPropertiesBindingPostProcessor
 			factory.setIgnoreUnknownFields(annotation.ignoreUnknownFields());
 			factory.setExceptionIfInvalid(annotation.exceptionIfInvalid());
 			factory.setIgnoreNestedProperties(annotation.ignoreNestedProperties());
-			String targetName = (StringUtils.hasLength(annotation.value())
-					? annotation.value() : annotation.prefix());
-			if (StringUtils.hasLength(targetName)) {
-				factory.setTargetName(targetName);
+			if (StringUtils.hasLength(annotation.prefix())) {
+				factory.setTargetName(annotation.prefix());
 			}
 		}
 		try {
@@ -346,8 +344,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 			return "";
 		}
 		StringBuilder details = new StringBuilder();
-		details.append("prefix=").append((StringUtils.hasLength(annotation.value())
-				? annotation.value() : annotation.prefix()));
+		details.append("prefix=").append(annotation.prefix());
 		details.append(", ignoreInvalidFields=").append(annotation.ignoreInvalidFields());
 		details.append(", ignoreUnknownFields=").append(annotation.ignoreUnknownFields());
 		details.append(", ignoreNestedProperties=")

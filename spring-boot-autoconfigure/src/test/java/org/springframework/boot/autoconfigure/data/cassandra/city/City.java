@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra.city;
 
+import com.datastax.driver.core.DataType.Name;
+
+import org.springframework.data.cassandra.mapping.CassandraType;
 import org.springframework.data.cassandra.mapping.Column;
 import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
@@ -24,6 +27,7 @@ import org.springframework.data.cassandra.mapping.Table;
 public class City {
 
 	@PrimaryKey
+	@CassandraType(type = Name.BIGINT)
 	private Long id;
 
 	@Column

@@ -80,6 +80,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-hibernate4[spring-boot-sample-hibernate4]
 | Demonstrates how to use Hibernate 4
 
+| link:spring-boot-sample-hibernate4[spring-boot-sample-hibernate52]
+| Demonstrates how to use Hibernate 5.2
+
 | link:spring-boot-sample-hornetq[spring-boot-sample-hornetq]
 | Message-oriented application using HornetQ
 
@@ -193,7 +196,7 @@ The following sample applications are provided:
 | Embedded Tomcat
 
 | link:spring-boot-sample-tomcat-jsp[spring-boot-sample-tomcat-jsp]
-| Web application that uses JSP templates with Tomcat 8
+| Web application that uses JSP templates with Tomcat
 
 | link:spring-boot-sample-tomcat-multi-connectors[spring-boot-sample-tomcat-multi-connectors]
 | Web application that uses Tomcat configured with multiple connectors
@@ -203,6 +206,12 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-tomcat7-jsp[spring-boot-sample-tomcat7-jsp]
 | Web application that uses JSP templates with Tomcat 7
+
+| link:spring-boot-sample-tomcat7-ssl[spring-boot-sample-tomcat7-ssl]
+| Web application that uses Tomcat 7 configured with SSL
+
+| link:spring-boot-sample-tomcat80-ssl[spring-boot-sample-tomcat80-ssl]
+| Web application that uses Tomcat 8.0 configured with SSL
 
 | link:spring-boot-sample-traditional[spring-boot-sample-traditional]
 | Traditional WAR packaging  (but also executable using `java -jar`)

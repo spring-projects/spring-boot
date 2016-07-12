@@ -16,18 +16,27 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
+import java.util.List;
+
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
+import org.springframework.data.cassandra.config.CassandraEntityClassScanner;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.convert.CassandraConverter;
@@ -42,6 +51,7 @@ import org.springframework.data.cassandra.mapping.CassandraMappingContext;
  *
  * @author Julien Dubois
  * @author Eddú Meléndez
+ * @author Mark Paluch
  * @since 1.3.0
  */
 @Configuration
@@ -50,20 +60,36 @@ import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 @AutoConfigureAfter(CassandraAutoConfiguration.class)
 public class CassandraDataAutoConfiguration {
 
+	private final BeanFactory beanFactory;
+
 	private final CassandraProperties properties;
 
 	private final Cluster cluster;
 
-	public CassandraDataAutoConfiguration(CassandraProperties properties,
-			Cluster cluster) {
+	private final PropertyResolver propertyResolver;
+
+	public CassandraDataAutoConfiguration(BeanFactory beanFactory,
+			CassandraProperties properties, Cluster cluster, Environment environment) {
+		this.beanFactory = beanFactory;
 		this.properties = properties;
 		this.cluster = cluster;
+		this.propertyResolver = new RelaxedPropertyResolver(environment,
+				"spring.data.cassandra.");
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraMappingContext cassandraMapping() {
-		return new BasicCassandraMappingContext();
+	public CassandraMappingContext cassandraMapping() throws ClassNotFoundException {
+		BasicCassandraMappingContext context = new BasicCassandraMappingContext();
+		List<String> packages = EntityScanPackages.get(this.beanFactory)
+				.getPackageNames();
+		if (packages.isEmpty() && AutoConfigurationPackages.has(this.beanFactory)) {
+			packages = AutoConfigurationPackages.get(this.beanFactory);
+		}
+		if (!packages.isEmpty()) {
+			context.setInitialEntitySet(CassandraEntityClassScanner.scan(packages));
+		}
+		return context;
 	}
 
 	@Bean
@@ -80,7 +106,9 @@ public class CassandraDataAutoConfiguration {
 		session.setCluster(this.cluster);
 		session.setConverter(converter);
 		session.setKeyspaceName(this.properties.getKeyspaceName());
-		session.setSchemaAction(SchemaAction.NONE);
+		SchemaAction schemaAction = this.propertyResolver.getProperty("schemaAction",
+				SchemaAction.class, SchemaAction.NONE);
+		session.setSchemaAction(schemaAction);
 		return session;
 	}
 

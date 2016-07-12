@@ -199,6 +199,10 @@ final class AsciiBytes {
 		return false;
 	}
 
+	static String toString(byte[] bytes) {
+		return new String(bytes, UTF_8);
+	}
+
 	public static int hashCode(String string) {
 		// We're compatible with String's hashCode().
 		return string.hashCode();

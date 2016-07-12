@@ -20,12 +20,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import groovy.text.Template;
 import groovy.text.TemplateEngine;
@@ -70,6 +73,9 @@ public class EndpointDocumentation {
 
 	static final File LOG_FILE = new File("target/logs/spring.log");
 
+	private static final Set<String> SKIPPED = Collections.<String>unmodifiableSet(
+			new HashSet<String>(Arrays.asList("/docs", "/logfile", "/heapdump")));
+
 	@Autowired
 	private MvcEndpoints mvcEndpoints;
 
@@ -103,28 +109,27 @@ public class EndpointDocumentation {
 
 	@Test
 	public void endpoints() throws Exception {
-
 		final File docs = new File("src/main/asciidoc");
-
 		final Map<String, Object> model = new LinkedHashMap<String, Object>();
 		final List<EndpointDoc> endpoints = new ArrayList<EndpointDoc>();
 		model.put("endpoints", endpoints);
 		for (MvcEndpoint endpoint : getEndpoints()) {
-			final String endpointPath = StringUtils.hasText(endpoint.getPath())
-					? endpoint.getPath() : "/";
-
-			if (!endpointPath.equals("/docs") && !endpointPath.equals("/logfile")) {
+			final String endpointPath = (StringUtils.hasText(endpoint.getPath())
+					? endpoint.getPath() : "/");
+			if (!SKIPPED.contains(endpointPath)) {
 				String output = endpointPath.substring(1);
 				output = output.length() > 0 ? output : "./";
 				this.mockMvc.perform(get(endpointPath).accept(MediaType.APPLICATION_JSON))
 						.andExpect(status().isOk()).andDo(document(output))
 						.andDo(new ResultHandler() {
+
 							@Override
 							public void handle(MvcResult mvcResult) throws Exception {
 								EndpointDoc endpoint = new EndpointDoc(docs,
 										endpointPath);
 								endpoints.add(endpoint);
 							}
+
 						});
 			}
 		}

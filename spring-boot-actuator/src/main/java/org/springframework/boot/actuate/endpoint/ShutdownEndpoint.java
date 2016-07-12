@@ -30,6 +30,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  *
  * @author Dave Syer
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "endpoints.shutdown")
 public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>>
@@ -61,20 +62,20 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>>
 			return SHUTDOWN_MESSAGE;
 		}
 		finally {
-			new Thread(new Runnable() {
-
+			Thread thread = new Thread(new Runnable() {
 				@Override
 				public void run() {
 					try {
 						Thread.sleep(500L);
 					}
 					catch (InterruptedException ex) {
-						// Swallow exception and continue
+						Thread.currentThread().interrupt();
 					}
 					ShutdownEndpoint.this.context.close();
 				}
-
-			}).start();
+			});
+			thread.setContextClassLoader(getClass().getClassLoader());
+			thread.start();
 		}
 	}
 

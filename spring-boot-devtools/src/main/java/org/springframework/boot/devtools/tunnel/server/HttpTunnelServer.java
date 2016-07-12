@@ -273,6 +273,7 @@ public class HttpTunnelServer {
 						this.httpConnections.wait(HttpTunnelServer.this.longPollTimeout);
 					}
 					catch (InterruptedException ex) {
+						Thread.currentThread().interrupt();
 						closeHttpConnections();
 					}
 					httpConnection = this.httpConnections.pollFirst();
@@ -442,7 +443,7 @@ public class HttpTunnelServer {
 						}
 					}
 					catch (InterruptedException ex) {
-						// Ignore
+						Thread.currentThread().interrupt();
 					}
 				}
 			}

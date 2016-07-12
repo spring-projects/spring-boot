@@ -149,6 +149,7 @@ content into your application; rather pick only the properties that you need.
 	server.compression.excluded-user-agents= # List of user-agents to exclude from compression.
 	server.compression.mime-types= # Comma-separated list of MIME types that should be compressed. For instance `text/html,text/css,application/json`
 	server.compression.min-response-size= # Minimum response size that is required for compression to be performed. For instance 2048
+	server.connection-timeout= # Time in milliseconds that connectors will wait for another HTTP request before closing the connection. When not set, the connector's container-specific default will be used. Use a value of -1 to indicate no (i.e. infinite) timeout.
 	server.context-parameters.*= # Servlet context init parameters. For instance `server.context-parameters.a=alpha`
 	server.context-path= # Context path of the application.
 	server.display-name=application # Display name of the application.
@@ -163,7 +164,7 @@ content into your application; rather pick only the properties that you need.
 	server.jsp-servlet.init-parameters.*= # Init parameters used to configure the JSP servlet
 	server.jsp-servlet.registered=true # Whether or not the JSP servlet is registered
 	server.port=8080 # Server HTTP port.
-	server.server-header= # The value sent in the server response header (uses servlet container default if empty)
+	server.server-header= # Value to use for the Server response header (no header is sent if empty)
 	server.servlet-path=/ # Path of the main dispatcher servlet.
 	server.use-forward-headers= # If X-Forwarded-* headers should be applied to the HttpRequest.
 	server.session.cookie.comment= # Comment for the session cookie.
@@ -196,6 +197,7 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.accesslog.enabled=false # Enable access log.
 	server.tomcat.accesslog.pattern=common # Format pattern for access logs.
 	server.tomcat.accesslog.prefix=access_log # Log file name prefix.
+	server.tomcat.accesslog.rename-on-rotate=false # Defer inclusion of the date stamp in the file name until rotate time.
 	server.tomcat.accesslog.suffix=.log # Log file name suffix.
 	server.tomcat.background-processor-delay=30 # Delay in seconds between the invocation of backgroundProcess methods.
 	server.tomcat.basedir= # Tomcat base directory. If not specified a temporary directory will be used.
@@ -211,6 +213,7 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.port-header=X-Forwarded-Port # Name of the HTTP header used to override the original port value.
 	server.tomcat.protocol-header= # Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
 	server.tomcat.protocol-header-https-value=https # Value of the protocol header that indicates that the incoming request uses SSL.
+	server.tomcat.redirect-context-root= # Whether requests to the context root should be redirected by appending a / to the path.
 	server.tomcat.remote-ip-header= # Name of the http header from which the remote ip is extracted. For instance `X-FORWARDED-FOR`
 	server.tomcat.uri-encoding=UTF-8 # Character encoding to use to decode the URI.
 	server.undertow.accesslog.dir= # Undertow access log directory.
@@ -333,11 +336,12 @@ content into your application; rather pick only the properties that you need.
 	spring.mvc.async.request-timeout= # Amount of time (in milliseconds) before asynchronous request handling times out.
 	spring.mvc.date-format= # Date format to use. For instance `dd/MM/yyyy`.
 	spring.mvc.dispatch-trace-request=false # Dispatch TRACE requests to the FrameworkServlet doService method.
-	spring.mvc.dispatch-options-request=false # Dispatch OPTIONS requests to the FrameworkServlet doService method.
+	spring.mvc.dispatch-options-request=true # Dispatch OPTIONS requests to the FrameworkServlet doService method.
 	spring.mvc.favicon.enabled=true # Enable resolution of favicon.ico.
 	spring.mvc.ignore-default-model-on-redirect=true # If the content of the "default" model should be ignored during redirect scenarios.
 	spring.mvc.locale= # Locale to use. By default, this locale is overridden by the "Accept-Language" header.
 	spring.mvc.locale-resolver=accept-header # Define how the locale should be resolved.
+	spring.mvc.log-resolved-exception=false # Enable warn logging of exceptions resolved by a "HandlerExceptionResolver".
 	spring.mvc.media-types.*= # Maps file extensions to media types for content negotiation.
 	spring.mvc.message-codes-resolver-format= # Formatting strategy for message codes. For instance `PREFIX_ERROR_CODE`.
 	spring.mvc.servlet.load-on-startup=-1 # Load on startup priority of the Spring Web Services servlet.
@@ -362,6 +366,8 @@ content into your application; rather pick only the properties that you need.
 
 	# SPRING SESSION ({sc-spring-boot-autoconfigure}/session/SessionProperties.{sc-ext}[SessionProperties])
 	spring.session.hazelcast.map-name=spring:session:sessions # Name of the map used to store sessions.
+	spring.session.jdbc.initializer.enabled=true # Create the required session tables on startup if necessary.
+	spring.session.jdbc.schema=classpath:org/springframework/session/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.session.jdbc.table-name=SPRING_SESSION # Name of database table used to store sessions.
 	spring.session.mongo.collection-name=sessions # Collection name used to store sessions.
 	spring.session.redis.flush-mode= # Flush mode for the Redis sessions.
@@ -545,6 +551,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.reconnection-policy= # Reconnection policy class.
 	spring.data.cassandra.retry-policy= # Class name of the retry policy.
 	spring.data.cassandra.serial-consistency-level= # Queries serial consistency level.
+	spring.data.cassandra.schema-action= # Schema action to take at startup.
 	spring.data.cassandra.ssl=false # Enable SSL support.
 	spring.data.cassandra.username= # Login user of the server.
 
@@ -624,18 +631,20 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.url= # JDBC url of the database.
 	spring.datasource.username=
 
+	# JEST (Elasticsearch HTTP client) ({sc-spring-boot-autoconfigure}/jest/JestProperties.{sc-ext}[JestProperties])
+	spring.elasticsearch.jest.connection-timeout=3000 # Connection timeout in milliseconds.
+	spring.elasticsearch.jest.password= # Login password.
+	spring.elasticsearch.jest.proxy.host= # Proxy host the HTTP client should use.
+	spring.elasticsearch.jest.proxy.port= # Proxy port the HTTP client should use.
+	spring.elasticsearch.jest.read-timeout=3000 # Read timeout in milliseconds.
+	spring.elasticsearch.jest.uris=http://localhost:9200 # Comma-separated list of the Elasticsearch instances to use.
+	spring.elasticsearch.jest.username= # Login user.
+
 	# H2 Web Console ({sc-spring-boot-autoconfigure}/h2/H2ConsoleProperties.{sc-ext}[H2ConsoleProperties])
 	spring.h2.console.enabled=false # Enable the console.
 	spring.h2.console.path=/h2-console # Path at which the console will be available.
 	spring.h2.console.settings.trace=false # Enable trace output.
 	spring.h2.console.settings.web-allow-others=false # Enable remote access.
-
-	# JEST (ElasticSearch HTTP client) ({sc-spring-boot-autoconfigure}/jest/JestProperties.{sc-ext}[JestProperties])
-	spring.jest.connection-timeout=3000 # Connection timeout in milliseconds.
-	spring.jest.password= # Login password.
-	spring.jest.read-timeout=3000 # Read timeout in milliseconds.
-	spring.jest.uris=http://localhost:9200 # Comma-separated list of the elasticsearch instances to use.
-	spring.jest.username= # Login user.
 
 	# JOOQ ({sc-spring-boot-autoconfigure}/jooq/JooqAutoConfiguration.{sc-ext}[JooqAutoConfiguration])
 	spring.jooq.sql-dialect= # SQLDialect JOOQ used when communicating with the configured datasource. For instance `POSTGRES`
@@ -829,7 +838,9 @@ content into your application; rather pick only the properties that you need.
 	spring.artemis.embedded.topics= # Comma-separated list of topics to create on startup.
 	spring.artemis.host=localhost # Artemis broker host.
 	spring.artemis.mode= # Artemis deployment mode, auto-detected by default. Can be explicitly set to "native" or "embedded".
+	spring.artemis.password= # Login password of the broker.
 	spring.artemis.port=61616 # Artemis broker port.
+	spring.artemis.user= # Login user of the broker.
 
 	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchProperties.{sc-ext}[BatchProperties])
 	spring.batch.initializer.enabled=true # Create the required batch tables on startup if necessary.
@@ -950,6 +961,9 @@ content into your application; rather pick only the properties that you need.
 	endpoints.health.path= # Endpoint path.
 	endpoints.health.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.health.time-to-live=1000 # Time to live for cached result, in milliseconds.
+	endpoints.heapdump.enabled= # Enable the endpoint.
+	endpoints.heapdump.path= # Endpoint path.
+	endpoints.heapdump.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.info.enabled= # Enable the endpoint.
 	endpoints.info.id= # Endpoint identifier.
 	endpoints.info.path= # Endpoint path.
@@ -961,6 +975,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.liquibase.id= # Endpoint identifier.
 	endpoints.liquibase.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.logfile.enabled=true # Enable the endpoint.
+	endpoints.logfile.external-file= # External Logfile to be accessed.
 	endpoints.logfile.path=/logfile # Endpoint URL path.
 	endpoints.logfile.sensitive=true # Enable security on the endpoint.
 	endpoints.mappings.enabled= # Enable the endpoint.
@@ -1004,10 +1019,25 @@ content into your application; rather pick only the properties that you need.
 	management.add-application-context-header=true # Add the "X-Application-Context" HTTP header in each response.
 	management.address= # Network address that the management endpoints should bind to.
 	management.context-path= # Management endpoint context-path. For instance `/actuator`
-	management.port= # Management endpoint HTTP port. Use the same port as the application by default.
+	management.port= # Management endpoint HTTP port. Uses the same port as the application by default. Configure a different port to use management-specific SSL.
 	management.security.enabled=true # Enable security.
 	management.security.roles=ADMIN # Comma-separated list of roles that can access the management endpoint.
 	management.security.sessions=stateless # Session creating policy to use (always, never, if_required, stateless).
+	management.ssl.ciphers= # Supported SSL ciphers. Requires a custom management.port.
+	management.ssl.client-auth= # Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store. Requires a custom management.port.
+	management.ssl.enabled= # Enable SSL support. Requires a custom management.port.
+	management.ssl.enabled-protocols= # Enabled SSL protocols. Requires a custom management.port.
+	management.ssl.key-alias= # Alias that identifies the key in the key store. Requires a custom management.port.
+	management.ssl.key-password= # Password used to access the key in the key store. Requires a custom management.port.
+	management.ssl.key-store= # Path to the key store that holds the SSL certificate (typically a jks file). Requires a custom management.port.
+	management.ssl.key-store-password= # Password used to access the key store. Requires a custom management.port.
+	management.ssl.key-store-provider= # Provider for the key store. Requires a custom management.port.
+	management.ssl.key-store-type= # Type of the key store. Requires a custom management.port.
+	management.ssl.protocol=TLS # SSL protocol to use. Requires a custom management.port.
+	management.ssl.trust-store= # Trust store that holds SSL certificates. Requires a custom management.port.
+	management.ssl.trust-store-password= # Password used to access the trust store. Requires a custom management.port.
+	management.ssl.trust-store-provider= # Provider for the trust store. Requires a custom management.port.
+	management.ssl.trust-store-type= # Type of the trust store. Requires a custom management.port.
 
 	# HEALTH INDICATORS (previously health.*)
 	management.health.db.enabled=true # Enable database health check.
@@ -1054,7 +1084,7 @@ content into your application; rather pick only the properties that you need.
 	management.shell.telnet.port=5000 # Telnet port.
 
 	# TRACING ({sc-spring-boot-actuator}/trace/TraceProperties.{sc-ext}[TraceProperties])
-	management.trace.include=request-headers,response-headers,errors # Items to be included in the trace.
+	management.trace.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.
 
 	# METRICS EXPORT ({sc-spring-boot-actuator}/metrics/export/MetricExportProperties.{sc-ext}[MetricExportProperties])
 	spring.metrics.export.aggregate.key-pattern= # Pattern that tells the aggregator what to do with the keys from the source repository.

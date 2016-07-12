@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,35 +18,44 @@ package org.springframework.boot.actuate.metrics.util;
 
 import java.util.ArrayList;
 import java.util.NavigableMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
-
-import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
  * Repository utility that stores stuff in memory with period-separated String keys.
  *
  * @param <T> the type to store
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class SimpleInMemoryRepository<T> {
 
 	private ConcurrentNavigableMap<String, T> values = new ConcurrentSkipListMap<String, T>();
 
-	private final ConcurrentMap<String, Object> locks = new ConcurrentReferenceHashMap<String, Object>();
+	private final ConcurrentMap<String, Object> locks = new ConcurrentHashMap<String, Object>();
 
 	public T update(String name, Callback<T> callback) {
-		Object lock = this.locks.putIfAbsent(name, new Object());
-		if (lock == null) {
-			lock = this.locks.get(name);
-		}
+		Object lock = getLock(name);
 		synchronized (lock) {
 			T current = this.values.get(name);
 			T value = callback.modify(current);
 			this.values.put(name, value);
 			return value;
 		}
+	}
+
+	private Object getLock(String name) {
+		Object lock = this.locks.get(name);
+		if (lock == null) {
+			Object newLock = new Object();
+			lock = this.locks.putIfAbsent(name, newLock);
+			if (lock == null) {
+				lock = newLock;
+			}
+		}
+		return lock;
 	}
 
 	public void set(String name, T value) {

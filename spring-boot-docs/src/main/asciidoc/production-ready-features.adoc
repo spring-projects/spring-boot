@@ -62,7 +62,7 @@ The way that endpoints are exposed will depend on the type of technology that yo
 Most applications choose HTTP monitoring, where the ID of the endpoint is mapped
 to a URL. For example, by default, the `health` endpoint will be mapped to `/health`.
 
-The following endpoints are available:
+The following technology agnostic endpoints are available:
 
 [cols="2,5,1"]
 |===
@@ -86,11 +86,6 @@ HATEOAS to be on the classpath.
 |Displays a collated list of all `@ConfigurationProperties`.
 |true
 
-|`docs`
-|Displays documentation, including example requests and responses, for the Actuator's
-endpoints. Requires `spring-boot-actuator-docs` to be on the classpath.
-|false
-
 |`dump`
 |Performs a thread dump.
 |true
@@ -104,8 +99,9 @@ endpoints. Requires `spring-boot-actuator-docs` to be on the classpath.
 |true
 
 |`health`
-|Shows application health information (when the application is secure, a simple '`status`' when accessed over an
-unauthenticated connection or full message details when authenticated).
+|Shows application health information (when the application is secure, a simple '`status`'
+when accessed over an unauthenticated connection or full message details when
+authenticated).
 |false
 
 |`info`
@@ -114,12 +110,6 @@ unauthenticated connection or full message details when authenticated).
 
 |`liquibase`
 |Shows any Liquibase database migrations that have been applied.
-|true
-
-|`logfile`
-|Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
-been set). Only available via MVC. Supports the use of the HTTP `Range` header to retrieve
-part of the log file's content.
 |true
 
 |`metrics`
@@ -136,6 +126,32 @@ part of the log file's content.
 
 |`trace`
 |Displays trace information (by default the last few HTTP requests).
+|true
+|===
+
+If you are using Spring MVC, the following additional endpoints can also be used:
+
+[cols="2,5,1"]
+|===
+| ID | Description | Sensitive Default
+
+|`docs`
+|Displays documentation, including example requests and responses, for the Actuator's
+endpoints. Requires `spring-boot-actuator-docs` to be on the classpath.
+|false
+
+|`heapdump`
+|Returns a GZip compressed `hprof` heap dump file.
+|true
+
+|`jolokia`
+|Exposes JMX beans over HTTP (when Jolokia is on the classpath).
+|true
+
+|`logfile`
+|Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
+been set). Supports the use of the HTTP `Range` header to retrieve part of the log file's
+content.
 |true
 |===
 
@@ -292,7 +308,7 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |Checks that a connection to `DataSource` can be obtained.
 
 |{sc-spring-boot-actuator}/health/ElasticsearchHealthIndicator.{sc-ext}[`ElasticsearchHealthIndicator`]
-|Checks that an ElasticSearch cluster is up.
+|Checks that an Elasticsearch cluster is up.
 
 |{sc-spring-boot-actuator}/health/JmsHealthIndicator.{sc-ext}[`JmsHealthIndicator`]
 |Checks that a JMS broker is up.
@@ -326,6 +342,7 @@ additional details to be displayed.
 
 [source,java,indent=0]
 ----
+	import org.springframework.boot.actuate.health.Health;
 	import org.springframework.boot.actuate.health.HealthIndicator;
 	import org.springframework.stereotype.Component;
 
@@ -595,6 +612,39 @@ disable the management security in this way, and it might even break the applica
 
 
 
+[[production-ready-management-specific-ssl]]
+=== Configuring management-specific SSL
+When configured to use a custom port, the management server can also be configured with
+its own SSL using the various `management.ssl.*` properties. For example, this allows a
+management server to be available via HTTP while the main application uses HTTPS:
+
+[source,properties,indent=0]
+----
+	server.port=8443
+	server.ssl.enabled=true
+	server.ssl.key-store=classpath:store.jks
+	server.ssl.key-password=secret
+	management.port=8080
+	management.ssl.enable=false
+----
+
+Alternatively, both the main server and the management server can use SSL but with
+different key stores:
+
+[source,properties,indent=0]
+----
+	server.port=8443
+	server.ssl.enabled=true
+	server.ssl.key-store=classpath:main.jks
+	server.ssl.key-password=secret
+	management.port=8080
+	management.ssl.enable=true
+	management.ssl.key-store=classpath:management.jks
+	management.ssl.key-password=secret
+----
+
+
+
 [[production-ready-customizing-management-server-address]]
 === Customizing the management server address
 You can customize the address that the management endpoints are available on by
@@ -633,10 +683,10 @@ The information exposed by the health endpoint varies depending on whether or no
 accessed anonymously, and whether or not the enclosing application is secure.
 By default, when accessed anonymously in a secure application, any details about the
 server's health are hidden and the endpoint will simply indicate whether or not the server
-is up or down. Furthermore, when accessed anonymously, the response is cached for a
-configurable period to prevent the endpoint being used in a denial of service attack.
-The `endpoints.health.time-to-live` property is used to configure the caching period in
-milliseconds. It defaults to 1000, i.e. one second.
+is up or down. Furthermore the response is cached for a configurable period to prevent the
+endpoint being used in a denial of service attack. The `endpoints.health.time-to-live`
+property is used to configure the caching period in milliseconds. It defaults to 1000,
+i.e. one second.
 
 The above-described restrictions can be enhanced, thereby allowing only authenticated
 users full access to the health endpoint in a secure application. To do so, set

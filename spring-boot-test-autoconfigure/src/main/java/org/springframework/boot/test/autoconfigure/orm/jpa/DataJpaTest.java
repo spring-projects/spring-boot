@@ -23,6 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
@@ -70,6 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
+@ImportAutoConfiguration
 public @interface DataJpaTest {
 
 	/**

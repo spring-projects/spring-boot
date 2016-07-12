@@ -28,12 +28,14 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.assertj.core.api.Condition;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
@@ -58,15 +60,18 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.HandlerAdapter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.handler.HandlerExceptionResolverComposite;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
+import org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
@@ -521,6 +526,39 @@ public class WebMvcAutoConfigurationTests {
 				.isNotInstanceOf(MyRequestMappingHandlerMapping.class);
 		assertThat(this.context.getBean(RequestMappingHandlerAdapter.class))
 				.isNotInstanceOf(MyRequestMappingHandlerAdapter.class);
+	}
+
+	@Test
+	public void defaultLogResolvedException() {
+		load();
+		testLogResolvedExceptionCustomization(false);
+	}
+
+	@Test
+	public void customLogResolvedException() {
+		load("spring.mvc.log-resolved-exception:true");
+		testLogResolvedExceptionCustomization(true);
+	}
+
+	private void testLogResolvedExceptionCustomization(final boolean expected) {
+		HandlerExceptionResolver exceptionResolver = this.context
+				.getBean(HandlerExceptionResolver.class);
+		assertThat(exceptionResolver)
+				.isInstanceOf(HandlerExceptionResolverComposite.class);
+		List<HandlerExceptionResolver> delegates = ((HandlerExceptionResolverComposite) exceptionResolver)
+				.getExceptionResolvers();
+		for (HandlerExceptionResolver delegate : delegates) {
+			if (delegate instanceof AbstractHandlerMethodAdapter) {
+				assertThat(
+						new DirectFieldAccessor(delegate).getPropertyValue("warnLogger"))
+								.is(new Condition<Object>() {
+									@Override
+									public boolean matches(Object value) {
+										return (expected ? value != null : value == null);
+									}
+								});
+			}
+		}
 	}
 
 	private void load(Class<?> config, String... environment) {

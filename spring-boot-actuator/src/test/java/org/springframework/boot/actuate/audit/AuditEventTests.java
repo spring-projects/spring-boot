@@ -18,7 +18,9 @@ package org.springframework.boot.actuate.audit;
 
 import java.util.Collections;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,11 +28,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link AuditEvent}.
  *
  * @author Dave Syer
+ * @author Vedran Pavic
  */
 public class AuditEventTests {
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@Test
-	public void testNowEvent() throws Exception {
+	public void nowEvent() throws Exception {
 		AuditEvent event = new AuditEvent("phil", "UNKNOWN",
 				Collections.singletonMap("a", (Object) "b"));
 		assertThat(event.getData().get("a")).isEqualTo("b");
@@ -40,10 +46,32 @@ public class AuditEventTests {
 	}
 
 	@Test
-	public void testConvertStringsToData() throws Exception {
+	public void convertStringsToData() throws Exception {
 		AuditEvent event = new AuditEvent("phil", "UNKNOWN", "a=b", "c=d");
 		assertThat(event.getData().get("a")).isEqualTo("b");
 		assertThat(event.getData().get("c")).isEqualTo("d");
+	}
+
+	@Test
+	public void nullTimestamp() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Timestamp must not be null");
+		new AuditEvent(null, "phil", "UNKNOWN",
+				Collections.singletonMap("a", (Object) "b"));
+	}
+
+	@Test
+	public void nullPrincipal() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Principal must not be null");
+		new AuditEvent(null, "UNKNOWN", Collections.singletonMap("a", (Object) "b"));
+	}
+
+	@Test
+	public void nullType() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Type must not be null");
+		new AuditEvent("phil", null, Collections.singletonMap("a", (Object) "b"));
 	}
 
 }

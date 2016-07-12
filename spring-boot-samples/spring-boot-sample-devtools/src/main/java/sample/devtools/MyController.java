@@ -18,6 +18,7 @@ package sample.devtools;
 
 import java.util.Date;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -27,6 +28,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class MyController {
+
+	@PostConstruct
+	public void slowRestart() throws InterruptedException {
+		Thread.sleep(5000);
+	}
 
 	@GetMapping("/")
 	public ModelAndView get(HttpSession session) {

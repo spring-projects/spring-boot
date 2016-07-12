@@ -200,6 +200,10 @@ public class JarFile extends java.util.jar.JarFile {
 		return (JarEntry) getEntry(name);
 	}
 
+	public boolean containsEntry(String name) {
+		return this.entries.containsEntry(name);
+	}
+
 	@Override
 	public ZipEntry getEntry(String name) {
 		return this.entries.getEntry(name);
@@ -320,8 +324,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public String getName() {
-		String path = this.pathFromRoot;
-		return this.rootFile.getFile() + path;
+		return this.rootFile.getFile() + this.pathFromRoot;
 	}
 
 	boolean isSigned() {
@@ -362,6 +365,10 @@ public class JarFile extends java.util.jar.JarFile {
 
 	public void clearCache() {
 		this.entries.clearCache();
+	}
+
+	protected String getPathFromRoot() {
+		return this.pathFromRoot;
 	}
 
 	/**

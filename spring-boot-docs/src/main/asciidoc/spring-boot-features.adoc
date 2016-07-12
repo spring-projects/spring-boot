@@ -734,8 +734,8 @@ Nested POJO properties can also be created (so a setter is not mandatory) if the
 default constructor, or a constructor accepting a single value that can be coerced from
 String. Some people use Project Lombok to add getters and setters automatically.
 
-NOTE: Contrary to `@Value`, SpEL expressions are not evaluated prior to injecting a value
-in the relevant `@ConfigurationProperties` bean.
+TIP: See also the <<boot-features-external-config-vs-value,differences between `@Value`
+and `@ConfigurationProperties`>>.
 
 The `@EnableConfigurationProperties` annotation is automatically applied to your project
 so that any beans annotated with `@ConfigurationProperties` will be configured from the
@@ -952,6 +952,41 @@ TIP: The `spring-boot-actuator` module includes an endpoint that exposes all
 or use the equivalent JMX endpoint. See the
 _<<production-ready-features.adoc#production-ready-endpoints, Production ready features>>_.
 section for details.
+
+
+
+[[boot-features-external-config-vs-value]]
+==== @ConfigurationProperties vs. @Value
+`@Value` is a core container feature and it does not provide the same features as
+type-safe Configuration Properties. The table below summarizes the features that are
+supported by `@ConfigurationProperties` and `@Value`:
+
+[cols="4,2,2"]
+|===
+|Feature |`@ConfigurationProperties` |`@Value`
+
+| <<boot-features-external-config-relaxed-binding,Relaxed binding>>
+| Yes
+| No
+
+| <<appendix-configuration-metadata.adoc#configuration-metadata,Meta-data support>>
+| Yes
+| No
+
+| `SpEL` evaluation
+| No
+| Yes
+|===
+
+If you define a set of configuration keys for your own components, we recommend you to
+group them in a POJO annotated with `@ConfigurationProperties`. Please also be aware
+that since `@Value` does not support relaxed binding, it isn't a great candidate if you
+need to provide the value using environment variables.
+
+Finally, while you can write a `SpEL` expression in `@Value`, such expressions are not
+processed from <<boot-features-external-config-application-property-files,Application
+property files>>.
+
 
 
 [[boot-features-profiles]]
@@ -2132,6 +2167,11 @@ packaged as an executable archive), there are some limitations in the JSP suppor
 
 * Undertow does not support JSPs.
 
+* Creating a custom `error.jsp` page won't override the default view for
+  <<boot-features-error-handling,error handling>>,
+  <<boot-features-error-handling-custom-error-pages,custom error pages>> should be used
+  instead.
+
 There is a {github-code}/spring-boot-samples/spring-boot-sample-web-jsp[JSP sample] so you
 can see how to set things up.
 
@@ -2629,6 +2669,15 @@ http://spring.io/guides/gs/accessing-data-jpa/['`Accessing Data with JPA`'] guid
 http://spring.io and read the http://projects.spring.io/spring-data-jpa/[Spring Data JPA]
 and  http://hibernate.org/orm/documentation/[Hibernate] reference documentation.
 
+
+[NOTE]
+====
+By default, Spring Boot uses Hibernate 5.0.x. However it's also possible to use 4.3.x
+or 5.2.x if you wish. Please refer to the
+{github-code}/spring-boot-samples/spring-boot-sample-hibernate4[Hibernate 4] and
+{github-code}/spring-boot-samples/spring-boot-sample-hibernate52[Hibernate 5.2] samples
+to see how to do so.
+====
 
 
 [[boot-features-entity-classes]]
@@ -3321,30 +3370,30 @@ https://github.com/searchbox-io/Jest[Jest].
 
 
 [[boot-features-connecting-to-elasticsearch-jest]]
-==== Connecting to Elasticsearch using Spring Data
+==== Connecting to Elasticsearch using Jest
 If you have `Jest` on the classpath, you can inject an auto-configured `JestClient`
 targeting `http://localhost:9200` by default. You can further tune how the client is
 configured:
 
 [source,properties,indent=0]
 ----
-	spring.jest.uris=http://search.example.com:9200
-	spring.jest.read-timeout=10000
-	spring.jest.username=user
-	spring.jest.password=secret
+	spring.elasticsearch.jest.uris=http://search.example.com:9200
+	spring.elasticsearch.jest.read-timeout=10000
+	spring.elasticsearch.jest.username=user
+	spring.elasticsearch.jest.password=secret
 ----
 
 To take full control over the registration, define a `JestClient` bean.
 
 
-[[boot-features-connecting-to-elasticsearch]]
+
 [[boot-features-connecting-to-elasticsearch-spring-data]]
 ==== Connecting to Elasticsearch using Spring Data
 You can inject an auto-configured `ElasticsearchTemplate` or Elasticsearch `Client`
 instance as you would any other Spring Bean. By default the instance will embed a
-local in-memory server (a `Node` in ElasticSearch terms) and use the current working
+local in-memory server (a `Node` in Elasticsearch terms) and use the current working
 directory as the home directory for the server. In this setup, the first thing to do
-is to tell ElasticSearch where to store its files:
+is to tell Elasticsearch where to store its files:
 
 [source,properties,indent=0]
 ----
@@ -4085,6 +4134,7 @@ For instance, the following exposes another factory that uses a specific
 Then you can use in any `@JmsListener`-annotated method as follows:
 
 [source,java,indent=0]
+[subs="verbatim,quotes"]
 ----
 	@Component
 	public class MyBean {
@@ -4227,6 +4277,7 @@ For instance, the following exposes another factory that uses a specific
 Then you can use in any `@RabbitListener`-annotated method as follows:
 
 [source,java,indent=0]
+[subs="verbatim,quotes"]
 ----
 	@Component
 	public class MyBean {
@@ -4284,7 +4335,23 @@ Here's a typical example:
 
 TIP: `RestTemplateBuilder` includes a number of useful methods that can be used to quickly
 configure a `RestTemplate`. For example, to add BASIC auth support you can use
-`build.basicAuthorization("user', "password").build()`.
+`builder.basicAuthorization("user", "password").build()`.
+
+[[boot-features-restclient-customization]]
+=== RestTemplate customization
+When a `RestTemplateBuilder` builds a `RestTemplate` it can be further customized using
+a `RestTemplateCustomizer`. Any `RestTemplateCustomizer` beans will be automatically
+added to the auto-configured `RestTemplateBuilder`. Furthermore, a new
+`RestTemplateBuilder` with additional customizers can be created by calling
+`additionalCustomizers(RestTemplateCustomizer...)`.
+
+Here's an example of a customizer that configures the use of a proxy for all hosts except
+`192.168.0.5`:
+
+[source,java,indent=0]
+----
+include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[tag=customizer]
+----
 
 
 
@@ -4516,13 +4583,18 @@ Spring Boot provides Spring Session auto-configuration for a wide range of store
 
 If Spring Session is available, you only need to choose the
 {sc-spring-boot-autoconfigure}/session/StoreType.{sc-ext}[`StoreType`] that you wish to
-use to store the sessions. For instance to use Redis as backend store, you'd configure
+use to store the sessions. For instance to use JDBC as backend store, you'd configure
 your application as follows:
 
 [source,properties,indent=0]
 ----
-    spring.session.store-type=redis
+    spring.session.store-type=jdbc
 ----
+
+NOTE: For backward compatibility if Redis is available Spring Session will be automatically
+configured to use Redis.
+
+TIP: You can disable Spring Session by setting the `store-type` to `none`.
 
 Each store has specific additional settings. For instance it is possible to customize
 the name of the table for the jdbc store:
@@ -4651,7 +4723,7 @@ automatically whenever you don't explicitly define one.
 
 The search algorithm works up from the package that contains the test until it finds a
 `@SpringBootApplication` or `@SpringBootConfiguration` annotated class. As long as you've
-<<using-boot-structuring-your-code, structure your code>> in a sensible way your main
+<<using-boot-structuring-your-code, structured your code>> in a sensible way your main
 configuration is usually found.
 
 If you want to customize the primary configuration, you can use a nested
@@ -4858,6 +4930,9 @@ NOTE: JSON helper classes can also be used directly in standard unit tests. Simp
 call the `initFields` method of the helper in your `@Before` method if you aren't using
 `@JsonTest`.
 
+A list of the auto-configuration that is enabled by `@JsonTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-mvc-tests]]
@@ -4871,9 +4946,11 @@ will not be scanned when using this annotation.
 Often `@WebMvcTest` will be limited to a single controller and used in combination with
 `@MockBean` to provide mock implementations for required collaborators.
 
-`@WebMvcTest` is meta-annotated with `@AutoConfigureMockMvc` which provides
-auto-configuration of `MockMvc`. Mock MVC offers a powerful way to quickly test MVC
-controllers without needing to start a full HTTP server.
+`@WebMvcTest` also auto-configures `MockMvc`. Mock MVC offers a powerful way to quickly
+test MVC controllers without needing to start a full HTTP server.
+
+TIP: You can also auto-configure `MockMvc` in a non-`@WebMvcTest` (e.g. `SpringBootTest`)
+by annotating it with `@AutoConfigureMockMvc`.
 
 [source,java,indent=0]
 ----
@@ -4950,6 +5027,9 @@ and/or a `WebDriver` bean. Here is an example that uses HtmlUnit:
 	}
 ----
 
+A list of the auto-configuration that is enabled by `@WebMvcTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test]]
@@ -4966,11 +5046,12 @@ disable transaction management for a test or for the whole class as follows:
 
 [source,java,indent=0]
 ----
-	import org.junit.*;
-	import org.junit.runner.*;
-	import org.springframework.boot.test.autoconfigure.orm.jpa.*;
-    import org.springframework.test.context.transaction.TestTransaction;
-    import org.springframework.transaction.annotation.Propagation;
+	import org.junit.Test;
+	import org.junit.runner.RunWith;
+	import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+	import org.springframework.transaction.annotation.Propagation;
+	import org.springframework.transaction.annotation.Transactional;
 
 	@RunWith(SpringRunner.class)
 	@DataJpaTest
@@ -5031,12 +5112,14 @@ database you can use the `@AutoConfigureTestDatabase` annotation:
 	}
 ----
 
+A list of the auto-configuration that is enabled by `@DataJpaTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-client]]
 ==== Auto-configured REST clients
-Use `@RestClientTest` annotation can be used if you want to test REST clients. By default
+The `@RestClientTest` annotation can be used if you want to test REST clients. By default
 it will auto-configure Jackson and GSON support, configure a `RestTemplateBuilder` and
 add support for `MockRestServiceServer`. The specific beans that you want to test should
 be specified using `value` or `components` attribute of `@RestClientTest`:
@@ -5065,6 +5148,9 @@ be specified using `value` or `components` attribute of `@RestClientTest`:
 
 	}
 ----
+
+A list of the auto-configuration that is enabled by `@RestClientTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 
 

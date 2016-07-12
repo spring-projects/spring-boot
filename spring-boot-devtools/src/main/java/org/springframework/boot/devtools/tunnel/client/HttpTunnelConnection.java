@@ -150,7 +150,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 			return size;
 		}
 
-		private synchronized void openNewConnection(final HttpTunnelPayload payload) {
+		private void openNewConnection(final HttpTunnelPayload payload) {
 			HttpTunnelConnection.this.executor.execute(new Runnable() {
 
 				@Override

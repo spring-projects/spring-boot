@@ -66,11 +66,12 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private int[] positions;
 
-	private final Map<Integer, JarEntry> entriesCache = Collections
-			.synchronizedMap(new LinkedHashMap<Integer, JarEntry>(16, 0.75f, true) {
+	private final Map<Integer, FileHeader> entriesCache = Collections
+			.synchronizedMap(new LinkedHashMap<Integer, FileHeader>(16, 0.75f, true) {
 
 				@Override
-				protected boolean removeEldestEntry(Map.Entry<Integer, JarEntry> eldest) {
+				protected boolean removeEldestEntry(
+						Map.Entry<Integer, FileHeader> eldest) {
 					if (JarFileEntries.this.jarFile.isSigned()) {
 						return false;
 					}
@@ -165,6 +166,10 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		return new EntryIterator();
 	}
 
+	public boolean containsEntry(String name) {
+		return getEntry(name, FileHeader.class, true) != null;
+	}
+
 	public JarEntry getEntry(String name) {
 		return getEntry(name, JarEntry.class, true);
 	}
@@ -235,21 +240,17 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	@SuppressWarnings("unchecked")
 	private <T extends FileHeader> T getEntry(int index, Class<T> type,
 			boolean cacheEntry) {
-		JarEntry entry = this.entriesCache.get(index);
-		if (entry != null) {
-			return (T) entry;
-		}
 		try {
-			CentralDirectoryFileHeader header = CentralDirectoryFileHeader
-					.fromRandomAccessData(this.centralDirectoryData,
-							this.centralDirectoryOffsets[index]);
-			if (FileHeader.class.equals(type)) {
-				// No need to convert
-				return (T) header;
+			FileHeader cached = this.entriesCache.get(index);
+			FileHeader entry = (cached != null ? cached
+					: CentralDirectoryFileHeader.fromRandomAccessData(
+							this.centralDirectoryData,
+							this.centralDirectoryOffsets[index], this.filter));
+			if (CentralDirectoryFileHeader.class.equals(entry.getClass())
+					&& type.equals(JarEntry.class)) {
+				entry = new JarEntry(this.jarFile, (CentralDirectoryFileHeader) entry);
 			}
-			entry = new JarEntry(this.jarFile, applyFilter(header.getName()).toString(),
-					header);
-			if (cacheEntry) {
+			if (cacheEntry && cached != entry) {
 				this.entriesCache.put(index, entry);
 			}
 			return (T) entry;

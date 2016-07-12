@@ -46,6 +46,7 @@
 		<module>spring-boot-sample-flyway</module>
 		<module>spring-boot-sample-hateoas</module>
 		<module>spring-boot-sample-hibernate4</module>
+		<module>spring-boot-sample-hibernate52</module>
 		<module>spring-boot-sample-hornetq</module>
 		<module>spring-boot-sample-hypermedia</module>
 		<module>spring-boot-sample-hypermedia-gson</module>
@@ -87,6 +88,8 @@
 		<module>spring-boot-sample-tomcat-ssl</module>
 		<module>spring-boot-sample-tomcat-multi-connectors</module>
 		<module>spring-boot-sample-tomcat7-jsp</module>
+		<module>spring-boot-sample-tomcat7-ssl</module>
+		<module>spring-boot-sample-tomcat80-ssl</module>
 		<module>spring-boot-sample-traditional</module>
 		<module>spring-boot-sample-undertow</module>
 		<module>spring-boot-sample-undertow-ssl</module>

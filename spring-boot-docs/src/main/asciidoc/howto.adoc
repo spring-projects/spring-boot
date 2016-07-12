@@ -82,6 +82,15 @@ by the `ApplicationContext` as well. See
 _<<spring-boot-features.adoc#boot-features-application-events-and-listeners>>_ in the
 '`Spring Boot features`' section for a complete list.
 
+It is also possible to customize the `Environment` before the application context is
+refreshed using `EnvironmentPostProcessor`. Each implementation should be registered in
+`META-INF/spring.factories`:
+
+[source,properties,indent=0]
+----
+	org.springframework.boot.env.EnvironmentPostProcessor=com.example.YourEnvironmentPostProcessor
+----
+
 
 
 [[howto-build-an-application-context-hierarchy]]
@@ -1382,6 +1391,30 @@ have been applied from the auto-configuration:
 		resolver.setLayoutUrl("layout/default.vm");
 		return resolver;
 	}
+----
+
+
+
+[[howto-http-clients]]
+== HTTP clients
+
+
+
+[[howto-http-clients-proxy-configuration]]
+=== Configure RestTemplate to use a proxy
+As described in <<spring-boot-features.adoc#boot-features-restclient-customization>>,
+a `RestTemplateCustomizer` can be used with `RestTemplateBuilder` to build a customized
+`RestTemplate`. This is the recommended approach for creating a `RestTemplate` configured
+to use a proxy.
+
+The exact details of the proxy configuration depend on the underlying client request
+factory that is being used. Here's an example of configuring
+`HttpComponentsClientRequestFactory` with an `HttpClient` that uses a proxy for all hosts
+except `192.168.0.5`.
+
+[source,java,indent=0]
+----
+include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[tag=customizer]
 ----
 
 

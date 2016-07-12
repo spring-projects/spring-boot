@@ -52,7 +52,7 @@ class FileWatchingFailureHandler implements FailureHandler {
 			latch.await();
 		}
 		catch (InterruptedException ex) {
-			// Ignore
+			Thread.currentThread().interrupt();
 		}
 		return Outcome.RETRY;
 	}

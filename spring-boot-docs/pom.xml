@@ -300,8 +300,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-logging-juli</artifactId>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-juli</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -886,6 +886,25 @@
 									</artifactItems>
 								</configuration>
 							</execution>
+							<execution>
+								<id>unpack-test-slices</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>org.springframework.boot</groupId>
+											<artifactId>spring-boot-test-autoconfigure</artifactId>
+											<version>${project.version}</version>
+											<outputDirectory>
+												${project.build.directory}/test-auto-config
+											</outputDirectory>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
 						</executions>
 					</plugin>
 					<plugin>
@@ -932,6 +951,7 @@
 							<scripts>
 								<script>file:///${project.basedir}/src/main/groovy/generateAutoConfigurationClassTables.groovy</script>
 								<script>file:///${project.basedir}/src/main/groovy/generateStarterTables.groovy</script>
+								<script>file:///${project.basedir}/src/main/groovy/generateTestSlicesTable.groovy</script>
 							</scripts>
 						</configuration>
 						<dependencies>
@@ -939,6 +959,11 @@
 								<groupId>org.codehaus.groovy</groupId>
 								<artifactId>groovy-all</artifactId>
 								<version>${groovy.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.springframework</groupId>
+								<artifactId>spring-core</artifactId>
+								<version>${spring.version}</version>
 							</dependency>
 						</dependencies>
 					</plugin>
@@ -949,7 +974,7 @@
 						<executions>
 							<execution>
 								<id>generate-docbook</id>
-								<phase>generate-resources</phase>
+								<phase>prepare-package</phase>
 								<goals>
 									<goal>process-asciidoc</goal>
 								</goals>
@@ -1007,7 +1032,7 @@
 								<goals>
 									<goal>generate-html</goal>
 								</goals>
-								<phase>generate-resources</phase>
+								<phase>prepare-package</phase>
 								<configuration>
 									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-singlepage.xsl</htmlCustomization>
 									<targetDirectory>${basedir}/target/docbook/htmlsingle</targetDirectory>
@@ -1033,7 +1058,7 @@
 								<goals>
 									<goal>generate-html</goal>
 								</goals>
-								<phase>generate-resources</phase>
+								<phase>prepare-package</phase>
 								<configuration>
 									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-multipage.xsl</htmlCustomization>
 									<targetDirectory>${basedir}/target/docbook/html</targetDirectory>
@@ -1060,7 +1085,7 @@
 								<goals>
 									<goal>generate-pdf</goal>
 								</goals>
-								<phase>generate-resources</phase>
+								<phase>prepare-package</phase>
 								<configuration>
 									<foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
 									<targetDirectory>${basedir}/target/docbook/pdf</targetDirectory>
@@ -1079,7 +1104,7 @@
 								<goals>
 									<goal>generate-epub3</goal>
 								</goals>
-								<phase>generate-resources</phase>
+								<phase>prepare-package</phase>
 								<configuration>
 									<epubCustomization>${basedir}/src/main/docbook/xsl/epub.xsl</epubCustomization>
 									<targetDirectory>${basedir}/target/docbook/epub</targetDirectory>

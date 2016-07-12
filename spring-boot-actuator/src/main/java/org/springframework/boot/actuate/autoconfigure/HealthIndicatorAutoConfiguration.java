@@ -57,11 +57,11 @@ import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoCo
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.jest.JestAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProviders;
-import org.springframework.boot.autoconfigure.jest.JestAutoConfiguration;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
@@ -98,8 +98,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 		MongoDataAutoConfiguration.class, RabbitAutoConfiguration.class,
 		RedisAutoConfiguration.class, SolrAutoConfiguration.class })
 @EnableConfigurationProperties({ HealthIndicatorProperties.class })
-@Import({ ElasticsearchHealthIndicatorConfiguration.SpringData.class,
-		ElasticsearchHealthIndicatorConfiguration.Jest.class })
+@Import({ ElasticsearchHealthIndicatorConfiguration.ElasticsearchSpringDataHealthIndicatorConfiguration.class,
+		ElasticsearchHealthIndicatorConfiguration.ElasticsearchJestHealthIndicatorConfiguration.class })
 public class HealthIndicatorAutoConfiguration {
 
 	private final HealthIndicatorProperties properties;

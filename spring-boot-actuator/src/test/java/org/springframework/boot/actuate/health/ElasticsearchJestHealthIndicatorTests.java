@@ -41,9 +41,10 @@ public class ElasticsearchJestHealthIndicatorTests {
 
 	private final JestClient jestClient = mock(JestClient.class);
 
-	private final ElasticsearchJestHealthIndicator healthIndicator =
-			new ElasticsearchJestHealthIndicator(this.jestClient);
+	private final ElasticsearchJestHealthIndicator healthIndicator = new ElasticsearchJestHealthIndicator(
+			this.jestClient);
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void elasticSearchIsUp() throws IOException {
 		given(this.jestClient.execute(any(Action.class)))
@@ -52,31 +53,28 @@ public class ElasticsearchJestHealthIndicatorTests {
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 	}
+
+	@SuppressWarnings("unchecked")
 	@Test
 	public void elasticSearchIsDown() throws IOException {
 		given(this.jestClient.execute(any(Action.class))).willThrow(
 				new CouldNotConnectException("http://localhost:9200", new IOException()));
-
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void elasticSearchIsOutOfService() throws IOException {
 		given(this.jestClient.execute(any(Action.class)))
 				.willReturn(createJestResult(4, 1));
-
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 	}
 
 	private static JestResult createJestResult(int shards, int failedShards) {
-		String json = String.format("{_shards: {\n" +
-				"total: %s,\n" +
-				"successful: %s,\n" +
-				"failed: %s\n" +
-				"}}", shards, shards - failedShards, failedShards);
-
+		String json = String.format("{_shards: {\n" + "total: %s,\n" + "successful: %s,\n"
+				+ "failed: %s\n" + "}}", shards, shards - failedShards, failedShards);
 		SearchResult searchResult = new SearchResult(new Gson());
 		searchResult.setJsonString(json);
 		searchResult.setJsonObject(new JsonParser().parse(json).getAsJsonObject());

@@ -46,7 +46,7 @@ class HornetQXAConnectionFactoryConfiguration {
 	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
 	public ConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory,
 			HornetQProperties properties, XAConnectionFactoryWrapper wrapper)
-			throws Exception {
+					throws Exception {
 		return wrapper.wrapConnectionFactory(
 				new HornetQConnectionFactoryFactory(beanFactory, properties)
 						.createConnectionFactory(

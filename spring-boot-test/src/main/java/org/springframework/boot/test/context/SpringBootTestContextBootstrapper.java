@@ -33,6 +33,7 @@ import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.support.DefaultTestContextBootstrapper;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -122,7 +123,13 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		if (webEnvironment != null) {
 			if (webEnvironment.isEmbedded() || (webEnvironment == WebEnvironment.MOCK
 					&& hasWebEnvironmentClasses())) {
-				mergedConfig = new WebMergedContextConfiguration(mergedConfig, "");
+				WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
+						.findMergedAnnotation(mergedConfig.getTestClass(),
+								WebAppConfiguration.class);
+				String resourceBasePath = (webAppConfiguration == null ? "src/main/webapp"
+						: webAppConfiguration.value());
+				mergedConfig = new WebMergedContextConfiguration(mergedConfig,
+						resourceBasePath);
 			}
 		}
 		return mergedConfig;

@@ -18,7 +18,6 @@ package org.springframework.boot.test;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,13 +31,11 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.protocol.HttpContext;
 
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
-import org.springframework.util.Base64Utils;
+import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
@@ -56,8 +53,6 @@ import org.springframework.web.client.RestTemplate;
  */
 @Deprecated
 public class TestRestTemplate extends RestTemplate {
-
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	/**
 	 * Create a new {@link TestRestTemplate} instance.
@@ -113,29 +108,6 @@ public class TestRestTemplate extends RestTemplate {
 		 * Enable redirects.
 		 */
 		ENABLE_REDIRECTS
-
-	}
-
-	private static class BasicAuthorizationInterceptor
-			implements ClientHttpRequestInterceptor {
-
-		private final String username;
-
-		private final String password;
-
-		BasicAuthorizationInterceptor(String username, String password) {
-			this.username = username;
-			this.password = (password == null ? "" : password);
-		}
-
-		@Override
-		public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-				ClientHttpRequestExecution execution) throws IOException {
-			String token = Base64Utils.encodeToString(
-					(this.username + ":" + this.password).getBytes(UTF_8));
-			request.getHeaders().add("Authorization", "Basic " + token);
-			return execution.execute(request, body);
-		}
 
 	}
 

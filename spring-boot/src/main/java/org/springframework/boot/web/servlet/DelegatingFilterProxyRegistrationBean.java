@@ -18,6 +18,7 @@ package org.springframework.boot.web.servlet;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -84,7 +85,15 @@ public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistr
 
 	@Override
 	public Filter getFilter() {
-		return new DelegatingFilterProxy(this.targetBeanName, getWebApplicationContext());
+		return new DelegatingFilterProxy(this.targetBeanName,
+				getWebApplicationContext()) {
+
+			@Override
+			protected void initFilterBean() throws ServletException {
+				// Don't initialize filter bean on init()
+			}
+
+		};
 	}
 
 	private WebApplicationContext getWebApplicationContext() {

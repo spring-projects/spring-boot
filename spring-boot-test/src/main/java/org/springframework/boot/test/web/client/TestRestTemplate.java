@@ -36,7 +36,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 
-import org.springframework.boot.web.client.BasicAuthorizationInterceptor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -47,6 +46,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
+import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
