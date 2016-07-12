@@ -18,9 +18,7 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.assertj.core.api.Assertions;
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.neo4j.ogm.drivers.http.driver.HttpDriver;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
@@ -47,9 +45,6 @@ import static org.mockito.Mockito.mock;
  * @author Vince Bickers
  */
 public class Neo4jDataAutoConfigurationTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 

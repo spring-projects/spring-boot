@@ -394,7 +394,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void elasticSearchHealthIndicator() {
+	public void elasticsearchHealthIndicator() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.data.elasticsearch.properties.path.home:target",
 				"management.health.diskspace.enabled:false");
@@ -411,7 +411,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void elasticSearchJestHealthIndicator() {
+	public void elasticsearchJestHealthIndicator() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.diskspace.enabled:false");
 		this.context.register(JestClientConfiguration.class,
