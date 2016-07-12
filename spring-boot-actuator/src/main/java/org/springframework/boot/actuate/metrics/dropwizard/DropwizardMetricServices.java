@@ -128,8 +128,9 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 	}
 
 	private String wrapName(String metricName, String prefix) {
-		if (this.names.containsKey(metricName)) {
-			return this.names.get(metricName);
+		String cached = this.names.get(metricName);
+		if (cached != null) {
+			return cached;
 		}
 		if (metricName.startsWith(prefix)) {
 			return metricName;
