@@ -33,6 +33,8 @@ public class ElasticsearchJestHealthIndicator extends AbstractHealthIndicator {
 
 	private final JestClient jestClient;
 
+	private final JsonParser jsonParser = new JsonParser();
+
 	public ElasticsearchJestHealthIndicator(JestClient jestClient) {
 		this.jestClient = jestClient;
 	}
@@ -40,8 +42,7 @@ public class ElasticsearchJestHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		JestResult aliases = this.jestClient.execute(new Stats.Builder().build());
-		JsonParser jsonParser = new JsonParser();
-		JsonElement root = jsonParser.parse(aliases.getJsonString());
+		JsonElement root = this.jsonParser.parse(aliases.getJsonString());
 		JsonObject shards = root.getAsJsonObject().get("_shards").getAsJsonObject();
 		int failedShards = shards.get("failed").getAsInt();
 		if (failedShards != 0) {

@@ -43,14 +43,14 @@ class ElasticsearchHealthIndicatorConfiguration {
 	@ConditionalOnBean(Client.class)
 	@ConditionalOnEnabledHealthIndicator("elasticsearch")
 	@EnableConfigurationProperties(ElasticsearchHealthIndicatorProperties.class)
-	static class ElasticsearchSpringDataHealthIndicatorConfiguration extends
+	static class ElasticsearchClientHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<ElasticsearchHealthIndicator, Client> {
 
 		private final Map<String, Client> clients;
 
 		private final ElasticsearchHealthIndicatorProperties properties;
 
-		ElasticsearchSpringDataHealthIndicatorConfiguration(Map<String, Client> clients,
+		ElasticsearchClientHealthIndicatorConfiguration(Map<String, Client> clients,
 				ElasticsearchHealthIndicatorProperties properties) {
 			this.clients = clients;
 			this.properties = properties;
