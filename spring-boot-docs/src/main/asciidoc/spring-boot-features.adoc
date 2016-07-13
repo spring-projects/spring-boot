@@ -701,6 +701,57 @@ case that you need to load values that way, you need to use a properties file.
 
 
 
+[[boot-features-external-config-complex-type-merge]]
+==== Merging YAML lists
+As <<boot-features-external-config-loading-yaml,we have seen above>>, any YAML content is
+ultimately transformed to properties. That process may be counter intuitive when
+overriding "`list`" properties via a profile.
+
+For example, assume a `MyPojo` object with `name` and `description` attributes
+that are `null` by default. Let's expose a list of `MyPojo` from `FooProperties`:
+
+[source,java,indent=0]
+----
+	@ConfigurationProperties("foo")
+	public class FooProperties {
+
+		private final List<MyPojo> list = new ArrayList<>();
+
+		public List<MyPojo> getList() {
+			return this.list;
+		}
+
+	}
+----
+
+Consider the following configuration:
+
+[source,yaml,indent=0]
+----
+	foo:
+	  list:
+	    - name: my name
+	      description: my description
+	---
+	spring:
+	  profiles: dev
+	foo:
+	  list:
+        - name: my another name
+----
+
+If the `dev` profile isn't active, `FooProperties.list` will contain one `MyPojo` entry
+as defined above. If the `dev` profile is enabled however, the `list` will _still_
+only contain one entry (with name "`my another name`" and description `null`). This
+configuration _will not_ add a second `MyPojo` instance to the list, and it won't merge
+the items.
+
+When a collection is specified in multiples profiles, the one with highest priority is
+used (and only that one). Similarly, do not expect the list to shrink if a
+profile-specific property source has one entry while the standard one defines two.
+
+
+
 [[boot-features-external-config-typesafe-configuration-properties]]
 === Type-safe Configuration Properties
 Using the `@Value("${property}")` annotation to inject configuration properties can
