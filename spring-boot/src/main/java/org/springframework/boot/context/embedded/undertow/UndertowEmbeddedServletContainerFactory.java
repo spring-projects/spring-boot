@@ -300,11 +300,13 @@ public class UndertowEmbeddedServletContainerFactory
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
 					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 			Ssl ssl = getSsl();
-			String keyPassword = ssl.getKeyPassword();
-			if (keyPassword == null) {
-				keyPassword = ssl.getKeyStorePassword();
+			char[] keyPassword = ssl.getKeyPassword() != null
+				? ssl.getKeyPassword().toCharArray()
+				: null;
+			if (keyPassword == null && ssl.getKeyStorePassword() != null) {
+				keyPassword = ssl.getKeyStorePassword().toCharArray();
 			}
-			keyManagerFactory.init(keyStore, keyPassword.toCharArray());
+			keyManagerFactory.init(keyStore, keyPassword);
 			return keyManagerFactory.getKeyManagers();
 		}
 		catch (Exception ex) {
@@ -351,7 +353,7 @@ public class UndertowEmbeddedServletContainerFactory
 		}
 		KeyStore store = KeyStore.getInstance(type);
 		URL url = ResourceUtils.getURL(resource);
-		store.load(url.openStream(), password.toCharArray());
+		store.load(url.openStream(), password == null ? null : password.toCharArray());
 		return store;
 	}
 
