@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.net.ConnectException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -45,12 +46,14 @@ import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ClassPathChangeUploader}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class ClassPathChangeUploaderTests {
 
@@ -102,19 +105,28 @@ public class ClassPathChangeUploaderTests {
 	@Test
 	public void sendsClassLoaderFiles() throws Exception {
 		File sourceFolder = this.temp.newFolder();
-		Set<ChangedFile> files = new LinkedHashSet<ChangedFile>();
-		File file1 = createFile(sourceFolder, "File1");
-		File file2 = createFile(sourceFolder, "File2");
-		File file3 = createFile(sourceFolder, "File3");
-		files.add(new ChangedFile(sourceFolder, file1, Type.ADD));
-		files.add(new ChangedFile(sourceFolder, file2, Type.MODIFY));
-		files.add(new ChangedFile(sourceFolder, file3, Type.DELETE));
-		Set<ChangedFiles> changeSet = new LinkedHashSet<ChangedFiles>();
-		changeSet.add(new ChangedFiles(sourceFolder, files));
-		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
+		ClassPathChangedEvent event = createClassPathChangedEvent(sourceFolder);
 		this.requestFactory.willRespond(HttpStatus.OK);
 		this.uploader.onApplicationEvent(event);
+		assertThat(this.requestFactory.getExecutedRequests().size(), is(1));
 		MockClientHttpRequest request = this.requestFactory.getExecutedRequests().get(0);
+		verifyUploadRequest(sourceFolder, request);
+	}
+
+	@Test
+	public void retriesOnConnectException() throws Exception {
+		File sourceFolder = this.temp.newFolder();
+		ClassPathChangedEvent event = createClassPathChangedEvent(sourceFolder);
+		this.requestFactory.willRespond(new ConnectException());
+		this.requestFactory.willRespond(HttpStatus.OK);
+		this.uploader.onApplicationEvent(event);
+		assertThat(this.requestFactory.getExecutedRequests().size(), is(2));
+		verifyUploadRequest(sourceFolder,
+				this.requestFactory.getExecutedRequests().get(1));
+	}
+
+	private void verifyUploadRequest(File sourceFolder, MockClientHttpRequest request)
+			throws IOException, ClassNotFoundException {
 		ClassLoaderFiles classLoaderFiles = deserialize(request.getBodyAsBytes());
 		Collection<SourceFolder> sourceFolders = classLoaderFiles.getSourceFolders();
 		assertThat(sourceFolders.size(), equalTo(1));
@@ -131,6 +143,21 @@ public class ClassPathChangeUploaderTests {
 		assertThat(file.getContents(),
 				equalTo(content == null ? null : content.getBytes()));
 		assertThat(file.getKind(), equalTo(kind));
+	}
+
+	private ClassPathChangedEvent createClassPathChangedEvent(File sourceFolder)
+			throws IOException {
+		Set<ChangedFile> files = new LinkedHashSet<ChangedFile>();
+		File file1 = createFile(sourceFolder, "File1");
+		File file2 = createFile(sourceFolder, "File2");
+		File file3 = createFile(sourceFolder, "File3");
+		files.add(new ChangedFile(sourceFolder, file1, Type.ADD));
+		files.add(new ChangedFile(sourceFolder, file2, Type.MODIFY));
+		files.add(new ChangedFile(sourceFolder, file3, Type.DELETE));
+		Set<ChangedFiles> changeSet = new LinkedHashSet<ChangedFiles>();
+		changeSet.add(new ChangedFiles(sourceFolder, files));
+		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
+		return event;
 	}
 
 	private File createFile(File sourceFolder, String name) throws IOException {
