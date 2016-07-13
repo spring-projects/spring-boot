@@ -59,13 +59,7 @@ public class SimpleInMemoryRepository<T> {
 	}
 
 	public void set(String name, T value) {
-		T current = this.values.get(name);
-		if (current != null) {
-			this.values.replace(name, current, value);
-		}
-		else {
-			this.values.putIfAbsent(name, value);
-		}
+		this.values.put(name, value);
 	}
 
 	public long count() {
@@ -77,10 +71,7 @@ public class SimpleInMemoryRepository<T> {
 	}
 
 	public T findOne(String name) {
-		if (this.values.containsKey(name)) {
-			return this.values.get(name);
-		}
-		return null;
+		return this.values.get(name);
 	}
 
 	public Iterable<T> findAll() {
