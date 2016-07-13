@@ -65,6 +65,8 @@ import static org.mockito.Mockito.spy;
  *
  * @author Stephane Nicoll
  */
+@Deprecated
+@SuppressWarnings("deprecation")
 public class HornetQAutoConfigurationTests {
 
 	@Rule

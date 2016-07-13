@@ -28,6 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
+@Deprecated
+@SuppressWarnings("deprecation")
 public class HornetQEmbeddedConfigurationFactoryTests {
 
 	@Test

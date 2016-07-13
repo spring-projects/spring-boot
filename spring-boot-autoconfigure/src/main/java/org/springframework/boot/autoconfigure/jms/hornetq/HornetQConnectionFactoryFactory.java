@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,9 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @since 1.2.0
+ * @deprecated as of 1.4 in favor of the artemis support
  */
+@Deprecated
 class HornetQConnectionFactoryFactory {
 
 	static final String EMBEDDED_JMS_CLASS = "org.hornetq.jms.server.embedded.EmbeddedJMS";

@@ -30,8 +30,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  * @since 1.1.0
+ * @deprecated as of 1.4 in favor of the artemis support
  */
 @ConfigurationProperties(prefix = "spring.hornetq")
+@Deprecated
 public class HornetQProperties {
 
 	/**

@@ -30,7 +30,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Stéphane Lagraulet
  * @author Stephane Nicoll
+ * @deprecated as of 1.4 in favor of the artemis support
  */
+@Deprecated
 class SpringBootHornetQXAConnectionFactory extends HornetQXAConnectionFactory {
 
 	private final HornetQProperties properties;
