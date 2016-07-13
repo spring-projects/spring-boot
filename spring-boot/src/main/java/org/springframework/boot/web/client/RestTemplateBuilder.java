@@ -520,20 +520,26 @@ public class RestTemplateBuilder {
 		return Collections.unmodifiableSet(result);
 	}
 
+	/**
+	 * Strategy interface used to customize the {@link ClientHttpRequestFactory}.
+	 */
 	private interface RequestFactoryCustomizer {
 
 		void customize(ClientHttpRequestFactory factory);
 
 	}
 
-	private static abstract class TimeoutConfiguringRequestFactoryCustomizer
+	/**
+	 * {@link RequestFactoryCustomizer} to call a "set timeout" method.
+	 */
+	private static abstract class TimeoutRequestFactoryCustomizer
 			implements RequestFactoryCustomizer {
 
 		private final int timeout;
 
 		private final String methodName;
 
-		TimeoutConfiguringRequestFactoryCustomizer(int timeout, String methodName) {
+		TimeoutRequestFactoryCustomizer(int timeout, String methodName) {
 			this.timeout = timeout;
 			this.methodName = methodName;
 		}
@@ -555,8 +561,11 @@ public class RestTemplateBuilder {
 
 	}
 
+	/**
+	 * {@link RequestFactoryCustomizer} to set the read timeout.
+	 */
 	private static class ReadTimeoutRequestFactoryCustomizer
-			extends TimeoutConfiguringRequestFactoryCustomizer {
+			extends TimeoutRequestFactoryCustomizer {
 
 		ReadTimeoutRequestFactoryCustomizer(int readTimeout) {
 			super(readTimeout, "setReadTimeout");
@@ -564,8 +573,11 @@ public class RestTemplateBuilder {
 
 	}
 
+	/**
+	 * {@link RequestFactoryCustomizer} to set the connect timeout.
+	 */
 	private static class ConnectTimeoutRequestFactoryCustomizer
-			extends TimeoutConfiguringRequestFactoryCustomizer {
+			extends TimeoutRequestFactoryCustomizer {
 
 		ConnectTimeoutRequestFactoryCustomizer(int connectTimeout) {
 			super(connectTimeout, "setConnectTimeout");
