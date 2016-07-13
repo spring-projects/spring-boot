@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.devtools.remote.client;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -51,6 +52,7 @@ import org.springframework.util.FileCopyUtils;
  * Listens and pushes any classpath updates to a remote endpoint.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.3.0
  */
 public class ClassPathChangeUploader
@@ -91,19 +93,41 @@ public class ClassPathChangeUploader
 	public void onApplicationEvent(ClassPathChangedEvent event) {
 		try {
 			ClassLoaderFiles classLoaderFiles = getClassLoaderFiles(event);
-			ClientHttpRequest request = this.requestFactory.createRequest(this.uri,
-					HttpMethod.POST);
 			byte[] bytes = serialize(classLoaderFiles);
-			HttpHeaders headers = request.getHeaders();
-			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-			headers.setContentLength(bytes.length);
-			FileCopyUtils.copy(bytes, request.getBody());
-			logUpload(classLoaderFiles);
-			ClientHttpResponse response = request.execute();
-			Assert.state(response.getStatusCode() == HttpStatus.OK, "Unexpected "
-					+ response.getStatusCode() + " response uploading class files");
+			performUpload(classLoaderFiles, bytes);
 		}
 		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
+	private void performUpload(ClassLoaderFiles classLoaderFiles, byte[] bytes)
+			throws IOException {
+		try {
+			while (true) {
+				try {
+					ClientHttpRequest request = this.requestFactory
+							.createRequest(this.uri, HttpMethod.POST);
+					HttpHeaders headers = request.getHeaders();
+					headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+					headers.setContentLength(bytes.length);
+					FileCopyUtils.copy(bytes, request.getBody());
+					ClientHttpResponse response = request.execute();
+					Assert.state(response.getStatusCode() == HttpStatus.OK,
+							"Unexpected " + response.getStatusCode()
+									+ " response uploading class files");
+					logUpload(classLoaderFiles);
+					return;
+				}
+				catch (ConnectException ex) {
+					logger.warn("Failed to connect when uploading to " + this.uri
+							+ ". Upload will be retried in 2 seconds");
+					Thread.sleep(2000);
+				}
+			}
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
 			throw new IllegalStateException(ex);
 		}
 	}
