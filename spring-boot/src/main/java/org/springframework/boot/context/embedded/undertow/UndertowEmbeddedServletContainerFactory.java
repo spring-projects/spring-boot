@@ -294,17 +294,14 @@ public class UndertowEmbeddedServletContainerFactory
 			}
 			KeyStore keyStore = KeyStore.getInstance(keyStoreType);
 			URL url = ResourceUtils.getURL(ssl.getKeyStore());
-			char[] keyStorePassword = ssl.getKeyStorePassword() != null
-					? ssl.getKeyStorePassword().toCharArray()
-					: null;
+			char[] keyStorePassword = (ssl.getKeyStorePassword() != null
+					? ssl.getKeyStorePassword().toCharArray() : null);
 			keyStore.load(url.openStream(), keyStorePassword);
-
 			// Get key manager to provide client credentials.
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
 					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			char[] keyPassword = ssl.getKeyPassword() != null
-					? ssl.getKeyPassword().toCharArray()
-					: keyStorePassword;
+			char[] keyPassword = (ssl.getKeyPassword() != null
+					? ssl.getKeyPassword().toCharArray() : keyStorePassword);
 			keyManagerFactory.init(keyStore, keyPassword);
 			return keyManagerFactory.getKeyManagers();
 		}
