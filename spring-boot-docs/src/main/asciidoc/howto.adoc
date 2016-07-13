@@ -1881,6 +1881,27 @@ bean.
 
 
 
+[[howto-configure-a-component-that-is-used-by-JPA]]
+=== Configure a component that is used by JPA
+If you want to configure a component that will be used by JPA then you need to ensure
+that the component is initialized before JPA. Where the component is auto-configured
+Spring Boot will take care of this for you. For example, when Flyway is auto-configured,
+Hibernate is configured to depend upon Flyway so that the latter has a chance to
+initialize the database before Hibernate tries to use it.
+
+If you are configuring a component yourself, you can use an
+`EntityManagerFactoryDependsOnPostProcessor` subclass as a convenient way of setting up
+the necessary dependencies. For example, if you are using Hibernate Search with
+Elasticsearch as its index manager then any `EntityManagerFactory` beans must be
+configured to depend on the `elasticsearchClient` bean:
+
+[source,java,indent=0]
+----
+include::{code-examples}/elasticsearch/HibernateSearchElasticsearchExample.java[tag=configuration]
+----
+
+
+
 [[howto-database-initialization]]
 == Database initialization
 An SQL database can be initialized in different ways depending on what your stack is. Or
