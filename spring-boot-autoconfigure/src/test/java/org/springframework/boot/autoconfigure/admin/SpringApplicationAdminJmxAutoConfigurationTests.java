@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
@@ -49,6 +52,7 @@ import static org.junit.Assert.fail;
  * Tests for {@link SpringApplicationAdminJmxAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 public class SpringApplicationAdminJmxAutoConfigurationTests {
 
@@ -129,6 +133,37 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 				.getEmbeddedServletContainer().getPort();
 		String actual = getProperty(createDefaultObjectName(), "local.server.port");
 		assertEquals(String.valueOf(expected), actual);
+	}
+
+	@Test
+	public void onlyRegisteredOnceWhenThereIsAChildContext() throws Exception {
+		SpringApplicationBuilder parentBuilder = new SpringApplicationBuilder().web(false)
+				.sources(JmxAutoConfiguration.class,
+						SpringApplicationAdminJmxAutoConfiguration.class);
+		SpringApplicationBuilder childBuilder = parentBuilder
+				.child(JmxAutoConfiguration.class,
+						SpringApplicationAdminJmxAutoConfiguration.class)
+				.web(false);
+		ConfigurableApplicationContext parent = null;
+		ConfigurableApplicationContext child = null;
+
+		try {
+			parent = parentBuilder.run("--" + ENABLE_ADMIN_PROP);
+			child = childBuilder.run("--" + ENABLE_ADMIN_PROP);
+			BeanFactoryUtils.beanOfType(parent.getBeanFactory(),
+					SpringApplicationAdminMXBeanRegistrar.class);
+			this.thrown.expect(NoSuchBeanDefinitionException.class);
+			BeanFactoryUtils.beanOfType(child.getBeanFactory(),
+					SpringApplicationAdminMXBeanRegistrar.class);
+		}
+		finally {
+			if (parent != null) {
+				parent.close();
+			}
+			if (child != null) {
+				child.close();
+			}
+		}
 	}
 
 	private ObjectName createDefaultObjectName() {
