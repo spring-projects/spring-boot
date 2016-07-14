@@ -747,8 +747,26 @@ configuration _will not_ add a second `MyPojo` instance to the list, and it won'
 the items.
 
 When a collection is specified in multiples profiles, the one with highest priority is
-used (and only that one). Similarly, do not expect the list to shrink if a
-profile-specific property source has one entry while the standard one defines two.
+used (and only that one):
+
+[source,yaml,indent=0]
+----
+	foo:
+	  list:
+		- name: my name
+		  description: my description
+		- name: another name
+		  description: another description
+	---
+	spring:
+	  profiles: dev
+	foo:
+	  list:
+		 - name: my another name
+----
+
+In the example above, considering that the `dev` profile is active, `FooProperties.list`
+will contain _one_ `MyPojo` entry (with name "`my another name`" and description `null`).
 
 
 
