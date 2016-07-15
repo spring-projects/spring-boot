@@ -5370,6 +5370,12 @@ this when you don't need the full features provided by `@SpringBootTest`.
 		initializers = ConfigFileApplicationContextInitializer.class)
 ----
 
+NOTE: Using `ConfigFileApplicationContextInitializer` alone won't provide support for
+`@Value("${...}")` injection. Its only job is to ensure that `application.properties` files
+are loaded into Spring's `Environment`. For `@Value` support you need to either
+additionally configure a `PropertySourcesPlaceholderConfigurer` or use `@SpringBootTest`
+where one will be auto-configured for you.
+
 
 
 [[boot-features-environment-test-utilities]]
