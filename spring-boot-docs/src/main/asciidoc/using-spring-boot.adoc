@@ -697,9 +697,6 @@ You might also want to use the useful operating system environment variable:
 	$ export MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=128M
 ----
 
-(The "`egd`" setting is to speed up Tomcat startup by giving it a faster source of
-entropy for session keys.)
-
 
 
 [[using-boot-running-with-the-gradle-plugin]]
