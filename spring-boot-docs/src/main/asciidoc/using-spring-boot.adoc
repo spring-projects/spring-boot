@@ -694,7 +694,7 @@ You might also want to use the useful operating system environment variable:
 
 [indent=0,subs="attributes"]
 ----
-	$ export MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=128M -Djava.security.egd=file:/dev/./urandom
+	$ export MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=128M
 ----
 
 (The "`egd`" setting is to speed up Tomcat startup by giving it a faster source of
@@ -717,7 +717,7 @@ You might also want to use this useful operating system environment variable:
 
 [indent=0,subs="attributes"]
 ----
-	$ export JAVA_OPTS=-Xmx1024m -XX:MaxPermSize=128M -Djava.security.egd=file:/dev/./urandom
+	$ export JAVA_OPTS=-Xmx1024m -XX:MaxPermSize=128M
 ----
 
 
