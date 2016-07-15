@@ -79,7 +79,7 @@ public class FixedAuthoritiesExtractor implements AuthoritiesExtractor {
 		}
 		for (String key : AUTHORITY_KEYS) {
 			if (map.containsKey(key)) {
-				return map.get(map);
+				return map.get(key);
 			}
 		}
 		return map;
