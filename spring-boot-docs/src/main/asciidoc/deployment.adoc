@@ -620,7 +620,6 @@ for Gradle and to `${project.name}` for Maven.
 
 
 [[deployment-script-customization-when-it-runs]]
-[[deployment-script-customization-conf-file]]
 ===== Customizing script when it runs
 For items of the script that need to be customized _after_ the jar has been written you
 can use environment variables or a
