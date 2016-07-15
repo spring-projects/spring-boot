@@ -47,7 +47,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = RestDocsTestController.class, secure = false)
-@AutoConfigureRestDocs(outputDir = "target/generated-snippets")
+@AutoConfigureRestDocs("target/generated-snippets")
 public class RestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 
 	@Before
