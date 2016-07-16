@@ -445,7 +445,7 @@ Once installed, you can start and stop the service in the usual way. For example
 	$ /etc/init.d/myapp start
 ----
 
-TIP: If you're application fails to start, check the log file written to
+TIP: If your application fails to start, check the log file written to
 `/var/log/<appname>.log` for errors.
 
 You can also flag the application to start automatically using your standard operating
