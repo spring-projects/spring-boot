@@ -438,18 +438,19 @@ Spring Boot application as an `init.d` service simply create a symlink:
 	$ sudo ln -s /var/myapp/myapp.jar /etc/init.d/myapp
 ----
 
-Once installed, you can start and stop the service in the usual way. For example:
+Once installed, you can start and stop the service in the usual way. For example, on a
+Debian based system:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	$ /etc/init.d/myapp start
+	$ service myapp start
 ----
 
 TIP: If your application fails to start, check the log file written to
 `/var/log/<appname>.log` for errors.
 
 You can also flag the application to start automatically using your standard operating
-system tools. For example, if you use Debian:
+system tools. For example, on Debian:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
