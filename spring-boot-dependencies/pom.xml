@@ -81,7 +81,7 @@
 		<hikaricp.version>2.4.7</hikaricp.version>
 		<hikaricp-java6.version>2.3.13</hikaricp-java6.version>
 		<hornetq.version>2.4.7.Final</hornetq.version>
-		<hsqldb.version>2.3.4</hsqldb.version>
+		<hsqldb.version>2.3.3</hsqldb.version>
 		<httpasyncclient.version>4.1.2</httpasyncclient.version>
 		<httpclient.version>4.5.2</httpclient.version>
 		<httpcore.version>4.4.5</httpcore.version>
