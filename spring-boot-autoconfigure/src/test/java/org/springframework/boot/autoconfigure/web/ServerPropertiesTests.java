@@ -339,7 +339,7 @@ public class ServerPropertiesTests {
 		bindProperties(map);
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
-		assertThat(container.getValves()).isEmpty();
+		assertThat(container.getEngineValves()).isEmpty();
 	}
 
 	@Test
@@ -368,8 +368,8 @@ public class ServerPropertiesTests {
 	private void testRemoteIpValveConfigured() {
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
-		assertThat(container.getValves()).hasSize(1);
-		Valve valve = container.getValves().iterator().next();
+		assertThat(container.getEngineValves()).hasSize(1);
+		Valve valve = container.getEngineValves().iterator().next();
 		assertThat(valve).isInstanceOf(RemoteIpValve.class);
 		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
 		assertThat(remoteIpValve.getProtocolHeader()).isEqualTo("X-Forwarded-Proto");
@@ -398,8 +398,8 @@ public class ServerPropertiesTests {
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
 
-		assertThat(container.getValves()).hasSize(1);
-		Valve valve = container.getValves().iterator().next();
+		assertThat(container.getEngineValves()).hasSize(1);
+		Valve valve = container.getEngineValves().iterator().next();
 		assertThat(valve).isInstanceOf(RemoteIpValve.class);
 		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
 		assertThat(remoteIpValve.getProtocolHeader()).isEqualTo("x-my-protocol-header");
