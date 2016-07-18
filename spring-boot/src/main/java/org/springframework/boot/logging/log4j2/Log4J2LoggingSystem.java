@@ -130,13 +130,13 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	public void beforeInitialize() {
 		super.beforeInitialize();
-		getRootLoggerConfig().addFilter(FILTER);
+		getLoggerContext().getConfiguration().addFilter(FILTER);
 	}
 
 	@Override
 	public void initialize(LoggingInitializationContext initializationContext,
 			String configLocation, LogFile logFile) {
-		getRootLoggerConfig().removeFilter(FILTER);
+		getLoggerContext().getConfiguration().removeFilter(FILTER);
 		super.initialize(initializationContext, configLocation, logFile);
 	}
 
@@ -202,10 +202,6 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	public Runnable getShutdownHandler() {
 		return new ShutdownHandler();
-	}
-
-	private LoggerConfig getRootLoggerConfig() {
-		return getLoggerContext().getConfiguration().getLoggerConfig("");
 	}
 
 	private LoggerConfig getLoggerConfig(String name) {
