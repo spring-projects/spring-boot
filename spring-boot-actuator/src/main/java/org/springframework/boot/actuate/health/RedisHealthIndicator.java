@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,28 +50,22 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 				.getConnection(this.redisConnectionFactory);
 		try {
 			if (connection instanceof RedisClusterConnection) {
-				redisClusterInfo(builder,
-						((RedisClusterConnection) connection).clusterGetClusterInfo());
+				ClusterInfo clusterInfo = ((RedisClusterConnection) connection)
+						.clusterGetClusterInfo();
+				builder.up()
+						.withDetail("cluster_size", clusterInfo.getClusterSize())
+						.withDetail("slots_up", clusterInfo.getSlotsOk())
+						.withDetail("slots_fail", clusterInfo.getSlotsFail());
 			}
 			else {
 				Properties info = connection.info();
-				defaultRedisInfo(builder, VERSION, info.getProperty(REDIS_VERSION));
+				builder.up().withDetail(VERSION, info.getProperty(REDIS_VERSION));
 			}
 		}
 		finally {
 			RedisConnectionUtils.releaseConnection(connection,
 					this.redisConnectionFactory);
 		}
-	}
-
-	private void redisClusterInfo(Health.Builder builder, ClusterInfo clusterInfo) {
-		defaultRedisInfo(builder, "cluster_size", clusterInfo.getClusterSize());
-		defaultRedisInfo(builder, "slots_up", clusterInfo.getSlotsOk());
-		defaultRedisInfo(builder, "slots_fail", clusterInfo.getSlotsFail());
-	}
-
-	private void defaultRedisInfo(Health.Builder builder, String key, Object value) {
-		builder.up().withDetail(key, value);
 	}
 
 }
