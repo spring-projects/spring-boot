@@ -851,7 +851,7 @@ public class ServerProperties
 				valve.setPortHeader(getPortHeader());
 				valve.setProtocolHeaderHttpsValue(getProtocolHeaderHttpsValue());
 				// ... so it's safe to add this valve by default.
-				factory.addContextValves(valve);
+				factory.addEngineValves(valve);
 			}
 		}
 
@@ -925,7 +925,7 @@ public class ServerProperties
 			valve.setPrefix(this.accesslog.getPrefix());
 			valve.setSuffix(this.accesslog.getSuffix());
 			valve.setRenameOnRotate(this.accesslog.isRenameOnRotate());
-			factory.addContextValves(valve);
+			factory.addEngineValves(valve);
 		}
 
 		private void customizeRedirectContextRoot(

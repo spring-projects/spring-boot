@@ -34,6 +34,7 @@ import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 
 import org.apache.catalina.Context;
+import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
@@ -106,6 +107,8 @@ public class TomcatEmbeddedServletContainerFactory
 
 	private File baseDirectory;
 
+	private List<Valve> engineValves = new ArrayList<Valve>();
+
 	private List<Valve> contextValves = new ArrayList<Valve>();
 
 	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<LifecycleListener>();
@@ -162,12 +165,20 @@ public class TomcatEmbeddedServletContainerFactory
 		customizeConnector(connector);
 		tomcat.setConnector(connector);
 		tomcat.getHost().setAutoDeploy(false);
-		tomcat.getEngine().setBackgroundProcessorDelay(-1);
+		configureEngine(tomcat.getEngine());
 		for (Connector additionalConnector : this.additionalTomcatConnectors) {
 			tomcat.getService().addConnector(additionalConnector);
 		}
 		prepareContext(tomcat.getHost(), initializers);
 		return getTomcatEmbeddedServletContainer(tomcat);
+	}
+
+	private void configureEngine(Engine engine) {
+		engine.setBackgroundProcessorDelay(-1);
+
+		for (Valve valve : this.engineValves) {
+			engine.getPipeline().addValve(valve);
+		}
 	}
 
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
@@ -528,8 +539,18 @@ public class TomcatEmbeddedServletContainerFactory
 	}
 
 	/**
+	 * Set {@link Valve}s that should be applied to the Tomcat {@link Engine}. Calling
+	 * this method will replace any existing valves.
+	 * @param engineValves the valves to set
+	 */
+	public void setEngineValves(Collection<? extends Valve> engineValves) {
+		Assert.notNull(engineValves, "Valves must not be null");
+		this.engineValves = new ArrayList<Valve>(engineValves);
+	}
+
+	/**
 	 * Set {@link Valve}s that should be applied to the Tomcat {@link Context}. Calling
-	 * this method will replace any existing listeners.
+	 * this method will replace any existing valves.
 	 * @param contextValves the valves to set
 	 */
 	public void setContextValves(Collection<? extends Valve> contextValves) {
@@ -539,11 +560,40 @@ public class TomcatEmbeddedServletContainerFactory
 
 	/**
 	 * Returns a mutable collection of the {@link Valve}s that will be applied to the
+	 * Tomcat {@link Engine}.
+	 * @return the engineValves the valves that will be applied
+	 */
+	public Collection<Valve> getEngineValves() {
+		return this.engineValves;
+	}
+
+	/**
+	 * Returns a mutable collection of the {@link Valve}s that will be applied to the
 	 * Tomcat {@link Context}.
 	 * @return the contextValves the valves that will be applied
 	 */
-	public Collection<Valve> getValves() {
+	public Collection<Valve> getContextValves() {
 		return this.contextValves;
+	}
+
+	/**
+	 * Returns a mutable collection of the {@link Valve}s that will be applied to the
+	 * Tomcat {@link Context}.
+	 * @return the contextValves the valves that will be applied
+	 * @deprecated Renamed to {@link #getContextValves()}
+	 */
+	@Deprecated
+	public Collection<Valve> getValves() {
+		return getContextValves();
+	}
+
+	/**
+	 * Add {@link Valve}s that should be applied to the Tomcat {@link Engine}.
+	 * @param engineValves the valves to add
+	 */
+	public void addEngineValves(Valve... engineValves) {
+		Assert.notNull(engineValves, "Valves must not be null");
+		this.engineValves.addAll(Arrays.asList(engineValves));
 	}
 
 	/**
