@@ -693,7 +693,8 @@ public class TomcatEmbeddedServletContainerFactory
 
 	/**
 	 * {@link LifecycleListener} that stores an empty merged web.xml. This is critical for
-	 * Jasper to prevent warnings about missing web.xml files and to enable EL.
+	 * Jasper on Tomcat 7 to prevent warnings about missing web.xml files and to enable
+	 * EL.
 	 */
 	private static class StoreMergedWebXmlListener implements LifecycleListener {
 
@@ -708,10 +709,8 @@ public class TomcatEmbeddedServletContainerFactory
 
 		private void onStart(Context context) {
 			ServletContext servletContext = context.getServletContext();
-			if (servletContext
-					.getAttribute(StoreMergedWebXmlListener.MERGED_WEB_XML) == null) {
-				servletContext.setAttribute(StoreMergedWebXmlListener.MERGED_WEB_XML,
-						getEmptyWebXml());
+			if (servletContext.getAttribute(MERGED_WEB_XML) == null) {
+				servletContext.setAttribute(MERGED_WEB_XML, getEmptyWebXml());
 			}
 			TomcatResources.get(context).addClasspathResources();
 		}

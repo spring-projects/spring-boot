@@ -195,6 +195,13 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	public void beforeInitializeFilterDisablesErrorLogging() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		assertThat(this.logger.isErrorEnabled()).isFalse();
+		this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
+	}
+
+	@Test
 	public void customExceptionConversionWord() throws Exception {
 		System.setProperty("LOG_EXCEPTION_CONVERSION_WORD", "%ex");
 		try {
