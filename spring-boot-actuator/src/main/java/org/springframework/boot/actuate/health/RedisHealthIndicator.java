@@ -36,7 +36,9 @@ import org.springframework.util.Assert;
 public class RedisHealthIndicator extends AbstractHealthIndicator {
 
 	private static final String VERSION = "version";
+
 	private static final String REDIS_VERSION = "redis_version";
+
 	private final RedisConnectionFactory redisConnectionFactory;
 
 	public RedisHealthIndicator(RedisConnectionFactory connectionFactory) {
@@ -52,8 +54,7 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 			if (connection instanceof RedisClusterConnection) {
 				ClusterInfo clusterInfo = ((RedisClusterConnection) connection)
 						.clusterGetClusterInfo();
-				builder.up()
-						.withDetail("cluster_size", clusterInfo.getClusterSize())
+				builder.up().withDetail("cluster_size", clusterInfo.getClusterSize())
 						.withDetail("slots_up", clusterInfo.getSlotsOk())
 						.withDetail("slots_fail", clusterInfo.getSlotsFail());
 			}
