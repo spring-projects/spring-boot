@@ -886,6 +886,9 @@ for details). By default Spring Boot will search for commands in the following l
 
 TIP: You can change the search path by settings a `shell.command-path-patterns` property.
 
+NOTE: If you are using an executable archive, any classes that a shell command depends
+upon must be packaged in a nested jar rather than directly in the executable jar or war.
+
 Here is a simple '`hello`' command that could be loaded from
 `src/main/resources/commands/hello.groovy`
 
