@@ -730,7 +730,7 @@ public class TomcatEmbeddedServletContainerFactory
 	 */
 	private static class StoreMergedWebXmlListener implements LifecycleListener {
 
-		private final String MERGED_WEB_XML = "org.apache.tomcat.util.scan.MergedWebXml";
+		private static final String MERGED_WEB_XML = "org.apache.tomcat.util.scan.MergedWebXml";
 
 		@Override
 		public void lifecycleEvent(LifecycleEvent event) {
@@ -741,8 +741,8 @@ public class TomcatEmbeddedServletContainerFactory
 
 		private void onStart(Context context) {
 			ServletContext servletContext = context.getServletContext();
-			if (servletContext.getAttribute(this.MERGED_WEB_XML) == null) {
-				servletContext.setAttribute(this.MERGED_WEB_XML, getEmptyWebXml());
+			if (servletContext.getAttribute(MERGED_WEB_XML) == null) {
+				servletContext.setAttribute(MERGED_WEB_XML, getEmptyWebXml());
 			}
 			TomcatResources.get(context).addClasspathResources();
 		}
