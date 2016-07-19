@@ -61,11 +61,14 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 			String sourceName = entry.getKey();
 			if (source instanceof EnumerablePropertySource) {
 				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
-				Map<String, Object> map = new LinkedHashMap<String, Object>();
+				Map<String, Object> properties = new LinkedHashMap<String, Object>();
 				for (String name : enumerable.getPropertyNames()) {
-					map.put(name, sanitize(name, enumerable.getProperty(name)));
+					properties.put(name, sanitize(name, enumerable.getProperty(name)));
 				}
-				result.put(sourceName, map);
+				properties = postProcessSourceProperties(sourceName, properties);
+				if (properties != null) {
+					result.put(sourceName, properties);
+				}
 			}
 		}
 		return result;
@@ -102,6 +105,19 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	public Object sanitize(String name, Object object) {
 		return this.sanitizer.sanitize(name, object);
+	}
+
+	/**
+	 * Apply any post processing to source data before it is added.
+	 * @param sourceName the source name
+	 * @param properties the properties
+	 * @return the post-processed properties or {@code null} if the source should not be
+	 * added
+	 * @since 1.4.0
+	 */
+	protected Map<String, Object> postProcessSourceProperties(String sourceName,
+			Map<String, Object> properties) {
+		return properties;
 	}
 
 }
