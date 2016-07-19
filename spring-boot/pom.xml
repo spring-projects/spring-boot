@@ -110,11 +110,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>tomcat-juli</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity</artifactId>
 			<optional>true</optional>

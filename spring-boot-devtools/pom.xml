@@ -118,11 +118,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>tomcat-juli</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.eclipse.jetty.websocket</groupId>
 			<artifactId>websocket-client</artifactId>
 			<scope>test</scope>

@@ -42,6 +42,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-juli</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
 		</dependency>

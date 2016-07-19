@@ -308,11 +308,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>tomcat-juli</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
 			<scope>test</scope>
