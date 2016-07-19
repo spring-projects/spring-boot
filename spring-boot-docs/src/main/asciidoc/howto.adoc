@@ -2917,6 +2917,11 @@ And if you're using Gradle:
 	}
 ----
 
+NOTE: If you are using a version of Gradle that supports compile only dependencies (2.12
+or later), you should continue to use `providedRuntime`. Among other limitations,
+`compileOnly` dependencies are not on the test classpath so any web-based integration
+tests will fail.
+
 If you're using the <<build-tool-plugins.adoc#build-tool-plugins, Spring Boot build tools>>,
 marking the embedded servlet container dependency as provided will produce an executable war
 file with the provided dependencies packaged in a `lib-provided` directory. This means
