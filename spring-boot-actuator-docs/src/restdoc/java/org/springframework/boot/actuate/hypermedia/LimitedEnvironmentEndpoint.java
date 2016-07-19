@@ -67,7 +67,8 @@ public class LimitedEnvironmentEndpoint extends EnvironmentEndpoint {
 		systemEnvironment.add("DISPLAY");
 		systemEnvironment.add("LOGNAME");
 		includes.put("systemEnvironment", systemEnvironment);
-		INCLUDES = new LinkedMultiValueMap<>(Collections.unmodifiableMap(includes));
+		INCLUDES = new LinkedMultiValueMap<String, String>(
+				Collections.unmodifiableMap(includes));
 	}
 
 	@Override
