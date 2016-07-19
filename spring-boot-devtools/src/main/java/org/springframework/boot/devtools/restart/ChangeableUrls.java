@@ -98,8 +98,8 @@ final class ChangeableUrls implements Iterable<URL> {
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException(
-						"Failed to read Class-Path attribute from manifest of jar "
-								+ url);
+						"Failed to read Class-Path attribute from manifest of jar " + url,
+						ex);
 			}
 		}
 		return Collections.<URL>emptyList();
