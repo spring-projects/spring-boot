@@ -780,9 +780,8 @@ the configuration of your application. For example:
 
 [source,java,indent=0]
 ----
-	@Component
 	@ConfigurationProperties(prefix="connection")
-	public class ConnectionSettings {
+	public class ConnectionProperties {
 
 		private String username;
 
@@ -806,9 +805,49 @@ String. Some people use Project Lombok to add getters and setters automatically.
 TIP: See also the <<boot-features-external-config-vs-value,differences between `@Value`
 and `@ConfigurationProperties`>>.
 
-The `@EnableConfigurationProperties` annotation is automatically applied to your project
-so that any beans annotated with `@ConfigurationProperties` will be configured from the
-`Environment` properties. This style of configuration works particularly well with the
+You also need to list the properties classes to register in the
+`@EnableConfigurationProperties` annotation:
+
+[source,java,indent=0]
+----
+	@Configuration
+	@EnableConfigurationProperties(ConnectionProperties.class)
+	public class MyConfiguration {
+	}
+----
+
+[NOTE]
+====
+When `@ConfigurationProperties` bean is registered that way, the bean will have a
+conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix
+specified in the `@ConfigurationProperties` annotation and <fqn> the fully qualified
+name of the bean. If the annotation does not provide any prefix, only the fully qualified
+name of the bean is used.
+
+The bean name in the example above will be `connection-com.example.ConnectionProperties`,
+assuming that `ConnectionProperties` sits in the `com.example` package.
+====
+
+Even if the configuration above will create a regular bean for `ConnectionProperties`, we
+recommend that `@ConfigurationProperties` only deal with the environment and in particular
+does not inject other beans from the context. Having said that, The
+`@EnableConfigurationProperties` annotation is _also_ automatically applied to your project
+so that any _existing_ bean annotated with `@ConfigurationProperties` will be configured
+from the `Environment` properties. You could shortcut `MyConfiguration` above by making
+sure `ConnectionProperties` is a already a bean:
+
+[source,java,indent=0]
+----
+    @Component
+    @ConfigurationProperties(prefix="connection")
+	public class ConnectionProperties {
+
+		// ... getters and setters
+
+	}
+----
+
+This style of configuration works particularly well with the
 `SpringApplication` external YAML configuration:
 
 [source,yaml,indent=0]
@@ -830,8 +869,12 @@ as any other bean.
 	@Service
 	public class MyService {
 
+		private final ConnectionProperties connection;
+
 		@Autowired
-		private ConnectionSettings connection;
+		public MyService(ConnectionProperties connection) {
+		    this.connection = connection;
+		}
 
 	 	//...
 
@@ -843,30 +886,6 @@ as any other bean.
 
 	}
 ----
-
-It is also possible to shortcut the registration of `@ConfigurationProperties` bean
-definitions by simply listing the properties classes directly in the
-`@EnableConfigurationProperties` annotation:
-
-[source,java,indent=0]
-----
-	@Configuration
-	@EnableConfigurationProperties(ConnectionSettings.class)
-	public class MyConfiguration {
-	}
-----
-
-[NOTE]
-====
-When `@ConfigurationProperties` bean is registered that way, the bean will have a
-conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix
-specified in the `@ConfigurationProperties` annotation and <fqn> the fully qualified
-name of the bean. If the annotation does not provide any prefix, only the fully qualified
-name of the bean is used.
-
-The bean name in the example above will be `connection-com.example.ConnectionSettings`,
-assuming that `ConnectionSettings` sits in the `com.example` package.
-====
 
 TIP: Using `@ConfigurationProperties` also allows you to generate meta-data files that can
 be used by IDEs. See the <<configuration-metadata>> appendix for details.
@@ -892,7 +911,7 @@ its bean registration:
 ----
 
 Any property defined with the `foo` prefix will be mapped onto that `FooComponent` bean
-in a similar manner as the `ConnectionSettings` example above.
+in a similar manner as the `ConnectionProperties` example above.
 
 
 
@@ -908,9 +927,8 @@ For example, given the following `@ConfigurationProperties` class:
 
 [source,java,indent=0]
 ----
-	@Component
 	@ConfigurationProperties(prefix="person")
-	public class ConnectionSettings {
+	public class OwnerProperties {
 
 		private String firstName;
 
@@ -971,9 +989,8 @@ annotations to your `@ConfigurationProperties` class:
 
 [source,java,indent=0]
 ----
-	@Component
 	@ConfigurationProperties(prefix="connection")
-	public class ConnectionSettings {
+	public class ConnectionProperties {
 
 		@NotNull
 		private InetAddress remoteAddress;
@@ -985,13 +1002,12 @@ annotations to your `@ConfigurationProperties` class:
 
 In order to validate values of nested properties, you must annotate the associated field
 as `@Valid` to trigger its validation. For example, building upon the above
-`ConnectionSettings` example:
+`ConnectionProperties` example:
 
 [source,java,indent=0]
 ----
-	@Component
 	@ConfigurationProperties(prefix="connection")
-	public class ConnectionSettings {
+	public class ConnectionProperties {
 
 		@NotNull
 		@Valid
