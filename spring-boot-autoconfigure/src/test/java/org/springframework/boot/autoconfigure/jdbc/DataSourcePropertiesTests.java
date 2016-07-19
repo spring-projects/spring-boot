@@ -30,28 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataSourcePropertiesTests {
 
 	@Test
-	@Deprecated
-	public void getDriver() {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.setUrl("jdbc:mysql://mydb");
-		assertThat(properties.getDriverClassName()).isEqualTo("com.mysql.jdbc.Driver");
-	}
-
-	@Test
 	public void determineDriver() {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUrl("jdbc:mysql://mydb");
+		assertThat(properties.getDriverClassName()).isNull();
 		assertThat(properties.determineDriverClassName())
 				.isEqualTo("com.mysql.jdbc.Driver");
-	}
-
-	@Test
-	@Deprecated
-	public void getDriverWithExplicitConfig() {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.setUrl("jdbc:mysql://mydb");
-		properties.setDriverClassName("org.hsqldb.jdbcDriver");
-		assertThat(properties.getDriverClassName()).isEqualTo("org.hsqldb.jdbcDriver");
 	}
 
 	@Test
@@ -59,33 +43,18 @@ public class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUrl("jdbc:mysql://mydb");
 		properties.setDriverClassName("org.hsqldb.jdbcDriver");
+		assertThat(properties.getDriverClassName()).isEqualTo("org.hsqldb.jdbcDriver");
 		assertThat(properties.determineDriverClassName())
 				.isEqualTo("org.hsqldb.jdbcDriver");
-	}
-
-	@Test
-	@Deprecated
-	public void getUrl() throws Exception {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.afterPropertiesSet();
-		assertThat(properties.getUrl()).isEqualTo(EmbeddedDatabaseConnection.H2.getUrl());
 	}
 
 	@Test
 	public void determineUrl() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.afterPropertiesSet();
+		assertThat(properties.getUrl()).isNull();
 		assertThat(properties.determineUrl())
 				.isEqualTo(EmbeddedDatabaseConnection.H2.getUrl());
-	}
-
-	@Test
-	@Deprecated
-	public void getUrlWithExplicitConfig() throws Exception {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.setUrl("jdbc:mysql://mydb");
-		properties.afterPropertiesSet();
-		assertThat(properties.getUrl()).isEqualTo("jdbc:mysql://mydb");
 	}
 
 	@Test
@@ -93,31 +62,16 @@ public class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUrl("jdbc:mysql://mydb");
 		properties.afterPropertiesSet();
+		assertThat(properties.getUrl()).isEqualTo("jdbc:mysql://mydb");
 		assertThat(properties.determineUrl()).isEqualTo("jdbc:mysql://mydb");
-	}
-
-	@Test
-	@Deprecated
-	public void getUsername() throws Exception {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.afterPropertiesSet();
-		assertThat(properties.getUsername()).isEqualTo("sa");
 	}
 
 	@Test
 	public void determineUsername() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.afterPropertiesSet();
+		assertThat(properties.getUsername()).isNull();
 		assertThat(properties.determineUsername()).isEqualTo("sa");
-	}
-
-	@Test
-	@Deprecated
-	public void getUsernameWithExplicitConfig() throws Exception {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.setUsername("foo");
-		properties.afterPropertiesSet();
-		assertThat(properties.getUsername()).isEqualTo("foo");
 	}
 
 	@Test
@@ -125,31 +79,16 @@ public class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUsername("foo");
 		properties.afterPropertiesSet();
+		assertThat(properties.getUsername()).isEqualTo("foo");
 		assertThat(properties.determineUsername()).isEqualTo("foo");
-	}
-
-	@Test
-	@Deprecated
-	public void getPassword() throws Exception {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.afterPropertiesSet();
-		assertThat(properties.getPassword()).isEqualTo("");
 	}
 
 	@Test
 	public void determinePassword() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.afterPropertiesSet();
+		assertThat(properties.getPassword()).isNull();
 		assertThat(properties.determinePassword()).isEqualTo("");
-	}
-
-	@Test
-	@Deprecated
-	public void getPasswordWithExplicitConfig() throws Exception {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.setPassword("bar");
-		properties.afterPropertiesSet();
-		assertThat(properties.getPassword()).isEqualTo("bar");
 	}
 
 	@Test
@@ -157,6 +96,7 @@ public class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setPassword("bar");
 		properties.afterPropertiesSet();
+		assertThat(properties.getPassword()).isEqualTo("bar");
 		assertThat(properties.determinePassword()).isEqualTo("bar");
 	}
 

@@ -181,14 +181,12 @@ public class DataSourceProperties
 	}
 
 	/**
-	 * Determine the driver to use based on this configuration and the environment.
-	 * @return the driver to use
+	 * Return the configured driver or {@code null} if none was configured.
+	 * @return the configured driver
 	 * @see #determineDriverClassName()
-	 * @deprecated as for 1.4 in favor of {@link #determineDriverClassName()}
 	 */
-	@Deprecated
 	public String getDriverClassName() {
-		return determineDriverClassName();
+		return this.driverClassName;
 	}
 
 	public void setDriverClassName(String driverClassName) {
@@ -238,14 +236,12 @@ public class DataSourceProperties
 	}
 
 	/**
-	 * Determine the url to use based on this configuration and the environment.
-	 * @return the url to use
+	 * Return the configured url or {@code null} if none was configured.
+	 * @return the configured url
 	 * @see #determineUrl()
-	 * @deprecated as of 1.4 in favor of {@link #determineUrl()}
 	 */
-	@Deprecated
 	public String getUrl() {
-		return determineUrl();
+		return this.url;
 	}
 
 	public void setUrl(String url) {
@@ -270,14 +266,12 @@ public class DataSourceProperties
 	}
 
 	/**
-	 * Determine the username to use based on this configuration and the environment.
-	 * @return the username to use
+	 * Return the configured username or {@code null} if none was configured.
+	 * @return the configured username
 	 * @see #determineUsername()
-	 * @deprecated as of 1.4 in favor of {@link #determineUsername()}
 	 */
-	@Deprecated
 	public String getUsername() {
-		return determineUsername();
+		return this.username;
 	}
 
 	public void setUsername(String username) {
@@ -300,14 +294,12 @@ public class DataSourceProperties
 	}
 
 	/**
-	 * Determine the password to use based on this configuration and the environment.
-	 * @return the password to use
+	 * Return the configured password or {@code null} if none was configured.
+	 * @return the configured password
 	 * @see #determinePassword()
-	 * @deprecated as of 1.4 in favor of {@link #determinePassword()}
 	 */
-	@Deprecated
 	public String getPassword() {
-		return determinePassword();
+		return this.password;
 	}
 
 	public void setPassword(String password) {
