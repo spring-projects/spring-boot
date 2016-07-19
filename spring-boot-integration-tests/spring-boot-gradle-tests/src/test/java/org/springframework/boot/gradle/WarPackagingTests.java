@@ -46,8 +46,7 @@ public class WarPackagingTests {
 
 	private static final Set<String> TOMCAT_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
 			Arrays.asList("spring-boot-starter-tomcat-", "tomcat-embed-core-",
-					"tomcat-embed-el-", "tomcat-embed-logging-juli-",
-					"tomcat-embed-websocket-"));
+					"tomcat-embed-el-", "tomcat-embed-websocket-"));
 
 	private static final Set<String> JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
 			Arrays.asList("spring-boot-starter-jetty-", "jetty-continuation",
