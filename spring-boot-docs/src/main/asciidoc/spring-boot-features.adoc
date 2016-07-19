@@ -2033,7 +2033,11 @@ The basic features you get out of the box in a web application are:
 All of the above can be switched on and off or modified using external properties
 (`+security.*+`). To override the access rules without changing any other auto-configured
 features add a `@Bean` of type `WebSecurityConfigurerAdapter` with
-`@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)`.
+`@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)` and configure it to meet your needs.
+
+NOTE: By default, a `WebSecurityConfigurerAdapter` will match any path. If you don't want
+to completely override Spring Boot's auto-configured access rules, your adapter must
+explicitly configure the paths that you do want to override.
 
 
 
