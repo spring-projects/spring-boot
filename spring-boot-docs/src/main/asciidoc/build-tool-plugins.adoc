@@ -775,7 +775,7 @@ attributes are supported
 
 
 
-===== Examples
+==== Examples
 .Find and log
 [source,xml,indent=0]
 ----
