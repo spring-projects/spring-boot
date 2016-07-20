@@ -20,8 +20,6 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
-ext['h2.version'] = '1.4.192'
-
 jar {
 	baseName = 'spring-boot-sample-actuator'
 }
@@ -47,7 +45,7 @@ dependencies {
 	compile("org.springframework.boot:spring-boot-starter-jdbc")
 	compile("org.springframework.boot:spring-boot-starter-security")
 	compile("org.springframework.boot:spring-boot-starter-web")
-	compile group:"com.h2database", name:"h2", version:property('h2.version')
+	compile("com.h2database:h2")
 
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 
