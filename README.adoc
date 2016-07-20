@@ -139,7 +139,7 @@ Once this is done, you can build the reference documentation with the command be
 
 [indent=0]
 ----
-	$ ./mvnw clean generate-resources -pl spring-boot-docs -Pdefault,full
+	$ ./mvnw clean prepare-package -pl spring-boot-docs -Pdefault,full
 ----
 
 TIP: The generated documentation is available from `spring-boot-docs/target/contents/reference`
