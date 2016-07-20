@@ -239,7 +239,7 @@ the launching of a Spring Boot application in pretty much any way you like as lo
 Java runtime is available (which is a standard feature you can ask for at OpenShift).
 To do this you can use the
 https://www.openshift.com/developers/do-it-yourself[DIY Cartridge] and hooks in your
-repository under `.openshift/action_scripts`:
+repository under `.openshift/action_hooks`:
 
 The basic model is to:
 
