@@ -42,7 +42,7 @@ public abstract class AbstractMvcEndpoint extends WebMvcConfigurerAdapter
 	 * Endpoint URL path.
 	 */
 	@NotNull
-	@Pattern(regexp = "/.*|^$", message = "Path must start with /")
+	@Pattern(regexp = "/.*|^$", message = "Path must start with / or be empty")
 	private String path;
 
 	/**
