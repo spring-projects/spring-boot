@@ -152,6 +152,9 @@ public class HeapdumpMvcEndpointTests {
 					if (TestHeapdumpMvcEndpoint.this.locked) {
 						throw new InterruptedException();
 					}
+					if (file.exists()) {
+						throw new IOException("File exists");
+					}
 					FileCopyUtils.copy(TestHeapdumpMvcEndpoint.this.heapDump.getBytes(),
 							file);
 				}
