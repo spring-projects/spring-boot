@@ -56,7 +56,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 @ConfigurationProperties("endpoints.heapdump")
 @HypermediaDisabled
-public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint implements MvcEndpoint {
+public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint {
 
 	private final long timeout;
 
@@ -116,10 +116,8 @@ public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint implements MvcEndpo
 
 	private File createTempFile(boolean live) throws IOException {
 		String date = new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date());
-		File file = File.createTempFile("heapdump" + date + (live ? "-live" : ""),
+		return File.createTempFile("heapdump" + date + (live ? "-live" : ""),
 				".hprof");
-		file.delete();
-		return file;
 	}
 
 	/**
