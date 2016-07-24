@@ -18,11 +18,13 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration;
@@ -36,6 +38,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Kazuki Shimizu
  */
 public class DataSourceTransactionManagerAutoConfigurationTests {
 
@@ -84,6 +87,27 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 				.isEqualTo(this.context.getBean("myTransactionManager"));
 	}
 
+	@Test
+	public void testMultiDataSource() throws Exception {
+		this.context.register(TestMultiDataSourceConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(PlatformTransactionManager.class)).isEmpty();
+		assertThat(this.context.getBean(AbstractTransactionManagementConfiguration.class))
+				.isNotNull();
+	}
+
+	@Test
+	public void testMultiDataSourceUsingPrimary() throws Exception {
+		this.context.register(TestMultiDataSourceUsingPrimaryConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(DataSourceTransactionManager.class)).isNotNull();
+		assertThat(this.context.getBean(AbstractTransactionManagementConfiguration.class))
+				.isNotNull();
+	}
+
+
 	@EnableTransactionManagement
 	protected static class SwitchTransactionsOn {
 
@@ -95,6 +119,54 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 		@Bean
 		public PlatformTransactionManager myTransactionManager() {
 			return mock(PlatformTransactionManager.class);
+		}
+
+	}
+
+
+	@Configuration
+	static class TestMultiDataSourceConfiguration {
+
+		@Bean
+		public DataSource test1DataSource() {
+			BasicDataSource pool = new BasicDataSource();
+			pool.setDriverClassName("org.hsqldb.jdbcDriver");
+			pool.setUrl("jdbc:hsqldb:target/test1");
+			pool.setUsername("sa");
+			return pool;
+		}
+
+		@Bean
+		public DataSource test2DataSource() {
+			BasicDataSource pool = new BasicDataSource();
+			pool.setDriverClassName("org.hsqldb.jdbcDriver");
+			pool.setUrl("jdbc:hsqldb:target/test2");
+			pool.setUsername("sa");
+			return pool;
+		}
+
+	}
+
+	@Configuration
+	static class TestMultiDataSourceUsingPrimaryConfiguration {
+
+		@Bean
+		@Primary
+		public DataSource test1DataSource() {
+			BasicDataSource pool = new BasicDataSource();
+			pool.setDriverClassName("org.hsqldb.jdbcDriver");
+			pool.setUrl("jdbc:hsqldb:target/test1");
+			pool.setUsername("sa");
+			return pool;
+		}
+
+		@Bean
+		public DataSource test2DataSource() {
+			BasicDataSource pool = new BasicDataSource();
+			pool.setDriverClassName("org.hsqldb.jdbcDriver");
+			pool.setUrl("jdbc:hsqldb:target/test2");
+			pool.setUsername("sa");
+			return pool;
 		}
 
 	}

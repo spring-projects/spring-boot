@@ -42,8 +42,6 @@ import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -226,35 +224,6 @@ public class DataSourceAutoConfigurationTests {
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		assertThat(dataSource).isInstanceOf(BasicDataSource.class);
-	}
-
-	@Test
-	public void testJdbcTemplateExists() throws Exception {
-		this.context.register(DataSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
-		assertThat(jdbcTemplate).isNotNull();
-		assertThat(jdbcTemplate.getDataSource()).isNotNull();
-	}
-
-	@Test
-	public void testJdbcTemplateExistsWithCustomDataSource() throws Exception {
-		this.context.register(TestDataSourceConfiguration.class,
-				DataSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
-		assertThat(jdbcTemplate).isNotNull();
-		assertThat(jdbcTemplate.getDataSource() instanceof BasicDataSource).isTrue();
-	}
-
-	@Test
-	public void testNamedParameterJdbcTemplateExists() throws Exception {
-		this.context.register(DataSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(NamedParameterJdbcOperations.class)).isNotNull();
 	}
 
 	@SuppressWarnings("unchecked")
