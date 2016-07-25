@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.system;
+package org.springframework.boot.system;
 
 /**
  * Access to system properties.

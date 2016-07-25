@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.system;
+package org.springframework.boot.system;
 
 import java.io.File;
 import java.io.FileReader;
