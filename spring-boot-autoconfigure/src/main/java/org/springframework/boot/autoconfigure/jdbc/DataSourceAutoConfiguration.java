@@ -47,10 +47,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 /**
@@ -106,29 +102,6 @@ public class DataSourceAutoConfiguration {
 			DataSourceConfiguration.Dbcp.class, DataSourceConfiguration.Dbcp2.class })
 	protected static class PooledDataSourceConfiguration {
 
-	}
-
-	@Configuration
-	@Conditional(DataSourceAutoConfiguration.DataSourceAvailableCondition.class)
-	protected static class JdbcTemplateConfiguration {
-
-		private final DataSource dataSource;
-
-		public JdbcTemplateConfiguration(DataSource dataSource) {
-			this.dataSource = dataSource;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(JdbcOperations.class)
-		public JdbcTemplate jdbcTemplate() {
-			return new JdbcTemplate(this.dataSource);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(NamedParameterJdbcOperations.class)
-		public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
-			return new NamedParameterJdbcTemplate(this.dataSource);
-		}
 	}
 
 	@Configuration
