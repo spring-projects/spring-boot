@@ -54,8 +54,8 @@ public class BeanNotOfRequiredTypeFailureAnalyzer
 				"The bean '%s' could not be injected as a '%s' because it is a "
 						+ "JDK dynamic proxy that implements:%n",
 				ex.getBeanName(), ex.getRequiredType().getName());
-		for (Class<?> iface : ex.getRequiredType().getInterfaces()) {
-			printer.println("\t" + iface.getName());
+		for (Class<?> requiredTypeInterface : ex.getRequiredType().getInterfaces()) {
+			printer.println("\t" + requiredTypeInterface.getName());
 		}
 		return description.toString();
 	}
