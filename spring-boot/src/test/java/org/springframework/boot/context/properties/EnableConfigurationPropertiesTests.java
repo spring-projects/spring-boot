@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -208,6 +208,19 @@ public class EnableConfigurationPropertiesTests {
 				"list[1]:2");
 		this.context.refresh();
 		assertEquals(2, this.context.getBean(TestProperties.class).getList().size());
+	}
+
+	@Test
+	public void testCollectionPropertiesBindingWithOver256Elements() {
+		this.context.register(TestConfiguration.class);
+		List<String> pairs = new ArrayList<String>();
+		pairs.add("name:foo");
+		for (int i = 0; i < 1000; i++) {
+			pairs.add("list[" + i + "]:" + i);
+		}
+		EnvironmentTestUtils.addEnvironment(this.context, pairs.toArray(new String[] {}));
+		this.context.refresh();
+		assertEquals(1000, this.context.getBean(TestProperties.class).getList().size());
 	}
 
 	@Test
