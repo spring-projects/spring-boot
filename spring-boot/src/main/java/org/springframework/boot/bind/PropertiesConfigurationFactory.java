@@ -263,6 +263,7 @@ public class PropertiesConfigurationFactory<T>
 		if (this.conversionService != null) {
 			dataBinder.setConversionService(this.conversionService);
 		}
+		dataBinder.setAutoGrowCollectionLimit(Integer.MAX_VALUE);
 		dataBinder.setIgnoreNestedProperties(this.ignoreNestedProperties);
 		dataBinder.setIgnoreInvalidFields(this.ignoreInvalidFields);
 		dataBinder.setIgnoreUnknownFields(this.ignoreUnknownFields);
