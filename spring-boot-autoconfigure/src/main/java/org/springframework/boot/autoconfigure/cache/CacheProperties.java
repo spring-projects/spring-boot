@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -56,8 +55,6 @@ public class CacheProperties {
 	private final Infinispan infinispan = new Infinispan();
 
 	private final JCache jcache = new JCache();
-
-	private final Guava guava = new Guava();
 
 	public CacheType getType() {
 		return this.type;
@@ -97,10 +94,6 @@ public class CacheProperties {
 
 	public JCache getJcache() {
 		return this.jcache;
-	}
-
-	public Guava getGuava() {
-		return this.guava;
 	}
 
 	/**
@@ -252,32 +245,6 @@ public class CacheProperties {
 
 		public void setConfig(Resource config) {
 			this.config = config;
-		}
-
-	}
-
-	/**
-	 * Guava specific cache properties.
-	 */
-	public static class Guava {
-
-		/**
-		 * The spec to use to create caches. Check CacheBuilderSpec for more details on
-		 * the spec format.
-		 */
-		private String spec;
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(
-				reason = "Caffeine will supersede the Guava support in Spring Boot 2.0",
-				replacement = "spring.cache.caffeine.spec")
-		public String getSpec() {
-			return this.spec;
-		}
-
-		@Deprecated
-		public void setSpec(String spec) {
-			this.spec = spec;
 		}
 
 	}

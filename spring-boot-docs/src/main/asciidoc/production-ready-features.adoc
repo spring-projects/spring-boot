@@ -1067,7 +1067,7 @@ is prefixed by the name of the `CacheManager` bean.
 
 It is possible to override part or all of those defaults by registering a bean with a
 customized version of `CachePublicMetrics`. By default, Spring Boot provides cache
-statistics for EhCache, Hazelcast, Infinispan, JCache and Guava. You can add additional
+statistics for EhCache, Hazelcast, Infinispan, JCache and Caffeine. You can add additional
 `CacheStatisticsProvider` beans if your favorite caching library isn't supported out of
 the box. See `CacheStatisticsAutoConfiguration` for examples.
 

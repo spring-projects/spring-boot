@@ -67,12 +67,6 @@ public enum CacheType {
 	CAFFEINE,
 
 	/**
-	 * Guava backed caching.
-	 */
-	@Deprecated
-	GUAVA,
-
-	/**
 	 * Simple in-memory caching.
 	 */
 	SIMPLE,

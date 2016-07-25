@@ -126,7 +126,7 @@ public class LogFileMvcEndpoint extends AbstractMvcEndpoint {
 		}
 
 		@Override
-		protected MediaType getMediaType(Resource resource) {
+		protected MediaType getMediaType(HttpServletRequest request, Resource resource) {
 			return MediaType.TEXT_PLAIN;
 		}
 
