@@ -17,6 +17,7 @@
 package org.springframework.boot.test.autoconfigure.properties;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -113,7 +114,9 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 			String name = getName(typeMapping, attributeMapping, attribute);
 			ReflectionUtils.makeAccessible(attribute);
 			Object value = ReflectionUtils.invokeMethod(attribute, annotation);
-			putProperties(name, value, properties);
+			if (isValueMapped(value)) {
+				putProperties(name, value, properties);
+			}
 		}
 	}
 
@@ -123,6 +126,17 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 			return attributeMapping.map();
 		}
 		return (typeMapping != null && typeMapping.map());
+	}
+
+	private boolean isValueMapped(Object value) {
+		if (value != null && value instanceof Enum) {
+			Field field = ReflectionUtils.findField(value.getClass(),
+					((Enum<?>) value).name());
+			if (AnnotatedElementUtils.isAnnotated(field, UnmappedPropertyValue.class)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private String getName(PropertyMapping typeMapping, PropertyMapping attributeMapping,

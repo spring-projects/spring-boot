@@ -185,6 +185,20 @@ public class AnnotationsPropertySourceTests {
 		assertThat(source.getProperty("aliasing.value")).isEqualTo("baz");
 	}
 
+	@Test
+	public void enumValueMapped() throws Exception {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(
+				EnumValueMapped.class);
+		assertThat(source.getProperty("testenum.value")).isEqualTo(EnumItem.TWO);
+	}
+
+	@Test
+	public void enumValueNotMapped() throws Exception {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(
+				EnumValueNotMapped.class);
+		assertThat(source.containsProperty("testenum.value")).isFalse();
+	}
+
 	static class NoAnnotation {
 
 	}
@@ -379,6 +393,34 @@ public class AnnotationsPropertySourceTests {
 
 	static class AliasedPropertyMappedAnnotationOnSuperClass
 			extends PropertyMappedAttributeWithAnAlias {
+
+	}
+
+	@EnumAnnotation(EnumItem.TWO)
+	static class EnumValueMapped {
+
+	}
+
+	@EnumAnnotation(EnumItem.DEFAULT)
+	static class EnumValueNotMapped {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@PropertyMapping("testenum")
+	static @interface EnumAnnotation {
+
+		EnumItem value();
+
+	}
+
+	enum EnumItem {
+
+		@UnmappedPropertyValue DEFAULT,
+
+		ONE,
+
+		TWO
 
 	}
 
