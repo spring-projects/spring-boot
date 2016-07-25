@@ -51,6 +51,7 @@ org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration,\
+org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration,\
 org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration,\

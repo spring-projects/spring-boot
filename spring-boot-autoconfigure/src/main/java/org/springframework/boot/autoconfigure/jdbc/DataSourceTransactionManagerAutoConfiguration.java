@@ -20,9 +20,9 @@ import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
 @Configuration
 @ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
@@ -46,7 +47,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class DataSourceTransactionManagerAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnBean(DataSource.class)
+	@ConditionalOnSingleCandidate(DataSource.class)
 	static class DataSourceTransactionManagerConfiguration {
 
 		private final DataSource dataSource;
