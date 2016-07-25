@@ -54,11 +54,10 @@ public @interface AutoConfigureMockMvc {
 	boolean addFilters() default true;
 
 	/**
-	 * If {@link MvcResult} information should always be printed after each MockMVC
-	 * invocation. Defaults to {@code true}.
-	 * @return if result information is always printed
+	 * How {@link MvcResult} information should be printed after each MockMVC invocation.
+	 * @return how information is printed
 	 */
-	boolean alwaysPrint() default true;
+	MockMvcPrint print() default MockMvcPrint.DEFAULT;
 
 	/**
 	 * If a {@link WebClient} should be auto-configured when HtmlUnit is on the classpath.

@@ -41,6 +41,7 @@ import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -66,7 +67,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 		"endpoints.health.sensitive=true", "endpoints.actuator.enabled=false" })
 @DirtiesContext
 @AutoConfigureRestDocs(EndpointDocumentation.RESTDOCS_OUTPUT_DIR)
-@AutoConfigureMockMvc(alwaysPrint = false)
+@AutoConfigureMockMvc(print = MockMvcPrint.NONE)
 public class EndpointDocumentation {
 
 	static final String RESTDOCS_OUTPUT_DIR = "target/generated-snippets";
