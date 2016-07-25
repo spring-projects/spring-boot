@@ -36,6 +36,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Kazuki Shimizu
  */
 public class DataSourceTransactionManagerAutoConfigurationTests {
 
@@ -82,6 +83,27 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 				.hasSize(1);
 		assertThat(this.context.getBean(PlatformTransactionManager.class))
 				.isEqualTo(this.context.getBean("myTransactionManager"));
+	}
+
+	@Test
+	public void testMultiDataSource() throws Exception {
+		this.context.register(MultiDataSourceConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(PlatformTransactionManager.class))
+				.isEmpty();
+		assertThat(this.context.getBean(AbstractTransactionManagementConfiguration.class))
+				.isNotNull();
+	}
+
+	@Test
+	public void testMultiDataSourceUsingPrimary() throws Exception {
+		this.context.register(MultiDataSourceUsingPrimaryConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(DataSourceTransactionManager.class)).isNotNull();
+		assertThat(this.context.getBean(AbstractTransactionManagementConfiguration.class))
+				.isNotNull();
 	}
 
 	@EnableTransactionManagement
