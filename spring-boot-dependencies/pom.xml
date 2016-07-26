@@ -72,7 +72,7 @@
 		<ehcache3.version>3.1.1</ehcache3.version>
 		<embedded-mongo.version>1.50.5</embedded-mongo.version>
 		<flyway.version>3.2.1</flyway.version>
-		<freemarker.version>2.3.24-incubating</freemarker.version>
+		<freemarker.version>2.3.25-incubating</freemarker.version>
 		<elasticsearch.version>2.3.3</elasticsearch.version>
 		<gemfire.version>8.2.0</gemfire.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
@@ -131,7 +131,7 @@
 		<narayana.version>5.3.3.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>2.0.3</neo4j-ogm.version>
-		<postgresql.version>9.4.1208.jre7</postgresql.version>
+		<postgresql.version>9.4.1209.jre7</postgresql.version>
 		<reactor.version>2.0.8.RELEASE</reactor.version>
 		<reactor-spring.version>2.0.7.RELEASE</reactor-spring.version>
 		<selenium.version>2.53.0</selenium.version>
