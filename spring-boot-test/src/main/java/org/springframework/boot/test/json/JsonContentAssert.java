@@ -30,6 +30,7 @@ import org.assertj.core.api.AbstractMapAssert;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.Assert;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.ObjectAssert;
 import org.skyscreamer.jsonassert.JSONCompare;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.JSONCompareResult;
@@ -935,7 +936,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @throws AssertionError if the path is not valid or does not result in an array
 	 */
 	@SuppressWarnings("unchecked")
-	public AbstractListAssert<?, ?, Object> extractingJsonPathArrayValue(
+	public AbstractListAssert<?, ?, Object, ObjectAssert<Object>> extractingJsonPathArrayValue(
 			CharSequence expression, Object... args) {
 		return Assertions.assertThat(
 				extractingJsonPathValue(expression, args, List.class, "an array"));
