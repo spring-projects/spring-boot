@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +38,7 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.util.CharsetMapper;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.junit.After;
@@ -430,6 +432,15 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		new InitialContext().lookup("java:comp/env");
 	}
 
+	@Test
+	public void defaultLocaleCharsetMappingsAreOverriden() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory.getEmbeddedServletContainer();
+		// override defaults, see org.apache.catalina.util.CharsetMapperDefault.properties
+		assertThat(getCharset(Locale.ENGLISH).toString()).isEqualTo("UTF-8");
+		assertThat(getCharset(Locale.FRENCH).toString()).isEqualTo("UTF-8");
+	}
+
 	@Override
 	protected Wrapper getJspServlet() {
 		Container context = ((TomcatEmbeddedServletContainer) this.container).getTomcat()
@@ -444,6 +455,15 @@ public class TomcatEmbeddedServletContainerFactoryTests
 				.getTomcat().getHost().findChildren()[0];
 		return (Map<String, String>) ReflectionTestUtils.getField(context,
 				"mimeMappings");
+	}
+
+	@Override
+	protected Charset getCharset(Locale locale) {
+		Context context = (Context) ((TomcatEmbeddedServletContainer) this.container)
+				.getTomcat().getHost().findChildren()[0];
+		CharsetMapper mapper = ((TomcatEmbeddedContext) context).getCharsetMapper();
+		String charsetName = mapper.getCharset(locale);
+		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}
 
 	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory,

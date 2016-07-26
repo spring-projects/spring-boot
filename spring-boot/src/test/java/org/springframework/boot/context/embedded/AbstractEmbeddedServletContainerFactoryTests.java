@@ -38,6 +38,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -870,6 +872,17 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		});
 	}
 
+	@Test
+	public void localeCharsetMappingsAreConfigured() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		Map<Locale, Charset> mappings = new HashMap<Locale, Charset>();
+		mappings.put(Locale.GERMAN, Charset.forName("UTF-8"));
+		factory.setLocaleCharsetMappings(mappings);
+		this.container = factory.getEmbeddedServletContainer();
+		assertThat(getCharset(Locale.GERMAN).toString()).isEqualTo("UTF-8");
+		assertThat(getCharset(Locale.ITALIAN)).isNull();
+	}
+
 	protected abstract void addConnector(int port,
 			AbstractEmbeddedServletContainerFactory factory);
 
@@ -916,6 +929,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	protected Collection<MimeMappings.Mapping> getExpectedMimeMappings() {
 		return MimeMappings.DEFAULT.getAll();
 	}
+
+	protected abstract Charset getCharset(Locale locale);
 
 	private void addTestTxtFile(AbstractEmbeddedServletContainerFactory factory)
 			throws IOException {

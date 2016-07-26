@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.net.ssl.KeyManager;
@@ -381,6 +382,10 @@ public class UndertowEmbeddedServletContainerFactory
 		if (isPersistSession()) {
 			File dir = getValidSessionStoreDir();
 			deployment.setSessionPersistenceManager(new FileSessionPersistence(dir));
+		}
+		for (Locale locale : getLocaleCharsetMappings().keySet()) {
+			deployment.addLocaleCharsetMapping(locale.toString(),
+					getLocaleCharsetMappings().get(locale).toString());
 		}
 		DeploymentManager manager = Servlets.newContainer().addDeployment(deployment);
 		manager.deploy();

@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.nio.charset.Charset;
+import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -24,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for http encoding.
  *
  * @author Stephane Nicoll
+ * @author Brian Clozel
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.http.encoding")
@@ -52,6 +55,11 @@ public class HttpEncodingProperties {
 	 * Force the encoding to the configured charset on HTTP responses.
 	 */
 	private Boolean forceResponse;
+
+	/**
+	 * Locale to Encoding mapping.
+	 */
+	private Map<Locale, Charset> mapping;
 
 	public Charset getCharset() {
 		return this.charset;
@@ -83,6 +91,14 @@ public class HttpEncodingProperties {
 
 	public void setForceResponse(boolean forceResponse) {
 		this.forceResponse = forceResponse;
+	}
+
+	public Map<Locale, Charset> getMapping() {
+		return this.mapping;
+	}
+
+	public void setMapping(Map<Locale, Charset> mapping) {
+		this.mapping = mapping;
 	}
 
 	boolean shouldForce(Type type) {

@@ -19,9 +19,11 @@ package org.springframework.boot.context.embedded.undertow;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -268,4 +270,11 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		return expectedMappings;
 	}
 
+	@Override
+	protected Charset getCharset(Locale locale) {
+		DeploymentInfo info = ((DeploymentManager) ReflectionTestUtils
+				.getField(this.container, "manager")).getDeployment().getDeploymentInfo();
+		String charsetName = info.getLocaleCharsetMapping().get(locale.toString());
+		return (charsetName != null) ? Charset.forName(charsetName) : null;
+	}
 }

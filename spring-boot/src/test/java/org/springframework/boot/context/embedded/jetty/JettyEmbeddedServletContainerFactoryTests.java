@@ -17,8 +17,10 @@
 package org.springframework.boot.context.embedded.jetty;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -326,4 +328,11 @@ public class JettyEmbeddedServletContainerFactoryTests
 		return context.getMimeTypes().getMimeMap();
 	}
 
+	@Override
+	protected Charset getCharset(Locale locale) {
+		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
+				.getServer().getHandler();
+		String charsetName = context.getLocaleEncoding(locale);
+		return (charsetName != null) ? Charset.forName(charsetName) : null;
+	}
 }

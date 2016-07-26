@@ -18,7 +18,10 @@ package org.springframework.boot.context.embedded;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +37,7 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Brian Clozel
  * @see EmbeddedServletContainerFactory
  * @see EmbeddedServletContainerCustomizer
  */
@@ -173,5 +177,11 @@ public interface ConfigurableEmbeddedServletContainer extends ErrorPageRegistry 
 	 * @param serverHeader the server header value
 	 */
 	void setServerHeader(String serverHeader);
+
+	/**
+	 * Sets the Locale to Charset mappings.
+	 * @param localeCharsetMappings the Locale to Charset mappings
+	 */
+	void setLocaleCharsetMappings(Map<Locale, Charset> localeCharsetMappings);
 
 }

@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -193,6 +194,15 @@ public class TomcatEmbeddedServletContainerFactory
 		context.setParentClassLoader(
 				this.resourceLoader != null ? this.resourceLoader.getClassLoader()
 						: ClassUtils.getDefaultClassLoader());
+		// override defaults, see org.apache.catalina.util.CharsetMapperDefault.properties
+		context.addLocaleEncodingMappingParameter(Locale.ENGLISH.toString(),
+				DEFAULT_CHARSET.displayName());
+		context.addLocaleEncodingMappingParameter(Locale.FRENCH.toString(),
+				DEFAULT_CHARSET.displayName());
+		for (Locale locale : getLocaleCharsetMappings().keySet()) {
+			context.addLocaleEncodingMappingParameter(locale.toString(),
+					getLocaleCharsetMappings().get(locale).toString());
+		}
 		try {
 			context.setUseRelativeRedirects(false);
 		}

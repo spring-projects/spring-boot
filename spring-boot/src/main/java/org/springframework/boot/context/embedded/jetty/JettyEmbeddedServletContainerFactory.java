@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -353,6 +354,10 @@ public class JettyEmbeddedServletContainerFactory
 		if (shouldRegisterJspServlet()) {
 			addJspServlet(context);
 			context.addBean(new JasperInitializer(context), true);
+		}
+		for (Locale locale : getLocaleCharsetMappings().keySet()) {
+			context.addLocaleEncoding(locale.toString(),
+					getLocaleCharsetMappings().get(locale).toString());
 		}
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
 		Configuration[] configurations = getWebAppContextConfigurations(context,
