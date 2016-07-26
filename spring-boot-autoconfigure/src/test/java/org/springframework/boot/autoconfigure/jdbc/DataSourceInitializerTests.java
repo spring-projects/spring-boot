@@ -28,7 +28,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.beans.factory.UnsatisfiedDependencyException;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -223,7 +223,7 @@ public class DataSourceInitializerTests {
 			fail("User does not exist");
 		}
 		catch (Exception ex) {
-			assertThat(ex).isInstanceOf(UnsatisfiedDependencyException.class);
+			assertThat(ex).isInstanceOf(BeanCreationException.class);
 		}
 	}
 
@@ -245,7 +245,7 @@ public class DataSourceInitializerTests {
 			fail("User does not exist");
 		}
 		catch (Exception ex) {
-			assertThat(ex).isInstanceOf(UnsatisfiedDependencyException.class);
+			assertThat(ex).isInstanceOf(BeanCreationException.class);
 		}
 	}
 
