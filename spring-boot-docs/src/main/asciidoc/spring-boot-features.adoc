@@ -2939,7 +2939,7 @@ the security configuration:
 
 
 [[boot-features-jooq]]
-== Using jOOQ
+=== Using jOOQ
 Java Object Oriented Querying (http://www.jooq.org/[jOOQ]) is a popular product from
 http://www.datageekery.com/[Data Geekery] which generates Java code from your
 database, and lets you build type safe SQL queries through its fluent API. Both the
@@ -2947,7 +2947,7 @@ commercial and open source editions can be used with Spring Boot.
 
 
 
-=== Code Generation
+==== Code Generation
 In order to use jOOQ type-safe queries, you need to generate Java classes from your
 database schema. You can follow the instructions in the
 http://www.jooq.org/doc/3.6/manual-single-page/#jooq-in-7-steps-step3[jOOQ user manual].
@@ -2985,7 +2985,7 @@ declare the plugin's database dependency. Here's an example:
 
 
 
-=== Using DSLContext
+==== Using DSLContext
 The fluent API offered by jOOQ is initiated via the `org.jooq.DSLContext` interface.
 Spring Boot will auto-configure a `DSLContext` as a Spring Bean and connect it to your
 application `DataSource`. To use the `DSLContext` you can just `@Autowire` it:
@@ -3021,7 +3021,7 @@ You can then use the `DSLContext` to construct your queries:
 
 
 
-=== Customizing jOOQ
+==== Customizing jOOQ
 You can customize the SQL dialect used by jOOQ by setting `spring.jooq.sql-dialect` in
 your `application.properties`. For example, to specify Postgres you would add:
 
