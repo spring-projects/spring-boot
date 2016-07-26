@@ -130,7 +130,7 @@
 		<mysql.version>5.1.39</mysql.version>
 		<narayana.version>5.3.3.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
-		<neo4j-ogm.version>2.0.3</neo4j-ogm.version>
+		<neo4j-ogm.version>2.0.4</neo4j-ogm.version>
 		<postgresql.version>9.4.1209.jre7</postgresql.version>
 		<reactor.version>2.0.8.RELEASE</reactor.version>
 		<reactor-spring.version>2.0.7.RELEASE</reactor-spring.version>
