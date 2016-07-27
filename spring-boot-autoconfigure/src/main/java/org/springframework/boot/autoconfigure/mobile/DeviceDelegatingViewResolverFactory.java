@@ -69,7 +69,7 @@ public class DeviceDelegatingViewResolverFactory {
 	public LiteDeviceDelegatingViewResolver createViewResolver(ViewResolver delegate) {
 		if (!(delegate instanceof Ordered)) {
 			throw new IllegalStateException("ViewResolver " + delegate
-					+ "should implement " + Ordered.class.getName());
+					+ " should implement " + Ordered.class.getName());
 		}
 		int delegateOrder = ((Ordered) delegate).getOrder();
 		return createViewResolver(delegate, adjustOrder(delegateOrder));

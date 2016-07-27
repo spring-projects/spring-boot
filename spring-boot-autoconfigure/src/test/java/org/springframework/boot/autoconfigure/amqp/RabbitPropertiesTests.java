@@ -205,15 +205,15 @@ public class RabbitPropertiesTests {
 	@Test
 	public void customAddresses() {
 		this.properties.setAddresses(
-				"user:secrect@rabbit1.example.com:1234/alpha,rabbit2.example.com");
+				"user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
 		assertThat(this.properties.getAddresses()).isEqualTo(
-				"user:secrect@rabbit1.example.com:1234/alpha,rabbit2.example.com");
+				"user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
 	}
 
 	@Test
 	public void determineAddressesReturnsAddressesWithJustHostAndPort() {
 		this.properties.setAddresses(
-				"user:secrect@rabbit1.example.com:1234/alpha,rabbit2.example.com");
+				"user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
 		assertThat(this.properties.determineAddresses())
 				.isEqualTo("rabbit1.example.com:1234,rabbit2.example.com:5672");
 	}

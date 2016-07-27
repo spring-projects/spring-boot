@@ -229,7 +229,7 @@ The following sample applications are provided:
 | Web application packaged as a war file
 
 | link:spring-boot-sample-web-freemarker[spring-boot-sample-web-freemarker]
-| Web application that uses Freemarker templates
+| Web application that uses FreeMarker templates
 
 | link:spring-boot-sample-web-groovy-templates[spring-boot-sample-web-groovy-templates]
 | Web application that uses Groovy templates
