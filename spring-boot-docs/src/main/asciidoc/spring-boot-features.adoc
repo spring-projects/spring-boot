@@ -5469,7 +5469,7 @@ public class MyTest {
 ----
 
 If you are using the `@SpringBootTest` annotation, you can just inject a fully configured
-`TestRestTemplate` and start usinging it. If necessary, additional customizations can be
+`TestRestTemplate` and start using it. If necessary, additional customizations can be
 applied via the `RestTemplateBuilder` bean:
 
 [source,java,indent=0]
