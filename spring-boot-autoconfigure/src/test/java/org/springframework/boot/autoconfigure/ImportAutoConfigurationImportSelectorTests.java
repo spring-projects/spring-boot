@@ -63,7 +63,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 	@Test
 	public void importsAreSelected() throws Exception {
 		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
-				.getMetadataReader(ImportFreemarker.class.getName())
+				.getMetadataReader(ImportFreeMarker.class.getName())
 				.getAnnotationMetadata();
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
 		assertThat(imports).containsExactly(FreeMarkerAutoConfiguration.class.getName());
@@ -72,7 +72,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 	@Test
 	public void propertyExclusionsAreNotApplied() throws Exception {
 		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
-				.getMetadataReader(ImportFreemarker.class.getName())
+				.getMetadataReader(ImportFreeMarker.class.getName())
 				.getAnnotationMetadata();
 		this.importSelector.selectImports(annotationMetadata);
 		verifyZeroInteractions(this.environment);
@@ -98,7 +98,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@ImportAutoConfiguration(FreeMarkerAutoConfiguration.class)
-	static class ImportFreemarker {
+	static class ImportFreeMarker {
 
 	}
 

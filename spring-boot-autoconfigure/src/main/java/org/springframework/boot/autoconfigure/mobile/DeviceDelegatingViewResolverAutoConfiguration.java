@@ -71,11 +71,11 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(FreeMarkerViewResolver.class)
-	protected static class DeviceDelegatingFreemarkerViewResolverConfiguration {
+	protected static class DeviceDelegatingFreeMarkerViewResolverConfiguration {
 
 		@Bean
 		@ConditionalOnBean(FreeMarkerViewResolver.class)
-		public LiteDeviceDelegatingViewResolver deviceDelegatingFreemarkerViewResolver(
+		public LiteDeviceDelegatingViewResolver deviceDelegatingFreeMarkerViewResolver(
 				DeviceDelegatingViewResolverFactory factory,
 				FreeMarkerViewResolver viewResolver) {
 			return factory.createViewResolver(viewResolver);

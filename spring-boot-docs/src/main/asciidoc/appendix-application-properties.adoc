@@ -551,7 +551,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.reconnection-policy= # Reconnection policy class.
 	spring.data.cassandra.retry-policy= # Class name of the retry policy.
 	spring.data.cassandra.serial-consistency-level= # Queries serial consistency level.
-	spring.data.cassandra.schema-action= # Schema action to take at startup.
+	spring.data.cassandra.schema-action=none # Schema action to take at startup.
 	spring.data.cassandra.ssl=false # Enable SSL support.
 	spring.data.cassandra.username= # Login user of the server.
 
