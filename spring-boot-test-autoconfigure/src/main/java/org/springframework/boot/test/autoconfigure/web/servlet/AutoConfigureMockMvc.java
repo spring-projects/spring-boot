@@ -27,6 +27,7 @@ import org.openqa.selenium.WebDriver;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
+import org.springframework.boot.test.autoconfigure.properties.SkipPropertyMapping;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -57,6 +58,7 @@ public @interface AutoConfigureMockMvc {
 	 * How {@link MvcResult} information should be printed after each MockMVC invocation.
 	 * @return how information is printed
 	 */
+	@PropertyMapping(skip = SkipPropertyMapping.ON_DEFAULT_VALUE)
 	MockMvcPrint print() default MockMvcPrint.DEFAULT;
 
 	/**

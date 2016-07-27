@@ -47,7 +47,6 @@ import org.springframework.test.context.TestPropertySource;
  * @author Phillip Webb
  * @since 1.4.0
  * @see AnnotationsPropertySource
- * @see UnmappedPropertyValue
  * @see TestPropertySource
  */
 @Documented
@@ -64,11 +63,11 @@ public @interface PropertyMapping {
 	String value() default "";
 
 	/**
-	 * Determines if mapping should occur. When specified at the type-level indicates if
-	 * mapping should occur by default or not. When used at the attribute-level, overrides
-	 * the type-level default.
-	 * @return if mapping should occur
+	 * Determines if mapping should be skipped. When specified at the type-level indicates
+	 * if skipping should occur by default or not. When used at the attribute-level,
+	 * overrides the type-level default.
+	 * @return if mapping should be skipped
 	 */
-	boolean map() default true;
+	SkipPropertyMapping skip() default SkipPropertyMapping.NO;
 
 }

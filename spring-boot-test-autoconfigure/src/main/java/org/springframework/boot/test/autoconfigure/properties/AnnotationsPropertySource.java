@@ -17,7 +17,6 @@
 package org.springframework.boot.test.autoconfigure.properties;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -110,33 +109,32 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 			PropertyMapping typeMapping, Map<String, Object> properties) {
 		PropertyMapping attributeMapping = AnnotationUtils.getAnnotation(attribute,
 				PropertyMapping.class);
-		if (isMapped(typeMapping, attributeMapping)) {
-			String name = getName(typeMapping, attributeMapping, attribute);
-			ReflectionUtils.makeAccessible(attribute);
-			Object value = ReflectionUtils.invokeMethod(attribute, annotation);
-			if (isValueMapped(value)) {
-				putProperties(name, value, properties);
+		SkipPropertyMapping skip = getMappingType(typeMapping, attributeMapping);
+		if (skip == SkipPropertyMapping.YES) {
+			return;
+		}
+		String name = getName(typeMapping, attributeMapping, attribute);
+		ReflectionUtils.makeAccessible(attribute);
+		Object value = ReflectionUtils.invokeMethod(attribute, annotation);
+		if (skip == SkipPropertyMapping.ON_DEFAULT_VALUE) {
+			Object defaultValue = AnnotationUtils.getDefaultValue(annotation,
+					attribute.getName());
+			if (ObjectUtils.nullSafeEquals(value, defaultValue)) {
+				return;
 			}
 		}
+		putProperties(name, value, properties);
 	}
 
-	private boolean isMapped(PropertyMapping typeMapping,
+	private SkipPropertyMapping getMappingType(PropertyMapping typeMapping,
 			PropertyMapping attributeMapping) {
 		if (attributeMapping != null) {
-			return attributeMapping.map();
+			return attributeMapping.skip();
 		}
-		return (typeMapping != null && typeMapping.map());
-	}
-
-	private boolean isValueMapped(Object value) {
-		if (value != null && value instanceof Enum) {
-			Field field = ReflectionUtils.findField(value.getClass(),
-					((Enum<?>) value).name());
-			if (AnnotatedElementUtils.isAnnotated(field, UnmappedPropertyValue.class)) {
-				return false;
-			}
+		if (typeMapping != null) {
+			return typeMapping.skip();
 		}
-		return true;
+		return SkipPropertyMapping.YES;
 	}
 
 	private String getName(PropertyMapping typeMapping, PropertyMapping attributeMapping,

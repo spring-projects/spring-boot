@@ -262,7 +262,7 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@PropertyMapping(map = false)
+	@PropertyMapping(skip = SkipPropertyMapping.YES)
 	static @interface NotMappedAtTypeLevelAnnotation {
 
 		@PropertyMapping
@@ -283,7 +283,7 @@ public class AnnotationsPropertySourceTests {
 
 		String value();
 
-		@PropertyMapping(map = false)
+		@PropertyMapping(skip = SkipPropertyMapping.YES)
 		String ignore() default "xyz";
 
 	}
@@ -362,7 +362,9 @@ public class AnnotationsPropertySourceTests {
 	static @interface AttributeWithAliasAnnotation {
 
 		@AliasFor(annotation = AliasedAttributeAnnotation.class, attribute = "value")
-		String value() default "foo";
+		String value()
+
+		default "foo";
 
 		String someOtherAttribute() default "shouldNotBeMapped";
 
@@ -410,13 +412,14 @@ public class AnnotationsPropertySourceTests {
 	@PropertyMapping("testenum")
 	static @interface EnumAnnotation {
 
-		EnumItem value();
+		@PropertyMapping(skip = SkipPropertyMapping.ON_DEFAULT_VALUE)
+		EnumItem value() default EnumItem.DEFAULT;
 
 	}
 
 	enum EnumItem {
 
-		@UnmappedPropertyValue DEFAULT,
+		DEFAULT,
 
 		ONE,
 

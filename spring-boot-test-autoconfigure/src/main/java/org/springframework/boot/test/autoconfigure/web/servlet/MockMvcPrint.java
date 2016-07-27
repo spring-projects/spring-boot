@@ -16,8 +16,6 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
-import org.springframework.boot.test.autoconfigure.properties.UnmappedPropertyValue;
-
 /**
  * MVC print options specified from {@link AutoConfigureMockMvc}.
  *
@@ -30,7 +28,7 @@ public enum MockMvcPrint {
 	 * Use the default print setting ({@code MockMvcPrint.SYSTEM_OUT} unless explicitly
 	 * overridden).
 	 */
-	@UnmappedPropertyValue DEFAULT,
+	DEFAULT,
 
 	/**
 	 * Log MVC interactions at the {@code DEBUG} level.

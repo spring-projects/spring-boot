@@ -16,21 +16,27 @@
 
 package org.springframework.boot.test.autoconfigure.properties;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Indicates that a single value should not be mapped when referenced from a
- * {@link PropertyMapping @PropertyMapping} annotation.
+ * Enum used to control when {@link PropertyMapping} is skipped.
  *
  * @author Phillip Webb
  * @since 1.4.0
- * @see PropertyMapping
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD })
-public @interface UnmappedPropertyValue {
+public enum SkipPropertyMapping {
+
+	/**
+	 * Skip the mapping the property.
+	 */
+	YES,
+
+	/**
+	 * Skip mapping the property when the default attribute value is specified.
+	 */
+	ON_DEFAULT_VALUE,
+
+	/**
+	 * Don't skip mapping the property.
+	 */
+	NO,
 
 }
