@@ -17,6 +17,10 @@ org.springframework.boot.test.autoconfigure.json.AutoConfigureJson=\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 
+# AutoConfigureJsonTesters auto-configuration imports
+org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters=\
+org.springframework.boot.test.autoconfigure.json.JsonTestersAutoConfiguration
+
 # AutoConfigureMockMvc auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc=\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration,\
@@ -69,6 +73,5 @@ org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCus
 # Test Execution Listeners
 org.springframework.test.context.TestExecutionListener=\
 org.springframework.boot.test.autoconfigure.AutoConfigureReportTestExecutionListener,\
-org.springframework.boot.test.autoconfigure.json.JsonTesterInitializationTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener

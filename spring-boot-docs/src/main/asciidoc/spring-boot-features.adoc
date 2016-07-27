@@ -5011,12 +5011,13 @@ annotation.
 Spring Boot includes AssertJ based helpers that work with the JSONassert and JsonPath
 libraries to check that JSON is as expected. The `JacksonHelper`, `GsonHelper` and
 `BasicJsonTester` classes can be used for Jackson, Gson and Strings respectively. Any
-helper fields on the test class will be automatically initialized when using `@JsonTest`.
+helper fields on the test class can be `@Autowired` when using `@JsonTest`.
 
 [source,java,indent=0]
 ----
 	import org.junit.*;
 	import org.junit.runner.*;
+	import org.springframework.beans.factory.annotation.*;
 	import org.springframework.boot.test.autoconfigure.json.*;
 	import org.springframework.boot.test.context.*;
 	import org.springframework.boot.test.json.*;
@@ -5028,6 +5029,7 @@ helper fields on the test class will be automatically initialized when using `@J
 	@JsonTest
 	public class MyJsonTests {
 
+		@Autowired
 		private JacksonTester<VehicleDetails> json;
 
 		@Test

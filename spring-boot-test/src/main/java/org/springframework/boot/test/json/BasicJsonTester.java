@@ -19,6 +19,7 @@ package org.springframework.boot.test.json;
 import java.io.File;
 import java.io.InputStream;
 
+import org.springframework.core.ResolvableType;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -45,7 +46,13 @@ import org.springframework.util.Assert;
  */
 public class BasicJsonTester {
 
-	private final JsonLoader loader;
+	private JsonLoader loader;
+
+	/**
+	 * Create a new uninialized {@link BasicJsonTester} instance.
+	 */
+	protected BasicJsonTester() {
+	}
 
 	/**
 	 * Create a new {@link BasicJsonTester} instance.
@@ -57,6 +64,18 @@ public class BasicJsonTester {
 	}
 
 	/**
+	 * Initialize the marshal tester for use.
+	 * @param resourceLoadClass the source class used when loading relative classpath
+	 * resources
+	 * @param type the type under test
+	 */
+	protected final void initialize(Class<?> resourceLoadClass, ResolvableType type) {
+		if (this.loader == null) {
+			this.loader = new JsonLoader(resourceLoadClass);
+		}
+	}
+
+	/**
 	 * Create JSON content from the specified String source. The source can contain the
 	 * JSON itself or, if it ends with {@code .json}, the name of a resource to be loaded
 	 * using {@code resourceLoadClass}.
@@ -64,6 +83,7 @@ public class BasicJsonTester {
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(CharSequence source) {
+		verify();
 		return getJsonContent(this.loader.getJson(source));
 	}
 
@@ -74,6 +94,7 @@ public class BasicJsonTester {
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(String path, Class<?> resourceLoadClass) {
+		verify();
 		return getJsonContent(this.loader.getJson(path, resourceLoadClass));
 	}
 
@@ -83,6 +104,7 @@ public class BasicJsonTester {
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(byte[] source) {
+		verify();
 		return getJsonContent(this.loader.getJson(source));
 	}
 
@@ -92,6 +114,7 @@ public class BasicJsonTester {
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(File source) {
+		verify();
 		return getJsonContent(this.loader.getJson(source));
 	}
 
@@ -101,6 +124,7 @@ public class BasicJsonTester {
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(InputStream source) {
+		verify();
 		return getJsonContent(this.loader.getJson(source));
 	}
 
@@ -110,7 +134,12 @@ public class BasicJsonTester {
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(Resource source) {
+		verify();
 		return getJsonContent(this.loader.getJson(source));
+	}
+
+	private void verify() {
+		Assert.state(this.loader != null, "Unitialized BasicJsonTester");
 	}
 
 	private JsonContent<Object> getJsonContent(String json) {
