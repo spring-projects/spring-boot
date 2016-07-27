@@ -5468,6 +5468,40 @@ public class MyTest {
 }
 ----
 
+If you are using the `@SpringBootTest` annotation, you can just inject a fully configured
+`TestRestTemplate` and start usinging it. If necessary, additional customizations can be
+applied via the `RestTemplateBuilder` bean:
+
+[source,java,indent=0]
+----
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class MyTest {
+
+	@Autowired
+	private TestRestTemplate template;
+
+	@Test
+	public void testRequest() throws Exception {
+		HttpHeaders headers = template.getForEntity("http://myhost.com", String.class).getHeaders();
+		assertThat(headers.getLocation().toString(), containsString("myotherhost"));
+	}
+
+	@TestConfig
+	static class Config {
+
+		@Bean
+		public RestTemplateBuilder restTemplateBuilder() {
+			return new RestTemplateBuilder()
+				.additionalMessageConverters(...)
+				.customizers(...);
+		}
+
+	}
+
+}
+----
+
 
 
 [[boot-features-websockets]]

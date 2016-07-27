@@ -54,6 +54,8 @@ import org.springframework.web.context.WebApplicationContext;
  * including the ability to start a fully running container listening on a
  * {@link WebEnvironment#DEFINED_PORT defined} or {@link WebEnvironment#RANDOM_PORT
  * random} port.</li>
+ * <li>Registers a {@link org.springframework.boot.test.web.client.TestRestTemplate
+ * TestRestTemplate} bean for use in web tests.</li>
  * </ul>
  *
  * @author Phillip Webb

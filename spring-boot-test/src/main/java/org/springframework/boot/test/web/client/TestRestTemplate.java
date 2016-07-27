@@ -36,6 +36,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -66,6 +67,12 @@ import org.springframework.web.util.UriTemplateHandler;
  * Note: To prevent injection problems this class internally does not extend
  * {@link RestTemplate}. If you need access to the underlying {@link RestTemplate} use
  * {@link #getRestTemplate()}.
+ * <p>
+ * If you are using the
+ * {@link org.springframework.boot.test.context.SpringBootTest @SpringBootTest}
+ * annotation, a {@link TestRestTemplate} is automatically available and can be
+ * {@code @Autowired} into you test. If you need customizations (for example to adding
+ * additional message converters) use a {@link RestTemplateBuilder} {@code @Bean}.
  *
  * @author Dave Syer
  * @author Phillip Webb
