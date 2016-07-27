@@ -88,14 +88,14 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	}
 
 	@Test
-	public void deviceDelegatingFreemarkerViewResolver() throws Exception {
+	public void deviceDelegatingFreeMarkerViewResolver() throws Exception {
 		load(Collections.<Class<?>>singletonList(FreeMarkerAutoConfiguration.class),
 				"spring.mobile.devicedelegatingviewresolver.enabled:true");
 		assertThat(this.context.getBeansOfType(LiteDeviceDelegatingViewResolver.class))
 				.hasSize(2);
 		assertLiteDeviceDelegatingViewResolver(
 				this.context.getBean(FreeMarkerViewResolver.class),
-				"deviceDelegatingFreemarkerViewResolver");
+				"deviceDelegatingFreeMarkerViewResolver");
 	}
 
 	@Test

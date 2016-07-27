@@ -49,7 +49,7 @@ public class BasicJsonTester {
 	private JsonLoader loader;
 
 	/**
-	 * Create a new uninialized {@link BasicJsonTester} instance.
+	 * Create a new uninitialized {@link BasicJsonTester} instance.
 	 */
 	protected BasicJsonTester() {
 	}
@@ -139,7 +139,7 @@ public class BasicJsonTester {
 	}
 
 	private void verify() {
-		Assert.state(this.loader != null, "Unitialized BasicJsonTester");
+		Assert.state(this.loader != null, "Uninitialized BasicJsonTester");
 	}
 
 	private JsonContent<Object> getJsonContent(String json) {

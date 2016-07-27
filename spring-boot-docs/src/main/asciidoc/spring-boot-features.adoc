@@ -746,7 +746,7 @@ only contain one entry (with name "`my another name`" and description `null`). T
 configuration _will not_ add a second `MyPojo` instance to the list, and it won't merge
 the items.
 
-When a collection is specified in multiples profiles, the one with highest priority is
+When a collection is specified in multiple profiles, the one with highest priority is
 used (and only that one):
 
 [source,yaml,indent=0]

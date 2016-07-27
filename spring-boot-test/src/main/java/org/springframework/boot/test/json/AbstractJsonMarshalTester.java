@@ -304,8 +304,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 
 	private void verify() {
 		Assert.state(this.resourceLoadClass != null,
-				"Unitialized JsonMarshalTester (ResourceLoadClass is null)");
-		Assert.state(this.type != null, "Unitialized JsonMarshalTester (Type is null)");
+				"Uninitialized JsonMarshalTester (ResourceLoadClass is null)");
+		Assert.state(this.type != null, "Uninitialized JsonMarshalTester (Type is null)");
 	}
 
 	/**
