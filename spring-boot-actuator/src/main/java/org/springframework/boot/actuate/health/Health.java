@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
  * <pre class="code">
  * try {
  * 	// do some test to determine state of component
- * 	return new Health.Builder().up().withDetail(&quot;version&quot;, &quot;1.1.2&quot;).build();
+ * 	return new Health.Builder().up().withDetail("version", "1.1.2").build();
  * }
  * catch (Exception ex) {
  * 	return new Health.Builder().down(ex).build();
