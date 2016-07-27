@@ -2134,8 +2134,9 @@ will be available under `/system`.
 [[howto-switch-off-spring-boot-security-configuration]]
 === Switch off the Spring Boot security configuration
 If you define a `@Configuration` with `@EnableWebSecurity` anywhere in your application
-it will switch off the default webapp security settings in Spring Boot. To tweak the
-defaults try setting properties in `+security.*+` (see
+it will switch off the default webapp security settings in Spring Boot (but leave the
+Actuator's security enabled). To tweak the defaults try setting properties in
+`+security.*+` (see
 {sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`]
 for details of available settings) and `SECURITY` section of
 <<common-application-properties-security,Common application properties>>.
