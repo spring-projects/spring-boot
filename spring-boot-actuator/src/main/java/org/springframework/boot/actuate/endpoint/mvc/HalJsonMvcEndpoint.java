@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @ConfigurationProperties("endpoints.actuator")
 public class HalJsonMvcEndpoint extends AbstractMvcEndpoint {
+
 	private final ManagementServletContext managementServletContext;
 
 	public HalJsonMvcEndpoint(ManagementServletContext managementServletContext) {
