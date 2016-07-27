@@ -145,8 +145,8 @@ public class HttpEncodingAutoConfigurationTests {
 	@Test
 	public void noLocaleCharsetMapping() {
 		load(EmptyConfiguration.class);
-		Map<String, EmbeddedServletContainerCustomizer> beans =
-				this.context.getBeansOfType(EmbeddedServletContainerCustomizer.class);
+		Map<String, EmbeddedServletContainerCustomizer> beans = this.context
+				.getBeansOfType(EmbeddedServletContainerCustomizer.class);
 		assertThat(beans.size()).isEqualTo(1);
 		assertThat(this.context.getBean(MockEmbeddedServletContainerFactory.class)
 				.getLocaleCharsetMappings().size()).isEqualTo(0);
@@ -156,15 +156,17 @@ public class HttpEncodingAutoConfigurationTests {
 	public void customLocaleCharsetMappings() {
 		load(EmptyConfiguration.class, "spring.http.encoding.mapping.en:UTF-8",
 				"spring.http.encoding.mapping.fr_FR:UTF-8");
-		Map<String, EmbeddedServletContainerCustomizer> beans =
-				this.context.getBeansOfType(EmbeddedServletContainerCustomizer.class);
+		Map<String, EmbeddedServletContainerCustomizer> beans = this.context
+				.getBeansOfType(EmbeddedServletContainerCustomizer.class);
 		assertThat(beans.size()).isEqualTo(1);
 		assertThat(this.context.getBean(MockEmbeddedServletContainerFactory.class)
 				.getLocaleCharsetMappings().size()).isEqualTo(2);
 		assertThat(this.context.getBean(MockEmbeddedServletContainerFactory.class)
-				.getLocaleCharsetMappings().get(Locale.ENGLISH)).isEqualTo(Charset.forName("UTF-8"));
+				.getLocaleCharsetMappings().get(Locale.ENGLISH))
+						.isEqualTo(Charset.forName("UTF-8"));
 		assertThat(this.context.getBean(MockEmbeddedServletContainerFactory.class)
-				.getLocaleCharsetMappings().get(Locale.FRANCE)).isEqualTo(Charset.forName("UTF-8"));
+				.getLocaleCharsetMappings().get(Locale.FRANCE))
+						.isEqualTo(Charset.forName("UTF-8"));
 	}
 
 	private void assertCharacterEncodingFilter(CharacterEncodingFilter actual,
@@ -233,10 +235,10 @@ public class HttpEncodingAutoConfigurationTests {
 		}
 
 		@Bean
-		public EmbeddedServletContainerCustomizerBeanPostProcessor
-				embeddedServletContainerCustomizerBeanPostProcessor() {
+		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
 			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
 		}
+
 	}
 
 }

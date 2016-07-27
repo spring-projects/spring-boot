@@ -342,6 +342,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 		return this.localeCharsetMappings;
 	}
 
+	@Override
 	public void setLocaleCharsetMappings(Map<Locale, Charset> localeCharsetMappings) {
 		Assert.notNull(localeCharsetMappings, "localeCharsetMappings must not be null");
 		this.localeCharsetMappings = localeCharsetMappings;

@@ -67,7 +67,8 @@ public class HttpEncodingAutoConfiguration {
 		return new LocaleCharsetMappingsCustomizer(this.properties);
 	}
 
-	private static class LocaleCharsetMappingsCustomizer implements EmbeddedServletContainerCustomizer, Ordered {
+	private static class LocaleCharsetMappingsCustomizer
+			implements EmbeddedServletContainerCustomizer, Ordered {
 
 		private final HttpEncodingProperties properties;
 
@@ -86,6 +87,7 @@ public class HttpEncodingAutoConfiguration {
 		public int getOrder() {
 			return 0;
 		}
+
 	}
 
 }

@@ -20,12 +20,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -355,16 +357,21 @@ public class JettyEmbeddedServletContainerFactory
 			addJspServlet(context);
 			context.addBean(new JasperInitializer(context), true);
 		}
-		for (Locale locale : getLocaleCharsetMappings().keySet()) {
-			context.addLocaleEncoding(locale.toString(),
-					getLocaleCharsetMappings().get(locale).toString());
-		}
+		addLocaleMappings(context);
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
 		Configuration[] configurations = getWebAppContextConfigurations(context,
 				initializersToUse);
 		context.setConfigurations(configurations);
 		configureSession(context);
 		postProcessWebAppContext(context);
+	}
+
+	private void addLocaleMappings(WebAppContext context) {
+		for (Map.Entry<Locale, Charset> entry : getLocaleCharsetMappings().entrySet()) {
+			Locale locale = entry.getKey();
+			Charset charset = entry.getValue();
+			context.addLocaleEncoding(locale.toString(), charset.toString());
+		}
 	}
 
 	private void configureSession(WebAppContext context) {

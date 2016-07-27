@@ -277,4 +277,5 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		String charsetName = info.getLocaleCharsetMapping().get(locale.toString());
 		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}
+
 }

@@ -19,6 +19,7 @@ package org.springframework.boot.context.embedded.undertow;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
@@ -28,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.net.ssl.KeyManager;
@@ -383,10 +385,7 @@ public class UndertowEmbeddedServletContainerFactory
 			File dir = getValidSessionStoreDir();
 			deployment.setSessionPersistenceManager(new FileSessionPersistence(dir));
 		}
-		for (Locale locale : getLocaleCharsetMappings().keySet()) {
-			deployment.addLocaleCharsetMapping(locale.toString(),
-					getLocaleCharsetMappings().get(locale).toString());
-		}
+		addLocaleMappings(deployment);
 		DeploymentManager manager = Servlets.newContainer().addDeployment(deployment);
 		manager.deploy();
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
@@ -433,6 +432,14 @@ public class UndertowEmbeddedServletContainerFactory
 		Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
 		return xnio.createWorker(
 				OptionMap.builder().set(Options.THREAD_DAEMON, true).getMap());
+	}
+
+	private void addLocaleMappings(DeploymentInfo deployment) {
+		for (Map.Entry<Locale, Charset> entry : getLocaleCharsetMappings().entrySet()) {
+			Locale locale = entry.getKey();
+			Charset charset = entry.getValue();
+			deployment.addLocaleCharsetMapping(locale.toString(), charset.toString());
+		}
 	}
 
 	private void registerServletContainerInitializerToDriveServletContextInitializers(

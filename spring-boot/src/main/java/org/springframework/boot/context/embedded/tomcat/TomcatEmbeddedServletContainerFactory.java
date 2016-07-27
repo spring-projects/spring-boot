@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -194,15 +195,8 @@ public class TomcatEmbeddedServletContainerFactory
 		context.setParentClassLoader(
 				this.resourceLoader != null ? this.resourceLoader.getClassLoader()
 						: ClassUtils.getDefaultClassLoader());
-		// override defaults, see org.apache.catalina.util.CharsetMapperDefault.properties
-		context.addLocaleEncodingMappingParameter(Locale.ENGLISH.toString(),
-				DEFAULT_CHARSET.displayName());
-		context.addLocaleEncodingMappingParameter(Locale.FRENCH.toString(),
-				DEFAULT_CHARSET.displayName());
-		for (Locale locale : getLocaleCharsetMappings().keySet()) {
-			context.addLocaleEncodingMappingParameter(locale.toString(),
-					getLocaleCharsetMappings().get(locale).toString());
-		}
+		resetDefaultLocaleMapping(context);
+		addLocaleMappings(context);
 		try {
 			context.setUseRelativeRedirects(false);
 		}
@@ -226,6 +220,27 @@ public class TomcatEmbeddedServletContainerFactory
 		configureContext(context, initializersToUse);
 		host.addChild(context);
 		postProcessContext(context);
+	}
+
+	/**
+	 * Override Tomcat's default locale mappings to align with other containers. See
+	 * {@code org.apache.catalina.util.CharsetMapperDefault.properties}.
+	 * @param context the context to reset
+	 */
+	private void resetDefaultLocaleMapping(TomcatEmbeddedContext context) {
+		context.addLocaleEncodingMappingParameter(Locale.ENGLISH.toString(),
+				DEFAULT_CHARSET.displayName());
+		context.addLocaleEncodingMappingParameter(Locale.FRENCH.toString(),
+				DEFAULT_CHARSET.displayName());
+	}
+
+	private void addLocaleMappings(TomcatEmbeddedContext context) {
+		for (Map.Entry<Locale, Charset> entry : getLocaleCharsetMappings().entrySet()) {
+			Locale locale = entry.getKey();
+			Charset charset = entry.getValue();
+			context.addLocaleEncodingMappingParameter(locale.toString(),
+					charset.toString());
+		}
 	}
 
 	private void addDefaultServlet(Context context) {

@@ -33,6 +33,7 @@ import org.springframework.boot.test.json.JacksonTester;
  * auto-configuration of JSON testers.
  *
  * @author Phillip Webb
+ * @since 1.4.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

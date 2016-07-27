@@ -335,4 +335,5 @@ public class JettyEmbeddedServletContainerFactoryTests
 		String charsetName = context.getLocaleEncoding(locale);
 		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}
+
 }
