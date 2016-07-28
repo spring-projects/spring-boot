@@ -22,6 +22,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
@@ -86,6 +89,9 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
 			"javax.validation.ValidatorFactory" };
+
+	private static final Log logger = LogFactory
+			.getLog(ConfigurationPropertiesBindingPostProcessor.class);
 
 	private ConfigurationBeanFactoryMetaData beans = new ConfigurationBeanFactoryMetaData();
 
@@ -254,6 +260,8 @@ public class ConfigurationPropertiesBindingPostProcessor
 			return new FlatPropertySources(propertySources);
 		}
 		// empty, so not very useful, but fulfils the contract
+		logger.warn("Unable to obtain PropertySources from "
+				+ "PropertySourcesPlaceholderConfigurer or Environment");
 		return new MutablePropertySources();
 	}
 
@@ -266,6 +274,11 @@ public class ConfigurationPropertiesBindingPostProcessor
 							false);
 			if (beans.size() == 1) {
 				return beans.values().iterator().next();
+			}
+			if (beans.size() > 1 && logger.isWarnEnabled()) {
+				logger.warn("Multiple PropertySourcesPlaceholderConfigurer "
+						+ "beans registered " + beans.keySet()
+						+ ", falling back to Environment");
 			}
 		}
 		return null;
