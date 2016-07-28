@@ -3106,6 +3106,23 @@ pooled connection factory by default.
 
 
 
+[[boot-features-redis-embedded]]
+==== Embedded Redis
+Spring Boot offers auto-configuration for
+https://github.com/flapdoodle-oss/de.flapdoodle.embed.redis[Embedded Redis]. To use
+it in your Spring Boot application add a dependency on
+`de.flapdoodle.embed:de.flapdoodle.embed.redis`.
+
+The port that Redis will listen on can be configured using the `spring.redis.port`
+property. To use a randomly allocated free port use a value of zero. The `RedisTemplate`
+created by `RedisAutoConfiguration` will be automatically configured to use the randomly
+allocated port.
+
+If you have SLF4J on the classpath, output produced by Redis will be automatically routed
+to a logger named `org.springframework.boot.autoconfigure.redis.embedded.EmbeddedRedis`.
+
+
+
 [[boot-features-mongodb]]
 === MongoDB
 http://www.mongodb.com/[MongoDB] is an open-source NoSQL document database that uses a

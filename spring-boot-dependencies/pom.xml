@@ -71,6 +71,7 @@
 		<ehcache.version>2.10.2.2.21</ehcache.version>
 		<ehcache3.version>3.1.1</ehcache3.version>
 		<embedded-mongo.version>1.50.5</embedded-mongo.version>
+		<embedded-redis.version>1.11.5-SNAPSHOT</embedded-redis.version>
 		<flyway.version>3.2.1</flyway.version>
 		<freemarker.version>2.3.24-incubating</freemarker.version>
 		<elasticsearch.version>2.3.3</elasticsearch.version>
@@ -853,6 +854,11 @@
 				<groupId>de.flapdoodle.embed</groupId>
 				<artifactId>de.flapdoodle.embed.mongo</artifactId>
 				<version>${embedded-mongo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.flapdoodle.embed</groupId>
+				<artifactId>de.flapdoodle.embed.redis</artifactId>
+				<version>${embedded-redis.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>dom4j</groupId>

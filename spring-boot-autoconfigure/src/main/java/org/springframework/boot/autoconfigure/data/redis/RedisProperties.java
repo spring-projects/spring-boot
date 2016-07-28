@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.redis;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.env.Environment;
 
 /**
  * Configuration properties for Redis.
@@ -29,6 +30,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
+
+	/**
+	 * Default port used when the configured port is {@code null}.
+	 */
+	public static final int DEFAULT_PORT = 6379;
 
 	/**
 	 * Database index used by the connection factory.
@@ -48,7 +54,7 @@ public class RedisProperties {
 	/**
 	 * Redis server port.
 	 */
-	private int port = 6379;
+	private Integer port = null;
 
 	/**
 	 * Connection timeout in milliseconds.
@@ -85,11 +91,11 @@ public class RedisProperties {
 		this.password = password;
 	}
 
-	public int getPort() {
+	public Integer getPort() {
 		return this.port;
 	}
 
-	public void setPort(int port) {
+	public void setPort(Integer port) {
 		this.port = port;
 	}
 
@@ -123,6 +129,24 @@ public class RedisProperties {
 
 	public void setCluster(Cluster cluster) {
 		this.cluster = cluster;
+	}
+
+	public int determinePort(Environment environment) {
+		if (this.port == null) {
+			return DEFAULT_PORT;
+		}
+		if (this.port == 0) {
+			if (environment != null) {
+				String localPort = environment.getProperty("local.redis.port");
+				if (localPort != null) {
+					return Integer.valueOf(localPort);
+				}
+			}
+			throw new IllegalStateException(
+					"spring.redis.port=0 and no local redis port configuration "
+							+ "is available");
+		}
+		return this.port;
 	}
 
 	/**
@@ -256,4 +280,5 @@ public class RedisProperties {
 		}
 
 	}
+
 }
