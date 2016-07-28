@@ -11,7 +11,7 @@
 		actual jars). Run with '$ java -jar target/*.jar'.
 	</description>
 
-	<property name="spring-boot.version" value="1.4.0.BUILD-SNAPSHOT" />
+	<property name="spring-boot.version" value="1.4.0.RELEASE" />
 	<property name="lib.dir" location="${basedir}/target/lib" />
 	<property name="start-class" value="sample.ant.SampleAntApplication" />
 

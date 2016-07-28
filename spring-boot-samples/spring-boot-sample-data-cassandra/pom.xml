@@ -5,7 +5,7 @@
 		<!-- Your own application should inherit from spring-boot-starter-parent -->
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-samples</artifactId>
-		<version>1.4.0.BUILD-SNAPSHOT</version>
+		<version>1.4.0.RELEASE</version>
 	</parent>
 	<artifactId>spring-boot-sample-data-cassandra</artifactId>
 	<name>Spring Boot Data Cassandra Sample</name>
