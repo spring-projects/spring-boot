@@ -42,12 +42,17 @@ import static org.mockito.Mockito.mock;
  * @author Christian Dupuis
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 public class HealthMvcEndpointTests {
 
 	private static final PropertySource<?> NON_SENSITIVE = new MapPropertySource("test",
 			Collections.<String, Object>singletonMap("endpoints.health.sensitive",
 					"false"));
+
+	private static final PropertySource<?> SECURITY_ROLES = new MapPropertySource("test",
+			Collections.<String, Object>singletonMap("management.security.roles",
+					"HERO, USER"));
 
 	private HealthEndpoint endpoint = null;
 
@@ -138,6 +143,19 @@ public class HealthMvcEndpointTests {
 		assertThat(result instanceof Health).isTrue();
 		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
 		assertThat(((Health) result).getDetails().get("foo")).isNull();
+	}
+
+	@Test
+	public void secureCustomRole() {
+		this.mvc = new HealthMvcEndpoint(this.endpoint, false);
+		this.mvc.setEnvironment(this.environment);
+		this.environment.getPropertySources().addLast(SECURITY_ROLES);
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(this.user);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isEqualTo("bar");
 	}
 
 	@Test
