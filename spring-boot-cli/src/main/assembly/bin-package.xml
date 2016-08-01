@@ -14,6 +14,20 @@
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
+			<filtered>true</filtered>
+			<includes>
+				<include>INSTALL.txt</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/content</directory>
+			<outputDirectory>/</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+			<excludes>
+				<exclude>INSTALL.txt</exclude>
+			</excludes>
 		</fileSet>
 		<fileSet>
 			<directory>src/main/executablecontent</directory>
