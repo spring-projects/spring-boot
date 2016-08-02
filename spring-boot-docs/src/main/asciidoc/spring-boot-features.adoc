@@ -5368,8 +5368,36 @@ on Spock's `spock-spring` module to your application's build. `spock-spring` int
 Spring's test framework into Spock.
 
 NOTE: The annotations <<boot-features-testing-spring-boot-applications,described above>>
-can be used with Spock, i.e. you can annotate your `Specification` with
+can be used with Spock 1.1, i.e. you can annotate your `Specification` with
 `@SpringBootTest` to suit the needs of your tests.
+When using Spock 1.0 @SpringbootTest will not work for a web project. You need to use
+'@SpringApplicationConfiguration()' and '@WebIntegrationTest(randomPort = true)'
+If you want to autowire a TestRestTemplate you will have to create a bean like:
+[source,java,indent=0]
+----
+	public class TestConfiguration {
+        @Autowired
+        ApplicationContext applicationContext;
+
+        @Bean
+        TestRestTemplate restTemplate(){
+            RestTemplateBuilder builder = getRestTemplateBuilder(applicationContext);
+            TestRestTemplate template = new TestRestTemplate(builder.build());
+            template.setUriTemplateHandler(
+                    new LocalHostUriTemplateHandler(applicationContext.getEnvironment()));
+            return template;
+        }
+
+        private RestTemplateBuilder getRestTemplateBuilder(
+                ApplicationContext applicationContext) {
+            try {
+                return applicationContext.getBean(RestTemplateBuilder.class);
+            }
+            catch (NoSuchBeanDefinitionException ex) {
+                return new RestTemplateBuilder();
+            }
+----
+
 
 
 
