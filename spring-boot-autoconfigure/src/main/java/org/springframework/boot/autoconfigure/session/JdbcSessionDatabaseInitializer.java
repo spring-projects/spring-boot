@@ -42,8 +42,9 @@ public class JdbcSessionDatabaseInitializer {
 
 	static {
 		Map<String, String> aliases = new HashMap<String, String>();
-		aliases.put("hsql", "hsqldb");
-		aliases.put("postgres", "postgresql");
+		aliases.put("apache derby", "derby");
+		aliases.put("hsql database engine", "hsqldb");
+		aliases.put("microsoft sql server", "sqlserver");
 		ALIASES = Collections.unmodifiableMap(aliases);
 	}
 
