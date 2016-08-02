@@ -66,27 +66,36 @@ public class JsonTestersAutoConfiguration {
 				null);
 	}
 
-	@Bean
-	@Scope("prototype")
 	@ConditionalOnClass(ObjectMapper.class)
-	@ConditionalOnBean(ObjectMapper.class)
-	public FactoryBean<JacksonTester<?>> jacksonTesterFactoryBean(ObjectMapper mapper) {
-		return new JsonTesterFactoryBean<JacksonTester<?>, ObjectMapper>(
-				JacksonTester.class, mapper);
+	private static class JacksonJsonTestersConfiguration {
+
+		@Bean
+		@Scope("prototype")
+		@ConditionalOnBean(ObjectMapper.class)
+		public FactoryBean<JacksonTester<?>> jacksonTesterFactoryBean(
+				ObjectMapper mapper) {
+			return new JsonTesterFactoryBean<JacksonTester<?>, ObjectMapper>(
+					JacksonTester.class, mapper);
+		}
+
 	}
 
-	@Bean
-	@Scope("prototype")
 	@ConditionalOnClass(Gson.class)
-	@ConditionalOnBean(Gson.class)
-	public FactoryBean<GsonTester<?>> gsonTesterFactoryBean(Gson gson) {
-		return new JsonTesterFactoryBean<GsonTester<?>, Gson>(GsonTester.class, gson);
+	private static class GsonJsonTestersConfiguration {
+
+		@Bean
+		@Scope("prototype")
+		@ConditionalOnBean(Gson.class)
+		public FactoryBean<GsonTester<?>> gsonTesterFactoryBean(Gson gson) {
+			return new JsonTesterFactoryBean<GsonTester<?>, Gson>(GsonTester.class, gson);
+		}
+
 	}
 
 	/**
 	 * {@link FactoryBean} used to create JSON Tester instances.
 	 */
-	private class JsonTesterFactoryBean<T, M> implements FactoryBean<T> {
+	private static class JsonTesterFactoryBean<T, M> implements FactoryBean<T> {
 
 		private final Class<?> objectType;
 
