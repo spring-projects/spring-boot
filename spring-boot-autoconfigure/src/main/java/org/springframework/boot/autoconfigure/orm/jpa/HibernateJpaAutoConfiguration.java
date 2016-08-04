@@ -30,9 +30,11 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.HibernateEntityManagerCondition;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -55,13 +57,15 @@ import org.springframework.util.ClassUtils;
  * @author Josh Long
  * @author Manuel Doninger
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
 @Configuration
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
 		EnableTransactionManagement.class, EntityManager.class })
 @Conditional(HibernateEntityManagerCondition.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class })
-public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
+@EnableConfigurationProperties(JpaProperties.class)
+public class HibernateJpaAutoConfiguration  {
 
 	private static final Log logger = LogFactory
 			.getLog(HibernateJpaAutoConfiguration.class);
@@ -83,110 +87,117 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 			"org.hibernate.engine.transaction.jta.platform.internal.WebSphereExtendedJtaPlatform",
 			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform", };
 
-	public HibernateJpaAutoConfiguration(DataSource dataSource,
-			JpaProperties jpaProperties,
-			ObjectProvider<JtaTransactionManager> jtaTransactionManagerProvider) {
-		super(dataSource, jpaProperties, jtaTransactionManagerProvider);
-	}
 
-	@Override
-	protected AbstractJpaVendorAdapter createJpaVendorAdapter() {
-		return new HibernateJpaVendorAdapter();
-	}
+	@Configuration
+	@ConditionalOnSingleCandidate(DataSource.class)
+	static class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
-	@Override
-	protected Map<String, Object> getVendorProperties() {
-		Map<String, Object> vendorProperties = new LinkedHashMap<String, Object>();
-		vendorProperties.putAll(getProperties().getHibernateProperties(getDataSource()));
-		return vendorProperties;
-	}
-
-	@Override
-	protected void customizeVendorProperties(Map<String, Object> vendorProperties) {
-		super.customizeVendorProperties(vendorProperties);
-		if (!vendorProperties.containsKey(JTA_PLATFORM)) {
-			configureJtaPlatform(vendorProperties);
+		HibernateJpaConfiguration(DataSource dataSource,
+				JpaProperties jpaProperties,
+				ObjectProvider<JtaTransactionManager> jtaTransactionManagerProvider) {
+			super(dataSource, jpaProperties, jtaTransactionManagerProvider);
 		}
-	}
 
-	private void configureJtaPlatform(Map<String, Object> vendorProperties)
-			throws LinkageError {
-		JtaTransactionManager jtaTransactionManager = getJtaTransactionManager();
-		if (jtaTransactionManager != null) {
-			if (runningOnWebSphere()) {
-				// We can never use SpringJtaPlatform on WebSphere as
-				// WebSphereUowTransactionManager has a null TransactionManager
-				// which will cause Hibernate to NPE
-				configureWebSphereTransactionPlatform(vendorProperties);
+		@Override
+		protected AbstractJpaVendorAdapter createJpaVendorAdapter() {
+			return new HibernateJpaVendorAdapter();
+		}
+
+		@Override
+		protected Map<String, Object> getVendorProperties() {
+			Map<String, Object> vendorProperties = new LinkedHashMap<String, Object>();
+			vendorProperties.putAll(getProperties().getHibernateProperties(getDataSource()));
+			return vendorProperties;
+		}
+
+		@Override
+		protected void customizeVendorProperties(Map<String, Object> vendorProperties) {
+			super.customizeVendorProperties(vendorProperties);
+			if (!vendorProperties.containsKey(JTA_PLATFORM)) {
+				configureJtaPlatform(vendorProperties);
+			}
+		}
+
+		private void configureJtaPlatform(Map<String, Object> vendorProperties)
+				throws LinkageError {
+			JtaTransactionManager jtaTransactionManager = getJtaTransactionManager();
+			if (jtaTransactionManager != null) {
+				if (runningOnWebSphere()) {
+					// We can never use SpringJtaPlatform on WebSphere as
+					// WebSphereUowTransactionManager has a null TransactionManager
+					// which will cause Hibernate to NPE
+					configureWebSphereTransactionPlatform(vendorProperties);
+				}
+				else {
+					configureSpringJtaPlatform(vendorProperties, jtaTransactionManager);
+				}
 			}
 			else {
-				configureSpringJtaPlatform(vendorProperties, jtaTransactionManager);
+				vendorProperties.put(JTA_PLATFORM, getNoJtaPlatformManager());
 			}
 		}
-		else {
-			vendorProperties.put(JTA_PLATFORM, getNoJtaPlatformManager());
+
+		private boolean runningOnWebSphere() {
+			return ClassUtils.isPresent(
+					"com.ibm.websphere.jtaextensions." + "ExtendedJTATransaction",
+					getClass().getClassLoader());
 		}
-	}
 
-	private boolean runningOnWebSphere() {
-		return ClassUtils.isPresent(
-				"com.ibm.websphere.jtaextensions." + "ExtendedJTATransaction",
-				getClass().getClassLoader());
-	}
-
-	private void configureWebSphereTransactionPlatform(
-			Map<String, Object> vendorProperties) {
-		vendorProperties.put(JTA_PLATFORM, getWebSphereJtaPlatformManager());
-	}
-
-	private Object getWebSphereJtaPlatformManager() {
-		return getJtaPlatformManager(WEBSPHERE_JTA_PLATFORM_CLASSES);
-	}
-
-	private void configureSpringJtaPlatform(Map<String, Object> vendorProperties,
-			JtaTransactionManager jtaTransactionManager) {
-		try {
-			vendorProperties.put(JTA_PLATFORM,
-					new SpringJtaPlatform(jtaTransactionManager));
+		private void configureWebSphereTransactionPlatform(
+				Map<String, Object> vendorProperties) {
+			vendorProperties.put(JTA_PLATFORM, getWebSphereJtaPlatformManager());
 		}
-		catch (LinkageError ex) {
-			// NoClassDefFoundError can happen if Hibernate 4.2 is used and some
-			// containers (e.g. JBoss EAP 6) wraps it in the superclass LinkageError
-			if (!isUsingJndi()) {
-				throw new IllegalStateException("Unable to set Hibernate JTA "
-						+ "platform, are you using the correct "
-						+ "version of Hibernate?", ex);
-			}
-			// Assume that Hibernate will use JNDI
-			if (logger.isDebugEnabled()) {
-				logger.debug("Unable to set Hibernate JTA platform : " + ex.getMessage());
-			}
-		}
-	}
 
-	private boolean isUsingJndi() {
-		try {
-			return JndiLocatorDelegate.isDefaultJndiEnvironmentAvailable();
+		private Object getWebSphereJtaPlatformManager() {
+			return getJtaPlatformManager(WEBSPHERE_JTA_PLATFORM_CLASSES);
 		}
-		catch (Error ex) {
-			return false;
-		}
-	}
 
-	private Object getNoJtaPlatformManager() {
-		return getJtaPlatformManager(NO_JTA_PLATFORM_CLASSES);
-	}
-
-	private Object getJtaPlatformManager(String[] candidates) {
-		for (String candidate : candidates) {
+		private void configureSpringJtaPlatform(Map<String, Object> vendorProperties,
+				JtaTransactionManager jtaTransactionManager) {
 			try {
-				return Class.forName(candidate).newInstance();
+				vendorProperties.put(JTA_PLATFORM,
+						new SpringJtaPlatform(jtaTransactionManager));
 			}
-			catch (Exception ex) {
-				// Continue searching
+			catch (LinkageError ex) {
+				// NoClassDefFoundError can happen if Hibernate 4.2 is used and some
+				// containers (e.g. JBoss EAP 6) wraps it in the superclass LinkageError
+				if (!isUsingJndi()) {
+					throw new IllegalStateException("Unable to set Hibernate JTA "
+							+ "platform, are you using the correct "
+							+ "version of Hibernate?", ex);
+				}
+				// Assume that Hibernate will use JNDI
+				if (logger.isDebugEnabled()) {
+					logger.debug("Unable to set Hibernate JTA platform : " + ex.getMessage());
+				}
 			}
 		}
-		throw new IllegalStateException("Could not configure JTA platform");
+
+		private boolean isUsingJndi() {
+			try {
+				return JndiLocatorDelegate.isDefaultJndiEnvironmentAvailable();
+			}
+			catch (Error ex) {
+				return false;
+			}
+		}
+
+		private Object getNoJtaPlatformManager() {
+			return getJtaPlatformManager(NO_JTA_PLATFORM_CLASSES);
+		}
+
+		private Object getJtaPlatformManager(String[] candidates) {
+			for (String candidate : candidates) {
+				try {
+					return Class.forName(candidate).newInstance();
+				}
+				catch (Exception ex) {
+					// Continue searching
+				}
+			}
+			throw new IllegalStateException("Could not configure JTA platform");
+		}
+
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE + 20)

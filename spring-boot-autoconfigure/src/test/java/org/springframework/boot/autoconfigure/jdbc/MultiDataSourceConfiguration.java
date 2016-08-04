@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Kazuki Shimizu
  */
 @Configuration
-class MultiDataSourceConfiguration {
+public class MultiDataSourceConfiguration {
 
 	@Bean
 	public DataSource test1DataSource() {
