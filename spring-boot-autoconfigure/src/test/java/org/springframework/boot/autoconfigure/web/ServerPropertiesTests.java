@@ -322,6 +322,22 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void testCustomizeTomcatAcceptCount() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.accept-count", "10");
+		bindProperties(map);
+		assertThat(this.properties.getTomcat().getAcceptCount()).isEqualTo(10);
+	}
+
+	@Test
+	public void testCustomizeTomcatMaxConnections() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.max-connections", "5");
+		bindProperties(map);
+		assertThat(this.properties.getTomcat().getMaxConnections()).isEqualTo(5);
+	}
+
+	@Test
 	public void customizeTomcatDisplayName() throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.display-name", "MyBootApp");
