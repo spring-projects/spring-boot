@@ -929,6 +929,8 @@ The trigger file could be updated manually, or via an IDE plugin.
 
 To use a trigger file use the `spring.devtools.restart.trigger-file` property.
 
+TIP: When you update the trigger file then application will be restarted only if there are any changes to reload.
+
 TIP: You might want to set `spring.devtools.restart.trigger-file` as a
 <<using-boot-devtools-globalsettings,global setting>> so that all your projects behave
 in the same way.
