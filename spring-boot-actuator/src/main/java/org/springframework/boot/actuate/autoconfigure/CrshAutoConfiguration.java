@@ -180,6 +180,7 @@ public class CrshAutoConfiguration {
 
 		@Bean
 		@ConditionalOnProperty(name = "management.shell.web.enabled", havingValue = "true")
+		@ConditionalOnClass(CRaSHConnector.class)
 		public CRaSHConnector cRaSHWebConnector() {
 			return new CRaSHConnector();
 		}
