@@ -66,6 +66,7 @@ import static org.hamcrest.CoreMatchers.isA;
  * @author Eddú Meléndez
  * @author Matt Benson
  * @author Stephane Nicoll
+ * @author Alex Fainshtein
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CrshAutoConfigurationTests {
@@ -137,6 +138,14 @@ public class CrshAutoConfigurationTests {
 				.isEqualTo("300000");
 		assertThat(lifeCycle.getConfig().getProperty("crash.ssh.idle_timeout"))
 				.isEqualTo("400000");
+	}
+
+	@Test
+	public void testWebConfiguration() {
+		load("management.shell.web.enabled=true");
+		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
+		assertThat(lifeCycle.getConfig().getProperty("crash.web.enabled"))
+				.isEqualTo("true");
 	}
 
 	@Test

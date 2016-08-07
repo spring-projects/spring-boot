@@ -805,8 +805,8 @@ If you are using Jolokia but you don't want Spring Boot to configure it, simply 
 [[production-ready-remote-shell]]
 == Monitoring and management using a remote shell
 Spring Boot supports an integrated Java shell called '`CRaSH`'. You can use CRaSH to
-`ssh` or `telnet` into your running application. To enable remote shell support, add
-the following dependency to your project:
+`ssh` or `telnet` or `websocket` into your running application. To enable remote shell
+support, add the following dependency to your project:
 
 [source,xml,indent=0]
 ----
@@ -818,6 +818,9 @@ the following dependency to your project:
 
 TIP: If you want to also enable telnet access you will additionally need a dependency
 on `org.crsh:crsh.shell.telnet`.
+
+TIP: If you want to also enable websocket access you will additionally need a dependency
+on `org.crsh:crsh.shell.web`.
 
 NOTE: CRaSH requires to run with a JDK as it compiles commands on the fly. If a basic
 `help` command fails, you are probably running with a JRE.

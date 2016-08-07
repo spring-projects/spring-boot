@@ -1498,6 +1498,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.crashub</groupId>
+				<artifactId>crash.connectors.web</artifactId>
+				<version>${crashub.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.crashub</groupId>
 				<artifactId>crash.embed.spring</artifactId>
 				<version>${crashub.version}</version>
 			</dependency>

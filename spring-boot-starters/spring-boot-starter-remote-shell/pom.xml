@@ -62,6 +62,25 @@
 		</dependency>
 		<dependency>
 			<groupId>org.crashub</groupId>
+			<artifactId>crash.connectors.web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>servlet-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.crashub</groupId>
 			<artifactId>crash.embed.spring</artifactId>
 			<exclusions>
 				<exclusion>
