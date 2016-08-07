@@ -349,7 +349,8 @@ public class ShellProperties {
 		 * Enable CRaSH telnet support. Enabled by default if the TelnetPlugin is
 		 * available.
 		 */
-		private boolean enabled = false;
+		private boolean enabled = ClassUtils.isPresent("org.crsh.telnet.TelnetPlugin",
+				ClassUtils.getDefaultClassLoader());
 
 		/**
 		 * Telnet port.
@@ -391,8 +392,7 @@ public class ShellProperties {
 		 * Enable CRaSH websocket support. Enabled by default if the WebPlugin is
 		 * available.
 		 */
-		private boolean enabled = ClassUtils.isPresent("org.crsh.web.servlet.WebPlugin",
-				ClassUtils.getDefaultClassLoader());
+		private boolean enabled = false;
 
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
