@@ -173,19 +173,19 @@ public class CrshAutoConfiguration {
 	static class CrshWebPlugin {
 
 		@Bean
-		@ConditionalOnProperty(name = "crash.web.enabled", havingValue = "true")
+		@ConditionalOnProperty(name = "management.shell.web.enabled", havingValue = "true")
 		public WebPluginLifeCycle webPluginLifeCycle() {
 			return new WebPluginLifeCycle();
 		}
 
 		@Bean
-		@ConditionalOnProperty(name = "crash.web.enabled", havingValue = "true")
+		@ConditionalOnProperty(name = "management.shell.web.enabled", havingValue = "true")
 		public CRaSHConnector cRaSHWebConnector() {
 			return new CRaSHConnector();
 		}
 
 		@Bean
-		@ConditionalOnProperty(name = "crash.web.enabled", havingValue = "true")
+		@ConditionalOnProperty(name = "management.shell.web.enabled", havingValue = "true")
 		@ConditionalOnMissingBean(ServerEndpointExporter.class)
 		public ServerEndpointExporter serverEndpointExporter() {
 			return new ServerEndpointExporter();

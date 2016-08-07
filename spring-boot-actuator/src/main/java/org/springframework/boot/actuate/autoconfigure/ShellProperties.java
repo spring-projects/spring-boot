@@ -349,8 +349,7 @@ public class ShellProperties {
 		 * Enable CRaSH telnet support. Enabled by default if the TelnetPlugin is
 		 * available.
 		 */
-		private boolean enabled = ClassUtils.isPresent("org.crsh.telnet.TelnetPlugin",
-				ClassUtils.getDefaultClassLoader());
+		private boolean enabled = false;
 
 		/**
 		 * Telnet port.

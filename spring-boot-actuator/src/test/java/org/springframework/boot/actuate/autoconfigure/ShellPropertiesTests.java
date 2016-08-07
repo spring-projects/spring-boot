@@ -164,13 +164,6 @@ public class ShellPropertiesTests {
 	}
 
 	@Test
-	public void testBindingWebAutoloaded() {
-		ShellProperties props = load(ShellProperties.class);
-		Properties p = props.asCrshShellConfig();
-		assertThat(p.get("crash.web.enabled")).isEqualTo("true");
-	}
-
-	@Test
 	public void testBindingWebIgnored() {
 		ShellProperties props = load(ShellProperties.class,
 				"management.shell.web.enabled=false");
