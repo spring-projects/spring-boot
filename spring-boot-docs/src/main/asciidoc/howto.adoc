@@ -1414,6 +1414,15 @@ for example:
 	</dependency>
 ----
 
+To avoid a warning message about the HTML 5 template mode being deprecated and the HTML
+template mode being used instead, you may also want to explicity configure
+`spring.thymeleaf.mode` to be `HTML`, for example:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.thymeleaf.mode: HTML
+----
+
 Please refer to the
 {github-code}/spring-boot-samples/spring-boot-sample-web-thymeleaf3[Thymeleaf 3 sample] to
 see this in action.
