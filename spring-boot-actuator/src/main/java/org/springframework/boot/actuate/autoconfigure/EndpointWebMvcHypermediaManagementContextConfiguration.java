@@ -54,6 +54,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.ResourceLoader;
@@ -118,14 +119,6 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnEnabledEndpoint("docs")
-	@ConditionalOnResource(resources = "classpath:/META-INF/resources/spring-boot-actuator/docs/index.html")
-	public DocsMvcEndpoint docsMvcEndpoint(
-			ManagementServletContext managementServletContext) {
-		return new DocsMvcEndpoint(managementServletContext);
-	}
-
-	@Bean
 	@ConditionalOnBean(DocsMvcEndpoint.class)
 	@ConditionalOnMissingBean(CurieProvider.class)
 	@ConditionalOnProperty(prefix = "endpoints.docs.curies", name = "enabled", matchIfMissing = false)
@@ -133,10 +126,31 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 			ManagementServerProperties management, DocsMvcEndpoint endpoint) {
 		String path = management.getContextPath() + endpoint.getPath()
 				+ "/#spring_boot_actuator__{rel}";
-		if (server.getPort().equals(management.getPort()) && management.getPort() != 0) {
+		if (serverAndManagementPortsAreTheSame(server, management)) {
 			path = server.getPath(path);
 		}
 		return new DefaultCurieProvider("boot", new UriTemplate(path));
+	}
+
+	private boolean serverAndManagementPortsAreTheSame(ServerProperties server,
+			ManagementServerProperties management) {
+		if (server.getPort() == null) {
+			return management.getPort() == null;
+		}
+		return server.getPort().equals(management.getPort()) && management.getPort() != 0;
+	}
+
+	@Configuration
+	static class DocsMvcEndpointConfiguration {
+
+		@Bean
+		@ConditionalOnEnabledEndpoint("docs")
+		@ConditionalOnResource(resources = "classpath:/META-INF/resources/spring-boot-actuator/docs/index.html")
+		public DocsMvcEndpoint docsMvcEndpoint(
+				ManagementServletContext managementServletContext) {
+			return new DocsMvcEndpoint(managementServletContext);
+		}
+
 	}
 
 	/**
