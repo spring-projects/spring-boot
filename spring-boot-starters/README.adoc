@@ -104,6 +104,6 @@ do as they were designed before this was clarified.
 | https://github.com/ePages-de/restdocs-wiremock
 
 | https://cxf.apache.org/docs/springboot.html[Apache CXF]
-| https://github.com/apache/cxf/tree/master/integration/spring-boot
+| https://github.com/apache/cxf
 
 |===
