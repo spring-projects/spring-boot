@@ -2837,6 +2837,13 @@ Java 6-compatible container. Both Tomcat 7 and Jetty 8 are Java 6 compatible. Se
 
 
 
+[[howto-use-java-6-jackson]]
+==== Jackson
+Jackson 2.7 and later requires Java 7. If you want to use Jackson with Java 6 you
+will have to downgrade to Jackson 2.6.
+
+
+
 [[how-to-use-java-6-jta-api]]
 ==== JTA API compatibility
 While the Java Transaction API itself doesn't require Java 7 the official API jar
