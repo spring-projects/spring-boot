@@ -657,6 +657,8 @@ public class ServerProperties
 		 */
 		private Charset uriEncoding;
 
+		private String tldSkipPatterns;
+
 		public int getMaxThreads() {
 			return this.maxThreads;
 		}
@@ -772,6 +774,14 @@ public class ServerProperties
 			this.uriEncoding = uriEncoding;
 		}
 
+		public String getTldSkipPatterns() {
+			return tldSkipPatterns;
+		}
+
+		public void setTldSkipPatterns(String tldSkipPatterns) {
+			this.tldSkipPatterns = tldSkipPatterns;
+		}
+
 		void customizeTomcat(ServerProperties serverProperties,
 				TomcatEmbeddedServletContainerFactory factory) {
 			if (getBasedir() != null) {
@@ -805,6 +815,10 @@ public class ServerProperties
 			}
 			if (this.redirectContextRoot != null) {
 				customizeRedirectContextRoot(factory, this.redirectContextRoot);
+			}
+
+			if (this.tldSkipPatterns != null) {
+				factory.setTldSkip(this.tldSkipPatterns);
 			}
 		}
 
