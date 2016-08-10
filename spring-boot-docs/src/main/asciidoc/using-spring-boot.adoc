@@ -925,7 +925,9 @@ with a specific library, you need to set a `System` property before calling
 If you work with an IDE that continuously compiles changed files, you might prefer to
 trigger restarts only at specific times. To do this you can use a "`trigger file`", which
 is a special file that must be modified when you want to actually trigger a restart check.
-The trigger file could be updated manually, or via an IDE plugin.
+Changing the file only triggers the check and the restart will only occur if Devtools has
+detected it has to do something. The trigger file could be updated manually, or via an IDE
+plugin.
 
 To use a trigger file use the `spring.devtools.restart.trigger-file` property.
 
