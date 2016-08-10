@@ -76,7 +76,7 @@ class InitializrService {
 
 	protected CloseableHttpClient getHttp() {
 		if (this.http == null) {
-			this.http = HttpClientBuilder.create().build();
+			this.http = HttpClientBuilder.create().useSystemProperties().build();
 		}
 		return this.http;
 	}
