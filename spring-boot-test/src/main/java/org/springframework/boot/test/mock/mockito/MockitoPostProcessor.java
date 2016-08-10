@@ -18,13 +18,11 @@ package org.springframework.boot.test.mock.mockito;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -37,6 +35,8 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -70,11 +70,14 @@ import org.springframework.util.StringUtils;
  * {@link MockBean @MockBean}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.4.0
  */
 public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAdapter
 		implements BeanClassLoaderAware, BeanFactoryAware, BeanFactoryPostProcessor,
 		Ordered {
+
+	private static final String FACTORY_BEAN_OBJECT_TYPE = "factoryBeanObjectType";
 
 	private static final String BEAN_NAME = MockitoPostProcessor.class.getName();
 
@@ -240,8 +243,16 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private String[] getExistingBeans(ConfigurableListableBeanFactory beanFactory,
 			Class<?> type) {
-		List<String> beans = new ArrayList<String>(
+		Set<String> beans = new LinkedHashSet<String>(
 				Arrays.asList(beanFactory.getBeanNamesForType(type)));
+		for (String beanName : beanFactory.getBeanNamesForType(FactoryBean.class)) {
+			beanName = BeanFactoryUtils.transformedBeanName(beanName);
+			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+			if (type.getName()
+					.equals(beanDefinition.getAttribute(FACTORY_BEAN_OBJECT_TYPE))) {
+				beans.add(beanName);
+			}
+		}
 		for (Iterator<String> iterator = beans.iterator(); iterator.hasNext();) {
 			if (isScopedTarget(iterator.next())) {
 				iterator.remove();
