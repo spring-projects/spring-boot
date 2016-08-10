@@ -337,6 +337,9 @@ public class Repackager {
 
 		@Override
 		public JarEntry transform(JarEntry entry) {
+			if (entry.getName().equals("META-INF/INDEX.LIST")) {
+				return null;
+			}
 			if (entry.getName().startsWith("META-INF/")
 					|| entry.getName().startsWith("BOOT-INF/")) {
 				return entry;

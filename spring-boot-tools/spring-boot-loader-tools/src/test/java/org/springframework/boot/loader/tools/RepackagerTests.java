@@ -518,6 +518,24 @@ public class RepackagerTests {
 		}
 	}
 
+	@Test
+	public void metaInfIndexListIsRemovedFromRepackagedJar() throws Exception {
+		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
+		this.testJarFile.addFile("META-INF/INDEX.LIST",
+				this.temporaryFolder.newFile("INDEX.LIST"));
+		File source = this.testJarFile.getFile();
+		File dest = this.temporaryFolder.newFile("dest.jar");
+		Repackager repackager = new Repackager(source);
+		repackager.repackage(dest, NO_LIBRARIES);
+		JarFile jarFile = new JarFile(dest);
+		try {
+			assertThat(jarFile.getEntry("META-INF/INDEX.LIST")).isNull();
+		}
+		finally {
+			jarFile.close();
+		}
+	}
+
 	private boolean hasLauncherClasses(File file) throws IOException {
 		return hasEntry(file, "org/springframework/boot/")
 				&& hasEntry(file, "org/springframework/boot/loader/JarLauncher.class");

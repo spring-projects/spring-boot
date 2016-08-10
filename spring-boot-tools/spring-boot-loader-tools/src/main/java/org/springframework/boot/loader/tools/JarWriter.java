@@ -141,7 +141,10 @@ public class JarWriter {
 							jarFile.getInputStream(entry));
 				}
 				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream, true);
-				writeEntry(entryTransformer.transform(entry), entryWriter);
+				JarEntry transformedEntry = entryTransformer.transform(entry);
+				if (transformedEntry != null) {
+					writeEntry(transformedEntry, entryWriter);
+				}
 			}
 			finally {
 				inputStream.close();
