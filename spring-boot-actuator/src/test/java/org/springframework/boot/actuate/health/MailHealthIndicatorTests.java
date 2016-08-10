@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,7 @@ import org.junit.Test;
 
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
@@ -67,8 +65,8 @@ public class MailHealthIndicatorTests {
 	public void smtpIsUp() {
 		given(this.mailSender.getProtocol()).willReturn("success");
 		Health health = this.indicator.health();
-		assertEquals(Status.UP, health.getStatus());
-		assertEquals("smtp.acme.org:25", health.getDetails().get("location"));
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("location")).isEqualTo("smtp.acme.org:25");
 	}
 
 	@Test
@@ -76,11 +74,11 @@ public class MailHealthIndicatorTests {
 		willThrow(new MessagingException("A test exception")).given(this.mailSender)
 				.testConnection();
 		Health health = this.indicator.health();
-		assertEquals(Status.DOWN, health.getStatus());
-		assertEquals("smtp.acme.org:25", health.getDetails().get("location"));
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails().get("location")).isEqualTo("smtp.acme.org:25");
 		Object errorMessage = health.getDetails().get("error");
-		assertNotNull(errorMessage);
-		assertTrue(errorMessage.toString().contains("A test exception"));
+		assertThat(errorMessage).isNotNull();
+		assertThat(errorMessage.toString().contains("A test exception")).isTrue();
 	}
 
 	public static class SuccessTransport extends Transport {
@@ -90,8 +88,8 @@ public class MailHealthIndicatorTests {
 		}
 
 		@Override
-		public synchronized void connect(String host, int port, String user,
-				String password) throws MessagingException {
+		public void connect(String host, int port, String user, String password)
+				throws MessagingException {
 		}
 
 		@Override

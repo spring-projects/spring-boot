@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.rich.InMemoryRichGaugeRepository;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RichGaugeExporter}.
@@ -43,7 +43,7 @@ public class RichGaugeExporterTests {
 	public void prefixedMetricsCopied() {
 		this.reader.set(new Metric<Number>("foo", 2.3));
 		this.exporter.export();
-		assertEquals(1, Iterables.collection(this.writer.groups()).size());
+		assertThat(Iterables.collection(this.writer.groups())).hasSize(1);
 	}
 
 }

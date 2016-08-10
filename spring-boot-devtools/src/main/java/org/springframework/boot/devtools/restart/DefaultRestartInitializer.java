@@ -28,6 +28,7 @@ import java.util.Set;
  * exploded) or when running from a test.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.3.0
  */
 public class DefaultRestartInitializer implements RestartInitializer {
@@ -38,6 +39,7 @@ public class DefaultRestartInitializer implements RestartInitializer {
 		Set<String> skipped = new LinkedHashSet<String>();
 		skipped.add("org.junit.runners.");
 		skipped.add("org.springframework.boot.test.");
+		skipped.add("cucumber.runtime.");
 		SKIPPED_STACK_ELEMENTS = Collections.unmodifiableSet(skipped);
 	}
 

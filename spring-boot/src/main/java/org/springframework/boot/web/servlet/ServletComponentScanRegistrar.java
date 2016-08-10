@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,14 +28,13 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} used by {@link ServletComponentScan}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 
@@ -77,16 +76,9 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 	private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
 		AnnotationAttributes attributes = AnnotationAttributes.fromMap(
 				metadata.getAnnotationAttributes(ServletComponentScan.class.getName()));
-		String[] value = attributes.getStringArray("value");
 		String[] basePackages = attributes.getStringArray("basePackages");
 		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
-		if (!ObjectUtils.isEmpty(value)) {
-			Assert.state(ObjectUtils.isEmpty(basePackages),
-					"@ServletComponentScan basePackages and value attributes are"
-							+ " mutually exclusive");
-		}
 		Set<String> packagesToScan = new LinkedHashSet<String>();
-		packagesToScan.addAll(Arrays.asList(value));
 		packagesToScan.addAll(Arrays.asList(basePackages));
 		for (Class<?> basePackageClass : basePackageClasses) {
 			packagesToScan.add(ClassUtils.getPackageName(basePackageClass));

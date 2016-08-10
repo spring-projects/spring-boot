@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import com.codahale.metrics.MetricRegistry;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.actuate.metrics.buffer.BufferCounterService;
@@ -86,9 +85,11 @@ public class MetricRepositoryAutoConfiguration {
 	@ConditionalOnMissingBean(GaugeService.class)
 	static class LegacyMetricServicesConfiguration {
 
-		@Autowired
-		@ActuatorMetricWriter
-		private MetricWriter writer;
+		private final MetricWriter writer;
+
+		LegacyMetricServicesConfiguration(@ActuatorMetricWriter MetricWriter writer) {
+			this.writer = writer;
+		}
 
 		@Bean
 		@ConditionalOnMissingBean(CounterService.class)

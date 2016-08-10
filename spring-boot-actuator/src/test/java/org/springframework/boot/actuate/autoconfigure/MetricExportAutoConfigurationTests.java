@@ -32,7 +32,7 @@ import org.springframework.boot.actuate.metrics.export.MetricExporters;
 import org.springframework.boot.actuate.metrics.statsd.StatsdMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,10 +42,7 @@ import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.SubscribableChannel;
 
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MetricExportAutoConfiguration}.
@@ -75,7 +72,7 @@ public class MetricExportAutoConfigurationTests {
 				MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		GaugeService gaugeService = this.context.getBean(GaugeService.class);
-		assertNotNull(gaugeService);
+		assertThat(gaugeService).isNotNull();
 		gaugeService.submit("foo", 2.7);
 		MetricExporters flusher = this.context.getBean(MetricExporters.class);
 		flusher.close(); // this will be called by Spring on shutdown
@@ -92,8 +89,8 @@ public class MetricExportAutoConfigurationTests {
 				MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		MetricExporters exporter = this.context.getBean(MetricExporters.class);
-		assertNotNull(exporter);
-		assertTrue(exporter.getExporters().containsKey("messageChannelMetricWriter"));
+		assertThat(exporter).isNotNull();
+		assertThat(exporter.getExporters()).containsKey("messageChannelMetricWriter");
 	}
 
 	@Test
@@ -103,7 +100,7 @@ public class MetricExportAutoConfigurationTests {
 				MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		GaugeService gaugeService = this.context.getBean(GaugeService.class);
-		assertNotNull(gaugeService);
+		assertThat(gaugeService).isNotNull();
 		gaugeService.submit("foo", 2.7);
 		MetricExporters exporters = this.context.getBean(MetricExporters.class);
 		MetricCopyExporter exporter = (MetricCopyExporter) exporters.getExporters()
@@ -149,7 +146,7 @@ public class MetricExportAutoConfigurationTests {
 				MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(StatsdMetricWriter.class), notNullValue());
+		assertThat(this.context.getBean(StatsdMetricWriter.class)).isNotNull();
 	}
 
 	@Configuration

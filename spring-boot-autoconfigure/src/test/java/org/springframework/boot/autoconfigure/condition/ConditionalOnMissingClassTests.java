@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConditionalOnMissingClass}.
@@ -39,16 +37,16 @@ public class ConditionalOnMissingClassTests {
 	public void testVanillaOnClassCondition() {
 		this.context.register(BasicConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
-		assertFalse(this.context.containsBean("bar"));
-		assertEquals("foo", this.context.getBean("foo"));
+		assertThat(this.context.containsBean("bar")).isFalse();
+		assertThat(this.context.getBean("foo")).isEqualTo("foo");
 	}
 
 	@Test
 	public void testMissingOnClassCondition() {
 		this.context.register(MissingConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("foo", this.context.getBean("foo"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("foo")).isEqualTo("foo");
 	}
 
 	@Configuration
@@ -61,7 +59,7 @@ public class ConditionalOnMissingClassTests {
 	}
 
 	@Configuration
-	@ConditionalOnMissingClass(name = "FOO")
+	@ConditionalOnMissingClass("FOO")
 	protected static class MissingConfiguration {
 		@Bean
 		public String bar() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,33 +18,60 @@ package org.springframework.boot.actuate.audit;
 
 import java.util.Collections;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AuditEvent}.
  *
  * @author Dave Syer
+ * @author Vedran Pavic
  */
 public class AuditEventTests {
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@Test
-	public void testNowEvent() throws Exception {
+	public void nowEvent() throws Exception {
 		AuditEvent event = new AuditEvent("phil", "UNKNOWN",
 				Collections.singletonMap("a", (Object) "b"));
-		assertEquals("b", event.getData().get("a"));
-		assertEquals("UNKNOWN", event.getType());
-		assertEquals("phil", event.getPrincipal());
-		assertNotNull(event.getTimestamp());
+		assertThat(event.getData().get("a")).isEqualTo("b");
+		assertThat(event.getType()).isEqualTo("UNKNOWN");
+		assertThat(event.getPrincipal()).isEqualTo("phil");
+		assertThat(event.getTimestamp()).isNotNull();
 	}
 
 	@Test
-	public void testConvertStringsToData() throws Exception {
+	public void convertStringsToData() throws Exception {
 		AuditEvent event = new AuditEvent("phil", "UNKNOWN", "a=b", "c=d");
-		assertEquals("b", event.getData().get("a"));
-		assertEquals("d", event.getData().get("c"));
+		assertThat(event.getData().get("a")).isEqualTo("b");
+		assertThat(event.getData().get("c")).isEqualTo("d");
+	}
+
+	@Test
+	public void nullTimestamp() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Timestamp must not be null");
+		new AuditEvent(null, "phil", "UNKNOWN",
+				Collections.singletonMap("a", (Object) "b"));
+	}
+
+	@Test
+	public void nullPrincipal() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Principal must not be null");
+		new AuditEvent(null, "UNKNOWN", Collections.singletonMap("a", (Object) "b"));
+	}
+
+	@Test
+	public void nullType() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Type must not be null");
+		new AuditEvent("phil", null, Collections.singletonMap("a", (Object) "b"));
 	}
 
 }

@@ -17,6 +17,7 @@
 package org.springframework.boot.context.config;
 
 import java.util.Random;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -93,6 +94,9 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		range = getRange(type, "long");
 		if (range != null) {
 			return getNextLongInRange(range);
+		}
+		if (type.equals("uuid")) {
+			return UUID.randomUUID().toString();
 		}
 		return getRandomBytes();
 	}

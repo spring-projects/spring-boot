@@ -46,8 +46,9 @@ public class DefaultGaugeService implements GaugeService {
 	}
 
 	private String wrap(String metricName) {
-		if (this.names.containsKey(metricName)) {
-			return this.names.get(metricName);
+		String cached = this.names.get(metricName);
+		if (cached != null) {
+			return cached;
 		}
 		if (metricName.startsWith("gauge") || metricName.startsWith("histogram")
 				|| metricName.startsWith("timer")) {

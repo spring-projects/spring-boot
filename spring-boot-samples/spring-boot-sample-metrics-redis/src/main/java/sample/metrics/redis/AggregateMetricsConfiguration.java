@@ -16,7 +16,6 @@
 
 package sample.metrics.redis;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.metrics.aggregate.AggregateMetricReader;
@@ -30,11 +29,15 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 @Configuration
 public class AggregateMetricsConfiguration {
 
-	@Autowired
-	private MetricExportProperties export;
+	private final MetricExportProperties export;
 
-	@Autowired
-	private RedisConnectionFactory connectionFactory;
+	private final RedisConnectionFactory connectionFactory;
+
+	public AggregateMetricsConfiguration(MetricExportProperties export,
+			RedisConnectionFactory connectionFactory) {
+		this.export = export;
+		this.connectionFactory = connectionFactory;
+	}
 
 	@Bean
 	public PublicMetrics metricsAggregate() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.context.embedded.undertow;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
@@ -27,6 +28,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.net.ssl.KeyManager;
@@ -62,6 +65,7 @@ import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
 import org.xnio.OptionMap;
 import org.xnio.Options;
+import org.xnio.Sequence;
 import org.xnio.SslClientAuthMode;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
@@ -69,11 +73,11 @@ import org.xnio.XnioWorker;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.MimeMappings.Mapping;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
@@ -143,7 +147,7 @@ public class UndertowEmbeddedServletContainerFactory
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainerFactory} with the specified
 	 * context path and port.
-	 * @param contextPath root the context path
+	 * @param contextPath the root context path
 	 * @param port the port to listen on
 	 */
 	public UndertowEmbeddedServletContainerFactory(String contextPath, int port) {
@@ -259,6 +263,14 @@ public class UndertowEmbeddedServletContainerFactory
 			builder.addHttpsListener(port, getListenAddress(), sslContext);
 			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE,
 					getSslClientAuthMode(ssl));
+			if (ssl.getEnabledProtocols() != null) {
+				builder.setSocketOption(Options.SSL_ENABLED_PROTOCOLS,
+						Sequence.of(ssl.getEnabledProtocols()));
+			}
+			if (ssl.getCiphers() != null) {
+				builder.setSocketOption(Options.SSL_ENABLED_CIPHER_SUITES,
+						Sequence.of(ssl.getCiphers()));
+			}
 		}
 		catch (NoSuchAlgorithmException ex) {
 			throw new IllegalStateException(ex);
@@ -287,21 +299,15 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private KeyManager[] getKeyManagers() {
 		try {
-			Ssl ssl = getSsl();
-			String keyStoreType = ssl.getKeyStoreType();
-			if (keyStoreType == null) {
-				keyStoreType = "JKS";
-			}
-			KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-			URL url = ResourceUtils.getURL(ssl.getKeyStore());
-			char[] keyStorePassword = (ssl.getKeyStorePassword() != null
-					? ssl.getKeyStorePassword().toCharArray() : null);
-			keyStore.load(url.openStream(), keyStorePassword);
-			// Get key manager to provide client credentials.
+			KeyStore keyStore = getKeyStore();
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
 					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+			Ssl ssl = getSsl();
 			char[] keyPassword = (ssl.getKeyPassword() != null
-					? ssl.getKeyPassword().toCharArray() : keyStorePassword);
+					? ssl.getKeyPassword().toCharArray() : null);
+			if (keyPassword == null && ssl.getKeyStorePassword() != null) {
+				keyPassword = ssl.getKeyStorePassword().toCharArray();
+			}
 			keyManagerFactory.init(keyStore, keyPassword);
 			return keyManagerFactory.getKeyManagers();
 		}
@@ -310,29 +316,47 @@ public class UndertowEmbeddedServletContainerFactory
 		}
 	}
 
+	private KeyStore getKeyStore() throws Exception {
+		if (getSslStoreProvider() != null) {
+			return getSslStoreProvider().getKeyStore();
+		}
+		Ssl ssl = getSsl();
+		return loadKeyStore(ssl.getKeyStoreType(), ssl.getKeyStore(),
+				ssl.getKeyStorePassword());
+	}
+
 	private TrustManager[] getTrustManagers() {
 		try {
-			Ssl ssl = getSsl();
-			String trustStoreType = ssl.getTrustStoreType();
-			if (trustStoreType == null) {
-				trustStoreType = "JKS";
-			}
-			String trustStore = ssl.getTrustStore();
-			if (trustStore == null) {
-				return null;
-			}
-			KeyStore trustedKeyStore = KeyStore.getInstance(trustStoreType);
-			URL url = ResourceUtils.getURL(trustStore);
-			trustedKeyStore.load(url.openStream(),
-					ssl.getTrustStorePassword().toCharArray());
+			KeyStore store = getTrustStore();
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory
 					.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-			trustManagerFactory.init(trustedKeyStore);
+			trustManagerFactory.init(store);
 			return trustManagerFactory.getTrustManagers();
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	private KeyStore getTrustStore() throws Exception {
+		if (getSslStoreProvider() != null) {
+			return getSslStoreProvider().getTrustStore();
+		}
+		Ssl ssl = getSsl();
+		return loadKeyStore(ssl.getTrustStoreType(), ssl.getTrustStore(),
+				ssl.getTrustStorePassword());
+	}
+
+	private KeyStore loadKeyStore(String type, String resource, String password)
+			throws Exception {
+		type = (type == null ? "JKS" : type);
+		if (resource == null) {
+			return null;
+		}
+		KeyStore store = KeyStore.getInstance(type);
+		URL url = ResourceUtils.getURL(resource);
+		store.load(url.openStream(), password == null ? null : password.toCharArray());
+		return store;
 	}
 
 	private DeploymentManager createDeploymentManager(
@@ -361,6 +385,7 @@ public class UndertowEmbeddedServletContainerFactory
 			File dir = getValidSessionStoreDir();
 			deployment.setSessionPersistenceManager(new FileSessionPersistence(dir));
 		}
+		addLocaleMappings(deployment);
 		DeploymentManager manager = Servlets.newContainer().addDeployment(deployment);
 		manager.deploy();
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
@@ -407,6 +432,14 @@ public class UndertowEmbeddedServletContainerFactory
 		Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
 		return xnio.createWorker(
 				OptionMap.builder().set(Options.THREAD_DAEMON, true).getMap());
+	}
+
+	private void addLocaleMappings(DeploymentInfo deployment) {
+		for (Map.Entry<Locale, Charset> entry : getLocaleCharsetMappings().entrySet()) {
+			Locale locale = entry.getKey();
+			Charset charset = entry.getValue();
+			deployment.addLocaleCharsetMapping(locale.toString(), charset.toString());
+		}
 	}
 
 	private void registerServletContainerInitializerToDriveServletContextInitializers(
@@ -492,8 +525,7 @@ public class UndertowEmbeddedServletContainerFactory
 	protected UndertowEmbeddedServletContainer getUndertowEmbeddedServletContainer(
 			Builder builder, DeploymentManager manager, int port) {
 		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, isUseForwardHeaders(), port >= 0, getCompression(),
-				getServerHeader());
+				isUseForwardHeaders(), port >= 0, getCompression(), getServerHeader());
 	}
 
 	@Override

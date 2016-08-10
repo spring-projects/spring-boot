@@ -70,4 +70,5 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 		builder.withDetail("initializingShards", response.getInitializingShards());
 		builder.withDetail("unassignedShards", response.getUnassignedShards());
 	}
+
 }

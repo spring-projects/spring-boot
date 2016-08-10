@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>1.3.8.BUILD-SNAPSHOT</version>
+		<version>1.4.1.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter</artifactId>
 	<name>Spring Boot Starter</name>
-	<description>Spring Boot Starter</description>
+	<description>Core starter, including auto-configuration support, logging and YAML</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

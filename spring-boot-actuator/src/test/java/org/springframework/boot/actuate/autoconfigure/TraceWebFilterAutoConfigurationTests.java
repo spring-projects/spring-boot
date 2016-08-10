@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,19 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Map;
+
 import org.junit.Test;
 
+import org.springframework.boot.actuate.trace.TraceProperties;
+import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link TraceWebFilterAutoConfiguration}.
@@ -37,8 +43,44 @@ public class TraceWebFilterAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				TraceRepositoryAutoConfiguration.class,
 				TraceWebFilterAutoConfiguration.class);
-		assertNotNull(context.getBean(WebRequestTraceFilter.class));
+		assertThat(context.getBean(WebRequestTraceFilter.class)).isNotNull();
 		context.close();
+	}
+
+	@Test
+	public void overrideTraceFilter() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				CustomTraceFilterConfig.class, PropertyPlaceholderAutoConfiguration.class,
+				TraceRepositoryAutoConfiguration.class,
+				TraceWebFilterAutoConfiguration.class);
+		WebRequestTraceFilter filter = context.getBean(WebRequestTraceFilter.class);
+		assertThat(filter).isInstanceOf(TestWebRequestTraceFilter.class);
+		context.close();
+	}
+
+	@Configuration
+	static class CustomTraceFilterConfig {
+
+		@Bean
+		public TestWebRequestTraceFilter testWebRequestTraceFilter(
+				TraceRepository repository, TraceProperties properties) {
+			return new TestWebRequestTraceFilter(repository, properties);
+		}
+
+	}
+
+	static class TestWebRequestTraceFilter extends WebRequestTraceFilter {
+
+		TestWebRequestTraceFilter(TraceRepository repository,
+				TraceProperties properties) {
+			super(repository, properties);
+		}
+
+		@Override
+		protected void postProcessRequestHeaders(Map<String, Object> headers) {
+			headers.clear();
+		}
+
 	}
 
 }

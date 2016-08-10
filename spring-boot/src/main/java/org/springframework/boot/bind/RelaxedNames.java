@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,24 +79,30 @@ public final class RelaxedNames implements Iterable<String> {
 	enum Variation {
 
 		NONE {
+
 			@Override
 			public String apply(String value) {
 				return value;
 			}
+
 		},
 
 		LOWERCASE {
+
 			@Override
 			public String apply(String value) {
 				return value.toLowerCase();
 			}
+
 		},
 
 		UPPERCASE {
+
 			@Override
 			public String apply(String value) {
 				return value.toUpperCase();
 			}
+
 		};
 
 		public abstract String apply(String value);
@@ -109,34 +115,43 @@ public final class RelaxedNames implements Iterable<String> {
 	enum Manipulation {
 
 		NONE {
+
 			@Override
 			public String apply(String value) {
 				return value;
 			}
+
 		},
 
 		HYPHEN_TO_UNDERSCORE {
+
 			@Override
 			public String apply(String value) {
 				return value.replace("-", "_");
 			}
+
 		},
 
 		UNDERSCORE_TO_PERIOD {
+
 			@Override
 			public String apply(String value) {
 				return value.replace("_", ".");
 			}
+
 		},
 
 		PERIOD_TO_UNDERSCORE {
+
 			@Override
 			public String apply(String value) {
 				return value.replace(".", "_");
 			}
+
 		},
 
 		CAMELCASE_TO_UNDERSCORE {
+
 			@Override
 			public String apply(String value) {
 				Matcher matcher = CAMEL_CASE_PATTERN.matcher(value);
@@ -148,9 +163,11 @@ public final class RelaxedNames implements Iterable<String> {
 				matcher.appendTail(result);
 				return result.toString();
 			}
+
 		},
 
 		CAMELCASE_TO_HYPHEN {
+
 			@Override
 			public String apply(String value) {
 				Matcher matcher = CAMEL_CASE_PATTERN.matcher(value);
@@ -162,20 +179,25 @@ public final class RelaxedNames implements Iterable<String> {
 				matcher.appendTail(result);
 				return result.toString();
 			}
+
 		},
 
 		SEPARATED_TO_CAMELCASE {
+
 			@Override
 			public String apply(String value) {
 				return separatedToCamelCase(value, false);
 			}
+
 		},
 
 		CASE_INSENSITIVE_SEPARATED_TO_CAMELCASE {
+
 			@Override
 			public String apply(String value) {
 				return separatedToCamelCase(value, true);
 			}
+
 		};
 
 		public abstract String apply(String value);

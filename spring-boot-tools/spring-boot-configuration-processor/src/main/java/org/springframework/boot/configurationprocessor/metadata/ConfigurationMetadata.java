@@ -19,8 +19,10 @@ package org.springframework.boot.configurationprocessor.metadata;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -37,7 +39,12 @@ import org.springframework.util.ObjectUtils;
  */
 public class ConfigurationMetadata {
 
-	private static final List<Character> SEPARATORS = Arrays.asList('-', '_');
+	private static final Set<Character> SEPARATORS;
+
+	static {
+		List<Character> chars = Arrays.asList('-', '_');
+		SEPARATORS = Collections.unmodifiableSet(new HashSet<Character>(chars));
+	}
 
 	private final MultiValueMap<String, ItemMetadata> items;
 
@@ -159,23 +166,23 @@ public class ConfigurationMetadata {
 	}
 
 	static String toDashedCase(String name) {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder dashed = new StringBuilder();
 		Character previous = null;
 		for (char current : name.toCharArray()) {
 			if (SEPARATORS.contains(current)) {
-				sb.append("-");
+				dashed.append("-");
 			}
 			else if (Character.isUpperCase(current) && previous != null
 					&& !SEPARATORS.contains(previous)) {
-				sb.append("-").append(current);
+				dashed.append("-").append(current);
 			}
 			else {
-				sb.append(current);
+				dashed.append(current);
 			}
 			previous = current;
 
 		}
-		return sb.toString().toLowerCase();
+		return dashed.toString().toLowerCase();
 	}
 
 	private static <T extends Comparable<T>> List<T> flattenValues(

@@ -48,6 +48,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * @author Dave Syer
  * @author Wallace Wadge
  * @author Andy Wilkinson
+ * @author Venil Noronha
  */
 public class WebRequestTraceFilter extends OncePerRequestFilter implements Ordered {
 
@@ -64,17 +65,6 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	private ErrorAttributes errorAttributes;
 
 	private final TraceProperties properties;
-
-	/**
-	 * Create a new {@link WebRequestTraceFilter} instance.
-	 * @param traceRepository the trace repository.
-	 * @deprecated since 1.3.0 in favor of
-	 * {@link #WebRequestTraceFilter(TraceRepository, TraceProperties)}
-	 */
-	@Deprecated
-	public WebRequestTraceFilter(TraceRepository traceRepository) {
-		this(traceRepository, new TraceProperties());
-	}
 
 	/**
 	 * Create a new {@link WebRequestTraceFilter} instance.
@@ -173,7 +163,19 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 			}
 			headers.put(name, value);
 		}
+		if (!isIncluded(Include.COOKIES)) {
+			headers.remove("Cookie");
+		}
+		postProcessRequestHeaders(headers);
 		return headers;
+	}
+
+	/**
+	 * Post process request headers before they are added to the trace.
+	 * @param headers a mutable map containing the request headers to trace
+	 * @since 1.4.0
+	 */
+	protected void postProcessRequestHeaders(Map<String, Object> headers) {
 	}
 
 	@SuppressWarnings("unchecked")
@@ -189,6 +191,9 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		for (String header : response.getHeaderNames()) {
 			String value = response.getHeader(header);
 			headers.put(header, value);
+		}
+		if (!isIncluded(Include.COOKIES)) {
+			headers.remove("Set-Cookie");
 		}
 		headers.put("status", "" + response.getStatus());
 		return headers;

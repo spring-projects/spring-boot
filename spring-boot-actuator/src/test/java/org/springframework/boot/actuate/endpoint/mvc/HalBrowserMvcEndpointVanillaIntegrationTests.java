@@ -26,20 +26,18 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.MinimalActuatorHypermediaApplication;
-import org.springframework.boot.actuate.endpoint.mvc.HalBrowserMvcEndpointVanillaIntegrationTests.SpringBootHypermediaApplication;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -51,9 +49,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(SpringBootHypermediaApplication.class)
-@WebAppConfiguration
+@RunWith(SpringRunner.class)
+@SpringBootTest
 @DirtiesContext
 @TestPropertySource(properties = "endpoints.hypermedia.enabled=true")
 public class HalBrowserMvcEndpointVanillaIntegrationTests {
@@ -90,7 +87,8 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 		MvcResult response = this.mockMvc
 				.perform(get("/actuator/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isOk()).andReturn();
-		assertEquals("/actuator/browser.html", response.getResponse().getForwardedUrl());
+		assertThat(response.getResponse().getForwardedUrl())
+				.isEqualTo("/actuator/browser.html");
 	}
 
 	@Test
@@ -124,7 +122,7 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 	@Test
 	public void endpointsEachHaveSelf() throws Exception {
 		Set<String> collections = new HashSet<String>(
-				Arrays.asList("/trace", "/beans", "/dump"));
+				Arrays.asList("/trace", "/beans", "/dump", "/heapdump"));
 		for (MvcEndpoint endpoint : this.mvcEndpoints.getEndpoints()) {
 			String path = endpoint.getPath();
 			if (collections.contains(path)) {

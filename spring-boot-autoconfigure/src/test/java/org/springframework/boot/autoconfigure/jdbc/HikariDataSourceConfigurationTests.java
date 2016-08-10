@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,13 @@ import org.junit.Test;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HikariDataSourceConfiguration}.
@@ -42,7 +41,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class HikariDataSourceConfigurationTests {
 
-	private static final String PREFIX = "spring.datasource.";
+	private static final String PREFIX = "spring.datasource.hikari.";
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -55,8 +54,8 @@ public class HikariDataSourceConfigurationTests {
 	public void testDataSourceExists() throws Exception {
 		this.context.register(HikariDataSourceConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-		assertNotNull(this.context.getBean(HikariDataSource.class));
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
+		assertThat(this.context.getBean(HikariDataSource.class)).isNotNull();
 	}
 
 	@Test
@@ -67,8 +66,8 @@ public class HikariDataSourceConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "maxLifetime:1234");
 		this.context.refresh();
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
-		assertEquals("jdbc:foo//bar/spam", ds.getJdbcUrl());
-		assertEquals(1234, ds.getMaxLifetime());
+		assertThat(ds.getJdbcUrl()).isEqualTo("jdbc:foo//bar/spam");
+		assertThat(ds.getMaxLifetime()).isEqualTo(1234);
 		// TODO: test JDBC4 isValid()
 	}
 
@@ -79,8 +78,8 @@ public class HikariDataSourceConfigurationTests {
 				+ "dataSourceProperties.dataSourceClassName:org.h2.JDBCDataSource");
 		this.context.refresh();
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
-		assertEquals("org.h2.JDBCDataSource",
-				ds.getDataSourceProperties().getProperty("dataSourceClassName"));
+		assertThat(ds.getDataSourceProperties().getProperty("dataSourceClassName"))
+				.isEqualTo("org.h2.JDBCDataSource");
 	}
 
 	@Test
@@ -88,7 +87,7 @@ public class HikariDataSourceConfigurationTests {
 		this.context.register(HikariDataSourceConfiguration.class);
 		this.context.refresh();
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
-		assertEquals(1800000, ds.getMaxLifetime());
+		assertThat(ds.getMaxLifetime()).isEqualTo(1800000);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -103,7 +102,7 @@ public class HikariDataSourceConfigurationTests {
 	protected static class HikariDataSourceConfiguration {
 
 		@Bean
-		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
+		@ConfigurationProperties(prefix = "spring.datasource.hikari")
 		public DataSource dataSource() {
 			return DataSourceBuilder.create().type(HikariDataSource.class).build();
 		}

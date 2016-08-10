@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,21 +29,18 @@ import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
 import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import org.springframework.boot.cli.util.SystemProperties;
+import org.springframework.boot.cli.testutil.SystemProperties;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -53,7 +50,6 @@ import static org.mockito.Matchers.eq;
  *
  * @author Andy Wilkinson
  */
-@RunWith(MockitoJUnitRunner.class)
 public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 
 	@Rule
@@ -61,6 +57,11 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 
 	@Mock
 	private RepositorySystem repositorySystem;
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
 
 	@Test
 	public void basicSessionCustomization() throws SettingsBuildingException {
@@ -99,14 +100,13 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 		}, "user.home:src/test/resources/maven-settings/property-interpolation",
 				"foo:bar");
 
-		assertThat(session.getLocalRepository().getBasedir().getAbsolutePath(),
-				endsWith(File.separatorChar + "bar" + File.separatorChar + "repository"));
+		assertThat(session.getLocalRepository().getBasedir().getAbsolutePath())
+				.endsWith(File.separatorChar + "bar" + File.separatorChar + "repository");
 	}
 
 	private void assertSessionCustomization(String userHome) {
 		final DefaultRepositorySystemSession session = MavenRepositorySystemUtils
 				.newSession();
-
 		SystemProperties.doWithSystemProperties(new Runnable() {
 			@Override
 			public void run() {
@@ -117,7 +117,6 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 
 		RemoteRepository repository = new RemoteRepository.Builder("my-server", "default",
 				"http://maven.example.com").build();
-
 		assertMirrorSelectorConfiguration(session, repository);
 		assertProxySelectorConfiguration(session, repository);
 		assertAuthenticationSelectorConfiguration(session, repository);
@@ -129,34 +128,33 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 		repository = new RemoteRepository.Builder(repository).setProxy(proxy).build();
 		AuthenticationContext authenticationContext = AuthenticationContext
 				.forProxy(session, repository);
-		assertEquals("proxy.example.com", proxy.getHost());
-		assertEquals("proxyuser",
-				authenticationContext.get(AuthenticationContext.USERNAME));
-		assertEquals("somepassword",
-				authenticationContext.get(AuthenticationContext.PASSWORD));
+		assertThat(proxy.getHost()).isEqualTo("proxy.example.com");
+		assertThat(authenticationContext.get(AuthenticationContext.USERNAME))
+				.isEqualTo("proxyuser");
+		assertThat(authenticationContext.get(AuthenticationContext.PASSWORD))
+				.isEqualTo("somepassword");
 	}
 
 	private void assertMirrorSelectorConfiguration(DefaultRepositorySystemSession session,
 			RemoteRepository repository) {
 		RemoteRepository mirror = session.getMirrorSelector().getMirror(repository);
-		assertNotNull("No mirror configured for repository " + repository.getId(),
-				mirror);
-		assertEquals("maven.example.com", mirror.getHost());
+		assertThat(mirror).as("Mirror configured for repository " + repository.getId())
+				.isNotNull();
+		assertThat(mirror.getHost()).isEqualTo("maven.example.com");
 	}
 
 	private void assertAuthenticationSelectorConfiguration(
 			DefaultRepositorySystemSession session, RemoteRepository repository) {
 		Authentication authentication = session.getAuthenticationSelector()
 				.getAuthentication(repository);
-
 		repository = new RemoteRepository.Builder(repository)
 				.setAuthentication(authentication).build();
-
 		AuthenticationContext authenticationContext = AuthenticationContext
 				.forRepository(session, repository);
-
-		assertEquals("tester", authenticationContext.get(AuthenticationContext.USERNAME));
-		assertEquals("secret", authenticationContext.get(AuthenticationContext.PASSWORD));
+		assertThat(authenticationContext.get(AuthenticationContext.USERNAME))
+				.isEqualTo("tester");
+		assertThat(authenticationContext.get(AuthenticationContext.PASSWORD))
+				.isEqualTo("secret");
 	}
 
 }

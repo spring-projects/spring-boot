@@ -24,7 +24,6 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.test.ApplicationContextTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -37,12 +36,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -58,7 +52,16 @@ public class SpringApplicationBuilderTests {
 
 	@After
 	public void close() {
-		ApplicationContextTestUtils.closeAll(this.context);
+		close(this.context);
+	}
+
+	private void close(ApplicationContext context) {
+		if (context != null) {
+			if (context instanceof ConfigurableApplicationContext) {
+				((ConfigurableApplicationContext) context).close();
+			}
+			close(context.getParent());
+		}
 	}
 
 	@Test
@@ -67,10 +70,9 @@ public class SpringApplicationBuilderTests {
 				.sources(ExampleConfig.class).contextClass(StaticApplicationContext.class)
 				.profiles("foo").properties("foo=bar");
 		this.context = application.run();
-		assertThat(this.context, is(instanceOf(StaticApplicationContext.class)));
-		assertThat(this.context.getEnvironment().getProperty("foo"),
-				is(equalTo("bucket")));
-		assertThat(this.context.getEnvironment().acceptsProfiles("foo"), is(true));
+		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
+		assertThat(this.context.getEnvironment().getProperty("foo")).isEqualTo("bucket");
+		assertThat(this.context.getEnvironment().acceptsProfiles("foo")).isTrue();
 	}
 
 	@Test
@@ -79,7 +81,7 @@ public class SpringApplicationBuilderTests {
 				.sources(ExampleConfig.class).contextClass(StaticApplicationContext.class)
 				.properties(Collections.<String, Object>singletonMap("bar", "foo"));
 		this.context = application.run();
-		assertThat(this.context.getEnvironment().getProperty("bar"), is(equalTo("foo")));
+		assertThat(this.context.getEnvironment().getProperty("bar")).isEqualTo("foo");
 	}
 
 	@Test
@@ -89,7 +91,7 @@ public class SpringApplicationBuilderTests {
 				.properties(StringUtils.splitArrayElementsIntoProperties(
 						new String[] { "bar=foo" }, "="));
 		this.context = application.run();
-		assertThat(this.context.getEnvironment().getProperty("bar"), is(equalTo("foo")));
+		assertThat(this.context.getEnvironment().getProperty("bar")).isEqualTo("foo");
 	}
 
 	@Test
@@ -100,10 +102,10 @@ public class SpringApplicationBuilderTests {
 						"four:a:b");
 		this.context = application.run();
 		ConfigurableEnvironment environment = this.context.getEnvironment();
-		assertThat(environment.getProperty("one"), is(equalTo("c:\\logging.file")));
-		assertThat(environment.getProperty("two"), is(equalTo("a:b")));
-		assertThat(environment.getProperty("three"), is(equalTo("c:\\logging.file")));
-		assertThat(environment.getProperty("four"), is(equalTo("a:b")));
+		assertThat(environment.getProperty("one")).isEqualTo("c:\\logging.file");
+		assertThat(environment.getProperty("two")).isEqualTo("a:b");
+		assertThat(environment.getProperty("three")).isEqualTo("c:\\logging.file");
+		assertThat(environment.getProperty("four")).isEqualTo("a:b");
 	}
 
 	@Test
@@ -112,7 +114,7 @@ public class SpringApplicationBuilderTests {
 				.sources(ExampleConfig.class)
 				.contextClass(StaticApplicationContext.class);
 		this.context = application.run();
-		assertThat(this.context, is(instanceOf(StaticApplicationContext.class)));
+		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
 	}
 
 	@Test
@@ -123,12 +125,12 @@ public class SpringApplicationBuilderTests {
 		this.context = application.run("foo.bar=baz");
 		verify(((SpyApplicationContext) this.context).getApplicationContext())
 				.setParent(any(ApplicationContext.class));
-		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),
-				equalTo(false));
+		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook())
+				.isFalse();
 		assertThat(this.context.getParent().getBean(ApplicationArguments.class)
-				.getNonOptionArgs(), contains("foo.bar=baz"));
-		assertThat(this.context.getBean(ApplicationArguments.class).getNonOptionArgs(),
-				contains("foo.bar=baz"));
+				.getNonOptionArgs()).contains("foo.bar=baz");
+		assertThat(this.context.getBean(ApplicationArguments.class).getNonOptionArgs())
+				.contains("foo.bar=baz");
 	}
 
 	@Test
@@ -139,12 +141,12 @@ public class SpringApplicationBuilderTests {
 		this.context = application.build("a=alpha").run("b=bravo");
 		verify(((SpyApplicationContext) this.context).getApplicationContext())
 				.setParent(any(ApplicationContext.class));
-		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),
-				equalTo(false));
+		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook())
+				.isFalse();
 		assertThat(this.context.getParent().getBean(ApplicationArguments.class)
-				.getNonOptionArgs(), contains("a=alpha"));
-		assertThat(this.context.getBean(ApplicationArguments.class).getNonOptionArgs(),
-				contains("b=bravo"));
+				.getNonOptionArgs()).contains("a=alpha");
+		assertThat(this.context.getBean(ApplicationArguments.class).getNonOptionArgs())
+				.contains("b=bravo");
 	}
 
 	@Test
@@ -156,8 +158,8 @@ public class SpringApplicationBuilderTests {
 		this.context = application.run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext())
 				.setParent(any(ApplicationContext.class));
-		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),
-				equalTo(true));
+		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook())
+				.isTrue();
 	}
 
 	@Test
@@ -168,8 +170,8 @@ public class SpringApplicationBuilderTests {
 				getClass().getClassLoader());
 		application.resourceLoader(new DefaultResourceLoader(classLoader));
 		this.context = application.run();
-		assertThat(((SpyApplicationContext) this.context).getClassLoader(),
-				is(equalTo(classLoader)));
+		assertThat(((SpyApplicationContext) this.context).getClassLoader())
+				.isEqualTo(classLoader);
 	}
 
 	@Test
@@ -182,7 +184,7 @@ public class SpringApplicationBuilderTests {
 		application.parent(ExampleConfig.class);
 		this.context = application.run();
 		assertThat(((SpyApplicationContext) this.context).getResourceLoader()
-				.getClassLoader(), is(equalTo(classLoader)));
+				.getClassLoader()).isEqualTo(classLoader);
 	}
 
 	@Test
@@ -193,8 +195,8 @@ public class SpringApplicationBuilderTests {
 		this.context = application.run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext())
 				.setParent(any(ApplicationContext.class));
-		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),
-				equalTo(false));
+		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook())
+				.isFalse();
 	}
 
 	@Test
@@ -203,15 +205,15 @@ public class SpringApplicationBuilderTests {
 				ExampleConfig.class).profiles("node").properties("transport=redis")
 						.child(ChildConfig.class).web(false);
 		this.context = application.run();
-		assertThat(this.context.getEnvironment().acceptsProfiles("node"), is(true));
-		assertThat(this.context.getEnvironment().getProperty("transport"),
-				is(equalTo("redis")));
-		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("node"),
-				is(true));
-		assertThat(this.context.getParent().getEnvironment().getProperty("transport"),
-				is(equalTo("redis")));
+		assertThat(this.context.getEnvironment().acceptsProfiles("node")).isTrue();
+		assertThat(this.context.getEnvironment().getProperty("transport"))
+				.isEqualTo("redis");
+		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("node"))
+				.isTrue();
+		assertThat(this.context.getParent().getEnvironment().getProperty("transport"))
+				.isEqualTo("redis");
 		// only defined in node profile
-		assertThat(this.context.getEnvironment().getProperty("bar"), is(equalTo("spam")));
+		assertThat(this.context.getEnvironment().getProperty("bar")).isEqualTo("spam");
 	}
 
 	@Test
@@ -220,10 +222,10 @@ public class SpringApplicationBuilderTests {
 				ExampleConfig.class).profiles("node").properties("transport=redis")
 						.child(ChildConfig.class).profiles("admin").web(false);
 		this.context = application.run();
-		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"),
-				is(true));
-		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"),
-				is(false));
+		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"))
+				.isTrue();
+		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"))
+				.isFalse();
 	}
 
 	@Test
@@ -234,12 +236,12 @@ public class SpringApplicationBuilderTests {
 				.profiles("admin").web(false);
 		shared.profiles("parent");
 		this.context = application.run();
-		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"),
-				is(true));
+		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"))
+				.isTrue();
 		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("node",
-				"parent"), is(true));
-		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"),
-				is(false));
+				"parent")).isTrue();
+		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"))
+				.isFalse();
 	}
 
 	@Test
@@ -249,12 +251,12 @@ public class SpringApplicationBuilderTests {
 						.profiles("node").properties("transport=redis")
 						.child(ChildConfig.class).profiles("admin").web(false);
 		this.context = application.run();
-		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"),
-				is(true));
+		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"))
+				.isTrue();
 		// Now they share an Environment explicitly so there's no way to keep the profiles
 		// separate
-		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"),
-				is(true));
+		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"))
+				.isTrue();
 	}
 
 	@Test
@@ -273,7 +275,7 @@ public class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).web(false);
 		this.context = application.run();
-		assertEquals(4, application.application().getInitializers().size());
+		assertThat(application.application().getInitializers()).hasSize(4);
 	}
 
 	@Test
@@ -281,7 +283,7 @@ public class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).child(ChildConfig.class).web(false);
 		this.context = application.run();
-		assertEquals(5, application.application().getInitializers().size());
+		assertThat(application.application().getInitializers()).hasSize(5);
 	}
 
 	@Test
@@ -295,7 +297,7 @@ public class SpringApplicationBuilderTests {
 							}
 						});
 		this.context = application.run();
-		assertEquals(5, application.application().getInitializers().size());
+		assertThat(application.application().getInitializers()).hasSize(5);
 	}
 
 	@Configuration

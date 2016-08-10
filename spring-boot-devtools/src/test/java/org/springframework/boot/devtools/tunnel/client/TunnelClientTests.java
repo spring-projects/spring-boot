@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.util.SocketUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -76,7 +75,7 @@ public class TunnelClientTests {
 		channel.read(buffer);
 		channel.close();
 		this.tunnelConnection.verifyWritten("hello");
-		assertThat(new String(buffer.array()), equalTo("olleh"));
+		assertThat(new String(buffer.array())).isEqualTo("olleh");
 	}
 
 	@Test
@@ -89,8 +88,8 @@ public class TunnelClientTests {
 		channel.close();
 		client.getServerThread().stopAcceptingConnections();
 		client.getServerThread().join(2000);
-		assertThat(this.tunnelConnection.getOpenedTimes(), equalTo(1));
-		assertThat(this.tunnelConnection.isOpen(), equalTo(false));
+		assertThat(this.tunnelConnection.getOpenedTimes()).isEqualTo(1);
+		assertThat(this.tunnelConnection.isOpen()).isFalse();
 	}
 
 	@Test
@@ -101,9 +100,9 @@ public class TunnelClientTests {
 				.open(new InetSocketAddress(this.listenPort));
 		Thread.sleep(200);
 		client.stop();
-		assertThat(this.tunnelConnection.getOpenedTimes(), equalTo(1));
-		assertThat(this.tunnelConnection.isOpen(), equalTo(false));
-		assertThat(channel.read(ByteBuffer.allocate(1)), equalTo(-1));
+		assertThat(this.tunnelConnection.getOpenedTimes()).isEqualTo(1);
+		assertThat(this.tunnelConnection.isOpen()).isFalse();
+		assertThat(channel.read(ByteBuffer.allocate(1))).isEqualTo(-1);
 	}
 
 	@Test
@@ -144,7 +143,7 @@ public class TunnelClientTests {
 
 		public void verifyWritten(byte[] expected) {
 			synchronized (this.written) {
-				assertThat(this.written.toByteArray(), equalTo(expected));
+				assertThat(this.written.toByteArray()).isEqualTo(expected);
 				this.written.reset();
 			}
 		}

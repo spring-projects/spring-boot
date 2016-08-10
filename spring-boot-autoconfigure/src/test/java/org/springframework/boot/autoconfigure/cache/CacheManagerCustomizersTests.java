@@ -21,7 +21,7 @@ import java.util.Arrays;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
@@ -30,9 +30,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -56,8 +54,7 @@ public class CacheManagerCustomizersTests {
 		load(SimpleConfiguration.class, "spring.cache.type=simple");
 		ConcurrentMapCacheManager cacheManager = this.context
 				.getBean(ConcurrentMapCacheManager.class);
-		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("one", "two"));
-		assertThat(cacheManager.getCacheNames(), hasSize(2));
+		assertThat(cacheManager.getCacheNames()).containsOnly("one", "two");
 	}
 
 	@Test

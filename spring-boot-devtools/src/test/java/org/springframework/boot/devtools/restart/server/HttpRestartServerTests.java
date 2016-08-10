@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +37,7 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -92,8 +90,8 @@ public class HttpRestartServerTests {
 		this.server.handle(new ServletServerHttpRequest(request),
 				new ServletServerHttpResponse(response));
 		verify(this.delegate).updateAndRestart(this.filesCaptor.capture());
-		assertThat(this.filesCaptor.getValue().getFile("name"), notNullValue());
-		assertThat(response.getStatus(), equalTo(200));
+		assertThat(this.filesCaptor.getValue().getFile("name")).isNotNull();
+		assertThat(response.getStatus()).isEqualTo(200);
 	}
 
 	@Test
@@ -103,7 +101,7 @@ public class HttpRestartServerTests {
 		this.server.handle(new ServletServerHttpRequest(request),
 				new ServletServerHttpResponse(response));
 		verifyZeroInteractions(this.delegate);
-		assertThat(response.getStatus(), equalTo(500));
+		assertThat(response.getStatus()).isEqualTo(500);
 
 	}
 
@@ -115,7 +113,7 @@ public class HttpRestartServerTests {
 		this.server.handle(new ServletServerHttpRequest(request),
 				new ServletServerHttpResponse(response));
 		verifyZeroInteractions(this.delegate);
-		assertThat(response.getStatus(), equalTo(500));
+		assertThat(response.getStatus()).isEqualTo(500);
 	}
 
 	private byte[] serialize(Object object) throws IOException {

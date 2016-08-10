@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Properties;
 
+import org.springframework.data.redis.connection.ClusterInfo;
+import org.springframework.data.redis.connection.RedisClusterConnection;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisConnectionUtils;
@@ -28,9 +30,14 @@ import org.springframework.util.Assert;
  * Redis data stores.
  *
  * @author Christian Dupuis
+ * @author Richard Santana
  * @since 1.1.0
  */
 public class RedisHealthIndicator extends AbstractHealthIndicator {
+
+	private static final String VERSION = "version";
+
+	private static final String REDIS_VERSION = "redis_version";
 
 	private final RedisConnectionFactory redisConnectionFactory;
 
@@ -44,8 +51,17 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 		RedisConnection connection = RedisConnectionUtils
 				.getConnection(this.redisConnectionFactory);
 		try {
-			Properties info = connection.info();
-			builder.up().withDetail("version", info.getProperty("redis_version"));
+			if (connection instanceof RedisClusterConnection) {
+				ClusterInfo clusterInfo = ((RedisClusterConnection) connection)
+						.clusterGetClusterInfo();
+				builder.up().withDetail("cluster_size", clusterInfo.getClusterSize())
+						.withDetail("slots_up", clusterInfo.getSlotsOk())
+						.withDetail("slots_fail", clusterInfo.getSlotsFail());
+			}
+			else {
+				Properties info = connection.info();
+				builder.up().withDetail(VERSION, info.getProperty(REDIS_VERSION));
+			}
 		}
 		finally {
 			RedisConnectionUtils.releaseConnection(connection,

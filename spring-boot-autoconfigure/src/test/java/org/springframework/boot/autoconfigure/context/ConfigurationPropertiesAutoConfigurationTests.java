@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,14 @@ package org.springframework.boot.autoconfigure.context;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationPropertiesAutoConfiguration}.
@@ -48,13 +47,13 @@ public class ConfigurationPropertiesAutoConfigurationTests {
 	@Test
 	public void processAnnotatedBean() {
 		load(new Class[] { AutoConfig.class, SampleBean.class }, "foo.name:test");
-		assertThat(this.context.getBean(SampleBean.class).getName(), equalTo("test"));
+		assertThat(this.context.getBean(SampleBean.class).getName()).isEqualTo("test");
 	}
 
 	@Test
 	public void processAnnotatedBeanNoAutoConfig() {
 		load(new Class[] { SampleBean.class }, "foo.name:test");
-		assertThat(this.context.getBean(SampleBean.class).getName(), equalTo("default"));
+		assertThat(this.context.getBean(SampleBean.class).getName()).isEqualTo("default");
 	}
 
 	private void load(Class<?>[] configs, String... environment) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties to configure Jackson.
@@ -89,7 +90,7 @@ public class JacksonProperties {
 	 * Controls the inclusion of properties during serialization. Configured with one of
 	 * the values in Jackson's JsonInclude.Include enumeration.
 	 */
-	private JsonInclude.Include serializationInclusion;
+	private JsonInclude.Include defaultPropertyInclusion;
 
 	/**
 	 * Time zone used when formatting dates. Configured using any recognized time zone
@@ -146,12 +147,24 @@ public class JacksonProperties {
 		return this.generator;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(reason = "ObjectMapper.setSerializationInclusion was deprecated in Jackson 2.7", replacement = "spring.jackson.default-property-inclusion")
 	public JsonInclude.Include getSerializationInclusion() {
-		return this.serializationInclusion;
+		return getDefaultPropertyInclusion();
 	}
 
+	@Deprecated
 	public void setSerializationInclusion(JsonInclude.Include serializationInclusion) {
-		this.serializationInclusion = serializationInclusion;
+		setDefaultPropertyInclusion(serializationInclusion);
+	}
+
+	public JsonInclude.Include getDefaultPropertyInclusion() {
+		return this.defaultPropertyInclusion;
+	}
+
+	public void setDefaultPropertyInclusion(
+			JsonInclude.Include defaultPropertyInclusion) {
+		this.defaultPropertyInclusion = defaultPropertyInclusion;
 	}
 
 	public TimeZone getTimeZone() {

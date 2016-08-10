@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.data.redis;
+
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -56,6 +58,8 @@ public class RedisProperties {
 	private Pool pool;
 
 	private Sentinel sentinel;
+
+	private Cluster cluster;
 
 	public int getDatabase() {
 		return this.database;
@@ -111,6 +115,14 @@ public class RedisProperties {
 
 	public void setPool(Pool pool) {
 		this.pool = pool;
+	}
+
+	public Cluster getCluster() {
+		return this.cluster;
+	}
+
+	public void setCluster(Cluster cluster) {
+		this.cluster = cluster;
 	}
 
 	/**
@@ -174,6 +186,42 @@ public class RedisProperties {
 		public void setMaxWait(int maxWait) {
 			this.maxWait = maxWait;
 		}
+
+	}
+
+	/**
+	 * Cluster properties.
+	 */
+	public static class Cluster {
+
+		/**
+		 * Comma-separated list of "host:port" pairs to bootstrap from. This represents an
+		 * "initial" list of cluster nodes and is required to have at least one entry.
+		 */
+		private List<String> nodes;
+
+		/**
+		 * Maximum number of redirects to follow when executing commands across the
+		 * cluster.
+		 */
+		private Integer maxRedirects;
+
+		public List<String> getNodes() {
+			return this.nodes;
+		}
+
+		public void setNodes(List<String> nodes) {
+			this.nodes = nodes;
+		}
+
+		public Integer getMaxRedirects() {
+			return this.maxRedirects;
+		}
+
+		public void setMaxRedirects(Integer maxRedirects) {
+			this.maxRedirects = maxRedirects;
+		}
+
 	}
 
 	/**
@@ -206,5 +254,6 @@ public class RedisProperties {
 		public void setNodes(String nodes) {
 			this.nodes = nodes;
 		}
+
 	}
 }

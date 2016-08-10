@@ -1,0 +1,24 @@
+2016-05-10 10:55:45.405  INFO 40532 --- [           main] sanity.SanityCheckApplication            : Starting SanityCheckApplication on pwmbp with PID 40532 (/Users/pwebb/projects/spring-boot/samples/spring-boot-sanity-check/target/classes started by pwebb in /Users/pwebb/projects/spring-boot/samples/spring-boot-sanity-check)
+2016-05-10 10:55:45.408  INFO 40532 --- [           main] sanity.SanityCheckApplication            : No active profile set, falling back to default profiles: default
+2016-05-10 10:55:45.473  INFO 40532 --- [           main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@59e5ddf: startup date [Tue May 10 10:55:45 PDT 2016]; root of context hierarchy
+2016-05-10 10:55:47.076  INFO 40532 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8080 (http)
+2016-05-10 10:55:47.088  INFO 40532 --- [           main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+2016-05-10 10:55:47.090  INFO 40532 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.0.33
+2016-05-10 10:55:47.173  INFO 40532 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2016-05-10 10:55:47.173  INFO 40532 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1705 ms
+2016-05-10 10:55:47.486  INFO 40532 --- [ost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2016-05-10 10:55:47.489  INFO 40532 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2016-05-10 10:55:47.490  INFO 40532 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2016-05-10 10:55:47.490  INFO 40532 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2016-05-10 10:55:47.490  INFO 40532 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2016-05-10 10:55:47.763  INFO 40532 --- [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@59e5ddf: startup date [Tue May 10 10:55:45 PDT 2016]; root of context hierarchy
+2016-05-10 10:55:47.826  INFO 40532 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/]}" onto public org.springframework.http.ResponseEntity<java.lang.String> sanity.MyController.hello()
+2016-05-10 10:55:47.829  INFO 40532 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2016-05-10 10:55:47.830  INFO 40532 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2016-05-10 10:55:47.864  INFO 40532 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2016-05-10 10:55:47.864  INFO 40532 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2016-05-10 10:55:47.908  INFO 40532 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2016-05-10 10:55:48.208  WARN 40532 --- [           main] arterDepricationWarningAutoConfiguration : spring-boot-starter-redis is deprecated as of Spring Boot 1.4, please migrate to spring-boot-starter-data-redis
+2016-05-10 10:55:48.268  INFO 40532 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2016-05-10 10:55:48.320 ERROR 40532 --- [           main] o.a.coyote.http11.Http11NioProtocol      : Failed to start end point associated with ProtocolHandler ["http-nio-8080"]
+

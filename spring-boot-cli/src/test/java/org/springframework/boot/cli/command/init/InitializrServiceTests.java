@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
@@ -48,7 +45,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	public void loadMetadata() throws IOException {
 		mockSuccessfulMetadataGet(false);
 		InitializrServiceMetadata metadata = this.invoker.loadMetadata("http://foo/bar");
-		assertNotNull(metadata);
+		assertThat(metadata).isNotNull();
 	}
 
 	@Test
@@ -149,20 +146,20 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 			MockHttpProjectGenerationRequest mockRequest) throws IOException {
 		mockSuccessfulProjectGeneration(mockRequest);
 		ProjectGenerationResponse entity = this.invoker.generate(request);
-		assertArrayEquals("wrong body content", mockRequest.content, entity.getContent());
+		assertThat(entity.getContent()).as("wrong body content")
+				.isEqualTo(mockRequest.content);
 		return entity;
 	}
 
 	private static void assertProjectEntity(ProjectGenerationResponse entity,
 			String mimeType, String fileName) {
 		if (mimeType == null) {
-			assertNull("No content type expected", entity.getContentType());
+			assertThat(entity.getContentType()).isNull();
 		}
 		else {
-			assertEquals("wrong mime type", mimeType,
-					entity.getContentType().getMimeType());
+			assertThat(entity.getContentType().getMimeType()).isEqualTo(mimeType);
 		}
-		assertEquals("wrong filename", fileName, entity.getFileName());
+		assertThat(entity.getFileName()).isEqualTo(fileName);
 	}
 
 }

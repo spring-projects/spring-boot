@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,10 @@ package org.springframework.boot.loader.archive;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.List;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.Launcher;
-import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * An archive that can be launched by the {@link Launcher}.
@@ -32,56 +30,21 @@ import org.springframework.boot.loader.util.AsciiBytes;
  * @author Phillip Webb
  * @see JarFileArchive
  */
-public abstract class Archive {
+public interface Archive extends Iterable<Archive.Entry> {
 
 	/**
 	 * Returns a URL that can be used to load the archive.
 	 * @return the archive URL
 	 * @throws MalformedURLException if the URL is malformed
 	 */
-	public abstract URL getUrl() throws MalformedURLException;
-
-	/**
-	 * Obtain the main class that should be used to launch the application. By default
-	 * this method uses a {@code Start-Class} manifest entry.
-	 * @return the main class
-	 * @throws Exception if the main class cannot be obtained
-	 */
-	public String getMainClass() throws Exception {
-		Manifest manifest = getManifest();
-		String mainClass = null;
-		if (manifest != null) {
-			mainClass = manifest.getMainAttributes().getValue("Start-Class");
-		}
-		if (mainClass == null) {
-			throw new IllegalStateException(
-					"No 'Start-Class' manifest entry specified in " + this);
-		}
-		return mainClass;
-	}
-
-	@Override
-	public String toString() {
-		try {
-			return getUrl().toString();
-		}
-		catch (Exception ex) {
-			return "archive";
-		}
-	}
+	URL getUrl() throws MalformedURLException;
 
 	/**
 	 * Returns the manifest of the archive.
 	 * @return the manifest
 	 * @throws IOException if the manifest cannot be read
 	 */
-	public abstract Manifest getManifest() throws IOException;
-
-	/**
-	 * Returns all entries from the archive.
-	 * @return the archive entries
-	 */
-	public abstract Collection<Entry> getEntries();
+	Manifest getManifest() throws IOException;
 
 	/**
 	 * Returns nested {@link Archive}s for entries that match the specified filter.
@@ -89,22 +52,12 @@ public abstract class Archive {
 	 * @return nested archives
 	 * @throws IOException if nested archives cannot be read
 	 */
-	public abstract List<Archive> getNestedArchives(EntryFilter filter)
-			throws IOException;
-
-	/**
-	 * Returns a filtered version of the archive.
-	 * @param filter the filter to apply
-	 * @return a filter archive
-	 * @throws IOException if the archive cannot be read
-	 */
-	public abstract Archive getFilteredArchive(EntryRenameFilter filter)
-			throws IOException;
+	List<Archive> getNestedArchives(EntryFilter filter) throws IOException;
 
 	/**
 	 * Represents a single entry in the archive.
 	 */
-	public interface Entry {
+	interface Entry {
 
 		/**
 		 * Returns {@code true} if the entry represents a directory.
@@ -116,14 +69,14 @@ public abstract class Archive {
 		 * Returns the name of the entry.
 		 * @return the name of the entry
 		 */
-		AsciiBytes getName();
+		String getName();
 
 	}
 
 	/**
 	 * Strategy interface to filter {@link Entry Entries}.
 	 */
-	public interface EntryFilter {
+	interface EntryFilter {
 
 		/**
 		 * Apply the jar entry filter.
@@ -131,23 +84,6 @@ public abstract class Archive {
 		 * @return {@code true} if the filter matches
 		 */
 		boolean matches(Entry entry);
-
-	}
-
-	/**
-	 * Strategy interface to filter or rename {@link Entry Entries}.
-	 */
-	public interface EntryRenameFilter {
-
-		/**
-		 * Apply the jar entry filter.
-		 * @param entryName the current entry name. This may be different that the
-		 * original entry name if a previous filter has been applied
-		 * @param entry the entry to filter
-		 * @return the new name of the entry or {@code null} if the entry should not be
-		 * included.
-		 */
-		AsciiBytes apply(AsciiBytes entryName, Entry entry);
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link CounterBuffers}.
@@ -43,7 +42,7 @@ public class CounterBuffersTests {
 				CounterBuffersTests.this.value = buffer.getValue();
 			}
 		});
-		assertEquals(2, this.value);
+		assertThat(this.value).isEqualTo(2);
 	}
 
 	@Test
@@ -54,12 +53,12 @@ public class CounterBuffersTests {
 				CounterBuffersTests.this.value = buffer.getValue();
 			}
 		});
-		assertEquals(0, this.value);
+		assertThat(this.value).isEqualTo(0);
 	}
 
 	@Test
 	public void findNonExistent() {
-		assertNull(this.buffers.find("foo"));
+		assertThat(this.buffers.find("foo")).isNull();
 	}
 
 }

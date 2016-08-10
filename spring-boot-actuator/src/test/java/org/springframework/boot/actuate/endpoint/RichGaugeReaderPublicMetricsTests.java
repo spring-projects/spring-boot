@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.rich.InMemoryRichGaugeRepository;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RichGaugeReaderPublicMetrics}.
@@ -50,23 +48,23 @@ public class RichGaugeReaderPublicMetricsTests {
 		for (Metric<?> metric : metrics.metrics()) {
 			results.put(metric.getName(), metric);
 		}
-		assertTrue(results.containsKey("a.val"));
-		assertThat(results.get("a.val").getValue().doubleValue(), equalTo(0.5d));
+		assertThat(results.containsKey("a.val")).isTrue();
+		assertThat(results.get("a.val").getValue().doubleValue()).isEqualTo(0.5d);
 
-		assertTrue(results.containsKey("a.avg"));
-		assertThat(results.get("a.avg").getValue().doubleValue(), equalTo(0.25d));
+		assertThat(results.containsKey("a.avg")).isTrue();
+		assertThat(results.get("a.avg").getValue().doubleValue()).isEqualTo(0.25d);
 
-		assertTrue(results.containsKey("a.min"));
-		assertThat(results.get("a.min").getValue().doubleValue(), equalTo(0.0d));
+		assertThat(results.containsKey("a.min")).isTrue();
+		assertThat(results.get("a.min").getValue().doubleValue()).isEqualTo(0.0d);
 
-		assertTrue(results.containsKey("a.max"));
-		assertThat(results.get("a.max").getValue().doubleValue(), equalTo(0.5d));
+		assertThat(results.containsKey("a.max")).isTrue();
+		assertThat(results.get("a.max").getValue().doubleValue()).isEqualTo(0.5d);
 
-		assertTrue(results.containsKey("a.count"));
-		assertThat(results.get("a.count").getValue().longValue(), equalTo(2L));
+		assertThat(results.containsKey("a.count")).isTrue();
+		assertThat(results.get("a.count").getValue().longValue()).isEqualTo(2L);
 
-		assertTrue(results.containsKey("a.alpha"));
-		assertThat(results.get("a.alpha").getValue().doubleValue(), equalTo(-1.d));
+		assertThat(results.containsKey("a.alpha")).isTrue();
+		assertThat(results.get("a.alpha").getValue().doubleValue()).isEqualTo(-1.d);
 	}
 
 }

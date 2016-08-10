@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link LogFileMvcEndpoint}.
@@ -67,7 +65,7 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(
 				HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND.value()));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@Test
@@ -77,7 +75,7 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(
 				HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND.value()));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@Test
@@ -87,7 +85,7 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(
 				HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.OK.value()));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	@Test
@@ -98,7 +96,7 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(
 				HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND.value()));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@Test
@@ -108,8 +106,19 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.GET.name(),
 				"/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.OK.value()));
-		assertEquals("--TEST--", response.getContentAsString());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.getContentAsString()).isEqualTo("--TEST--");
+	}
+
+	@Test
+	public void invokeGetsContentExternalFile() throws Exception {
+		this.mvc.setExternalFile(this.logFile);
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.GET.name(),
+				"/logfile");
+		this.mvc.invoke(request, response);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat("--TEST--").isEqualTo(response.getContentAsString());
 	}
 
 }

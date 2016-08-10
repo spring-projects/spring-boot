@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SampleElasticsearchApplication}.
@@ -36,10 +36,6 @@ import static org.junit.Assert.assertTrue;
  * @author Artur Konczak
  */
 public class SampleElasticsearchApplicationTests {
-
-	private static final String[] PROPERTIES = {
-			"spring.data.elasticsearch.properties.path.data:target/data",
-			"spring.data.elasticsearch.properties.path.logs:target/logs" };
 
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
@@ -49,11 +45,9 @@ public class SampleElasticsearchApplicationTests {
 
 	@Test
 	public void testDefaultSettings() throws Exception {
-		new SpringApplicationBuilder(SampleElasticsearchApplication.class)
-				.properties(PROPERTIES).run();
+		new SpringApplicationBuilder(SampleElasticsearchApplication.class).run();
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output,
-				output.contains("firstName='Alice', lastName='Smith'"));
+		assertThat(output).contains("firstName='Alice', lastName='Smith'");
 	}
 
 	static class SkipOnWindows implements TestRule {

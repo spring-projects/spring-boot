@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ProjectGenerationRequest}
@@ -52,8 +52,8 @@ public class ProjectGenerationRequestTests {
 
 	@Test
 	public void defaultSettings() {
-		assertEquals(createDefaultUrl("?type=test-type"),
-				this.request.generateUrl(createDefaultMetadata()));
+		assertThat(this.request.generateUrl(createDefaultMetadata()))
+				.isEqualTo(createDefaultUrl("?type=test-type"));
 	}
 
 	@Test
@@ -61,46 +61,44 @@ public class ProjectGenerationRequestTests {
 		String customServerUrl = "http://foo:8080/initializr";
 		this.request.setServiceUrl(customServerUrl);
 		this.request.getDependencies().add("security");
-		assertEquals(
-				new URI(customServerUrl
-						+ "/starter.zip?dependencies=security&type=test-type"),
-				this.request.generateUrl(createDefaultMetadata()));
+		assertThat(this.request.generateUrl(createDefaultMetadata())).isEqualTo(new URI(
+				customServerUrl + "/starter.zip?dependencies=security&type=test-type"));
 	}
 
 	@Test
 	public void customBootVersion() {
 		this.request.setBootVersion("1.2.0.RELEASE");
-		assertEquals(createDefaultUrl("?type=test-type&bootVersion=1.2.0.RELEASE"),
-				this.request.generateUrl(createDefaultMetadata()));
+		assertThat(this.request.generateUrl(createDefaultMetadata()))
+				.isEqualTo(createDefaultUrl("?type=test-type&bootVersion=1.2.0.RELEASE"));
 	}
 
 	@Test
 	public void singleDependency() {
 		this.request.getDependencies().add("web");
-		assertEquals(createDefaultUrl("?dependencies=web&type=test-type"),
-				this.request.generateUrl(createDefaultMetadata()));
+		assertThat(this.request.generateUrl(createDefaultMetadata()))
+				.isEqualTo(createDefaultUrl("?dependencies=web&type=test-type"));
 	}
 
 	@Test
 	public void multipleDependencies() {
 		this.request.getDependencies().add("web");
 		this.request.getDependencies().add("data-jpa");
-		assertEquals(createDefaultUrl("?dependencies=web%2Cdata-jpa&type=test-type"),
-				this.request.generateUrl(createDefaultMetadata()));
+		assertThat(this.request.generateUrl(createDefaultMetadata())).isEqualTo(
+				createDefaultUrl("?dependencies=web%2Cdata-jpa&type=test-type"));
 	}
 
 	@Test
 	public void customJavaVersion() {
 		this.request.setJavaVersion("1.8");
-		assertEquals(createDefaultUrl("?type=test-type&javaVersion=1.8"),
-				this.request.generateUrl(createDefaultMetadata()));
+		assertThat(this.request.generateUrl(createDefaultMetadata()))
+				.isEqualTo(createDefaultUrl("?type=test-type&javaVersion=1.8"));
 	}
 
 	@Test
 	public void customPackageName() {
 		this.request.setPackageName("demo.foo");
-		assertEquals(createDefaultUrl("?packageName=demo.foo&type=test-type"),
-				this.request.generateUrl(createDefaultMetadata()));
+		assertThat(this.request.generateUrl(createDefaultMetadata()))
+				.isEqualTo(createDefaultUrl("?packageName=demo.foo&type=test-type"));
 	}
 
 	@Test
@@ -110,24 +108,23 @@ public class ProjectGenerationRequestTests {
 		InitializrServiceMetadata metadata = new InitializrServiceMetadata(projectType);
 		this.request.setType("custom");
 		this.request.getDependencies().add("data-rest");
-		assertEquals(
-				new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL
-						+ "/foo?dependencies=data-rest&type=custom"),
-				this.request.generateUrl(metadata));
+		assertThat(this.request.generateUrl(metadata))
+				.isEqualTo(new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL
+						+ "/foo?dependencies=data-rest&type=custom"));
 	}
 
 	@Test
 	public void customPackaging() {
 		this.request.setPackaging("war");
-		assertEquals(createDefaultUrl("?type=test-type&packaging=war"),
-				this.request.generateUrl(createDefaultMetadata()));
+		assertThat(this.request.generateUrl(createDefaultMetadata()))
+				.isEqualTo(createDefaultUrl("?type=test-type&packaging=war"));
 	}
 
 	@Test
 	public void customLanguage() {
 		this.request.setLanguage("groovy");
-		assertEquals(createDefaultUrl("?type=test-type&language=groovy"),
-				this.request.generateUrl(createDefaultMetadata()));
+		assertThat(this.request.generateUrl(createDefaultMetadata()))
+				.isEqualTo(createDefaultUrl("?type=test-type&language=groovy"));
 	}
 
 	@Test
@@ -136,40 +133,39 @@ public class ProjectGenerationRequestTests {
 		this.request.setArtifactId("sample");
 		this.request.setVersion("1.0.1-SNAPSHOT");
 		this.request.setDescription("Spring Boot Test");
-		assertEquals(
-				createDefaultUrl(
+		assertThat(this.request.generateUrl(createDefaultMetadata()))
+				.isEqualTo(createDefaultUrl(
 						"?groupId=org.acme&artifactId=sample&version=1.0.1-SNAPSHOT"
-								+ "&description=Spring+Boot+Test&type=test-type"),
-				this.request.generateUrl(createDefaultMetadata()));
+								+ "&description=Spring+Boot+Test&type=test-type"));
 	}
 
 	@Test
 	public void outputCustomizeArtifactId() {
 		this.request.setOutput("my-project");
-		assertEquals(createDefaultUrl("?artifactId=my-project&type=test-type"),
-				this.request.generateUrl(createDefaultMetadata()));
+		assertThat(this.request.generateUrl(createDefaultMetadata()))
+				.isEqualTo(createDefaultUrl("?artifactId=my-project&type=test-type"));
 	}
 
 	@Test
 	public void outputArchiveCustomizeArtifactId() {
 		this.request.setOutput("my-project.zip");
-		assertEquals(createDefaultUrl("?artifactId=my-project&type=test-type"),
-				this.request.generateUrl(createDefaultMetadata()));
+		assertThat(this.request.generateUrl(createDefaultMetadata()))
+				.isEqualTo(createDefaultUrl("?artifactId=my-project&type=test-type"));
 	}
 
 	@Test
 	public void outputArchiveWithDotsCustomizeArtifactId() {
 		this.request.setOutput("my.nice.project.zip");
-		assertEquals(createDefaultUrl("?artifactId=my.nice.project&type=test-type"),
-				this.request.generateUrl(createDefaultMetadata()));
+		assertThat(this.request.generateUrl(createDefaultMetadata())).isEqualTo(
+				createDefaultUrl("?artifactId=my.nice.project&type=test-type"));
 	}
 
 	@Test
 	public void outputDoesNotOverrideCustomArtifactId() {
 		this.request.setOutput("my-project");
 		this.request.setArtifactId("my-id");
-		assertEquals(createDefaultUrl("?artifactId=my-id&type=test-type"),
-				this.request.generateUrl(createDefaultMetadata()));
+		assertThat(this.request.generateUrl(createDefaultMetadata()))
+				.isEqualTo(createDefaultUrl("?artifactId=my-id&type=test-type"));
 	}
 
 	@Test
@@ -195,8 +191,8 @@ public class ProjectGenerationRequestTests {
 	public void buildOneMatch() {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("gradle", null);
-		assertEquals(createDefaultUrl("?type=gradle-project"),
-				this.request.generateUrl(metadata));
+		assertThat(this.request.generateUrl(metadata))
+				.isEqualTo(createDefaultUrl("?type=gradle-project"));
 	}
 
 	@Test
@@ -204,8 +200,8 @@ public class ProjectGenerationRequestTests {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("gradle", "project");
 		this.request.setType("maven-build");
-		assertEquals(createUrl("/pom.xml?type=maven-build"),
-				this.request.generateUrl(metadata));
+		assertThat(this.request.generateUrl(metadata))
+				.isEqualTo(createUrl("/pom.xml?type=maven-build"));
 	}
 
 	@Test

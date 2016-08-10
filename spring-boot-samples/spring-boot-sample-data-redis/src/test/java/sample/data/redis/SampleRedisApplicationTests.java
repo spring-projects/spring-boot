@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package sample.data.redis;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.data.redis.RedisConnectionFailureException;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SampleRedisApplication}.
@@ -39,14 +39,13 @@ public class SampleRedisApplicationTests {
 		try {
 			SampleRedisApplication.main(new String[0]);
 		}
-		catch (IllegalStateException ex) {
+		catch (Exception ex) {
 			if (!redisServerRunning(ex)) {
 				return;
 			}
 		}
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output,
-				output.contains("Found key spring.boot.redis.test"));
+		assertThat(output).contains("Found key spring.boot.redis.test");
 	}
 
 	private boolean redisServerRunning(Throwable ex) {

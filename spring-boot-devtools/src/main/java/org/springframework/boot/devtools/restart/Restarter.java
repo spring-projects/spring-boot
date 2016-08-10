@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,10 @@ package org.springframework.boot.devtools.restart;
 import java.beans.Introspector;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -49,6 +47,7 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.devtools.restart.classloader.RestartClassLoader;
 import org.springframework.boot.logging.DeferredLog;
 import org.springframework.cglib.core.ClassNameReader;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
@@ -72,6 +71,7 @@ import org.springframework.util.ReflectionUtils;
  * URLs or class file updates for remote restart scenarios.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.3.0
  * @see RestartApplicationListener
  * @see #initialize(String[])
@@ -80,9 +80,23 @@ import org.springframework.util.ReflectionUtils;
  */
 public class Restarter {
 
+	private static final Object INSTANCE_MONITOR = new Object();
+
 	private static final String[] NO_ARGS = {};
 
 	private static Restarter instance;
+
+	private final Set<URL> urls = new LinkedHashSet<URL>();
+
+	private final ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
+
+	private final Map<String, Object> attributes = new HashMap<String, Object>();
+
+	private final BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<LeakSafeThread>();
+
+	private final Lock stopLock = new ReentrantLock();
+
+	private final Object monitor = new Object();
 
 	private Log logger = new DeferredLog();
 
@@ -100,19 +114,9 @@ public class Restarter {
 
 	private final UncaughtExceptionHandler exceptionHandler;
 
-	private final Set<URL> urls = new LinkedHashSet<URL>();
-
-	private final ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
-
-	private final Map<String, Object> attributes = new HashMap<String, Object>();
-
-	private final BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<LeakSafeThread>();
-
-	private final RestartListener[] listeners;
-
 	private boolean finished = false;
 
-	private Lock stopLock = new ReentrantLock();
+	private volatile ConfigurableApplicationContext rootContext;
 
 	/**
 	 * Internal constructor to create a new {@link Restarter} instance.
@@ -120,11 +124,10 @@ public class Restarter {
 	 * @param args the application arguments
 	 * @param forceReferenceCleanup if soft/weak reference cleanup should be forced
 	 * @param initializer the restart initializer
-	 * @param listeners listeners to be notified of restarts
 	 * @see #initialize(String[])
 	 */
 	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer, RestartListener... listeners) {
+			RestartInitializer initializer) {
 		Assert.notNull(thread, "Thread must not be null");
 		Assert.notNull(args, "Args must not be null");
 		Assert.notNull(initializer, "Initializer must not be null");
@@ -137,7 +140,6 @@ public class Restarter {
 		this.args = args;
 		this.exceptionHandler = thread.getUncaughtExceptionHandler();
 		this.leakSafeThreads.add(new LeakSafeThread());
-		this.listeners = listeners;
 	}
 
 	private String getMainClassName(Thread thread) {
@@ -250,7 +252,6 @@ public class Restarter {
 
 			@Override
 			public Void call() throws Exception {
-				Restarter.this.beforeRestart();
 				Restarter.this.stop();
 				Restarter.this.start(failureHandler);
 				return null;
@@ -313,7 +314,10 @@ public class Restarter {
 		this.logger.debug("Stopping application");
 		this.stopLock.lock();
 		try {
-			triggerShutdownHooks();
+			if (this.rootContext != null) {
+				this.rootContext.close();
+				this.rootContext = null;
+			}
 			cleanupCaches();
 			if (this.forceReferenceCleanup) {
 				forceReferenceCleanup();
@@ -324,23 +328,6 @@ public class Restarter {
 		}
 		System.gc();
 		System.runFinalization();
-	}
-
-	private void beforeRestart() {
-		for (RestartListener listener : this.listeners) {
-			listener.beforeRestart();
-		}
-	}
-
-	@SuppressWarnings("rawtypes")
-	private void triggerShutdownHooks() throws Exception {
-		Class<?> hooksClass = Class.forName("java.lang.ApplicationShutdownHooks");
-		Method runHooks = hooksClass.getDeclaredMethod("runHooks");
-		runHooks.setAccessible(true);
-		runHooks.invoke(null);
-		Field field = hooksClass.getDeclaredField("hooks");
-		field.setAccessible(true);
-		field.set(null, new IdentityHashMap());
 	}
 
 	private void cleanupCaches() throws Exception {
@@ -411,15 +398,27 @@ public class Restarter {
 	 * Called to finish {@link Restarter} initialization when application logging is
 	 * available.
 	 */
-	synchronized void finish() {
-		if (!isFinished()) {
-			this.logger = DeferredLog.replay(this.logger, LogFactory.getLog(getClass()));
-			this.finished = true;
+	void finish() {
+		synchronized (this.monitor) {
+			if (!isFinished()) {
+				this.logger = DeferredLog.replay(this.logger,
+						LogFactory.getLog(getClass()));
+				this.finished = true;
+			}
 		}
 	}
 
 	boolean isFinished() {
-		return this.finished;
+		synchronized (this.monitor) {
+			return this.finished;
+		}
+	}
+
+	void prepare(ConfigurableApplicationContext applicationContext) {
+		if (applicationContext != null && applicationContext.getParent() != null) {
+			return;
+		}
+		this.rootContext = applicationContext;
 	}
 
 	private LeakSafeThread getLeakSafeThread() {
@@ -520,16 +519,14 @@ public class Restarter {
 	 * @param initializer the restart initializer
 	 * @param restartOnInitialize if the restarter should be restarted immediately when
 	 * the {@link RestartInitializer} returns non {@code null} results
-	 * @param listeners listeners to be notified of restarts
 	 */
 	public static void initialize(String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer, boolean restartOnInitialize,
-			RestartListener... listeners) {
+			RestartInitializer initializer, boolean restartOnInitialize) {
 		Restarter localInstance = null;
-		synchronized (Restarter.class) {
+		synchronized (INSTANCE_MONITOR) {
 			if (instance == null) {
 				localInstance = new Restarter(Thread.currentThread(), args,
-						forceReferenceCleanup, initializer, listeners);
+						forceReferenceCleanup, initializer);
 				instance = localInstance;
 			}
 		}
@@ -543,9 +540,11 @@ public class Restarter {
 	 * {@link #initialize(String[]) initialization}.
 	 * @return the restarter
 	 */
-	public synchronized static Restarter getInstance() {
-		Assert.state(instance != null, "Restarter has not been initialized");
-		return instance;
+	public static Restarter getInstance() {
+		synchronized (INSTANCE_MONITOR) {
+			Assert.state(instance != null, "Restarter has not been initialized");
+			return instance;
+		}
 	}
 
 	/**
@@ -553,7 +552,9 @@ public class Restarter {
 	 * @param instance the instance to set
 	 */
 	final static void setInstance(Restarter instance) {
-		Restarter.instance = instance;
+		synchronized (INSTANCE_MONITOR) {
+			Restarter.instance = instance;
+		}
 	}
 
 	/**
@@ -561,7 +562,9 @@ public class Restarter {
 	 * application code.
 	 */
 	public static void clearInstance() {
-		instance = null;
+		synchronized (INSTANCE_MONITOR) {
+			instance = null;
+		}
 	}
 
 	/**

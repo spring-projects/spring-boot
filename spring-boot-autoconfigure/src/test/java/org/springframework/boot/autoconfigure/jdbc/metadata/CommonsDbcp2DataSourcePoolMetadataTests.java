@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link CommonsDbcp2DataSourcePoolMetadata}.
@@ -52,7 +51,7 @@ public class CommonsDbcp2DataSourcePoolMetadataTests
 				return null;
 			}
 		};
-		assertNull(dsm.getUsage());
+		assertThat(dsm.getUsage()).isNull();
 	}
 
 	@Test
@@ -64,21 +63,22 @@ public class CommonsDbcp2DataSourcePoolMetadataTests
 				return null;
 			}
 		};
-		assertNull(dsm.getUsage());
+		assertThat(dsm.getUsage()).isNull();
 	}
 
 	@Test
 	public void getPoolUsageWithUnlimitedPool() {
 		DataSourcePoolMetadata unlimitedDataSource = createDataSourceMetadata(0, -1);
-		assertEquals(Float.valueOf(-1F), unlimitedDataSource.getUsage());
+		assertThat(unlimitedDataSource.getUsage()).isEqualTo(Float.valueOf(-1F));
 	}
 
 	@Override
 	public void getValidationQuery() {
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setValidationQuery("SELECT FROM FOO");
-		assertEquals("SELECT FROM FOO",
-				new CommonsDbcp2DataSourcePoolMetadata(dataSource).getValidationQuery());
+		assertThat(
+				new CommonsDbcp2DataSourcePoolMetadata(dataSource).getValidationQuery())
+						.isEqualTo("SELECT FROM FOO");
 	}
 
 	private CommonsDbcp2DataSourcePoolMetadata createDataSourceMetadata(int minSize,

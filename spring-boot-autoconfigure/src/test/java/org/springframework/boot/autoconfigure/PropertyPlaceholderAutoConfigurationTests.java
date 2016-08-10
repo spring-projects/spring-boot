@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,14 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.util.StringUtils;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PropertyPlaceholderAutoConfiguration}.
@@ -51,7 +51,8 @@ public class PropertyPlaceholderAutoConfigurationTests {
 				PlaceholderConfig.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "foo:two");
 		this.context.refresh();
-		assertEquals("two", this.context.getBean(PlaceholderConfig.class).getFoo());
+		assertThat(this.context.getBean(PlaceholderConfig.class).getFoo())
+				.isEqualTo("two");
 	}
 
 	@Test
@@ -60,7 +61,8 @@ public class PropertyPlaceholderAutoConfigurationTests {
 				PlaceholderConfig.class, PlaceholdersOverride.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "foo:two");
 		this.context.refresh();
-		assertEquals("spam", this.context.getBean(PlaceholderConfig.class).getFoo());
+		assertThat(this.context.getBean(PlaceholderConfig.class).getFoo())
+				.isEqualTo("spam");
 	}
 
 	@Configuration

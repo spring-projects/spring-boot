@@ -20,15 +20,26 @@ import groovy.text.GStringTemplateEngine;
 import groovy.text.TemplateEngine;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 
+// Flyway must go first
 @SpringBootApplication
+@Import({ FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class })
 public class SpringBootHypermediaApplication {
 
 	@Bean
 	public TemplateEngine groovyTemplateEngine() {
 		return new GStringTemplateEngine();
+	}
+
+	@Bean
+	public EnvironmentEndpoint environmentEndpoint() {
+		return new LimitedEnvironmentEndpoint();
 	}
 
 	public static void main(String[] args) {

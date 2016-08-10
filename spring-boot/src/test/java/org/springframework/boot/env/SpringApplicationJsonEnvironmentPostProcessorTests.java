@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package org.springframework.boot.env;
 
 import org.junit.Test;
 
-import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringApplicationJsonEnvironmentPostProcessor}.
@@ -37,82 +37,83 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 
 	@Test
 	public void error() {
-		assertEquals("", this.environment.resolvePlaceholders("${foo:}"));
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json=foo:bar");
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertEquals("", this.environment.resolvePlaceholders("${foo:}"));
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 	}
 
 	@Test
 	public void missing() {
-		assertEquals("", this.environment.resolvePlaceholders("${foo:}"));
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertEquals("", this.environment.resolvePlaceholders("${foo:}"));
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 	}
 
 	@Test
 	public void empty() {
-		assertEquals("", this.environment.resolvePlaceholders("${foo:}"));
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json={}");
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertEquals("", this.environment.resolvePlaceholders("${foo:}"));
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 	}
 
 	@Test
 	public void periodSeparated() {
-		assertEquals("", this.environment.resolvePlaceholders("${foo:}"));
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json={\"foo\":\"bar\"}");
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertEquals("bar", this.environment.resolvePlaceholders("${foo:}"));
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("bar");
 	}
 
 	@Test
 	public void envVar() {
-		assertEquals("", this.environment.resolvePlaceholders("${foo:}"));
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":\"bar\"}");
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertEquals("bar", this.environment.resolvePlaceholders("${foo:}"));
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("bar");
 	}
 
 	@Test
 	public void nested() {
-		assertEquals("", this.environment.resolvePlaceholders("${foo:}"));
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":{\"bar\":\"spam\",\"rab\":\"maps\"}}");
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertEquals("spam", this.environment.resolvePlaceholders("${foo.bar:}"));
-		assertEquals("maps", this.environment.resolvePlaceholders("${foo.rab:}"));
+		assertThat(this.environment.resolvePlaceholders("${foo.bar:}")).isEqualTo("spam");
+		assertThat(this.environment.resolvePlaceholders("${foo.rab:}")).isEqualTo("maps");
 	}
 
 	@Test
 	public void prefixed() {
-		assertEquals("", this.environment.resolvePlaceholders("${foo:}"));
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo.bar\":\"spam\"}");
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertEquals("spam", this.environment.resolvePlaceholders("${foo.bar:}"));
+		assertThat(this.environment.resolvePlaceholders("${foo.bar:}")).isEqualTo("spam");
 	}
 
 	@Test
 	public void list() {
-		assertEquals("", this.environment.resolvePlaceholders("${foo[1]:}"));
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		assertThat(this.environment.resolvePlaceholders("${foo[1]:}")).isEmpty();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":[\"bar\",\"spam\"]}");
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertEquals("spam", this.environment.resolvePlaceholders("${foo[1]:}"));
+		assertThat(this.environment.resolvePlaceholders("${foo[1]:}")).isEqualTo("spam");
 	}
 
 	@Test
 	public void listOfObject() {
-		assertEquals("", this.environment.resolvePlaceholders("${foo[0].bar:}"));
-		EnvironmentTestUtils.addEnvironment(this.environment,
+		assertThat(this.environment.resolvePlaceholders("${foo[0].bar:}")).isEmpty();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":[{\"bar\":\"spam\"}]}");
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertEquals("spam", this.environment.resolvePlaceholders("${foo[0].bar:}"));
+		assertThat(this.environment.resolvePlaceholders("${foo[0].bar:}"))
+				.isEqualTo("spam");
 	}
 
 }

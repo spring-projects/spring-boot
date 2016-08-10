@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,12 @@ import org.junit.Test;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationPropertiesReportEndpoint}.
@@ -49,7 +45,7 @@ public class ConfigurationPropertiesReportEndpointTests
 
 	@Test
 	public void testInvoke() throws Exception {
-		assertThat(getEndpointBean().invoke().size(), greaterThan(0));
+		assertThat(getEndpointBean().invoke().size()).isGreaterThan(0);
 	}
 
 	@Test
@@ -59,9 +55,9 @@ public class ConfigurationPropertiesReportEndpointTests
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("testProperties");
-		assertNotNull(nestedProperties);
-		assertEquals("test", nestedProperties.get("prefix"));
-		assertNotNull(nestedProperties.get("properties"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("prefix")).isEqualTo("test");
+		assertThat(nestedProperties.get("properties")).isNotNull();
 	}
 
 	@Test
@@ -71,9 +67,9 @@ public class ConfigurationPropertiesReportEndpointTests
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
 				.get("testProperties")).get("properties");
-		assertNotNull(nestedProperties);
-		assertEquals("******", nestedProperties.get("dbPassword"));
-		assertEquals("654321", nestedProperties.get("myTestProperty"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
+		assertThat(nestedProperties.get("myTestProperty")).isEqualTo("654321");
 	}
 
 	@Test
@@ -84,9 +80,9 @@ public class ConfigurationPropertiesReportEndpointTests
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
 				.get("testProperties")).get("properties");
-		assertNotNull(nestedProperties);
-		assertEquals("123456", nestedProperties.get("dbPassword"));
-		assertEquals("******", nestedProperties.get("myTestProperty"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("dbPassword")).isEqualTo("123456");
+		assertThat(nestedProperties.get("myTestProperty")).isEqualTo("******");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -97,9 +93,9 @@ public class ConfigurationPropertiesReportEndpointTests
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
 				.get("testProperties")).get("properties");
-		assertNotNull(nestedProperties);
-		assertEquals("******", nestedProperties.get("dbPassword"));
-		assertEquals("654321", nestedProperties.get("myTestProperty"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
+		assertThat(nestedProperties.get("myTestProperty")).isEqualTo("654321");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -114,9 +110,9 @@ public class ConfigurationPropertiesReportEndpointTests
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
 				.get("testProperties")).get("properties");
-		assertNotNull(nestedProperties);
-		assertEquals("123456", nestedProperties.get("dbPassword"));
-		assertEquals("******", nestedProperties.get("myTestProperty"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("dbPassword")).isEqualTo("123456");
+		assertThat(nestedProperties.get("myTestProperty")).isEqualTo("******");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -131,9 +127,9 @@ public class ConfigurationPropertiesReportEndpointTests
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
 				.get("testProperties")).get("properties");
-		assertNotNull(nestedProperties);
-		assertEquals("******", nestedProperties.get("dbPassword"));
-		assertEquals("654321", nestedProperties.get("myTestProperty"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
+		assertThat(nestedProperties.get("myTestProperty")).isEqualTo("654321");
 	}
 
 	@Test
@@ -149,9 +145,9 @@ public class ConfigurationPropertiesReportEndpointTests
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
 				.get("testProperties")).get("properties");
-		assertNotNull(nestedProperties);
-		assertEquals("******", nestedProperties.get("dbPassword"));
-		assertEquals("******", nestedProperties.get("myTestProperty"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("dbPassword")).isEqualTo("******");
+		assertThat(nestedProperties.get("myTestProperty")).isEqualTo("******");
 	}
 
 	@Test
@@ -168,13 +164,13 @@ public class ConfigurationPropertiesReportEndpointTests
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
 				.get("testProperties")).get("properties");
-		assertNotNull(nestedProperties);
+		assertThat(nestedProperties).isNotNull();
 		Map<String, Object> secrets = (Map<String, Object>) nestedProperties
 				.get("secrets");
 		Map<String, Object> hidden = (Map<String, Object>) nestedProperties.get("hidden");
-		assertEquals("******", secrets.get("mine"));
-		assertEquals("******", secrets.get("yours"));
-		assertEquals("******", hidden.get("mine"));
+		assertThat(secrets.get("mine")).isEqualTo("******");
+		assertThat(secrets.get("yours")).isEqualTo("******");
+		assertThat(hidden.get("mine")).isEqualTo("******");
 	}
 
 	@Test
@@ -184,7 +180,7 @@ public class ConfigurationPropertiesReportEndpointTests
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
 				.get("testProperties")).get("properties");
-		assertThat(nestedProperties.get("mixedBoolean"), equalTo((Object) true));
+		assertThat(nestedProperties.get("mixedBoolean")).isEqualTo(true);
 	}
 
 	@Configuration

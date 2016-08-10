@@ -80,6 +80,12 @@ public class MessageSourceAutoConfiguration {
 	 */
 	private boolean fallbackToSystemLocale = true;
 
+	/**
+	 * Set whether to always apply the MessageFormat rules, parsing even messages without
+	 * arguments.
+	 */
+	private boolean alwaysUseMessageFormat = false;
+
 	@Bean
 	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
@@ -92,6 +98,7 @@ public class MessageSourceAutoConfiguration {
 		}
 		messageSource.setFallbackToSystemLocale(this.fallbackToSystemLocale);
 		messageSource.setCacheSeconds(this.cacheSeconds);
+		messageSource.setAlwaysUseMessageFormat(this.alwaysUseMessageFormat);
 		return messageSource;
 	}
 
@@ -125,6 +132,14 @@ public class MessageSourceAutoConfiguration {
 
 	public void setFallbackToSystemLocale(boolean fallbackToSystemLocale) {
 		this.fallbackToSystemLocale = fallbackToSystemLocale;
+	}
+
+	public boolean isAlwaysUseMessageFormat() {
+		return this.alwaysUseMessageFormat;
+	}
+
+	public void setAlwaysUseMessageFormat(boolean alwaysUseMessageFormat) {
+		this.alwaysUseMessageFormat = alwaysUseMessageFormat;
 	}
 
 	protected static class ResourceBundleCondition extends SpringBootCondition {

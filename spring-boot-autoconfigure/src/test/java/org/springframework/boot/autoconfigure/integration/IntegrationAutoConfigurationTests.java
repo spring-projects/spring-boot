@@ -34,9 +34,7 @@ import org.springframework.integration.support.channel.HeaderChannelRegistry;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -62,7 +60,7 @@ public class IntegrationAutoConfigurationTests {
 	@Test
 	public void integrationIsAvailable() {
 		load();
-		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
+		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 	}
 
 	@Test
@@ -77,7 +75,7 @@ public class IntegrationAutoConfigurationTests {
 		this.context.register(JmxAutoConfiguration.class,
 				IntegrationAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
+		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 		((ConfigurableApplicationContext) this.context.getParent()).close();
 		this.context.close();
 	}
@@ -93,7 +91,7 @@ public class IntegrationAutoConfigurationTests {
 	@Test
 	public void disableJmxIntegration() {
 		load("spring.jmx.enabled=false");
-		assertEquals(0, this.context.getBeansOfType(MBeanServer.class).size());
+		assertThat(this.context.getBeansOfType(MBeanServer.class)).hasSize(0);
 	}
 
 	@Test
@@ -108,15 +106,16 @@ public class IntegrationAutoConfigurationTests {
 	@Test
 	public void primaryExporterIsAllowed() {
 		load(CustomMBeanExporter.class);
-		assertEquals(2, this.context.getBeansOfType(MBeanExporter.class).size());
-		assertSame(this.context.getBean("myMBeanExporter"), this.context.getBean(MBeanExporter.class));
+		assertThat(this.context.getBeansOfType(MBeanExporter.class)).hasSize(2);
+		assertThat(this.context.getBean(MBeanExporter.class)).isSameAs(
+				this.context.getBean("myMBeanExporter"));
 	}
 
 	private static void assertDomains(MBeanServer mBeanServer, boolean expected,
 			String... domains) {
 		List<String> actual = Arrays.asList(mBeanServer.getDomains());
 		for (String domain : domains) {
-			assertEquals(expected, actual.contains(domain));
+			assertThat(actual.contains(domain)).isEqualTo(expected);
 		}
 	}
 

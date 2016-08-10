@@ -267,8 +267,8 @@ To build and run a project artifact, you can type the following:
 ----
 
 To build a war file that is both executable and deployable into an external container,
-you need to mark the embedded container dependencies as belonging to a configuration
-named "`providedRuntime`", e.g:
+you need to mark the embedded container dependencies as belonging to the war plugin's
+`providedRuntime` configuration, e.g.:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -283,10 +283,6 @@ named "`providedRuntime`", e.g:
 	repositories {
 		jcenter()
 		maven { url "http://repo.spring.io/libs-snapshot" }
-	}
-
-	configurations {
-		providedRuntime
 	}
 
 	dependencies {
@@ -779,7 +775,7 @@ attributes are supported
 
 
 
-===== Examples
+==== Examples
 .Find and log
 [source,xml,indent=0]
 ----

@@ -16,20 +16,36 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties.ListenerRetry;
 import org.springframework.util.Assert;
 
 /**
  * Configure {@link RabbitListenerContainerFactory} with sensible defaults.
  *
  * @author Stephane Nicoll
+ * @author Gary Russell
  * @since 1.3.3
  */
 public final class SimpleRabbitListenerContainerFactoryConfigurer {
 
+	private MessageConverter messageConverter;
+
 	private RabbitProperties rabbitProperties;
+
+	/**
+	 * Set the {@link MessageConverter} to use or {@code null} if the out-of-the-box
+	 * converter should be used.
+	 * @param messageConverter the {@link MessageConverter}
+	 */
+	void setMessageConverter(MessageConverter messageConverter) {
+		this.messageConverter = messageConverter;
+	}
 
 	/**
 	 * Set the {@link RabbitProperties} to use.
@@ -51,6 +67,9 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer {
 		Assert.notNull(factory, "Factory must not be null");
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		factory.setConnectionFactory(connectionFactory);
+		if (this.messageConverter != null) {
+			factory.setMessageConverter(this.messageConverter);
+		}
 		RabbitProperties.Listener listenerConfig = this.rabbitProperties.getListener();
 		factory.setAutoStartup(listenerConfig.isAutoStartup());
 		if (listenerConfig.getAcknowledgeMode() != null) {
@@ -68,6 +87,21 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer {
 		if (listenerConfig.getTransactionSize() != null) {
 			factory.setTxSize(listenerConfig.getTransactionSize());
 		}
+		if (listenerConfig.getDefaultRequeueRejected() != null) {
+			factory.setDefaultRequeueRejected(listenerConfig.getDefaultRequeueRejected());
+		}
+		ListenerRetry retryConfig = listenerConfig.getRetry();
+		if (retryConfig.isEnabled()) {
+			RetryInterceptorBuilder<?> builder = (retryConfig.isStateless()
+					? RetryInterceptorBuilder.stateless()
+					: RetryInterceptorBuilder.stateful());
+			builder.maxAttempts(retryConfig.getMaxAttempts());
+			builder.backOffOptions(retryConfig.getInitialInterval(),
+					retryConfig.getMultiplier(), retryConfig.getMaxInterval());
+			builder.recoverer(new RejectAndDontRequeueRecoverer());
+			factory.setAdviceChain(builder.build());
+		}
+
 	}
 
 }

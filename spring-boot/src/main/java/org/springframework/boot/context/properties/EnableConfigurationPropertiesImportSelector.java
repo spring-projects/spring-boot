@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,8 +76,8 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			List<Class<?>> types = collectClasses(attributes.get("value"));
 			for (Class<?> type : types) {
 				String prefix = extractPrefix(type);
-				String name = (StringUtils.hasText(prefix)
-						? prefix + ".CONFIGURATION_PROPERTIES" : type.getName());
+				String name = (StringUtils.hasText(prefix) ? prefix + "-" + type.getName()
+						: type.getName());
 				if (!registry.containsBeanDefinition(name)) {
 					registerBeanDefinition(registry, type, name);
 				}
@@ -88,8 +88,7 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			ConfigurationProperties annotation = AnnotationUtils.findAnnotation(type,
 					ConfigurationProperties.class);
 			if (annotation != null) {
-				return (StringUtils.hasLength(annotation.value()) ? annotation.value()
-						: annotation.prefix());
+				return annotation.prefix();
 			}
 			return "";
 		}

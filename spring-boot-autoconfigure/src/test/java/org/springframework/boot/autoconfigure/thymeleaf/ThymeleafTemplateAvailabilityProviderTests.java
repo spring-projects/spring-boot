@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.env.MockEnvironment;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ThymeleafTemplateAvailabilityProvider}.
@@ -41,30 +40,29 @@ public class ThymeleafTemplateAvailabilityProviderTests {
 
 	@Test
 	public void availabilityOfTemplateInDefaultLocation() {
-		assertTrue(this.provider.isTemplateAvailable("home", this.environment,
-				getClass().getClassLoader(), this.resourceLoader));
+		assertThat(this.provider.isTemplateAvailable("home", this.environment,
+				getClass().getClassLoader(), this.resourceLoader)).isTrue();
 	}
 
 	@Test
 	public void availabilityOfTemplateThatDoesNotExist() {
-		assertFalse(this.provider.isTemplateAvailable("whatever", this.environment,
-				getClass().getClassLoader(), this.resourceLoader));
+		assertThat(this.provider.isTemplateAvailable("whatever", this.environment,
+				getClass().getClassLoader(), this.resourceLoader)).isFalse();
 	}
 
 	@Test
 	public void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.thymeleaf.prefix",
 				"classpath:/custom-templates/");
-
-		assertTrue(this.provider.isTemplateAvailable("custom", this.environment,
-				getClass().getClassLoader(), this.resourceLoader));
+		assertThat(this.provider.isTemplateAvailable("custom", this.environment,
+				getClass().getClassLoader(), this.resourceLoader)).isTrue();
 	}
 
 	@Test
 	public void availabilityOfTemplateWithCustomSuffix() {
 		this.environment.setProperty("spring.thymeleaf.suffix", ".thymeleaf");
-
-		assertTrue(this.provider.isTemplateAvailable("suffixed", this.environment,
-				getClass().getClassLoader(), this.resourceLoader));
+		assertThat(this.provider.isTemplateAvailable("suffixed", this.environment,
+				getClass().getClassLoader(), this.resourceLoader)).isTrue();
 	}
+
 }

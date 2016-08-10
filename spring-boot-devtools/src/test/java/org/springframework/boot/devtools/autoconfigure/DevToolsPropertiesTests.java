@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@ package org.springframework.boot.devtools.autoconfigure;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.arrayContaining;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DevToolsProperties}.
@@ -34,11 +33,10 @@ public class DevToolsPropertiesTests {
 	public void additionalExcludeKeepsDefaults() {
 		DevToolsProperties.Restart restart = this.devToolsProperties.getRestart();
 		restart.setAdditionalExclude("foo/**,bar/**");
-		assertThat(restart.getAllExclude(),
-				arrayContaining("META-INF/maven/**", "META-INF/resources/**",
-						"resources/**", "static/**", "public/**", "templates/**",
-						"**/*Test.class", "**/*Tests.class", "git.properties", "foo/**",
-						"bar/**"));
+		assertThat(restart.getAllExclude()).containsOnly("META-INF/maven/**",
+				"META-INF/resources/**", "resources/**", "static/**", "public/**",
+				"templates/**", "**/*Test.class", "**/*Tests.class", "git.properties",
+				"foo/**", "bar/**");
 	}
 
 	@Test
@@ -46,7 +44,7 @@ public class DevToolsPropertiesTests {
 		DevToolsProperties.Restart restart = this.devToolsProperties.getRestart();
 		restart.setExclude("");
 		restart.setAdditionalExclude("foo/**,bar/**");
-		assertThat(restart.getAllExclude(), arrayContaining("foo/**", "bar/**"));
+		assertThat(restart.getAllExclude()).containsOnly("foo/**", "bar/**");
 	}
 
 	@Test
@@ -54,8 +52,7 @@ public class DevToolsPropertiesTests {
 		DevToolsProperties.Restart restart = this.devToolsProperties.getRestart();
 		restart.setExclude("biz/**");
 		restart.setAdditionalExclude("foo/**,bar/**");
-		assertThat(restart.getAllExclude(),
-				arrayContaining("biz/**", "foo/**", "bar/**"));
+		assertThat(restart.getAllExclude()).containsOnly("biz/**", "foo/**", "bar/**");
 	}
 
 }

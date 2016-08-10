@@ -4,6 +4,7 @@ jdk:
 services:
   - mongodb
   - redis
+  - cassandra
 sudo: false
 install: true
 before_script:

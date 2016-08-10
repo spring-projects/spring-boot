@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,25 +27,21 @@ import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runners.model.Statement;
 
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.IntegrationTestPropertiesListener;
-import org.springframework.boot.test.OutputCapture;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestExecutionListeners.MergeMode;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SampleCassandraApplication}.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
 @TestExecutionListeners(mergeMode = MergeMode.MERGE_WITH_DEFAULTS, listeners = {
-		IntegrationTestPropertiesListener.class,
 		OrderedCassandraTestExecutionListener.class })
-@SpringApplicationConfiguration(SampleCassandraApplication.class)
-@IntegrationTest("spring.data.cassandra.port=9142")
+@SpringBootTest
 @CassandraDataSet(keyspace = "mykeyspace", value = "setup.cql")
 @EmbeddedCassandra(timeout = 60000)
 public class SampleCassandraApplicationTests {
@@ -59,8 +55,7 @@ public class SampleCassandraApplicationTests {
 	@Test
 	public void testDefaultSettings() throws Exception {
 		String output = SampleCassandraApplicationTests.outputCapture.toString();
-		assertTrue("Wrong output: " + output,
-				output.contains("firstName='Alice', lastName='Smith'"));
+		assertThat(output).contains("firstName='Alice', lastName='Smith'");
 	}
 
 	static class SkipOnWindows implements TestRule {

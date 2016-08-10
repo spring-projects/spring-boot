@@ -30,11 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ShutdownEndpoint}.
@@ -53,7 +49,7 @@ public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoin
 	@Override
 	public void isEnabledByDefault() throws Exception {
 		// Shutdown is dangerous so is disabled by default
-		assertThat(getEndpointBean().isEnabled(), equalTo(false));
+		assertThat(getEndpointBean().isEnabled()).isFalse();
 	}
 
 	@Test
@@ -69,10 +65,11 @@ public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoin
 		finally {
 			Thread.currentThread().setContextClassLoader(previousTccl);
 		}
-		assertThat((String) result.get("message"), startsWith("Shutting down"));
-		assertTrue(this.context.isActive());
-		assertTrue(config.latch.await(10, TimeUnit.SECONDS));
-		assertThat(config.threadContextClassLoader, is(getClass().getClassLoader()));
+		assertThat((String) result.get("message")).startsWith("Shutting down");
+		assertThat(this.context.isActive()).isTrue();
+		assertThat(config.latch.await(10, TimeUnit.SECONDS)).isTrue();
+		assertThat(config.threadContextClassLoader)
+				.isEqualTo(getClass().getClassLoader());
 	}
 
 	@Configuration
@@ -92,12 +89,14 @@ public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoin
 		@Bean
 		public ApplicationListener<ContextClosedEvent> listener() {
 			return new ApplicationListener<ContextClosedEvent>() {
+
 				@Override
 				public void onApplicationEvent(ContextClosedEvent event) {
 					Config.this.threadContextClassLoader = Thread.currentThread()
 							.getContextClassLoader();
 					Config.this.latch.countDown();
 				}
+
 			};
 
 		}

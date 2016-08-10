@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,16 +24,15 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServicesRefreshTokenTests.Application;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
@@ -46,23 +45,22 @@ import org.springframework.security.oauth2.common.DefaultExpiringOAuth2RefreshTo
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link UserInfoTokenServices}.
  *
  * @author Dave Syer
  */
-@SpringApplicationConfiguration(classes = Application.class)
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebIntegrationTest({ "server.port=0",
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
 		"security.oauth2.resource.userInfoUri:http://example.com",
 		"security.oauth2.client.clientId=foo" })
 @DirtiesContext
@@ -71,7 +69,7 @@ public class UserInfoTokenServicesRefreshTokenTests {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port;
 
 	private UserInfoTokenServices services;
@@ -84,7 +82,7 @@ public class UserInfoTokenServicesRefreshTokenTests {
 
 	@Test
 	public void sunnyDay() {
-		assertEquals("me", this.services.loadAuthentication("FOO").getName());
+		assertThat(this.services.loadAuthentication("FOO").getName()).isEqualTo("me");
 	}
 
 	@Test
@@ -95,10 +93,11 @@ public class UserInfoTokenServicesRefreshTokenTests {
 		token.setRefreshToken(new DefaultExpiringOAuth2RefreshToken("BAR", new Date(0L)));
 		context.setAccessToken(token);
 		this.services.setRestTemplate(new OAuth2RestTemplate(resource, context));
-		assertEquals("me", this.services.loadAuthentication("FOO").getName());
-		assertEquals("FOO", context.getAccessToken().getValue());
+		assertThat(this.services.loadAuthentication("FOO").getName()).isEqualTo("me");
+		assertThat(context.getAccessToken().getValue()).isEqualTo("FOO");
 		// The refresh token is still intact
-		assertEquals(token.getRefreshToken(), context.getAccessToken().getRefreshToken());
+		assertThat(context.getAccessToken().getRefreshToken())
+				.isEqualTo(token.getRefreshToken());
 	}
 
 	@Test
@@ -107,8 +106,8 @@ public class UserInfoTokenServicesRefreshTokenTests {
 		OAuth2ClientContext context = new DefaultOAuth2ClientContext();
 		context.setAccessToken(new DefaultOAuth2AccessToken("FOO"));
 		this.services.setRestTemplate(new OAuth2RestTemplate(resource, context));
-		assertEquals("me", this.services.loadAuthentication("BAR").getName());
-		assertEquals("BAR", context.getAccessToken().getValue());
+		assertThat(this.services.loadAuthentication("BAR").getName()).isEqualTo("me");
+		assertThat(context.getAccessToken().getValue()).isEqualTo("BAR");
 	}
 
 	@Configuration

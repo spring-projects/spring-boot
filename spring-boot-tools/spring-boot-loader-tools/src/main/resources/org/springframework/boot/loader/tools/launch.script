@@ -37,17 +37,21 @@ while [[ -L "$jarfile" ]]; do
   cd "$(dirname "$jarfile")" || exit 1
   jarfile=$(pwd)/$(basename "$jarfile")
 done
-jarfolder="$(dirname "$jarfile")"
+jarfolder="$( (cd $(dirname "$jarfile") && pwd -P) )"
 cd "$WORKING_DIR" || exit 1
 
 # Source any config file
 configfile="$(basename "${jarfile%.*}.conf")"
+
+# Initialize CONF_FOLDER location defaulting to jarfolder
+[[ -z "$CONF_FOLDER" ]] && CONF_FOLDER="${jarfolder}"
+
 # shellcheck source=/dev/null
-[[ -r "${jarfolder}/${configfile}" ]] && source "${jarfolder}/${configfile}"
+[[ -r "${CONF_FOLDER}/${configfile}" ]] && source "${CONF_FOLDER}/${configfile}"
 
 # Initialize PID/LOG locations if they weren't provided by the config file
-[[ -z "$PID_FOLDER" ]] && PID_FOLDER="/var/run"
-[[ -z "$LOG_FOLDER" ]] && LOG_FOLDER="/var/log"
+[[ -z "$PID_FOLDER" ]] && PID_FOLDER="{{pidFolder:/var/run}}"
+[[ -z "$LOG_FOLDER" ]] && LOG_FOLDER="{{logFolder:/var/log}}"
 ! [[ -x "$PID_FOLDER" ]] && PID_FOLDER="/tmp"
 ! [[ -x "$LOG_FOLDER" ]] && LOG_FOLDER="/tmp"
 

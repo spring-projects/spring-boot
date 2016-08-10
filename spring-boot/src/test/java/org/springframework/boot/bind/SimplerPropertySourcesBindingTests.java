@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,26 +24,25 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.bind.SimplerPropertySourcesBindingTests.TestConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PropertySourcesPropertyValues} binding.
  *
  * @author Dave Syer
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(TestConfig.class)
-@IntegrationTest
+@RunWith(SpringRunner.class)
+@DirtiesContext
+@ContextConfiguration(classes = TestConfig.class, loader = SpringApplicationBindContextLoader.class)
 public class SimplerPropertySourcesBindingTests {
 
 	@Value("${foo:}")
@@ -54,7 +53,7 @@ public class SimplerPropertySourcesBindingTests {
 
 	@Test
 	public void overridingOfPropertiesWorksAsExpected() {
-		assertThat(this.foo, is(this.properties.getFoo()));
+		assertThat(this.foo).isEqualTo(this.properties.getFoo());
 	}
 
 	@PropertySources({ @PropertySource("classpath:/override.properties"),
@@ -72,6 +71,7 @@ public class SimplerPropertySourcesBindingTests {
 
 	@ConfigurationProperties
 	public static class Wrapper {
+
 		private String foo;
 
 		public String getFoo() {
@@ -81,6 +81,7 @@ public class SimplerPropertySourcesBindingTests {
 		public void setFoo(String foo) {
 			this.foo = foo;
 		}
+
 	}
 
 }

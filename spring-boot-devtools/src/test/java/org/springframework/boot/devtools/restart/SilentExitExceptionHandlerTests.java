@@ -20,10 +20,7 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -45,11 +42,11 @@ public class SilentExitExceptionHandlerTests {
 		};
 		SilentExitExceptionHandler.setup(testThread);
 		testThread.startAndJoin();
-		assertThat(testThread.getThrown(), nullValue());
+		assertThat(testThread.getThrown()).isNull();
 	}
 
 	@Test
-	public void doesntInterferWithOtherExceptions() throws Exception {
+	public void doesntInterfereWithOtherExceptions() throws Exception {
 		TestThread testThread = new TestThread() {
 			@Override
 			public void run() {
@@ -58,7 +55,7 @@ public class SilentExitExceptionHandlerTests {
 		};
 		SilentExitExceptionHandler.setup(testThread);
 		testThread.startAndJoin();
-		assertThat(testThread.getThrown().getMessage(), equalTo("Expected"));
+		assertThat(testThread.getThrown().getMessage()).isEqualTo("Expected");
 	}
 
 	@Test
@@ -70,7 +67,7 @@ public class SilentExitExceptionHandlerTests {
 			TestSilentExitExceptionHandler silentExitExceptionHandler = new TestSilentExitExceptionHandler();
 			silentExitExceptionHandler.uncaughtException(Thread.currentThread(), ex);
 			try {
-				assertTrue(silentExitExceptionHandler.nonZeroExitCodePrevented);
+				assertThat(silentExitExceptionHandler.nonZeroExitCodePrevented).isTrue();
 			}
 			finally {
 				silentExitExceptionHandler.cleanUp();

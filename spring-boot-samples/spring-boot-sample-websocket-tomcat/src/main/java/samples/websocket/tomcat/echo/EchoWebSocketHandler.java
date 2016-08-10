@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package samples.websocket.tomcat.echo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
@@ -35,7 +34,6 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
 
 	private final EchoService echoService;
 
-	@Autowired
 	public EchoWebSocketHandler(EchoService echoService) {
 		this.echoService = echoService;
 	}

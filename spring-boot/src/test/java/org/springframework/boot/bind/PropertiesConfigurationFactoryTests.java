@@ -37,7 +37,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PropertiesConfigurationFactory}.
@@ -57,14 +57,14 @@ public class PropertiesConfigurationFactoryTests {
 	@Test
 	public void testValidPropertiesLoadsWithDash() throws Exception {
 		Foo foo = createFoo("na-me: blah\nbar: blah");
-		assertEquals("blah", foo.bar);
-		assertEquals("blah", foo.name);
+		assertThat(foo.bar).isEqualTo("blah");
+		assertThat(foo.name).isEqualTo("blah");
 	}
 
 	@Test
 	public void testUnknownPropertyOkByDefault() throws Exception {
 		Foo foo = createFoo("hi: hello\nname: foo\nbar: blah");
-		assertEquals("blah", foo.bar);
+		assertThat(foo.bar).isEqualTo("blah");
 	}
 
 	@Test(expected = NotWritablePropertyException.class)
@@ -102,7 +102,7 @@ public class PropertiesConfigurationFactoryTests {
 		this.factory.setIgnoreUnknownFields(false);
 		this.factory.afterPropertiesSet();
 		Foo foo = this.factory.getObject();
-		assertEquals("bar", foo.name);
+		assertThat(foo.name).isEqualTo("bar");
 	}
 
 	@Test
@@ -131,7 +131,7 @@ public class PropertiesConfigurationFactoryTests {
 		this.factory.setPropertySources(propertySources);
 		this.factory.afterPropertiesSet();
 		Foo foo = this.factory.getObject();
-		assertEquals("blah", foo.name);
+		assertThat(foo.name).isEqualTo("blah");
 	}
 
 	@Test
@@ -146,7 +146,7 @@ public class PropertiesConfigurationFactoryTests {
 		this.factory.setPropertySources(propertySources);
 		this.factory.afterPropertiesSet();
 		Foo foo = this.factory.getObject();
-		assertEquals("blah", foo.name);
+		assertThat(foo.name).isEqualTo("blah");
 	}
 
 	@Test
@@ -161,19 +161,19 @@ public class PropertiesConfigurationFactoryTests {
 		this.factory.setPropertySources(propertySources);
 		this.factory.afterPropertiesSet();
 		Foo foo = this.factory.getObject();
-		assertEquals("blah", foo.name);
+		assertThat(foo.name).isEqualTo("blah");
 	}
 
 	@Test
 	public void propertyWithAllUpperCaseSuffixCanBeBound() throws Exception {
 		Foo foo = createFoo("foo-bar-u-r-i:baz");
-		assertEquals("baz", foo.fooBarURI);
+		assertThat(foo.fooBarURI).isEqualTo("baz");
 	}
 
 	@Test
 	public void propertyWithAllUpperCaseInTheMiddleCanBeBound() throws Exception {
 		Foo foo = createFoo("foo-d-l-q-bar:baz");
-		assertEquals("baz", foo.fooDLQBar);
+		assertThat(foo.fooDLQBar).isEqualTo(("baz"));
 	}
 
 	private Foo createFoo(final String values) throws Exception {
@@ -181,6 +181,7 @@ public class PropertiesConfigurationFactoryTests {
 		return bindFoo(values);
 	}
 
+	@Deprecated
 	private Foo bindFoo(final String values) throws Exception {
 		this.factory.setProperties(PropertiesLoaderUtils
 				.loadProperties(new ByteArrayResource(values.getBytes())));
@@ -258,6 +259,7 @@ public class PropertiesConfigurationFactoryTests {
 		public void setFooDLQBar(String fooDLQBar) {
 			this.fooDLQBar = fooDLQBar;
 		}
+
 	}
 
 }

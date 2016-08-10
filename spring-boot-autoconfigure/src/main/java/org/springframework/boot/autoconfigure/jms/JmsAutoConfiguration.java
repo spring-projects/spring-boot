@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,19 @@ package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
 
 /**
@@ -44,31 +46,50 @@ import org.springframework.jms.support.destination.DestinationResolver;
 @Import(JmsAnnotationDrivenConfiguration.class)
 public class JmsAutoConfiguration {
 
-	@Autowired
-	private JmsProperties properties;
+	@Configuration
+	protected static class JmsTemplateConfiguration {
 
-	@Autowired
-	private ConnectionFactory connectionFactory;
+		private final JmsProperties properties;
 
-	@Autowired(required = false)
-	private DestinationResolver destinationResolver;
+		private final ObjectProvider<DestinationResolver> destinationResolver;
 
-	@Bean
-	@ConditionalOnMissingBean
-	public JmsTemplate jmsTemplate() {
-		JmsTemplate jmsTemplate = new JmsTemplate(this.connectionFactory);
-		jmsTemplate.setPubSubDomain(this.properties.isPubSubDomain());
-		if (this.destinationResolver != null) {
-			jmsTemplate.setDestinationResolver(this.destinationResolver);
+		private final ObjectProvider<MessageConverter> messageConverter;
+
+		public JmsTemplateConfiguration(JmsProperties properties,
+				ObjectProvider<DestinationResolver> destinationResolver,
+				ObjectProvider<MessageConverter> messageConverter) {
+			this.properties = properties;
+			this.destinationResolver = destinationResolver;
+			this.messageConverter = messageConverter;
 		}
-		return jmsTemplate;
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnSingleCandidate(ConnectionFactory.class)
+		public JmsTemplate jmsTemplate(ConnectionFactory connectionFactory) {
+			JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
+			jmsTemplate.setPubSubDomain(this.properties.isPubSubDomain());
+			DestinationResolver destinationResolver = this.destinationResolver
+					.getIfUnique();
+			if (destinationResolver != null) {
+				jmsTemplate.setDestinationResolver(destinationResolver);
+			}
+			MessageConverter messageConverter = this.messageConverter.getIfUnique();
+			if (messageConverter != null) {
+				jmsTemplate.setMessageConverter(messageConverter);
+			}
+			return jmsTemplate;
+
+		}
 	}
 
 	@ConditionalOnClass(JmsMessagingTemplate.class)
-	@ConditionalOnMissingBean(JmsMessagingTemplate.class)
+	@Import(JmsTemplateConfiguration.class)
 	protected static class MessagingTemplateConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnSingleCandidate(JmsTemplate.class)
 		public JmsMessagingTemplate jmsMessagingTemplate(JmsTemplate jmsTemplate) {
 			return new JmsMessagingTemplate(jmsTemplate);
 		}

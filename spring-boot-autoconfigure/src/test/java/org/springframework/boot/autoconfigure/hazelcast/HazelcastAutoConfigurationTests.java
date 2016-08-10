@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,16 +29,13 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HazelcastAutoConfiguration}.
@@ -64,8 +61,8 @@ public class HazelcastAutoConfigurationTests {
 		load(); // hazelcast.xml present in root classpath
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
-		assertThat(hazelcastInstance.getConfig().getConfigurationUrl(),
-				equalTo(new ClassPathResource("hazelcast.xml").getURL()));
+		assertThat(hazelcastInstance.getConfig().getConfigurationUrl())
+				.isEqualTo(new ClassPathResource("hazelcast.xml").getURL());
 	}
 
 	@Test
@@ -78,8 +75,7 @@ public class HazelcastAutoConfigurationTests {
 					.getBean(HazelcastInstance.class);
 			Map<String, QueueConfig> queueConfigs = hazelcastInstance.getConfig()
 					.getQueueConfigs();
-			assertThat(queueConfigs.values(), hasSize(1));
-			assertThat(queueConfigs, hasKey("foobar"));
+			assertThat(queueConfigs).hasSize(1).containsKey("foobar");
 		}
 		finally {
 			System.clearProperty(HazelcastConfigResourceCondition.CONFIG_SYSTEM_PROPERTY);
@@ -92,10 +88,9 @@ public class HazelcastAutoConfigurationTests {
 				+ "hazelcast-specific.xml");
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
-		assertThat(hazelcastInstance.getConfig().getConfigurationFile(),
-				equalTo(new ClassPathResource(
-						"org/springframework/boot/autoconfigure/hazelcast"
-								+ "/hazelcast-specific.xml").getFile()));
+		assertThat(hazelcastInstance.getConfig().getConfigurationFile()).isEqualTo(
+				new ClassPathResource("org/springframework/boot/autoconfigure/hazelcast"
+						+ "/hazelcast-specific.xml").getFile());
 	}
 
 	@Test
@@ -103,8 +98,8 @@ public class HazelcastAutoConfigurationTests {
 		load("spring.hazelcast.config=hazelcast-default.xml");
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
-		assertThat(hazelcastInstance.getConfig().getConfigurationUrl(),
-				equalTo(new ClassPathResource("hazelcast-default.xml").getURL()));
+		assertThat(hazelcastInstance.getConfig().getConfigurationUrl())
+				.isEqualTo(new ClassPathResource("hazelcast-default.xml").getURL());
 	}
 
 	@Test
@@ -124,10 +119,10 @@ public class HazelcastAutoConfigurationTests {
 					"spring.hazelcast.config=this-is-ignored.xml");
 			HazelcastInstance hazelcastInstance = this.context
 					.getBean(HazelcastInstance.class);
-			assertThat(hazelcastInstance.getConfig().getInstanceName(),
-					equalTo("my-test-instance"));
+			assertThat(hazelcastInstance.getConfig().getInstanceName())
+					.isEqualTo("my-test-instance");
 			// Should reuse any existing instance by default.
-			assertThat(hazelcastInstance, equalTo(existingHazelcastInstance));
+			assertThat(hazelcastInstance).isEqualTo(existingHazelcastInstance);
 		}
 		finally {
 			existingHazelcastInstance.shutdown();
@@ -141,8 +136,7 @@ public class HazelcastAutoConfigurationTests {
 				.getBean(HazelcastInstance.class);
 		Map<String, QueueConfig> queueConfigs = hazelcastInstance.getConfig()
 				.getQueueConfigs();
-		assertThat(queueConfigs.values(), hasSize(1));
-		assertThat(queueConfigs, hasKey("another-queue"));
+		assertThat(queueConfigs).hasSize(1).containsKey("another-queue");
 	}
 
 	private void load(String... environment) {

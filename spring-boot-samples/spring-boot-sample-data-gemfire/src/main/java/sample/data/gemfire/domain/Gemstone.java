@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package sample.data.gemfire.domain;
 
 import java.io.Serializable;
 
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.gemfire.mapping.Region;
 import org.springframework.util.ObjectUtils;
@@ -39,11 +40,11 @@ public class Gemstone implements Serializable {
 	public Gemstone() {
 	}
 
-	public Gemstone(final Long id) {
+	public Gemstone(Long id) {
 		this.id = id;
 	}
 
-	public Gemstone(final Long id, final String name) {
+	public Gemstone(Long id, String name) {
 		this.id = id;
 		this.name = name;
 	}
@@ -52,7 +53,7 @@ public class Gemstone implements Serializable {
 		return this.id;
 	}
 
-	public void setId(final Long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -60,36 +61,32 @@ public class Gemstone implements Serializable {
 		return this.name;
 	}
 
-	public void setName(final String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	@Override
-	public boolean equals(final Object obj) {
+	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
 		}
-
-		if (!(obj instanceof Gemstone)) {
+		if (obj == null || !obj.getClass().equals(getClass())) {
 			return false;
 		}
-
-		Gemstone that = (Gemstone) obj;
-
-		return ObjectUtils.nullSafeEquals(this.getName(), that.getName());
+		return ObjectUtils.nullSafeEquals(this.getName(), ((Gemstone) obj).getName());
 	}
 
 	@Override
 	public int hashCode() {
-		int hashValue = 17;
-		hashValue = 37 * hashValue + ObjectUtils.nullSafeHashCode(getName());
-		return hashValue;
+		return ObjectUtils.nullSafeHashCode(getName());
 	}
 
 	@Override
 	public String toString() {
-		return String.format("{ @type = %1$s, id = %2$d, name = %3$s }",
-				getClass().getName(), getId(), getName());
+		ToStringCreator creator = new ToStringCreator(this);
+		creator.append("id", this.id);
+		creator.append("name", this.name);
+		return creator.toString();
 	}
 
 }

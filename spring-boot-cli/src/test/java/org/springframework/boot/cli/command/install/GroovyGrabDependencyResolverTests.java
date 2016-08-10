@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,11 +31,11 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.GroovyCompilerScope;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
+import org.springframework.boot.testutil.Matched;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link GroovyGrabDependencyResolver}.
@@ -88,35 +89,35 @@ public class GroovyGrabDependencyResolverTests {
 	public void resolveArtifactWithNoDependencies() throws Exception {
 		List<File> resolved = this.resolver
 				.resolve(Arrays.asList("commons-logging:commons-logging:1.1.3"));
-		assertThat(resolved, hasSize(1));
-		assertThat(getNames(resolved), hasItems("commons-logging-1.1.3.jar"));
+		assertThat(resolved).hasSize(1);
+		assertThat(getNames(resolved)).containsOnly("commons-logging-1.1.3.jar");
 	}
 
 	@Test
 	public void resolveArtifactWithDependencies() throws Exception {
 		List<File> resolved = this.resolver
 				.resolve(Arrays.asList("org.springframework:spring-core:4.1.1.RELEASE"));
-		assertThat(resolved, hasSize(2));
-		assertThat(getNames(resolved),
-				hasItems("commons-logging-1.1.3.jar", "spring-core-4.1.1.RELEASE.jar"));
+		assertThat(resolved).hasSize(2);
+		assertThat(getNames(resolved)).containsOnly("commons-logging-1.1.3.jar",
+				"spring-core-4.1.1.RELEASE.jar");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void resolveShorthandArtifactWithDependencies() throws Exception {
 		List<File> resolved = this.resolver.resolve(Arrays.asList("spring-core"));
-		assertThat(resolved, hasSize(2));
-		assertThat(getNames(resolved),
-				hasItems(startsWith("commons-logging-"), startsWith("spring-core-")));
+		assertThat(resolved).hasSize(2);
+		assertThat(getNames(resolved)).has((Condition) Matched.by(
+				hasItems(startsWith("commons-logging-"), startsWith("spring-core-"))));
 	}
 
 	@Test
 	public void resolveMultipleArtifacts() throws Exception {
 		List<File> resolved = this.resolver.resolve(Arrays.asList("junit:junit:4.11",
 				"commons-logging:commons-logging:1.1.3"));
-		assertThat(resolved, hasSize(3));
-		assertThat(getNames(resolved), hasItems("junit-4.11.jar",
-				"commons-logging-1.1.3.jar", "hamcrest-core-1.3.jar"));
+		assertThat(resolved).hasSize(3);
+		assertThat(getNames(resolved)).containsOnly("junit-4.11.jar",
+				"commons-logging-1.1.3.jar", "hamcrest-core-1.3.jar");
 	}
 
 	public Set<String> getNames(Collection<File> files) {

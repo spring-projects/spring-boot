@@ -23,12 +23,10 @@ import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for configuring a project's main class
+ * Tests for configuring a project's main class.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
@@ -59,7 +57,7 @@ public class MainClassTests {
 		}
 		catch (BuildException ex) {
 			Throwable rootCause = getRootCause(ex);
-			assertThat(rootCause.getMessage(), is(equalTo("Unable to find main class")));
+			assertThat(rootCause.getMessage()).isEqualTo("Unable to find main class");
 		}
 	}
 

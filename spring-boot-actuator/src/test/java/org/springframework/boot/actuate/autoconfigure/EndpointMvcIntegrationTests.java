@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.autoconfigure.EndpointMvcIntegrationTests.Application;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
@@ -48,38 +47,35 @@ import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for MVC {@link Endpoint}s.
  *
  * @author Dave Syer
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(Application.class)
-@IntegrationTest("server.port=0")
-@WebAppConfiguration
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class EndpointMvcIntegrationTests {
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port;
 
 	@Autowired
@@ -89,30 +85,16 @@ public class EndpointMvcIntegrationTests {
 	public void envEndpointHidden() throws InterruptedException {
 		String body = new TestRestTemplate().getForObject(
 				"http://localhost:" + this.port + "/env/user.dir", String.class);
-		assertNotNull(body);
-		assertTrue("Wrong body: \n" + body, body.contains("spring-boot-actuator"));
-		assertTrue(this.interceptor.invoked());
+		assertThat(body).isNotNull().contains("spring-boot-actuator");
+		assertThat(this.interceptor.invoked()).isTrue();
 	}
 
 	@Test
 	public void healthEndpointNotHidden() throws InterruptedException {
 		String body = new TestRestTemplate()
 				.getForObject("http://localhost:" + this.port + "/health", String.class);
-		assertNotNull(body);
-		assertTrue("Wrong body: \n" + body, body.contains("status"));
-		assertTrue(this.interceptor.invoked());
-	}
-
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			JacksonAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
-	protected @interface MinimalWebConfiguration {
-
+		assertThat(body).isNotNull().contains("status");
+		assertThat(this.interceptor.invoked()).isTrue();
 	}
 
 	@Configuration
@@ -122,6 +104,13 @@ public class EndpointMvcIntegrationTests {
 			EndpointWebMvcAutoConfiguration.class })
 	@RestController
 	protected static class Application {
+
+		private final List<HttpMessageConverter<?>> converters;
+
+		public Application(
+				ObjectProvider<List<HttpMessageConverter<?>>> convertersProvider) {
+			this.converters = convertersProvider.getIfAvailable();
+		}
 
 		@RequestMapping("/{name}/{env}/{bar}")
 		public Map<String, Object> master(@PathVariable String name,
@@ -135,13 +124,11 @@ public class EndpointMvcIntegrationTests {
 			return Collections.singletonMap("foo", (Object) "bar");
 		}
 
-		@Autowired(required = false)
-		private final List<HttpMessageConverter<?>> converters = Collections.emptyList();
-
 		@Bean
 		@ConditionalOnMissingBean
 		public HttpMessageConverters messageConverters() {
-			return new HttpMessageConverters(this.converters);
+			return new HttpMessageConverters(this.converters == null
+					? Collections.<HttpMessageConverter<?>>emptyList() : this.converters);
 		}
 
 		@Bean
@@ -160,6 +147,18 @@ public class EndpointMvcIntegrationTests {
 		protected TestInterceptor interceptor() {
 			return new TestInterceptor();
 		}
+
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			JacksonAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
+	protected @interface MinimalWebConfiguration {
 
 	}
 

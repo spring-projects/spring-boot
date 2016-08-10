@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,10 @@
 
 package org.springframework.boot.autoconfigure.solr;
 
-import javax.annotation.PreDestroy;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.impl.CloudSolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.impl.CloudSolrServer;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.common.cloud.HashPartitioner;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -39,35 +35,30 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass({ HttpSolrServer.class, CloudSolrServer.class,
-		HashPartitioner.class })
+@ConditionalOnClass({ HttpSolrClient.class, CloudSolrClient.class })
 @EnableConfigurationProperties(SolrProperties.class)
 public class SolrAutoConfiguration {
 
-	@Autowired
-	private SolrProperties properties;
+	private final SolrProperties properties;
 
-	private SolrServer solrServer;
+	private SolrClient solrClient;
 
-	@PreDestroy
-	public void close() {
-		if (this.solrServer != null) {
-			this.solrServer.shutdown();
-		}
+	public SolrAutoConfiguration(SolrProperties properties) {
+		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SolrServer solrServer() {
-		this.solrServer = createSolrServer();
-		return this.solrServer;
+	public SolrClient solrClient() {
+		this.solrClient = createSolrClient();
+		return this.solrClient;
 	}
 
-	private SolrServer createSolrServer() {
+	private SolrClient createSolrClient() {
 		if (StringUtils.hasText(this.properties.getZkHost())) {
-			return new CloudSolrServer(this.properties.getZkHost());
+			return new CloudSolrClient(this.properties.getZkHost());
 		}
-		return new HttpSolrServer(this.properties.getHost());
+		return new HttpSolrClient(this.properties.getHost());
 	}
 
 }

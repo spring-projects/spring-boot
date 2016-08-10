@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -42,9 +43,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.web.OrderedHiddenHttpMethodFilter;
-import org.springframework.boot.context.web.OrderedHttpPutFormContentFilter;
-import org.springframework.boot.context.web.OrderedRequestContextFilter;
+import org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter;
+import org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter;
+import org.springframework.boot.web.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -67,6 +68,7 @@ import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
@@ -80,11 +82,15 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
+import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
+import org.springframework.web.servlet.resource.GzipResourceResolver;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.resource.ResourceResolver;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
@@ -100,6 +106,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Andy Wilkinson
  * @author Sébastien Deleuze
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnWebApplication
@@ -136,20 +143,27 @@ public class WebMvcAutoConfiguration {
 		private static final Log logger = LogFactory
 				.getLog(WebMvcConfigurerAdapter.class);
 
-		@Autowired
-		private ResourceProperties resourceProperties = new ResourceProperties();
+		private final ResourceProperties resourceProperties;
 
-		@Autowired
-		private WebMvcProperties mvcProperties = new WebMvcProperties();
+		private final WebMvcProperties mvcProperties;
 
-		@Autowired
-		private ListableBeanFactory beanFactory;
+		private final ListableBeanFactory beanFactory;
 
-		@Autowired
-		private HttpMessageConverters messageConverters;
+		private final HttpMessageConverters messageConverters;
 
-		@Autowired(required = false)
-		ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+		final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+
+		public WebMvcAutoConfigurationAdapter(ResourceProperties resourceProperties,
+				WebMvcProperties mvcProperties, ListableBeanFactory beanFactory,
+				HttpMessageConverters messageConverters,
+				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider) {
+			this.resourceProperties = resourceProperties;
+			this.mvcProperties = mvcProperties;
+			this.beanFactory = beanFactory;
+			this.messageConverters = messageConverters;
+			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider
+					.getIfAvailable();
+		}
 
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -182,13 +196,6 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean({ RequestContextListener.class,
-				RequestContextFilter.class })
-		public RequestContextFilter requestContextFilter() {
-			return new OrderedRequestContextFilter();
-		}
-
-		@Bean
 		@ConditionalOnBean(View.class)
 		@ConditionalOnMissingBean
 		public BeanNameViewResolver beanNameViewResolver() {
@@ -214,7 +221,13 @@ public class WebMvcAutoConfiguration {
 		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = "spring.mvc", name = "locale")
 		public LocaleResolver localeResolver() {
-			return new FixedLocaleResolver(this.mvcProperties.getLocale());
+			if (this.mvcProperties
+					.getLocaleResolver() == WebMvcProperties.LocaleResolver.FIXED) {
+				return new FixedLocaleResolver(this.mvcProperties.getLocale());
+			}
+			AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
+			localeResolver.setDefaultLocale(this.mvcProperties.getLocale());
+			return localeResolver;
 		}
 
 		@Bean
@@ -292,12 +305,22 @@ public class WebMvcAutoConfiguration {
 			}
 		}
 
+		@Bean
+		@ConditionalOnMissingBean({ RequestContextListener.class,
+				RequestContextFilter.class })
+		public static RequestContextFilter requestContextFilter() {
+			return new OrderedRequestContextFilter();
+		}
+
 		@Configuration
 		@ConditionalOnProperty(value = "spring.mvc.favicon.enabled", matchIfMissing = true)
 		public static class FaviconConfiguration {
 
-			@Autowired
-			private ResourceProperties resourceProperties = new ResourceProperties();
+			private final ResourceProperties resourceProperties;
+
+			public FaviconConfiguration(ResourceProperties resourceProperties) {
+				this.resourceProperties = resourceProperties;
+			}
 
 			@Bean
 			public SimpleUrlHandlerMapping faviconHandlerMapping() {
@@ -326,11 +349,20 @@ public class WebMvcAutoConfiguration {
 	@Configuration
 	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration {
 
-		@Autowired(required = false)
-		private WebMvcProperties mvcProperties;
+		private final WebMvcProperties mvcProperties;
 
-		@Autowired
-		private ListableBeanFactory beanFactory;
+		private final ListableBeanFactory beanFactory;
+
+		private final WebMvcRegistrations mvcRegistrations;
+
+		public EnableWebMvcConfiguration(
+				ObjectProvider<WebMvcProperties> mvcPropertiesProvider,
+				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider,
+				ListableBeanFactory beanFactory) {
+			this.mvcProperties = mvcPropertiesProvider.getIfAvailable();
+			this.mvcRegistrations = mvcRegistrationsProvider.getIfUnique();
+			this.beanFactory = beanFactory;
+		}
 
 		@Bean
 		@Override
@@ -339,6 +371,15 @@ public class WebMvcAutoConfiguration {
 			adapter.setIgnoreDefaultModelOnRedirect(this.mvcProperties == null ? true
 					: this.mvcProperties.isIgnoreDefaultModelOnRedirect());
 			return adapter;
+		}
+
+		@Override
+		protected RequestMappingHandlerAdapter createRequestMappingHandlerAdapter() {
+			if (this.mvcRegistrations != null
+					&& this.mvcRegistrations.getRequestMappingHandlerAdapter() != null) {
+				return this.mvcRegistrations.getRequestMappingHandlerAdapter();
+			}
+			return super.createRequestMappingHandlerAdapter();
 		}
 
 		@Bean
@@ -350,12 +391,47 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Override
+		protected RequestMappingHandlerMapping createRequestMappingHandlerMapping() {
+			if (this.mvcRegistrations != null
+					&& this.mvcRegistrations.getRequestMappingHandlerMapping() != null) {
+				return this.mvcRegistrations.getRequestMappingHandlerMapping();
+			}
+			return super.createRequestMappingHandlerMapping();
+		}
+
+		@Override
 		protected ConfigurableWebBindingInitializer getConfigurableWebBindingInitializer() {
 			try {
 				return this.beanFactory.getBean(ConfigurableWebBindingInitializer.class);
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return super.getConfigurableWebBindingInitializer();
+			}
+		}
+
+		@Override
+		protected ExceptionHandlerExceptionResolver createExceptionHandlerExceptionResolver() {
+			if (this.mvcRegistrations != null && this.mvcRegistrations
+					.getExceptionHandlerExceptionResolver() != null) {
+				return this.mvcRegistrations.getExceptionHandlerExceptionResolver();
+			}
+			return super.createExceptionHandlerExceptionResolver();
+		}
+
+		@Override
+		protected void configureHandlerExceptionResolvers(
+				List<HandlerExceptionResolver> exceptionResolvers) {
+			super.configureHandlerExceptionResolvers(exceptionResolvers);
+			if (exceptionResolvers.isEmpty()) {
+				addDefaultHandlerExceptionResolvers(exceptionResolvers);
+			}
+			if (this.mvcProperties.isLogResolvedException()) {
+				for (HandlerExceptionResolver resolver : exceptionResolvers) {
+					if (resolver instanceof AbstractHandlerExceptionResolver) {
+						((AbstractHandlerExceptionResolver) resolver)
+								.setWarnLogCategory(resolver.getClass().getName());
+					}
+				}
 			}
 		}
 
@@ -396,6 +472,9 @@ public class WebMvcAutoConfiguration {
 			Strategy strategy = properties.getStrategy();
 			if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
 				chain.addResolver(getVersionResourceResolver(strategy));
+			}
+			if (properties.isGzipped()) {
+				chain.addResolver(new GzipResourceResolver());
 			}
 			if (properties.isHtmlApplicationCache()) {
 				chain.addTransformer(new AppCacheManifestTransformer());

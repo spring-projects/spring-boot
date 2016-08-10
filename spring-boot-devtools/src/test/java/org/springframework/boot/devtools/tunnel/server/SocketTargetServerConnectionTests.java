@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,7 @@ import org.junit.Test;
 
 import org.springframework.util.SocketUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -65,7 +62,7 @@ public class SocketTargetServerConnectionTests {
 		ByteChannel channel = this.connection.open(DEFAULT_TIMEOUT);
 		ByteBuffer buffer = ByteBuffer.allocate(5);
 		channel.read(buffer);
-		assertThat(buffer.array(), equalTo("hello".getBytes()));
+		assertThat(buffer.array()).isEqualTo("hello".getBytes());
 	}
 
 	@Test
@@ -91,8 +88,8 @@ public class SocketTargetServerConnectionTests {
 		catch (SocketTimeoutException ex) {
 			// Expected
 			long runTime = System.currentTimeMillis() - startTime;
-			assertThat(runTime, greaterThanOrEqualTo(10L));
-			assertThat(runTime, lessThan(10000L));
+			assertThat(runTime).isGreaterThanOrEqualTo(10L);
+			assertThat(runTime).isLessThan(10000L);
 		}
 	}
 
@@ -134,7 +131,7 @@ public class SocketTargetServerConnectionTests {
 
 		public void closeAndVerify() throws InterruptedException {
 			close();
-			assertThat(this.actualRead.array(), equalTo(this.expect));
+			assertThat(this.actualRead.array()).isEqualTo(this.expect);
 		}
 
 		public void close() throws InterruptedException {

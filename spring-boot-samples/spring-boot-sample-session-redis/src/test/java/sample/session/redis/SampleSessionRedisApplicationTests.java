@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.net.URI;
 import org.junit.Test;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer;
+import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpHeaders;
@@ -30,10 +30,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SampleSessionRedisApplication}.
@@ -59,6 +56,7 @@ public class SampleSessionRedisApplicationTests {
 			if (!redisServerRunning(ex)) {
 				return;
 			}
+			throw ex;
 		}
 
 		URI uri = URI.create("http://localhost:" + port + "/");
@@ -73,12 +71,12 @@ public class SampleSessionRedisApplicationTests {
 				HttpMethod.GET, uri);
 
 		String uuid2 = restTemplate.exchange(request, String.class).getBody();
-		assertThat(uuid1, is(equalTo(uuid2)));
+		assertThat(uuid1).isEqualTo(uuid2);
 
 		Thread.sleep(5000);
 
 		String uuid3 = restTemplate.exchange(request, String.class).getBody();
-		assertThat(uuid2, is(not(equalTo(uuid3))));
+		assertThat(uuid2).isNotEqualTo(uuid3);
 	}
 
 	private boolean redisServerRunning(Throwable ex) {

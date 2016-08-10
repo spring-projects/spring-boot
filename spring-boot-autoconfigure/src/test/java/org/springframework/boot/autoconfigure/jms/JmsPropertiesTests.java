@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@ package org.springframework.boot.autoconfigure.jms;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JmsProperties}.
@@ -31,21 +30,21 @@ public class JmsPropertiesTests {
 	@Test
 	public void formatConcurrencyNull() {
 		JmsProperties properties = new JmsProperties();
-		assertNull(properties.getListener().formatConcurrency());
+		assertThat(properties.getListener().formatConcurrency()).isNull();
 	}
 
 	@Test
 	public void formatConcurrencyOnlyLowerBound() {
 		JmsProperties properties = new JmsProperties();
 		properties.getListener().setConcurrency(2);
-		assertEquals("2", properties.getListener().formatConcurrency());
+		assertThat(properties.getListener().formatConcurrency()).isEqualTo("2");
 	}
 
 	@Test
 	public void formatConcurrencyOnlyHigherBound() {
 		JmsProperties properties = new JmsProperties();
 		properties.getListener().setMaxConcurrency(5);
-		assertEquals("1-5", properties.getListener().formatConcurrency());
+		assertThat(properties.getListener().formatConcurrency()).isEqualTo("1-5");
 	}
 
 	@Test
@@ -53,7 +52,7 @@ public class JmsPropertiesTests {
 		JmsProperties properties = new JmsProperties();
 		properties.getListener().setConcurrency(2);
 		properties.getListener().setMaxConcurrency(10);
-		assertEquals("2-10", properties.getListener().formatConcurrency());
+		assertThat(properties.getListener().formatConcurrency()).isEqualTo("2-10");
 	}
 
 }

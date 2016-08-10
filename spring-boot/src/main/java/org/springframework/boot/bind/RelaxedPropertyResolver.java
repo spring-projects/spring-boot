@@ -87,6 +87,7 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 	}
 
 	@Override
+	@Deprecated
 	public <T> Class<T> getPropertyAsClass(String key, Class<T> targetType) {
 		RelaxedNames prefixes = new RelaxedNames(this.prefix);
 		RelaxedNames keys = new RelaxedNames(key);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,9 +64,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * Add maven resources to the classpath directly, this allows live in-place editing of
 	 * resources. Duplicate resources are removed from {@code target/classes} to prevent
-	 * them to appear twice if {@code ClassLoader.getResources()} is called. Please consider
-	 * adding {@code spring-boot-devtools} to your project instead as it provides this feature
-	 * and many more.
+	 * them to appear twice if {@code ClassLoader.getResources()} is called. Please
+	 * consider adding {@code spring-boot-devtools} to your project instead as it provides
+	 * this feature and many more.
 	 * @since 1.0
 	 */
 	@Parameter(property = "run.addResources", defaultValue = "false")
@@ -401,7 +401,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void logArguments(String message, String[] args) {
-		StringBuffer sb = new StringBuffer(message);
+		StringBuilder sb = new StringBuilder(message);
 		for (String arg : args) {
 			sb.append(arg).append(" ");
 		}
@@ -426,6 +426,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	class IsolatedThreadGroup extends ThreadGroup {
 
+		private final Object monitor = new Object();
+
 		private Throwable exception;
 
 		IsolatedThreadGroup(String name) {
@@ -435,18 +437,21 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		@Override
 		public void uncaughtException(Thread thread, Throwable ex) {
 			if (!(ex instanceof ThreadDeath)) {
-				synchronized (this) {
+				synchronized (this.monitor) {
 					this.exception = (this.exception == null ? ex : this.exception);
 				}
 				getLog().warn(ex);
 			}
 		}
 
-		public synchronized void rethrowUncaughtException()
-				throws MojoExecutionException {
-			if (this.exception != null) {
-				throw new MojoExecutionException("An exception occurred while running. "
-						+ this.exception.getMessage(), this.exception);
+		public void rethrowUncaughtException() throws MojoExecutionException {
+			synchronized (this.monitor) {
+				if (this.exception != null) {
+					throw new MojoExecutionException(
+							"An exception occurred while running. "
+									+ this.exception.getMessage(),
+							this.exception);
+				}
 			}
 		}
 

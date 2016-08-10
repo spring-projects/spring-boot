@@ -18,8 +18,7 @@ package org.springframework.boot.configurationprocessor.metadata;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationMetadata}.
@@ -30,53 +29,54 @@ public class ConfigurationMetadataTests {
 
 	@Test
 	public void toDashedCaseCamelCase() {
-		assertThat(toDashedCase("simpleCamelCase"), is("simple-camel-case"));
+		assertThat(toDashedCase("simpleCamelCase")).isEqualTo("simple-camel-case");
 	}
 
 	@Test
 	public void toDashedCaseUpperCamelCaseSuffix() {
-		assertThat(toDashedCase("myDLQ"), is("my-d-l-q"));
+		assertThat(toDashedCase("myDLQ")).isEqualTo("my-d-l-q");
 	}
 
 	@Test
 	public void toDashedCaseUpperCamelCaseMiddle() {
-		assertThat(toDashedCase("someDLQKey"), is("some-d-l-q-key"));
+		assertThat(toDashedCase("someDLQKey")).isEqualTo("some-d-l-q-key");
 	}
 
 	@Test
 	public void toDashedCaseWordsUnderscore() {
-		assertThat(toDashedCase("Word_With_underscore"), is("word-with-underscore"));
+		assertThat(toDashedCase("Word_With_underscore"))
+				.isEqualTo("word-with-underscore");
 	}
 
 	@Test
 	public void toDashedCaseWordsSeveralUnderscores() {
-		assertThat(toDashedCase("Word___With__underscore"),
-				is("word---with--underscore"));
+		assertThat(toDashedCase("Word___With__underscore"))
+				.isEqualTo("word---with--underscore");
 	}
 
 	@Test
 	public void toDashedCaseLowerCaseUnderscore() {
-		assertThat(toDashedCase("lower_underscore"), is("lower-underscore"));
+		assertThat(toDashedCase("lower_underscore")).isEqualTo("lower-underscore");
 	}
 
 	@Test
 	public void toDashedCaseUpperUnderscoreSuffix() {
-		assertThat(toDashedCase("my_DLQ"), is("my-d-l-q"));
+		assertThat(toDashedCase("my_DLQ")).isEqualTo("my-d-l-q");
 	}
 
 	@Test
 	public void toDashedCaseUpperUnderscoreMiddle() {
-		assertThat(toDashedCase("some_DLQ_key"), is("some-d-l-q-key"));
+		assertThat(toDashedCase("some_DLQ_key")).isEqualTo("some-d-l-q-key");
 	}
 
 	@Test
 	public void toDashedCaseMultipleUnderscores() {
-		assertThat(toDashedCase("super___crazy"), is("super---crazy"));
+		assertThat(toDashedCase("super___crazy")).isEqualTo("super---crazy");
 	}
 
 	@Test
 	public void toDashedCaseLowercase() {
-		assertThat(toDashedCase("lowercase"), is("lowercase"));
+		assertThat(toDashedCase("lowercase")).isEqualTo("lowercase");
 	}
 
 	private String toDashedCase(String name) {

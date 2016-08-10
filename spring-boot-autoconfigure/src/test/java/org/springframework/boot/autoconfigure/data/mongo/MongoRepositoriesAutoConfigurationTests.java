@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,11 +37,7 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MongoRepositoriesAutoConfiguration}.
@@ -62,15 +58,15 @@ public class MongoRepositoriesAutoConfigurationTests {
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		prepareApplicationContext(TestConfiguration.class);
 
-		assertNotNull(this.context.getBean(CityRepository.class));
+		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 		Mongo mongo = this.context.getBean(Mongo.class);
-		assertThat(mongo, is(instanceOf(MongoClient.class)));
+		assertThat(mongo).isInstanceOf(MongoClient.class);
 		MongoMappingContext mappingContext = this.context
 				.getBean(MongoMappingContext.class);
 		@SuppressWarnings("unchecked")
 		Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
 				.getField(mappingContext, "initialEntitySet");
-		assertThat(entities.size(), is(equalTo(1)));
+		assertThat(entities).hasSize(1);
 	}
 
 	@Test
@@ -78,14 +74,14 @@ public class MongoRepositoriesAutoConfigurationTests {
 		prepareApplicationContext(EmptyConfiguration.class);
 
 		Mongo mongo = this.context.getBean(Mongo.class);
-		assertThat(mongo, is(instanceOf(MongoClient.class)));
+		assertThat(mongo).isInstanceOf(MongoClient.class);
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		prepareApplicationContext(CustomizedConfiguration.class);
 
-		assertNotNull(this.context.getBean(CityMongoDbRepository.class));
+		assertThat(this.context.getBean(CityMongoDbRepository.class)).isNotNull();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)

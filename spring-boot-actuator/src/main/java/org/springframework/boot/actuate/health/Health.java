@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
  * <pre class="code">
  * try {
  * 	// do some test to determine state of component
- * 	return new Health.Builder().up().withDetail(&quot;version&quot;, &quot;1.1.2&quot;).build();
+ * 	return new Health.Builder().up().withDetail("version", "1.1.2").build();
  * }
  * catch (Exception ex) {
  * 	return new Health.Builder().down(ex).build();
@@ -219,15 +219,15 @@ public final class Health {
 		}
 
 		/**
-		 * Record detail using {@code key} and {@code value}.
+		 * Record detail using given {@code key} and {@code value}.
 		 * @param key the detail key
-		 * @param data the detail data
+		 * @param value the detail value
 		 * @return this {@link Builder} instance
 		 */
-		public Builder withDetail(String key, Object data) {
+		public Builder withDetail(String key, Object value) {
 			Assert.notNull(key, "Key must not be null");
-			Assert.notNull(data, "Data must not be null");
-			this.details.put(key, data);
+			Assert.notNull(value, "Value must not be null");
+			this.details.put(key, value);
 			return this;
 		}
 

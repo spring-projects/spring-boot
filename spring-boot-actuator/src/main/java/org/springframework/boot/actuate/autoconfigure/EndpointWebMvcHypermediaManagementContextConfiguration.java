@@ -237,7 +237,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		@Autowired
 		private List<RequestMappingHandlerAdapter> handlerAdapters;
 
-		private Map<MediaType, HttpMessageConverter<?>> converterCache = new ConcurrentHashMap<MediaType, HttpMessageConverter<?>>();
+		private final Map<MediaType, HttpMessageConverter<?>> converterCache = new ConcurrentHashMap<MediaType, HttpMessageConverter<?>>();
 
 		@Override
 		public boolean supports(MethodParameter returnType,
@@ -292,8 +292,10 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		private HttpMessageConverter<Object> findConverter(
 				Class<? extends HttpMessageConverter<?>> selectedConverterType,
 				MediaType mediaType) {
-			if (this.converterCache.containsKey(mediaType)) {
-				return (HttpMessageConverter<Object>) this.converterCache.get(mediaType);
+			HttpMessageConverter<Object> cached = (HttpMessageConverter<Object>) this.converterCache
+					.get(mediaType);
+			if (cached != null) {
+				return cached;
 			}
 			for (RequestMappingHandlerAdapter handlerAdapter : this.handlerAdapters) {
 				for (HttpMessageConverter<?> converter : handlerAdapter
