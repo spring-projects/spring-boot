@@ -44,7 +44,7 @@ cd "$WORKING_DIR" || exit 1
 configfile="$(basename "${jarfile%.*}.conf")"
 
 # Initialize CONF_FOLDER location defaulting to jarfolder
-[[ -z "$CONF_FOLDER" ]] && CONF_FOLDER="${jarfolder}"
+[[ -z "$CONF_FOLDER" ]] && CONF_FOLDER="{{confFolder:${jarfolder}}}"
 
 # shellcheck source=/dev/null
 [[ -r "${CONF_FOLDER}/${configfile}" ]] && source "${CONF_FOLDER}/${configfile}"

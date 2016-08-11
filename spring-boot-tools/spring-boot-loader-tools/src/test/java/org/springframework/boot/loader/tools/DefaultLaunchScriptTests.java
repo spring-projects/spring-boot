@@ -87,6 +87,11 @@ public class DefaultLaunchScriptTests {
 	}
 
 	@Test
+	public void confFolderCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("confFolder");
+	}
+
+	@Test
 	public void defaultForUseStartStopDaemonIsTrue() throws Exception {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
