@@ -8,6 +8,8 @@ services:
 sudo: false
 install: true
 before_script:
-- ./mvnw install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true || true
-- ./mvnw install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true
+# Note that we're using '-q' here to suppress most build output since Travis has a limit
+# of 4MB of output and the build produces more than that. We're also using the 'travis_wait'
+# function to make sure Travis doesn't abort our build due to lack of output.
+- travis_wait ./mvnw install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true
 script: ./mvnw install -q -nsu -Dmaven.test.redirectTestOutputToFile=true -P '!integration'
