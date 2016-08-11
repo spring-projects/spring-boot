@@ -55,7 +55,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionEvaluationRepor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
@@ -188,26 +187,26 @@ public class EndpointAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnSingleCandidate(Flyway.class)
+	@ConditionalOnBean(Flyway.class)
 	@ConditionalOnClass(Flyway.class)
 	static class FlywayEndpointConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public FlywayEndpoint flywayEndpoint(Flyway flyway) {
+		public FlywayEndpoint flywayEndpoint(List<Flyway> flyway) {
 			return new FlywayEndpoint(flyway);
 		}
 
 	}
 
 	@Configuration
-	@ConditionalOnSingleCandidate(SpringLiquibase.class)
+	@ConditionalOnBean(SpringLiquibase.class)
 	@ConditionalOnClass(SpringLiquibase.class)
 	static class LiquibaseEndpointConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public LiquibaseEndpoint liquibaseEndpoint(SpringLiquibase liquibase) {
+		public LiquibaseEndpoint liquibaseEndpoint(List<SpringLiquibase> liquibase) {
 			return new LiquibaseEndpoint(liquibase);
 		}
 

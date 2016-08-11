@@ -16,9 +16,15 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
@@ -38,21 +44,46 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "endpoints.flyway")
-public class FlywayEndpoint extends AbstractEndpoint<List<FlywayMigration>> {
+public class FlywayEndpoint extends AbstractEndpoint<Map<String, List<FlywayMigration>>> {
 
-	private final Flyway flyway;
+	private final List<Flyway> flyway;
 
 	public FlywayEndpoint(Flyway flyway) {
+		this(Collections.singletonList(flyway));
+	}
+
+	public FlywayEndpoint(List<Flyway> flyway) {
 		super("flyway");
 		Assert.notNull(flyway, "Flyway must not be null");
 		this.flyway = flyway;
 	}
 
 	@Override
-	public List<FlywayMigration> invoke() {
-		List<FlywayMigration> migrations = new ArrayList<FlywayMigration>();
-		for (MigrationInfo info : this.flyway.info().all()) {
-			migrations.add(new FlywayMigration(info));
+	public Map<String, List<FlywayMigration>> invoke() {
+		Map<String, List<FlywayMigration>> migrations = new HashMap<String, List<FlywayMigration>>();
+		for (Flyway flyway : this.flyway) {
+			Connection connection = null;
+			try {
+				connection = flyway.getDataSource().getConnection();
+				DatabaseMetaData metaData = connection.getMetaData();
+
+				List<FlywayMigration> migration = new ArrayList<FlywayMigration>();
+				for (MigrationInfo info : flyway.info().all()) {
+					migration.add(new FlywayMigration(info));
+				}
+				migrations.put(metaData.getURL(), migration);
+			}
+			catch (SQLException e) {
+				//Continue
+			}
+			finally {
+				try {
+					connection.close();
+				}
+				catch (SQLException e) {
+					//Continue
+				}
+			}
 		}
 		return migrations;
 	}
