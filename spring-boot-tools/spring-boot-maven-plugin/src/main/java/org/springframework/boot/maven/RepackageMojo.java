@@ -95,11 +95,10 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Classifier to add to the artifact generated. If given, the artifact will be
-	 * attached with that classifier and the main artifact will be deployed as the
-	 * main artifact. If this is not given (default), it will replace the
-	 * main artifact and only the repackaged artifact will be deployed. Attaching
-	 * the artifact allows to deploy it alongside to
-	 * the original one, see <a href=
+	 * attached with that classifier and the main artifact will be deployed as the main
+	 * artifact. If this is not given (default), it will replace the main artifact and
+	 * only the repackaged artifact will be deployed. Attaching the artifact allows to
+	 * deploy it alongside to the original one, see <a href=
 	 * "http://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
 	 * > the maven documentation for more details</a>.
 	 * @since 1.0
@@ -128,7 +127,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * A list of the libraries that must be unpacked from fat jars in order to run.
 	 * Specify each library as a <code>&lt;dependency&gt;</code> with a
 	 * <code>&lt;groupId&gt;</code> and a <code>&lt;artifactId&gt;</code> and they will be
-	 * unpacked at runtime in <code>$TMPDIR/spring-boot-libs</code>.
+	 * unpacked at runtime.
 	 * @since 1.1
 	 */
 	@Parameter
