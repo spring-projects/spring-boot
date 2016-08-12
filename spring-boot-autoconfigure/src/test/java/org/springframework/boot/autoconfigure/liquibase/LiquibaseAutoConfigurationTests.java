@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.liquibase;
 import java.io.File;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.After;
 import org.junit.Before;
@@ -29,10 +31,14 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.FileCopyUtils;
 
@@ -43,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Marcel Overdijk
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 public class LiquibaseAutoConfigurationTests {
 
@@ -239,6 +246,36 @@ public class LiquibaseAutoConfigurationTests {
 		assertThat(actualFile).isEqualTo(file).exists();
 		String content = new String(FileCopyUtils.copyToByteArray(file));
 		assertThat(content).contains("DROP TABLE PUBLIC.customer;");
+	}
+
+	@Test
+	public void testLiquibaseDateSource() {
+		this.context.register(LiquibaseDataSourceConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+		assertThat(liquibase.getDataSource())
+				.isEqualTo(this.context.getBean("liquibaseDataSource"));
+	}
+
+	@Configuration
+	static class LiquibaseDataSourceConfiguration {
+
+		@Bean
+		@Primary
+		public DataSource normalDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa")
+					.build();
+		}
+
+		@LiquibaseDataSource
+		@Bean
+		public DataSource liquibaseDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:liquibasetest")
+					.username("sa").build();
+		}
+
 	}
 
 }
