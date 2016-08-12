@@ -16,16 +16,21 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.mockito.MockSettings;
+import org.mockito.MockingDetails;
 import org.mockito.Mockito;
+import org.mockito.internal.util.DefaultMockingDetails;
 import org.mockito.internal.util.MockUtil;
 import org.mockito.listeners.InvocationListener;
 import org.mockito.listeners.MethodInvocationReport;
 import org.mockito.mock.MockCreationSettings;
-
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Reset strategy used on a mock bean. Usually applied to a mock via the
@@ -52,8 +57,6 @@ public enum MockReset {
 	 * Don't reset the mock.
 	 */
 	NONE;
-
-	private static final MockUtil util = new MockUtil();
 
 	/**
 	 * Create {@link MockSettings settings} to be used with mocks where reset should occur
@@ -105,8 +108,27 @@ public enum MockReset {
 	@SuppressWarnings("rawtypes")
 	static MockReset get(Object mock) {
 		MockReset reset = MockReset.NONE;
-		if (util.isMock(mock)) {
-			MockCreationSettings settings = util.getMockSettings(mock);
+		MockingDetails details = Mockito.mockingDetails(mock);
+		MockCreationSettings settings;
+		if (details.isMock()) {
+			try {
+				// Mockito 1.9.x
+				Field mockUtil = ReflectionUtils.findField(DefaultMockingDetails.class, "delegate", MockUtil.class);
+				MockUtil field = (MockUtil) ReflectionUtils.getField(mockUtil, details);
+				settings = field.getMockSettings(mock);
+			} catch (IllegalStateException e) {
+				// Mockito 2.x.x
+				try {
+					Method method = MockUtil.class.getMethod("getMockSettings", Object.class);
+					settings = (MockCreationSettings) method.invoke(null, mock);
+				} catch (NoSuchMethodException e1) {
+					throw new IllegalStateException(e1);
+				} catch (InvocationTargetException e1) {
+					throw new IllegalStateException(e1);
+				} catch (IllegalAccessException e1) {
+					throw new IllegalStateException(e1);
+				}
+			}
 			List listeners = settings.getInvocationListeners();
 			for (Object listener : listeners) {
 				if (listener instanceof ResetInvocationListener) {
