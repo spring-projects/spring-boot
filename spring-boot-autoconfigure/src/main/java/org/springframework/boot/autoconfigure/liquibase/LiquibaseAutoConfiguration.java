@@ -116,11 +116,11 @@ public class LiquibaseAutoConfiguration {
 		}
 
 		private DataSource getDataSource() {
-			if (this.properties.getUrl() == null) {
-				return this.dataSource;
-			}
-			else if (this.liquibaseDataSource != null) {
+			if (this.liquibaseDataSource != null) {
 				return this.liquibaseDataSource;
+			}
+			else if (this.properties.getUrl() == null) {
+				return this.dataSource;
 			}
 			return DataSourceBuilder.create().url(this.properties.getUrl())
 					.username(this.properties.getUser())
