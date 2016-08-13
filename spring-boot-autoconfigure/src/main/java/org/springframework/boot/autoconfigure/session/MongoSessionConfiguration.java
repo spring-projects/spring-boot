@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Conditional;
@@ -38,11 +37,11 @@ import org.springframework.session.data.mongo.config.annotation.web.http.MongoHt
 class MongoSessionConfiguration {
 
 	@Configuration
-	public static class SpringBootMongoHttpSessionConfiguration
+	static class SpringBootMongoHttpSessionConfiguration
 			extends MongoHttpSessionConfiguration {
 
-		@Autowired
-		public void customize(SessionProperties sessionProperties) {
+		protected SpringBootMongoHttpSessionConfiguration(
+				SessionProperties sessionProperties) {
 			Integer timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds(timeout);
