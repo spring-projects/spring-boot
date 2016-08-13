@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.security.Principal;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -190,10 +189,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		if (isSpringSecurityAuthentication(principal)) {
 			Authentication authentication = (Authentication) principal;
 			List<String> roles = Arrays.asList(StringUtils.trimArrayElements(StringUtils
-					.commaDelimitedListToStringArray(this.roleResolver.getProperty("roles"))));
-			if (roles.isEmpty()) {
-				roles = Collections.singletonList("ROLE_ADMIN");
-			}
+					.commaDelimitedListToStringArray(this.roleResolver.getProperty("roles", "ROLE_ADMIN"))));
 			for (GrantedAuthority authority : authentication.getAuthorities()) {
 				String name = authority.getAuthority();
 				for (String role : roles) {
