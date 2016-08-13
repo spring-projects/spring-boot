@@ -16,6 +16,7 @@
 
 package org.springframework.boot.maven;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.ConnectException;
@@ -87,9 +88,9 @@ public class StartMojo extends AbstractRunMojo {
 	private final Object lock = new Object();
 
 	@Override
-	protected void runWithForkedJvm(List<String> args)
+	protected void runWithForkedJvm(List<String> args, File workingDirectory)
 			throws MojoExecutionException, MojoFailureException {
-		RunProcess runProcess = runProcess(args);
+		RunProcess runProcess = runProcess(args, workingDirectory);
 		try {
 			waitForSpringApplication();
 		}
@@ -103,9 +104,9 @@ public class StartMojo extends AbstractRunMojo {
 		}
 	}
 
-	private RunProcess runProcess(List<String> args) throws MojoExecutionException {
+	private RunProcess runProcess(List<String> args, File workingDirectory) throws MojoExecutionException {
 		try {
-			RunProcess runProcess = new RunProcess(new JavaExecutable().toString());
+			RunProcess runProcess = new RunProcess(workingDirectory, new JavaExecutable().toString());
 			runProcess.run(false, args.toArray(new String[args.size()]));
 			return runProcess;
 		}
