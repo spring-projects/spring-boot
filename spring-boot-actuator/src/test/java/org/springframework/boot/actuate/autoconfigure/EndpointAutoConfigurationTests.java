@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
+import liquibase.integration.spring.SpringLiquibase;
+import org.flywaydb.core.Flyway;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
 
@@ -38,14 +43,28 @@ import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -163,25 +182,167 @@ public class EndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void testFlywayEndpoint() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class, EndpointAutoConfiguration.class);
-		this.context.refresh();
-		FlywayEndpoint endpoint = this.context.getBean(FlywayEndpoint.class);
-		assertNotNull(endpoint);
-		assertEquals(1, endpoint.invoke().size());
+	public void testFlywayEndpoint() throws Exception {
+		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+		context.register(Config.class, WebMvcAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class, EndpointAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class);
+		context.refresh();
+
+		assertEquals(1, context.getBeanNamesForType(FlywayEndpoint.class).length);
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/flyway"))
+				.andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("\"version\":\"1\"")))
+				.andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)))
+				.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 	}
 
 	@Test
-	public void testLiquibaseEndpoint() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				LiquibaseAutoConfiguration.class, EndpointAutoConfiguration.class);
-		this.context.refresh();
-		LiquibaseEndpoint endpoint = this.context.getBean(LiquibaseEndpoint.class);
-		assertNotNull(endpoint);
-		assertEquals(1, endpoint.invoke().size());
+	public void testFlywayEndpointDisabled() throws Exception {
+		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "endpoints.flyway.enabled:false");
+		context.register(Config.class, WebMvcAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class, EndpointAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class);
+		context.refresh();
+
+		assertEquals(0, context.getBeanNamesForType(FlywayEndpoint.class).length);
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/flyway"))
+				.andExpect(MockMvcResultMatchers.status().is4xxClientError());
+	}
+
+	@Test
+	public void testFlywayEndpointNewId() throws Exception {
+		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "endpoints.flyway.id:changelog");
+		context.register(Config.class, WebMvcAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class, EndpointAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class);
+		context.refresh();
+
+		assertEquals(1, context.getBeanNamesForType(FlywayEndpoint.class).length);
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/changelog"))
+				.andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("\"version\":\"1\"")))
+				.andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)))
+				.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+	}
+
+	@Test
+	public void testFlywayEndpointTwoFlywayBeans() throws Exception {
+		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+		context.register(Config.class, WebMvcAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				FlywayConfig.class,
+				FlywayAutoConfiguration.class, EndpointAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class);
+		context.refresh();
+
+		assertEquals(2, context.getBeanNamesForType(Flyway.class).length);
+		assertEquals(1, context.getBeanNamesForType(FlywayEndpoint.class).length);
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/flyway"))
+				.andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("\"version\":\"1\"")))
+				.andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)))
+				.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+	}
+
+	@Test
+	public void testLiquibaseEndpoint() throws Exception {
+		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+		context.register(Config.class, WebMvcAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class, EndpointAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class);
+		context.refresh();
+
+		assertEquals(1, context.getBeanNamesForType(LiquibaseEndpoint.class).length);
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/liquibase"))
+				.andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("\"ID\":\"1\"")))
+				.andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)))
+				.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+	}
+
+	@Test
+	public void testLiquibaseEndpointDisabled() throws Exception {
+		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "endpoints.liquibase.enabled:false");
+		context.register(Config.class, WebMvcAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class, EndpointAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class);
+		context.refresh();
+
+		assertEquals(0, context.getBeanNamesForType(LiquibaseEndpoint.class).length);
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/liquibase"))
+				.andExpect(MockMvcResultMatchers.status().is4xxClientError());
+	}
+
+	@Test
+	public void testLiquibaseEndpointNewId() throws Exception {
+		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "endpoints.liquibase.id:changelog");
+		context.register(Config.class, WebMvcAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class, EndpointAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class);
+		context.refresh();
+
+		assertEquals(1, context.getBeanNamesForType(LiquibaseEndpoint.class).length);
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/changelog"))
+				.andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("\"ID\":\"1\"")))
+				.andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)))
+				.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+	}
+
+	@Test
+	public void testLiquibaseEndpointTwoSpringLiquibaseBeans() throws Exception {
+		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+		context.register(Config.class, WebMvcAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, ManagementServerPropertiesAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				LiquibaseConfig.class,
+				LiquibaseAutoConfiguration.class, EndpointAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class);
+		context.refresh();
+
+		assertEquals(2, context.getBeanNamesForType(SpringLiquibase.class).length);
+		assertEquals(1, context.getBeanNamesForType(LiquibaseEndpoint.class).length);
+
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/liquibase"))
+				.andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("\"ID\":\"1\"")))
+				.andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)))
+				.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 	}
 
 	private void load(Class<?>... config) {
@@ -205,4 +366,84 @@ public class EndpointAutoConfigurationTests {
 		}
 
 	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	protected static class Config {
+
+		protected static MockEmbeddedServletContainerFactory containerFactory = null;
+
+		@Bean
+		public EmbeddedServletContainerFactory containerFactory() {
+			if (containerFactory == null) {
+				containerFactory = new MockEmbeddedServletContainerFactory();
+			}
+			return containerFactory;
+		}
+
+		@Bean
+		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
+			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
+		}
+
+	}
+
+	static class DataSourceConfig {
+
+		@Bean
+		public DataSource customDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:changelogdbtest")
+					.username("sa").build();
+		}
+
+		@Bean
+		public DataSource customDataSource2() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:changelogdbtest2")
+					.username("sa").build();
+		}
+
+	}
+
+	@Configuration
+	static class LiquibaseConfig extends DataSourceConfig {
+
+		@Primary
+		@Bean
+		public SpringLiquibase customLiquibase() {
+			SpringLiquibase liquibase = new SpringLiquibase();
+			liquibase.setDataSource(customDataSource());
+			liquibase.setChangeLog("classpath:/db/changelog/db.changelog-master.yaml");
+			return liquibase;
+		}
+
+		@Bean
+		public SpringLiquibase customLiquibase2() {
+			SpringLiquibase liquibase = new SpringLiquibase();
+			liquibase.setDataSource(customDataSource2());
+			liquibase.setChangeLog("classpath:/db/changelog/db.changelog-master.yaml");
+			return liquibase;
+		}
+
+	}
+
+	@Configuration
+	static class FlywayConfig extends DataSourceConfig {
+
+		@Primary
+		@Bean
+		public Flyway customFlyway() {
+			Flyway flyway = new Flyway();
+			flyway.setDataSource(customDataSource());
+			return flyway;
+		}
+
+		@Bean
+		public Flyway customFlyway2() {
+			Flyway flyway = new Flyway();
+			flyway.setDataSource(customDataSource2());
+			return flyway;
+		}
+
+	}
+
 }

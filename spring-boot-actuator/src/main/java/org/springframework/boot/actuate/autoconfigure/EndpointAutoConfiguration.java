@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.flywaydb.core.Flyway;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
 import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint;
@@ -57,6 +58,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionEvaluationRepor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
@@ -177,6 +179,8 @@ public class EndpointAutoConfiguration {
 	@Configuration
 	@ConditionalOnBean(Flyway.class)
 	@ConditionalOnClass(Flyway.class)
+	@ConditionalOnSingleCandidate(Flyway.class)
+	@ConditionalOnEnabledEndpoint("flyway")
 	static class FlywayEndpointConfiguration {
 
 		@Bean
@@ -190,6 +194,8 @@ public class EndpointAutoConfiguration {
 	@Configuration
 	@ConditionalOnBean(SpringLiquibase.class)
 	@ConditionalOnClass(SpringLiquibase.class)
+	@ConditionalOnSingleCandidate(SpringLiquibase.class)
+	@ConditionalOnEnabledEndpoint("liquibase")
 	static class LiquibaseEndpointConfiguration {
 
 		@Bean
