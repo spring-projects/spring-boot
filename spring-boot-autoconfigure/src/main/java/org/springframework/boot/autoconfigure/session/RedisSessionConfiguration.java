@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.session;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -45,8 +45,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
 @Conditional(SessionCondition.class)
 class RedisSessionConfiguration {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(RedisSessionConfiguration.class);
+	private static final Log log = LogFactory.getLog(RedisSessionConfiguration.class);
 
 	@Configuration
 	public static class SpringBootRedisHttpSessionConfiguration
@@ -69,7 +68,7 @@ class RedisSessionConfiguration {
 		@PostConstruct
 		public void validate() {
 			if (this.sessionProperties.getStoreType() == null) {
-				logger.warn("Spring Session store type is mandatory: set "
+				log.warn("Spring Session store type is mandatory: set "
 						+ "'spring.session.store-type=redis' in your configuration");
 			}
 		}
