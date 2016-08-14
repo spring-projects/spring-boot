@@ -67,6 +67,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  */
 public class BatchAutoConfigurationTests {
 
@@ -91,6 +92,8 @@ public class BatchAutoConfigurationTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
 		assertThat(this.context.getBean(JobExplorer.class)).isNotNull();
+		assertThat(this.context.getBean(BatchProperties.class)
+				.getInitializer().isEnabled()).isTrue();
 		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
 				.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty();
 	}
@@ -190,6 +193,8 @@ public class BatchAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
+		assertThat(this.context.getBean(BatchProperties.class)
+				.getInitializer().isEnabled()).isFalse();
 		this.expected.expect(BadSqlGrammarException.class);
 		new JdbcTemplate(this.context.getBean(DataSource.class))
 				.queryForList("select * from BATCH_JOB_EXECUTION");
@@ -228,6 +233,8 @@ public class BatchAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
+		assertThat(this.context.getBean(BatchProperties.class)
+				.getInitializer().isEnabled()).isTrue();
 		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
 				.queryForList("select * from PREFIX_JOB_EXECUTION")).isEmpty();
 		JobExplorer jobExplorer = this.context.getBean(JobExplorer.class);
@@ -235,6 +242,25 @@ public class BatchAutoConfigurationTests {
 		JobRepository jobRepository = this.context.getBean(JobRepository.class);
 		assertThat(jobRepository.getLastJobExecution("test", new JobParameters()))
 				.isNull();
+	}
+
+	@Test
+	public void testCustomTablePrefixWithDefaultSchemaDisablesInitializer() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.name:batchtest",
+				"spring.batch.tablePrefix:PREFIX_");
+		this.context.register(TestConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class, BatchAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
+		assertThat(this.context.getBean(BatchProperties.class)
+				.getInitializer().isEnabled()).isFalse();
+		this.expected.expect(BadSqlGrammarException.class);
+		new JdbcTemplate(this.context.getBean(DataSource.class))
+				.queryForList("select * from BATCH_JOB_EXECUTION");
 	}
 
 	@Configuration
