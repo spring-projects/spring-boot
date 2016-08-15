@@ -39,6 +39,8 @@ import org.springframework.boot.loader.tools.RunProcess;
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
 public class RunMojo extends AbstractRunMojo {
 
+	private static final int EXIT_CODE_SIGINT = 130;
+
 	@Override
 	protected void runWithForkedJvm(List<String> args) throws MojoExecutionException {
 		try {
@@ -46,11 +48,11 @@ public class RunMojo extends AbstractRunMojo {
 			Runtime.getRuntime()
 					.addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
 			int exitCode = runProcess.run(true, args.toArray(new String[args.size()]));
-
-			if (exitCode != 0) {
-				throw new MojoExecutionException(
-						"Application finished with non-zero exit code: " + exitCode);
+			if (exitCode == 0 || exitCode == EXIT_CODE_SIGINT) {
+				return;
 			}
+			throw new MojoExecutionException(
+					"Application finished with exit code: " + exitCode);
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not exec java", ex);
