@@ -50,11 +50,22 @@ public class RunProcess {
 
 	private volatile long endTime;
 
+	/**
+	 * Creates new {@link RunProcess} instance for the specified command
+	 * and working directory.
+	 * @param workingDirectory the working directory of the child process or {@code null}
+	 * to run in the working directory of the current Java process
+	 * @param command the program to execute and it's arguments
+	 */
 	public RunProcess(File workingDirectory, String... command) {
 		this.workingDirectory = workingDirectory;
 		this.command = command;
 	}
 
+	/**
+	 * Creates new {@link RunProcess} instance for the specified command.
+	 * @param command the program to execute and it's arguments
+	 */
 	public RunProcess(String... command) {
 		this(null, command);
 	}
