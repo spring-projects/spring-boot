@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionEvaluationRepor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
@@ -175,7 +176,7 @@ public class EndpointAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnBean(Flyway.class)
+	@ConditionalOnSingleCandidate(Flyway.class)
 	@ConditionalOnClass(Flyway.class)
 	static class FlywayEndpointConfiguration {
 
@@ -188,7 +189,7 @@ public class EndpointAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnBean(SpringLiquibase.class)
+	@ConditionalOnSingleCandidate(SpringLiquibase.class)
 	@ConditionalOnClass(SpringLiquibase.class)
 	static class LiquibaseEndpointConfiguration {
 

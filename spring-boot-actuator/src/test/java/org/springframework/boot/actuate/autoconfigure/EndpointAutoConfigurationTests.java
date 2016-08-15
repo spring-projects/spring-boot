@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import liquibase.integration.spring.SpringLiquibase;
+import org.flywaydb.core.Flyway;
 import org.junit.After;
 import org.junit.Test;
 
@@ -47,10 +49,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link EndpointAutoConfiguration}.
@@ -174,6 +180,16 @@ public class EndpointAutoConfigurationTests {
 	}
 
 	@Test
+	public void flywayEndpointIsDisabledWhenThereAreMultipleFlywayBeans() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(MultipleFlywayBeansConfig.class,
+				EndpointAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(FlywayEndpoint.class).size(),
+				is(equalTo(0)));
+	}
+
+	@Test
 	public void testLiquibaseEndpoint() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(EmbeddedDataSourceConfiguration.class,
@@ -182,6 +198,16 @@ public class EndpointAutoConfigurationTests {
 		LiquibaseEndpoint endpoint = this.context.getBean(LiquibaseEndpoint.class);
 		assertNotNull(endpoint);
 		assertEquals(1, endpoint.invoke().size());
+	}
+
+	@Test
+	public void liquibaseEndpointIsDisabledWhenThereAreMultipleSpringLiquibaseBeans() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(MultipleLiquibaseBeansConfig.class,
+				EndpointAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(LiquibaseEndpoint.class).size(),
+				is(equalTo(0)));
 	}
 
 	private void load(Class<?>... config) {
@@ -205,4 +231,35 @@ public class EndpointAutoConfigurationTests {
 		}
 
 	}
+
+	@Configuration
+	static class MultipleFlywayBeansConfig {
+
+		@Bean
+		Flyway flywayOne() {
+			return mock(Flyway.class);
+		}
+
+		@Bean
+		Flyway flywayTwo() {
+			return mock(Flyway.class);
+		}
+
+	}
+
+	@Configuration
+	static class MultipleLiquibaseBeansConfig {
+
+		@Bean
+		SpringLiquibase liquibaseOne() {
+			return mock(SpringLiquibase.class);
+		}
+
+		@Bean
+		SpringLiquibase liquibaseTwo() {
+			return mock(SpringLiquibase.class);
+		}
+
+	}
+
 }
