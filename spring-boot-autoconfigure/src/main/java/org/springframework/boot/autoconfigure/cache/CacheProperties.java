@@ -52,6 +52,8 @@ public class CacheProperties {
 
 	private final Hazelcast hazelcast = new Hazelcast();
 
+	private final Ignite ignite = new Ignite();
+
 	private final Infinispan infinispan = new Infinispan();
 
 	private final JCache jcache = new JCache();
@@ -88,6 +90,10 @@ public class CacheProperties {
 
 	public Hazelcast getHazelcast() {
 		return this.hazelcast;
+	}
+
+	public Ignite getIgnite() {
+		return this.ignite;
 	}
 
 	public Infinispan getInfinispan() {
@@ -186,6 +192,26 @@ public class CacheProperties {
 
 		/**
 		 * The location of the configuration file to use to initialize Hazelcast.
+		 */
+		private Resource config;
+
+		public Resource getConfig() {
+			return this.config;
+		}
+
+		public void setConfig(Resource config) {
+			this.config = config;
+		}
+
+	}
+
+	/**
+	 * Apache Ignite specific cache properties.
+	 */
+	public static class Ignite {
+
+		/**
+		 * The location of the configuration file to use to initialize Apache Ignite.
 		 */
 		private Resource config;
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+    	<property name="gridName" value="classpathRootConfigGrid" />
+        <property name ="gridLogger">
+        	<bean class="org.apache.ignite.logger.slf4j.Slf4jLogger"></bean>
+        </property>
+    </bean>
+</beans>

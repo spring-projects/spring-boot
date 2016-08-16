@@ -41,6 +41,10 @@ import com.hazelcast.cache.HazelcastCachingProvider;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
 import net.sf.ehcache.Status;
+import org.apache.ignite.Ignite;
+import org.apache.ignite.Ignition;
+import org.apache.ignite.cache.CachingProvider;
+import org.apache.ignite.cache.spring.SpringCacheManager;
 import org.ehcache.jsr107.EhcacheCachingProvider;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.jcache.embedded.JCachingProvider;
@@ -56,6 +60,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.autoconfigure.ignite.IgniteAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -562,6 +567,123 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
+	public void igniteCacheExplicit() {
+		load(DefaultCacheConfiguration.class, "spring.cache.type=ignite");
+		SpringCacheManager cacheManager = validateCacheManager(SpringCacheManager.class);
+		cacheManager.getCache("defaultCache");
+
+		assertThat(cacheManager.getCacheNames()).containsOnly("defaultCache");
+		assertThat(this.context.getBean(Ignite.class))
+				.isEqualTo(getIgniteInstance(cacheManager));
+	}
+
+	@Test
+	public void igniteCacheWithCustomizers() {
+		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "ignite",
+				"allCacheManagerCustomizer", "igniteCacheManagerCustomizer");
+	}
+
+	@Test
+	public void igniteCacheWithConfig() throws IOException {
+		load(DefaultCacheConfiguration.class, "spring.cache.type=ignite",
+				"spring.cache.ignite.config=org/springframework/boot/autoconfigure/cache/ignite-specific.xml");
+		Ignite igniteInstance = this.context.getBean(Ignite.class);
+		SpringCacheManager cacheManager = validateCacheManager(SpringCacheManager.class);
+		Ignite actual = getIgniteInstance(cacheManager);
+		assertThat(actual).isSameAs(igniteInstance);
+		assertThat(actual.configuration().getGridName()).isEqualTo("testSpecificGrid");
+		cacheManager.getCache("wmz7year");
+		assertThat(cacheManager.getCacheNames()).containsOnly("wmz7year");
+	}
+
+	@Test
+	public void igniteWithWrongConfig() {
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("foo/bar/unknown.xml");
+		load(DefaultCacheConfiguration.class, "spring.cache.type=ignite",
+				"spring.cache.ignite.config=foo/bar/unknown.xml");
+	}
+
+	@Test
+	public void igniteCacheWithExistingIgniteInstance() {
+		load(IgniteCustomHazelcastInstance.class, "spring.cache.type=ignite");
+		SpringCacheManager cacheManager = validateCacheManager(SpringCacheManager.class);
+		assertThat(getIgniteInstance(cacheManager))
+				.isEqualTo(this.context.getBean("customIgniteInstance"));
+	}
+
+	@Test
+	public void igniteCacheWithMainIgniteAutoConfiguration() throws IOException {
+		String mainConfig = "org/springframework/boot/autoconfigure/ignite/ignite-specific.xml";
+		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(applicationContext,
+				"spring.cache.type=ignite", "spring.ignite.config=" + mainConfig);
+		applicationContext.register(DefaultCacheConfiguration.class);
+		applicationContext.register(IgniteAndCacheConfiguration.class);
+		applicationContext.refresh();
+		this.context = applicationContext;
+		SpringCacheManager cacheManager = validateCacheManager(SpringCacheManager.class);
+		Ignite igniteInstance = this.context.getBean(Ignite.class);
+		assertThat(getIgniteInstance(cacheManager)).isEqualTo(igniteInstance);
+		assertThat(igniteInstance.configuration().getGridName())
+				.isEqualTo("testMainGridName");
+	}
+
+	@Test
+	public void igniteCacheWithMainIgniteAutoConfigurationAndSeparateCacheConfig()
+			throws IOException {
+		String mainConfig = "org/springframework/boot/autoconfigure/ignite/ignite-specific.xml";
+		String cacheConfig = "org/springframework/boot/autoconfigure/cache/ignite-specific.xml";
+		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(applicationContext,
+				"spring.cache.type=ignite", "spring.cache.ignite.config=" + cacheConfig,
+				"spring.ignite.config=" + mainConfig);
+		applicationContext.register(DefaultCacheConfiguration.class);
+		applicationContext.register(IgniteAndCacheConfiguration.class);
+		applicationContext.refresh();
+		this.context = applicationContext;
+		Ignite igniteInstance = this.context.getBean(Ignite.class);
+		SpringCacheManager cacheManager = validateCacheManager(SpringCacheManager.class);
+		Ignite cacheIgniteInstance = (Ignite) new DirectFieldAccessor(cacheManager)
+				.getPropertyValue("ignite");
+		assertThat(cacheIgniteInstance).isNotEqualTo(igniteInstance); // Our custom
+		assertThat(igniteInstance.configuration().getGridName())
+				.isEqualTo("testMainGridName");
+		assertThat(cacheIgniteInstance.configuration().getGridName())
+				.isEqualTo("testSpecificGrid");
+	}
+
+	@Test
+	public void igniteAsJCacheWithCaches() {
+		String cachingProviderFqn = CachingProvider.class.getName();
+		try {
+			load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
+					"spring.cache.jcache.provider=" + cachingProviderFqn,
+					"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
+			JCacheCacheManager cacheManager = validateCacheManager(
+					JCacheCacheManager.class);
+			assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+		}
+		finally {
+			Caching.getCachingProvider(cachingProviderFqn).close();
+		}
+	}
+
+	@Test
+	public void igniteAsJCacheWithConfig() throws IOException {
+		String cachingProviderFqn = CachingProvider.class.getName();
+		String configLocation = "org/springframework/boot/autoconfigure/cache/ignite-specific.xml";
+		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
+				"spring.cache.jcache.provider=" + cachingProviderFqn,
+				"spring.cache.jcache.config=" + configLocation);
+		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
+
+		Resource configResource = new ClassPathResource(configLocation);
+		assertThat(cacheManager.getCacheManager().getURI())
+				.isEqualTo(configResource.getURI());
+	}
+
+	@Test
 	public void infinispanCacheWithConfig() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=infinispan",
 				"spring.cache.infinispan.config=infinispan.xml");
@@ -766,6 +888,10 @@ public class CacheAutoConfigurationTests {
 				.getPropertyValue("hazelcastInstance");
 	}
 
+	private static Ignite getIgniteInstance(SpringCacheManager cacheManager) {
+		return (Ignite) new DirectFieldAccessor(cacheManager).getPropertyValue("ignite");
+	}
+
 	@Configuration
 	static class EmptyConfiguration {
 
@@ -925,6 +1051,23 @@ public class CacheAutoConfigurationTests {
 
 	@Configuration
 	@EnableCaching
+	static class IgniteCustomHazelcastInstance {
+
+		@Bean
+		public Ignite customIgniteInstance() {
+			return Ignition.start();
+		}
+	}
+
+	@Configuration
+	@ImportAutoConfiguration({ CacheAutoConfiguration.class,
+			IgniteAutoConfiguration.class })
+	static class IgniteAndCacheConfiguration {
+
+	}
+
+	@Configuration
+	@EnableCaching
 	static class InfinispanCustomConfiguration {
 
 		@Bean
@@ -1070,6 +1213,12 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public CacheManagerCustomizer<HazelcastCacheManager> hazelcastCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<HazelcastCacheManager>() {
+			};
+		}
+
+		@Bean
+		public CacheManagerCustomizer<SpringCacheManager> igniteCacheManagerCustomizer() {
+			return new CacheManagerTestCustomizer<SpringCacheManager>() {
 			};
 		}
 

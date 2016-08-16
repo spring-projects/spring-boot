@@ -47,6 +47,11 @@ public enum CacheType {
 	HAZELCAST,
 
 	/**
+	 * Ignite backed caching.
+	 */
+	IGNITE,
+
+	/**
 	 * Infinispan backed caching.
 	 */
 	INFINISPAN,
