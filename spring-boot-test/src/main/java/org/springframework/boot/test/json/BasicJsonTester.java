@@ -18,6 +18,7 @@ package org.springframework.boot.test.json;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.Resource;
@@ -42,6 +43,7 @@ import org.springframework.util.Assert;
  * See {@link AbstractJsonMarshalTester} for more details.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.4.0
  */
 public class BasicJsonTester {
@@ -55,23 +57,47 @@ public class BasicJsonTester {
 	}
 
 	/**
-	 * Create a new {@link BasicJsonTester} instance.
+	 * Create a new {@link BasicJsonTester} instance that will load resources as UTF-8.
 	 * @param resourceLoadClass the source class used to load resources
 	 */
 	public BasicJsonTester(Class<?> resourceLoadClass) {
+		this(resourceLoadClass, null);
+	}
+
+	/**
+	 * Create a new {@link BasicJsonTester} instance.
+	 * @param resourceLoadClass the source class used to load resources
+	 * @param charset the charset used to load resources
+	 * @since 1.4.1
+	 */
+	public BasicJsonTester(Class<?> resourceLoadClass, Charset charset) {
 		Assert.notNull(resourceLoadClass, "ResourceLoadClass must not be null");
-		this.loader = new JsonLoader(resourceLoadClass);
+		this.loader = new JsonLoader(resourceLoadClass, charset);
+	}
+
+	/**
+	 * Initialize the marshal tester for use, configuring it to load JSON resources as
+	 * UTF-8.
+	 * @param resourceLoadClass the source class used when loading relative classpath
+	 * resources
+	 * @param type the type under test
+	 */
+	protected final void initialize(Class<?> resourceLoadClass, ResolvableType type) {
+		this.initialize(resourceLoadClass, null, type);
 	}
 
 	/**
 	 * Initialize the marshal tester for use.
 	 * @param resourceLoadClass the source class used when loading relative classpath
 	 * resources
+	 * @param charset the charset used when loading relative classpath resources
 	 * @param type the type under test
+	 * @since 1.4.1
 	 */
-	protected final void initialize(Class<?> resourceLoadClass, ResolvableType type) {
+	protected final void initialize(Class<?> resourceLoadClass, Charset charset,
+			ResolvableType type) {
 		if (this.loader == null) {
-			this.loader = new JsonLoader(resourceLoadClass);
+			this.loader = new JsonLoader(resourceLoadClass, charset);
 		}
 	}
 
