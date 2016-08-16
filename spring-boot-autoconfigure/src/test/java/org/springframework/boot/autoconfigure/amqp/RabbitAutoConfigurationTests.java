@@ -303,6 +303,7 @@ public class RabbitAutoConfigurationTests {
 				"spring.rabbitmq.listener.maxConcurrency:10",
 				"spring.rabbitmq.listener.prefetch:40",
 				"spring.rabbitmq.listener.defaultRequeueRejected:false",
+				"spring.rabbitmq.listener.idleEventInterval:5",
 				"spring.rabbitmq.listener.transactionSize:20");
 		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
 				.getBean("rabbitListenerContainerFactory",
@@ -319,6 +320,7 @@ public class RabbitAutoConfigurationTests {
 				.isSameAs(this.context.getBean("myMessageConverter"));
 		assertThat(dfa.getPropertyValue("defaultRequeueRejected"))
 				.isEqualTo(Boolean.FALSE);
+		assertThat(dfa.getPropertyValue("idleEventInterval")).isEqualTo(5L);
 		Advice[] adviceChain = (Advice[]) dfa.getPropertyValue("adviceChain");
 		assertThat(adviceChain).isNotNull();
 		assertThat(adviceChain.length).isEqualTo(1);
