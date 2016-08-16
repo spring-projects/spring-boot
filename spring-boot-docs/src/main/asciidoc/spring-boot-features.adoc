@@ -149,11 +149,7 @@ For example:
 
 [source,java,indent=0]
 ----
-	new SpringApplicationBuilder()
-		.bannerMode(Banner.Mode.OFF)
-		.sources(Parent.class)
-		.child(Application.class)
-		.run(args);
+include::{code-examples}/builder/SpringApplicationBuilderExample.java[tag=hierarchy]
 ----
 
 NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy, e.g.
