@@ -75,9 +75,10 @@ public class ImageBanner implements Banner {
 			System.setProperty("java.awt.headless", "true");
 			printBanner(environment, out);
 		}
-		catch (Exception ex) {
+		catch (Throwable ex) {
 			log.warn("Image banner not printable: " + this.image + " (" + ex.getClass()
-					+ ": '" + ex.getMessage() + "')", ex);
+					+ ": '" + ex.getMessage() + "')");
+			log.debug("Image banner printing failure", ex);
 		}
 		finally {
 			if (headless == null) {
