@@ -94,7 +94,6 @@ public class RabbitAutoConfiguration {
 				factory.setHost(config.determineHost());
 			}
 			factory.setPort(config.determinePort());
-			factory.setHost(config.determineHost());
 			if (config.determineUsername() != null) {
 				factory.setUsername(config.determineUsername());
 			}

@@ -237,7 +237,6 @@ public class PropertySourcesPropertyValuesTests {
 		this.propertySources.addFirst(new MapPropertySource("s", second));
 		this.propertySources.addFirst(new MapPropertySource("f", first));
 		binder.bind(new PropertySourcesPropertyValues(this.propertySources));
-		target.getList();
 		assertThat(target.getList()).hasSize(1);
 		assertThat(target.getList().get(0).getDescription())
 				.isEqualTo("another description");

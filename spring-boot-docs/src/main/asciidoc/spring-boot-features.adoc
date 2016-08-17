@@ -4059,7 +4059,7 @@ resolved against their provided names.
 Apache Artemis was formed in 2015 when HornetQ was donated to the Apache Foundation. Make
 sure to use that rather than the deprecated HornetQ support.
 
-NOTE: You should not try and use Artemis and HornetQ and the same time.
+NOTE: You should not try and use Artemis and HornetQ at the same time.
 
 Spring Boot can auto-configure a `ConnectionFactory` when it detects that Artemis is
 available on the classpath. If the broker is present, an embedded broker is started and

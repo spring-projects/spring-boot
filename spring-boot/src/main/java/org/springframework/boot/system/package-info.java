@@ -15,6 +15,6 @@
  */
 
 /**
- * General actuator system support classes.
+ * General system support classes.
  */
 package org.springframework.boot.system;
