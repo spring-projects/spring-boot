@@ -67,17 +67,23 @@ public class ResetMocksTestExecutionListenerTests {
 	static class Config {
 
 		@Bean
-		public ExampleService before() {
-			return mock(ExampleService.class, MockReset.before());
+		public ExampleService before(MockitoBeans mockedBeans) {
+			ExampleService mock = mock(ExampleService.class, MockReset.before());
+			mockedBeans.add(mock);
+			return mock;
 		}
 
 		@Bean
-		public ExampleService after() {
-			return mock(ExampleService.class, MockReset.before());
+		public ExampleService after(MockitoBeans mockedBeans) {
+			ExampleService mock = mock(ExampleService.class, MockReset.before());
+			mockedBeans.add(mock);
+			return mock;
 		}
 
 		@Bean
-		public ExampleService none() {
+		public ExampleService none(MockitoBeans mockedBeans) {
+			ExampleService mock = mock(ExampleService.class, MockReset.before());
+			mockedBeans.add(mock);
 			return mock(ExampleService.class);
 		}
 

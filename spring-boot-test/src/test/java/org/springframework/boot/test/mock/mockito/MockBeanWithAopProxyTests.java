@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -51,11 +52,13 @@ public class MockBeanWithAopProxyTests {
 
 	@Test
 	public void verifyShouldUseProxyTarget() throws Exception {
+		given(this.dateService.getDate()).willReturn(1L);
 		Long d1 = this.dateService.getDate();
-		Thread.sleep(200);
+		assertThat(d1).isEqualTo(1L);
+		given(this.dateService.getDate()).willReturn(2L);
 		Long d2 = this.dateService.getDate();
-		assertThat(d1).isEqualTo(d2);
-		verify(this.dateService, times(1)).getDate();
+		assertThat(d2).isEqualTo(2L);
+		verify(this.dateService, times(2)).getDate();
 	}
 
 	@Configuration

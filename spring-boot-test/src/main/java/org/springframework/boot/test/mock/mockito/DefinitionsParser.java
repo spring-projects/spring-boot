@@ -92,8 +92,7 @@ class DefinitionsParser {
 		for (ResolvableType typeToMock : typesToMock) {
 			MockDefinition definition = new MockDefinition(annotation.name(), typeToMock,
 					annotation.extraInterfaces(), annotation.answer(),
-					annotation.serializable(), annotation.reset(),
-					annotation.proxyTargetAware());
+					annotation.serializable(), annotation.reset());
 			addDefinition(element, definition, "mock");
 		}
 	}

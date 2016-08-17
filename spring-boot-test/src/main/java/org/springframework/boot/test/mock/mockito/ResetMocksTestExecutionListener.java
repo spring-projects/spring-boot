@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.mockito.Mockito;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -69,6 +70,17 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 					Mockito.reset(bean);
 				}
 			}
+		}
+		try {
+			MockitoBeans mockedBeans = beanFactory.getBean(MockitoBeans.class);
+			for (Object mockedBean : mockedBeans) {
+				if (reset.equals(MockReset.get(mockedBean))) {
+					Mockito.reset(mockedBean);
+				}
+			}
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			// Continue
 		}
 		if (applicationContext.getParent() != null) {
 			resetMocks(applicationContext.getParent(), reset);
