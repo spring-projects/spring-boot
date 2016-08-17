@@ -92,6 +92,7 @@ public class AnyNestedConditionTests {
 
 		}
 
+		@ConditionalOnExpression("true")
 		@ConditionalOnProperty("b")
 		static class HasPropertyB {
 
