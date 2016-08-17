@@ -1415,7 +1415,7 @@ for example:
 ----
 
 To avoid a warning message about the HTML 5 template mode being deprecated and the HTML
-template mode being used instead, you may also want to explicity configure
+template mode being used instead, you may also want to explicitly configure
 `spring.thymeleaf.mode` to be `HTML`, for example:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]

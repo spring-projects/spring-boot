@@ -133,7 +133,7 @@
  			<property name="maximum" value="0"/>
 			<property name="format" value="org\.mockito\.Mockito\.(when|doThrow|doAnswer)" />
 			<property name="message"
-				value="Please use BDDMockto imports." />
+				value="Please use BDDMockito imports." />
 			<property name="ignoreComments" value="true" />
 		</module>
  		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">

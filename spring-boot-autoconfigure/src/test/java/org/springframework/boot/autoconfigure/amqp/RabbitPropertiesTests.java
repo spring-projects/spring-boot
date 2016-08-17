@@ -122,7 +122,7 @@ public class RabbitPropertiesTests {
 	}
 
 	@Test
-	public void determinedVirtualHostIsSlashWhenAddressHasTrailingSlash() {
+	public void determineVirtualHostIsSlashWhenAddressHasTrailingSlash() {
 		this.properties.setAddresses("amqp://root:password@otherhost:1111/");
 		assertThat(this.properties.determineVirtualHost()).isEqualTo("/");
 	}
@@ -199,7 +199,7 @@ public class RabbitPropertiesTests {
 
 	@Test
 	public void addressesDefaultsToNull() {
-		assertThat(this.properties.getAddresses()).isEqualTo(null);
+		assertThat(this.properties.getAddresses()).isNull();
 	}
 
 	@Test
