@@ -34,6 +34,7 @@ import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Service;
+import org.apache.catalina.SessionIdGenerator;
 import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
@@ -439,6 +440,25 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		// override defaults, see org.apache.catalina.util.CharsetMapperDefault.properties
 		assertThat(getCharset(Locale.ENGLISH).toString()).isEqualTo("UTF-8");
 		assertThat(getCharset(Locale.FRENCH).toString()).isEqualTo("UTF-8");
+	}
+
+	@Test
+	public void sessionIdGeneratorIsConfiguredWithAttributesFromTheManager() {
+		System.setProperty("jvmRoute", "test");
+		try {
+			TomcatEmbeddedServletContainerFactory factory = getFactory();
+			this.container = factory.getEmbeddedServletContainer();
+			this.container.start();
+		}
+		finally {
+			System.clearProperty("jvmRoute");
+		}
+		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+		Context context = (Context) tomcat.getHost().findChildren()[0];
+		SessionIdGenerator sessionIdGenerator = context.getManager()
+				.getSessionIdGenerator();
+		assertThat(sessionIdGenerator).isInstanceOf(LazySessionIdGenerator.class);
+		assertThat(sessionIdGenerator.getJvmRoute()).isEqualTo("test");
 	}
 
 	@Override

@@ -46,7 +46,6 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.loader.WebappLoader;
-import org.apache.catalina.session.ManagerBase;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
@@ -488,7 +487,6 @@ public class TomcatEmbeddedServletContainerFactory
 		else {
 			context.addLifecycleListener(new DisablePersistSessionListener());
 		}
-		context.addLifecycleListener(new LazySessionIdGeneratorListener());
 	}
 
 	private void configurePersistSession(Manager manager) {
@@ -824,22 +822,6 @@ public class TomcatEmbeddedServletContainerFactory
 				Manager manager = context.getManager();
 				if (manager != null && manager instanceof StandardManager) {
 					((StandardManager) manager).setPathname(null);
-				}
-			}
-		}
-
-	}
-
-	private static class LazySessionIdGeneratorListener implements LifecycleListener {
-
-		@Override
-		public void lifecycleEvent(LifecycleEvent event) {
-			if (event.getType().equals(Lifecycle.START_EVENT)) {
-				Context context = (Context) event.getLifecycle();
-				Manager manager = context.getManager();
-				if (manager instanceof ManagerBase) {
-					((ManagerBase) manager)
-							.setSessionIdGenerator(new LazySessionIdGenerator());
 				}
 			}
 		}
