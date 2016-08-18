@@ -72,9 +72,9 @@ class WebServletHandler extends ServletComponentHandler {
 			return null;
 		}
 		return new MultipartConfigElement((String) attributes.get("location"),
-				(long) attributes.get("maxFileSize"),
-				(long) attributes.get("maxRequestSize"),
-				(int) attributes.get("fileSizeThreshold"));
+				(Long) attributes.get("maxFileSize"),
+				(Long) attributes.get("maxRequestSize"),
+				(Integer) attributes.get("fileSizeThreshold"));
 	}
 
 }
