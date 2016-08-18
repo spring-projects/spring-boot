@@ -97,8 +97,8 @@ public class LaunchedURLClassLoaderTests {
 		try {
 			Thread.currentThread().interrupt();
 			URL resource = loader.getResource("nested.jar!/3.dat");
-			assertThat(resource.toString(), equalTo(url + "nested.jar!/3.dat"));
-			assertThat(resource.openConnection().getInputStream().read(), equalTo(3));
+			assertThat(resource.toString()).isEqualTo(url + "nested.jar!/3.dat");
+			assertThat(resource.openConnection().getInputStream().read()).isEqualTo(3);
 		}
 		finally {
 			Thread.interrupted();
