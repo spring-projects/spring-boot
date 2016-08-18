@@ -3353,7 +3353,7 @@ infrastructure; so you could take the JPA example from earlier and, assuming tha
 is now a Neo4j OGM `@NodeEntity` rather than a JPA `@Entity`, it will work in the same
 way.
 
-TIP: You can customize entity scanning locations using the `@NodeEntityScan` annotation.
+TIP: You can customize entity scanning locations using the `@EntityScan` annotation.
 
 To enable repository support (and optionally support for `@Transactional`), add the
 following two annotations to your Spring configuration:
