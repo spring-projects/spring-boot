@@ -463,14 +463,16 @@ public class RestTemplateBuilder {
 	private void configureRequestFactory(RestTemplate restTemplate) {
 		ClientHttpRequestFactory requestFactory = null;
 		if (this.requestFactory != null) {
-			requestFactory = unwrapRequestFactoryIfNecessary(this.requestFactory);
+			requestFactory = this.requestFactory;
 		}
 		else if (this.detectRequestFactory) {
 			requestFactory = detectRequestFactory();
 		}
 		if (requestFactory != null) {
+			ClientHttpRequestFactory unwrappedRequestFactory = unwrapRequestFactoryIfNecessary(
+					requestFactory);
 			for (RequestFactoryCustomizer customizer : this.requestFactoryCustomizers) {
-				customizer.customize(requestFactory);
+				customizer.customize(unwrappedRequestFactory);
 			}
 			restTemplate.setRequestFactory(requestFactory);
 		}

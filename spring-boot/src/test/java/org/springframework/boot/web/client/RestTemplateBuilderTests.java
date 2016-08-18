@@ -474,6 +474,16 @@ public class RestTemplateBuilderTests {
 				.isEqualTo(1234);
 	}
 
+	@Test
+	public void unwrappingDoesNotAffectRequestFactoryThatIsSetOnTheBuiltTemplate() {
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		RestTemplate template = this.builder
+				.requestFactory(new BufferingClientHttpRequestFactory(requestFactory))
+				.build();
+		assertThat(template.getRequestFactory())
+				.isInstanceOf(BufferingClientHttpRequestFactory.class);
+	}
+
 	public static class RestTemplateSubclass extends RestTemplate {
 
 	}
