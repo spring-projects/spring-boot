@@ -378,6 +378,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-hibernate</artifactId>
+				<version>1.4.1.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-hornetq</artifactId>
 				<version>1.4.1.BUILD-SNAPSHOT</version>
 			</dependency>
