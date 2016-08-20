@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import org.springframework.boot.test.web.client.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
@@ -34,6 +35,7 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link TestRestTemplate}.
@@ -42,6 +44,15 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  */
 public class TestRestTemplateTests {
+
+	@Test
+	public void fromRestTemplateBuilder() {
+		RestTemplateBuilder builder = mock(RestTemplateBuilder.class);
+		RestTemplate delegate = new RestTemplate();
+		when(builder.build()).thenReturn(delegate);
+		assertThat(new TestRestTemplate(builder).getRestTemplate())
+				.isEqualTo(delegate);
+	}
 
 	@Test
 	public void simple() {

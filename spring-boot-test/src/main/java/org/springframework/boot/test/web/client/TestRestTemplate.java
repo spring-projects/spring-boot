@@ -84,6 +84,19 @@ public class TestRestTemplate {
 
 	/**
 	 * Create a new {@link TestRestTemplate} instance.
+	 * @param restTemplateBuilder builder used to configure underlying {@link RestTemplate}
+	 */
+	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+		this(buildRestTemplate(restTemplateBuilder));
+	}
+
+	private static RestTemplate buildRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+		Assert.notNull(restTemplateBuilder, "RestTemplateBuilder must not be null");
+		return restTemplateBuilder.build();
+	}
+
+	/**
+	 * Create a new {@link TestRestTemplate} instance.
 	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
 	 */
 	public TestRestTemplate(HttpClientOption... httpClientOptions) {
