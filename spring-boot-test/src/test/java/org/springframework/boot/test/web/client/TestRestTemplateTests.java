@@ -34,8 +34,8 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link TestRestTemplate}.
@@ -49,7 +49,7 @@ public class TestRestTemplateTests {
 	public void fromRestTemplateBuilder() {
 		RestTemplateBuilder builder = mock(RestTemplateBuilder.class);
 		RestTemplate delegate = new RestTemplate();
-		when(builder.build()).thenReturn(delegate);
+		given(builder.build()).willReturn(delegate);
 		assertThat(new TestRestTemplate(builder).getRestTemplate())
 				.isEqualTo(delegate);
 	}
