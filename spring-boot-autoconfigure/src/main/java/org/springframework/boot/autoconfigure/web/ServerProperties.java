@@ -777,7 +777,7 @@ public class ServerProperties
 			if (getBasedir() != null) {
 				factory.setBaseDirectory(getBasedir());
 			}
-			customizeBackgroundProcessorDelay(factory);
+			factory.setBackgroundProcessorDelay(Tomcat.this.backgroundProcessorDelay);
 			customizeRemoteIpValve(serverProperties, factory);
 			if (this.maxThreads > 0) {
 				customizeMaxThreads(factory);
@@ -817,19 +817,6 @@ public class ServerProperties
 					handler.setConnectionTimeout(connectionTimeout);
 				}
 			}
-		}
-
-		private void customizeBackgroundProcessorDelay(
-				TomcatEmbeddedServletContainerFactory factory) {
-			factory.addContextCustomizers(new TomcatContextCustomizer() {
-
-				@Override
-				public void customize(Context context) {
-					context.setBackgroundProcessorDelay(
-							Tomcat.this.backgroundProcessorDelay);
-				}
-
-			});
 		}
 
 		private void customizeRemoteIpValve(ServerProperties properties,

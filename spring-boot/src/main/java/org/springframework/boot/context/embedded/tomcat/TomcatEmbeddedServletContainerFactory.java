@@ -129,6 +129,8 @@ public class TomcatEmbeddedServletContainerFactory
 
 	private Charset uriEncoding = DEFAULT_CHARSET;
 
+	private int backgroundProcessorDelay;
+
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainerFactory} instance.
 	 */
@@ -176,7 +178,7 @@ public class TomcatEmbeddedServletContainerFactory
 	}
 
 	private void configureEngine(Engine engine) {
-		engine.setBackgroundProcessorDelay(-1);
+		engine.setBackgroundProcessorDelay(this.backgroundProcessorDelay);
 		for (Valve valve : this.engineValves) {
 			engine.getPipeline().addValve(valve);
 		}
@@ -763,6 +765,15 @@ public class TomcatEmbeddedServletContainerFactory
 	 */
 	public Charset getUriEncoding() {
 		return this.uriEncoding;
+	}
+
+	/**
+	 * Sets the background processor delay in seconds.
+	 * @param delay the delay in seconds
+	 * @since 1.4.1
+	 */
+	public void setBackgroundProcessorDelay(int delay) {
+		this.backgroundProcessorDelay = delay;
 	}
 
 	/**
