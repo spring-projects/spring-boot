@@ -40,11 +40,14 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.jdbc.support.JdbcUtils;
+import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
@@ -78,6 +81,8 @@ public class FlywayAutoConfiguration {
 	@ConditionalOnMissingBean(Flyway.class)
 	@EnableConfigurationProperties(FlywayProperties.class)
 	public static class FlywayConfiguration {
+
+		private static final String VENDOR_PLACEHOLDER = "{vendor}";
 
 		private final FlywayProperties properties;
 
@@ -126,7 +131,31 @@ public class FlywayAutoConfiguration {
 		@Bean
 		@ConfigurationProperties(prefix = "flyway")
 		public Flyway flyway() {
-			Flyway flyway = new Flyway();
+			Flyway flyway = new Flyway() {
+
+				@Override
+				public void setLocations(String... locations) {
+					if (usesVendorLocation()) {
+						try {
+							String url = (String) JdbcUtils.extractDatabaseMetaData(
+									getDataSource(), "getURL");
+							DatabaseDriver vendor = DatabaseDriver.fromJdbcUrl(url);
+							if (vendor != DatabaseDriver.UNKNOWN) {
+								for (int i = 0; i < locations.length; i++) {
+									locations[i] = locations[i].replace(
+											VENDOR_PLACEHOLDER,
+											vendor.name().toLowerCase());
+								}
+							}
+						}
+						catch (MetaDataAccessException e) {
+							throw new IllegalStateException(e);
+						}
+					}
+					super.setLocations(locations);
+				}
+
+			};
 			if (this.properties.isCreateDataSource()) {
 				flyway.setDataSource(this.properties.getUrl(), this.properties.getUser(),
 						this.properties.getPassword(),
@@ -140,6 +169,15 @@ public class FlywayAutoConfiguration {
 			}
 			flyway.setLocations(this.properties.getLocations().toArray(new String[0]));
 			return flyway;
+		}
+
+		private boolean usesVendorLocation() {
+			for (String location : this.properties.getLocations()) {
+				if (location.contains(VENDOR_PLACEHOLDER)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		@Bean
