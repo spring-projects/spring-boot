@@ -34,6 +34,8 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
+import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -48,8 +50,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link LiquibaseAutoConfiguration}.
  *
  * @author Marcel Overdijk
- * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Andy Wilkinson
  */
 public class LiquibaseAutoConfigurationTests {
 
@@ -59,12 +61,16 @@ public class LiquibaseAutoConfigurationTests {
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
 
+	@Rule
+	public OutputCapture outputCapture = new OutputCapture();
+
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Before
 	public void init() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.name:liquibasetest");
+		new LiquibaseServiceLocatorApplicationListener().onApplicationEvent(null);
 	}
 
 	@After
@@ -203,6 +209,7 @@ public class LiquibaseAutoConfigurationTests {
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
 		Object log = ReflectionTestUtils.getField(liquibase, "log");
 		assertThat(log).isInstanceOf(CommonsLoggingLiquibaseLogger.class);
+		assertThat(this.outputCapture.toString()).doesNotContain(": liquibase:");
 	}
 
 	@Test
