@@ -35,6 +35,7 @@ import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
@@ -42,7 +43,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.contains;
 
 /**
  * Tests for {@link LiquibaseAutoConfiguration}.
@@ -176,7 +176,7 @@ public class LiquibaseAutoConfigurationTests {
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
 		Object log = ReflectionTestUtils.getField(liquibase, "log");
 		assertThat(log, instanceOf((CommonsLoggingLiquibaseLogger.class)));
-		assertThat(this.outputCapture.toString(), not(contains(": liquibase:")));
+		assertThat(this.outputCapture.toString(), not(containsString(": liquibase:")));
 	}
 
 	@Test
