@@ -175,7 +175,7 @@
   {
     "name": "spring.output.ansi.enabled",
     "type": "org.springframework.boot.ansi.AnsiOutput$Enabled",
-    "description": "Configure the ANSI output (can be \"detect\", \"always\", \"never\").",
+    "description": "Configure the ANSI output.",
     "defaultValue": "detect"
   },
   {

@@ -121,7 +121,7 @@ content into your application; rather pick only the properties that you need.
 	spring.messages.fallback-to-system-locale=true # Set whether to fall back to the system Locale if no files for a specific Locale have been found.
 
 	# OUTPUT
-	spring.output.ansi.enabled=detect # Configure the ANSI output (can be "detect", "always", "never").
+	spring.output.ansi.enabled=detect # Configure the ANSI output.
 
 	# PID FILE ({sc-spring-boot-actuator}/system/ApplicationPidFileWriter.{sc-ext}[ApplicationPidFileWriter])
 	spring.pid.fail-on-write-error= # Fail if ApplicationPidFileWriter is used but it cannot write the PID file.
@@ -303,7 +303,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jersey.filter.order=0 # Jersey filter chain order.
 	spring.jersey.init.*= # Init parameters to pass to Jersey via the servlet or filter.
 	spring.jersey.servlet.load-on-startup=-1 # Load on startup priority of the Jersey servlet.
-	spring.jersey.type=servlet # Jersey integration type. Can be either "servlet" or "filter".
+	spring.jersey.type=servlet # Jersey integration type.
 
 	# SPRING MOBILE DEVICE VIEWS ({sc-spring-boot-autoconfigure}/mobile/DeviceDelegatingViewResolverAutoConfiguration.{sc-ext}[DeviceDelegatingViewResolverAutoConfiguration])
 	spring.mobile.devicedelegatingviewresolver.enable-fallback=false # Enable support for fallback resolution.
@@ -839,7 +839,7 @@ content into your application; rather pick only the properties that you need.
 	spring.artemis.embedded.server-id= # Server id. By default, an auto-incremented counter is used.
 	spring.artemis.embedded.topics= # Comma-separated list of topics to create on startup.
 	spring.artemis.host=localhost # Artemis broker host.
-	spring.artemis.mode= # Artemis deployment mode, auto-detected by default. Can be explicitly set to "native" or "embedded".
+	spring.artemis.mode= # Artemis deployment mode, auto-detected by default.
 	spring.artemis.password= # Login password of the broker.
 	spring.artemis.port=61616 # Artemis broker port.
 	spring.artemis.user= # Login user of the broker.
@@ -860,7 +860,7 @@ content into your application; rather pick only the properties that you need.
 	spring.hornetq.embedded.server-id= # Server id. By default, an auto-incremented counter is used.
 	spring.hornetq.embedded.topics= # Comma-separated list of topics to create on startup.
 	spring.hornetq.host=localhost # HornetQ broker host.
-	spring.hornetq.mode= # HornetQ deployment mode, auto-detected by default. Can be explicitly set to "native" or "embedded".
+	spring.hornetq.mode= # HornetQ deployment mode, auto-detected by default.
 	spring.hornetq.password= # Login password of the broker.
 	spring.hornetq.port=5445 # HornetQ broker port.
 	spring.hornetq.user= # Login user of the broker.

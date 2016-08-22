@@ -36,8 +36,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ArtemisProperties {
 
 	/**
-	 * Artemis deployment mode, auto-detected by default. Can be explicitly set to
-	 * "native" or "embedded".
+	 * Artemis deployment mode, auto-detected by default.
 	 */
 	private ArtemisMode mode;
 

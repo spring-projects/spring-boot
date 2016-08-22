@@ -37,8 +37,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class HornetQProperties {
 
 	/**
-	 * HornetQ deployment mode, auto-detected by default. Can be explicitly set to
-	 * "native" or "embedded".
+	 * HornetQ deployment mode, auto-detected by default.
 	 */
 	private HornetQMode mode;
 
