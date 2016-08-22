@@ -50,8 +50,7 @@ public class TestRestTemplateTests {
 		RestTemplateBuilder builder = mock(RestTemplateBuilder.class);
 		RestTemplate delegate = new RestTemplate();
 		given(builder.build()).willReturn(delegate);
-		assertThat(new TestRestTemplate(builder).getRestTemplate())
-				.isEqualTo(delegate);
+		assertThat(new TestRestTemplate(builder).getRestTemplate()).isEqualTo(delegate);
 	}
 
 	@Test

@@ -84,15 +84,12 @@ public class TestRestTemplate {
 
 	/**
 	 * Create a new {@link TestRestTemplate} instance.
-	 * @param restTemplateBuilder builder used to configure underlying {@link RestTemplate}
+	 * @param restTemplateBuilder builder used to configure underlying
+	 * {@link RestTemplate}
+	 * @since 1.4.1
 	 */
 	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder) {
 		this(buildRestTemplate(restTemplateBuilder));
-	}
-
-	private static RestTemplate buildRestTemplate(RestTemplateBuilder restTemplateBuilder) {
-		Assert.notNull(restTemplateBuilder, "RestTemplateBuilder must not be null");
-		return restTemplateBuilder.build();
 	}
 
 	/**
@@ -128,6 +125,12 @@ public class TestRestTemplate {
 		addAuthentication(restTemplate, username, password);
 		restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
 		this.restTemplate = restTemplate;
+	}
+
+	private static RestTemplate buildRestTemplate(
+			RestTemplateBuilder restTemplateBuilder) {
+		Assert.notNull(restTemplateBuilder, "RestTemplateBuilder must not be null");
+		return restTemplateBuilder.build();
 	}
 
 	private void addAuthentication(RestTemplate restTemplate, String username,
