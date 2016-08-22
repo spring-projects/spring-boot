@@ -1270,6 +1270,12 @@ public class ServerProperties
 			if (this.accesslog.pattern != null) {
 				factory.setAccessLogPattern(this.accesslog.pattern);
 			}
+			if (this.accesslog.prefix != null) {
+				factory.setAccessLogPrefix(this.accesslog.prefix);
+			}
+			if (this.accesslog.suffix != null) {
+				factory.setAccessLogSuffix(this.accesslog.suffix);
+			}
 			if (this.accesslog.enabled != null) {
 				factory.setAccessLogEnabled(this.accesslog.enabled);
 			}
@@ -1341,6 +1347,16 @@ public class ServerProperties
 			private String pattern = "common";
 
 			/**
+			 * Log file name prefix.
+			 */
+			protected String prefix = "access_log.";
+
+			/**
+			 * Log file name suffix.
+			 */
+			private String suffix = "log";
+
+			/**
 			 * Undertow access log directory.
 			 */
 			private File dir = new File("logs");
@@ -1359,6 +1375,22 @@ public class ServerProperties
 
 			public void setPattern(String pattern) {
 				this.pattern = pattern;
+			}
+
+			public String getPrefix() {
+				return this.prefix;
+			}
+
+			public void setPrefix(String prefix) {
+				this.prefix = prefix;
+			}
+
+			public String getSuffix() {
+				return this.suffix;
+			}
+
+			public void setSuffix(String suffix) {
+				this.suffix = suffix;
 			}
 
 			public File getDir() {

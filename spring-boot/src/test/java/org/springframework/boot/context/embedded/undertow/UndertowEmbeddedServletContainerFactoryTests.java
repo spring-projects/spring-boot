@@ -178,8 +178,21 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	@Test
 	public void accessLogCanBeEnabled()
 			throws IOException, URISyntaxException, InterruptedException {
+		testAccessLog(null, null, "access_log.log");
+	}
+
+	@Test
+	public void accessLogCanBeCustomized()
+			throws IOException, URISyntaxException, InterruptedException {
+		testAccessLog("my_access.", "logz", "my_access.logz");
+	}
+
+	private void testAccessLog(String prefix, String suffix, String expectedFile)
+			throws IOException, URISyntaxException, InterruptedException {
 		UndertowEmbeddedServletContainerFactory factory = getFactory();
 		factory.setAccessLogEnabled(true);
+		factory.setAccessLogPrefix(prefix);
+		factory.setAccessLogSuffix(suffix);
 		File accessLogDirectory = this.temporaryFolder.getRoot();
 		factory.setAccessLogDirectory(accessLogDirectory);
 		assertThat(accessLogDirectory.listFiles()).isEmpty();
@@ -187,7 +200,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
-		File accessLog = new File(accessLogDirectory, "access_log.log");
+		File accessLog = new File(accessLogDirectory, expectedFile);
 		awaitFile(accessLog);
 		assertThat(accessLogDirectory.listFiles()).contains(accessLog);
 	}

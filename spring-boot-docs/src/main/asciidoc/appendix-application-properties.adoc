@@ -219,6 +219,8 @@ content into your application; rather pick only the properties that you need.
 	server.undertow.accesslog.dir= # Undertow access log directory.
 	server.undertow.accesslog.enabled=false # Enable access log.
 	server.undertow.accesslog.pattern=common # Format pattern for access logs.
+	server.undertow.accesslog.prefix=access_log. # Log file name prefix.
+	server.undertow.accesslog.suffix=log # Log file name suffix.
 	server.undertow.buffer-size= # Size of each buffer in bytes.
 	server.undertow.buffers-per-region= # Number of buffer per region.
 	server.undertow.direct-buffers= # Allocate buffers outside the Java heap.

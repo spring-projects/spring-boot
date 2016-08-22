@@ -122,6 +122,10 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private String accessLogPattern;
 
+	private String accessLogPrefix;
+
+	private String accessLogSuffix;
+
 	private boolean accessLogEnabled = false;
 
 	private boolean useForwardHeaders;
@@ -408,8 +412,9 @@ public class UndertowEmbeddedServletContainerFactory
 	private AccessLogHandler createAccessLogHandler(HttpHandler handler) {
 		try {
 			createAccessLogDirectoryIfNecessary();
+			String prefix = (this.accessLogPrefix != null ? this.accessLogPrefix : "access_log.");
 			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
-					createWorker(), this.accessLogDirectory, "access_log.");
+					createWorker(), this.accessLogDirectory, prefix, this.accessLogSuffix);
 			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
 					: "common";
 			return new AccessLogHandler(handler, accessLogReceiver, formatString,
@@ -559,6 +564,14 @@ public class UndertowEmbeddedServletContainerFactory
 
 	public void setAccessLogPattern(String accessLogPattern) {
 		this.accessLogPattern = accessLogPattern;
+	}
+
+	public void setAccessLogPrefix(String accessLogPrefix) {
+		this.accessLogPrefix = accessLogPrefix;
+	}
+
+	public void setAccessLogSuffix(String accessLogSuffix) {
+		this.accessLogSuffix = accessLogSuffix;
 	}
 
 	public void setAccessLogEnabled(boolean accessLogEnabled) {
