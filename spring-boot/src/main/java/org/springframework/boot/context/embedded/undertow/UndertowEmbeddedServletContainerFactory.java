@@ -568,6 +568,10 @@ public class UndertowEmbeddedServletContainerFactory
 		this.accessLogPattern = accessLogPattern;
 	}
 
+	public String getAccessLogPrefix() {
+		return this.accessLogPrefix;
+	}
+
 	public void setAccessLogPrefix(String accessLogPrefix) {
 		this.accessLogPrefix = accessLogPrefix;
 	}

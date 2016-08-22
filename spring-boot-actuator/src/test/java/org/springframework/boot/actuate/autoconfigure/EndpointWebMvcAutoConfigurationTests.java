@@ -29,6 +29,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.catalina.Valve;
+import org.apache.catalina.valves.AccessLogValve;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
@@ -67,6 +69,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.testutil.Matched;
@@ -429,7 +432,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
 				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
-		// /health, /metrics, /env, /actuator, /heapdump (/shutdown is disabled by default)
+		// /health, /metrics, /env, /actuator, /heapdump (/shutdown is disabled by
+		// default)
 		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class)).hasSize(5);
 	}
 
@@ -560,6 +564,54 @@ public class EndpointWebMvcAutoConfigurationTests {
 				.getBean(ManagementServerProperties.class);
 		assertThat(managementServerProperties.getSsl()).isNotNull();
 		assertThat(managementServerProperties.getSsl().isEnabled()).isFalse();
+	}
+
+	@Test
+	public void tomcatManagementAccessLogUsesCustomPrefix() throws Exception {
+		this.applicationContext.register(TomcatContainerConfig.class, RootConfig.class,
+				EndpointConfig.class, DifferentPortConfig.class, BaseConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext,
+				"server.tomcat.accesslog.enabled: true");
+		this.applicationContext.refresh();
+		ApplicationContext managementContext = this.applicationContext
+				.getBean(ManagementContextResolver.class).getApplicationContext();
+		EmbeddedServletContainerFactory servletContainerFactory = managementContext
+				.getBean(EmbeddedServletContainerFactory.class);
+		assertThat(servletContainerFactory)
+				.isInstanceOf(TomcatEmbeddedServletContainerFactory.class);
+		AccessLogValve accessLogValve = findAccessLogValve(
+				((TomcatEmbeddedServletContainerFactory) servletContainerFactory));
+		assertThat(accessLogValve).isNotNull();
+		assertThat(accessLogValve.getPrefix()).isEqualTo("management_access_log");
+	}
+
+	@Test
+	public void undertowManagementAccessLogUsesCustomPrefix() throws Exception {
+		this.applicationContext.register(UndertowContainerConfig.class, RootConfig.class,
+				EndpointConfig.class, DifferentPortConfig.class, BaseConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext,
+				"server.undertow.accesslog.enabled: true");
+		this.applicationContext.refresh();
+		ApplicationContext managementContext = this.applicationContext
+				.getBean(ManagementContextResolver.class).getApplicationContext();
+		EmbeddedServletContainerFactory servletContainerFactory = managementContext
+				.getBean(EmbeddedServletContainerFactory.class);
+		assertThat(servletContainerFactory)
+				.isInstanceOf(UndertowEmbeddedServletContainerFactory.class);
+		assertThat(((UndertowEmbeddedServletContainerFactory) servletContainerFactory)
+				.getAccessLogPrefix()).isEqualTo("management_access_log.");
+	}
+
+	private AccessLogValve findAccessLogValve(
+			TomcatEmbeddedServletContainerFactory container) {
+		for (Valve engineValve : container.getEngineValves()) {
+			if (engineValve instanceof AccessLogValve) {
+				return (AccessLogValve) engineValve;
+			}
+		}
+		return null;
 	}
 
 	private void endpointDisabled(String name, Class<? extends MvcEndpoint> type) {
@@ -730,6 +782,26 @@ public class EndpointWebMvcAutoConfigurationTests {
 		@Bean
 		public SpecificEmbeddedServletContainerFactory embeddedServletContainerFactory() {
 			return new SpecificEmbeddedServletContainerFactory();
+		}
+
+	}
+
+	@Configuration
+	public static class TomcatContainerConfig {
+
+		@Bean
+		public TomcatEmbeddedServletContainerFactory embeddedServletContainerFactory() {
+			return new TomcatEmbeddedServletContainerFactory();
+		}
+
+	}
+
+	@Configuration
+	public static class UndertowContainerConfig {
+
+		@Bean
+		public UndertowEmbeddedServletContainerFactory embeddedServletContainerFactory() {
+			return new UndertowEmbeddedServletContainerFactory();
 		}
 
 	}
