@@ -249,8 +249,8 @@ public class RestTemplateBuilder {
 	 * previously defined interceptors.
 	 * @param interceptors the interceptors to set
 	 * @return a new builder instance
-	 * @see #additionalInterceptors(ClientHttpRequestInterceptor...)
 	 * @since 1.4.1
+	 * @see #additionalInterceptors(ClientHttpRequestInterceptor...)
 	 */
 	public RestTemplateBuilder interceptors(
 			ClientHttpRequestInterceptor... interceptors) {
@@ -264,8 +264,8 @@ public class RestTemplateBuilder {
 	 * previously defined interceptors.
 	 * @param interceptors the interceptors to set
 	 * @return a new builder instance
-	 * @see #additionalInterceptors(ClientHttpRequestInterceptor...)
 	 * @since 1.4.1
+	 * @see #additionalInterceptors(ClientHttpRequestInterceptor...)
 	 */
 	public RestTemplateBuilder interceptors(
 			Collection<ClientHttpRequestInterceptor> interceptors) {
@@ -282,8 +282,8 @@ public class RestTemplateBuilder {
 	 * that should be used with the {@link RestTemplate}.
 	 * @param interceptors the interceptors to add
 	 * @return a new builder instance
-	 * @see #interceptors(ClientHttpRequestInterceptor...)
 	 * @since 1.4.1
+	 * @see #interceptors(ClientHttpRequestInterceptor...)
 	 */
 	public RestTemplateBuilder additionalInterceptors(
 			ClientHttpRequestInterceptor... interceptors) {
@@ -296,8 +296,8 @@ public class RestTemplateBuilder {
 	 * that should be used with the {@link RestTemplate}.
 	 * @param interceptors the interceptors to add
 	 * @return a new builder instance
-	 * @see #interceptors(ClientHttpRequestInterceptor...)
 	 * @since 1.4.1
+	 * @see #interceptors(ClientHttpRequestInterceptor...)
 	 */
 	public RestTemplateBuilder additionalInterceptors(
 			Collection<? extends ClientHttpRequestInterceptor> interceptors) {
