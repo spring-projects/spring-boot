@@ -30,6 +30,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -99,7 +100,8 @@ public class DataSourceAutoConfiguration {
 	@Conditional(PooledDataSourceCondition.class)
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import({ DataSourceConfiguration.Tomcat.class, DataSourceConfiguration.Hikari.class,
-			DataSourceConfiguration.Dbcp.class, DataSourceConfiguration.Dbcp2.class })
+			DataSourceConfiguration.Dbcp.class, DataSourceConfiguration.Dbcp2.class,
+			DataSourceConfiguration.Generic.class})
 	protected static class PooledDataSourceConfiguration {
 
 	}
@@ -127,9 +129,27 @@ public class DataSourceAutoConfiguration {
 	}
 
 	/**
+	 * {@link AnyNestedCondition} that checks that either {@code spring.datasource.type}
+	 * is set or {@link PooledDataSourceAvailableCondition} applies.
+	 */
+	static class PooledDataSourceCondition extends AnyNestedCondition {
+
+		PooledDataSourceCondition() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@ConditionalOnProperty(prefix = "spring.datasource", name = "type")
+		static class ExplicitType { }
+
+		@Conditional(PooledDataSourceAvailableCondition.class)
+		static class PooledDataSourceAvailable { }
+
+	}
+
+	/**
 	 * {@link Condition} to test if a supported connection pool is available.
 	 */
-	static class PooledDataSourceCondition extends SpringBootCondition {
+	static class PooledDataSourceAvailableCondition extends SpringBootCondition {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,

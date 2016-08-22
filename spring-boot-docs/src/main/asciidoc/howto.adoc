@@ -1642,15 +1642,14 @@ a| `log4j2.json` +
 [[howto-configure-a-datasource]]
 === Configure a DataSource
 To override the default settings just define a `@Bean` of your own of type `DataSource`.
-Spring Boot provides a utility builder class `DataSourceBuilder` that can be used
-to create one of the standard ones (if it is on the classpath), or you can just create
-your own, and bind it to a set of `Environment` properties as explained in
-<<spring-boot-features.adoc#boot-features-external-config-3rd-party-configuration>>, e.g.
+As explained in
+<<spring-boot-features.adoc#boot-features-external-config-3rd-party-configuration>> you
+can easily bind it to a set of `Environment` properties:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
-	@ConfigurationProperties(prefix="datasource.mine")
+	@ConfigurationProperties(prefix="datasource.fancy")
 	public DataSource dataSource() {
 		return new FancyDataSource();
 	}
@@ -1658,10 +1657,37 @@ your own, and bind it to a set of `Environment` properties as explained in
 
 [source,properties,indent=0]
 ----
-	datasource.mine.jdbcUrl=jdbc:h2:mem:mydb
-	datasource.mine.user=sa
+	datasource.fancy.jdbcUrl=jdbc:h2:mem:mydb
+	datasource.fancy.username=sa
+	datasource.fancy.poolSize=30
+----
+
+Spring Boot also provides a utility builder class `DataSourceBuilder` that can be used
+to create one of the standard data sources (if it is on the classpath), or you can just
+create your own. If you want to reuse the customizations of `DataSourceProperties`, you
+can easily initialize a `DataSourceBuilder` from it:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+	@ConfigurationProperties(prefix="datasource.mine")
+	public DataSource dataSource(DataSourceProperties properties) {
+		return properties.initializeDataSourceBuilder()
+				// additional customizations
+				.build();
+	}
+----
+
+[source,properties,indent=0]
+----
+	spring.datasource.url=jdbc:h2:mem:mydb
+	spring.datasource.username=sa
 	datasource.mine.poolSize=30
 ----
+
+In this scenario, you keep the standard properties exposed by Spring Boot with your
+custom `DataSource` arrangement. By adding `@ConfigurationProperties`, you can also
+expose additional implementation-specific settings in a dedicated namespace.
 
 See _<<spring-boot-features.adoc#boot-features-configure-datasource>>_ in the
 '`Spring Boot features`' section and the
