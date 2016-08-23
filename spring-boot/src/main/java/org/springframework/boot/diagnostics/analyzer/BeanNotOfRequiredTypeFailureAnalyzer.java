@@ -26,7 +26,7 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 
 /**
  * An {@link AbstractFailureAnalyzer} that performs analysis of failures caused by a
- * {@link BeanNotOfRequiredTypeFailureAnalyzer}.
+ * {@link BeanNotOfRequiredTypeException}.
  *
  * @author Andy Wilkinson
  */
