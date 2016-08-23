@@ -41,7 +41,7 @@ import org.springframework.test.web.servlet.htmlunit.webdriver.MockMvcHtmlUnitDr
 @Configuration
 @ConditionalOnClass(HtmlUnitDriver.class)
 @AutoConfigureAfter(MockMvcAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.test.webmvc.webdriver", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.test.mockmvc.webdriver", name = "enabled", matchIfMissing = true)
 public class MockMvcWebDriverAutoConfiguration {
 
 	private final Environment environment;
