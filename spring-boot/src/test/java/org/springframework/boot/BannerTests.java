@@ -100,6 +100,9 @@ public class BannerTests {
 		application.setWebEnvironment(false);
 		this.context = application.run();
 		assertThat(this.context.containsBean("springBootBanner")).isTrue();
+		assertThat(this.context.containsBean("springApplicationInfo")).isTrue();
+		assertThat(this.context.getBean(
+				"springApplicationInfo", ApplicationInfo.class).getBanner()).isNotNull();
 	}
 
 	@Test
@@ -109,7 +112,9 @@ public class BannerTests {
 		Banner banner = mock(Banner.class);
 		application.setBanner(banner);
 		this.context = application.run();
-		Banner printedBanner = (Banner) this.context.getBean("springBootBanner");
+		ApplicationInfo applicationInfo = this.context.getBean("springApplicationInfo",
+				ApplicationInfo.class);
+		Banner printedBanner = applicationInfo.getBanner();
 		assertThat(ReflectionTestUtils.getField(printedBanner, "banner"))
 				.isEqualTo(banner);
 		verify(banner).printBanner(any(Environment.class),
@@ -127,6 +132,8 @@ public class BannerTests {
 		application.setWebEnvironment(false);
 		this.context = application.run();
 		assertThat(this.context.containsBean("springBootBanner")).isFalse();
+		assertThat(this.context.getBean("springApplicationInfo", ApplicationInfo.class).
+				getBanner()).isNull();
 	}
 
 	@Test
@@ -143,6 +150,8 @@ public class BannerTests {
 		this.context = application.run();
 		assertThat(this.out.toString()).contains("I printed a deprecated banner");
 		assertThat(this.context.containsBean("springBootBanner")).isFalse();
+		assertThat(this.context.getBean("springApplicationInfo", ApplicationInfo.class).
+				getBanner()).isNull();
 	}
 
 	static class DummyBanner implements Banner {

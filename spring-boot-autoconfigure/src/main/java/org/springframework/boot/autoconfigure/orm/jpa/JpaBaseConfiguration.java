@@ -27,6 +27,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.ApplicationInfo;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -105,6 +106,9 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 				jpaVendorAdapter, this.properties.getProperties(),
 				persistenceUnitManagerProvider.getIfAvailable());
 		builder.setCallback(getVendorCallback());
+		if (this.beanFactory.containsBean("springApplicationInfo")) {
+			builder.setApplicationInfo(this.beanFactory.getBean(ApplicationInfo.class));
+		}
 		return builder;
 	}
 
