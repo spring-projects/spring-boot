@@ -25,7 +25,7 @@ package org.springframework.boot.test.autoconfigure.properties;
 public enum SkipPropertyMapping {
 
 	/**
-	 * Skip the mapping the property.
+	 * Skip mapping the property.
 	 */
 	YES,
 

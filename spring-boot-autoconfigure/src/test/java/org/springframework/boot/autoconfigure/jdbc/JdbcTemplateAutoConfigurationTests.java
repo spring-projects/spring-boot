@@ -38,7 +38,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DataSourceAutoConfiguration}.
+ * Tests for {@link JdbcTemplateAutoConfiguration}.
  *
  * @author Dave Syer
  * @author Stephane Nicoll

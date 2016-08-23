@@ -5507,7 +5507,7 @@ public class MyTest {
 		assertThat(headers.getLocation().toString(), containsString("myotherhost"));
 	}
 
-	@TestConfig
+	@TestConfiguration
 	static class Config {
 
 		@Bean

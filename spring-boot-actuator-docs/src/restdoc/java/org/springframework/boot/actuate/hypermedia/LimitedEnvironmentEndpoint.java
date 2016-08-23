@@ -73,7 +73,6 @@ public class LimitedEnvironmentEndpoint extends EnvironmentEndpoint {
 
 	@Override
 	public Object sanitize(String name, Object object) {
-		System.out.println(name);
 		if (name.equals("gopherProxySet")) {
 			return object;
 		}
