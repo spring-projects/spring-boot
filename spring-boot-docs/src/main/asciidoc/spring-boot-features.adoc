@@ -5488,9 +5488,10 @@ public class MyTest {
 }
 ----
 
-If you are using the `@SpringBootTest` annotation, you can just inject a fully configured
-`TestRestTemplate` and start using it. If necessary, additional customizations can be
-applied via the `RestTemplateBuilder` bean:
+If you are using the `@SpringBootTest` annotation with `WebEnvironment.RANDOM_PORT` or
+`WebEnvironment.DEFINED_PORT`, you can just inject a fully configured `TestRestTemplate`
+and start using it. If necessary, additional customizations can be applied via the
+`RestTemplateBuilder` bean:
 
 [source,java,indent=0]
 ----
