@@ -25,6 +25,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
@@ -46,6 +47,7 @@ public class SessionAutoConfigurationJdbcTests
 	@Test
 	public void defaultConfig() {
 		load(Arrays.asList(EmbeddedDataSourceConfiguration.class,
+				JdbcTemplateAutoConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class),
 				"spring.session.store-type=jdbc");
 		JdbcOperationsSessionRepository repository = validateSessionRepository(
