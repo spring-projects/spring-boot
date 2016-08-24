@@ -21,6 +21,7 @@ import java.net.URI;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -46,11 +47,12 @@ public class SampleGithubApplicationTests {
 	@LocalServerPort
 	private int port;
 
+	@Autowired
+	private TestRestTemplate restTemplate;
+
 	@Test
 	public void everythingIsSecuredByDefault() throws Exception {
-		TestRestTemplate restTemplate = new TestRestTemplate();
-		ResponseEntity<Void> entity = restTemplate
-				.getForEntity("http://localhost:" + this.port, Void.class);
+		ResponseEntity<Void> entity = this.restTemplate.getForEntity("/", Void.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation())
 				.isEqualTo(URI.create("http://localhost:" + this.port + "/login"));
@@ -58,9 +60,8 @@ public class SampleGithubApplicationTests {
 
 	@Test
 	public void loginRedirectsToGithub() throws Exception {
-		TestRestTemplate restTemplate = new TestRestTemplate();
-		ResponseEntity<Void> entity = restTemplate
-				.getForEntity("http://localhost:" + this.port + "/login", Void.class);
+		ResponseEntity<Void> entity = this.restTemplate.getForEntity("/login",
+				Void.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation().toString())
 				.startsWith("https://github.com/login/oauth");
