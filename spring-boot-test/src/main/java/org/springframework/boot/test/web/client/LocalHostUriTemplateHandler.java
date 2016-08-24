@@ -23,26 +23,49 @@ import org.springframework.web.util.DefaultUriTemplateHandler;
 import org.springframework.web.util.UriTemplateHandler;
 
 /**
- * {@link UriTemplateHandler} will automatically prefix relative URLs with
+ * {@link UriTemplateHandler} will automatically prefix relative URIs with
  * <code>localhost:$&#123;local.server.port&#125;</code>.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.4.0
  */
 public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 
 	private final Environment environment;
 
+	private final String scheme;
+
+	/**
+	 * Create a new {@code LocalHostUriTemplateHandler} that will generate {@code http}
+	 * URIs using the given {@code environment} to determine the port.
+	 *
+	 * @param environment the environment used to determine the port
+	 */
 	public LocalHostUriTemplateHandler(Environment environment) {
+		this(environment, "http");
+	}
+
+	/**
+	 * Create a new {@code LocalHostUriTemplateHandler} the will generate URIs with the
+	 * given {@code scheme} and use the given {@code environment} to determine the port.
+	 *
+	 * @param environment the environment used to determine the port
+	 * @param scheme the scheme of the root uri
+	 * @since 1.4.1
+	 */
+	public LocalHostUriTemplateHandler(Environment environment, String scheme) {
 		super(new DefaultUriTemplateHandler());
 		Assert.notNull(environment, "Environment must not be null");
+		Assert.notNull(scheme, "Scheme must not be null");
 		this.environment = environment;
+		this.scheme = scheme;
 	}
 
 	@Override
 	public String getRootUri() {
 		String port = this.environment.getProperty("local.server.port", "8080");
-		return "http://localhost:" + port;
+		return this.scheme + "://localhost:" + port;
 	}
 
 }
