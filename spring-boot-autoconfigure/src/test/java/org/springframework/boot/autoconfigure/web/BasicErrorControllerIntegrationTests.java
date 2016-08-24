@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +30,7 @@ import javax.validation.constraints.NotNull;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.BasicErrorControllerMockMvcTests.MinimalWebConfiguration;
@@ -50,10 +49,16 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractView;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link BasicErrorController} using a real HTTP server.

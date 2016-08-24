@@ -43,12 +43,12 @@ public class ErrorProperties {
 	private IncludeStacktrace includeStacktrace = IncludeStacktrace.NEVER;
 
 	/**
-	 * RequestAttributes to include in DefaultErrorProperties
+	 * RequestAttributes to include in DefaultErrorProperties.
 	 */
 	private Set<String> includeRequestAttributes = new HashSet<String>();
 
 	/**
-	 * SessionAttributes to include in DefaultErrorProperties
+	 * SessionAttributes to include in DefaultErrorProperties.
 	 */
 	private Set<String> includeSessionAttributes = new HashSet<String>();
 
