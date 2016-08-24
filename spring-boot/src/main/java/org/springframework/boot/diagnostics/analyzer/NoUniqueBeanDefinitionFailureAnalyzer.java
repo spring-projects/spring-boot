@@ -16,30 +16,25 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
-import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * An {@link AbstractFailureAnalyzer} that performs analysis of failures caused by a
- * {@link NoUniqueBeanDefinitionException}.
+ * An {@link AbstractInjectionFailureAnalyzer} that performs analysis of failures caused
+ * by a {@link NoUniqueBeanDefinitionException}.
  *
  * @author Andy Wilkinson
  */
 class NoUniqueBeanDefinitionFailureAnalyzer
-		extends AbstractFailureAnalyzer<NoUniqueBeanDefinitionException>
+		extends AbstractInjectionFailureAnalyzer<NoUniqueBeanDefinitionException>
 		implements BeanFactoryAware {
 
 	private ConfigurableBeanFactory beanFactory;
@@ -52,9 +47,8 @@ class NoUniqueBeanDefinitionFailureAnalyzer
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
-			NoUniqueBeanDefinitionException cause) {
-		String consumerDescription = getConsumerDescription(rootFailure);
-		if (consumerDescription == null) {
+			NoUniqueBeanDefinitionException cause, String description) {
+		if (description == null) {
 			return null;
 		}
 		String[] beanNames = extractBeanNames(cause);
@@ -63,26 +57,9 @@ class NoUniqueBeanDefinitionFailureAnalyzer
 		}
 		StringBuilder message = new StringBuilder();
 		message.append(String.format("%s required a single bean, but %d were found:%n",
-				consumerDescription, beanNames.length));
+				description, beanNames.length));
 		for (String beanName : beanNames) {
-			try {
-				BeanDefinition beanDefinition = this.beanFactory
-						.getMergedBeanDefinition(beanName);
-				if (StringUtils.hasText(beanDefinition.getFactoryMethodName())) {
-					message.append(String.format("\t- %s: defined by method '%s' in %s%n",
-							beanName, beanDefinition.getFactoryMethodName(),
-							beanDefinition.getResourceDescription()));
-				}
-				else {
-					message.append(String.format("\t- %s: defined in %s%n", beanName,
-							beanDefinition.getResourceDescription()));
-				}
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				message.append(String.format(
-						"\t- %s: a programmatically registered singleton", beanName));
-			}
-
+			buildMessage(message, beanName);
 		}
 		return new FailureAnalysis(message.toString(),
 				"Consider marking one of the beans as @Primary, updating the consumer to"
@@ -91,78 +68,26 @@ class NoUniqueBeanDefinitionFailureAnalyzer
 				cause);
 	}
 
-	private String getConsumerDescription(Throwable ex) {
-		UnsatisfiedDependencyException unsatisfiedDependency = findUnsatisfiedDependencyException(
-				ex);
-		if (unsatisfiedDependency != null) {
-			return getConsumerDescription(unsatisfiedDependency);
+	private void buildMessage(StringBuilder message, String beanName) {
+		try {
+			BeanDefinition definition = this.beanFactory
+					.getMergedBeanDefinition(beanName);
+			message.append(getDefinitionDescription(beanName, definition));
 		}
-		BeanInstantiationException beanInstantiationException = findBeanInstantiationException(
-				ex);
-		if (beanInstantiationException != null) {
-			return getConsumerDescription(beanInstantiationException);
+		catch (NoSuchBeanDefinitionException ex) {
+			message.append(String
+					.format("\t- %s: a programmatically registered singleton", beanName));
 		}
-		return null;
 	}
 
-	private UnsatisfiedDependencyException findUnsatisfiedDependencyException(
-			Throwable root) {
-		return findMostNestedCause(root, UnsatisfiedDependencyException.class);
-	}
-
-	private BeanInstantiationException findBeanInstantiationException(Throwable root) {
-		return findMostNestedCause(root, BeanInstantiationException.class);
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T extends Exception> T findMostNestedCause(Throwable root,
-			Class<T> causeType) {
-		Throwable candidate = root;
-		T mostNestedMatch = null;
-		while (candidate != null) {
-			if (causeType.isAssignableFrom(candidate.getClass())) {
-				mostNestedMatch = (T) candidate;
-			}
-			candidate = candidate.getCause();
+	private String getDefinitionDescription(String beanName, BeanDefinition definition) {
+		if (StringUtils.hasText(definition.getFactoryMethodName())) {
+			return String.format("\t- %s: defined by method '%s' in %s%n", beanName,
+					definition.getFactoryMethodName(),
+					definition.getResourceDescription());
 		}
-		return mostNestedMatch;
-	}
-
-	private String getConsumerDescription(UnsatisfiedDependencyException ex) {
-		InjectionPoint injectionPoint = ex.getInjectionPoint();
-		if (injectionPoint != null) {
-			if (injectionPoint.getField() != null) {
-				return String.format("Field %s in %s",
-						injectionPoint.getField().getName(),
-						injectionPoint.getField().getDeclaringClass().getName());
-			}
-			if (injectionPoint.getMethodParameter() != null) {
-				if (injectionPoint.getMethodParameter().getConstructor() != null) {
-					return String.format("Parameter %d of constructor in %s",
-							injectionPoint.getMethodParameter().getParameterIndex(),
-							injectionPoint.getMethodParameter().getDeclaringClass()
-									.getName());
-				}
-				return String.format("Parameter %d of method %s in %s",
-						injectionPoint.getMethodParameter().getParameterIndex(),
-						injectionPoint.getMethodParameter().getMethod().getName(),
-						injectionPoint.getMethodParameter().getDeclaringClass()
-								.getName());
-			}
-		}
-		return ex.getResourceDescription();
-	}
-
-	private String getConsumerDescription(BeanInstantiationException ex) {
-		if (ex.getConstructingMethod() != null) {
-			return String.format("Method %s in %s", ex.getConstructingMethod().getName(),
-					ex.getConstructingMethod().getDeclaringClass().getName());
-		}
-		if (ex.getConstructor() != null) {
-			return String.format("Constructor in %s", ClassUtils
-					.getUserClass(ex.getConstructor().getDeclaringClass()).getName());
-		}
-		return ex.getBeanClass().getName();
+		return String.format("\t- %s: defined in %s%n", beanName,
+				definition.getResourceDescription());
 	}
 
 	private String[] extractBeanNames(NoUniqueBeanDefinitionException cause) {
