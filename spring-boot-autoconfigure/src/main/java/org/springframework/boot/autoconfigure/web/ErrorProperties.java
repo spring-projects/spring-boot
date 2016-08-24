@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -23,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
  *
  * @author Michael Stummvoll
  * @author Stephane Nicoll
+ * @author Kim Saabye Pedersen
  * @since 1.3.0
  */
 public class ErrorProperties {
@@ -38,6 +42,16 @@ public class ErrorProperties {
 	 */
 	private IncludeStacktrace includeStacktrace = IncludeStacktrace.NEVER;
 
+	/**
+	 * RequestAttributes to include in DefaultErrorProperties
+	 */
+	private Set<String> includeRequestAttributes = new HashSet<String>();
+
+	/**
+	 * SessionAttributes to include in DefaultErrorProperties
+	 */
+	private Set<String> includeSessionAttributes = new HashSet<String>();
+
 	public String getPath() {
 		return this.path;
 	}
@@ -52,6 +66,22 @@ public class ErrorProperties {
 
 	public void setIncludeStacktrace(IncludeStacktrace includeStacktrace) {
 		this.includeStacktrace = includeStacktrace;
+	}
+
+	public Set<String> getIncludeSessionAttributes() {
+		return includeSessionAttributes;
+	}
+
+	public void setIncludeSessionAttributes(Set<String> includeSessionAttributes) {
+		this.includeSessionAttributes = includeSessionAttributes;
+	}
+
+	public Set<String> getIncludeRequestAttributes() {
+		return includeRequestAttributes;
+	}
+
+	public void setIncludeRequestAttributes(Set<String> includeRequestAttributes) {
+		this.includeRequestAttributes = includeRequestAttributes;
 	}
 
 	/**

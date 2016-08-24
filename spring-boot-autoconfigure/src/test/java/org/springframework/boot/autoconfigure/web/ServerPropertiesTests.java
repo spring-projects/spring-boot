@@ -23,12 +23,10 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
-
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.RemoteIpValve;
@@ -37,7 +35,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
@@ -52,11 +49,7 @@ import org.springframework.mock.env.MockEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link ServerProperties}.
@@ -68,6 +61,7 @@ import static org.mockito.Mockito.verify;
  * @author Eddú Meléndez
  * @author Quinten De Swaef
  * @author Venil Noronha
+ * @author Kim Saabye Pedersen
  */
 public class ServerPropertiesTests {
 
@@ -129,6 +123,20 @@ public class ServerPropertiesTests {
 		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 		assertThat(this.properties.getServletMapping()).isEqualTo("/foo/*");
 		assertThat(this.properties.getServletPrefix()).isEqualTo("/foo");
+	}
+
+	@Test
+	public void testErrorBinding() throws Exception {
+		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
+		binder.bind(new MutablePropertyValues(Collections
+				.singletonMap("server.error.includeRequestAttributes", "foo,bar")));
+		binder.bind(new MutablePropertyValues(Collections
+				.singletonMap("server.error.includeSessionAttributes", "mooh,booh")));
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		assertThat(this.properties.getError().getIncludeRequestAttributes())
+				.contains("foo", "bar");
+		assertThat(this.properties.getError().getIncludeSessionAttributes())
+				.contains("mooh", "booh");
 	}
 
 	@Test

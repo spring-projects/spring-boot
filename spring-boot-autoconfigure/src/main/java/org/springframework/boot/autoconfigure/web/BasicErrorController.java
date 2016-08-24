@@ -44,6 +44,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Phillip Webb
  * @author Michael Stummvoll
  * @author Stephane Nicoll
+ * @author Kim Saabye Pedersen
  * @see ErrorAttributes
  * @see ErrorProperties
  */
@@ -86,8 +87,10 @@ public class BasicErrorController extends AbstractErrorController {
 	public ModelAndView errorHtml(HttpServletRequest request,
 			HttpServletResponse response) {
 		HttpStatus status = getStatus(request);
-		Map<String, Object> model = Collections.unmodifiableMap(getErrorAttributes(
-				request, isIncludeStackTrace(request, MediaType.TEXT_HTML)));
+		Map<String, Object> model = Collections.unmodifiableMap(
+				getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL),
+						this.errorProperties.getIncludeRequestAttributes(),
+						this.errorProperties.getIncludeSessionAttributes()));
 		response.setStatus(status.value());
 		ModelAndView modelAndView = resolveErrorView(request, response, status, model);
 		return (modelAndView == null ? new ModelAndView("error", model) : modelAndView);
@@ -97,7 +100,9 @@ public class BasicErrorController extends AbstractErrorController {
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
 		Map<String, Object> body = getErrorAttributes(request,
-				isIncludeStackTrace(request, MediaType.ALL));
+				isIncludeStackTrace(request, MediaType.ALL),
+				this.errorProperties.getIncludeRequestAttributes(),
+				this.errorProperties.getIncludeSessionAttributes());
 		HttpStatus status = getStatus(request);
 		return new ResponseEntity<Map<String, Object>>(body, status);
 	}

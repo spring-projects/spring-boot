@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,6 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Kim Saabye Pedersen
  * @since 1.3.0
  * @see ErrorAttributes
  */
@@ -71,6 +73,14 @@ public abstract class AbstractErrorController implements ErrorController {
 		RequestAttributes requestAttributes = new ServletRequestAttributes(request);
 		return this.errorAttributes.getErrorAttributes(requestAttributes,
 				includeStackTrace);
+	}
+
+	protected Map<String, Object> getErrorAttributes(HttpServletRequest request,
+			boolean includeStackTrace, Set<String> includeRequestAttributes,
+			Set<String> includeSessionAttributes) {
+		RequestAttributes requestAttributes = new ServletRequestAttributes(request);
+		return this.errorAttributes.getErrorAttributes(requestAttributes,
+				includeStackTrace, includeRequestAttributes, includeSessionAttributes);
 	}
 
 	protected boolean getTraceParameter(HttpServletRequest request) {

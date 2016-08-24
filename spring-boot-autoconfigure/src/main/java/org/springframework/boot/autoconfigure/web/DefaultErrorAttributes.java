@@ -18,9 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +52,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Kim Saabye Pedersen
  * @since 1.1.0
  * @see ErrorAttributes
  */
@@ -78,6 +77,17 @@ public class DefaultErrorAttributes
 
 	private void storeErrorAttributes(HttpServletRequest request, Exception ex) {
 		request.setAttribute(ERROR_ATTRIBUTE, ex);
+	}
+
+	@Override
+	public Map<String, Object> getErrorAttributes(RequestAttributes requestAttributes,
+			boolean includeStackTrace, Set<String> includeRequestAttributes,
+			Set<String> includeSessionAttributes) {
+		Map<String, Object> errorAttributes = this.getErrorAttributes(requestAttributes,
+				includeStackTrace);
+		addCustomAttributesDetails(errorAttributes, requestAttributes,
+				includeRequestAttributes, includeSessionAttributes);
+		return errorAttributes;
 	}
 
 	@Override
@@ -108,6 +118,30 @@ public class DefaultErrorAttributes
 			// Unable to obtain a reason
 			errorAttributes.put("error", "Http Status " + status);
 		}
+	}
+
+	private void addCustomAttributesDetails(Map<String, Object> errorAttributes,
+			RequestAttributes requestAttributes, Set<String> includeRequestAttributes,
+			Set<String> includeSessionAttributes) {
+
+		for (Iterator<String> iterator = includeRequestAttributes.iterator(); iterator
+				.hasNext();) {
+			String attributeName = iterator.next();
+			Object attribute = requestAttributes.getAttribute(attributeName,
+					RequestAttributes.SCOPE_REQUEST);
+			errorAttributes.put(RequestAttributes.REFERENCE_REQUEST + "." + attributeName,
+					attribute);
+		}
+
+		for (Iterator<String> iterator = includeSessionAttributes.iterator(); iterator
+				.hasNext();) {
+			String attributeName = iterator.next();
+			Object attribute = requestAttributes.getAttribute(attributeName,
+					RequestAttributes.SCOPE_SESSION);
+			errorAttributes.put(RequestAttributes.REFERENCE_SESSION + "." + attributeName,
+					attribute);
+		}
+
 	}
 
 	private void addErrorDetails(Map<String, Object> errorAttributes,

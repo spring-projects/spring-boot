@@ -16,14 +16,13 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.*;
 
 import javax.servlet.ServletException;
 
 import org.junit.Test;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BindException;
@@ -35,12 +34,11 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Tests for {@link DefaultErrorAttributes}.
  *
  * @author Phillip Webb
+ * @author Kim Saabye Pedersen
  */
 public class DefaultErrorAttributesTests {
 
@@ -149,6 +147,19 @@ public class DefaultErrorAttributesTests {
 		assertThat(attributes.get("exception"))
 				.isEqualTo(OutOfMemoryError.class.getName());
 		assertThat(attributes.get("message")).isEqualTo("Test error");
+	}
+
+	@Test
+	public void getCustomErrorAttributes() throws Exception {
+		this.request.setAttribute("foo", "foovalue");
+		this.request.getSession().setAttribute("moo", "moovalue");
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(
+				this.requestAttributes, false, new HashSet<String>(Arrays.asList("foo")),
+				new HashSet<String>(Arrays.asList("moo")));
+		assertThat(attributes.get(RequestAttributes.REFERENCE_REQUEST + ".foo"))
+				.isEqualTo("foovalue");
+		assertThat(attributes.get(RequestAttributes.REFERENCE_SESSION + ".moo"))
+				.isEqualTo("moovalue");
 	}
 
 	@Test
