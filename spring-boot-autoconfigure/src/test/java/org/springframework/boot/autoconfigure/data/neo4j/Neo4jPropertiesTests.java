@@ -57,7 +57,14 @@ public class Neo4jPropertiesTests {
 	}
 
 	@Test
-	public void defaultUseHttpDriverIfEmbeddedDriverIsNotAvailable() {
+	public void defaultUseBoltIfAvailableAndEmbeddedNot() {
+		Neo4jProperties properties = load(EnumSet.of( AvailableDriver.BOLT ));
+		Configuration configuration = properties.createConfiguration();
+		assertDriver(configuration, Neo4jProperties.BOLT_DRIVER, "bolt://localhost:7687");
+	}
+
+	@Test
+	public void defaultUseHttpIfEmbeddedAndBoltIsNotAvailable() {
 		Neo4jProperties properties = load(EnumSet.noneOf( AvailableDriver.class ));
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
@@ -70,6 +77,14 @@ public class Neo4jPropertiesTests {
 				"spring.data.neo4j.uri=http://localhost:7474");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "http://localhost:7474");
+	}
+
+	@Test
+	public void boltUriUseBolt() {
+		Neo4jProperties properties = load(EnumSet.of( AvailableDriver.EMBEDDED, AvailableDriver.BOLT ),
+				"spring.data.neo4j.uri=bolt://localhost:7687");
+		Configuration configuration = properties.createConfiguration();
+		assertDriver(configuration, Neo4jProperties.BOLT_DRIVER, "bolt://localhost:7687");
 	}
 
 	@Test
