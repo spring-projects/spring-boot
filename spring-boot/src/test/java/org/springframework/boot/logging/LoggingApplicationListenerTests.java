@@ -37,6 +37,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.boot.testutil.InternalOutputCapture;
@@ -462,6 +463,21 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		assertThat(System.getProperty("LOG_FILE"))
 				.isEqualTo("target/" + new ApplicationPid().toString() + ".log");
+	}
+
+	@Test
+	public void applicationFailedEventCleansUpLoggingSystem() {
+		System.setProperty(LoggingSystem.SYSTEM_PROPERTY,
+				TestCleanupLoggingSystem.class.getName());
+		this.initializer.onApplicationEvent(
+				new ApplicationStartedEvent(this.springApplication, new String[0]));
+		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils
+				.getField(this.initializer, "loggingSystem");
+		assertThat(loggingSystem.cleanedUp).isFalse();
+		this.initializer
+				.onApplicationEvent(new ApplicationFailedEvent(this.springApplication,
+						new String[0], new GenericApplicationContext(), new Exception()));
+		assertThat(loggingSystem.cleanedUp).isTrue();
 	}
 
 	private boolean bridgeHandlerInstalled() {
