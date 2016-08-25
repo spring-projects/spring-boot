@@ -32,7 +32,6 @@ import javax.validation.constraints.NotNull;
 
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowOptions;
-import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
@@ -627,6 +626,13 @@ public class ServerProperties
 		private File basedir;
 
 		/**
+		 * The static content settings. If not specified the defaults will be used.
+		 */
+		private Context context;
+
+		private Servlets servlets;
+
+		/**
 		 * Delay in seconds between the invocation of backgroundProcess methods.
 		 */
 		private int backgroundProcessorDelay = 30; // seconds
@@ -716,6 +722,22 @@ public class ServerProperties
 			this.basedir = basedir;
 		}
 
+		public Context getContext() {
+			return context;
+		}
+
+		public void setContext(Context context) {
+			this.context = context;
+		}
+
+		public Servlets getServlets() {
+			return servlets;
+		}
+
+		public void setServlets(Servlets servlets) {
+			this.servlets = servlets;
+		}
+
 		public String getInternalProxies() {
 			return this.internalProxies;
 		}
@@ -777,6 +799,18 @@ public class ServerProperties
 			if (getBasedir() != null) {
 				factory.setBaseDirectory(getBasedir());
 			}
+
+			if (getContext() != null && getContext().getDocbase() != null) {
+				factory.setDocumentRoot(getContext().getDocbase());
+				if (getContext().getResources() != null) {
+					factory.setAllowLinking(getContext().getResources().getLinking().isEnabled());
+				}
+			}
+
+			if (getServlets() != null && getServlets().getDefaultservlet() != null) {
+				factory.setShowListing(getServlets().getDefaultservlet().getListing().isEnabled());
+			}
+
 			factory.setBackgroundProcessorDelay(Tomcat.this.backgroundProcessorDelay);
 			customizeRemoteIpValve(serverProperties, factory);
 			if (this.maxThreads > 0) {
@@ -921,7 +955,7 @@ public class ServerProperties
 			factory.addContextCustomizers(new TomcatContextCustomizer() {
 
 				@Override
-				public void customize(Context context) {
+				public void customize(org.apache.catalina.Context context) {
 					context.setMapperContextRootRedirectEnabled(redirectContextRoot);
 				}
 
@@ -1007,6 +1041,119 @@ public class ServerProperties
 
 			public void setRenameOnRotate(boolean renameOnRotate) {
 				this.renameOnRotate = renameOnRotate;
+			}
+
+		}
+
+		public static class Context {
+
+			/**
+			 * The Document Base (also known as the Context Root) directory for this web application, or the pathname
+			 * to the web application archive file (if this web application is being executed directly from the
+			 * WAR file).
+			 *
+			 * You may specify an absolute pathname for this directory or WAR file, or a pathname that is
+			 * relative to the appBase directory of the owning Host.
+			 *
+			 * This will set the document root.
+			 */
+			private File docbase;
+
+			private Resources resources;
+
+			public File getDocbase() {
+				return docbase;
+			}
+
+			public void setDocbase(File docbase) {
+				this.docbase = docbase;
+			}
+
+			public Resources getResources() {
+				return resources;
+			}
+
+			public void setResources(Resources resources) {
+				this.resources = resources;
+			}
+
+			public static class Resources {
+
+				private Linking linking;
+
+				public Linking getLinking() {
+					return linking;
+				}
+
+				public void setLinking(Linking linking) {
+					this.linking = linking;
+				}
+
+				public static class Linking {
+
+					/**
+					 * If the value of this flag is true, symlinks will be allowed inside the web application,
+					 * pointing to resources outside the web application base path.
+					 * If not specified, the default value of the flag is false.
+					 */
+					private boolean enabled;
+
+					public boolean isEnabled() {
+						return enabled;
+					}
+
+					public void setEnabled(boolean enabled) {
+						this.enabled = enabled;
+					}
+
+				}
+
+			}
+
+		}
+
+		public static class Servlets {
+
+			private DefaultServlet defaultservlet;
+
+			public DefaultServlet getDefaultservlet() {
+				return defaultservlet;
+			}
+
+			public void setDefaultservlet(DefaultServlet defaultservlet) {
+				this.defaultservlet = defaultservlet;
+			}
+
+			public static class DefaultServlet {
+
+				private Listing listing;
+
+				public Listing getListing() {
+					return listing;
+				}
+
+				public void setListing(Listing listing) {
+					this.listing = listing;
+				}
+
+				public static class Listing {
+
+					/**
+					 * The show listing attribute controls if directory listings
+					 * should be shown for static content.
+					 */
+					private boolean enabled;
+
+					public boolean isEnabled() {
+						return enabled;
+					}
+
+					public void setEnabled(boolean enabled) {
+						this.enabled = enabled;
+					}
+
+				}
+
 			}
 
 		}

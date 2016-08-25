@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,6 +110,10 @@ public class TomcatEmbeddedServletContainerFactory
 
 	private File baseDirectory;
 
+	private boolean allowLinking;
+
+	private boolean showListing;
+
 	private List<Valve> engineValves = new ArrayList<Valve>();
 
 	private List<Valve> contextValves = new ArrayList<Valve>();
@@ -196,6 +201,10 @@ public class TomcatEmbeddedServletContainerFactory
 		context.setParentClassLoader(
 				this.resourceLoader != null ? this.resourceLoader.getClassLoader()
 						: ClassUtils.getDefaultClassLoader());
+		if (getDocumentRoot() != null && allowLinking) {
+			enableAllowLinkingByReflection(context);
+		}
+
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
 		try {
@@ -221,6 +230,57 @@ public class TomcatEmbeddedServletContainerFactory
 		configureContext(context, initializersToUse);
 		host.addChild(context);
 		postProcessContext(context);
+	}
+
+	private void enableAllowLinkingByReflection(TomcatEmbeddedContext context) {
+
+		Class standardRootClass = null;
+		boolean usesTomcat8 = true;
+		try {
+			standardRootClass = Class.forName("org.apache.catalina.webresources.StandardRoot");
+		}
+		catch (ClassNotFoundException e) {
+			usesTomcat8 = false;
+		}
+
+		if (usesTomcat8) {
+			try {
+
+				// context.setResources(new StandardRoot());
+				// context.getResources().setAllowLinking(true);
+
+				//create the new StandardRoot instance
+				Object standardRootInstance = standardRootClass.newInstance();
+
+				//assign the standard root instance as a resource
+				Class webResourceRootClass = Class.forName("org.apache.catalina.WebResourceRoot");
+				Method setResourcesMethod = TomcatEmbeddedContext.class.getMethod("setResources", webResourceRootClass);
+				setResourcesMethod.invoke(context, standardRootInstance);
+
+				//retrieve the web resource root
+				Method getResourcesMethod = TomcatEmbeddedContext.class.getMethod("getResources");
+				Object webResourceRoot = getResourcesMethod.invoke(context);
+
+				//allow linking
+				Method setAllowLinkingMethod = webResourceRootClass.getMethod("setAllowLinking", boolean.class);
+				setAllowLinkingMethod.invoke(webResourceRoot, true);
+
+			}
+			catch (Exception e) {
+				throw new IllegalStateException("Failed to enable linking.", e);
+			}
+		}
+		else {
+			// ((StandardContext)context).setAllowLinking(true);
+			try {
+				Class standardContextClass = Class.forName("org.apache.catalina.core.StandardContext");
+				final Method setAllowLinkingMethod = standardContextClass.getMethod("setAllowLinking", boolean.class);
+				setAllowLinkingMethod.invoke(context, true);
+			}
+			catch (Exception e) {
+				throw new IllegalStateException("Failed to enable linking.", e);
+			}
+		}
 	}
 
 	/**
@@ -249,7 +309,9 @@ public class TomcatEmbeddedServletContainerFactory
 		defaultServlet.setName("default");
 		defaultServlet.setServletClass("org.apache.catalina.servlets.DefaultServlet");
 		defaultServlet.addInitParameter("debug", "0");
-		defaultServlet.addInitParameter("listings", "false");
+
+		defaultServlet.addInitParameter("listings", Boolean.toString(showListing));
+
 		defaultServlet.setLoadOnStartup(1);
 		// Otherwise the default location of a Spring DispatcherServlet cannot be set
 		defaultServlet.setOverridable(true);
@@ -541,6 +603,27 @@ public class TomcatEmbeddedServletContainerFactory
 	 */
 	public void setBaseDirectory(File baseDirectory) {
 		this.baseDirectory = baseDirectory;
+	}
+
+	/**
+	 * When docBase is set, if the value of this flag is true, symlinks
+	 * will be allowed inside the web application, pointing to resources
+	 * outside the web application base path.
+	 * If not specified, the default value of the flag is false.
+	 * When docBase is not set, this attribute is ignored.
+	 * @param allowLinking The allow linking flag
+	 */
+	public void setAllowLinking(boolean allowLinking) {
+		this.allowLinking = allowLinking;
+	}
+
+	/**
+	 * When docBase is set, if the value of this flag is true, directory listings will
+	 * be shown.
+	 * @param showListing The show directory listings flag
+	 */
+	public void setShowListing(boolean showListing) {
+		this.showListing = showListing;
 	}
 
 	/**

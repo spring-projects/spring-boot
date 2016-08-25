@@ -230,6 +230,9 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 
 	@Override
 	public void setDocumentRoot(File documentRoot) {
+		if (documentRoot != null && !documentRoot.exists()) {
+			throw new IllegalStateException("document root must exist.");
+		}
 		this.documentRoot = documentRoot;
 	}
 

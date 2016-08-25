@@ -201,6 +201,9 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.accesslog.suffix=.log # Log file name suffix.
 	server.tomcat.background-processor-delay=30 # Delay in seconds between the invocation of backgroundProcess methods.
 	server.tomcat.basedir= # Tomcat base directory. If not specified a temporary directory will be used.
+	server.tomcat.context.docbase= # Tomcat docbase override. This allows for users to set static content external to the server.
+    server.tomcat.context.resources.linking.enabled=false # If the value of this flag is true, symlinks will be allowed inside the web application, pointing to resources outside the web application base path.
+    server.tomcat.servlets.defaultservlet.listing.enabled=false # controls if directory listings should be shown by the default servlet.
 	server.tomcat.internal-proxies=10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			192\\.168\\.\\d{1,3}\\.\\d{1,3}|\\
 			169\\.254\\.\\d{1,3}\\.\\d{1,3}|\\

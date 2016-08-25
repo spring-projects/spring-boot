@@ -640,7 +640,17 @@ Access logging for undertow can be configured in a similar fashion
 Logs are stored in a `logs` directory relative to the working directory of the
 application. This can be customized via `server.undertow.accesslog.directory`.
 
+[[howto-configure-external-context]]
+=== Configure External Static Content
+Tomcat can be configured to serve static external content, follow symlinks, and
+show directory listings.
 
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	server.tomcat.context.docbase=/var/www
+    server.tomcat.context.resources.linking.enabled=true
+    server.tomcat.servlets.defaultservlet.listing.enabled=true
+----
 
 [[howto-use-behind-a-proxy-server]]
 [[howto-use-tomcat-behind-a-proxy-server]]

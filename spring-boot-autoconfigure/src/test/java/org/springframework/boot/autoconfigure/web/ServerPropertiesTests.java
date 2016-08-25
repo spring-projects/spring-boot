@@ -142,6 +142,9 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.remote_ip_header", "Remote-Ip");
 		map.put("server.tomcat.internal_proxies", "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 		map.put("server.tomcat.background_processor_delay", "10");
+		map.put("server.tomcat.context.docbase", "/var/www");
+		map.put("server.tomcat.context.resources.linking.enabled", "true");
+		map.put("server.tomcat.servlets.defaultservlet.listing.enabled", "true");
 		bindProperties(map);
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		assertThat(tomcat.getAccesslog().getPattern()).isEqualTo("%h %t '%r' %s %b");
@@ -153,6 +156,9 @@ public class ServerPropertiesTests {
 		assertThat(tomcat.getInternalProxies())
 				.isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 		assertThat(tomcat.getBackgroundProcessorDelay()).isEqualTo(10);
+		assertThat(tomcat.getContext().getDocbase().toString()).isEqualTo("/var/www");
+		assertThat(tomcat.getContext().getResources().getLinking().isEnabled()).isTrue();
+		assertThat(tomcat.getServlets().getDefaultservlet().getListing().isEnabled()).isTrue();
 	}
 
 	@Test
