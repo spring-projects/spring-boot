@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.EnumSet;
+import java.util.Set;
 
 import com.hazelcast.util.Base64;
 import org.junit.After;
@@ -29,7 +31,6 @@ import org.neo4j.ogm.config.DriverConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -50,14 +51,14 @@ public class Neo4jPropertiesTests {
 
 	@Test
 	public void defaultUseEmbeddedInMemoryIfAvailable() {
-		Neo4jProperties properties = load(true);
+		Neo4jProperties properties = load(EnumSet.of( AvailableDriver.EMBEDDED ));
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER, null);
 	}
 
 	@Test
 	public void defaultUseHttpDriverIfEmbeddedDriverIsNotAvailable() {
-		Neo4jProperties properties = load(false);
+		Neo4jProperties properties = load(EnumSet.noneOf( AvailableDriver.class ));
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
 				Neo4jProperties.DEFAULT_HTTP_URI);
@@ -65,7 +66,7 @@ public class Neo4jPropertiesTests {
 
 	@Test
 	public void httpUriUseHttpServer() {
-		Neo4jProperties properties = load(true,
+		Neo4jProperties properties = load(EnumSet.of( AvailableDriver.EMBEDDED ),
 				"spring.data.neo4j.uri=http://localhost:7474");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "http://localhost:7474");
@@ -73,7 +74,7 @@ public class Neo4jPropertiesTests {
 
 	@Test
 	public void fileUriUseEmbeddedServer() {
-		Neo4jProperties properties = load(true,
+		Neo4jProperties properties = load(EnumSet.of( AvailableDriver.EMBEDDED ),
 				"spring.data.neo4j.uri=file://var/tmp/graph.db");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER,
@@ -82,7 +83,7 @@ public class Neo4jPropertiesTests {
 
 	@Test
 	public void credentialsAreSet() {
-		Neo4jProperties properties = load(true,
+		Neo4jProperties properties = load(EnumSet.of( AvailableDriver.EMBEDDED ),
 				"spring.data.neo4j.uri=http://localhost:7474",
 				"spring.data.neo4j.username=user", "spring.data.neo4j.password=secret");
 		Configuration configuration = properties.createConfiguration();
@@ -92,7 +93,7 @@ public class Neo4jPropertiesTests {
 
 	@Test
 	public void credentialsAreSetFromUri() {
-		Neo4jProperties properties = load(true,
+		Neo4jProperties properties = load(EnumSet.of( AvailableDriver.EMBEDDED ),
 				"spring.data.neo4j.uri=http://user:secret@my-server:7474");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
@@ -102,7 +103,7 @@ public class Neo4jPropertiesTests {
 
 	@Test
 	public void embeddedModeDisabledUseHttpUri() {
-		Neo4jProperties properties = load(true,
+		Neo4jProperties properties = load(EnumSet.of( AvailableDriver.EMBEDDED ),
 				"spring.data.neo4j.embedded.enabled=false");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
@@ -111,7 +112,7 @@ public class Neo4jPropertiesTests {
 
 	@Test
 	public void embeddedModeWithRelativeLocation() {
-		Neo4jProperties properties = load(true,
+		Neo4jProperties properties = load(EnumSet.of( AvailableDriver.EMBEDDED ),
 				"spring.data.neo4j.uri=target/neo4j/my.db");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER,
@@ -143,20 +144,15 @@ public class Neo4jPropertiesTests {
 		}
 	}
 
-	public Neo4jProperties load(final boolean embeddedAvailable, String... environment) {
+	public Neo4jProperties load( final Set<AvailableDriver> availableDrivers, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		ctx.setClassLoader(new URLClassLoader(new URL[0], getClass().getClassLoader()) {
 
 			@Override
 			protected Class<?> loadClass(String name, boolean resolve)
 					throws ClassNotFoundException {
-				if (name.equals(Neo4jProperties.EMBEDDED_DRIVER)) {
-					if (embeddedAvailable) {
-						return TestEmbeddedDriver.class;
-					}
-					else {
-						throw new ClassNotFoundException();
-					}
+				if ( AvailableDriver.shouldLoad( availableDrivers, name )) {
+					return AvailableDriver.loadClass( name );
 				}
 				return super.loadClass(name, resolve);
 			}
@@ -175,8 +171,42 @@ public class Neo4jPropertiesTests {
 
 	}
 
+	private enum AvailableDriver {
+		EMBEDDED( Neo4jProperties.EMBEDDED_DRIVER, TestEmbeddedDriver.class ),
+		BOLT( Neo4jProperties.BOLT_DRIVER, TestBoltDriver.class );
+
+		private final String driverName;
+		private final Class<?> driverStub;
+
+		AvailableDriver( final String driverName, final Class<?> driverStub ) {
+			this.driverName = driverName;
+			this.driverStub = driverStub;
+		}
+
+		public static boolean shouldLoad( Set<AvailableDriver> availableDrivers, String name ) {
+			for ( AvailableDriver driver : availableDrivers ) {
+				if ( driver.driverName.equals( name ) ) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public static Class<?> loadClass( String className ) throws ClassNotFoundException {
+			for ( AvailableDriver driver : AvailableDriver.values() ) {
+				if ( driver.driverName.equals( className ) ) {
+					return driver.driverStub;
+				}
+			}
+			throw new ClassNotFoundException();
+		}
+	}
+
 	private static class TestEmbeddedDriver {
 
+	}
+
+	private static class TestBoltDriver {
 	}
 
 }
