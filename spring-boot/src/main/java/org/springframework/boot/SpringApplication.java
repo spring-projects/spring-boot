@@ -298,6 +298,7 @@ public class SpringApplication {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
+		FailureAnalyzers analyzers = null;
 		configureHeadlessProperty();
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.started();
@@ -308,6 +309,7 @@ public class SpringApplication {
 					applicationArguments);
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
+			analyzers = new FailureAnalyzers(context);
 			prepareContext(context, environment, listeners, applicationArguments,
 					printedBanner);
 			refreshContext(context);
@@ -321,7 +323,7 @@ public class SpringApplication {
 			return context;
 		}
 		catch (Throwable ex) {
-			handleRunFailure(context, listeners, ex);
+			handleRunFailure(context, listeners, analyzers, ex);
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -803,14 +805,15 @@ public class SpringApplication {
 	}
 
 	private void handleRunFailure(ConfigurableApplicationContext context,
-			SpringApplicationRunListeners listeners, Throwable exception) {
+			SpringApplicationRunListeners listeners, FailureAnalyzers analyzers,
+			Throwable exception) {
 		try {
 			try {
 				handleExitCode(context, exception);
 				listeners.finished(context, exception);
 			}
 			finally {
-				reportFailure(exception, context);
+				reportFailure(analyzers, exception);
 				if (context != null) {
 					context.close();
 				}
@@ -822,11 +825,9 @@ public class SpringApplication {
 		ReflectionUtils.rethrowRuntimeException(exception);
 	}
 
-	private void reportFailure(Throwable failure,
-			ConfigurableApplicationContext context) {
+	private void reportFailure(FailureAnalyzers analyzers, Throwable failure) {
 		try {
-			if (FailureAnalyzers.analyzeAndReport(failure, getClass().getClassLoader(),
-					context)) {
+			if (analyzers != null && analyzers.analyzeAndReport(failure)) {
 				registerLoggedException(failure);
 				return;
 			}

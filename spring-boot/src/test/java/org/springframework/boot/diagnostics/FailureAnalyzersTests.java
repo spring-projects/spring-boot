@@ -70,8 +70,7 @@ public class FailureAnalyzersTests {
 
 	private void analyzeAndReport(final String factoriesName, Throwable failure) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-		FailureAnalyzers.analyzeAndReport(failure,
+		context.setClassLoader(
 				new ClassLoader(getClass().getClassLoader()) {
 
 					@Override
@@ -85,7 +84,8 @@ public class FailureAnalyzersTests {
 						}
 					}
 
-				}, context);
+				});
+		new FailureAnalyzers(context).analyzeAndReport(failure);
 	}
 
 	static class BasicFailureAnalyzer implements FailureAnalyzer {
