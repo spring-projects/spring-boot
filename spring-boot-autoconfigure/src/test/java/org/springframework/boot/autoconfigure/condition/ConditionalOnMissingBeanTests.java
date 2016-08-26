@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.scan.ScannedFactoryBeanConfiguration;
+import org.springframework.boot.autoconfigure.condition.scan.ScannedFactoryBeanWithBeanMethodArgumentsConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportResource;
@@ -123,6 +128,27 @@ public class ConditionalOnMissingBeanTests {
 	@Test
 	public void testOnMissingBeanConditionWithFactoryBean() {
 		this.context.register(FactoryBeanConfiguration.class,
+				ConditionalOnFactoryBean.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(ExampleBean.class).toString(),
+				equalTo("fromFactory"));
+	}
+
+	@Test
+	public void testOnMissingBeanConditionWithComponentScannedFactoryBean() {
+		this.context.register(ComponentScannedFactoryBeanBeanMethodConfiguration.class,
+				ConditionalOnFactoryBean.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(ExampleBean.class).toString(),
+				equalTo("fromFactory"));
+	}
+
+	@Test
+	public void testOnMissingBeanConditionWithComponentScannedFactoryBeanWithBeanMethodArguments() {
+		this.context.register(
+				ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration.class,
 				ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -239,6 +265,18 @@ public class ConditionalOnMissingBeanTests {
 		public FactoryBean<ExampleBean> exampleBeanFactoryBean() {
 			return new ExampleFactoryBean("foo");
 		}
+	}
+
+	@Configuration
+	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan", includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = ScannedFactoryBeanConfiguration.class))
+	protected static class ComponentScannedFactoryBeanBeanMethodConfiguration {
+
+	}
+
+	@Configuration
+	@ComponentScan(basePackages = "org.springframework.boot.autoconfigure.condition.scan", includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = ScannedFactoryBeanWithBeanMethodArgumentsConfiguration.class))
+	protected static class ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration {
+
 	}
 
 	@Configuration
