@@ -94,7 +94,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 				return ConditionOutcome.noMatch(
 						"@ConditionalOnSingleCandidate " + spec + " found no beans");
 			}
-			else if (!hasSingleAutowireCandidate(context.getBeanFactory(), matching)) {
+			else if (!hasSingleAutowireCandidate(context.getBeanFactory(), matching,
+					spec.getStrategy() == SearchStrategy.ALL)) {
 				return ConditionOutcome.noMatch("@ConditionalOnSingleCandidate " + spec
 						+ " found no primary candidate amongst the" + " following "
 						+ matching);
@@ -222,21 +223,38 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 	}
 
 	private boolean hasSingleAutowireCandidate(
-			ConfigurableListableBeanFactory beanFactory, List<String> beanNames) {
+			ConfigurableListableBeanFactory beanFactory, List<String> beanNames,
+			boolean considerHierarchy) {
 		return (beanNames.size() == 1
-				|| getPrimaryBeans(beanFactory, beanNames).size() == 1);
+				|| getPrimaryBeans(beanFactory, beanNames, considerHierarchy)
+						.size() == 1);
 	}
 
 	private List<String> getPrimaryBeans(ConfigurableListableBeanFactory beanFactory,
-			List<String> beanNames) {
+			List<String> beanNames, boolean considerHierarchy) {
 		List<String> primaryBeans = new ArrayList<String>();
 		for (String beanName : beanNames) {
-			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+			BeanDefinition beanDefinition = findBeanDefinition(beanFactory, beanName,
+					considerHierarchy);
 			if (beanDefinition != null && beanDefinition.isPrimary()) {
 				primaryBeans.add(beanName);
 			}
 		}
 		return primaryBeans;
+	}
+
+	private BeanDefinition findBeanDefinition(ConfigurableListableBeanFactory beanFactory,
+			String beanName, boolean considerHierarchy) {
+		if (beanFactory.containsBeanDefinition(beanName)) {
+			return beanFactory.getBeanDefinition(beanName);
+		}
+		if (considerHierarchy && beanFactory
+				.getParentBeanFactory() instanceof ConfigurableListableBeanFactory) {
+			return findBeanDefinition(((ConfigurableListableBeanFactory) beanFactory
+					.getParentBeanFactory()), beanName, considerHierarchy);
+		}
+		return null;
+
 	}
 
 	private static class BeanSearchSpec {

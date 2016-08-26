@@ -33,6 +33,7 @@ import static org.hamcrest.CoreMatchers.isA;
  * Tests for {@link ConditionalOnSingleCandidate}.
  *
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 public class ConditionalOnSingleCandidateTests {
 
@@ -99,6 +100,22 @@ public class ConditionalOnSingleCandidateTests {
 		this.thrown
 				.expectMessage(OnBeanSingleCandidateNoTypeConfiguration.class.getName());
 		load(OnBeanSingleCandidateNoTypeConfiguration.class);
+	}
+
+	@Test
+	public void singleCandidateMultipleCandidatesInContextHierarchy() {
+		load(FooPrimaryConfiguration.class, BarConfiguration.class);
+		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
+		child.setParent(this.context);
+		child.register(OnBeanSingleCandidateConfiguration.class);
+		try {
+			child.refresh();
+			assertThat(child.containsBean("baz")).isTrue();
+			assertThat(child.getBean("baz")).isEqualTo("foo");
+		}
+		finally {
+			child.close();
+		}
 	}
 
 	private void load(Class<?>... classes) {
