@@ -47,8 +47,6 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 	static final String BOLT_DRIVER = "org.neo4j.ogm.drivers.bolt.driver.BoltDriver";
 
-	static final String DEFAULT_BOLT_URI = "bolt://localhost:7687";
-
 	/**
 	 * URI used by the driver. Auto-detected by default.
 	 */
@@ -171,11 +169,6 @@ public class Neo4jProperties implements ApplicationContextAware {
 		if (getEmbedded().isEnabled()
 				&& ClassUtils.isPresent(EMBEDDED_DRIVER, this.classLoader)) {
 			driverConfiguration.setDriverClassName(EMBEDDED_DRIVER);
-			return;
-		}
-		if (ClassUtils.isPresent(BOLT_DRIVER, this.classLoader)) {
-			driverConfiguration.setDriverClassName(BOLT_DRIVER);
-			driverConfiguration.setURI( DEFAULT_BOLT_URI );
 			return;
 		}
 		driverConfiguration.setDriverClassName(HTTP_DRIVER);
