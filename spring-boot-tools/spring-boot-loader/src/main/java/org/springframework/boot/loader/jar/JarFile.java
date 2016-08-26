@@ -449,7 +449,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * {@link URLStreamHandler} will be located to deal with jar URLs.
 	 */
 	public static void registerUrlProtocolHandler() {
-		String handlers = System.getProperty(PROTOCOL_HANDLER);
+		String handlers = System.getProperty(PROTOCOL_HANDLER, "");
 		System.setProperty(PROTOCOL_HANDLER, ("".equals(handlers) ? HANDLERS_PACKAGE
 				: handlers + "|" + HANDLERS_PACKAGE));
 		resetCachedUrlHandlers();

@@ -43,10 +43,12 @@ import org.springframework.boot.loader.util.AsciiBytes;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
@@ -63,6 +65,9 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  */
 public class JarFileTests {
+	private static final String PROTOCOL_HANDLER = "java.protocol.handler.pkgs";
+
+	private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -453,4 +458,11 @@ public class JarFileTests {
 		url.openConnection().getInputStream();
 	}
 
+	@Test
+	public void registerUrlProtocolHandler() {
+		JarFile.registerUrlProtocolHandler();
+		String protocolHandler = System.getProperty(PROTOCOL_HANDLER);
+		assertThat(protocolHandler, containsString(HANDLERS_PACKAGE));
+		assertThat(protocolHandler, not(containsString("null")));
+	}
 }
