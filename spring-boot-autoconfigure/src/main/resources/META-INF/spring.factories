@@ -104,7 +104,8 @@ org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration
 
 # Failure analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.boot.autoconfigure.jdbc.DataSourceBeanCreationFailureAnalyzer
+org.springframework.boot.autoconfigure.jdbc.DataSourceBeanCreationFailureAnalyzer,\
+org.springframework.boot.autoconfigure.jdbc.HikariDriverConfigurationFailureAnalyzer
 
 # Template availability providers
 org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
