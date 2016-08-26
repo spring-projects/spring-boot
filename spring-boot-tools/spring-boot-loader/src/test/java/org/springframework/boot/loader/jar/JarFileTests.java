@@ -54,6 +54,9 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  */
 public class JarFileTests {
+	private static final String PROTOCOL_HANDLER = "java.protocol.handler.pkgs";
+
+	private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -420,4 +423,11 @@ public class JarFileTests {
 		url.openConnection().getInputStream();
 	}
 
+	@Test
+	public void registerUrlProtocolHandler() {
+		JarFile.registerUrlProtocolHandler();
+		String protocolHandler = System.getProperty(PROTOCOL_HANDLER);
+		assertThat(protocolHandler).contains(HANDLERS_PACKAGE);
+		assertThat(protocolHandler).doesNotContain("null");
+	}
 }
