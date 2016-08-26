@@ -45,6 +45,8 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 	static final String DEFAULT_HTTP_URI = "http://localhost:7474";
 
+	static final String BOLT_DRIVER = "org.neo4j.ogm.drivers.bolt.driver.BoltDriver";
+
 	/**
 	 * URI used by the driver. Auto-detected by default.
 	 */
@@ -150,6 +152,9 @@ public class Neo4jProperties implements ApplicationContextAware {
 			}
 			if ("http".equals(scheme)) {
 				return HTTP_DRIVER;
+			}
+			if ("bolt".equals(scheme)) {
+				return BOLT_DRIVER;
 			}
 			throw new IllegalArgumentException(
 					"Could not deduce driver to use based on URI '" + uri + "'");

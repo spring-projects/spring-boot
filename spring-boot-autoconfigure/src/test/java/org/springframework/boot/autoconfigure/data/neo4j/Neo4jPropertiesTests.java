@@ -72,6 +72,14 @@ public class Neo4jPropertiesTests {
 	}
 
 	@Test
+	public void boltUriUseBoltDriver() {
+		Neo4jProperties properties = load(true,
+				"spring.data.neo4j.uri=bolt://localhost:7687");
+		Configuration configuration = properties.createConfiguration();
+		assertDriver(configuration, Neo4jProperties.BOLT_DRIVER, "bolt://localhost:7687");
+	}
+
+	@Test
 	public void fileUriUseEmbeddedServer() {
 		Neo4jProperties properties = load(true,
 				"spring.data.neo4j.uri=file://var/tmp/graph.db");
