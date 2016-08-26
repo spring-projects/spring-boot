@@ -20,10 +20,11 @@ import org.springframework.http.HttpStatus;
 
 /**
  * Simple container-independent abstraction for servlet error pages. Roughly equivalent to
- * the {@literal &lt;error-page&gt;} element traditionally found in web.xml.
+ * the {@literal <error-page>} element traditionally found in web.xml.
  *
  * @author Dave Syer
- * @deprecated as of 1.4 in favor of org.springframework.boot.web.ErrorPage
+ * @deprecated as of 1.4 in favor of
+ * {@link org.springframework.boot.web.servlet.ErrorPage}
  */
 @Deprecated
 public class ErrorPage extends org.springframework.boot.web.servlet.ErrorPage {
