@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link ConditionalOnSingleCandidate}.
  *
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 public class ConditionalOnSingleCandidateTests {
 
@@ -101,6 +102,22 @@ public class ConditionalOnSingleCandidateTests {
 		this.thrown
 				.expectMessage(OnBeanSingleCandidateNoTypeConfiguration.class.getName());
 		load(OnBeanSingleCandidateNoTypeConfiguration.class);
+	}
+
+	@Test
+	public void singleCandidateMultipleCandidatesInContextHierarchy() {
+		load(FooPrimaryConfiguration.class, BarConfiguration.class);
+		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
+		child.setParent(this.context);
+		child.register(OnBeanSingleCandidateConfiguration.class);
+		try {
+			child.refresh();
+			assertTrue(child.containsBean("baz"));
+			assertEquals("foo", child.getBean("baz"));
+		}
+		finally {
+			child.close();
+		}
 	}
 
 	private void load(Class<?>... classes) {
