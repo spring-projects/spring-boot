@@ -16,6 +16,7 @@
 
 package org.springframework.boot.maven;
 
+import java.io.File;
 import java.net.URLClassLoader;
 import java.util.List;
 
@@ -42,9 +43,9 @@ public class RunMojo extends AbstractRunMojo {
 	private static final int EXIT_CODE_SIGINT = 130;
 
 	@Override
-	protected void runWithForkedJvm(List<String> args) throws MojoExecutionException {
+	protected void runWithForkedJvm(List<String> args, File workingDirectory) throws MojoExecutionException {
 		try {
-			RunProcess runProcess = new RunProcess(new JavaExecutable().toString());
+			RunProcess runProcess = new RunProcess(workingDirectory, new JavaExecutable().toString());
 			Runtime.getRuntime()
 					.addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
 			int exitCode = runProcess.run(true, args.toArray(new String[args.size()]));
