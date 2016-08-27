@@ -181,7 +181,7 @@ public class StartMojo extends AbstractRunMojo {
 	private void waitForSpringApplication()
 			throws MojoFailureException, MojoExecutionException {
 		try {
-			if (Boolean.TRUE.equals(isFork())) {
+			if (isFork()) {
 				waitForForkedSpringApplication();
 			}
 			else {
