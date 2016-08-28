@@ -40,6 +40,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
@@ -59,6 +60,7 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Josh Long
  * @author Ivan Sopov
+ * @author Toshiaki Maki
  */
 public class MultipartAutoConfigurationTests {
 
@@ -186,6 +188,20 @@ public class MultipartAutoConfigurationTests {
 				.getBean(MultipartResolver.class);
 		assertThat(multipartResolver)
 				.isNotInstanceOf(StandardServletMultipartResolver.class);
+	}
+
+	@Test
+	public void configureResolveLazily() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.http.multipart.resolve-lazily=true");
+		this.context.register(ContainerWithNothing.class, BaseConfiguration.class);
+		this.context.refresh();
+		StandardServletMultipartResolver multipartResolver = this.context
+				.getBean(StandardServletMultipartResolver.class);
+		boolean resolveLazily = (Boolean) ReflectionTestUtils.getField(multipartResolver,
+				"resolveLazily");
+		assertThat(resolveLazily).isTrue();
 	}
 
 	private void verify404() throws Exception {
