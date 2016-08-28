@@ -53,13 +53,13 @@ class CaffeineCacheConfiguration {
 
 	private final CaffeineSpec caffeineSpec;
 
-	private final CacheLoader<Object, Object> cacheLoader;
+	private final CacheLoader cacheLoader;
 
 	CaffeineCacheConfiguration(CacheProperties cacheProperties,
 			CacheManagerCustomizers customizers,
 			ObjectProvider<Caffeine<Object, Object>> caffeineProvider,
 			ObjectProvider<CaffeineSpec> caffeineSpecProvider,
-			ObjectProvider<CacheLoader<Object, Object>> cacheLoaderProvider) {
+			ObjectProvider<CacheLoader> cacheLoaderProvider) {
 		this.cacheProperties = cacheProperties;
 		this.customizers = customizers;
 		this.caffeine = caffeineProvider.getIfAvailable();

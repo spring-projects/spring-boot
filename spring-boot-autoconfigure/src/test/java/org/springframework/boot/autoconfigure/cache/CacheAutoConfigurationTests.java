@@ -23,6 +23,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.function.Supplier;
 
 import javax.cache.Caching;
 import javax.cache.configuration.CompleteConfiguration;
@@ -34,6 +37,7 @@ import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.bucket.BucketManager;
 import com.couchbase.client.spring.cache.CouchbaseCache;
 import com.couchbase.client.spring.cache.CouchbaseCacheManager;
+import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import com.google.common.cache.CacheBuilder;
@@ -714,6 +718,21 @@ public class CacheAutoConfigurationTests {
 		validateCaffeineCacheWithStats();
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void caffeineCacheExplicitWithLoader() {
+		load(CaffeineCacheLoaderConfiguration.class, "spring.cache.type=caffeine",
+				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar",
+				"spring.cache.caffeine.spec=recordStats");
+		validateCaffeineCacheWithStats();
+
+		CaffeineCacheManager cacheManager = (CaffeineCacheManager) this.context.getBean(CacheManager.class);
+		Cache.ValueWrapper value = cacheManager.getCache("bar").get("hi");
+		assertThat(value).as("Cache miss should be loaded from the provided CacheLoader")
+				.isNotNull();
+		assertThat((List<String>) value.get()).containsExactly("One", "two", "three");
+	}
+
 	private void validateCaffeineCacheWithStats() {
 		CaffeineCacheManager cacheManager = validateCacheManager(
 				CaffeineCacheManager.class);
@@ -1026,6 +1045,35 @@ public class CacheAutoConfigurationTests {
 			return CaffeineSpec.parse("recordStats");
 		}
 
+	}
+
+	@Configuration
+	@EnableCaching
+	static class CaffeineCacheLoaderConfiguration {
+
+		@Bean
+		CacheLoader<String, List<String>> cacheLoader() {
+			return new CacheLoader<String, List<String>>() {
+				@Override
+				public CompletableFuture<List<String>> asyncLoad(final String key, Executor executor) {
+					return CompletableFuture.supplyAsync(new Supplier<List<String>>() {
+						@Override
+						public List<String> get() {
+							return getValues(key);
+						}
+					}, executor);
+				}
+
+				@Override
+				public List<String> load(String key) throws Exception {
+					return getValues(key);
+				}
+			};
+		}
+
+		private List<String> getValues(String key) {
+			return Arrays.asList("One", "two", "three");
+		}
 	}
 
 	@Configuration
