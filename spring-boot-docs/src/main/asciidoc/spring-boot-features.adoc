@@ -891,8 +891,8 @@ be used by IDEs. See the <<configuration-metadata>> appendix for details.
 [[boot-features-external-config-3rd-party-configuration]]
 ==== Third-party configuration
 As well as using `@ConfigurationProperties` to annotate a class, you can also use it
-on `@Bean` methods. This can be particularly useful when you want to bind properties to
-third-party components that are outside of your control.
+on public `@Bean` methods. This can be particularly useful when you want to bind
+properties to third-party components that are outside of your control.
 
 To configure a bean from the `Environment` properties, add `@ConfigurationProperties` to
 its bean registration:
