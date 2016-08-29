@@ -103,7 +103,8 @@ public class StopMojo extends AbstractMojo {
 		if (this.fork != null) {
 			return this.fork;
 		}
-		String property = this.project.getProperties().getProperty("_spring.boot.fork.enabled");
+		String property = this.project.getProperties()
+				.getProperty("_spring.boot.fork.enabled");
 		return Boolean.valueOf(property);
 	}
 

@@ -90,8 +90,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * JVM arguments that should be associated with the forked process used to run the
 	 * application. On command line, make sure to wrap multiple values between quotes.
-	 * NOTE: the use of JVM arguments means that processes will be started by forking
-	 * a new JVM.
+	 * NOTE: the use of JVM arguments means that processes will be started by forking a
+	 * new JVM.
 	 * @since 1.1
 	 */
 	@Parameter(property = "run.jvmArguments")
@@ -214,10 +214,10 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private void run(String startClassName)
 			throws MojoExecutionException, MojoFailureException {
 		findAgent();
-		boolean forkEnabled = isFork();
+		boolean fork = isFork();
 		this.project.getProperties().setProperty("_spring.boot.fork.enabled",
-				Boolean.toString(forkEnabled));
-		if (forkEnabled) {
+				Boolean.toString(fork));
+		if (fork) {
 			doRunWithForkedJvm(startClassName);
 		}
 		else {
