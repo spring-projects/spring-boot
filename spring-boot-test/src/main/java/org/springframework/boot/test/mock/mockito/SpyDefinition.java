@@ -18,8 +18,6 @@ package org.springframework.boot.test.mock.mockito;
 
 import org.mockito.MockSettings;
 import org.mockito.Mockito;
-import org.mockito.internal.util.MockUtil;
-
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -31,8 +29,6 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  */
 class SpyDefinition extends Definition {
-
-	private MockUtil mockUtil = new MockUtil();
 
 	private static final int MULTIPLIER = 31;
 
@@ -86,7 +82,7 @@ class SpyDefinition extends Definition {
 	public <T> T createSpy(String name, Object instance) {
 		Assert.notNull(instance, "Instance must not be null");
 		Assert.isInstanceOf(this.classToSpy, instance);
-		if (this.mockUtil.isSpy(instance)) {
+		if (Mockito.mockingDetails(instance).isSpy()) {
 			return (T) instance;
 		}
 		MockSettings settings = MockReset.withSettings(getReset());
