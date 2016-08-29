@@ -138,13 +138,17 @@ abstract class BeanTypeRegistry {
 				.getBeanDefinition(definition.getFactoryBeanName());
 		Class<?> factoryClass = ClassUtils.forName(factoryDefinition.getBeanClassName(),
 				beanFactory.getBeanClassLoader());
+		return getFactoryMethod(definition, factoryClass);
+	}
+
+	private Method getFactoryMethod(BeanDefinition definition, Class<?> factoryClass) {
 		Method uniqueMethod = null;
 		for (Method candidate : getCandidateFactoryMethods(definition, factoryClass)) {
 			if (candidate.getName().equals(definition.getFactoryMethodName())) {
 				if (uniqueMethod == null) {
 					uniqueMethod = candidate;
 				}
-				else if (!matchingArguments(candidate, uniqueMethod)) {
+				else if (!hasMatchingParameterTypes(candidate, uniqueMethod)) {
 					return null;
 				}
 			}
@@ -164,7 +168,7 @@ abstract class BeanTypeRegistry {
 				&& ((AbstractBeanDefinition) definition).isNonPublicAccessAllowed();
 	}
 
-	private boolean matchingArguments(Method candidate, Method current) {
+	private boolean hasMatchingParameterTypes(Method candidate, Method current) {
 		return Arrays.equals(candidate.getParameterTypes(), current.getParameterTypes());
 	}
 

@@ -246,8 +246,10 @@ public class RandomAccessDataFile implements RandomAccessData {
 		public RandomAccessFile acquire() throws IOException {
 			this.available.acquireUninterruptibly();
 			RandomAccessFile file = this.files.poll();
-			return (file == null
-					? new RandomAccessFile(RandomAccessDataFile.this.file, "r") : file);
+			if (file != null) {
+				return file;
+			}
+			return new RandomAccessFile(RandomAccessDataFile.this.file, "r");
 		}
 
 		public void release(RandomAccessFile file) {
