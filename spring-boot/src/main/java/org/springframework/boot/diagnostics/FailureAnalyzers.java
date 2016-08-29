@@ -28,6 +28,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -53,42 +54,23 @@ public final class FailureAnalyzers {
 
 	private final List<FailureAnalyzer> analyzers;
 
+	/**
+	 * Create a new {@link FailureAnalyzers} instance.
+	 * @param context the source application context
+	 * @since 1.4.1
+	 */
 	public FailureAnalyzers(ConfigurableApplicationContext context) {
-		this.classLoader = context.getClassLoader();
+		this(context, null);
+	}
+
+	FailureAnalyzers(ConfigurableApplicationContext context, ClassLoader classLoader) {
+		Assert.notNull(context, "Context must not be null");
+		this.classLoader = (classLoader == null ? context.getClassLoader() : classLoader);
 		this.analyzers = loadFailureAnalyzers(this.classLoader);
 		prepareFailureAnalyzers(this.analyzers, context);
 	}
 
-	/**
-	 * Analyze and report the specified {@code failure}.
-	 *
-	 * @param failure the failure to analyze
-	 * @return {@code true} if the failure was handled
-	 */
-	public boolean analyzeAndReport(Throwable failure) {
-		FailureAnalysis analysis = analyze(failure, this.analyzers);
-		return report(analysis, this.classLoader);
-	}
-
-	/**
-	 * Analyze and report the specified {@code failure}.
-	 *
-	 * @param failure the failure to analyze
-	 * @param classLoader the classloader to use
-	 * @param context the context to use
-	 * @return {@code true} if the failure was handled
-	 * @deprecated in favour of {@link #analyzeAndReport(Throwable)}
-	 */
-	@Deprecated
-	public static boolean analyzeAndReport(Throwable failure, ClassLoader classLoader,
-			ConfigurableApplicationContext context) {
-		List<FailureAnalyzer> analyzers = loadFailureAnalyzers(classLoader);
-		prepareFailureAnalyzers(analyzers, context);
-		FailureAnalysis analysis = analyze(failure, analyzers);
-		return report(analysis, classLoader);
-	}
-
-	private static List<FailureAnalyzer> loadFailureAnalyzers(ClassLoader classLoader) {
+	private List<FailureAnalyzer> loadFailureAnalyzers(ClassLoader classLoader) {
 		List<String> analyzerNames = SpringFactoriesLoader
 				.loadFactoryNames(FailureAnalyzer.class, classLoader);
 		List<FailureAnalyzer> analyzers = new ArrayList<FailureAnalyzer>();
@@ -107,15 +89,31 @@ public final class FailureAnalyzers {
 		return analyzers;
 	}
 
-	private static void prepareFailureAnalyzers(List<FailureAnalyzer> analyzers,
+	private void prepareFailureAnalyzers(List<FailureAnalyzer> analyzers,
 			ConfigurableApplicationContext context) {
 		for (FailureAnalyzer analyzer : analyzers) {
 			prepareAnalyzer(context, analyzer);
 		}
 	}
 
-	private static FailureAnalysis analyze(Throwable failure,
-			List<FailureAnalyzer> analyzers) {
+	private void prepareAnalyzer(ConfigurableApplicationContext context,
+			FailureAnalyzer analyzer) {
+		if (analyzer instanceof BeanFactoryAware) {
+			((BeanFactoryAware) analyzer).setBeanFactory(context.getBeanFactory());
+		}
+	}
+
+	/**
+	 * Analyze and report the specified {@code failure}.
+	 * @param failure the failure to analyze
+	 * @return {@code true} if the failure was handled
+	 */
+	public boolean analyzeAndReport(Throwable failure) {
+		FailureAnalysis analysis = analyze(failure, this.analyzers);
+		return report(analysis, this.classLoader);
+	}
+
+	private FailureAnalysis analyze(Throwable failure, List<FailureAnalyzer> analyzers) {
 		for (FailureAnalyzer analyzer : analyzers) {
 			FailureAnalysis analysis = analyzer.analyze(failure);
 			if (analysis != null) {
@@ -125,15 +123,7 @@ public final class FailureAnalyzers {
 		return null;
 	}
 
-	private static void prepareAnalyzer(ConfigurableApplicationContext context,
-			FailureAnalyzer analyzer) {
-		if (analyzer instanceof BeanFactoryAware) {
-			((BeanFactoryAware) analyzer).setBeanFactory(context.getBeanFactory());
-		}
-	}
-
-	private static boolean report(FailureAnalysis analysis,
-			ClassLoader classLoader) {
+	private boolean report(FailureAnalysis analysis, ClassLoader classLoader) {
 		List<FailureAnalysisReporter> reporters = SpringFactoriesLoader
 				.loadFactories(FailureAnalysisReporter.class, classLoader);
 		if (analysis == null || reporters.isEmpty()) {
@@ -143,6 +133,20 @@ public final class FailureAnalyzers {
 			reporter.report(analysis);
 		}
 		return true;
+	}
+
+	/**
+	 * Analyze and report the specified {@code failure}.
+	 * @param failure the failure to analyze
+	 * @param classLoader the classloader to use
+	 * @param context the context to use
+	 * @return {@code true} if the failure was handled
+	 * @deprecated as of 1.4.1 in favor of {@link #analyzeAndReport(Throwable)}
+	 */
+	@Deprecated
+	public static boolean analyzeAndReport(Throwable failure, ClassLoader classLoader,
+			ConfigurableApplicationContext context) {
+		return new FailureAnalyzers(context, classLoader).analyzeAndReport(failure);
 	}
 
 }

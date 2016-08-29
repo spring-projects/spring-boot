@@ -101,7 +101,7 @@ public class DataSourceAutoConfiguration {
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import({ DataSourceConfiguration.Tomcat.class, DataSourceConfiguration.Hikari.class,
 			DataSourceConfiguration.Dbcp.class, DataSourceConfiguration.Dbcp2.class,
-			DataSourceConfiguration.Generic.class})
+			DataSourceConfiguration.Generic.class })
 	protected static class PooledDataSourceConfiguration {
 
 	}
@@ -139,10 +139,12 @@ public class DataSourceAutoConfiguration {
 		}
 
 		@ConditionalOnProperty(prefix = "spring.datasource", name = "type")
-		static class ExplicitType { }
+		static class ExplicitType {
+		}
 
 		@Conditional(PooledDataSourceAvailableCondition.class)
-		static class PooledDataSourceAvailable { }
+		static class PooledDataSourceAvailable {
+		}
 
 	}
 

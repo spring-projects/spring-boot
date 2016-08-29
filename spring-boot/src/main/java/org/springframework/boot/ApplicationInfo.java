@@ -31,7 +31,8 @@ public final class ApplicationInfo {
 
 	private final Banner banner;
 
-	protected ApplicationInfo(SpringApplication application, ApplicationArguments applicationArguments, Banner banner) {
+	protected ApplicationInfo(SpringApplication application,
+			ApplicationArguments applicationArguments, Banner banner) {
 		this.mainApplicationClass = application.getMainApplicationClass();
 		this.applicationArguments = applicationArguments;
 		this.banner = banner;

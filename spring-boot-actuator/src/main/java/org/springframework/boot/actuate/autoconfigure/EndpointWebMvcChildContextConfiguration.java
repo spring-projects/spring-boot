@@ -364,6 +364,7 @@ public class EndpointWebMvcChildContextConfiguration {
 		}
 
 		abstract void customize(T container);
+
 	}
 
 	static class TomcatAccessLogCustomizer

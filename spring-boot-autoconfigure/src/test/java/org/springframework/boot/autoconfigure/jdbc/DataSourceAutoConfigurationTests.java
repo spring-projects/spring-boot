@@ -186,8 +186,8 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	/**
-	 * This test makes sure that if no supported data source is present, a datasource
-	 * is still created if "spring.datasource.type" is present.
+	 * This test makes sure that if no supported data source is present, a datasource is
+	 * still created if "spring.datasource.type" is present.
 	 */
 	@Test
 	public void explicitTypeNoSupportedDataSource() {
@@ -195,9 +195,9 @@ public class DataSourceAutoConfigurationTests {
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
 				"spring.datasource.type:" + SimpleDriverDataSource.class.getName());
-		this.context.setClassLoader(new HidePackagesClassLoader(
-				"org.apache.tomcat", "com.zaxxer.hikari", "org.apache.commons.dbcp",
-				"org.apache.commons.dbcp2"));
+		this.context.setClassLoader(
+				new HidePackagesClassLoader("org.apache.tomcat", "com.zaxxer.hikari",
+						"org.apache.commons.dbcp", "org.apache.commons.dbcp2"));
 		testExplicitType();
 	}
 
@@ -328,7 +328,6 @@ public class DataSourceAutoConfigurationTests {
 			super(new URL[0], DataSourceAutoConfigurationTests.class.getClassLoader());
 			this.hiddenPackages = hiddenPackages;
 		}
-
 
 		@Override
 		protected Class<?> loadClass(String name, boolean resolve)

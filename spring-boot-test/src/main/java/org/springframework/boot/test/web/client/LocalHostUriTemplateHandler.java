@@ -39,7 +39,6 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	/**
 	 * Create a new {@code LocalHostUriTemplateHandler} that will generate {@code http}
 	 * URIs using the given {@code environment} to determine the port.
-	 *
 	 * @param environment the environment used to determine the port
 	 */
 	public LocalHostUriTemplateHandler(Environment environment) {
@@ -49,7 +48,6 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	/**
 	 * Create a new {@code LocalHostUriTemplateHandler} the will generate URIs with the
 	 * given {@code scheme} and use the given {@code environment} to determine the port.
-	 *
 	 * @param environment the environment used to determine the port
 	 * @param scheme the scheme of the root uri
 	 * @since 1.4.1

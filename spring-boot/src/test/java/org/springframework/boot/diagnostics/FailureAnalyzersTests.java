@@ -68,24 +68,10 @@ public class FailureAnalyzersTests {
 		verify(failureAnalyzer, times(1)).analyze(failure);
 	}
 
-	private void analyzeAndReport(final String factoriesName, Throwable failure) {
+	private void analyzeAndReport(String factoriesName, Throwable failure) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.setClassLoader(
-				new ClassLoader(getClass().getClassLoader()) {
-
-					@Override
-					public Enumeration<URL> getResources(String name) throws IOException {
-						if ("META-INF/spring.factories".equals(name)) {
-							return super.getResources(
-									"failure-analyzers-tests/" + factoriesName);
-						}
-						else {
-							return super.getResources(name);
-						}
-					}
-
-				});
-		new FailureAnalyzers(context).analyzeAndReport(failure);
+		ClassLoader classLoader = new CustomSpringFactoriesClassLoader(factoriesName);
+		new FailureAnalyzers(context, classLoader).analyzeAndReport(failure);
 	}
 
 	static class BasicFailureAnalyzer implements FailureAnalyzer {
@@ -120,6 +106,26 @@ public class FailureAnalyzersTests {
 		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 			failureAnalyzer.setBeanFactory(beanFactory);
+		}
+
+	}
+
+	static class CustomSpringFactoriesClassLoader extends ClassLoader {
+
+		private final String factoriesName;
+
+		CustomSpringFactoriesClassLoader(String factoriesName) {
+			super(CustomSpringFactoriesClassLoader.class.getClassLoader());
+			this.factoriesName = factoriesName;
+		}
+
+		@Override
+		public Enumeration<URL> getResources(String name) throws IOException {
+			if ("META-INF/spring.factories".equals(name)) {
+				return super.getResources(
+						"failure-analyzers-tests/" + this.factoriesName);
+			}
+			return super.getResources(name);
 		}
 
 	}

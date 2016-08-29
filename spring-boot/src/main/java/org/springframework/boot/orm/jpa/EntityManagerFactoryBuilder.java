@@ -50,7 +50,8 @@ import org.springframework.util.ResourceUtils;
  */
 public class EntityManagerFactoryBuilder {
 
-	private static final Log logger = LogFactory.getLog(EntityManagerFactoryBuilder.class);
+	private static final Log logger = LogFactory
+			.getLog(EntityManagerFactoryBuilder.class);
 
 	private JpaVendorAdapter jpaVendorAdapter;
 
@@ -105,8 +106,8 @@ public class EntityManagerFactoryBuilder {
 	protected String determinePersistenceUnitRootLocation() {
 		if (this.applicationClass != null) {
 			try {
-				URL mainLocation = this.applicationClass.getProtectionDomain().
-						getCodeSource().getLocation();
+				URL mainLocation = this.applicationClass.getProtectionDomain()
+						.getCodeSource().getLocation();
 				return ResourceUtils.extractJarFileURL(mainLocation).toString();
 			}
 			catch (Exception ex) {
@@ -115,7 +116,6 @@ public class EntityManagerFactoryBuilder {
 		}
 		return null;
 	}
-
 
 	/**
 	 * A fluent builder for a LocalContainerEntityManagerFactoryBean.

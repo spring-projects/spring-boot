@@ -114,10 +114,10 @@ abstract class DataSourceConfiguration {
 	static class Generic {
 
 		@Bean
-		public DataSource dataSource(
-				DataSourceProperties properties) {
+		public DataSource dataSource(DataSourceProperties properties) {
 			return properties.initializeDataSourceBuilder().build();
 		}
+
 	}
 
 }

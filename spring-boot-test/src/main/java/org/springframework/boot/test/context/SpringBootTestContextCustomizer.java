@@ -23,7 +23,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
@@ -86,6 +85,10 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 	public static class TestRestTemplateFactory
 			implements FactoryBean<TestRestTemplate>, ApplicationContextAware {
 
+		private static final HttpClientOption[] DEFAULT_OPTIONS = {};
+
+		private static final HttpClientOption[] SSL_OPTIONS = { HttpClientOption.SSL };
+
 		private TestRestTemplate object;
 
 		@Override
@@ -93,25 +96,19 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 				throws BeansException {
 			RestTemplateBuilder builder = getRestTemplateBuilder(applicationContext);
 			boolean sslEnabled = isSslEnabled(applicationContext);
-			TestRestTemplate template;
-			if (sslEnabled) {
-				template = new TestRestTemplate(builder.build(), null, null,
-						HttpClientOption.SSL);
-			}
-			else {
-				template = new TestRestTemplate(builder.build());
-			}
-			template.setUriTemplateHandler(new LocalHostUriTemplateHandler(
-					applicationContext.getEnvironment(), sslEnabled ? "https" : "http"));
+			TestRestTemplate template = new TestRestTemplate(builder.build(), null, null,
+					sslEnabled ? SSL_OPTIONS : DEFAULT_OPTIONS);
+			LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
+					applicationContext.getEnvironment(), sslEnabled ? "https" : "http");
+			template.setUriTemplateHandler(handler);
 			this.object = template;
 		}
 
-		private boolean isSslEnabled(ApplicationContext applicationContext) {
+		private boolean isSslEnabled(ApplicationContext context) {
 			try {
-				Ssl ssl = applicationContext
-						.getBean(AbstractConfigurableEmbeddedServletContainer.class)
-						.getSsl();
-				return ssl != null && ssl.isEnabled();
+				AbstractConfigurableEmbeddedServletContainer container = context
+						.getBean(AbstractConfigurableEmbeddedServletContainer.class);
+				return container.getSsl() != null && container.getSsl().isEnabled();
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return false;

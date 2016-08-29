@@ -22,24 +22,28 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 /**
  * An {@link AbstractFailureAnalyzer} that performs analysis of a Hikari configuration
  * failure caused by the use of the unsupported 'dataSourceClassName' property.
-
+ *
  * @author Stephane Nicoll
  */
-class HikariDriverConfigurationFailureAnalyzer extends AbstractFailureAnalyzer<IllegalStateException> {
+class HikariDriverConfigurationFailureAnalyzer
+		extends AbstractFailureAnalyzer<IllegalStateException> {
 
-	static final String EXPECTED_MESSAGE = "both driverClassName and dataSourceClassName are " +
-			"specified, one or the other should be used";
+	private static final String EXPECTED_MESSAGE = "both driverClassName and "
+			+ "dataSourceClassName are specified, one or the other should be used";
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, IllegalStateException cause) {
+	protected FailureAnalysis analyze(Throwable rootFailure,
+			IllegalStateException cause) {
 		if (!EXPECTED_MESSAGE.equals(cause.getMessage())) {
 			return null;
 		}
-		return new FailureAnalysis("Configuration of the Hikari connection pool failed: " +
-				"'dataSourceClassName' is not supported.",
-				"Spring Boot auto-configures only a driver and can't specify a custom " +
-						"DataSource. Consider configuring the Hikari DataSource in your " +
-						"own configuration.", cause);
+		return new FailureAnalysis(
+				"Configuration of the Hikari connection pool failed: "
+						+ "'dataSourceClassName' is not supported.",
+				"Spring Boot auto-configures only a driver and can't specify a custom "
+						+ "DataSource. Consider configuring the Hikari DataSource in "
+						+ "your own configuration.",
+				cause);
 	}
 
 }

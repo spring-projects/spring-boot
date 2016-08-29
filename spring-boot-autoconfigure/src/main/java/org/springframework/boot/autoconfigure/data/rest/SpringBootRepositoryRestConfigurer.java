@@ -24,10 +24,10 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapt
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 /**
- * A {@code RepositoryRestConfigurer} that applies that applies configuration items
- * from the {@code spring.data.rest} namespace to Spring Data REST. Also, if a
- * {@link Jackson2ObjectMapperBuilder} is available, it is used to configure Spring
- * Data REST's {@link ObjectMapper ObjectMappers}.
+ * A {@code RepositoryRestConfigurer} that applies that applies configuration items from
+ * the {@code spring.data.rest} namespace to Spring Data REST. Also, if a
+ * {@link Jackson2ObjectMapperBuilder} is available, it is used to configure Spring Data
+ * REST's {@link ObjectMapper ObjectMappers}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll

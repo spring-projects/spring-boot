@@ -785,8 +785,8 @@ public class SpringApplicationTests {
 		application.setWebEnvironment(false);
 		this.context = application.run("foo");
 		ApplicationInfo applicationInfo = this.context.getBean(ApplicationInfo.class);
-		assertThat(application.getMainApplicationClass()).isEqualTo(application
-				.getMainApplicationClass());
+		assertThat(application.getMainApplicationClass())
+				.isEqualTo(application.getMainApplicationClass());
 		assertThat(applicationInfo.getApplicationArguments()).isNotNull();
 		assertThat(applicationInfo.getApplicationArguments().getNonOptionArgs())
 				.containsExactly("foo");

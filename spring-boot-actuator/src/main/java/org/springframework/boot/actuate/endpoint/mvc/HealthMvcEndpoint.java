@@ -188,8 +188,9 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		}
 		if (isSpringSecurityAuthentication(principal)) {
 			Authentication authentication = (Authentication) principal;
-			List<String> roles = Arrays.asList(StringUtils.trimArrayElements(StringUtils
-					.commaDelimitedListToStringArray(this.roleResolver.getProperty("roles", "ROLE_ADMIN"))));
+			List<String> roles = Arrays.asList(StringUtils
+					.trimArrayElements(StringUtils.commaDelimitedListToStringArray(
+							this.roleResolver.getProperty("roles", "ROLE_ADMIN"))));
 			for (GrantedAuthority authority : authentication.getAuthorities()) {
 				String name = authority.getAuthority();
 				for (String role : roles) {

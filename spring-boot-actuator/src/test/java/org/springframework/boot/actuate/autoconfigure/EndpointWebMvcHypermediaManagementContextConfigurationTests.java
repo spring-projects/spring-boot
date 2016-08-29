@@ -42,7 +42,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link EndpointWebMvcHypermediaManagementContextConfigurationTests}.
+ * Tests for {@link EndpointWebMvcHypermediaManagementContextConfiguration}.
  *
  * @author Andy Wilkinson
  */

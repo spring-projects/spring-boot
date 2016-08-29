@@ -60,15 +60,18 @@ public class HealthMvcEndpointTests {
 
 	private MockEnvironment environment;
 
-	private UsernamePasswordAuthenticationToken user = createAuthenticationToken("ROLE_USER");
+	private UsernamePasswordAuthenticationToken user = createAuthenticationToken(
+			"ROLE_USER");
 
-	private UsernamePasswordAuthenticationToken admin = createAuthenticationToken("ROLE_ADMIN");
+	private UsernamePasswordAuthenticationToken admin = createAuthenticationToken(
+			"ROLE_ADMIN");
 
-	private UsernamePasswordAuthenticationToken hero = createAuthenticationToken("ROLE_HERO");
+	private UsernamePasswordAuthenticationToken hero = createAuthenticationToken(
+			"ROLE_HERO");
 
-	private UsernamePasswordAuthenticationToken createAuthenticationToken(String authority) {
-		return new UsernamePasswordAuthenticationToken(
-				"user", "password",
+	private UsernamePasswordAuthenticationToken createAuthenticationToken(
+			String authority) {
+		return new UsernamePasswordAuthenticationToken("user", "password",
 				AuthorityUtils.commaSeparatedStringToAuthorityList(authority));
 	}
 
