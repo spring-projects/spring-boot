@@ -359,10 +359,6 @@ public class SpringApplication {
 		if (printedBanner != null) {
 			context.getBeanFactory().registerSingleton("springBootBanner", printedBanner);
 		}
-		ApplicationInfo applicationInfo = new ApplicationInfo(this, applicationArguments,
-				printedBanner);
-		context.getBeanFactory().registerSingleton("springApplicationInfo",
-				applicationInfo);
 
 		// Load the sources
 		Set<Object> sources = getSources();

@@ -11,9 +11,9 @@ welcome = { ->
 	// Try to print using the banner interface
 	if (beanFactory != null) {
 		try {
-			def appInfo = beanFactory.getBean("springApplicationInfo")
+			def banner = beanFactory.getBean("springBootBanner")
 			def out = new java.io.ByteArrayOutputStream()
-			appInfo.banner.printBanner(environment, null, new java.io.PrintStream(out))
+			banner.printBanner(environment, null, new java.io.PrintStream(out))
 			return out.toString()
 		} catch (Exception ex) {
 			// Ignore
