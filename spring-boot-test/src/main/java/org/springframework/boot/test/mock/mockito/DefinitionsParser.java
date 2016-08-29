@@ -18,7 +18,6 @@ package org.springframework.boot.test.mock.mockito;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -26,6 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -82,15 +82,15 @@ class DefinitionsParser {
 	}
 
 	private void parseMockBeanAnnotation(MockBean annotation, AnnotatedElement element) {
-		Set<Class<?>> classesToMock = getOrDeduceClasses(element, annotation.value());
-		Assert.state(!classesToMock.isEmpty(),
-				"Unable to deduce class to mock from " + element);
+		Set<ResolvableType> typesToMock = getOrDeduceTypes(element, annotation.value());
+		Assert.state(!typesToMock.isEmpty(),
+				"Unable to deduce type to mock from " + element);
 		if (StringUtils.hasLength(annotation.name())) {
-			Assert.state(classesToMock.size() == 1,
+			Assert.state(typesToMock.size() == 1,
 					"The name attribute can only be used when mocking a single class");
 		}
-		for (Class<?> classToMock : classesToMock) {
-			MockDefinition definition = new MockDefinition(annotation.name(), classToMock,
+		for (ResolvableType typeToMock : typesToMock) {
+			MockDefinition definition = new MockDefinition(annotation.name(), typeToMock,
 					annotation.extraInterfaces(), annotation.answer(),
 					annotation.serializable(), annotation.reset(),
 					annotation.proxyTargetAware());
@@ -99,15 +99,15 @@ class DefinitionsParser {
 	}
 
 	private void parseSpyBeanAnnotation(SpyBean annotation, AnnotatedElement element) {
-		Set<Class<?>> classesToSpy = getOrDeduceClasses(element, annotation.value());
-		Assert.state(!classesToSpy.isEmpty(),
-				"Unable to deduce class to spy from " + element);
+		Set<ResolvableType> typesToSpy = getOrDeduceTypes(element, annotation.value());
+		Assert.state(!typesToSpy.isEmpty(),
+				"Unable to deduce type to spy from " + element);
 		if (StringUtils.hasLength(annotation.name())) {
-			Assert.state(classesToSpy.size() == 1,
+			Assert.state(typesToSpy.size() == 1,
 					"The name attribute can only be used when spying a single class");
 		}
-		for (Class<?> classToSpy : classesToSpy) {
-			SpyDefinition definition = new SpyDefinition(annotation.name(), classToSpy,
+		for (ResolvableType typeToSpy : typesToSpy) {
+			SpyDefinition definition = new SpyDefinition(annotation.name(), typeToSpy,
 					annotation.reset(), annotation.proxyTargetAware());
 			addDefinition(element, definition, "spy");
 		}
@@ -123,13 +123,16 @@ class DefinitionsParser {
 		}
 	}
 
-	private Set<Class<?>> getOrDeduceClasses(AnnotatedElement element, Class<?>[] value) {
-		Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
-		classes.addAll(Arrays.asList(value));
-		if (classes.isEmpty() && element instanceof Field) {
-			classes.add(((Field) element).getType());
+	private Set<ResolvableType> getOrDeduceTypes(AnnotatedElement element,
+			Class<?>[] value) {
+		Set<ResolvableType> types = new LinkedHashSet<ResolvableType>();
+		for (Class<?> type : value) {
+			types.add(ResolvableType.forClass(type));
 		}
-		return classes;
+		if (types.isEmpty() && element instanceof Field) {
+			types.add(ResolvableType.forField((Field) element));
+		}
+		return types;
 	}
 
 	public Set<Definition> getDefinitions() {

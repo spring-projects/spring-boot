@@ -54,6 +54,7 @@ import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Conventions;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
+import org.springframework.core.ResolvableType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -190,8 +191,8 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private RootBeanDefinition createBeanDefinition(MockDefinition mockDefinition) {
 		RootBeanDefinition definition = new RootBeanDefinition(
-				mockDefinition.getClassToMock());
-		definition.setTargetType(mockDefinition.getClassToMock());
+				mockDefinition.getTypeToMock().resolve());
+		definition.setTargetType(mockDefinition.getTypeToMock());
 		definition.setFactoryBeanName(BEAN_NAME);
 		definition.setFactoryMethodName("createMock");
 		definition.getConstructorArgumentValues().addIndexedArgumentValue(0,
@@ -216,23 +217,22 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			return mockDefinition.getName();
 		}
 		String[] existingBeans = getExistingBeans(beanFactory,
-				mockDefinition.getClassToMock());
+				mockDefinition.getTypeToMock());
 		if (ObjectUtils.isEmpty(existingBeans)) {
 			return this.beanNameGenerator.generateBeanName(beanDefinition, registry);
 		}
 		if (existingBeans.length == 1) {
 			return existingBeans[0];
 		}
-		throw new IllegalStateException("Unable to register mock bean "
-				+ mockDefinition.getClassToMock().getName()
-				+ " expected a single existing bean to replace but found "
-				+ new TreeSet<String>(Arrays.asList(existingBeans)));
+		throw new IllegalStateException(
+				"Unable to register mock bean " + mockDefinition.getTypeToMock()
+						+ " expected a single existing bean to replace but found "
+						+ new TreeSet<String>(Arrays.asList(existingBeans)));
 	}
 
 	private void registerSpy(ConfigurableListableBeanFactory beanFactory,
 			BeanDefinitionRegistry registry, SpyDefinition definition, Field field) {
-		String[] existingBeans = getExistingBeans(beanFactory,
-				definition.getClassToSpy());
+		String[] existingBeans = getExistingBeans(beanFactory, definition.getTypeToSpy());
 		if (ObjectUtils.isEmpty(existingBeans)) {
 			createSpy(registry, definition, field);
 		}
@@ -242,13 +242,14 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	private String[] getExistingBeans(ConfigurableListableBeanFactory beanFactory,
-			Class<?> type) {
+			ResolvableType type) {
 		Set<String> beans = new LinkedHashSet<String>(
 				Arrays.asList(beanFactory.getBeanNamesForType(type)));
+		String resolvedTypeName = type.resolve(Object.class).getName();
 		for (String beanName : beanFactory.getBeanNamesForType(FactoryBean.class)) {
 			beanName = BeanFactoryUtils.transformedBeanName(beanName);
 			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-			if (type.getName()
+			if (resolvedTypeName
 					.equals(beanDefinition.getAttribute(FACTORY_BEAN_OBJECT_TYPE))) {
 				beans.add(beanName);
 			}
@@ -273,7 +274,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	private void createSpy(BeanDefinitionRegistry registry, SpyDefinition definition,
 			Field field) {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(
-				definition.getClassToSpy());
+				definition.getTypeToSpy().resolve());
 		String beanName = this.beanNameGenerator.generateBeanName(beanDefinition,
 				registry);
 		registry.registerBeanDefinition(beanName, beanDefinition);
@@ -283,7 +284,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	private void registerSpies(SpyDefinition definition, Field field,
 			String[] existingBeans) {
 		Assert.state(field == null || existingBeans.length == 1,
-				"Unable to register spy bean " + definition.getClassToSpy().getName()
+				"Unable to register spy bean " + definition.getTypeToSpy()
 						+ " expected a single existing bean to replace but found "
 						+ new TreeSet<String>(Arrays.asList(existingBeans)));
 		for (String beanName : existingBeans) {

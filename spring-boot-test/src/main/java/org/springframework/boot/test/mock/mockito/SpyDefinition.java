@@ -20,6 +20,7 @@ import org.mockito.MockSettings;
 import org.mockito.Mockito;
 import org.mockito.internal.util.MockUtil;
 
+import org.springframework.core.ResolvableType;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -36,24 +37,24 @@ class SpyDefinition extends Definition {
 
 	private static final int MULTIPLIER = 31;
 
-	private final Class<?> classToSpy;
+	private final ResolvableType typeToSpy;
 
-	SpyDefinition(String name, Class<?> classToSpy, MockReset reset,
+	SpyDefinition(String name, ResolvableType typeToSpy, MockReset reset,
 			boolean proxyTargetAware) {
 		super(name, reset, proxyTargetAware);
-		Assert.notNull(classToSpy, "ClassToSpy must not be null");
-		this.classToSpy = classToSpy;
+		Assert.notNull(typeToSpy, "TypeToSpy must not be null");
+		this.typeToSpy = typeToSpy;
 
 	}
 
-	public Class<?> getClassToSpy() {
-		return this.classToSpy;
+	public ResolvableType getTypeToSpy() {
+		return this.typeToSpy;
 	}
 
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.classToSpy);
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.typeToSpy);
 		return result;
 	}
 
@@ -67,14 +68,14 @@ class SpyDefinition extends Definition {
 		}
 		SpyDefinition other = (SpyDefinition) obj;
 		boolean result = super.equals(obj);
-		result &= ObjectUtils.nullSafeEquals(this.classToSpy, other.classToSpy);
+		result &= ObjectUtils.nullSafeEquals(this.typeToSpy, other.typeToSpy);
 		return result;
 	}
 
 	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("name", getName())
-				.append("classToSpy", this.classToSpy).append("reset", getReset())
+				.append("typeToSpy", this.typeToSpy).append("reset", getReset())
 				.toString();
 	}
 
@@ -85,7 +86,7 @@ class SpyDefinition extends Definition {
 	@SuppressWarnings("unchecked")
 	public <T> T createSpy(String name, Object instance) {
 		Assert.notNull(instance, "Instance must not be null");
-		Assert.isInstanceOf(this.classToSpy, instance);
+		Assert.isInstanceOf(this.typeToSpy.resolve(), instance);
 		if (this.mockUtil.isSpy(instance)) {
 			return (T) instance;
 		}

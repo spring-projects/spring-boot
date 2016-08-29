@@ -25,6 +25,7 @@ import org.mockito.mock.MockCreationSettings;
 
 import org.springframework.boot.test.mock.mockito.example.ExampleExtraInterface;
 import org.springframework.boot.test.mock.mockito.example.ExampleService;
+import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,22 +36,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MockDefinitionTests {
 
+	private static final ResolvableType EXAMPLE_SERVICE_TYPE = ResolvableType
+			.forClass(ExampleService.class);
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void ClassToMockMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ClassToMock must not be null");
+		this.thrown.expectMessage("TypeToMock must not be null");
 		new MockDefinition(null, null, null, null, false, null, true);
 	}
 
 	@Test
 	public void createWithDefaults() throws Exception {
-		MockDefinition definition = new MockDefinition(null, ExampleService.class, null,
+		MockDefinition definition = new MockDefinition(null, EXAMPLE_SERVICE_TYPE, null,
 				null, false, null, true);
 		assertThat(definition.getName()).isNull();
-		assertThat(definition.getClassToMock()).isEqualTo(ExampleService.class);
+		assertThat(definition.getTypeToMock()).isEqualTo(EXAMPLE_SERVICE_TYPE);
 		assertThat(definition.getExtraInterfaces()).isEmpty();
 		assertThat(definition.getAnswer()).isEqualTo(Answers.RETURNS_DEFAULTS);
 		assertThat(definition.isSerializable()).isFalse();
@@ -59,11 +63,11 @@ public class MockDefinitionTests {
 
 	@Test
 	public void createExplicit() throws Exception {
-		MockDefinition definition = new MockDefinition("name", ExampleService.class,
+		MockDefinition definition = new MockDefinition("name", EXAMPLE_SERVICE_TYPE,
 				new Class<?>[] { ExampleExtraInterface.class },
 				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE, false);
 		assertThat(definition.getName()).isEqualTo("name");
-		assertThat(definition.getClassToMock()).isEqualTo(ExampleService.class);
+		assertThat(definition.getTypeToMock()).isEqualTo(EXAMPLE_SERVICE_TYPE);
 		assertThat(definition.getExtraInterfaces())
 				.containsExactly(ExampleExtraInterface.class);
 		assertThat(definition.getAnswer()).isEqualTo(Answers.RETURNS_SMART_NULLS);
@@ -74,7 +78,7 @@ public class MockDefinitionTests {
 
 	@Test
 	public void createMock() throws Exception {
-		MockDefinition definition = new MockDefinition("name", ExampleService.class,
+		MockDefinition definition = new MockDefinition("name", EXAMPLE_SERVICE_TYPE,
 				new Class<?>[] { ExampleExtraInterface.class },
 				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE, true);
 		ExampleService mock = definition.createMock();

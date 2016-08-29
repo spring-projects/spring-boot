@@ -26,6 +26,7 @@ import org.mockito.mock.MockCreationSettings;
 import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller;
 import org.springframework.boot.test.mock.mockito.example.RealExampleService;
+import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,39 +37,41 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SpyDefinitionTests {
 
+	private static final ResolvableType REAL_SERVICE_TYPE = ResolvableType
+			.forClass(RealExampleService.class);
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void classToSpyMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ClassToSpy must not be null");
+		this.thrown.expectMessage("TypeToSpy must not be null");
 		new SpyDefinition(null, null, null, true);
 	}
 
 	@Test
 	public void createWithDefaults() throws Exception {
-		SpyDefinition definition = new SpyDefinition(null, RealExampleService.class, null,
-				true);
+		SpyDefinition definition = new SpyDefinition(null, REAL_SERVICE_TYPE, null, true);
 		assertThat(definition.getName()).isNull();
-		assertThat(definition.getClassToSpy()).isEqualTo(RealExampleService.class);
+		assertThat(definition.getTypeToSpy()).isEqualTo(REAL_SERVICE_TYPE);
 		assertThat(definition.getReset()).isEqualTo(MockReset.AFTER);
 		assertThat(definition.isProxyTargetAware()).isTrue();
 	}
 
 	@Test
 	public void createExplicit() throws Exception {
-		SpyDefinition definition = new SpyDefinition("name", RealExampleService.class,
+		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, false);
 		assertThat(definition.getName()).isEqualTo("name");
-		assertThat(definition.getClassToSpy()).isEqualTo(RealExampleService.class);
+		assertThat(definition.getTypeToSpy()).isEqualTo(REAL_SERVICE_TYPE);
 		assertThat(definition.getReset()).isEqualTo(MockReset.BEFORE);
 		assertThat(definition.isProxyTargetAware()).isFalse();
 	}
 
 	@Test
 	public void createSpy() throws Exception {
-		SpyDefinition definition = new SpyDefinition("name", RealExampleService.class,
+		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, true);
 		RealExampleService spy = definition.createSpy(new RealExampleService("hello"));
 		MockCreationSettings<?> settings = new MockUtil().getMockSettings(spy);
@@ -81,7 +84,7 @@ public class SpyDefinitionTests {
 
 	@Test
 	public void createSpyWhenNullInstanceShouldThrowException() throws Exception {
-		SpyDefinition definition = new SpyDefinition("name", RealExampleService.class,
+		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, true);
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Instance must not be null");
@@ -90,7 +93,7 @@ public class SpyDefinitionTests {
 
 	@Test
 	public void createSpyWhenWrongInstanceShouldThrowException() throws Exception {
-		SpyDefinition definition = new SpyDefinition("name", RealExampleService.class,
+		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, true);
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("must be an instance of");
@@ -99,7 +102,7 @@ public class SpyDefinitionTests {
 
 	@Test
 	public void createSpyTwice() throws Exception {
-		SpyDefinition definition = new SpyDefinition("name", RealExampleService.class,
+		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, true);
 		Object instance = new RealExampleService("hello");
 		instance = definition.createSpy(instance);
