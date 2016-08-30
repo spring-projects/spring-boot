@@ -132,7 +132,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			return Collections.emptyList();
 		}
 		List<String> beanNames = new ArrayList<String>();
-		boolean considerHierarchy = beans.getStrategy() == SearchStrategy.ALL;
+		boolean considerHierarchy = beans.getStrategy() == SearchStrategy.ALL
+			|| beans.getStrategy() == SearchStrategy.PARENTS;
 		for (String type : beans.getTypes()) {
 			beanNames.addAll(getBeanNamesForType(beanFactory, type,
 					context.getClassLoader(), considerHierarchy));
