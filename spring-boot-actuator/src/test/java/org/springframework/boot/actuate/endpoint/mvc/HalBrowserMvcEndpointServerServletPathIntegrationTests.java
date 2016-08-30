@@ -51,9 +51,9 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"server.contextPath=/spring" })
+		"server.servlet-path=/spring" })
 @DirtiesContext
-public class HalBrowserMvcEndpointServerContextPathIntegrationTests {
+public class HalBrowserMvcEndpointServerServletPathIntegrationTests {
 
 	@LocalServerPort
 	private int port;
