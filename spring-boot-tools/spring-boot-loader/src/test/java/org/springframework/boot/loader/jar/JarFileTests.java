@@ -63,6 +63,9 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  */
 public class JarFileTests {
+	private static final String PROTOCOL_HANDLER = "java.protocol.handler.pkgs";
+
+	private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -451,6 +454,44 @@ public class JarFileTests {
 		URL url = new URL(nestedUrl, nestedJarFile.getUrl() + "missing.jar!/3.dat");
 		this.thrown.expect(FileNotFoundException.class);
 		url.openConnection().getInputStream();
+	}
+
+	@Test
+	public void registerUrlProtocolHandlerWithNoExistingRegistration() {
+		String original = System.getProperty(PROTOCOL_HANDLER);
+		try {
+			System.clearProperty(PROTOCOL_HANDLER);
+			JarFile.registerUrlProtocolHandler();
+			String protocolHandler = System.getProperty(PROTOCOL_HANDLER);
+			assertThat(protocolHandler, equalTo(HANDLERS_PACKAGE));
+		}
+		finally {
+			if (original == null) {
+				System.clearProperty(PROTOCOL_HANDLER);
+			}
+			else {
+				System.setProperty(PROTOCOL_HANDLER, original);
+			}
+		}
+	}
+
+	@Test
+	public void registerUrlProtocolHandlerAddsToExistingRegistration() {
+		String original = System.getProperty(PROTOCOL_HANDLER);
+		try {
+			System.setProperty(PROTOCOL_HANDLER, "com.example");
+			JarFile.registerUrlProtocolHandler();
+			String protocolHandler = System.getProperty(PROTOCOL_HANDLER);
+			assertThat(protocolHandler, equalTo("com.example|" + HANDLERS_PACKAGE));
+		}
+		finally {
+			if (original == null) {
+				System.clearProperty(PROTOCOL_HANDLER);
+			}
+			else {
+				System.setProperty(PROTOCOL_HANDLER, original);
+			}
+		}
 	}
 
 }
