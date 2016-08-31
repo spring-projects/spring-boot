@@ -282,7 +282,7 @@ public class ConditionalOnMissingBeanTests {
 				OnBeanInParentsConfiguration.class);
 		child.setParent(this.context);
 		child.refresh();
-		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(1);
+		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(2);
 	}
 
 	@Configuration
