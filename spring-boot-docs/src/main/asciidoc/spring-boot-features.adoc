@@ -3336,7 +3336,10 @@ size of 500 and a _time to live_ of 10 minutes
 ----
 
 Besides, if a `com.google.common.cache.CacheLoader` bean is defined, it is automatically
-associated to the `GuavaCacheManager`.
+associated to the `GuavaCacheManager`. Since the `CacheLoader` is going to be associated
+to _all_ caches managed by the cache manager, it must be defined as
+`CacheLoader<Object, Object>`. Any other generic type will be ignored by the
+auto-configuration.
 
 
 
