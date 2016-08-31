@@ -43,12 +43,10 @@ import org.springframework.boot.loader.util.AsciiBytes;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
@@ -459,10 +457,41 @@ public class JarFileTests {
 	}
 
 	@Test
-	public void registerUrlProtocolHandler() {
-		JarFile.registerUrlProtocolHandler();
-		String protocolHandler = System.getProperty(PROTOCOL_HANDLER);
-		assertThat(protocolHandler, containsString(HANDLERS_PACKAGE));
-		assertThat(protocolHandler, not(containsString("null")));
+	public void registerUrlProtocolHandlerWithNoExistingRegistration() {
+		String original = System.getProperty(PROTOCOL_HANDLER);
+		try {
+			System.clearProperty(PROTOCOL_HANDLER);
+			JarFile.registerUrlProtocolHandler();
+			String protocolHandler = System.getProperty(PROTOCOL_HANDLER);
+			assertThat(protocolHandler, equalTo(HANDLERS_PACKAGE));
+		}
+		finally {
+			if (original == null) {
+				System.clearProperty(PROTOCOL_HANDLER);
+			}
+			else {
+				System.setProperty(PROTOCOL_HANDLER, original);
+			}
+		}
 	}
+
+	@Test
+	public void registerUrlProtocolHandlerAddsToExistingRegistration() {
+		String original = System.getProperty(PROTOCOL_HANDLER);
+		try {
+			System.setProperty(PROTOCOL_HANDLER, "com.example");
+			JarFile.registerUrlProtocolHandler();
+			String protocolHandler = System.getProperty(PROTOCOL_HANDLER);
+			assertThat(protocolHandler, equalTo("com.example|" + HANDLERS_PACKAGE));
+		}
+		finally {
+			if (original == null) {
+				System.clearProperty(PROTOCOL_HANDLER);
+			}
+			else {
+				System.setProperty(PROTOCOL_HANDLER, original);
+			}
+		}
+	}
+
 }
