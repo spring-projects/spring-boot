@@ -771,7 +771,17 @@
 			</dependency>
 			<dependency>
 				<groupId>com.querydsl</groupId>
+				<artifactId>querydsl-apt</artifactId>
+				<version>${querydsl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.querydsl</groupId>
 				<artifactId>querydsl-collections</artifactId>
+				<version>${querydsl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.querydsl</groupId>
+				<artifactId>querydsl-core</artifactId>
 				<version>${querydsl.version}</version>
 			</dependency>
 			<dependency>
