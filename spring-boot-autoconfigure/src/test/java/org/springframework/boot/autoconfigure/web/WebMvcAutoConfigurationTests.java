@@ -39,6 +39,7 @@ import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WelcomePageHandlerMapping;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -52,8 +53,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.accept.ContentNegotiationManager;
@@ -90,6 +94,9 @@ import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link WebMvcAutoConfiguration}.
@@ -132,7 +139,7 @@ public class WebMvcAutoConfigurationTests {
 	public void handlerMappingsCreated() throws Exception {
 		load();
 		assertThat(this.context.getBeanNamesForType(HandlerMapping.class).length)
-				.isEqualTo(6);
+				.isEqualTo(7);
 	}
 
 	@Test
@@ -538,6 +545,51 @@ public class WebMvcAutoConfigurationTests {
 	public void customLogResolvedException() {
 		load("spring.mvc.log-resolved-exception:true");
 		testLogResolvedExceptionCustomization(true);
+	}
+
+	@Test
+	public void welcomePageMappingProducesNotFoundResponseWhenThereIsNoWelcomePage()
+			throws Exception {
+		load("spring.resources.static-locations:classpath:/no-welcome-page/");
+		assertThat(this.context.getBeansOfType(WelcomePageHandlerMapping.class))
+				.hasSize(1);
+		MockMvcBuilders.webAppContextSetup(this.context).build()
+				.perform(get("/").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void welcomePageMappingHandlesRequestsThatAcceptTextHtml() throws Exception {
+		load("spring.resources.static-locations:classpath:/welcome-page/");
+		assertThat(this.context.getBeansOfType(WelcomePageHandlerMapping.class))
+				.hasSize(1);
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
+				.andExpect(forwardedUrl("index.html"));
+		mockMvc.perform(get("/").accept("*/*")).andExpect(status().isOk())
+				.andExpect(forwardedUrl("index.html"));
+	}
+
+	@Test
+	public void welcomePageMappingOnlyHandlesRequestsThatAcceptTextHtml()
+			throws Exception {
+		load("spring.resources.static-locations:classpath:/welcome-page/");
+		assertThat(this.context.getBeansOfType(WelcomePageHandlerMapping.class))
+				.hasSize(1);
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void welcomePageMappingWorksWithNoTrailingSlashOnResourceLocation()
+			throws Exception {
+		load("spring.resources.static-locations:classpath:/welcome-page");
+		assertThat(this.context.getBeansOfType(WelcomePageHandlerMapping.class))
+				.hasSize(1);
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
+				.andExpect(forwardedUrl("index.html"));
 	}
 
 	private void testLogResolvedExceptionCustomization(final boolean expected) {
