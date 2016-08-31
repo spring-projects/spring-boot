@@ -140,7 +140,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Flag to indicate if the run processes should be forked. {@code fork } is
-	 * automatically enabled if an agent or jvmArguments are specified.
+	 * automatically enabled if an agent or jvmArguments are specified, or if
+	 * devtools is present.
 	 * @since 1.2
 	 */
 	@Parameter(property = "fork")
@@ -160,23 +161,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	@Parameter(defaultValue = "false")
 	private boolean skip;
 
-	/**
-	 * Specify if the application process should be forked.
-	 * @return {@code true} if the application process should be forked
-	 */
-	protected boolean isFork() {
-		return (Boolean.TRUE.equals(this.fork)
-				|| (this.fork == null && (hasAgent() || hasJvmArgs())));
-	}
-
-	private boolean hasAgent() {
-		return (this.agent != null && this.agent.length > 0);
-	}
-
-	private boolean hasJvmArgs() {
-		return (this.jvmArguments != null && this.jvmArguments.length() > 0);
-	}
-
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.skip) {
@@ -185,6 +169,32 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 		final String startClassName = getStartClass();
 		run(startClassName);
+	}
+
+	/**
+	 * Specify if the application process should be forked.
+	 * @return {@code true} if the application process should be forked
+	 */
+	protected boolean isFork() {
+		return (Boolean.TRUE.equals(this.fork)
+				|| (this.fork == null && enableForkByDefault()));
+	}
+
+	/**
+	 * Specify if fork should be enabled by default.
+	 * @return {@code true} if fork should be enabled by default
+	 * @see #logDisabledFork()
+	 */
+	protected boolean enableForkByDefault() {
+		return hasAgent() || hasJvmArgs();
+	}
+
+	private boolean hasAgent() {
+		return (this.agent != null && this.agent.length > 0);
+	}
+
+	private boolean hasJvmArgs() {
+		return (this.jvmArguments != null && this.jvmArguments.length() > 0);
 	}
 
 	private void findAgent() {
@@ -221,14 +231,23 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			doRunWithForkedJvm(startClassName);
 		}
 		else {
-			if (hasAgent()) {
-				getLog().warn("Fork mode disabled, ignoring agent");
-			}
-			if (hasJvmArgs()) {
-				getLog().warn("Fork mode disabled, ignoring JVM argument(s) ["
-						+ this.jvmArguments + "]");
-			}
+			logDisabledFork();
 			runWithMavenJvm(startClassName, resolveApplicationArguments().asArray());
+		}
+	}
+
+	/**
+	 * Log a warning indicating that fork mode has been explicitly disabled
+	 * while some conditions are present that require to enable it.
+	 * @see #enableForkByDefault()
+	 */
+	protected void logDisabledFork() {
+		if (hasAgent()) {
+			getLog().warn("Fork mode disabled, ignoring agent");
+		}
+		if (hasJvmArgs()) {
+			getLog().warn("Fork mode disabled, ignoring JVM argument(s) ["
+					+ this.jvmArguments + "]");
 		}
 	}
 
