@@ -26,7 +26,7 @@ import org.springframework.context.ApplicationContextInitializer;
  * @author Dave Syer
  * @author Phillip Webb
  * @deprecated as of 1.4 in favor of
- * org.springframework.boot.web.support.ServletContextApplicationContextInitializer
+ * {@link org.springframework.boot.web.support.ServletContextApplicationContextInitializer}
  */
 @Deprecated
 public class ServletContextApplicationContextInitializer extends

@@ -25,7 +25,7 @@ import org.springframework.web.filter.HttpPutFormContentFilter;
  * @author Joao Pedro Evangelista
  * @since 1.3.0
  * @deprecated as of 1.4 in favor of
- * org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter
+ * {@link org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter}
  */
 @Deprecated
 public class OrderedHttpPutFormContentFilter

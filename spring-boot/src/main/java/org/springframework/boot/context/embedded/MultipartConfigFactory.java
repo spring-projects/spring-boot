@@ -29,7 +29,8 @@ import javax.servlet.MultipartConfigElement;
  * </pre>
  *
  * @author Phillip Webb
- * @deprecated as of 1.4 in favor of org.springframework.boot.web.MultipartConfigFactory
+ * @deprecated as of 1.4 in favor of
+ * {@link org.springframework.boot.web.servlet.MultipartConfigFactory}
  */
 @Deprecated
 public class MultipartConfigFactory

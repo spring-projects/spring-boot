@@ -46,7 +46,7 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  * @see FilterRegistrationBean
  * @see DelegatingFilterProxy
  * @deprecated as of 1.4 in favor of
- * org.springframework.boot.web.DelegatingFilterProxyRegistrationBean
+ * {@link org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean}
  */
 @Deprecated
 public class DelegatingFilterProxyRegistrationBean

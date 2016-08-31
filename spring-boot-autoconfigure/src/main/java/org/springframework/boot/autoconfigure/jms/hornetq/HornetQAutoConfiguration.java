@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Import;
  * @author Phillip Webb
  * @since 1.1.0
  * @see HornetQProperties
- * @deprecated as of 1.4 in favor of the artemis support
+ * @deprecated as of 1.4 in favor of the Artemis support
  */
 @Configuration
 @AutoConfigureBefore(JmsAutoConfiguration.class)

@@ -39,7 +39,7 @@ import org.springframework.core.env.Environment;
  * @author Phillip Webb
  * @since 1.3.0
  * @deprecated as of 1.4 in favor of
- * org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer
+ * {@link org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer}
  */
 @Deprecated
 public class ServerPortInfoApplicationContextInitializer extends

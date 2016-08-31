@@ -25,7 +25,7 @@ import org.springframework.web.filter.HiddenHttpMethodFilter;
  * @author Phillip Webb
  * @since 1.2.4
  * @deprecated as of 1.4 in favor of
- * org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter
+ * {@link org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter}
  */
 @Deprecated
 public class OrderedHiddenHttpMethodFilter

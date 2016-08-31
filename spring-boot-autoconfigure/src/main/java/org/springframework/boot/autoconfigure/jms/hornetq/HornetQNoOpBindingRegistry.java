@@ -23,7 +23,7 @@ import org.hornetq.spi.core.naming.BindingRegistry;
  *
  * @author Stephane Nicoll
  * @since 1.1.0
- * @deprecated as of 1.4 in favor of the artemis support
+ * @deprecated as of 1.4 in favor of the Artemis support
  */
 @Deprecated
 public class HornetQNoOpBindingRegistry implements BindingRegistry {

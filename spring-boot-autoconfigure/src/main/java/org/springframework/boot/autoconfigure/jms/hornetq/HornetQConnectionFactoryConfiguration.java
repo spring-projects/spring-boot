@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Phillip Webb
  * @since 1.2.0
- * @deprecated as of 1.4 in favor of the artemis support
+ * @deprecated as of 1.4 in favor of the Artemis support
  */
 @Configuration
 @ConditionalOnMissingBean(ConnectionFactory.class)

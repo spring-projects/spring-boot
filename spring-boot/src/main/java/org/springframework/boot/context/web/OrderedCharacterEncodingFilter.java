@@ -25,7 +25,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
  * @author Phillip Webb
  * @since 1.2.1
  * @deprecated as of 1.4 in favor of
- * org.springframework.boot.web.filter.OrderedCharacterEncodingFilter
+ * {@link org.springframework.boot.web.filter.OrderedCharacterEncodingFilter}
  */
 @Deprecated
 public class OrderedCharacterEncodingFilter

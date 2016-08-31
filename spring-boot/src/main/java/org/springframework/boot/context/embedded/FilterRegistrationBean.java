@@ -39,7 +39,7 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
  * @see ServletContext#addFilter(String, Filter)
  * @see DelegatingFilterProxyRegistrationBean
  * @deprecated as of 1.4 in favor of
- * org.springframework.boot.web.servlet.FilterRegistrationBean
+ * {@link org.springframework.boot.web.servlet.FilterRegistrationBean}
  */
 @Deprecated
 public class FilterRegistrationBean

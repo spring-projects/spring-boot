@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.support.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
@@ -71,8 +72,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @see org.springframework.boot.test.IntegrationTest
  * @see org.springframework.boot.test.WebIntegrationTest
  * @deprecated as of 1.4 in favor of {@link SpringBootTest @SpringBootTest}
- * {@link org.springframework.boot.test.context.SpringBootContextLoader} can also be
- * considered if absolutely necessary.
+ * {@link SpringBootContextLoader} can also be considered if absolutely necessary.
  */
 @Deprecated
 public class SpringApplicationContextLoader extends AbstractContextLoader {

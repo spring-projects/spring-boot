@@ -44,7 +44,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  *
  * @author Phillip Webb
  * @deprecated as of 1.4 in favor of
- * {@code @org.springframework.boot.autoconfigure.domain.EntityScan} or explicit
+ * {@code org.springframework.boot.autoconfigure.domain.EntityScan} or explicit
  * configuration of the {@link LocalContainerEntityManagerFactoryBean} (either
  * {@link LocalContainerEntityManagerFactoryBean#setPackagesToScan(String...) directly} or
  * using the {@link EntityManagerFactoryBuilder.Builder#packages(Class...)

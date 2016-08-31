@@ -47,7 +47,7 @@ import org.springframework.web.WebApplicationInitializer;
  * @author Andy Wilkinson
  * @see #configure(SpringApplicationBuilder)
  * @deprecated as of 1.4 in favor of
- * org.springframework.boot.web.support.SpringBootServletInitializer
+ * {@link org.springframework.boot.web.support.SpringBootServletInitializer}
  */
 @Deprecated
 public abstract class SpringBootServletInitializer
