@@ -132,6 +132,7 @@
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>2.0.4</neo4j-ogm.version>
 		<postgresql.version>9.4.1209.jre7</postgresql.version>
+		<querydsl.version>4.1.3</querydsl.version>
 		<reactor.version>2.0.8.RELEASE</reactor.version>
 		<reactor-spring.version>2.0.7.RELEASE</reactor-spring.version>
 		<selenium.version>2.53.1</selenium.version>
@@ -767,6 +768,37 @@
 				<groupId>com.jayway.jsonpath</groupId>
 				<artifactId>json-path-assert</artifactId>
 				<version>${json-path.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.querydsl</groupId>
+				<artifactId>querydsl-apt</artifactId>
+				<version>${querydsl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.querydsl</groupId>
+				<artifactId>querydsl-collections</artifactId>
+				<version>${querydsl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.querydsl</groupId>
+				<artifactId>querydsl-core</artifactId>
+				<version>${querydsl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.querydsl</groupId>
+				<artifactId>querydsl-jpa</artifactId>
+				<version>${querydsl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.querydsl</groupId>
+				<artifactId>querydsl-mongodb</artifactId>
+				<version>${querydsl.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.mongodb</groupId>
+						<artifactId>mongo-java-driver</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.samskivert</groupId>
