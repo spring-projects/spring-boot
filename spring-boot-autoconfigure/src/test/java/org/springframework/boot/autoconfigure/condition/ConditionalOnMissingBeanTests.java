@@ -257,6 +257,45 @@ public class ConditionalOnMissingBeanTests {
 		assertThat(this.context.getBeansOfType(CustomExampleBean.class)).hasSize(1);
 	}
 
+	@Test
+	public void grandparentIsConsideredWhenUsingParentsStrategy() {
+		this.context.register(ExampleBeanConfiguration.class);
+		this.context.refresh();
+		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
+		parent.setParent(this.context);
+		parent.refresh();
+		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
+		child.setParent(parent);
+		child.register(ExampleBeanConfiguration.class,
+				OnBeanInParentsConfiguration.class);
+		child.refresh();
+		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(1);
+		child.close();
+		parent.close();
+	}
+
+	@Test
+	public void currentContextIsIgnoredWhenUsingParentsStrategy() {
+		this.context.refresh();
+		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
+		child.register(ExampleBeanConfiguration.class,
+				OnBeanInParentsConfiguration.class);
+		child.setParent(this.context);
+		child.refresh();
+		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(1);
+	}
+
+	@Configuration
+	protected static class OnBeanInParentsConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(search = SearchStrategy.PARENTS)
+		public ExampleBean exampleBean2() {
+			return new ExampleBean("test");
+		}
+
+	}
+
 	@Configuration
 	@ConditionalOnMissingBean(name = "foo")
 	protected static class OnBeanNameConfiguration {
