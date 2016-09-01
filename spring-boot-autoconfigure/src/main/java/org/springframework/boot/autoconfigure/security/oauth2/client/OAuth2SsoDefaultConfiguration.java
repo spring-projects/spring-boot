@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2SsoDefaultConfiguration.NeedsWebSecurityCondition;
 import org.springframework.context.ApplicationContext;
@@ -75,22 +74,12 @@ public class OAuth2SsoDefaultConfiguration extends WebSecurityConfigurerAdapter
 		return SecurityProperties.ACCESS_OVERRIDE_ORDER;
 	}
 
-	protected static class NeedsWebSecurityCondition extends SpringBootCondition {
+	protected static class NeedsWebSecurityCondition extends EnableOAuth2SsoCondition {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			String[] enablers = context.getBeanFactory()
-					.getBeanNamesForAnnotation(EnableOAuth2Sso.class);
-			for (String name : enablers) {
-				if (context.getBeanFactory().isTypeMatch(name,
-						WebSecurityConfigurerAdapter.class)) {
-					return ConditionOutcome.noMatch(
-							"found @EnableOAuth2Sso on a WebSecurityConfigurerAdapter");
-				}
-			}
-			return ConditionOutcome
-					.match("found no @EnableOAuth2Sso on a WebSecurityConfigurerAdapter");
+			return ConditionOutcome.inverse(super.getMatchOutcome(context, metadata));
 		}
 
 	}

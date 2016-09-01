@@ -33,6 +33,7 @@ import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -223,10 +224,13 @@ public class ManagementWebSecurityAutoConfiguration {
 					.getProperty("management.security.enabled", "true");
 			String basicEnabled = context.getEnvironment()
 					.getProperty("security.basic.enabled", "true");
-			return new ConditionOutcome(
-					"true".equalsIgnoreCase(managementEnabled)
-							&& !"true".equalsIgnoreCase(basicEnabled),
-					"Management security enabled and basic disabled");
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("WebSecurityEnabled");
+			if ("true".equalsIgnoreCase(managementEnabled)
+					&& !"true".equalsIgnoreCase(basicEnabled)) {
+				return ConditionOutcome.match(message.because("security enabled"));
+			}
+			return ConditionOutcome.noMatch(message.because("security disabled"));
 		}
 
 	}

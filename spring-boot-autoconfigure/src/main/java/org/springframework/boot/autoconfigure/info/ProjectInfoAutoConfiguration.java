@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
@@ -104,9 +105,13 @@ public class ProjectInfoAutoConfiguration {
 					location = "classpath:git.properties";
 				}
 			}
-			boolean match = loader.getResource(location).exists();
-			return new ConditionOutcome(match,
-					"Git info " + (match ? "found" : "not found") + " at " + location);
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("GitResource");
+			if (loader.getResource(location).exists()) {
+				return ConditionOutcome.match(message.found("git info at").items(location));
+			}
+			return ConditionOutcome
+					.noMatch(message.didNotFind("git info at").items(location));
 		}
 
 	}

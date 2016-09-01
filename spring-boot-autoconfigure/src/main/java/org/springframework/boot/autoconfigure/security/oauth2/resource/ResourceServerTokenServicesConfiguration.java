@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -292,6 +293,8 @@ public class ResourceServerTokenServicesConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("OAuth TokenInfo Condition");
 			Environment environment = context.getEnvironment();
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
 					"security.oauth2.resource.");
@@ -305,13 +308,14 @@ public class ResourceServerTokenServicesConfiguration {
 			String tokenInfoUri = resolver.getProperty("token-info-uri");
 			String userInfoUri = resolver.getProperty("user-info-uri");
 			if (!StringUtils.hasLength(userInfoUri)) {
-				return ConditionOutcome.match("No user info provided");
+				return ConditionOutcome
+						.match(message.didNotFind("user-info-uri property").atAll());
 			}
 			if (StringUtils.hasLength(tokenInfoUri) && preferTokenInfo) {
-				return ConditionOutcome.match(
-						"Token info endpoint " + "is preferred and user info provided");
+				return ConditionOutcome
+						.match(message.foundExactly("preferred token-info-uri property"));
 			}
-			return ConditionOutcome.noMatch("Token info endpoint is not provided");
+			return ConditionOutcome.noMatch(message.didNotFind("token info").atAll());
 		}
 
 	}
@@ -321,14 +325,18 @@ public class ResourceServerTokenServicesConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("OAuth JWT Condition");
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 					context.getEnvironment(), "security.oauth2.resource.jwt.");
 			String keyValue = resolver.getProperty("key-value");
 			String keyUri = resolver.getProperty("key-uri");
 			if (StringUtils.hasText(keyValue) || StringUtils.hasText(keyUri)) {
-				return ConditionOutcome.match("public key is provided");
+				return ConditionOutcome
+						.match(message.foundExactly("provided public key"));
 			}
-			return ConditionOutcome.noMatch("public key is not provided");
+			return ConditionOutcome
+					.noMatch(message.didNotFind("provided public key").atAll());
 		}
 
 	}

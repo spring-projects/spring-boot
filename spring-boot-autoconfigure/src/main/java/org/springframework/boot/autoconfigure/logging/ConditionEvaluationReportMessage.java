@@ -116,8 +116,9 @@ public class ConditionEvaluationReportMessage {
 				.append(String.format("%n"));
 		for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
 			message.append("      - ");
-			if (StringUtils.hasLength(conditionAndOutcome.getOutcome().getMessage())) {
-				message.append(conditionAndOutcome.getOutcome().getMessage());
+			String outcomeMessage = conditionAndOutcome.getOutcome().getMessage();
+			if (StringUtils.hasLength(outcomeMessage)) {
+				message.append(outcomeMessage);
 			}
 			else {
 				message.append(conditionAndOutcome.getOutcome().isMatch() ? "matched"

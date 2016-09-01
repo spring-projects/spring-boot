@@ -14,45 +14,41 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devtools.restart;
+package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
- * {@link Condition} that checks that a {@link Restarter} is available an initialized.
+ * Condition that checks for {@link EnableOAuth2Sso} on a
+ * {@link WebSecurityConfigurerAdapter}.
  *
- * @author Phillip Webb
- * @see ConditionalOnInitializedRestarter
+ * @author Dave Syer
  */
-class OnInitializedRestarterCondition extends SpringBootCondition {
+class EnableOAuth2SsoCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
+		String[] enablers = context.getBeanFactory()
+				.getBeanNamesForAnnotation(EnableOAuth2Sso.class);
 		ConditionMessage.Builder message = ConditionMessage
-				.forCondition("Initializer Restarter Condition");
-		Restarter restarter = getRestarter();
-		if (restarter == null) {
-			return ConditionOutcome.noMatch(message.because("unavailable"));
+				.forCondition("@EnableOAuth2Sso Condition");
+		for (String name : enablers) {
+			if (context.getBeanFactory().isTypeMatch(name,
+					WebSecurityConfigurerAdapter.class)) {
+				return ConditionOutcome.match(message
+						.found("@EnableOAuth2Sso annotation on WebSecurityConfigurerAdapter")
+						.items(name));
+			}
 		}
-		if (restarter.getInitialUrls() == null) {
-			return ConditionOutcome.noMatch(message.because("initialized without URLs"));
-		}
-		return ConditionOutcome.match(message.because("available and initialized"));
-	}
-
-	private Restarter getRestarter() {
-		try {
-			return Restarter.getInstance();
-		}
-		catch (Exception ex) {
-			return null;
-		}
+		return ConditionOutcome.noMatch(message.didNotFind(
+				"@EnableOAuth2Sso annotation " + "on any WebSecurityConfigurerAdapter")
+				.atAll());
 	}
 
 }

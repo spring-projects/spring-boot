@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -38,22 +39,27 @@ class SessionCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
+		ConditionMessage.Builder message = ConditionMessage
+				.forCondition("Session Condition");
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 				context.getEnvironment(), "spring.session.");
 		StoreType sessionStoreType = SessionStoreMappings
 				.getType(((AnnotationMetadata) metadata).getClassName());
 		if (!resolver.containsProperty("store-type")) {
 			if (sessionStoreType == StoreType.REDIS && redisPresent) {
-				return ConditionOutcome
-						.match("Session store type default to redis (deprecated)");
+				return ConditionOutcome.match(
+						message.foundExactly("default store type of redis (deprecated)"));
 			}
-			return ConditionOutcome.noMatch("Session store type not set");
+			return ConditionOutcome.noMatch(
+					message.didNotFind("spring.session.store-type property").atAll());
 		}
 		String value = resolver.getProperty("store-type").replace("-", "_").toUpperCase();
 		if (value.equals(sessionStoreType.name())) {
-			return ConditionOutcome.match("Session store type " + sessionStoreType);
+			return ConditionOutcome.match(message
+					.found("spring.session.store-type property").items(sessionStoreType));
 		}
-		return ConditionOutcome.noMatch("Session store type " + value);
+		return ConditionOutcome
+				.noMatch(message.found("spring.session.store-type property").items(value));
 	}
 
 }

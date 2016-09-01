@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanExporter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -92,8 +93,13 @@ public class EndpointMBeanExportAutoConfiguration {
 				AnnotatedTypeMetadata metadata) {
 			boolean jmxEnabled = isEnabled(context, "spring.jmx.");
 			boolean jmxEndpointsEnabled = isEnabled(context, "endpoints.jmx.");
-			return new ConditionOutcome(jmxEnabled && jmxEndpointsEnabled,
-					"JMX Endpoints");
+			if (jmxEnabled && jmxEndpointsEnabled) {
+				return ConditionOutcome.match(
+						ConditionMessage.forCondition("JMX Enabled").found("properties")
+								.items("spring.jmx.enabled", "endpoints.jmx.enabled"));
+			}
+			return ConditionOutcome.noMatch(ConditionMessage.forCondition("JMX Enabled")
+					.because("spring.jmx.enabled or endpoints.jmx.enabled is not set"));
 		}
 
 		private boolean isEnabled(ConditionContext context, String prefix) {
