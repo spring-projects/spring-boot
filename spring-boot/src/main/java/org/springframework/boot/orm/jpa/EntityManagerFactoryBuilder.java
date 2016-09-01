@@ -25,9 +25,6 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
@@ -47,9 +44,6 @@ import org.springframework.util.ClassUtils;
  * @since 1.3.0
  */
 public class EntityManagerFactoryBuilder {
-
-	private static final Log logger = LogFactory
-			.getLog(EntityManagerFactoryBuilder.class);
 
 	private final JpaVendorAdapter jpaVendorAdapter;
 
@@ -211,7 +205,8 @@ public class EntityManagerFactoryBuilder {
 			entityManagerFactoryBean.getJpaPropertyMap().putAll(this.properties);
 			URL rootLocation = EntityManagerFactoryBuilder.this.persistenceUnitRootLocation;
 			if (rootLocation != null) {
-				entityManagerFactoryBean.setPersistenceUnitRootLocation(rootLocation.toString());
+				entityManagerFactoryBean
+						.setPersistenceUnitRootLocation(rootLocation.toString());
 			}
 			if (EntityManagerFactoryBuilder.this.callback != null) {
 				EntityManagerFactoryBuilder.this.callback

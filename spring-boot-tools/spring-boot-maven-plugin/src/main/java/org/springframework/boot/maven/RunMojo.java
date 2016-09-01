@@ -124,7 +124,12 @@ public class RunMojo extends AbstractRunMojo {
 		try {
 			URL[] urls = getClassPathUrls();
 			URLClassLoader classLoader = new URLClassLoader(urls);
-			return (classLoader.findResource(RESTARTER_CLASS_LOCATION) != null);
+			try {
+				return (classLoader.findResource(RESTARTER_CLASS_LOCATION) != null);
+			}
+			finally {
+				classLoader.close();
+			}
 		}
 		catch (Exception ex) {
 			return false;

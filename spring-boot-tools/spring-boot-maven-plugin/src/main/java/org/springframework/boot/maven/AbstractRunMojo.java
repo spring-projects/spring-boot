@@ -140,8 +140,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Flag to indicate if the run processes should be forked. {@code fork } is
-	 * automatically enabled if an agent or jvmArguments are specified, or if
-	 * devtools is present.
+	 * automatically enabled if an agent or jvmArguments are specified, or if devtools is
+	 * present.
 	 * @since 1.2
 	 */
 	@Parameter(property = "fork")
@@ -167,8 +167,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			getLog().debug("skipping run as per configuration.");
 			return;
 		}
-		final String startClassName = getStartClass();
-		run(startClassName);
+		run(getStartClass());
 	}
 
 	/**
@@ -237,8 +236,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	/**
-	 * Log a warning indicating that fork mode has been explicitly disabled
-	 * while some conditions are present that require to enable it.
+	 * Log a warning indicating that fork mode has been explicitly disabled while some
+	 * conditions are present that require to enable it.
 	 * @see #enableForkByDefault()
 	 */
 	protected void logDisabledFork() {
