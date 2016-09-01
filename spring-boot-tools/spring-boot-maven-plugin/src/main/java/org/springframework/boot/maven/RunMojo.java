@@ -120,16 +120,12 @@ public class RunMojo extends AbstractRunMojo {
 		return this.hasDevtools;
 	}
 
+	@SuppressWarnings("resource")
 	private boolean checkForDevtools() {
 		try {
 			URL[] urls = getClassPathUrls();
 			URLClassLoader classLoader = new URLClassLoader(urls);
-			try {
-				return (classLoader.findResource(RESTARTER_CLASS_LOCATION) != null);
-			}
-			finally {
-				classLoader.close();
-			}
+			return (classLoader.findResource(RESTARTER_CLASS_LOCATION) != null);
 		}
 		catch (Exception ex) {
 			return false;
