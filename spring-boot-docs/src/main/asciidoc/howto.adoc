@@ -22,6 +22,30 @@ can send us a {github-code}[pull request].
 == Spring Boot application
 
 
+[[howto-failure-analyzer]]
+=== Create your own FailureAnalyzer
+{dc-spring-boot}/diagnostics/FailureAnalyzer.{dc-ext}[[`FailureAnalyzer`] is a great way
+to intercept an exception on startup and turn it into a human-readable message, wrapped
+into a {dc-spring-boot}/diagnostics/FailureAnalysis.{dc-ext}[[`FailureAnalysis`]. Spring
+Boot provides such analyzer for application context related exceptions, JSR-303
+validations and more. It is actually very easy to create your own.
+
+`AbstractFailureAnalyzer` is a convenient extension of `FailureAnalyzer` that checks the
+presence of a specified exception type in the exception to handle. You can extend from
+that so that your implementation gets a chance to handle the exception only when it is
+actually present. If for whatever reason you can't handle the exception, return `null`
+to let another implementation a chance to handle the exception.
+
+`FailureAnalyzer` implementations are to be registered in a `META-INF/spring.factories`:
+the following registers `ProjectConstraintViolationFailureAnalyzer`:
+
+[source,properties,indent=0]
+----
+	org.springframework.boot.diagnostics.FailureAnalyzer=\
+	com.example.ProjectConstraintViolationFailureAnalyzer
+----
+
+
 
 [[howto-troubleshoot-auto-configuration]]
 === Troubleshoot auto-configuration

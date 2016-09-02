@@ -46,6 +46,29 @@ When your application starts you should see something similar to the following:
 By default `INFO` logging messages will be shown, including some relevant startup details
 such as the user that launched the application.
 
+If your application fails to start, registered `FailureAnalyzers` get a chance to provide
+a dedicated error message and a concrete action to fix the problem. For instance if you
+start a web application on port `8080` and that port is already in use, you should see
+something similar to the following:
+
+[indent=0]
+----
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Embedded servlet container failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+----
+
+NOTE: Spring Boot provides numerous `FailureAnalyzer` implementations and you can
+<<howto.adoc#howto-failure-analyzer,add your own>> very easily.
+
 
 [[boot-features-banner]]
 === Customizing the Banner
