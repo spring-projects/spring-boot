@@ -53,21 +53,22 @@ something similar to the following:
 
 [indent=0]
 ----
-***************************
-APPLICATION FAILED TO START
-***************************
+	***************************
+	APPLICATION FAILED TO START
+	***************************
 
-Description:
+	Description:
 
-Embedded servlet container failed to start. Port 8080 was already in use.
+	Embedded servlet container failed to start. Port 8080 was already in use.
 
-Action:
+	Action:
 
-Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+	Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
 ----
 
 NOTE: Spring Boot provides numerous `FailureAnalyzer` implementations and you can
 <<howto.adoc#howto-failure-analyzer,add your own>> very easily.
+
 
 
 [[boot-features-banner]]

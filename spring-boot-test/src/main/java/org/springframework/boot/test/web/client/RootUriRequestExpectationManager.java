@@ -37,9 +37,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
 
 /**
- * {@link RequestExpectationManager} that strips the specified root URI from the
- * request before verification. Can be used to simply test declarations when all REST
- * calls start the same way. For example: <pre class="code">
+ * {@link RequestExpectationManager} that strips the specified root URI from the request
+ * before verification. Can be used to simply test declarations when all REST calls start
+ * the same way. For example: <pre class="code">
  * RestTemplate restTemplate = new RestTemplateBuilder().rootUri("http://example.com").build();
  * MockRestServiceServer server = RootUriRequestExpectationManager.bindTo(restTemplate);
  * server.expect(requestTo("/hello")).andRespond(withSuccess());

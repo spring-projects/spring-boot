@@ -22,7 +22,6 @@ import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
@@ -38,6 +37,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -129,7 +129,7 @@ public class RedisHealthIndicatorTests {
 		assertThat(health.getDetails().get("cluster_size")).isEqualTo(4L);
 		assertThat(health.getDetails().get("slots_up")).isEqualTo(4L);
 		assertThat(health.getDetails().get("slots_fail")).isEqualTo(0L);
-		verify(redisConnectionFactory, Mockito.atLeastOnce()).getConnection();
+		verify(redisConnectionFactory, atLeastOnce()).getConnection();
 	}
 
 }
